@@ -1,0 +1,649 @@
+/*Customizing styles for specific views*/
+@media (max-width: 767px) {
+    .hidden-xs {
+        display: none !important;
+    }
+    .item h1 {
+        left: 7%;
+        bottom: 27%;
+        font-size: 18px;
+    }
+    body #workbenchWarning {
+        font-size: 10px;
+    }
+    .carousel-indicators {
+        bottom: 0px;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .navbar-header {float: right;}
+    #subnavigation {display: none;}
+    .login-content {
+        padding: 0;
+    }
+    #calendar-boxes {
+        padding: 0;
+    }
+
+    #mediadir .employee-more {
+        float: left;
+        word-wrap: break-word;
+        width: 100%;
+        padding-left: 10px;
+    }
+    #shop div.images a img {
+        height: auto;
+    }
+    #searchfield p#fieldlast {
+        padding-top: 0;
+    }
+    #searchfield p {
+        width: 100%;
+        margin-right: 0;
+    }
+    #home-page, #home-block {padding: 0 15px;}
+    .home-box.col-md-4 {width: 100%;margin-bottom: 30px;}
+    .social-foot {
+        float: left;
+        width: 78%;
+        margin-top: 3px;
+    }
+    #shop .shopterms .row3 {
+        display: none;
+    }
+    #footer-bottom .footer-left {
+        float: left;
+        width: auto;
+        margin-right: auto;
+        margin-left: 15px;
+    }
+    #media {
+        font-size: 13px;
+    }
+    .footer-right {
+        width: 100%;
+        float: left;
+    }
+    select[name="catId"] {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    .sidebar-block.contact-us a {
+        float: left;
+        width: 100%;
+        height: 41px;
+        padding: 6px 12px;
+        color: #FFFFFF;
+        font-size: 15px;
+        font-weight: bold;
+        background: url('images/contact-us-button.jpg') no-repeat;
+        background-size: 100% 100%;
+        text-align: center;
+        background-position: 100%;
+    }
+    #content-wrapper {
+        padding-bottom: 210px;
+    }
+    h1, .h1 {
+        font-size: 26px;
+    }
+    #home-page-wrapper {
+        padding: 20px 0;
+    }
+    #footer-bottom ul {
+        margin-left: 15px;
+    }
+    label[for="access_user_tos"] {
+        width: 90%;
+        float: left;
+        margin-left: 10px;
+    }
+    #page {margin-right: 0;width: 100%;}
+    #sidebar {margin-top: 20px;width: 100%;}
+    #tagelement,#tagelement tr, #tagelement .row2  {
+        float: left;
+        width: 100%;
+        font-size: 13px;
+    }
+    #tagelement td {
+        float: left;
+        width: 100%;
+        padding-left: 54%;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    }
+    #tagelement td:nth-of-type(1):before {
+        content: "Tabellenüberschrift 1";
+        position: absolute;
+        left: 20px;
+        font-weight: 700;
+    }
+    #login form input.remember_me, #login form label.remember_me {
+        width: auto;
+    }
+    #tagelement td:nth-of-type(2):before {
+        content: "Tabellenüberschrift 2";
+        position: absolute;
+        left: 20px;
+        font-weight: 700;
+    }
+    #tagelement td:nth-of-type(3):before {
+        content: "Tabellenüberschrift 3";
+        position: absolute;
+        left: 20px;
+        font-weight: 700;
+    }
+    .listrow .eachrow:nth-child(2) {
+        width: 22px;
+    }
+    .listrow .eachrow:nth-child(2) {
+        padding-left: 0;
+    }
+    #breadcrumb {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    #tagelement tr:nth-of-type(1) {display: none;}
+    .news-image {width: 50%;}
+    .news-text {clear: both;margin-top: 10px;}
+    #blog form p {padding-left: 0;}
+    #blog form p label {margin: 0;}
+    #blog div.search_date{padding: 0;}
+    #news-social-media li {clear: both;}
+    #news-social-media .facebook {margin-bottom: 5px;}
+    #captcha #coreCaptchaLabel {white-space: normal;}
+    #login p {
+        padding-left: 0;
+    }
+    form p label {
+        margin: 0;
+        margin-right: 20px;
+    }
+    form p {
+        width: 100%;
+        padding-left: 0;
+    }
+    #login p label {
+        margin-left: 0;
+        width: 100%;
+    }
+    #login #sociallogin, #access #sociallogin {
+        width: 100%;
+        margin-left: 0;
+    }
+    #login {
+        width: 100%;
+        padding: 0px;
+        border-bottom: 0;
+        border-right: 0;
+    }
+    .login-bottom {padding-left: 15px;}
+    #login a.lostpw, #login a.register {margin-left: 0}
+    #sidebar.col-md-3, #page.col-md-9, #page-left, #shop div.details, #shop div.short-description {
+        width: 100%;
+        margin-right: 0px;
+    }
+    #page-right {
+        width: 100%;
+        padding: 0;
+    }
+    #shop figure a, #checkout .right, #checkout .left {width: 100%;}
+    #shop figure a .categorie-image-wrapper {
+        width: 100%;
+        height: auto;
+    }
+    #shop figure a .categorie-image-wrapper img {
+        width: 70%;
+        height: auto;
+    }
+    #downloads div.overview div.row div.category {
+        width: 100%;
+        padding: 0 0 15px 0;
+    }
+    .overview .row {
+        width: 100%;
+    }
+    .member_list td {
+        float: left;
+        clear: both;
+    } /*cart*/
+    #cartlist #th_bg2 .cartrow:first-child {
+        width: 100%;
+        padding-left: 50%;
+    }
+    #cartlist #th_bg2 .cartrow:first-child:before {
+        content: "Product";
+        position: absolute;
+        left: 20px;
+        font-weight: 700;
+    }
+    #cartlist #th_bg2 .cartrow:nth-child(2):before {
+        content: "Stückpreis";
+        position: absolute;
+        font-weight: 700;
+        left: 20px;
+    }
+    #cartlist #th_bg2 .cartrow:nth-child(2) {
+        width: 100%;
+        padding-left: 50%;
+    }
+    #cartlist #th_bg2 .cartrow:nth-child(3):before {
+        content: "Menge";
+        position: absolute;
+        font-weight: 700;
+        left: 20px;
+    }
+    #cartlist #th_bg2 .cartrow:nth-child(3) {
+        width: 100%;
+        padding-left: 80%;
+        font-weight: 700;
+        padding-right: 0;
+    }
+    #shop input.shop_quantity {
+        float: right;
+    }
+    #shop .delete-icon {
+        float: right;
+        right: 46px;
+    }
+    #cartlist .row1 div {
+        width: 50%;
+    }
+    #cartlist #th_bg2 .cartrow {
+        width: 100%;
+        padding-left: 50%;
+        text-align: right;
+    }
+    #shop #th_bg2 .a_right {
+        text-align: right;
+        width: 100%;
+    }
+    #cartlist #th_bg2 .cartrow:nth-child(4):before {
+        content: "inkl. MwSt.";
+        position: absolute;
+        font-weight: 700;
+        left: 20px;
+    }
+    #cartlist #th_bg2 .cartrow:nth-child(6):before {
+        content: "Total";
+        position: absolute;
+        left: 20px;
+        font-weight: 700;
+    }
+    #cartlist #th_bg {
+        display: none;
+    }
+    /*versandkonditions*/
+    #shop {
+        font-size: 13px;
+    }
+    #shop .shopterms .row2 .shoprow {
+        float: left;
+        width: 100%;
+        padding-left: 56%;
+        min-height: 27px;
+        color: #000;
+    }
+    .row2.first .shoprow:first-child:before {
+        content: "Versandart";
+        position: absolute;
+        left: 10px;
+        font-weight: 700;
+    }
+    .row2.first .shoprow:nth-child(2):before {
+        content: "Lieferländer";
+        position: absolute;
+        left: 10px;
+        font-weight: 700;
+    }
+    .row2 .shoprow:nth-child(2):before {
+        content: "Maximalgewicht";
+        font-weight: 700;
+        position: absolute;
+        left: 15px;
+    }
+    .row2 .shoprow:nth-child(3):before {
+        content: "Gebührenfrei ab";
+        font-weight: 700;
+        position: absolute;
+        left: 15px; 
+    }
+    .row2 .shoprow:last-child:before {
+        content: "Gebühr";
+        font-weight: 700;
+        position: absolute;
+        left: 15px; 
+    }
+    /*Medien*/
+    head .eachrow:nth-child(2) {
+        width: 35%;
+    }
+    .head .eachrow:nth-child(3) {
+        width: 32%;
+        text-align: right;
+    }
+    .head .eachrow:nth-child(4) {
+        display: none;
+    }
+    .head .eachrow:nth-child(5) {
+        float: right;
+        text-align: right;
+        margin-right: 10px;
+    }
+    .row2 .eachrow, .homerow2 .eachrow {
+        width: 89%;
+        padding-left: 0px;
+    }
+    .listrow .eachrow:nth-child(3) {
+        width: 28.5%;
+        padding-left: 0px;
+    }
+    .listrow .eachrow:nth-child(4) {
+        width: 20%;
+        text-align: right;
+    }
+    .listrow .eachrow:nth-child(5) {
+        display: none;
+    }
+    .listrow .eachrow:last-child {
+        width: 28.2%;
+        text-align: right;
+        padding-right: 10px;
+        float: right;
+    }
+    .head .eachrow:nth-child(2) {
+        width: 36%;
+    }
+    .eachrow {
+        width: 15%;
+    }
+    .login-content .login-social {
+        width: 100%;
+        padding-left: 0;
+        border-bottom: 1px solid #D8DCE0;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        padding-right: 0;
+        border-right: 0;
+    }
+    #access .login-social, .regForm {width: 100%}
+    .regdivider span {
+        top: -8px;
+        left: -8px;
+        padding: 0px 6px;
+        left: 45%;
+    }
+    .regdivider {
+        height: 1px;
+        width: 100%;
+        margin: 30px 0;
+    }
+    /**/
+    #shop #bestelTable .row1, #shop_payment .row3, #shop_payment .row1 {
+        float: left;
+        width: 100%;
+    }
+    #bestelTable tbody, #shop_payment tbody {
+        float: left;
+    }
+    #shop table#bestelTable tr.row3 {
+        float: left;
+        width: 100%;
+        padding-left: 0;
+    }
+    #bestelTable .row3 td {
+        padding-left: 0;
+        width: 33%;
+        word-wrap: break-word;
+    }
+    #shop #bestelTable .row1.price td, #shop #bestelTable .row1.tax td {
+        padding-left: 0;
+        width: 50%;
+        text-align: left;
+        padding-left: 10px;
+    }
+    #shop #bestelTable .row1.price, #shop #bestelTable .row1.tax {
+        width: 100%;
+    }
+    #shop #bestelTable .row1.price td:before, #shop #bestelTable .row1.tax td:before {
+        content: none;
+    }
+    #bestelTable .row3.total td {
+        width: 50%;
+        text-align: left;
+        padding-left: 10px;
+    }
+    #bestelTable th, #shop_payment th {
+        display: none;
+    }
+    #bestelTable td {
+        float: left;
+        width: 100%;
+        padding-left: 50%;
+        text-align: right;
+    }
+    #shop div.message p label {
+        width: 260px;
+    }
+    #bestelTable .row1 td:nth-of-type(1):before {
+        content: "ID";
+        position: absolute;
+        left: 22px;
+    }
+    #bestelTable .row1 td:nth-of-type(2):before {
+        content: "Produkt";
+        position: absolute;
+        left: 22px;
+    }
+    #bestelTable .row1 td:nth-of-type(3):before {
+        content: "Stückpreis";
+        position: absolute;
+        left: 22px;
+    }
+    #bestelTable .row1 td:nth-of-type(4):before {
+        content: "Menge";
+        position: absolute;
+        left: 22px;
+    }
+    #bestelTable .row1 td:nth-of-type(5):before {
+        content: "inkl. MwSt.";
+        position: absolute;
+        left: 22px;
+    }
+    #bestelTable .row1 td:nth-of-type(7):before {
+        content: "Total";
+        position: absolute;
+        left: 22px;
+    }
+    /**/
+    /**/
+    #shop_payment .row3 td {
+        float: left;
+        width: 100%;
+        text-align: left !important;
+    }
+    #shop_payment .row1 td {
+        width: 50%;
+        float: left;
+    }
+    #shop_payment .row1:first-child td {
+        width: 100%;
+        float: left;
+        text-align: left !important;
+    }
+    #shop div.message p {
+        padding-left: 0;
+    }
+    #shop #head td {
+        float: left;
+        width: 100%;
+        text-align: left !important;
+    }
+    #shop .shop-price td {
+        width: 50%;
+    }
+    #shop .shop-price td:nth-of-type(2) {
+        text-align: right !important;
+    }
+    #profile-left {
+        margin-left: 0px;
+    }
+    #subnavigation {display: none;}
+    #profile-left-button {
+        padding-left: 0;
+    }
+    /**/
+}
+@media (min-width: 768px) and (max-width: 979px) {
+    #home-page {padding: 0 15px;}
+    .home-box.col-md-4 {width: 100%;margin-bottom: 30px;}
+    #content-wrapper {
+        padding-bottom: 168px;
+    }
+    .social-foot {
+        float: none;
+        width: 30%;
+        margin-top: 3px;
+    }
+    #shop div.message p {
+        padding-left: 222px;
+    }
+    #shop div.message p label {
+        width: 274px;
+    }
+    #footer-bottom .footer-left {
+        float: none;
+        width: 50%;
+    }
+    #home-block {padding: 15px;}
+    .footer-right {
+        width: 77%;
+        float: none;
+    }
+    #home-page-wrapper {padding: 20px 0;}
+    .col-sm-9 {width: 72.7%;}
+    .contact-web a {word-wrap: break-word;}
+    input[name="downloads_search_keyword"] {
+        width: 82%;
+    }
+    #login {
+        width: 100%;
+        padding: 0px;
+        border-right: 0;
+    }
+    .login-bottom {
+        padding-left: 15px;
+    }
+    .login-content .login-social {
+        width: 100%;
+        padding-left: 0;
+        border-bottom: 1px solid #D8DCE0;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-right: 0;
+        padding-right: 0%;
+    }
+    #shop {
+        font-size: 13px;
+    }
+    .sidebar-block.contact-us a {
+        padding: 7% 0 0 13%;
+        font-size: 13px;
+    }
+    .head .eachrow:nth-child(3) {width: 24%;}
+    .head .eachrow:nth-child(2) {width: 46%;}
+    .row2 .eachrow, .homerow2 .eachrow {width: 93%;}
+    .listrow .eachrow:nth-child(3) {width: 42.5%;}
+    #shop div.short-description, #shop div.details {width: 100%;}
+    #page.col-md-9 {width: 75.3%;}
+    #cartlist #th_bg .cartrow:first-child,#cartlist #th_bg2 .cartrow:first-child {width: 26%;}
+    #cartlist #th_bg .cartrow:nth-child(2) {width: 21%;}
+    .cartrow {width: 23%;}
+    #shop #th_bg .a_right.cartrow {width: 13%;}
+    #cartlist #th_bg .cartrow:nth-child(3) {width: 17%;}
+    #cartlist #th_bg2 .cartrow:nth-child(2) {width: 18%;}
+    #cartlist #th_bg2 .cartrow:nth-child(3) {width: 16%;}
+    #cartlist #th_bg2 .cartrow {width: 11%;}
+    #shop #th_bg2 .a_right {
+        width: 15%;
+        word-wrap: break-word;
+        margin-left: 11px;
+        padding-right: 5px;
+    }
+    #access .login-social, .regForm {width: 100%}
+    .regdivider span {
+        top: -8px;
+        left: -8px;
+        padding: 0px 6px;
+        left: 45%;
+    }
+    .regdivider {
+        height: 1px;
+        width: 100%;
+        margin: 30px 0;
+    }
+    #profile-left {
+        margin-left: 0px;
+    }
+    #profile-left-button {
+        padding-left: 0;
+    }
+    #subnavigation {
+        display: none;
+    }
+}
+@media (min-width: 980px) and (max-width: 1199px) {
+    .home-box.col-md-4 {width: 31.4%;margin-right: 28px;}
+    #content-wrapper {
+        padding-bottom: 168px;
+    }
+    .social-foot {
+        float: none;
+        width: 24%;
+        margin-top: 3px;
+    }
+    #shop div.message p {
+        padding-left: 292px;
+    }
+    #footer-bottom .footer-left {
+        float: none;
+        width: 50%;
+    }
+    .footer-right {
+        width: 58%;
+        float: none;
+    }
+    .col-md-9_5 {
+        width: 75.9%;
+    }
+    input[name="downloads_search_keyword"] {
+        width: 87%;
+    }
+    .listrow .eachrow:nth-child(3) {width: 44.5%;}
+    .listrow .eachrow:last-child {width: 22.2%;}
+    .row2 .eachrow, .homerow2 .eachrow {width: 93%;}
+    #page.col-md-9 {
+        width: 77.3%;
+    }
+    #sidebar.col-md-3 {
+        width: 20.5%;
+    }
+    .shopterms {
+        font-size: 13px;
+    }
+    .sidebar-block.contact-us a {
+        padding: 5% 0 0 12%;
+        font-size: 14px;
+    }
+    .regdivider {
+        margin: 0 27px;
+    }
+    #cartlist {
+        font-size: 12px;
+    }
+    #profile-left-button {
+        padding-left: 35.5%;
+    }
+    #subnavigation {display: none;}
+}
