@@ -158,8 +158,9 @@ class Product extends \Cx\Model\Base\EntityBase {
     }
 
     public function initNewEntityForSale($saleOptions) {
+        $entity = \Env::get('em')->getRepository($this->entityClass)->findOneForSale($this->entityAttributes, $saleOptions);
         $entityIdKey = \Env::get('em')->getClassMetadata($this->entityClass)->getSingleIdentifierFieldName(); 
-        return call_user_func(array($this->entityClass, 'newForSale'), $this->entityAttributes, $saleOptions)->$entityIdKey();
+        return $entity->{'get'.ucfirst($entityIdKey)}();
     }
 
     public function getEntityById($entityId) {
