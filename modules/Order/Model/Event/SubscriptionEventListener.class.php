@@ -37,7 +37,7 @@ class SubscriptionEventListener implements \Cx\Core\Event\Model\Entity\EventList
         } else {
             $subscription->setPaymentState(self::PAYMENT_PAID);
         }
-        $productEntity = $subscription->getProduct()->getEntityById($subscriptionOptions->getProductEntityId());
+        $productEntity = $subscription->getProduct()->getEntityById($subscription->getProductEntityId());
         $productEntity->onSubscriptionPostPay();
     }
 
