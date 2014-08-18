@@ -283,6 +283,13 @@ class ContentManager extends \Module
             $this->template->hideBlock('page_permissions');
         }
 
+        //show the caching options only if the caching system is actually active
+        if ($_CONFIG['cacheEnabled'] == 'on') {
+            $this->template->touchBlock('show_caching_option');
+        } else {
+            $this->template->hideBlock('show_caching_option');
+        }
+        
         if (\Permission::checkAccess(78, 'static', true)) {
             $this->template->hideBlock('release_button');
         } else {
