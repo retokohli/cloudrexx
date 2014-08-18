@@ -215,8 +215,25 @@ class cmsSession extends RecursiveArrayAccess {
                 $this->releaseLock($lockKey);
             }
         }
+        $this->updateTimeStamp();
     }
     
+    /**
+     * Update the lastupdated timestamp value in database
+     */
+    protected function updateTimeStamp()
+    {
+        // Don't write session data to databse.
+        // This is used to prevent an unwanted session overwrite by a continuous
+        // script request (javascript) that only checks for a certain event to happen.
+        if ($this->discardChanges) return true;
+                
+        $query = "UPDATE " . DBPREFIX . "sessions SET lastupdated = '" . time() . "' WHERE sessionid = '" . $_SESSION->sessionid . "'";
+
+        \Env::get('db')->Execute($query);
+    }
+
+
     /**
      * Read the data from database and assign it into $_SESSION array
      */
@@ -443,22 +460,7 @@ class cmsSession extends RecursiveArrayAccess {
      * @return boolean
      */
     function cmsSessionWrite($aKey, $aVal) {
-        // Don't write session data to databse.
-        // This is used to prevent an unwanted session overwrite by a continuous
-        // script request (javascript) that only checks for a certain event to happen.
-        if ($this->discardChanges) return true;
         
-        $aVal = addslashes($aVal);
-        $query = "UPDATE " . DBPREFIX . "sessions SET lastupdated = '" . time() . "' WHERE sessionid = '" . $aKey . "'";
-
-        // We must deactivate the debugging of the database here,
-        // because at this stage the database driver used in DBG
-        // or DBG itself has already been deconstructed. So logging
-        // an SQL statement at this point will most likely generate
-        // a FATAL error.
-        \Env::get('db')->debug = 0;
-
-        \Env::get('db')->Execute($query);
         return true;
     }
 
