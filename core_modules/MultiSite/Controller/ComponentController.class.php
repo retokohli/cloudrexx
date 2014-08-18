@@ -382,7 +382,7 @@ throw new MultiSiteException('Refactor this method!');
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('multiSiteProtocol','mixed', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'mixed:Mixed,http:HTTP,https:HTTPS', 'setup')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'mixed:Allow insecure (HTTP) and secure (HTTPS) connections,http:Allow only insecure (HTTP) connections,https:Allow only secure (HTTPS) connections', 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Multisite Protocol");
             }
 
