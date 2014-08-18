@@ -23,7 +23,7 @@ class SubscriptionEventListener implements \Cx\Core\Event\Model\Entity\EventList
         $subscription = $eventArgs->getEntity();
         $productEntityId = $subscription->getProductEntityId();
         $productEntity = $subscription->getProduct()->getEntityById($productEntityId);
-        $productEntity->onSubscriptionPrePay();
+        $productEntity->onSubscriptionPrePay($subscription);
     }
 
     public function onPostPay($eventArgs) {
@@ -38,7 +38,7 @@ class SubscriptionEventListener implements \Cx\Core\Event\Model\Entity\EventList
             $subscription->setPaymentState(self::PAYMENT_PAID);
         }
         $productEntity = $subscription->getProduct()->getEntityById($subscription->getProductEntityId());
-        $productEntity->onSubscriptionPostPay();
+        $productEntity->onSubscriptionPostPay($subscription);
     }
 
     public function onPreRenewal($eventArgs) {}
