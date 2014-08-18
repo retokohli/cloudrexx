@@ -57,7 +57,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateOwnUser'         => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'unMapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission'))
+            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
+            'setWebsiteState'       => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
         );
     }
 
@@ -567,6 +568,20 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             } catch (\Exception $e) {
                 return $e->getMessage();
             }
+        }
+    }
+    /**
+     * set Website State
+     * 
+     * @param array $params
+     * 
+     */
+    public function setWebsiteState($params) {
+        if (!empty($params['post'])) {
+            $websiteConfigPath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $params['post']['websiteName'] . \Env::get('cx')->getConfigFolderName();
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem', $websiteConfigPath);
+            \Cx\Core\Setting\Controller\Setting::set('websiteState', $params['post']['status']);
+            \Cx\Core\Setting\Controller\Setting::update('websiteState');
         }
     }
 

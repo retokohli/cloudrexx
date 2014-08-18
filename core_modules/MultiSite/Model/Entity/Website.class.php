@@ -19,6 +19,11 @@ class Website extends \Cx\Model\Base\EntityBase {
      * Status init
      */
     const STATE_INIT = 'init';
+    
+    /**
+     * Status setup
+     */
+    const STATE_SETUP =  'setup';
         
     protected $basepath = null;
   
@@ -366,6 +371,9 @@ class Website extends \Cx\Model\Base\EntityBase {
      */
     public function setup() {
         global $_DBCONFIG, $_ARRAYLANG;
+        
+        $this->status = self::STATE_SETUP;
+        
         $this->websiteController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
 
         $websiteName = $this->getName();
@@ -723,7 +731,12 @@ class Website extends \Cx\Model\Base\EntityBase {
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthPassword', $websiteHttpAuthPassword, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new \Exception("Failed to add Setting entry for HTTP Authentication Password of Website Service");
-            }       
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteState', $this->status, 8,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::STATE_ONLINE.':'.self::STATE_ONLINE.','.self::STATE_OFFLINE.':'.self::STATE_OFFLINE.','.self::STATE_INIT.':'.self::STATE_INIT.','.self::STATE_SETUP.':'.self::STATE_SETUP, 'website')){
+                    throw new \Exception("Failed to add website entry for website state");
+            }
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');

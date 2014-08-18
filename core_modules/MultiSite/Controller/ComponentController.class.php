@@ -545,8 +545,11 @@ throw new MultiSiteException('Refactor this method!');
                 break;
 
             case self::MODE_WEBSITE:
-// TODO: Website specific customizings can be added at this point
-//       Extensions like access restrictions to certain parts of the system, etc.
+                if(\Cx\Core\Setting\Controller\Setting::getValue('websiteState') != \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE){
+                    throw new \Exception('Website is currently not online');
+                }
+        // TODO: Website specific customizings can be added at this point
+        // Extensions like access restrictions to certain parts of the system, etc.
                 break;
 
 // TODO: workaround to load the themes from the CodeBase as no themes in the Data Repository of the Website do exist at this point
