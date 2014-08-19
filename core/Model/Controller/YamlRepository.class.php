@@ -198,6 +198,14 @@ class YamlRepository {
         return $matchedEntities;
     }
 
+    public function findOneBy(array $criteria = array()) {
+        $matchedEntities = $this->findBy($criteria);
+        if (isset($matchedEntities[0])) {
+            return $matchedEntities[0];
+        }
+        return null;
+    }
+
     /**
      * Add new entity to the repository
      * Method {@see flush()} must triggered to persist the entity in the repository.
