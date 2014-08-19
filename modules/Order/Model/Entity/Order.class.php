@@ -134,5 +134,11 @@ class Order extends \Cx\Model\Base\EntityBase {
     public function setInvoices($invoices) {
         $this->invoices = $invoices;
     }
+
+    public function complete() {
+        foreach ($this->subscriptions as $subscription) {
+            $subscription->payComplete();
+        }
+    }
 }
 

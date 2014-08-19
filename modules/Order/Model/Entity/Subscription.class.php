@@ -205,6 +205,6 @@ class Subscription extends \Cx\Model\Base\EntityBase {
             $this->setPaymentState(self::PAYMENT_PAID);
         }
 
-        \Env::get('cx')->getEvents()->triggerEvent('model/onPayComplete', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+        \Env::get('cx')->getEvents()->triggerEvent('model/payComplete', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
     }
 }
