@@ -36,6 +36,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
 
     protected $expirationDate = null;
     protected $productEntityId = null;
+    protected $productEntity = null;
     protected $paymentAmount = null;
     protected $paymentState;
     protected $renewalUnit = null;
@@ -59,7 +60,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
             return;
         }
         $this->product = $product;
-        $this->productEntityId = $product->initNewEntityForSale($options);
+        $this->setProductEntity($product->getNewEntityForSale($options));
         $this->paymentAmount = $product->getPrice();
         $this->paymentState = self::PAYMENT_OPEN;
         if ($product->isExpirable()) {
@@ -138,6 +139,19 @@ class Subscription extends \Cx\Model\Base\EntityBase {
 
     public function setProductEntityId($productEntityId) {
         $this->productEntityId = $productEntityId;
+    }
+
+    public function getProductEntity() {
+        if (!$this->productEntity && $this->productEntityId) {
+            $this->productEntity = $this->product->getEntityById($this->productEntityId);
+        }
+        return $this->productEntity;
+    }
+
+    public function setProductEntity($productEntity) {
+        $this->productEntity = $productEntity;
+        $entityIdKey = \Env::get('em')->getClassMetadata(get_class($productEntity))->getSingleIdentifierFieldName(); 
+        $this->productEntityId = $productEntity->{'get'.ucfirst($entityIdKey)}();
     }
 
     public function getPaymentAmount() {
