@@ -588,11 +588,18 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      */
     public function setWebsiteState($params) {
-        if (!empty($params['post'])) {
-            $websiteConfigPath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $params['post']['websiteName'] . \Env::get('cx')->getConfigFolderName();
+         if (!empty($params['post'])) {
+            $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $website = $webRepo->findById($params['post']['websiteId']);
+            //Updating the website status in website settings(MultiSite.yml)
+            $websiteConfigPath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $website->getName() . \Env::get('cx')->getConfigFolderName();
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem', $websiteConfigPath);
             \Cx\Core\Setting\Controller\Setting::set('websiteState', $params['post']['status']);
             \Cx\Core\Setting\Controller\Setting::update('websiteState');
+            //Updating the website status in service server DB
+            $website->setStatus($params['post']['status']);
+            \Env::get('em')->persist($website);
+            \Env::get('em')->flush();
         }
     }
 
