@@ -1,18 +1,39 @@
 (function($) {
     $(document).ready(function() {
+        var fadeSpeed = 10, fadeTo = 0.6, topDistance = 30;
+        var topbarME = function() {
+            $jq11('.header').fadeTo(fadeSpeed, 1);
+        }, topbarML = function() {
+            $jq11('.header').fadeTo(fadeSpeed, fadeTo);
+        };
+        var inside = false;
+        $jq11(window).scroll(function() {
+            position = $jq11(window).scrollTop();
+            if (position > topDistance && !inside) {
+
+                topbarML();
+                $jq11('.header').bind('mouseenter', topbarME);
+                $jq11('.header').bind('mouseleave', topbarML);
+                inside = true;
+            }
+
+            else if (position < topDistance) {
+                topbarME();
+                $jq11('.header').unbind('mouseenter', topbarME);
+                $jq11('.header').unbind('mouseleave', topbarML);
+                inside = false;
+            }
+        });
         $jq11('.carousel').carousel({
             interval: 2000
         });
-        $jq11('.header').hover(function(){
-            $jq11(this).css('opacity','1');
-        }, function(){
-            $jq11(this).css('opacity','0.6');
-        });
+        $jq11('#social-media div').css('float', 'left');
         $('.btn-navbar').toggle(function() {
             $('section, footer').animate({right: '100%'}, 10);
-            $('.mobile-nav').css('visibility','visible');
-        }, function() {$('section, footer').animate({right: '0'}, 10);
-            $('.mobile-nav').css('visibility','hidden');
+            $('.mobile-nav').css('visibility', 'visible');
+        }, function() {
+            $('section, footer').animate({right: '0'}, 10);
+            $('.mobile-nav').css('visibility', 'hidden');
         });
         $('.profile.networks .btn-google').removeClass('btn-google').addClass('btn-google-plus');
         $('.profile.networks .fa-google').removeClass('fa-google').addClass('fa-google-plus');
@@ -57,7 +78,7 @@
         }
         /* Metanavigation End */
         /* Navigation Start */
-        $('.navigation > li').hover(function() {
+        $('#navigation-wrapper .navigation > li').hover(function() {
             $(this).children('ul').animate({
                 height: 'toggle',
                 opacity: 'toggle'
@@ -89,52 +110,6 @@
         $('#shop-categories li a:last').addClass('last');
         $('#shop-currencies a:last').addClass('last');
         /* Shop End */
-        /* Cycle Start */
-        if ($('#cycle').length > 0) {
-            $('#cycle').after(
-                    '<div class="cycle-button" id="cycle-prev" />' +
-                    '<div class="cycle-button" id="cycle-next" />' +
-                    '<div id="cycle-nav" />'
-                    ).cycle({
-                fx: 'fade',
-                speed: 1000,
-                timeout: 0,
-                next: '#cycle-next',
-                prev: '#cycle-prev',
-                pager: '#cycle-nav'
-            });
-            $('#cycle-nav a').empty();
-            $('#cycle-wrapper').hover(function(e) {
-                $('#cycle-prev').stop(true, true).hide().css('left', '-35px').animate({
-                    left: '+=45',
-                    opacity: 'toggle'
-                }, 100);
-                $('#cycle-next').stop(true, true).hide().css('right', '-35px').animate({
-                    right: '+=45',
-                    opacity: 'toggle'
-                }, 100);
-            }, function(e) {
-                $('#cycle-prev').stop(true, true).delay(500).animate({
-                    left: '-=45',
-                    opacity: 'toggle'
-                }, 100);
-                $('#cycle-next').stop(true, true).delay(500).animate({
-                    right: '-=45',
-                    opacity: 'toggle'
-                }, 100);
-            });
-        }
-        /* Cycle End */
-        /* Scroll Start */
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 100) {
-                $('#back-top').fadeIn();
-                $('.header').css('opacity', '0.6');
-            } else {
-                $('#back-top').fadeOut();
-                $('.header').css('opacity', '1');
-            }
-        });
         $('#back-top').click(function() {
             $('html, body').animate({
                 scrollTop: 0
