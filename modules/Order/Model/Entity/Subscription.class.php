@@ -50,6 +50,11 @@ class Subscription extends \Cx\Model\Base\EntityBase {
      * Constructor
      */
     public function __construct($product, $options) {
+        // Important:
+        // A subscription must always have a valid $product.
+        // The following exception is for the sole purpose of making this class
+        // compatible with the \Cx\Core\Html\Controller\ViewGenerator library
+        // for autogenerating user-interfaces.
         if (!$product) {
             return;
         }
@@ -173,5 +178,19 @@ class Subscription extends \Cx\Model\Base\EntityBase {
 
     public function setRenewalDate($renewalDate) {
         $this->renewalDate = $renewalDate;
+    }
+
+    public function payComplete() {
+        if ($this->getProduct()->isRenewable()) {
+            // update renewal period and date
+            list($this->renewalUnit, $this->renewalQuantifier) = $this->getProduct()->getRenewalDefinition($this->renewalUnit, $this->renewalQuantifier);
+            $renewalDate = $this->getProduct()->getRenewalDate($this->renewalUnit, $this->renewalQuantifier);
+            $this->setRenewalDate($renewalDate);
+            $this->setPaymentState(self::PAYMENT_RENEWAL);
+        } else {
+            $this->setPaymentState(self::PAYMENT_PAID);
+        }
+
+        \Env::get('cx')->getEvents()->triggerEvent('model/onPayComplete', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
     }
 }
