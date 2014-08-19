@@ -134,29 +134,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
         if (!empty($params['post'])) {
-            $post = $params['post'];
-            $websiteName = contrexx_input2raw($post['multisite_address']);
-            //set email of the new user
-            $objUser->setEmail(contrexx_input2raw($post['multisite_email_address']));
-            //set frontend language id 
-            //$objUser->setFrontendLanguage(contrexx_input2raw($post['langId']));
-            //set backend language id 
-            //$objUser->setBackendLanguage(contrexx_input2raw($post['langId']));
-            //set password 
-            $objUser->setPassword($objUser->make_password(8, true));
-            //check email validity
-            if (!\FWValidator::isEmail($post['multisite_email_address'])) {
-                throw new MultiSiteJsonException('The email you entered is invalid.');
-            }
-            //check email existence
-            self::verifyEmail($post['multisite_email_address']);
-
-            //call \User\store function to store all the info of new user
-            if (!$objUser->store()) {
-                throw new MultiSiteJsonException($objUser->error_msg);
+            $websiteName = contrexx_input2raw($params['post']['multisite_address']);
+            $user = $this->createUser(array('post' => array('email' => $params['post']['multisite_email_address'])));
+            // create a new CRM Contact and link it to the User account
+            if (!empty($user['userId'])) {
+                $objFWUser = \FWUser::getFWUserObject();
+                $objUser   = $objFWUser->objUser->getUser(intval($user['userId']));
+                
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $arrProfile[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
+                    $objUser->objAttribute->next();
+                }
+                
+                foreach ($arrProfile as $key => $value) {
+                    $arrProfile['fields'][] = array('special_type' => 'access_'.$key);
+                    $arrProfile['data'][]   = $value[0];
+                    unset($arrProfile[$key]);
+                }
+                $arrProfile['fields'][] = array('special_type' => 'access_email');
+                $arrProfile['data'][]   = $objUser->getEmail();
+                $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+                $objCrmLibrary->addCrmContact($arrProfile);
             }
             //call createWebsite method.
-            return $this->createWebsite($objUser,$websiteName);
+            return $this->createWebsite(array('post' => array('userId' => $user['userId'])), $websiteName);
         }
     }
 
@@ -164,21 +166,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Creates a new website
      * @param type $params  
     */
-    public function createWebsite($params,$websiteName='') {
+    public function createWebsite($params, $websiteName='') {
         // load text-variables of module MultiSite
         global $_ARRAYLANG, $objInit;
-        if (is_array($params)) {
-            $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
-            //set email of the new user
-            $objUser->setEmail(contrexx_input2raw($params['post']['userEmail']));
-            //set user id of the new user
-            $objUser->setId(contrexx_input2raw($params['post']['userId']));
-            $websiteId = contrexx_input2raw($params['post']['websiteId']);
-            $websiteName = contrexx_input2raw($params['post']['websiteName']);
-        } else {
-            $objUser = $params;
-            $websiteId = '';
-        }
+        
+        $objFWUser   = \FWUser::getFWUserObject();
+        $objUser     = $objFWUser->objUser->getUser(contrexx_input2raw($params['post']['userId']));
+        $websiteId   = isset($params['post']['websiteId']) ? contrexx_input2raw($params['post']['websiteId']) : '';
+        $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : $websiteName;
+        
         //load language file 
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
@@ -194,7 +190,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         try {
             $objWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
-            if($websiteId!=''){
+            if ($websiteId!='') {
                 $objWebsite->setId($websiteId);
             }
             \Env::get('em')->persist($objWebsite);
@@ -208,12 +204,27 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function createUser($params) {
         if (!empty($params['post'])) {
             $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
+            if (!empty($params['post']['userId'])) {
+                $objUser->setId($params['post']['userId']);
+            }
             $objUser->setEmail(!empty($params['post']['email']) ? contrexx_input2raw($params['post']['email']) : '');
             $objUser->setActiveStatus(!empty($params['post']['active']) ? (bool)$params['post']['active'] : false);
             $objUser->setAdminStatus(!empty($params['post']['admin']) ? (bool)$params['post']['admin'] : false);
             $objUser->setPassword(\User::make_password(8,true));
-            $objUser->store();
-            return true;
+            
+            //check email validity
+            if (!\FWValidator::isEmail($params['post']['email'])) {
+                throw new MultiSiteJsonException('The email you entered is invalid.');
+            }
+            //check email existence
+            self::verifyEmail($params['post']['email']);
+            
+            //call \User\store function to store all the info of new user
+            if (!$objUser->store()) {
+                throw new MultiSiteJsonException($objUser->error_msg);
+            } else {
+                return array('userId' => $objUser->getId());
+            }
         }
     }
 
@@ -458,9 +469,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
                 $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
                 $domain     = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
-                $website    = $domain->getWebsite();
+                $website    = $domain ? $domain->getWebsite() : '';
                 
-                if ($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                if (isset($website) && $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                     $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);                
                     $website->mapDomain($objDomain);
                 
@@ -496,9 +507,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
             $domain     = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
-            $website    = $domain->getWebsite();
+            $website    = $domain ? $domain->getWebsite() : '';
             
-            if ($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+            if (isset($website) && $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                 $website->unmapDomain($params['post']['domainName']);
                 \Env::get('em')->persist($website);
             } else {
