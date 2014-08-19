@@ -112,7 +112,9 @@ class Order extends \Cx\Model\Base\EntityBase {
     }
 
     public function createSubscription($product, $subscriptionOptions) {
-        $this->addSubscription(new Subscription($product, $subscriptionOptions));
+        $subscription = new Subscription($product, $subscriptionOptions);
+        \Env::get('em')->persist($subscription);
+        $this->addSubscription($subscription);
     }
     
     /**
@@ -133,3 +135,4 @@ class Order extends \Cx\Model\Base\EntityBase {
         $this->invoices = $invoices;
     }
 }
+
