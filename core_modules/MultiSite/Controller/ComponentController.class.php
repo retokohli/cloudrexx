@@ -36,8 +36,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     const MODE_HYBRID = 'hybrid';
     const MODE_WEBSITE = 'website';
     
-    private $messages = '';
-    private $reminders = array(3, 14);
+    protected $messages = '';
+    protected $reminders = array(3, 14);
     protected $db;
     /*
      * Constructor
@@ -69,6 +69,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $subcommand = $arguments[0];
         }
 
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+        // allow access only if mode is MODE_MANAGER or MODE_HYBRID
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(self::MODE_MANAGER, self::MODE_HYBRID))) {
+            return;
+        }
+
         global $objInit, $_ARRAYLANG;
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
@@ -77,7 +83,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case 'MultiSite':
                 switch ($subcommand) {
                     case 'signup':
-                        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
                         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
                         $objTemplate->loadTemplateFile('Signup.html');
                         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -360,30 +365,35 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'xampp:XAMPP,plesk:Plesk', 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user website Controller");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('multiSiteProtocol','mixed', 2,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'mixed:Allow insecure (HTTP) and secure (HTTPS) connections,http:Allow only insecure (HTTP) connections,https:Allow only secure (HTTPS) connections', 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Multisite Protocol");
+            }
             if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('multiSiteDomain',$_CONFIG['domainUrl'], 2,
+                && !\Cx\Core\Setting\Controller\Setting::add('multiSiteDomain',$_CONFIG['domainUrl'], 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database multiSite Domain");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteUrl') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('marketingWebsiteUrl','https://'.$_CONFIG['domainUrl'], 4,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Marketing Website URL");
+            }
             if (\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('unavailablePrefixes', 'account,admin,demo,dev,mail,media,my,staging,test,www', 3,
+                && !\Cx\Core\Setting\Controller\Setting::add('unavailablePrefixes', 'account,admin,demo,dev,mail,media,my,staging,test,www', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Unavailable website names");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMaxLength',80, 4,
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMaxLength',80, 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Maximal length of website names");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMinLength',4, 5,
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMinLength',4, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Minimal length of website names");
-            }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('multiSiteProtocol','mixed', 6,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'mixed:Allow insecure (HTTP) and secure (HTTPS) connections,http:Allow only insecure (HTTP) connections,https:Allow only secure (HTTPS) connections', 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Multisite Protocol");
             }
 
             // websiteSetup group
@@ -531,35 +541,64 @@ throw new MultiSiteException('Refactor this method!');
     }
 
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
-        // Abort in case the request has not been made to either the frontend nor the backend
-        if (!in_array($cx->getMode(), array($cx::MODE_FRONTEND, $cx::MODE_BACKEND))) {
+        // Abort in case the request has not been made to the frontend nor the backend, nor the command mode
+        if (!in_array($cx->getMode(), array($cx::MODE_FRONTEND, $cx::MODE_BACKEND, $cx::MODE_COMMAND))) {
             return;
         }
 
         // Abort in case this Contrexx installation has not been set up as a Website Service.
         // If the MultiSite module has not been configured, then 'mode' will be set to null.
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-            case self::MODE_SERVICE:
+            case self::MODE_MANAGER:
+                $this->verifyBackendAndCommandRequest($cx);
+                $this->verifyFrontendRequest($cx);
+                break;
+
             case self::MODE_HYBRID:
+            case self::MODE_SERVICE:
                 $this->deployWebsite($cx);
+                $this->verifyBackendAndCommandRequest($cx);
+                $this->verifyFrontendRequest($cx);
                 break;
 
             case self::MODE_WEBSITE:
-                if(\Cx\Core\Setting\Controller\Setting::getValue('websiteState') != \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE){
+                if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') != \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE){
                     throw new \Exception('Website is currently not online');
                 }
-        // TODO: Website specific customizings can be added at this point
-        // Extensions like access restrictions to certain parts of the system, etc.
                 break;
 
-// TODO: workaround to load the themes from the CodeBase as no themes in the Data Repository of the Website do exist at this point
-                //\Env::get('cx')->websiteThemesPath = \Env::get('cx')->getCodeBaseDocumentRootPath() . '/themes';
             default:
                 break;
         }
     }
 
-    private function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
+    protected function verifyBackendAndCommandRequest($cx) {
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $mainDomain = $domainRepository->getMainDomain()->getName();
+        // Allow access to backend and command-mode only through Main Domain.
+        // Other requests will be forwarded to the Marketing Website of MultiSite.
+        if (   in_array($cx->getMode(), array($cx::MODE_BACKEND, $cx::MODE_COMMAND))
+            && $_SERVER['HTTP_HOST'] != $mainDomain
+        ) {
+            header('Location: '.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteUrl'), true, 301);
+            exit;
+        }
+    }
+
+    protected function verifyFrontendRequest($cx) {
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        // Allow access to frontend only on known domains.
+        // Known domains are usually the Main Domain as well as the domain used for the Customer Panel.
+        // Other requests will be forwarded to the Marketing Website of MultiSite.
+        if (   $cx->getMode() == $cx::MODE_FRONTEND
+            && !$domainRepository->findOneBy(array('name' => $_SERVER['HTTP_HOST']))
+        ) {
+            header('Location: '.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteUrl'), true, 301);
+            exit;
+        }
+    }
+
+    protected function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
         $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
         $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $_SERVER['HTTP_HOST']);
         if ($website) {
