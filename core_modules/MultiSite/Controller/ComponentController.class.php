@@ -627,7 +627,7 @@ throw new MultiSiteException('Refactor this method!');
      * 
      * @return string $protocolUrl
      */
-    public function getApiProtocol() {
+    public static function getApiProtocol() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol')) {
             case 'mixed':
                 $protocolUrl = \Env::get('cx')->getRequest()->getUrl()->getProtocol() . '://';
