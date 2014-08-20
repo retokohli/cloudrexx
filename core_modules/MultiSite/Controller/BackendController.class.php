@@ -241,40 +241,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 ));
                 break;
             default:
-                //dynamic use websites path
-               // \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem');
-                //self::errorHandler();
-                $websitesPath=\Cx\Core\Setting\Controller\Setting::getValue('websitePath');
-                $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll());
-                if (isset($_GET['adminLogin'])) {
-                    $website = $instRepo->findByName($_GET['adminLogin']);
-                    if ($website) {
-                        // perform login via JSON
-                        $websiteDomain = contrexx_input2raw($_GET['adminLogin']) . '.' . substr(\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), 0);
-                        $websiteUrl = ComponentController::getApiProtocol() . $websiteDomain;
-                        $jd = new \Cx\Core\Json\JsonData();
-                        //$jd->setSessionId(session_id());
-                        $response = $jd->getJson(
-                            $websiteUrl.'/cadmin/index.php?cmd=jsondata&object=user&act=loginUser',
-                            array(
-                                'USERNAME' => 'O5vie5gOnIMY3Xbi@'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
-                                'PASSWORD' => 'NwIoOKjujfMlLcMnZCoSxFyZ6hmKnRxa',
-                            )
-                        );
-                        
-                        if ($response) {
-                            // redirect user to website
-                            \CSRF::redirect($websiteUrl.'/cadmin/index.php?autoLogin=' . $response->data->key);
-                        }
-                    }
-                }
-
-                if (!isset($_GET['order'])) {
-                    $_GET['order'] = 'createdAt/DESC';
-                }
-                //require_once ASCMS_DOCUMENT_ROOT.'config/settings.php';
-                       
+                $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
                 $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
                     'header' => 'Websites',
                     'functions' => array(
