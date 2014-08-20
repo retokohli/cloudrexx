@@ -3502,17 +3502,17 @@ CREATE TABLE `contrexx_module_order_subscription` (
   `order_id` int(11) default NULL,
   `product_id` int(11) default NULL,
   `expiration_date` timestamp NOT NULL,
-  `product_entity_id` int(11) NOT NULL,
+  `product_entity_id` int(11) default NULL,
   `payment_amount` decimal(10,0) NOT NULL,
   `payment_state` tinyint(1) NOT NULL,
-  `renewal_unit` varchar(5) NOT NULL,
-  `renewal_quantifier` int(10) unsigned NOT NULL,
+  `renewal_unit` varchar(5) default NULL,
+  `renewal_quantifier` int(10) unsigned default NULL,
   `renewal_date` timestamp NULL default NULL,
   PRIMARY KEY  (`id`),
   KEY `order_id` (`order_id`),
   KEY `product_id` (`product_id`),
-  CONSTRAINT `contrexx_module_order_subscription_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
-  CONSTRAINT `contrexx_module_order_subscription_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `contrexx_module_order_order` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
+  CONSTRAINT `contrexx_module_order_subscription_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `contrexx_module_order_order` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_module_order_subscription_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
