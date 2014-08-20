@@ -141,10 +141,28 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteServiceServerProxy extends \Cx\Co
         return parent::getHttpAuthPassword();
     }
 
+    public function setVirtual($virtual)
+    {
+        $this->_load();
+        return parent::setVirtual($virtual);
+    }
+
+    public function isVirtual()
+    {
+        $this->_load();
+        return parent::isVirtual();
+    }
+
     public function validate()
     {
         $this->_load();
         return parent::validate();
+    }
+
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
     }
 
 
