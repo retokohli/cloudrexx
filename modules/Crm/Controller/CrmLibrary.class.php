@@ -2525,6 +2525,8 @@ class CrmLibrary
                 }
                 // notify the staff's
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);
+                
+                return $this->contact->id;
             }
         }
     }

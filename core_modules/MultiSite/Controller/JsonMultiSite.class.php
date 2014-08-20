@@ -127,7 +127,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     * function signup
     * @param post parameters
     * */
-    public function signup($params){
+    public function signup($params) {
         // load text-variables of module MultiSite
         global $_ARRAYLANG, $objInit;
         $langData = $objInit->loadLanguageData('MultiSite');
@@ -155,10 +155,36 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $arrProfile['fields'][] = array('special_type' => 'access_email');
                 $arrProfile['data'][]   = $objUser->getEmail();
                 $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-                $objCrmLibrary->addCrmContact($arrProfile);
+                $crmContactId  = $objCrmLibrary->addCrmContact($arrProfile);
+                
+                try {
+                    $id = 1;
+                    $subscriptionOptions = array(
+                        // set hard-coded to 'month'
+                        // later we shall use $_POST['renewalUnit'] instead
+                        'renewalUnit'       => \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH,
+                        // set hard-coded to '1'
+                        // later we shall use $_POST['renewalQuantifier'] instead
+                        'renewalQuantifier' => 1,
+                        'websiteName'       => $websiteName,
+                        'customer'          => $objUser,
+                    );
+                    $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+                    $product = $productRepository->findOneBy(array('id' => $id));
+                    //create a new subscription for product #1 to order
+                    $order = new \Cx\Modules\Order\Model\Entity\Order();
+                    $order->setContactId($crmContactId);
+                    $order->createSubscription($product, $subscriptionOptions);
+                    \Env::get('em')->persist($order);
+                    \Env::get('em')->flush();
+            
+                    return $order->complete();
+                } catch (\Exception $e) {
+                    throw new MultiSiteJsonException($e->getMessage());
+                }
+            } else {
+                throw new MultiSiteJsonException('Problem in creating user');  
             }
-            //call createWebsite method.
-            return $this->createWebsite(array('post' => array('userId' => $user['userId'])), $websiteName);
         }
     }
 

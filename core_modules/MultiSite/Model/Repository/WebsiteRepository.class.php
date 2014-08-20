@@ -53,6 +53,24 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
     public function findWebsitesBetween($startTime, $endTime) {
         
     }
+    
+    public function findOneForSale($productOptions, $saleOptions) {
+        try {
+            $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+            $websiteName = $saleOptions['websiteName'];
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
+                //get default service server
+                $defaultWebsiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
+                ->findBy(array('isDefault' => 1));
+                $websiteServiceServer = $defaultWebsiteServiceServer[0];
+            }
+            $objUser = $saleOptions['customer'];
+            $website = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
+            \Env::get('em')->persist($website);
+            return $website;
+	} catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
+            throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException($e->getMessage());    
+	}
+    }
 }
-?>
 
