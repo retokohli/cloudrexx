@@ -262,38 +262,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function updateUser($params) {
         $objFWUser = \FWUser::getFWUserObject();
-        if (empty($params['post']['userId'])) {
-            throw new MultiSiteJsonException(array(
-                'object'    => 'form',
-                'type'      => 'danger',
-                'message'   => 'Unknown user account',
-            ));
-        }
-
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+        
         switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                if (empty($params['post']['websiteId'])) {
-                    return;
+                if (empty($params['post']['userId'])) {
+                    throw new MultiSiteJsonException(array(
+                        'object'    => 'form',
+                        'type'      => 'danger',
+                        'message'   => 'Unknown user account',
+                    ));
                 }
-                $webRepo    = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                $objWebsite = $webRepo->findById($params['post']['websiteId']);
-                $hostName   = $objWebsite->getBaseDn()->getName();
-                $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');  
-                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
-                $httpAuth = array(
-                    'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod'),
-                    'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername'),
-                    'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword'),
-                );
-                $params = array(
-                    'auth'   => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId),
-                    'userId' => $params['post']['userId'],
-                    'multisite_user_profile_attribute' => $params['post']['multisite_user_profile_attribute']
-                );
-                $objJsonData = new \Cx\Core\Json\JsonData();
-                $objJsonData->getJson(ComponentController::getApiProtocol() . $hostName . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
-                return;
                 break;
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                 $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
@@ -306,16 +285,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     ));
                 }
                 break;
-            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:    
-            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:    
-                $objUser = $objFWUser->objUser->getUser(intval($params['post']['userId']));
-                if (!$objUser) {
-                    throw new MultiSiteJsonException(array(
-                        'object'    => 'form',
-                        'type'      => 'danger',
-                        'message'   => 'Unknown user account',
-                    ));
-                }
             default:
                 break;
         }

@@ -33,40 +33,13 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function postPersist($eventArgs) {
         \DBG::msg('MultiSite (UserEventListener): postPersist');
         $objUser = $eventArgs->getEntity();
-        $objUser->objAttribute->first();
-        while (!$objUser->objAttribute->EOF) {
-            $arrProfile[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-            $objUser->objAttribute->next();
-        }
         
-        try { 
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
-            $crmId = $objUser->getCrmUserId();
-            if(!empty($crmId)) {
-                $objCrmLib = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-                $objCrmLib->setContactPersonProfile($arrProfile, $objUser->getId());
-            }
-            
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
-            switch ($mode) {
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
-                    if (empty($crmId)) {
-                        /*here code for add new crm contact*/
-                        foreach ($arrProfile as $key => $value) {
-                           $arrProfile['fields'][] = array('special_type' => 'access_'.$key);
-                           $arrProfile['data'][]   = $value[0];
-                           unset($arrProfile[$key]);
-                        }
-                        $arrProfile['fields'][] = array('special_type' => 'access_email');
-                        $arrProfile['data'][]   = $objUser->getEmail();
-                        $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-                        $objCrmLibrary->addCrmContact($arrProfile);
-                    }
-                    break;
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    if ($websiteUserId == 0) {
+                    \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                    if (empty($websiteUserId)) {
                         //set user's id to websiteUserId
                         \Cx\Core\Setting\Controller\Setting::set('websiteUserId', $objUser->getId());
                         \Cx\Core\Setting\Controller\Setting::update('websiteUserId');
@@ -86,21 +59,13 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function preUpdate($eventArgs) {
         \DBG::msg('MultiSite (UserEventListener): preUpdate');
         $objUser = $eventArgs->getEntity();
-        $objUser->objAttribute->first();
-        while (!$objUser->objAttribute->EOF) {
-            $arrProfile[$objUser->objAttribute->getId()] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-            $objUser->objAttribute->next();
-        }
         
         try {
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
-            $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
-            switch ($mode) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    //this aborting process still now working
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if ($websiteUserId == $objUser->getId()) {
-                        return;
+                        throw new \Exception('Website Owner can only be modified within the Customer Panel.');
                     }
                     break;
                 default:
@@ -114,20 +79,13 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function preRemove($eventArgs) {
         \DBG::msg('MultiSite (UserEventListener): preRemove');
         $objUser = $eventArgs->getEntity();
-        $objUser->objAttribute->first();
-        while (!$objUser->objAttribute->EOF) {
-            $arrProfile[$objUser->objAttribute->getId()] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-            $objUser->objAttribute->next();
-        }
+        
         try {
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
-            $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
-            switch ($mode) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    //this aborting process still now working
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if ($websiteUserId == $objUser->getId()) {
-                        return;
+                        throw new \Exception('Website Owner can only be modified within the Customer Panel.');
                     }
                     break;
                 default:
@@ -142,49 +100,58 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         \DBG::msg('MultiSite (UserEventListener): postUpdate');
         
         $objUser = $eventArgs->getEntity();
-        $objUser->objAttribute->first();
-        while (!$objUser->objAttribute->EOF) {
-            $arrProfile[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-            $objUser->objAttribute->next();
+        foreach($_POST as $key => $value)
+        {
+            $keyVal = str_replace("access_", "multisite_", $key);
+            $postedArray[$keyVal] = $value; 
         }
-        
+       
         try {
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            //find each associated websites
-            $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $websites = $webRepo->findBy(array('ownerId' => $objUser->getId()));
-            
-            if (!isset($websites)) {
-                return;
-            }
-            
-            foreach($websites as $website) {
-                switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                        $hostName = $website->getWebsiteServiceServer()->getHostname();
-                        $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');  
-                        $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
-                        $httpAuth = array(
-                            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod'),
-                            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername'),
-                            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword'),
-                        );
-                        $param['post'] = array(
-                            'websiteId' => $website->getId(),
-                            'auth'      => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId)
-                        );
-                        break;
-                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
-                        $hostName = $website->getBaseDn()->getName();
-                        //getting secret key and installation id, httpAuth and params pending
-                        break;
-                    default:
-                        break;
-                }
-            }
-            
             $objJsonData = new \Cx\Core\Json\JsonData();
-            $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
+            switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                    //Find each associated service servers
+                    $webServerRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                    $webServices = $webServerRepo->findAll();
+                    
+                    if (!isset($webServices)) {
+                        return;
+                    }
+                    
+                    foreach($webServices as $webService) {
+                        $hostName             = $webService->getHostname();
+                        $httpAuth = array(
+                            'httpAuthMethod'   => $webService->getHttpAuthMethod(),
+                            'httpAuthUsername' => $webService->getHttpAuthUsername(),
+                            'httpAuthPassword' => $webService->getHttpAuthPassword()
+                        );
+                        $params = array(
+                          'auth'   =>   \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($webService->getSecretKey(), $webService->getInstallationId()),
+                          'userId' =>   $objUser->getId(),
+                          'multisite_user_profile_attribute' => $postedArray
+                        );
+                        
+                        $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
+                    }
+                    
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    //find User's Website
+                    $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website   = $webRepo->findBy(array('ownerId' => $objUser->getId()));
+                    $hostName  = $website->getBaseDn()->getName();
+                    $params = array(
+                        'auth'   => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($website->getSecretKey(), $website->getInstallationId()),
+                        'userId' => $objUser->getId(),
+                        'multisite_user_profile_attribute' => $postedArray   
+                    );
+                    $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', null);
+                    break;
+                default:
+                    break;
+            }
+            
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
