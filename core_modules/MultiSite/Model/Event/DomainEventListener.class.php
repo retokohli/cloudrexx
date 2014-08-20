@@ -39,8 +39,26 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             // if MultiSite-mode set to 'manager' or 'hybrid': remove DNS record
             // if MultiSite-mode set to 'service' or 'hybrid': update Domain-Cache
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $domain  = $eventArgs->getEntity();
+            switch ($mode) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                    if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
+                        $this->removeDnsRecord($domain, 'postRemove');
+                    }
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+                    break;
+                    
+                default:
+                    break;
+            }
+            
             //for unmap a domain from website
-            $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+            }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
@@ -59,7 +77,10 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         $this->updateDnsRecord($domain, 'preUpdate');
                     }
                     break;
-
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    $this->domainMapping($eventArgs, $mode, 'updateDomain');
+                    break;
+                    
                 default:
                     break;
             }
@@ -95,24 +116,24 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $domain  = $eventArgs->getEntity();
             switch ($mode) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                    if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
-                        $this->addDnsRecord($domain, 'prePersist');
-                    }
-                    break;
-
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    break;
-
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                         $this->addDnsRecord($domain, 'prePersist');
                     }
                     break;
 
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    if ($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN) {
+                        $this->domainMapping($eventArgs, $mode, 'mapDomain');
+                    }
+                    break;
                 default:
                     break;
             }
             //for map a domain to website
+            // The mapping of $domain must only be performed for external domains. The BaseDN and FQDN must not be mapped, as they have already been mapped by the manager.
+            // Note: It is important that the BaseDN and FQDN are not being stored in the DomainRepository.yml file.
+            // Otherwise the domain mapping would result in an infinite loop
             if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
                 $this->domainMapping($eventArgs, $mode, 'mapDomain');
             }
@@ -129,19 +150,10 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $em = $eventArgs->getEntityManager();
             $domain  = $eventArgs->getEntity();
             switch ($mode) {
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                    $this->addDnsRecord($domain, 'postPersist');
-                    break;
-
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    $this->updateDomainRepositoryCache($em);
-                    break;
-
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
-                    $this->addDnsRecord($domain, 'postPersist');
                     $this->updateDomainRepositoryCache($em);
                     break;
-
                 default:
                     break;
             }
