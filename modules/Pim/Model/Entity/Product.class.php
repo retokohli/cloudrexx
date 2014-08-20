@@ -23,6 +23,7 @@ class ProductException extends \Exception {};
  */
 class Product extends \Cx\Model\Base\EntityBase {
     protected $id;
+    protected $name;
     protected $renewalOptions = array();
     protected $defaultRenewalOption = array();
     protected $entityClass = null;
@@ -51,6 +52,14 @@ class Product extends \Cx\Model\Base\EntityBase {
 
     public function setId($id) {
         $this->id = $id;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function setName($name) {
+        $this->name = $name;
     }
 
     public function getRenewalOptions() {
