@@ -59,7 +59,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'unMapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'updateDomain'          => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
-            'setWebsiteState'       => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
+            'setWebsiteState'       => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'updateWebsiteState'    => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission'))
         );
     }
 
@@ -586,10 +587,52 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function setWebsiteState($params) {
          if (!empty($params['post'])) {
             $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $website = $webRepo->findOneById($params['post']['websiteId']);
+            $website = $webRepo->findOneBy(array('name' => $params['post']['websiteName']));
             $website->setStatus($params['post']['status']);
             \Env::get('em')->persist($website);
             \Env::get('em')->flush();
+            return true;
+        }
+    }
+    
+     /**
+     * update Website State
+     * 
+     * @param array $params
+     * 
+     */
+     public function updateWebsiteState($params) {
+         
+        global $_ARRAYLANG, $objInit;
+        
+        $langData = $objInit->loadLanguageData('MultiSite');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        if (!empty($params['post'])) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    if ($this->setWebsiteState($params)){
+                        return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_CHANGED_SUCCESSFUL'];
+                    }
+                    break;
+
+                case ComponentController::MODE_SERVICE:
+                    //find User's Website
+                    $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website   = $webRepo->findBy(array('name' => $params['post']['websiteName']));
+                    $hostName  = $website->getBaseDn()->getName();
+                    $jd = new \Cx\Core\Json\JsonData();
+                    $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $hostName . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=setWebsiteState', 
+                        array(
+                            'websiteName' => $params['post']['websiteName'],
+                            'status'      => $params['post']['status'],
+                            'auth'        => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($website->getSecretKey(), $website->getInstallationId())
+                            ), false, '', null);
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                    break;
+            }
         }
     }
 
