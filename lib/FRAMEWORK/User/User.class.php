@@ -1531,6 +1531,9 @@ class User extends User_Profile
     {
         global $objDatabase, $_CORELANG;
 
+        //for calling postPersist and postUpdate based on $callPostUpdateEvent
+        $callPostUpdateEvent = $this->id;
+        
         if (!$this->validateUsername()) {
             return false;
         }
@@ -1568,7 +1571,6 @@ class User extends User_Profile
                 // deletes all sessions which are using this user (except the session changing the password)
                 $_SESSION->cmsSessionDestroyByUserId($this->id);
             }
-            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         } else {
             \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             if ($objDatabase->Execute("
@@ -1619,7 +1621,6 @@ class User extends User_Profile
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'];
                 return false;
             }
-            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         }
 
         if (!$this->storeGroupAssociations()) {
@@ -1637,6 +1638,12 @@ class User extends User_Profile
             return false;
         }
 
+        if (!empty($callPostUpdateEvent)) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+        } else {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+        }
+        
         return true;
     }
 

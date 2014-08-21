@@ -100,53 +100,67 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         \DBG::msg('MultiSite (UserEventListener): postUpdate');
         
         $objUser = $eventArgs->getEntity();
-        foreach($_POST as $key => $value)
-        {
-            $keyVal = str_replace("access_", "multisite_", $key);
-            $postedArray[$keyVal] = $value; 
+        //get user's profile details
+        $objUser->objAttribute->first();
+        while (!$objUser->objAttribute->EOF) {
+            $arrUserDetails[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
+            $objUser->objAttribute->next();
         }
-       
+        //get user's other details
+        $arrUserDetails['multisite_user_username'] = $objUser->getUsername();
+        $arrUserDetails['multisite_user_email']    = $objUser->getEmail();
+        $arrUserDetails['multisite_user_frontend_language'] = $objUser->getFrontendLanguage();
+        $arrUserDetails['multisite_user_backend_language']  = $objUser->getBackendLanguage();
+        $arrUserDetails['multisite_user_email_access']      = $objUser->getEmailAccess();
+        $arrUserDetails['multisite_user_profile_access']    = $objUser->getProfileAccess();
         try {
             $objJsonData = new \Cx\Core\Json\JsonData();
             switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     //Find each associated service servers
-                    $webServerRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $webServices = $webServerRepo->findAll();
+                    $webServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                    $webSiteRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $websites       = $webSiteRepo->findBy(array('ownerId' => $objUser->getId()));
                     
-                    if (!isset($webServices)) {
+                    if (!isset($websites)) {
                         return;
                     }
                     
-                    foreach($webServices as $webService) {
-                        $hostName             = $webService->getHostname();
-                        $httpAuth = array(
-                            'httpAuthMethod'   => $webService->getHttpAuthMethod(),
-                            'httpAuthUsername' => $webService->getHttpAuthUsername(),
-                            'httpAuthPassword' => $webService->getHttpAuthPassword()
-                        );
-                        $params = array(
-                          'auth'   =>   \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($webService->getSecretKey(), $webService->getInstallationId()),
-                          'userId' =>   $objUser->getId(),
-                          'multisite_user_profile_attribute' => $postedArray
-                        );
-                        
-                        $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
-                    }
+                    foreach ($websites As $website) {
+                        $websiteServiceServerId = $website->getWebsiteServiceServerId();
+                        $websiteServiceServer   = $webServerRepo->findOneBy(array('id' => $websiteServiceServerId));
                     
+                        if ($websiteServiceServer) {
+                            $hostName             = $websiteServiceServer->getHostname();
+                            $httpAuth = array(
+                                'httpAuthMethod'   => $websiteServiceServer->getHttpAuthMethod(),
+                                'httpAuthUsername' => $websiteServiceServer->getHttpAuthUsername(),
+                                'httpAuthPassword' => $websiteServiceServer->getHttpAuthPassword()
+                            );
+                            $params = array(
+                                'auth'   =>   \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($websiteServiceServer->getSecretKey(), $websiteServiceServer->getInstallationId()),
+                                'userId' =>   $objUser->getId(),
+                                'multisite_user_profile_attribute' => $arrUserDetails
+                            );
+                        
+                            $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
+                        }
+                    }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     //find User's Website
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website   = $webRepo->findBy(array('ownerId' => $objUser->getId()));
-                    $hostName  = $website->getBaseDn()->getName();
-                    $params = array(
-                        'auth'   => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($website->getSecretKey(), $website->getInstallationId()),
-                        'userId' => $objUser->getId(),
-                        'multisite_user_profile_attribute' => $postedArray   
-                    );
-                    $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', null);
+                    $websites  = $webRepo->findBy(array('ownerId' => $objUser->getId()));
+                    foreach ($websites As $website) {
+                        $hostName  = $website->getBaseDn()->getName();
+                        $params = array(
+                            'auth'   => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($website->getSecretKey(), $website->getInstallationId()),
+                            'userId' => $objUser->getId(),
+                            'multisite_user_profile_attribute' => $arrUserDetails
+                        );
+                        $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', null);
+                    }
                     break;
                 default:
                     break;

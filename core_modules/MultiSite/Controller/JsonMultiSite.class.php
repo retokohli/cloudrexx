@@ -267,7 +267,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                if (empty($params['post']['userId'])) {
+                $objUser = $objFWUser->objUser->getUser(intval($params['post']['userId']));
+                if (!$objUser) {
                     throw new MultiSiteJsonException(array(
                         'object'    => 'form',
                         'type'      => 'danger',
