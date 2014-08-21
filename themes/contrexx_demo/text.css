@@ -81,7 +81,6 @@ ul.horizontal-list li {
     float: left;
     padding: 0 10px 0 0;
     margin: 0 10px 0 0;
-    background: url('images/divider.gif') no-repeat right 7px;
 }
 ul.horizontal-list li.last {
     padding: 0 !important;

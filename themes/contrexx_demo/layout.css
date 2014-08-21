@@ -799,6 +799,7 @@ html, body {
     background: #fff;
     position: absolute;
     bottom: 0;
+    padding-bottom: 7px;
 }
 #footer .inner > div {
     font-family: 'Ubuntu';
@@ -820,6 +821,8 @@ html, body {
 }
 .horizontal-list.no-bg {
     float: left;
+    padding: 0;
+    margin: 0;
 }
 .footer-right {
     float: left;
@@ -919,7 +922,6 @@ span.disconnected {
 }
 .social-foot ul.horizontal-list li {
     background: none;
-    padding-right: 18px;
 }
 .footer-right ul.horizontal-list li {
     background: none;
@@ -1493,3 +1495,31 @@ p#loginerror {
 .mobile-nav .navigation li ul li a.active {
     color: #000;
 }
+.last .fa.fa-rss {
+    margin-right: 0;
+}
+.horizontal-list i {
+    color: #888;
+    padding-bottom: 1px;
+    font-size: 30px;
+    padding-top: 4px;
+    margin-top: 3px;
+    -webkit-transition: all 0.2s ease 0.1s;
+    -moz-transition: all 0.2s ease 0.1s;
+    -o-transition: all 0.2s ease 0.1s;
+    transition: all 0.2s ease 0.1s;
+}
+.horizontal-list i:hover {
+    color: #fff;
+    background: #cecece;
+    border-radius: 3px;
+}
+.horizontal-list.no-bg li {
+    padding-right: 0;
+    margin-right: 0;
+}
+.horizontal-list .fa.fa-twitter, .horizontal-list .fa.fa-google-plus {border: 0;}
+.horizontal-list .fa.fa-twitter:hover {background-color: #55ACEE;}
+.horizontal-list .fa.fa-facebook:hover {background-color: #4568B2;}
+.horizontal-list .fa.fa-google-plus:hover {background-color: #DD4B39;}
+.horizontal-list .fa.fa-rss:hover {background-color: #ec6621;}
