@@ -1,3 +1,8 @@
+#fe_toolbar_tab {
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+}
 .inner {
     margin: 0 auto;
     position: relative;
