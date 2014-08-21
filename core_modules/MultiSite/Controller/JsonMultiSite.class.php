@@ -65,8 +65,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateDomain'          => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'setWebsiteState'       => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'updateWebsiteState'    => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission'))
-        );
+            'updateWebsiteState'    => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
+            'ping'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'pong'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
+        );  
     }
 
     /**
@@ -646,7 +648,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public static function isIscRequest() {
         return self::$isIscRequest;
     }
-
+    
+    /**
+     * Return the status message
+     * 
+     * @return array
+     */
+    public function ping() 
+    {
+        if (self::executeCommandOnManager('pong',array('action' => 'pong'))) {
+            return array('status' => 'success');
+        }
+        
+        return array('status' => 'error', 'message' => 'Reverse connection failed');
+    }
+    
+    /**
+     * Return the status message
+     * 
+     * @return array
+     */
+    public function pong()
+    {
+        return array('status' => 'success');
+    }
+    
     public static function executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth) {
 
         $params['auth'] = self::getAuthenticationObject($secretKey, $installationId);
@@ -715,7 +741,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
 
     function executeCommandOnServiceServer($command, $params, $websiteServiceServer) {
-
         $host = $websiteServiceServer->getHostname();
         $installationId = $websiteServiceServer->getInstallationId();
         $secretKey = $websiteServiceServer->getSecretKey();

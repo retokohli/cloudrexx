@@ -70,6 +70,22 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 ),
                                 'hostname' => array(
                                     'header' => 'Hostname',
+                                    'table' => array(
+                                         'parse' => function($value) {
+                                            $websiteServiceServerRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                                            $websiteServiceServer           = $websiteServiceServerRepository->findOneBy(array('hostname' => $value));
+                                            $response   = JsonMultiSite::executeCommandOnServiceServer('ping', array('action' => 'ping'), $websiteServiceServer);
+                                            if ($response->status == 'success'){
+                                                $statusIcon       = '<img src="'. '../core/Core/View/Media/icons/status_green.gif"'. ' alt='."status_green".'/>';
+                                                $hostNameStatus   = $statusIcon."&nbsp;".$value."&nbsp;".'<span class="'. 'icon-info tooltip-trigger"'. '></span><span class="'. 'tooltip-message"'. '> Bidirectional communication successfully established </span>';
+                                                return $hostNameStatus;
+                                            } else {
+                                               $statusIcon      = '<img src="'. '../core/Core/View/Media/icons/status_red.gif"'. ' alt='."status_red".'/>';
+                                               $hostNameStatus  = $statusIcon."&nbsp;".$value."&nbsp;".'<span class="'. 'icon-info tooltip-trigger"'. '></span><span class="'. 'tooltip-message"'. '>'.$response->message.'</span>';
+                                               return $hostNameStatus;
+                                            }
+                                         },
+                                     ),
                                 ),
                                 'label' => array(
                                     'header' => 'Name',
