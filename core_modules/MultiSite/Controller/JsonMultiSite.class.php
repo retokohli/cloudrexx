@@ -235,9 +235,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function createUser($params) {
         if (!empty($params['post'])) {
             $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
-            if (!empty($params['post']['userId'])) {
-                $objUser->setId($params['post']['userId']);
-            }
+            
             $objUser->setEmail(!empty($params['post']['email']) ? contrexx_input2raw($params['post']['email']) : '');
             $objUser->setActiveStatus(!empty($params['post']['active']) ? (bool)$params['post']['active'] : false);
             $objUser->setAdminStatus(!empty($params['post']['admin']) ? (bool)$params['post']['admin'] : false);
@@ -254,6 +252,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (!$objUser->store()) {
                 throw new MultiSiteJsonException($objUser->error_msg);
             } else {
+                if (!empty($params['post']['userId'])) {
+                    $objUser->setId($params['post']['userId']);
+                }
                 return array('userId' => $objUser->getId());
             }
         }
