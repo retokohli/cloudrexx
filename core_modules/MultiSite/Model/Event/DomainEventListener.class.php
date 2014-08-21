@@ -45,19 +45,24 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                         $this->removeDnsRecord($domain, 'postRemove');
+                    } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'unMapDomain');
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+                    if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+                    } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+                    }
                     break;
-                    
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+                    }
+                    break;
                 default:
                     break;
-            }
-            
-            //for unmap a domain from website
-            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                $this->domainMapping($eventArgs, $mode, 'unMapDomain');
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -75,33 +80,24 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                         $this->updateDnsRecord($domain, 'preUpdate');
+                    } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'updateDomain');
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    $this->domainMapping($eventArgs, $mode, 'updateDomain');
+                    if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'updateDomain');
+                    } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'updateDomain');
+                    }
                     break;
-                    
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'updateDomain');
+                    }
+                    break;
                 default:
                     break;
-            }
-            //during the domain update, remove the old one after that create the domain as new
-            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                $this->domainMapping($eventArgs, $mode, 'updateDomain');
-            }
-        } catch (\Exception $e) {
-            \DBG::msg($e->getMessage());
-        }
-    }
-
-    public function postUpdate($eventArgs) {
-        \DBG::msg('MultiSite (DomainEventListener): postUpdate');
-        try {
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
-            $domain  = $eventArgs->getEntity();
-            //during the domain update, remove the old one after that create the domain as new
-            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                $this->domainMapping($eventArgs, $mode, 'updateDomain');
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -119,11 +115,22 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                         $this->addDnsRecord($domain, 'prePersist');
+                    } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'mapDomain');
                     }
                     break;
 
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    if ($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN) {
+                    if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
+                        if($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN) {
+                            $this->domainMapping($eventArgs, $mode, 'mapDomain');
+                        }
+                    } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                        $this->domainMapping($eventArgs, $mode, 'mapDomain');
+                    }
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
                         $this->domainMapping($eventArgs, $mode, 'mapDomain');
                     }
                     break;
@@ -134,9 +141,6 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             // The mapping of $domain must only be performed for external domains. The BaseDN and FQDN must not be mapped, as they have already been mapped by the manager.
             // Note: It is important that the BaseDN and FQDN are not being stored in the DomainRepository.yml file.
             // Otherwise the domain mapping would result in an infinite loop
-            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                $this->domainMapping($eventArgs, $mode, 'mapDomain');
-            }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
