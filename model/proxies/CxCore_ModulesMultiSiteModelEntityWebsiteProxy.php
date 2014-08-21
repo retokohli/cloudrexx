@@ -255,6 +255,12 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::isVirtual();
     }
 
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
+    }
+
 
     public function __sleep()
     {
