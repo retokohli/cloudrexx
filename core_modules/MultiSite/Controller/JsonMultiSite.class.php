@@ -34,6 +34,11 @@ class MultiSiteJsonException extends \Exception {
 class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
     /**
+     * @var boolean 
+     */
+    static $isIscRequest = false;
+    
+    /**
     * Returns the internal name used as identifier for this adapter
     * @return String Name of this adapter
     */
@@ -400,6 +405,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         if (md5($secretKey.$installationId) === $authenticationValue['key']) {
+            self::$isIscRequest = true;
             return true;
         }
         
@@ -631,6 +637,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
         }
+    }
+    
+    /**
+     * Returns the $isIscRequest value
+     * 
+     * @return boolean
+     */
+    public static function isIscRequest() {
+        return self::$isIscRequest;
     }
 
 }

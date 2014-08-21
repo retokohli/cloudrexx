@@ -64,7 +64,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
-                    if ($websiteUserId == $objUser->getId()) {
+                    if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::$isIscRequest) {
                         throw new \Exception('Website Owner can only be modified within the Customer Panel.');
                     }
                     break;
@@ -84,7 +84,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
-                    if ($websiteUserId == $objUser->getId()) {
+                    if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::$isIscRequest) {
                         throw new \Exception('Website Owner can only be modified within the Customer Panel.');
                     }
                     break;
