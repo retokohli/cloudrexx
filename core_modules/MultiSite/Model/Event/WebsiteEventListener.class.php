@@ -51,21 +51,12 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                 //hostName
                 $websiteServiceServer = $website->getWebsiteServiceServer();
-                $hostname = $websiteServiceServer->getHostname();
-                $httpAuth = array(
-                    'httpAuthMethod'   => $websiteServiceServer->getHttpAuthMethod(),
-                    'httpAuthUsername' => $websiteServiceServer->getHttpAuthUsername(),
-                    'httpAuthPassword' => $websiteServiceServer->getHttpAuthPassword(),
-                );        
                 
                 $params = array(
                     'websiteId'   => $website->getId(),
                     'status'      => $website->getStatus(),
-                    'auth'        => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($websiteServiceServer->getSecretKey(), $websiteServiceServer->getInstallationId())
                 );
-                $jd = new \Cx\Core\Json\JsonData();
-                $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=setWebsiteState', $params,
-                false, '', $httpAuth);
+                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('setWebsiteState', $params, $websiteServiceServer);
                 break;
         }
     }

@@ -131,19 +131,11 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         $websiteServiceServer   = $webServerRepo->findOneBy(array('id' => $websiteServiceServerId));
                     
                         if ($websiteServiceServer) {
-                            $hostName             = $websiteServiceServer->getHostname();
-                            $httpAuth = array(
-                                'httpAuthMethod'   => $websiteServiceServer->getHttpAuthMethod(),
-                                'httpAuthUsername' => $websiteServiceServer->getHttpAuthUsername(),
-                                'httpAuthPassword' => $websiteServiceServer->getHttpAuthPassword()
-                            );
                             $params = array(
-                                'auth'   =>   \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($websiteServiceServer->getSecretKey(), $websiteServiceServer->getInstallationId()),
                                 'userId' =>   $objUser->getId(),
                                 'multisite_user_profile_attribute' => $arrUserDetails
                             );
-                        
-                            $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
+                            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateUser', $params, $websiteServiceServer);
                         }
                     }
                     break;
@@ -153,13 +145,11 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $websites  = $webRepo->findBy(array('ownerId' => $objUser->getId()));
                     foreach ($websites As $website) {
-                        $hostName  = $website->getBaseDn()->getName();
                         $params = array(
-                            'auth'   => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($website->getSecretKey(), $website->getInstallationId()),
                             'userId' => $objUser->getId(),
                             'multisite_user_profile_attribute' => $arrUserDetails
                         );
-                        $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', null);
+                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('updateUser', $params, $website);
                     }
                     break;
                 default:

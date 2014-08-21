@@ -394,32 +394,15 @@ class Website extends \Cx\Model\Base\EntityBase {
         //check if the current server is running as the website manager
         if ($this->websiteServiceServer instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer) {
             $isServiceServer = false;
-            //hostName
-            $hostName = $this->websiteServiceServer->getHostname();
-            $authObj  = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($this->websiteServiceServer->getSecretKey(), $this->websiteServiceServer->getInstallationId());
-            $httpAuth = array(
-                'httpAuthMethod' => $this->websiteServiceServer->getHttpAuthMethod(),
-                'httpAuthUsername' => $this->websiteServiceServer->getHttpAuthUsername(),
-                'httpAuthPassword' => $this->websiteServiceServer->getHttpAuthPassword(),
-            );        
-            $jd = new \Cx\Core\Json\JsonData();
             //create user account in website service server
-            $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createUser', 
-             array(
-                'userId' => $this->owner->getId(),
-                'email'  => $this->owner->getEmail(),
-                'auth'   => $authObj
-             ),
-             false, '', $httpAuth);
+            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createUser', array('userId' => $this->owner->getId(), 'email'  => $this->owner->getEmail()), $this->websiteServiceServer);
             //create website in website service server
             $params = array(
                 'userId'      => $this->owner->getId(),
                 'websiteName' => $websiteName,
                 'websiteId'   => $this->getId(),
-                'auth'        => $authObj
                 );
-            $resp = $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
-             false, '', $httpAuth);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createWebsite', $params, $this->websiteServiceServer);
             $this->ipAddress = $resp->data->websiteIp;
             $this->codeBase  = $resp->data->codeBase;
             $this->status    = $resp->data->state;
@@ -760,21 +743,12 @@ class Website extends \Cx\Model\Base\EntityBase {
 
     protected function createContrexxUser($websiteName)
     {
-        $hostname = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-        $httpAuth = array(
-            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod'),
-            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername'),
-            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword'),
-        );        
         $params = array(
-                'email' => $this->owner->getEmail(),
-                'active'=> 1,
-                'admin' => 1,
-                'auth'  => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($this->secretKey, $this->installationId)
-            );
-        $jd = new \Cx\Core\Json\JsonData();
-        $resp = $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createUser', $params,
-         false, '', $httpAuth);
+            'email' => $this->owner->getEmail(),
+            'active'=> 1,
+            'admin' => 1,
+        );
+        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('createUser', $params, $this);
         if(!$resp || $resp->status == 'error'){
             $errMsg = isset($resp->message) ? $resp->message : '';
             throw new WebsiteException('Unable to create admin user account '.$errMsg);    

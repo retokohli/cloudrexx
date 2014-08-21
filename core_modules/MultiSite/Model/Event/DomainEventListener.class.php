@@ -218,8 +218,11 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     private function domainMapping($eventArgs , $mode, $event) {
-        $objJsonData = new \Cx\Core\Json\JsonData();
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+        //post array
+        $params = array(
+            'domainName'        => $eventArgs->getEntity()->getName(),
+            'coreNetDomainId'   => $eventArgs->getEntity()->getId()
+        );
         
         if (empty($mode) || empty($event)) {
             return;
@@ -227,27 +230,10 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         
         switch ($mode) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                $hostName = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
-                        
-                $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');  
-                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
-                $httpAuth = array(
-                    'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod'),
-                    'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername'),
-                    'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword'),
-                );
+                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($event, $params);
             break;
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                $hostName = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
-                        
-                $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');  
-                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
-            
-                $httpAuth = array(
-                    'httpAuthMethod'   => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod'),
-                    'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername'),
-                    'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
-                );
+                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer($event, $params);
             break;
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
@@ -264,15 +250,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             default:
                 return;
                 break;
-        }
-        //post array
-        $params = array(
-            'domainName'        => $eventArgs->getEntity()->getName(),
-            'auth'              => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId),
-            'coreNetDomainId'   => $eventArgs->getEntity()->getId()
-        );
-            
-        $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act='.$event, $params, false, '', $httpAuth);
+        }           
     } 
     
     public function onEvent($eventName, array $eventArgs) {        

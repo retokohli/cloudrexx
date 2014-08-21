@@ -625,14 +625,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     //find User's Website
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website   = $webRepo->findById($params['post']['websiteId']);
-                    $hostName  = $website->getBaseDn()->getName();
-                    $jd = new \Cx\Core\Json\JsonData();
-                    $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $hostName . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=setWebsiteState', 
-                        array(
-                            'websiteId'   => $params['post']['websiteId'],
-                            'status'      => $params['post']['status'],
-                            'auth'        => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($website->getSecretKey(), $website->getInstallationId())
-                            ), false, '', null);
+                    $params    = array(
+                        'websiteId'   => $params['post']['websiteId'],
+                        'status'      => $params['post']['status'],
+                    );
+                    \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setWebsiteState', $params, $website);
                     break;
 
                 case ComponentController::MODE_WEBSITE:
@@ -648,6 +645,104 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public static function isIscRequest() {
         return self::$isIscRequest;
+    }
+
+    public static function executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth) {
+
+        $params['auth'] = self::getAuthenticationObject($secretKey, $installationId);
+        $objJsonData = new \Cx\Core\Json\JsonData();
+        return $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $host . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=' . $command, $params, false, '', $httpAuth);
+    }
+
+    /*
+     * This method will be used by the Website Service to execute commands on the Website Manager
+     * Fetch connection data to Manager and pass it to the method executeCommand()
+     */
+
+    function executeCommandOnManager($command, $params) {
+
+        $host = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
+        $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
+        $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
+        $httpAuth = array(
+            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod'),
+            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername'),
+            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword'),
+        );
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+    }
+
+    /*
+     * This method will be used by a Websites to execute commands on its Website Service
+     * Fetch connection data to Service and pass it to the method executeCommand()
+     */
+
+    function executeCommandOnMyServiceServer($command, $params) {
+
+        $host = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
+        $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');
+        $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
+        $httpAuth = array(
+            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod'),
+            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername'),
+            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
+        );
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+    }
+
+    /*
+     * This method will be used by the Website Manager to execute commands on the Website Service
+     * Fetch connection data to Service and pass it to the method executeCommand()
+     */
+
+    function executeCommandOnServiceServerOfWebsite($command, $params, $website) {
+
+        $websiteServiceServer = $website->getWebsiteServiceServer();
+        $host = $websiteServiceServer->getHostname();
+        $installationId = $websiteServiceServer->getInstallationId();
+        $secretKey = $websiteServiceServer->getSecretKey();
+        $httpAuth = array(
+            'httpAuthMethod' => $websiteServiceServer->getHttpAuthMethod(),
+            'httpAuthUsername' => $websiteServiceServer->getHttpAuthUsername(),
+            'httpAuthPassword' => $websiteServiceServer->getHttpAuthPassword(),
+        );
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+    }
+
+    /*
+     * This method will be used by the Website Manager to execute commands on a Website Service
+     * Fetch connection data to Service and pass it to the method executeCommand():
+     */
+
+    function executeCommandOnServiceServer($command, $params, $websiteServiceServer) {
+
+        $host = $websiteServiceServer->getHostname();
+        $installationId = $websiteServiceServer->getInstallationId();
+        $secretKey = $websiteServiceServer->getSecretKey();
+        $httpAuth = array(
+            'httpAuthMethod' => $websiteServiceServer->getHttpAuthMethod(),
+            'httpAuthUsername' => $websiteServiceServer->getHttpAuthUsername(),
+            'httpAuthPassword' => $websiteServiceServer->getHttpAuthPassword(),
+        );
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+    }
+
+    /*
+     * This method will be used by the Website Service to execute commands on a Website
+     * Fetch connection data to Website and pass it to the method executeCommand():
+     */
+
+    function executeCommandOnWebsite($command, $params, $website) {
+
+        $host = $website->getBaseDn()->getName();
+        $installationId = $website->getInstallationId();
+        $secretKey = $website->getSecretKey();
+        $httpAuth = array(
+            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod'),
+            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername'),
+            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword'),
+        );
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
 
 }
