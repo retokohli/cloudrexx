@@ -2301,7 +2301,7 @@ class CrmLibrary
      */
     function getEmailTempLang($availableEmailTemp = array(), $email = '')
     {
-        global $objFWUser;
+        $objFWUser = \FWUser::getFWUserObject();
         
         if (empty($email))
             return false;
