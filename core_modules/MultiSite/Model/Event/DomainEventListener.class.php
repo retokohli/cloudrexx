@@ -244,7 +244,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
             
                 $httpAuth = array(
-                    'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod'),
+                    'httpAuthMethod'   => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod'),
                     'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername'),
                     'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
                 );
@@ -253,8 +253,9 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                 $config = \Env::get('config');
                 $param['post'] = array(
-                    'domainName' => $eventArgs->getEntity()->getName(),
-                    'auth'       => json_encode(array('sender' => $config['domainUrl']))
+                    'domainName'      => $eventArgs->getEntity()->getName(),
+                    'auth'            => json_encode(array('sender' => $config['domainUrl'])),
+                    'coreNetDomainId' => $eventArgs->getEntity()->getId()
                 );
                 $objJsonMultiSite = new \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite();
                 $objJsonMultiSite->$event($param);

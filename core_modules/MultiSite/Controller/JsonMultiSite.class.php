@@ -474,11 +474,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 if (isset($website) && $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                     $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);                
                     $website->mapDomain($objDomain);
+                    $objDomain->setCoreNetDomainId($params['post']['coreNetDomainId']);
                 
                     \Env::get('em')->persist($objDomain);
                     \Env::get('em')->persist($website);
                 } else {
                     $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);
+                    $objDomain->setCoreNetDomainId($params['post']['coreNetDomainId']);
                     \Env::get('em')->persist($objDomain);
                 }
                 
@@ -563,14 +565,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     case ComponentController::MODE_SERVICE:
                     case ComponentController::MODE_HYBRID:
                         $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-                        $domain = $domainRepo->findOneBy(array('coreNetDomainId' => $params['post']['domainId']));
+                        $domain = $domainRepo->findOneBy(array('coreNetDomainId' => $params['post']['coreNetDomainId']));
                         $domain->setName($params['post']['domainName']);
                         break;
 
                     case ComponentController::MODE_WEBSITE:
                         $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
                         $objDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
-                        $domain = $domainRepo->findOneBy(array('websiteId' => $objDomain->getWebsite()->getId(), 'coreNetDomainId' => $params['post']['domainId']));
+                        $domain = $domainRepo->findOneBy(array('websiteId' => $objDomain->getWebsite()->getId(), 'coreNetDomainId' => $params['post']['coreNetDomainId']));
                         $domain->setName($params['post']['domainName']);
                         break;
                 }
