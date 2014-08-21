@@ -72,5 +72,17 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
             throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException($e->getMessage());    
 	}
     }
+    
+    public function findWebsitesByOwnerId($ownerId) {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('website')
+                ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
+                ->where('website.ownerId = :ownerId')
+                ->groupBy('website.websiteServiceServerId')
+                ->getDql();
+        $qb->setParameter('ownerId', $ownerId);
+
+        return $qb->getQuery()->getResult();
+    }
 }
 

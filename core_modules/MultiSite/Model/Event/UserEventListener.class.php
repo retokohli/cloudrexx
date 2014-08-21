@@ -120,7 +120,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     //Find each associated service servers
                     $webServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
                     $webSiteRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $websites       = $webSiteRepo->findBy(array('ownerId' => $objUser->getId()));
+                    $websites      = $webSiteRepo->findWebsitesByOwnerId($objUser->getId());
                     
                     if (!isset($websites)) {
                         return;
