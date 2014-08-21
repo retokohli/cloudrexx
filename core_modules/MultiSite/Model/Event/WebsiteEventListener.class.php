@@ -59,7 +59,7 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 );        
                 
                 $params = array(
-                    'websiteName' => $website->getName(),
+                    'websiteId'   => $website->getId(),
                     'status'      => $website->getStatus(),
                     'auth'        => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($websiteServiceServer->getSecretKey(), $websiteServiceServer->getInstallationId())
                 );

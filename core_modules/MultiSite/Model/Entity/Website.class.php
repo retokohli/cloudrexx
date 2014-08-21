@@ -373,6 +373,8 @@ class Website extends \Cx\Model\Base\EntityBase {
         global $_DBCONFIG, $_ARRAYLANG;
         
         $this->status = self::STATE_SETUP;
+        \Env::get('em')->persist($this);
+        \Env::get('em')->flush();
         
         $this->websiteController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
 

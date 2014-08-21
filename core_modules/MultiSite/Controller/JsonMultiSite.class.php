@@ -592,7 +592,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function setWebsiteState($params) {
          if (!empty($params['post'])) {
             $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $website = $webRepo->findOneBy(array('name' => $params['post']['websiteName']));
+            $website = $webRepo->findOneById($params['post']['websiteId']);
             $website->setStatus($params['post']['status']);
             \Env::get('em')->persist($website);
             \Env::get('em')->flush();
@@ -624,12 +624,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_SERVICE:
                     //find User's Website
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website   = $webRepo->findBy(array('name' => $params['post']['websiteName']));
+                    $website   = $webRepo->findById($params['post']['websiteId']);
                     $hostName  = $website->getBaseDn()->getName();
                     $jd = new \Cx\Core\Json\JsonData();
                     $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $hostName . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=setWebsiteState', 
                         array(
-                            'websiteName' => $params['post']['websiteName'],
+                            'websiteId'   => $params['post']['websiteId'],
                             'status'      => $params['post']['status'],
                             'auth'        => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($website->getSecretKey(), $website->getInstallationId())
                             ), false, '', null);

@@ -267,13 +267,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'status' => array('header' => 'Status',
                             'table' => array(
-                                'parse' => function($value) {
+                                'parse' => function($value, $arrData) {
                             $stateOnline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE;
                             $stateOffline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE;
                             $stateOnlineSelected = ($value == $stateOnline) ? 'selected' : '';
                             $stateOfflineSelected = ($value == $stateOffline) ? 'selected' : '';
                             if ($value == $stateOnline || $value == $stateOffline) {
-                                $dropDownDisplay = '<select class="changeWebsiteStatus"><option value = ' . $stateOnline . ' ' . $stateOnlineSelected . '>' . $stateOnline . '</option>'
+                                $dropDownDisplay = '<select class="changeWebsiteStatus" data-websiteDetails= "'.$arrData['id'].'-'.$arrData['name'].'"><option value = ' . $stateOnline . ' ' . $stateOnlineSelected . '>' . $stateOnline . '</option>'
                                         . '<option value = ' . $stateOffline . ' ' . $stateOfflineSelected . '>' . $stateOffline . '</option>';
                                 return $dropDownDisplay;
                             } else {

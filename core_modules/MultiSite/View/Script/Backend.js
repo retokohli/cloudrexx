@@ -18,16 +18,19 @@
                 
             });
         });
-        $(".changeWebsiteStatus").change(function() {
+         $('.changeWebsiteStatus').focus(function() {
+            //Store old value
+            $(this).data('lastValue',$(this).val());
+            //changing dropdown value
+        }).change(function() {
             domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=updateWebsiteState";
-            var websiteName = $(this).closest('tr').find('td a').text();
-            var status = $(this).val();
-            if (confirm("Please confirm to change the state of website " + websiteName + ' to ' + status)) {
+            var websiteDetails = $(this).attr('data-websiteDetails').split("-");
+            if (confirm("Please confirm to change the state of website " + websiteDetails[1] + ' to ' + $(this).val())) {
                 cx.jQuery.ajax({
                     dataType: "json",
                     url: domainUrl,
                     data: {
-                        websiteName: $(this).closest('tr').find('td a').text(),
+                        websiteId: websiteDetails[0],
                         status: $(this).val()
                     },
                     type: "POST",
@@ -38,6 +41,8 @@
                     }
 
                 });
+            }else{
+                 $(this).val($(this).data('lastValue'));
             }
         });
     });
