@@ -3501,7 +3501,7 @@ CREATE TABLE `contrexx_module_order_subscription` (
   `id` int(11) NOT NULL auto_increment,
   `order_id` int(11) default NULL,
   `product_id` int(11) default NULL,
-  `expiration_date` timestamp NOT NULL,
+  `expiration_date` timestamp NULL default NULL,
   `product_entity_id` int(11) default NULL,
   `payment_amount` decimal(10,0) NOT NULL,
   `payment_state` tinyint(1) NOT NULL,
