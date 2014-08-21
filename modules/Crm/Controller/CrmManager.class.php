@@ -2415,9 +2415,7 @@ END;
         if (!empty($this->contact->account_id)) {
             $objUser = $objFWUser->objUser->getUser($this->contact->account_id);
             if ($objUser) {
-                $accountCompany     = contrexx_raw2xhtml($objUser->getProfileAttribute('company'));
-                $accountFirstName   = contrexx_raw2xhtml($objUser->getProfileAttribute('firstname'));
-                $accountLastName    = contrexx_raw2xhtml($objUser->getProfileAttribute('lastname'));
+                $accountName    = contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objUser));
             }
         } else {
             $objUser = false;
@@ -2447,7 +2445,7 @@ END;
                 'CRM_CONTACT_ID'            => $this->contact->id != null ? $this->contact->id : 0,
                 'CRM_CONTACT_USER_ID'       => $this->contact->account_id != null ? $this->contact->account_id : 0,
                 'CRM_CONTACT_USERNAME'      => $objUser ? contrexx_raw2xhtml($objUser->getEmail()) : '',
-                'CRM_CONTACT_ACCOUNT_USERNAME' => $objUser ? ($accountCompany ? $accountCompany.', '.$accountFirstName.' '.$accountLastName : $accountFirstName.' '.$accountLastName) : ' ',
+                'CRM_CONTACT_ACCOUNT_USERNAME' => $objUser ? $accountName : ' ',
                 'CRM_CONTACT_SHOW_PASSWORD' => "style='display: none;'",
                 'CRM_CONTACT_RANDOM_PASSWORD' => \User::make_password(),        
                 'CRM_GENDER_FEMALE_SELECTED'=> $this->contact->contact_gender == 1 ? 'selected' : '',
