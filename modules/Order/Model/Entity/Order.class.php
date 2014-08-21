@@ -113,6 +113,7 @@ class Order extends \Cx\Model\Base\EntityBase {
 
     public function createSubscription($product, $subscriptionOptions) {
         $subscription = new Subscription($product, $subscriptionOptions);
+        $subscription->setOrder($this);
         \Env::get('em')->persist($subscription);
         $this->addSubscription($subscription);
     }
