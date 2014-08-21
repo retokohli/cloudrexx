@@ -104,7 +104,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     /*
      * Constructor
      * */
-    public function __construct($basepath, $name, $websiteServiceServer = null, \Cx\Core_Modules\MultiSite\Model\Entity\User $userObj=null, $lazyLoad = true) {
+    public function __construct($basepath, $name, $websiteServiceServer = null, \User $userObj=null, $lazyLoad = true) {
         $this->basepath = $basepath;
         $this->name = $name;
 
