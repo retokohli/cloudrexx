@@ -39,6 +39,18 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setId($id);
     }
 
+    public function getName()
+    {
+        $this->_load();
+        return parent::getName();
+    }
+
+    public function setName($name)
+    {
+        $this->_load();
+        return parent::setName($name);
+    }
+
     public function getRenewalOptions()
     {
         $this->_load();
@@ -195,10 +207,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setSubscriptions($subscriptions);
     }
 
-    public function initNewEntityForSale($saleOptions)
+    public function getNewEntityForSale($saleOptions)
     {
         $this->_load();
-        return parent::initNewEntityForSale($saleOptions);
+        return parent::getNewEntityForSale($saleOptions);
     }
 
     public function getEntityById($entityId)
