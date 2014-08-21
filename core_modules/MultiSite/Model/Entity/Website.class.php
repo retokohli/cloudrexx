@@ -393,7 +393,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         if ($this->websiteServiceServer instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer) {
             $isServiceServer = false;
             //hostName
-            $hostname = $this->websiteServiceServer->getHostname();
+            $hostName = $this->websiteServiceServer->getHostname();
             $authObj  = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($this->websiteServiceServer->getSecretKey(), $this->websiteServiceServer->getInstallationId());
             $httpAuth = array(
                 'httpAuthMethod' => $this->websiteServiceServer->getHttpAuthMethod(),
@@ -402,20 +402,21 @@ class Website extends \Cx\Model\Base\EntityBase {
             );        
             $jd = new \Cx\Core\Json\JsonData();
             //create user account in website service server
-            $userResp = $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createUser', 
+            $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createUser', 
              array(
+                'userId' => $this->owner->getId(),
                 'email'  => $this->owner->getEmail(),
                 'auth'   => $authObj
              ),
              false, '', $httpAuth);
             //create website in website service server
             $params = array(
-                'userId'      => $userResp->data->userId,
+                'userId'      => $this->owner->getId(),
                 'websiteName' => $websiteName,
                 'websiteId'   => $this->getId(),
                 'auth'        => $authObj
                 );
-            $resp = $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
+            $resp = $jd->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
              false, '', $httpAuth);
             $this->ipAddress = $resp->data->websiteIp;
             $this->codeBase  = $resp->data->codeBase;

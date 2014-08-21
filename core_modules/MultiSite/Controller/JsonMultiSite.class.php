@@ -145,15 +145,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 
                 $objUser->objAttribute->first();
                 while (!$objUser->objAttribute->EOF) {
-                    $arrProfile[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
+                    $arrProfile['fields'][] = array('special_type' => 'access_'.$objUser->objAttribute->getId());
+                    $arrProfile['data'][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
                     $objUser->objAttribute->next();
                 }
                 
-                foreach ($arrProfile as $key => $value) {
-                    $arrProfile['fields'][] = array('special_type' => 'access_'.$key);
-                    $arrProfile['data'][]   = $value[0];
-                    unset($arrProfile[$key]);
-                }
                 $arrProfile['fields'][] = array('special_type' => 'access_email');
                 $arrProfile['data'][]   = $objUser->getEmail();
                 $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
@@ -194,14 +190,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Creates a new website
      * @param type $params  
     */
-    public function createWebsite($params, $websiteName='') {
+    public function createWebsite($params) {
         // load text-variables of module MultiSite
         global $_ARRAYLANG, $objInit;
         
         $objFWUser   = \FWUser::getFWUserObject();
         $objUser     = $objFWUser->objUser->getUser(contrexx_input2raw($params['post']['userId']));
         $websiteId   = isset($params['post']['websiteId']) ? contrexx_input2raw($params['post']['websiteId']) : '';
-        $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : $websiteName;
+        $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
         
         //load language file 
         $langData = $objInit->loadLanguageData('MultiSite');
