@@ -235,7 +235,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function createUser($params) {
         if (!empty($params['post'])) {
             $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
-            
+            if (!empty($params['post']['userId'])) {
+                $objUser->setMultiSiteId($params['post']['userId']);
+            }
             $objUser->setEmail(!empty($params['post']['email']) ? contrexx_input2raw($params['post']['email']) : '');
             $objUser->setActiveStatus(!empty($params['post']['active']) ? (bool)$params['post']['active'] : false);
             $objUser->setAdminStatus(!empty($params['post']['admin']) ? (bool)$params['post']['admin'] : false);
@@ -252,10 +254,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (!$objUser->store()) {
                 throw new MultiSiteJsonException($objUser->error_msg);
             } else {
-                if (!empty($params['post']['userId'])) {
-                    $objUser->setId($params['post']['userId']);
-                    $objUser->store();
-                }
                 return array('userId' => $objUser->getId());
             }
         }
@@ -364,7 +362,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function auth(array $params = array()) 
-    {   
+    {
         $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
 
         if (   empty($authenticationValue)
@@ -383,7 +381,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $objWebsiteService = $WebsiteServiceServerRepository->findBy(array('hostName' => $authenticationValue['sender']));
                     $secretKey = $objWebsiteService->getSecretKey();
                 } catch(\Exception $e) {
-                    return $e->getMessage();
+                    \DBG::msg($e->getMessage());
+                    return false;
                 }
                 break;
 
@@ -398,7 +397,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $domain     = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
                         $secretKey  = $domain->getWebsite()->getSecretKey();
                     } catch (\Exception $e) {
-                        return $e->getMessage();
+                        \DBG::msg($e->getMessage());
+                        return false;
                     }
                 }
                 break;

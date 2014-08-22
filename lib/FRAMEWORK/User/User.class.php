@@ -1543,84 +1543,13 @@ class User extends User_Profile
         if ($this->networks) {
             $this->networks->save();
         }
+
         if ($this->id) {
             \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
-            if ($objDatabase->Execute("
-                UPDATE `".DBPREFIX."access_users`
-                SET
-                    `username` = '".addslashes($this->username)."',
-                    `is_admin` = ".intval($this->is_admin).",
-                    ".(!empty($this->password) ? "`password` = '".$this->password."'," : '')."
-                    `email` = '".addslashes($this->email)."',
-                    `email_access` = '".$this->email_access."',
-                    `frontend_lang_id` = ".intval($this->frontend_language).",
-                    `backend_lang_id` = ".intval($this->backend_language).",
-                    `expiration` = ".intval($this->expiration).",
-                    `validity` = ".intval($this->validity).",
-                    `active` = ".intval($this->is_active).",
-                    `primary_group` = ".intval($this->primary_group).",
-                    `profile_access` = '".$this->profile_access."',
-                    `restore_key` = '".$this->restore_key."',
-                    `restore_key_time` = ".$this->restore_key_time."
-                WHERE `id` = ".$this->id
-            ) === false) {
-                $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
-                return false;
-            }
-            if (!empty($this->password)) {
-                // deletes all sessions which are using this user (except the session changing the password)
-                $_SESSION->cmsSessionDestroyByUserId($this->id);
-            }
+            $this->updateUser();
         } else {
             \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
-            if ($objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."access_users` (
-                    `username`,
-                    `is_admin`,
-                    `password`,
-                    `email`,
-                    `email_access`,
-                    `frontend_lang_id`,
-                    `backend_lang_id`,
-                    `regdate`,
-                    `expiration`,
-                    `validity`,
-                    `last_auth`,
-                    `last_activity`,
-                    `active`,
-                    `primary_group`,
-                    `profile_access`,
-                    `restore_key`,
-                    `restore_key_time`
-                ) VALUES (
-                    '".addslashes($this->username)."',
-                    ".intval($this->is_admin).",
-                    '".$this->password."',
-                    '".addslashes($this->email)."',
-                    '".$this->email_access."',
-                    ".intval($this->frontend_language).",
-                    ".intval($this->backend_language).",
-                    ".time().",
-                    ".intval($this->expiration).",
-                    ".intval($this->validity).",
-                    ".$this->last_auth.",
-                    ".$this->last_activity.",
-                    ".intval($this->is_active).",
-                    ".intval($this->primary_group).",
-                    '".$this->profile_access."',
-                    '".$this->restore_key."',
-                    '".$this->restore_key_time."'
-                )")) {
-                $this->id = $objDatabase->Insert_ID();
-                if (!$this->createProfile()) {
-                    $this->delete();
-                    $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'];
-                    return false;
-                }
-            } else {
-                $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'];
-                return false;
-            }
+            $this->createUser();
         }
 
         if (!$this->storeGroupAssociations()) {
@@ -1645,6 +1574,90 @@ class User extends User_Profile
         }
         
         return true;
+    }
+
+    protected function updateUser() {
+        global $objDatabase, $_CORELANG;
+
+        if ($objDatabase->Execute("
+            UPDATE `".DBPREFIX."access_users`
+            SET
+                `username` = '".addslashes($this->username)."',
+                `is_admin` = ".intval($this->is_admin).",
+                ".(!empty($this->password) ? "`password` = '".$this->password."'," : '')."
+                `email` = '".addslashes($this->email)."',
+                `email_access` = '".$this->email_access."',
+                `frontend_lang_id` = ".intval($this->frontend_language).",
+                `backend_lang_id` = ".intval($this->backend_language).",
+                `expiration` = ".intval($this->expiration).",
+                `validity` = ".intval($this->validity).",
+                `active` = ".intval($this->is_active).",
+                `primary_group` = ".intval($this->primary_group).",
+                `profile_access` = '".$this->profile_access."',
+                `restore_key` = '".$this->restore_key."',
+                `restore_key_time` = ".$this->restore_key_time."
+            WHERE `id` = ".$this->id
+        ) === false) {
+            $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
+            return false;
+        }
+        if (!empty($this->password)) {
+            // deletes all sessions which are using this user (except the session changing the password)
+            $_SESSION->cmsSessionDestroyByUserId($this->id);
+        }
+    }
+
+    protected function createUser() {
+        global $objDatabase, $_CORELANG;
+
+        if ($objDatabase->Execute("
+            INSERT INTO `".DBPREFIX."access_users` (
+                `username`,
+                `is_admin`,
+                `password`,
+                `email`,
+                `email_access`,
+                `frontend_lang_id`,
+                `backend_lang_id`,
+                `regdate`,
+                `expiration`,
+                `validity`,
+                `last_auth`,
+                `last_activity`,
+                `active`,
+                `primary_group`,
+                `profile_access`,
+                `restore_key`,
+                `restore_key_time`
+            ) VALUES (
+                '".addslashes($this->username)."',
+                ".intval($this->is_admin).",
+                '".$this->password."',
+                '".addslashes($this->email)."',
+                '".$this->email_access."',
+                ".intval($this->frontend_language).",
+                ".intval($this->backend_language).",
+                ".time().",
+                ".intval($this->expiration).",
+                ".intval($this->validity).",
+                ".$this->last_auth.",
+                ".$this->last_activity.",
+                ".intval($this->is_active).",
+                ".intval($this->primary_group).",
+                '".$this->profile_access."',
+                '".$this->restore_key."',
+                '".$this->restore_key_time."'
+            )")) {
+            $this->id = $objDatabase->Insert_ID();
+            if (!$this->createProfile()) {
+                $this->delete();
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'];
+                return false;
+            }
+        } else {
+            $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'];
+            return false;
+        }
     }
 
     /**
