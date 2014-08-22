@@ -109,7 +109,7 @@ namespace Cx\Core\Model {
             $objDateTimeZone = new \DateTimeZone($_CONFIG['timezone']);
             $objDateTime = new \DateTime('now', $objDateTimeZone);
             $offset = $objDateTimeZone->getOffset($objDateTime);
-            $offsetHours = round(abs($offset)/3600); 
+            $offsetHours = floor(abs($offset)/3600); 
             $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
             $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
 
