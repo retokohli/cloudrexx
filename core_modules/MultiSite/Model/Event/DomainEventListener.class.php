@@ -218,9 +218,12 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
     private function domainMapping($eventArgs , $mode, $event) {
         //post array
+        $domain = $eventArgs->getEntity();
         $params = array(
-            'domainName'        => $eventArgs->getEntity()->getName(),
-            'coreNetDomainId'   => $eventArgs->getEntity()->getId()
+            'domainName'        => $domain->getName(),
+            'coreNetDomainId'   => ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) ? $domain->getId() : 
+                                       ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain ? $domain->getCoreNetDomainId() : ''),
+            'componentType'     => $mode
         );
         
         if (empty($mode) || empty($event)) {
@@ -229,6 +232,10 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         
         switch ($mode) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
+                    $website = $domain->getWebsite();
+                    $params['componentId'] = $website ? $website->getId() : '';
+                }
                 \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($event, $params);
             break;
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
@@ -237,13 +244,15 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                 $config = \Env::get('config');
-                $param['post'] = array(
-                    'domainName'      => $eventArgs->getEntity()->getName(),
+                $params['post'] = array(
+                    'domainName'      => $domain->getName(),
                     'auth'            => json_encode(array('sender' => $config['domainUrl'])),
-                    'coreNetDomainId' => $eventArgs->getEntity()->getId()
+                    'coreNetDomainId' => ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) ? $domain->getId() : 
+                                            ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain ? $domain->getCoreNetDomainId() : ''),
+                    'componentType'   => $mode
                 );
                 $objJsonMultiSite = new \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite();
-                $objJsonMultiSite->$event($param);
+                $objJsonMultiSite->$event($params);
                 return;
                 break;
             default:

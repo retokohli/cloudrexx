@@ -28,7 +28,12 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     /**
      * @var integer $id
      */
-    private $websiteId;
+    private $componentId;
+
+    /**
+     * @var string $componentType
+     */
+    private $componentType;
 
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Website $website
@@ -61,12 +66,21 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     }
 
     /**
-     * Set websiteid
+     * Set componentId
      *
-     * @param integer $websiteId
+     * @param integer $componentId
      */
-    public function setWebsiteId($websiteId) {
-        $this->websiteId = $websiteId;
+    public function setComponentId($componentId) {
+        $this->componentId = $componentId;
+    }
+
+    /**
+     * Set componentType
+     *
+     * @param string $componentType
+     */
+    public function setComponentType($componentType) {
+        $this->componentType = $componentType;
     }
 
     /**
@@ -88,12 +102,21 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     }
 
     /**
-     * Get websiteid
+     * Get componentId
      *
-     * @return integer $websiteId
+     * @return integer $componentId
      */
-    public function getWebsiteId() {
-        return $this->websiteId;
+    public function getComponentId() {
+        return $this->componentId;
+    }
+
+    /**
+     * Get componentType
+     *
+     * @return integer $componentType
+     */
+    public function getComponentType() {
+        return $this->componentType;
     }
 
     /**

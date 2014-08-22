@@ -474,6 +474,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 if (empty($authenticationValue) || !is_array($authenticationValue)) {
                     return false;
                 }
+                
+                $componentId = 0;
+                switch (true) {
+                    case (!empty($params['post']['componentId'])):
+                        $componentId = $params['post']['componentId'];
+                        break;
+                    case ($params['post']['componentType'] == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE):
+                        $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
+                        ->findOneBy(array('hostname' => $authenticationValue['sender']));
+                        $componentId = $websiteServiceServer->getId();
+                        break;
+                }
+                
                 $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
                 $domain     = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
                 $website    = $domain ? $domain->getWebsite() : '';
@@ -482,12 +495,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);                
                     $website->mapDomain($objDomain);
                     $objDomain->setCoreNetDomainId($params['post']['coreNetDomainId']);
+                    $objDomain->setComponentType($params['post']['componentType']);
+                    $objDomain->setComponentId($componentId);
                 
                     \Env::get('em')->persist($objDomain);
                     \Env::get('em')->persist($website);
                 } else {
                     $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);
                     $objDomain->setCoreNetDomainId($params['post']['coreNetDomainId']);
+                    $objDomain->setComponentType($params['post']['componentType']);
+                    $objDomain->setComponentId($componentId);
                     \Env::get('em')->persist($objDomain);
                 }
                 
@@ -569,17 +586,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             try {
                 switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                     case ComponentController::MODE_MANAGER:
-                    case ComponentController::MODE_SERVICE:
                     case ComponentController::MODE_HYBRID:
                         $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-                        $domain = $domainRepo->findOneBy(array('coreNetDomainId' => $params['post']['coreNetDomainId']));
+                        $domain = $domainRepo->findOneBy(array('coreNetDomainId' => $params['post']['coreNetDomainId'], 'componentType' => $params['post']['componentType']));
                         $domain->setName($params['post']['domainName']);
                         break;
 
-                    case ComponentController::MODE_WEBSITE:
+                    case ComponentController::MODE_SERVICE:
                         $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
                         $objDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
-                        $domain = $domainRepo->findOneBy(array('websiteId' => $objDomain->getWebsite()->getId(), 'coreNetDomainId' => $params['post']['coreNetDomainId']));
+                        $domain = $domainRepo->findOneBy(array('componentId' => $objDomain->getWebsite()->getId(), 'coreNetDomainId' => $params['post']['coreNetDomainId']));
                         $domain->setName($params['post']['domainName']);
                         break;
                 }

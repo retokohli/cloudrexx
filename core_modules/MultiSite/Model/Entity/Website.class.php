@@ -963,7 +963,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         }
 
         // fetch FQDN from Domain repository
-        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_FQDN, 'websiteId' => $this->id));
+        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_FQDN, 'componentId' => $this->id));
     }   
     
     /**
@@ -988,7 +988,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         }
 
         // fetch baseDn from Domain repository
-        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_BASE_DOMAIN, 'websiteId' => $this->id)); 
+        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_BASE_DOMAIN, 'componentId' => $this->id)); 
     }
     
     /**
@@ -996,7 +996,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */   
     public function getDomainAliases(){
-        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_EXTERNAL_DOMAIN, 'websiteId' => $this->id));
+        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_EXTERNAL_DOMAIN, 'componentId' => $this->id));
     }
 
     /**
@@ -1005,7 +1005,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @return Doctrine\Common\Collections\Collection $domains
      */
     public function getDomains() {
-        $this->domains = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('websiteId' => $this->id));
+        $this->domains = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('componentId' => $this->id));
 
         return $this->domains;
     }

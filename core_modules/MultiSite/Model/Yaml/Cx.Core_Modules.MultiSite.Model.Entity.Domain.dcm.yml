@@ -12,8 +12,10 @@ Cx\Core_Modules\MultiSite\Model\Entity\Domain:
 #    name:
 #      type: string
 #      length: 200
-    websiteId:
+    componentId:
       type: integer
+    componentType:
+      type: string
     type:
       type: string
       length: 12
@@ -26,6 +28,6 @@ Cx\Core_Modules\MultiSite\Model\Entity\Domain:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
       inversedBy: domains 
       joinColumn:
-        name: websiteId
+        name: componentId
         referencedColumnName: id
         cascade: [remove]
