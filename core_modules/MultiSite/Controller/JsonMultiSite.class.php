@@ -661,7 +661,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function ping() 
     {
-        if (self::executeCommandOnManager('pong',array('action' => 'pong'))) {
+        $resp = self::executeCommandOnManager('pong',array('action' => 'pong'));
+        if ($resp->data->success = 'success') {
             return array('status' => 'success');
         }
         
