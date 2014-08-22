@@ -221,10 +221,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         try {
             $objWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
-            if ($websiteId!='') {
-                $objWebsite->setId($websiteId);
-            }
             \Env::get('em')->persist($objWebsite);
+            if ($websiteId) {
+                $objWebsite->setId($websiteId);
+                $metadata = \Env::get('em')->getClassMetaData(get_class($objWebsite));
+                $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+            }
             \Env::get('em')->flush();
             return $objWebsite->setup();
         } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
