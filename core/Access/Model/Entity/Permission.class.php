@@ -100,7 +100,7 @@ class Permission {
         }
         
         //callback function check
-        if (isset($this->callback) && !call_user_func($this->callback, $params)) {
+        if (isset($this->callback) && call_user_func($this->callback, $params) !== true) {
             return false;
         }
         
