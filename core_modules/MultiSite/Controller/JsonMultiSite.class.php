@@ -690,8 +690,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Manager and pass it to the method executeCommand()
      */
 
-    function executeCommandOnManager($command, $params) {
+    public static function executeCommandOnManager($command, $params) {
 
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
+        }
         $host = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
         $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
         $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
@@ -708,8 +711,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
 
-    function executeCommandOnMyServiceServer($command, $params) {
+    public static function executeCommandOnMyServiceServer($command, $params) {
 
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_WEBSITE))) {
+            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode WEBSITE.');
+        }
         $host = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
         $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');
         $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
@@ -726,8 +732,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
 
-    function executeCommandOnServiceServerOfWebsite($command, $params, $website) {
+    public static function executeCommandOnServiceServerOfWebsite($command, $params, $website) {
 
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER))) {
+            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode MANAGER.');
+        }
         $websiteServiceServer = $website->getWebsiteServiceServer();
         $host = $websiteServiceServer->getHostname();
         $installationId = $websiteServiceServer->getInstallationId();
@@ -745,7 +754,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Service and pass it to the method executeCommand():
      */
 
-    function executeCommandOnServiceServer($command, $params, $websiteServiceServer) {
+    public static function executeCommandOnServiceServer($command, $params, $websiteServiceServer) {
+        
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER))) {
+            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode MANAGER.');
+        }
         $host = $websiteServiceServer->getHostname();
         $installationId = $websiteServiceServer->getInstallationId();
         $secretKey = $websiteServiceServer->getSecretKey();
@@ -762,8 +775,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Website and pass it to the method executeCommand():
      */
 
-    function executeCommandOnWebsite($command, $params, $website) {
+    public static function executeCommandOnWebsite($command, $params, $website) {
 
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
+            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode HYBRID or SERVICE.');
+        }
         $host = $website->getBaseDn()->getName();
         $installationId = $website->getInstallationId();
         $secretKey = $website->getSecretKey();
