@@ -313,14 +313,15 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_domain` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(200) NOT NULL,
-  `websiteId` int(11) default NULL,
+  `componentId` int(11) default NULL,
+  `componentType` varchar(7) default NULL,
   `type` varchar(12) NOT NULL,
   `pleskId` int(11) default NULL,
   `coreNetDomainId` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
-  KEY `websiteId` (`websiteId`),
-  CONSTRAINT `contrexx_core_module_multisite_domain_ibfk_1` FOREIGN KEY (`websiteId`) REFERENCES `contrexx_core_module_multisite_website` (`id`)
+  KEY `componentId` (`componentId`),
+  CONSTRAINT `contrexx_core_module_multisite_domain_ibfk_1` FOREIGN KEY (`componentId`) REFERENCES `contrexx_core_module_multisite_website` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
