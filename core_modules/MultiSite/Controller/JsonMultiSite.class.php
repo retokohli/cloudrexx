@@ -628,7 +628,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_SERVICE:
                     //find User's Website
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website   = $webRepo->findById($params['post']['websiteId']);
+                    $website   = $webRepo->findOneById($params['post']['websiteId']);
                     $params    = array(
                         'websiteId'   => $params['post']['websiteId'],
                         'status'      => $params['post']['status'],
