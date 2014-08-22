@@ -254,6 +254,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             } else {
                 if (!empty($params['post']['userId'])) {
                     $objUser->setId($params['post']['userId']);
+                    $objUser->store();
                 }
                 return array('userId' => $objUser->getId());
             }
