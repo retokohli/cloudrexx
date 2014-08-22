@@ -88,38 +88,44 @@ class TestCommand extends Command {
                 $this->getTestingFoldersByType($cType, $useCustomizing);
             }
         }
-        
-        $workbench = new \Cx\Core_Modules\Workbench\Controller\Workbench();
-        $phpPath   = $workbench->getConfigEntry('php');
-        
-        $phpUnitTestPath = ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/phpunit.php';        
+                
+        $phpUnitTestPath = ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit';
         if(!file_exists($phpUnitTestPath)) {
-            $this->interface->show("PhpUnit test is not found in ". ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit');
+            $this->interface->show("PhpUnit is not found in ". ASCMS_DOCUMENT_ROOT.ASCMS_TESTING_FOLDER.'/PHPUnit');
             return;
         }
-        
+
         if (empty($this->testingFolders)) {
             $this->interface->show("Test cases not found!.\nPlease make sure the test cases are palced inside ([{component_name}|{component_type}])/Testing folder.");
             return;
         }
-        
-        chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/');
-        $isInitialized = false;
-        foreach ($this->testingFolders as $testingFolder) {                                    
+
+        // Needs to change the dir because files might be loaded by its relative path inside PHPUnit
+        chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit');
+        require_once $phpUnitTestPath.'/PHP/CodeCoverage/Filter.php';
+        \PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
+
+        if (extension_loaded('xdebug')) {
+            xdebug_disable();
+        }
+
+        if (strpos('@php_bin@', '@php_bin') === 0) {            
+            set_include_path($phpUnitTestPath . PATH_SEPARATOR . get_include_path());
+        }
+
+        require_once $phpUnitTestPath.'/PHPUnit/Autoload.php';
+
+        define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
+                
+        foreach ($this->testingFolders as $testingFolder) {
             $_SERVER['argv'] = $argv = array(
                 $phpUnitTestPath,
                 '--testdox',
                 $testingFolder,
             );
             $_SERVER['argc'] = count($argv);
-            
-            if (!$isInitialized) {
-                include_once $phpUnitTestPath;
-            } else {
-                \PHPUnit_TextUI_Command::main(false);
-            }
-                        
-            $isInitialized = true;
+
+            \PHPUnit_TextUI_Command::main(false);
         }
         
         $this->interface->show('Done');
