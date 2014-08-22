@@ -57,7 +57,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'email'                 => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'address'               => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'createUser'            => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            // protocol workaround as option multiSiteProtocol is not set on WEBSITE
+            'createUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'updateUser'            => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'updateOwnUser'         => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
