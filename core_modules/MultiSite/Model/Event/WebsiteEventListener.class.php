@@ -44,6 +44,9 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                 $websiteConfigPath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $website->getName() . \Env::get('cx')->getConfigFolderName();
+                if (!file_exists($websiteConfigPath)) {
+                    break;
+                }
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem', $websiteConfigPath);
                 \Cx\Core\Setting\Controller\Setting::set('websiteState', $website->getStatus());
                 \Cx\Core\Setting\Controller\Setting::update('websiteState');
