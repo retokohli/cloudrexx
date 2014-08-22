@@ -27,13 +27,21 @@ class LegacyClassLoader {
     private $subBytes = 0;
     private $mapTable = array();
     private $cx = null;
+    private $extraClassRepositoryFile;
+    private $userClassCacheFile;
 
     public function __construct($classLoader, $cx) {
         self::$instance = $this;
         $this->cx = $cx;
-        if (file_exists($classLoader->getFilePath($this->cx->getWebsiteTempPath().'/legacyClassCache.tmp'))) {
-            $this->mapTable = unserialize(file_get_contents($classLoader->getFilePath($this->cx->getWebsiteTempPath().'/legacyClassCache.tmp')));
+        $this->extraClassRepositoryFile = $this->cx->getCodeBaseCorePath(). '/ClassLoader/Data/ExtraClassRepository.dat';
+        $this->userClassCacheFile  = $this->cx->getWebsiteTempPath().'/UserClassCache.dat';
+        if (file_exists($classLoader->getFilePath($this->extraClassRepositoryFile))) {
+            $extraClassArr = unserialize(file_get_contents($classLoader->getFilePath($this->extraClassRepositoryFile)));
         }
+        if (file_exists($classLoader->getFilePath($this->userClassCacheFile))) {
+            $userClassArr = unserialize(file_get_contents($classLoader->getFilePath($this->userClassCacheFile)));
+        }
+        $this->mapTable = !empty($userClassArr) ? array_merge($extraClassArr, $userClassArr) : $extraClassArr;
     }
 
     public function autoload($name) {
@@ -159,10 +167,12 @@ class LegacyClassLoader {
         if (file_exists($path)) {
             $path = substr($path, strlen($this->cx->getCodeBaseDocumentRootPath()));
             $this->loadClass($path, $name);
-            $this->mapTable[$name] = $path;
             try {
-                $objFile = new \Cx\Lib\FileSystem\File($this->cx->getWebsiteTempPath() . '/legacyClassCache.tmp');
-                $objFile->write(serialize($this->mapTable));
+                $objFile = new \Cx\Lib\FileSystem\File($this->userClassCacheFile);
+                if (!file_exists($this->userClassCacheFile)) $objFile->touch();
+                $cacheArr = unserialize(file_get_contents(\Env::get('ClassLoader')->getFilePath($this->userClassCacheFile)));
+                $cacheArr[$name] = $path;
+                $objFile->write(serialize($cacheArr));
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
             }
