@@ -378,7 +378,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             case ComponentController::MODE_MANAGER:
                 try {
                     $WebsiteServiceServerRepository = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $objWebsiteService = $WebsiteServiceServerRepository->findBy(array('hostName' => $authenticationValue['sender']));
+                    $objWebsiteService = $WebsiteServiceServerRepository->findBy(array('hostname' => $authenticationValue['sender']));
                     $secretKey = $objWebsiteService->getSecretKey();
                 } catch(\Exception $e) {
                     \DBG::msg($e->getMessage());
