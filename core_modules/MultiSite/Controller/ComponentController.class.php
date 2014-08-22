@@ -563,9 +563,20 @@ throw new MultiSiteException('Refactor this method!');
                 break;
 
             case self::MODE_WEBSITE:
-                if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') != \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE){
-                    throw new \Exception('Website is currently not online');
+                if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                    break;
                 }
+
+                // This is a workaround for let MultiSite-API requests through
+                // in case the Website is in setup-mode
+                if (   $cx->getMode() == $cx::MODE_BACKEND
+                    && $_REQUEST['cmd'] == 'JsonData'
+                    && \Cx\Core\Setting\Controller\Setting::getValue('websiteState') == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_SETUP
+                ) {
+                    break;
+                }
+
+                throw new \Exception('Website is currently not online');
                 break;
 
             default:
