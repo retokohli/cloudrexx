@@ -372,6 +372,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     public function setup() {
         global $_DBCONFIG, $_ARRAYLANG;
         
+        \DBG::msg('Website::setup()');
         $this->status = self::STATE_SETUP;
         \Env::get('em')->persist($this);
         \Env::get('em')->flush();
@@ -393,6 +394,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         $isServiceServer = true;
         //check if the current server is running as the website manager
         if ($this->websiteServiceServer instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer) {
+            \DBG::msg('Website: Forward setup() to Website Service Server');
             $isServiceServer = false;
             //create user account in website service server
             \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createUser', array('userId' => $this->owner->getId(), 'email'  => $this->owner->getEmail()), $this->websiteServiceServer);
@@ -411,6 +413,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->codeBase  = $resp->data->codeBase;
             $this->status    = $resp->data->state;
         } else {
+            \DBG::msg('Website: setup process..');
             $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
             $this->setupDatabase($langId, $this->owner, $objDb, $objDbUser);
@@ -420,6 +423,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->createContrexxUser($websiteName);
             $this->status = self::STATE_ONLINE;
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
+            \DBG::msg('Website: setup process.. DONE');
         }
 
         \Env::get('em')->persist($this);
@@ -546,7 +550,6 @@ class Website extends \Cx\Model\Base\EntityBase {
     * @param $websiteName name of the website
     * */
     protected function setupDataFolder($websiteName){
-        $this->cl = \Env::get('ClassLoader');
         // create folders and chmod with 0755
         // otherwise the file system class will set 777
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
@@ -556,10 +559,8 @@ class Website extends \Cx\Model\Base\EntityBase {
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config');
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp');
-// TODO: Add /themes to Website
         // themes
-        //\Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');
-        //\Cx\Lib\FileSystem\FileSystem::copy_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');
         // create media folders
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media');
@@ -751,7 +752,9 @@ class Website extends \Cx\Model\Base\EntityBase {
         $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('createUser', $params, $this);
         if(!$resp || $resp->status == 'error'){
             $errMsg = isset($resp->message) ? $resp->message : '';
-            throw new WebsiteException('Unable to create admin user account '.$errMsg);    
+            \DBG::dump($resp);
+            \DBG::msg($errMsg);
+            throw new WebsiteException('Unable to create admin user account.');
         }
     }
 
