@@ -108,12 +108,11 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     break;
                 }
             } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                // The mapping of $domain must only be performed for external domains. The BaseDN and FQDN must not be mapped, as they have already been mapped by the manager.
+                // Note: It is important that the BaseDN and FQDN are not being stored in the DomainRepository.yml file.
+                // Otherwise the domain mapping would result in an infinite loop
                 $this->domainMapping($eventArgs, $mode, 'mapDomain');
             }
-            //for map a domain to website
-            // The mapping of $domain must only be performed for external domains. The BaseDN and FQDN must not be mapped, as they have already been mapped by the manager.
-            // Note: It is important that the BaseDN and FQDN are not being stored in the DomainRepository.yml file.
-            // Otherwise the domain mapping would result in an infinite loop
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
