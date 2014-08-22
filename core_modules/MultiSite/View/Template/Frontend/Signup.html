@@ -29,7 +29,7 @@ cx_multisite = {
 
         <div class="form-group">
             <div class="input-group multisite-address">
-                <input id="multisite_address" name="multisite_address" type="text" maxlength="{MULTISITE_ADDRESS_MAX_LENGTH}" pattern="[a-z]{{MULTISITE_ADDRESS_MIN_LENGTH},{MULTISITE_ADDRESS_MAX_LENGTH}}" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
+                <input id="multisite_address" name="multisite_address" type="text" maxlength="{MULTISITE_ADDRESS_MAX_LENGTH}" pattern="[a-z0-9]{{MULTISITE_ADDRESS_MIN_LENGTH},{MULTISITE_ADDRESS_MAX_LENGTH}}" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
                 <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
             </div>
         </div>
