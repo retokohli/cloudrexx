@@ -403,13 +403,13 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'websiteId'   => $this->getId(),
                 );
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createWebsite', $params, $this->websiteServiceServer);
-            $this->ipAddress = $resp->data->websiteIp;
-            $this->codeBase  = $resp->data->codeBase;
-            $this->status    = $resp->data->state;
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 throw new WebsiteException('Problem in creating website '.$errMsg);    
             }
+            $this->ipAddress = $resp->data->websiteIp;
+            $this->codeBase  = $resp->data->codeBase;
+            $this->status    = $resp->data->state;
         } else {
             $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
