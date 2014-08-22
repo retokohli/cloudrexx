@@ -86,7 +86,7 @@ class BackendTable extends HTML_Table {
                         is_callable($options['fields'][$origHeader]['table']['parse'])
                     ) {
                         $callback = $options['fields'][$origHeader]['table']['parse'];
-                        $data = $callback($data);
+                        $data = $callback($data, $rows);
                         $encode = false; // todo: this should be set by callback
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
