@@ -35,12 +35,7 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         \DBG::msg('MultiSite (WebsiteEventListener): postUpdate');
         $em      = $eventArgs->getEntityManager();
         $website = $eventArgs->getEntity();
-        $domains = $website->getDomains();
-        foreach ($domains as $domain) {
-            \DBG::msg('Update domain (map to new IP of Website): '.$domain->getName());
-            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($domain, $em)));
-        }
-         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                 $websiteConfigPath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $website->getName() . \Env::get('cx')->getConfigFolderName();
@@ -51,13 +46,21 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 \Cx\Core\Setting\Controller\Setting::set('websiteState', $website->getStatus());
                 \Cx\Core\Setting\Controller\Setting::update('websiteState');
                 break;
+
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+// TODO: updating ip address of domain is somehow redundant. it should only be done if ip address of website has changed
+                $domains = $website->getDomains();
+                foreach ($domains as $domain) {
+                    \DBG::msg('Update domain (map to new IP of Website): '.$domain->getName());
+                    \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($domain, $em)));
+                }
+
                 //hostName
                 $websiteServiceServer = $website->getWebsiteServiceServer();
-                
+
                 $params = array(
-                    'websiteId'   => $website->getId(),
-                    'status'      => $website->getStatus(),
+                'websiteId'   => $website->getId(),
+                'status'      => $website->getStatus(),
                 );
                 \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('setWebsiteState', $params, $websiteServiceServer);
                 break;
