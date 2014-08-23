@@ -10,6 +10,9 @@ Cx\Modules\Pim\Model\Entity\Product:
         strategy: AUTO
 
   fields:
+    name:
+      type: string
+      length: 255
     entityClass:
       type: string 
       length: 255
