@@ -2026,12 +2026,12 @@ namespace Cx\Core\Core\Controller {
             $this->codeBaseCorePath             = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CORE;
             $this->codeBaseAdminTemplatePath    = $this->codeBaseCorePath . '/Core/View/Template/Backend';
             $this->codeBaseAdminTemplateWebPath = $this->codeBaseOffsetPath . self::FOLDER_NAME_CORE . '/Core/View/Template/Backend';
-            $this->codeBaseCoreModulePath       = $this->codeBasePath . self::FOLDER_NAME_CORE_MODULE;
+            $this->codeBaseCoreModulePath       = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CORE_MODULE;
             $this->codeBaseCoreModuleWebPath    = $this->codeBaseOffsetPath . self::FOLDER_NAME_CORE_MODULE;
-            $this->codeBaseLibraryPath          = $this->codeBasePath . self::FOLDER_NAME_LIBRARY;
+            $this->codeBaseLibraryPath          = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_LIBRARY;
             $this->codeBaseFrameworkPath        = $this->codeBaseLibraryPath . '/FRAMEWORK';
-            $this->codeBaseModelPath            = $this->codeBasePath . self::FOLDER_NAME_MODEL;
-            $this->codeBaseModulePath           = $this->codeBasePath . self::FOLDER_NAME_MODULE;
+            $this->codeBaseModelPath            = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_MODEL;
+            $this->codeBaseModulePath           = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_MODULE;
             $this->codeBaseModuleWebPath        = $this->codeBaseOffsetPath . self::FOLDER_NAME_MODULE;
             $this->codeBaseThemesPath           = $this->codeBaseDocumentRootPath . '/themes';
         }
