@@ -32,6 +32,7 @@ class ModelEventWrapper {
         $this->cx->getEvents()->addEvent('model/preRemove');
         $this->cx->getEvents()->addEvent('model/postRemove');
         $this->cx->getEvents()->addEvent('model/onFlush');
+        $this->cx->getEvents()->addEvent('model/postFlush');
         $evm = $this->cx->getDb()->getEntityManager()->getEventManager();
         $evm->addEventListener(\Doctrine\ORM\Events::prePersist,  $this);
         $evm->addEventListener(\Doctrine\ORM\Events::postPersist, $this);
@@ -40,6 +41,7 @@ class ModelEventWrapper {
         $evm->addEventListener(\Doctrine\ORM\Events::preRemove,   $this);
         $evm->addEventListener(\Doctrine\ORM\Events::postRemove,  $this);
         $evm->addEventListener(\Doctrine\ORM\Events::onFlush,     $this);
+        $evm->addEventListener('postFlush'/* this event will be natively be available from Doctrine 2.2: \Doctrine\ORM\Events::postFlush*/,     $this);
     }
     
     public function prePersist(\Doctrine\ORM\Event\LifecycleEventArgs $eventArgs) {
@@ -68,5 +70,9 @@ class ModelEventWrapper {
     
     public function onFlush(\Doctrine\Common\EventArgs $eventArgs) {
         $this->cx->getEvents()->triggerEvent('model/onFlush', array($eventArgs));
+    }
+
+    public function postFlush(\Doctrine\Common\EventArgs $eventArgs) {
+        $this->cx->getEvents()->triggerEvent('model/postFlush', array($eventArgs));
     }
 }
