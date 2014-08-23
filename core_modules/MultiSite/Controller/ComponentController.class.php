@@ -86,9 +86,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
                         $objTemplate->loadTemplateFile('Signup.html');
                         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-                        $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
-                        $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' .\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
-                        $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' .\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
+                        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                        $mainDomain = $domainRepository->getMainDomain()->getName();
+                        $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
+                        $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
+                        $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
                         $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
                         $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
                         $objTemplate->setVariable(array(
@@ -97,6 +99,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'TXT_MULTISITE_SITE_ADDRESS'         => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
                             'TXT_MULTISITE_SITE_ADDRESS_SCHEME'  => sprintf($_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME'], $websiteNameMinLength, $websiteNameMaxLength),
                             'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
+                            'MULTISITE_PATH'                => ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getWebsiteOffsetPath(),
                             'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
                             'POST_URL'                      => '',
                             'MULTISITE_ADDRESS_MIN_LENGTH'  => $websiteNameMinLength,
@@ -606,6 +609,17 @@ throw new MultiSiteException('Refactor this method!');
             && !$domainRepository->findOneBy(array('name' => $_SERVER['HTTP_HOST']))
         ) {
             header('Location: '.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteUrl'), true, 301);
+            exit;
+        }
+
+        // In case the Main Domain has been requested,
+        // the user will automatically be redirected to the backend.
+        $mainDomain = $domainRepository->getMainDomain()->getName();
+        if (   !in_array($cx->getMode(), array($cx::MODE_BACKEND, $cx::MODE_COMMAND))
+            && $_SERVER['HTTP_HOST'] == $mainDomain
+        ) {
+            $backendUrl = \Env::get('cx')->getWebsiteBackendPath();
+            header('Location: '.$backendUrl);
             exit;
         }
     }
