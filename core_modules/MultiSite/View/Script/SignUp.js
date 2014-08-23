@@ -60,6 +60,7 @@ jQuery(document).ready(function() {
                 success: parseResponse,
                 error: function(response, statusMessage, error) {
 // TODO: replace statusMessage by a generic error message with guidance on how to contact the helpdesk
+                    message = 'Unfortunately, the build process of your website failed.';
                     setMessage(statusMessage, 'danger');
                 }
             });
@@ -83,7 +84,7 @@ jQuery(document).ready(function() {
             case 'error':
             default:
                 errorObject = null;
-                errorObject = 'danger';
+                errorType = 'danger';
                 errorMessage = response.message;
                 if (typeof(response.message) == 'object') {
                     errorObject = typeof(response.message.object) != null ? response.message.object : null;
