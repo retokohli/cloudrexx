@@ -36,8 +36,7 @@ class ModelEventListener implements EventListener {
         $eventArgs = current($eventArgs);
         if (
             $eventArgs instanceof \Doctrine\ORM\Event\LifecycleEventArgs &&
-            get_class($eventArgs->getEntity()) != $this->entityClass &&
-            get_class($eventArgs->getEntity()) != 'Cx\\Model\\Proxies\\' . str_replace('\\', '', $this->entityClass) . 'Proxy'
+            !($eventArgs->getEntity() instanceof $this->entityClass)
         ) {
             return;
         }
