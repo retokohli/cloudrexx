@@ -140,6 +140,9 @@ class Setting{
         }elseif($engine=="FileSystem"){ //optional
             \Cx\Core\Setting\Model\Entity\FileSystem::init($section, $group, $fileSystemConfigRepository);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\FileSystem');
+        }elseif($engine=="YamlSetting"){ //optional
+            \Cx\Core\Setting\Model\Entity\YamlSetting::init($section, $group, $fileSystemConfigRepository);
+            self::setEngineType('\Cx\Core\Setting\Model\Entity\YamlSetting');
         }else{
             throw new SettingException('Invalid arguments supplied');
             return false;
