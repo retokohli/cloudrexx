@@ -3520,6 +3520,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_pim_product` (
   `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
   `entity_class` varchar(255) NOT NULL,
   `entity_attributes` text NOT NULL,
   `renewable` tinyint(1) NOT NULL,
