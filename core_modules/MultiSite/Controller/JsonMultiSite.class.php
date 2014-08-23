@@ -381,7 +381,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             case ComponentController::MODE_MANAGER:
                 try {
                     $WebsiteServiceServerRepository = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $objWebsiteService = $WebsiteServiceServerRepository->findBy(array('hostname' => $authenticationValue['sender']));
+                    $objWebsiteService = $WebsiteServiceServerRepository->findOneBy(array('hostname' => $authenticationValue['sender']));
+                    if (!$objWebsiteService) {
+                        return false;
+                    }
                     $secretKey = $objWebsiteService->getSecretKey();
                 } catch(\Exception $e) {
                     \DBG::msg($e->getMessage());
@@ -398,6 +401,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     try {
                         $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
                         $domain     = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
+                        if (!$domain || !$domain->getWebsite()) {
+                            return false;
+                        }
                         $secretKey  = $domain->getWebsite()->getSecretKey();
                     } catch (\Exception $e) {
                         \DBG::msg($e->getMessage());
@@ -677,8 +683,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function ping() 
     {
-        $resp = self::executeCommandOnManager('pong',array('action' => 'pong'));
-        if ($resp->data->success = 'success') {
+        $resp = self::executeCommandOnManager('pong');
+        if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
             return array('status' => 'success');
         }
         
@@ -707,7 +713,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Manager and pass it to the method executeCommand()
      */
 
-    public static function executeCommandOnManager($command, $params) {
+    public static function executeCommandOnManager($command, $params = array()) {
 
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
             throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
