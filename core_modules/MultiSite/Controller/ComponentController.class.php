@@ -614,6 +614,7 @@ throw new MultiSiteException('Refactor this method!');
 
         // In case the Main Domain has been requested,
         // the user will automatically be redirected to the backend.
+        return;
         $mainDomain = $domainRepository->getMainDomain()->getName();
         if (   !in_array($cx->getMode(), array($cx::MODE_BACKEND, $cx::MODE_COMMAND))
             && $_SERVER['HTTP_HOST'] == $mainDomain
