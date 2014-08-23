@@ -1,0 +1,26 @@
+Cx\Core\Setting\Model\Entity\ModelSetting:
+  type: YamlEntity
+  repositoryClass: Cx\Core\Setting\Model\Repository\ModelSettingRepository
+  indexes:
+    name_index:
+      columns: [ name ]
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    name:
+      type: string
+    section:
+      type: string
+    group:
+      type: string
+    value:
+      type: string
+    type:
+      type: string
+    values:
+      type: string
+    ord:
+      type: integer  
