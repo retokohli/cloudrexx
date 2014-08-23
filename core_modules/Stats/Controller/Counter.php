@@ -13,7 +13,7 @@ namespace Cx\Core_Modules\Stats\Controller;
 /**
  * @ignore
  */
-\Env::get('ClassLoader')->loadFile(dirname(dirname(dirname(dirname(__FILE__)))).'/core/Core/init.php');
+require_once dirname(dirname(dirname(dirname(__FILE__)))).'/core/Core/init.php';
 
 $cx = init('minimal');
 
