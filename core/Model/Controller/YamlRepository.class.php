@@ -112,6 +112,7 @@ class YamlRepository {
      */
     protected function reset() {
         $this->entities = array();
+        $this->originalEntitiesFromRepository = array();
         $this->entityAutoIncrement = 1;
         $this->entityIdentifier = null;
         $this->entityUniqueKeys = array();
@@ -135,7 +136,9 @@ class YamlRepository {
         }
 
         $this->entities = $entities;
-        $this->originalEntitiesFromRepository = $entities;
+        foreach ($this->entities as $identifier => $entity) {
+            $this->originalEntitiesFromRepository[$identifier] = clone $entity;
+        }
     }
 
     protected function loadData() {
@@ -258,7 +261,7 @@ class YamlRepository {
             }
             if (isset($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)])) {
                 if ($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)] != $entity) {
-                    $this->updatedEntries[] = $entity;
+                    $this->updatedEntities[] = $entity;
                 }
             }
             $entitiesToPersist[] = $entity;
@@ -293,7 +296,7 @@ class YamlRepository {
         $this->updatedEntities = array();
         $this->removedEntities = array();
 
-        \Env::get('cx')->getEvents()->triggerEvent('model/postFlush');
+        \Env::get('cx')->getEvents()->triggerEvent('model/postFlush', array(new \Doctrine\ORM\Event\OnFlushEventArgs(\Env::get('em'))));
     }
 
     /**
