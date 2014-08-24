@@ -5105,8 +5105,8 @@ INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (3,'D
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (4,'Dear Mr');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (5,'Chère Madame');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (6,'Cher Monsieur');
-INSERT INTO `contrexx_module_pim_product` (`id`, `name`, `entity_class`, `entity_attributes`, `renewable`, `expirable`, `upgradable`, `expiration_unit`, `expiration_quantifier`, `price`) VALUES (1,'','\\Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website','a:1:{s:12:\"subscription\";s:5:\"Trial\";}',0,1,1,'',0,'0');
-INSERT INTO `contrexx_module_pim_product` (`id`, `name`, `entity_class`, `entity_attributes`, `renewable`, `expirable`, `upgradable`, `expiration_unit`, `expiration_quantifier`, `price`) VALUES (2,'','\\Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website','a:1:{s:12:\"subscription\";s:8:\"Business\";}',1,0,0,'month',1,'49');
+INSERT INTO `contrexx_module_pim_product` (`id`, `name`, `entity_class`, `entity_attributes`, `renewable`, `expirable`, `upgradable`, `expiration_unit`, `expiration_quantifier`, `price`) VALUES (1,'Cloudrexx Trial','\\Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website','a:1:{s:12:\"subscription\";s:5:\"Trial\";}',0,1,1,'',0,'0');
+INSERT INTO `contrexx_module_pim_product` (`id`, `name`, `entity_class`, `entity_attributes`, `renewable`, `expirable`, `upgradable`, `expiration_unit`, `expiration_quantifier`, `price`) VALUES (2,'Cloudrexx Business','\\Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website','a:1:{s:12:\"subscription\";s:8:\"Business\";}',1,0,0,'month',1,'49');
 INSERT INTO `contrexx_module_podcast_category` (`id`, `title`, `description`, `status`) VALUES (1,'Demo Kategorie','Das ist eine Demo Kategorie',1);
 INSERT INTO `contrexx_module_podcast_category` (`id`, `title`, `description`, `status`) VALUES (2,'Web 2.0 English','',1);
 INSERT INTO `contrexx_module_podcast_category` (`id`, `title`, `description`, `status`) VALUES (3,'Web 2.0 Deutsch','',1);
