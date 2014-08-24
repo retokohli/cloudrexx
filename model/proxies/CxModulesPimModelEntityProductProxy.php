@@ -264,7 +264,7 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'price', 'subscriptions');
+        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'price', 'subscriptions');
     }
 
     public function __clone()
