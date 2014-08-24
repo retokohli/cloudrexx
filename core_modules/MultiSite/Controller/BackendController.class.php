@@ -26,13 +26,22 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getCommands() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-            case ComponentController::MODE_NONE:
-            case ComponentController::MODE_WEBSITE:
-                return array();
+            case ComponentController::MODE_SERVICE:
+                return array('statistics','settings'=> array('codebases'));
                 break;
 
+            case ComponentController::MODE_MANAGER:
+                return array('statistics','settings'=> array('email','website_service_servers'));
+                break;
+
+            case ComponentController::MODE_HYBRID:
+                return array('statistics','settings'=> array('email','codebases'));
+                break;
+
+            case ComponentController::MODE_NONE:
+            case ComponentController::MODE_WEBSITE:
             default:
-                return array('statistics','settings'=> array('email','website_service_servers','codebases'));
+                return array();
                 break;
         }
     }
@@ -297,8 +306,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
             'header' => 'Websites',
             'functions' => array(
-                'edit' => true,
-                'delete' => true,
+                'edit' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                'delete' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
                 'sorting' => true,
                 'paging' => true,       // cannot be turned off yet
                 'filtering' => false,   // this does not exist yet
@@ -318,18 +327,22 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'status' => array('header' => 'Status',
                     'table' => array(
                         'parse' => function($value, $arrData) {
-                    $stateOnline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE;
-                    $stateOffline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE;
-                    $stateOnlineSelected = ($value == $stateOnline) ? 'selected' : '';
-                    $stateOfflineSelected = ($value == $stateOffline) ? 'selected' : '';
-                    if ($value == $stateOnline || $value == $stateOffline) {
-                        $dropDownDisplay = '<select class="changeWebsiteStatus" data-websiteDetails= "'.$arrData['id'].'-'.$arrData['name'].'"><option value = ' . $stateOnline . ' ' . $stateOnlineSelected . '>' . $stateOnline . '</option>'
-                                . '<option value = ' . $stateOffline . ' ' . $stateOfflineSelected . '>' . $stateOffline . '</option>';
-                        return $dropDownDisplay;
-                    } else {
-                        return $value;
-                    }
-                },
+                            // changing a Website's status must only be allowed from within the MANAGER (or HYBRID)
+                            if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                return $value;
+                            }
+                            $stateOnline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE;
+                            $stateOffline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE;
+                            $stateOnlineSelected = ($value == $stateOnline) ? 'selected' : '';
+                            $stateOfflineSelected = ($value == $stateOffline) ? 'selected' : '';
+                            if ($value == $stateOnline || $value == $stateOffline) {
+                                $dropDownDisplay = '<select class="changeWebsiteStatus" data-websiteDetails= "'.$arrData['id'].'-'.$arrData['name'].'"><option value = ' . $stateOnline . ' ' . $stateOnlineSelected . '>' . $stateOnline . '</option>'
+                                        . '<option value = ' . $stateOffline . ' ' . $stateOfflineSelected . '>' . $stateOffline . '</option>';
+                                return $dropDownDisplay;
+                            } else {
+                                return $value;
+                            }
+                        },
                     )),
                 'language' => array('showOverview' => false),
                 'websiteServiceServerId' => array(
