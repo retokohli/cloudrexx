@@ -416,10 +416,15 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: setup process..');
             $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
+            \DBG::msg('Website: setupDatabase..');
             $this->setupDatabase($langId, $this->owner, $objDb, $objDbUser);
+            \DBG::msg('Website: setupDataFolder..');
             $this->setupDataFolder($websiteName);
+            \DBG::msg('Website: setupConfiguration..');
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
+            \DBG::msg('Website: setupMultiSiteConfig..');
             $this->setupMultiSiteConfig($websiteName);
+            \DBG::msg('Website: createContrexxUser..');
             $this->createContrexxUser($websiteName);
             $this->status = self::STATE_ONLINE;
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
