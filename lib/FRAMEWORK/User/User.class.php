@@ -1034,7 +1034,10 @@ class User extends User_Profile
         // $filter != 1 needed because $filter can be 1 to show all active users
         $crmUser = false;
         if (isset($filter['crm']) && $filter != 1 && $filter['crm'] == 1 && is_array($filter)) {
-            $crmUser = true;
+            $cx = \Env::get('cx');
+            if ($cx->getLicense()->isInLegalComponents('Crm')) {
+                $crmUser = true;
+            }
         }
         if (!($arrQuery = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset, $groupless, $crmUser))) {
             $this->clean();
