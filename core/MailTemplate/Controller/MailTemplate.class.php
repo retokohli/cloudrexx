@@ -1380,23 +1380,28 @@ Use plain text areas instead.  See below.
         }
         $to_test = contrexx_input2raw($_POST['to_test']);
         $objTemplate->setVariable('CORE_MAILTEMPLATE_TO_TEST', $to_test);
+        self::sendTestMail($section, $key, $to_test);
+        return $objTemplate;
+    }
+
+    static function sendTestMail($section, $key, $email) {
+        global $_CORELANG;
+
         $sent = self::send(array(
             'section' => $section,
             'key' => $key,
-            'to' => $to_test,
+            'to' => $email,
             'do_not_strip_empty_placeholders' => true, ));
         if ($sent) {
             \Message::ok(sprintf(
                 $_CORELANG['TXT_CORE_MAILTEMPLATE_KEY_SENT_SUCCESSFULLY_TO'],
-                $key, $to_test));
+                $key, $email));
         } else {
             \Message::error(sprintf(
                 $_CORELANG['TXT_CORE_MAILTEMPLATE_ERROR_SENDING_KEY_TO'],
-                $key, $to_test));
+                $key, $email));
         }
-        return $objTemplate;
     }
-
 
     /**
      * Stores a template after editing
@@ -1424,6 +1429,7 @@ Use plain text areas instead.  See below.
         if (self::store($section, $_POST)) {
 // Prevent this from being run twice
 //            unset($_POST['text_from_id']);
+            self::sendTestMail($section, $_POST['key'], $_POST['to_test']);
             return \Message::ok($_CORELANG['TXT_CORE_MAILTEMPLATE_STORED_SUCCESSFULLY']);
         }
 // Prevent this from being run twice
