@@ -78,7 +78,8 @@ jQuery(document).ready(function() {
 
         switch (response.status) {
             case 'success':
-                setMessage(response.data, 'success');
+                message = response.data.message;
+                setMessage(message, 'success');
                 break;
 
             case 'error':
