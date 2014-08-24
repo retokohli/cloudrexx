@@ -195,19 +195,20 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
                     \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                         'section' => 'MultiSite',
-                        //'lang_id' => $langId,
                         'key' => 'setupError',
                         'to' => $config['coreAdminEmail'],
                         'search' => array(
                             '[[ERROR]]',
+                            '[[DBG_LOG]]',
                         ),
                         'replace' => array(
                             $e->getMessage(),
+                            join("\n", \DBG::getMemoryLogs()),
                         ),
                     ));
                     throw new MultiSiteJsonException(array(
                         'object' => 'form',
-                        'type' => 'error',
+                        'type'      => 'danger',
                         'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATION_ERROR'], contrexx_raw2xhtml($objUser->getEmail())),
                     ));
                 }
