@@ -27,12 +27,13 @@ define('DBG_DB_CHANGE',         DBG_ADODB_CHANGE | DBG_DOCTRINE_CHANGE);
 define('DBG_DB_ERROR',          DBG_ADODB_ERROR | DBG_DOCTRINE_ERROR);
 define('DBG_LOG_FILE',          1<<9);
 define('DBG_LOG_FIREPHP',       1<<10);
-define('DBG_LOG',               1<<11);
+define('DBG_LOG_MEMORY',        1<<11);
+define('DBG_LOG',               1<<12);
 // Full debugging (quite pointless really)
 define('DBG_ALL',
       DBG_PHP
     | DBG_DB | DBG_DB_TRACE | DBG_DB_ERROR | DBG_DB_CHANGE
-    | DBG_LOG_FILE | DBG_LOG_FIREPHP
+    | DBG_LOG_FILE | DBG_LOG_FIREPHP | DBG_LOG_MEMORY
     | DBG_LOG);
 // Common debugging modes (add more as required)
 define('DBG_ERROR_FIREPHP',
@@ -63,12 +64,14 @@ class DBG
     private static $firephp      = null;
     private static $log_file     = null;
     private static $log_firephp  = null;
+    private static $log_memory   = null;
     private static $log_adodb    = null;
     private static $log_php      = 0;
     private static $last_time    = null;
     private static $start_time   = null;
     private static $mode         = 0;
     private static $sql_query_cache = null;
+    private static $memory_logs = array();
 
 
     public function __construct()
@@ -170,6 +173,12 @@ class DBG
         } else {
             self::disable_firephp();
         }
+        // log to memory
+        if (self::$mode & DBG_LOG_MEMORY) {
+            self::enable_memory();
+        } else {
+            self::disable_memory();
+        }
         // log mysql queries
         if ((self::$mode & DBG_ADODB) || (self::$mode & DBG_ADODB_TRACE) || (self::$mode & DBG_ADODB_CHANGE) || (self::$mode & DBG_ADODB_ERROR)) {
             self::enable_adodb();
@@ -210,13 +219,14 @@ class DBG
     /**
      * Enables logging to a file
      *
-     * Disables logging to FirePHP in turn.
+     * Disables logging to FirePHP & memory in turn.
      */
     private static function enable_file()
     {
         if (self::$log_file) return;
         // disable firephp first
         self::disable_firephp();
+        self::disable_memory();
 // DO NOT OVERRIDE DEFAULT BEHAVIOR FROM INSIDE THE CLASS!
 // Call a method to do this from the outside.
 //        self::setup('dbg.log', 'w');
@@ -251,8 +261,9 @@ class DBG
             trigger_error("Can't activate FirePHP! Headers already sent in $file on line $line'", E_USER_NOTICE);
             return;
         }
-        // FirePHP overrides file logging
+        // FirePHP overrides file & memory logging
         self::disable_file();
+        self::disable_memory();
         ob_start();
         if (!isset(self::$firephp)) {
             if (!include_once(dirname(dirname(dirname(__FILE__))).'/firephp/FirePHP.class.php')) {
@@ -276,6 +287,31 @@ class DBG
         self::$log_firephp = false;
         ob_end_clean();
         restore_error_handler();
+    }
+
+
+    /**
+     * Enables logging to memory
+     *
+     * Disables logging to a file and firephp in turn.
+     */
+    private static function enable_memory()
+    {
+        if (self::$log_memory) return;
+        // FirePHP overrides file logging
+        self::disable_file();
+        self::disable_firephp();
+        self::$log_memory = true;
+    }
+
+
+    /**
+     * Disables logging to memory
+     */
+    private static function disable_memory()
+    {
+        if (!self::$log_memory) return;
+        self::$log_memory = false;
     }
 
 
@@ -330,6 +366,7 @@ class DBG
     static function setup($file, $mode='a')
     {
         if (self::$log_firephp) return true; //no need to setup ressources, we're using firephp
+        if (self::$log_memory) return true; //no need to setup ressources, we're using memory
         $suffix = '';
         /*$nr = 0;
         while (file_exists($file.$suffix)) {
@@ -554,7 +591,7 @@ class DBG
             $out = var_export($val, true);
         }
         $out = str_replace("\n", "\n        ", $out);
-        if (!self::$log_file) {
+        if (!self::$log_file && !self::$log_memory) {
             // we're logging directly to the browser
             // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
@@ -566,10 +603,19 @@ class DBG
     
     private static function _escapeDoctrineDump(&$val)
     {
-        if ($val instanceof \Cx\Model\Base\EntityBase) {
+        if (   $val instanceof \Cx\Model\Base\EntityBase
+            || $val instanceof \Doctrine\DBAL\Statement
+            || $val instanceof \Doctrine\DBAL\Connection
+            || $val instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain
+            || $val instanceof \Cx\Core\Core\Model\Entity\EntityBase
+            || $val instanceof \Doctrine\ORM\Mapping\ClassMetadata
+            || $val instanceof \Cx\Core\Core\Controller\Cx
+            || $val instanceof \Cx\Core\Html\Sigma
+            || $val instanceof \Cx\Core\Core\Model\Entity\SystemComponentController
+        ) {
             $val = \Doctrine\Common\Util\Debug::export($val, 2);
         } else if (is_array($val)) {
-            foreach ($val as $entry) {
+            foreach ($val as &$entry) {
                 self::_escapeDoctrineDump($entry);
             }
         }
@@ -578,7 +624,7 @@ class DBG
     static function stack()
     {
         if (self::$enable_trace) {
-            if (!self::$log_file && !self::$log_firephp) echo '<pre>';
+            if (!self::$log_file && !self::$log_firephp && !self::$log_memory) echo '<pre>';
             $callers = debug_backtrace();
 
             // remove call to this method (DBG::stack())
@@ -595,7 +641,7 @@ class DBG
             }
             error_reporting($err);
             self::_log("        === STACKTRACE END ====");
-            if (!self::$log_file && !self::$log_firephp) echo '</pre>';
+            if (!self::$log_file && !self::$log_firephp && !self::$log_memory) echo '</pre>';
         }
     }
 
@@ -670,10 +716,9 @@ class DBG
                     $type = 'E_USER_DEPRECATED';
                     break;
             }
-            if (self::$log_file) {
+            if (self::$log_file || self::$log_memory) {
                 self::_log("PHP: $type$suppressed: $errstr in $errfile on line $errline");
-            }
-            if (!self::$log_file) {
+            } else {
                 self::_log("PHP: <strong>$type</strong>$suppressed: $errstr in <strong>$errfile</strong> on line <strong>$errline</strong>");
             }
         }
@@ -710,6 +755,14 @@ class DBG
                     date($dateFormat).' '.
                     $text."\n");
             }
+        } elseif (self::$log_memory) {
+            // this constant might not exist when updating from older versions
+            if (defined('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME')) {
+                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;	
+            } else {
+                $dateFormat = 'Y-m-d H:i:s';
+            }
+            self::$memory_logs[] = date($dateFormat).' '.$text;
         } else {
             echo $text.'<br />';
             // force log message output
@@ -717,6 +770,11 @@ class DBG
                 ob_flush();
             }
         }
+    }
+
+
+    public static function getMemoryLogs() {
+        return self::$memory_logs;
     }
 
 
@@ -769,7 +827,7 @@ class DBG
                     break;
             }
         }
-        if (!self::$log_file && !self::$log_firephp) {
+        if (!self::$log_file && !self::$log_firephp && !self::$log_memory) {
             // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
             $sql = htmlentities($sql, ENT_QUOTES, CONTREXX_CHARSET);
