@@ -25,7 +25,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return array List of acts
      */
     public function getCommands() {
-        return array('statistics','settings'=> array('email','website_service_servers','codebases'));
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case ComponentController::MODE_NONE:
+            case ComponentController::MODE_WEBSITE:
+                return array();
+                break;
+
+            default:
+                return array('statistics','settings'=> array('email','website_service_servers','codebases'));
+                break;
+        }
     }
     
     /**
@@ -38,304 +47,327 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param array $cmd CMD separated by slashes
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
-        global $_ARRAYLANG,$_CONFIG;
+        global $_ARRAYLANG;
+
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case ComponentController::MODE_NONE:
+            case ComponentController::MODE_WEBSITE:
+                $cmd = array('settings');
+                break;
+
+            default:
+                break;
+        }
 
         switch (current($cmd)) {
             case 'settings':
-                if (!empty($cmd[1]) && $cmd[1]=='email')
-                {   
-                    $config = \Env::get('config');
-                    $template->setVariable(array(
-                        'TABLE' => \Cx\Core\MailTemplate\Controller\MailTemplate::adminView('MultiSite', 'nonempty', $config['corePagingLimit'], 'settings/email')->get(),
-                    ));
-                } elseif(!empty($cmd[1]) && $cmd[1]=='website_service_servers'){
-                    $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
-                    if(empty($websiteServiceServers)){
-                        $websiteServiceServers = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer();
-                    }
-                    $view = new \Cx\Core\Html\Controller\ViewGenerator($websiteServiceServers,
-                        array(
-                            'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_WEBSITE_SERVICE_SERVERS'],
-                            'functions' => array(
-                                'edit' => true,
-                                'add' => true,
-                                'delete' => true,
-                                'sorting' => true,
-                                'paging' => true,       // cannot be turned off yet
-                                'filtering' => false,   // this does not exist yet
-                            ),
-                            'fields' => array(
-                                'id' => array(
-                                    'showOverview' => false,
-                                ),
-                                'hostname' => array(
-                                    'header' => 'Hostname',
-                                    'table' => array(
-                                         'parse' => function($value) {
-                                            $websiteServiceServerRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                                            $websiteServiceServer           = $websiteServiceServerRepository->findOneBy(array('hostname' => $value));
-                                            $response   = JsonMultiSite::executeCommandOnServiceServer('ping', array(), $websiteServiceServer);
-                                            if ($response && $response->status == 'success' && $response->data->status == 'success'){
-                                                $statusIcon       = '<img src="'. '../core/Core/View/Media/icons/status_green.gif"'. ' alt='."status_green".'/>';
-                                                $hostNameStatus   = $statusIcon."&nbsp;".$value."&nbsp;".'<span class="'. 'icon-info tooltip-trigger"'. '></span><span class="'. 'tooltip-message"'. '> Bidirectional communication successfully established </span>';
-                                                return $hostNameStatus;
-                                            } else {
-                                               $statusIcon      = '<img src="'. '../core/Core/View/Media/icons/status_red.gif"'. ' alt='."status_red".'/>';
-                                               $hostNameStatus  = $statusIcon."&nbsp;".$value."&nbsp;".'<span class="'. 'icon-info tooltip-trigger"'. '></span><span class="'. 'tooltip-message"'. '>'.$response->data->message.'</span>';
-                                               return $hostNameStatus;
-                                            }
-                                         },
-                                     ),
-                                ),
-                                'label' => array(
-                                    'header' => 'Name',
-                                ),
-                                'isDefault' => array(
-                                    'header' => 'Default Server',
-                                ),
-                                'secretKey' => array(
-                                    'showOverview' => false,
-                                ),
-                                'installationId' => array(
-                                    'showOverview' => false,
-                                ),
-                                'httpAuthMethod' => array(
-                                    'showOverview' => false,
-                                ),
-                                'httpAuthUsername' => array(
-                                    'showOverview' => false,
-                                ),
-                                'httpAuthPassword' => array(
-                                    'showOverview' => false,
-                                ),
-                            )
-                        )
-                    );
-                    $template->setVariable('TABLE', $view->render());
-                } elseif (!empty($cmd[1]) && $cmd[1]=='codebases') {
-                    $codeBasePath   = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository');
-                    $codebaseScannedDir = array_values(array_diff(scandir($codeBasePath), array('..', '.')));
-                    $codebaseRepositoryDataArray[] = array(
-                        'Version_number'  => $_CONFIG['coreCmsVersion'],
-                        'default'         => '',
-                        'Code_Name'       => $_CONFIG['coreCmsCodeName'],
-                        'Release_Date'    => date(ASCMS_DATE_FORMAT_DATE, $_CONFIG['coreCmsReleaseDate']),
-                        'Path'            => \Env::get('cx')->getCodeBaseDocumentRootPath() 
-                    );
-                    
-                    foreach ($codebaseScannedDir as $value) {
-                        $configFile = $codeBasePath.'/'.$value.'/installer/config/config.php';
-                        if (file_exists($configFile)) {
-                            $configContents = file_get_contents($codeBasePath.'/'.$value.'/' .$scannedDir[0]. '/installer/config/config.php');
-                            if (preg_match_all('/\\$_CONFIG\\[\'(.*?)\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $matches)) {
-                                    $configValues = array_combine($matches[1], $matches[2]);
-                                    $codebaseRepositoryDataArray[] = array(
-                                        'Version_number' => $configValues['coreCmsVersion'],
-                                        'default'        => $value,
-                                        'Code_Name'      => $configValues['coreCmsCodeName'],
-                                        'Release_Date'   => $configValues['coreCmsReleaseDate'],
-                                        'Path'           => $codeBasePath.'/'.$value
-                                        );
-                            }
-                            
-                        }          
-                    }
-                    
-                    $codebaseRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($codebaseRepositoryDataArray);
-                    $codeBase = new \Cx\Core\Html\Controller\ViewGenerator($codebaseRepositoryDataSet,
-                        array(
-                            'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_CODEBASES'],
-                            'fields' => array(
-                                'Version_number' => array(
-                                    'header' => 'Version number'
-                                 ),
-                                'default' => array(
-                                    'header'  => 'Default',
-                                    'table' => array(
-                                        'parse' => function($value) {
-                                            $checked = ($value == \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase')) ? 'checked="checked"' : '';
-                                            $content = '<input type = "radio" class="defaultCodeBase" name = "defaultCodeBase" '.$checked.' value ="'.$value.'"/>';
-                                            return $content;
-                                        },
-                                    ),
-                                ),
-                                'Code_Name' => array(
-                                    'header' => 'Code Name',
-                                ),
-                                'Release_Date' => array(
-                                    'header' => 'Release Date',
-                                ),
-                                'Path' => array(
-                                    'header' => 'Path'
-                                )
-                            )
-                        )
-                    );
-                    $template->setVariable('TABLE', $codeBase->render());
-                    
-                } else{
-                    $this->settings($template);
-                }
+                $this->parseSectionSettings($template, $cmd);
                 break;
+
             case 'statistics':
-                //dynamic use websites path
-                //self::errorHandler();
-                //\Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config');
-                $websitesPath=\Cx\Core\Setting\Controller\Setting::getValue('websitePath');
-                // this a very ugly BETA with no much comment and wrong english in it
-                $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll());
-                $html = '
-                    <p>
-                        Heute: ' . 
-                        $instRepo->findWebsitesBetween(
-                            $websitesPath,
-                            new \DateTime(date('Y-m-d 00:00:00')),
-                            new \DateTime(date('Y-m-d 23:59:59'))
-                        ) . ' Accounts<br />
-                        Total: ' . $websites->size() . ' Accounts
-                    </p>
-                    <p><form>';
-                /*$filterTable = new \BackendTable(array('width'=>'100%'));
-                $filterTable->setCellContents(0, 0, 'Filter', 'th');
-                $filterTable->setCellContents(1, 0, '
-                    <input type="datetime" class="datetime" name="startdate" />
-                    <input type="datetime" class="datetime" name="enddate" />
-                    <input type="submit" class="button" name="submit" />
-                ', 'td', 0, false);
-                $html .= $filterTable;*/
-                $html .= '
-                    </form></p>
-                    <table border="1" style="border-collapse: collapse;" cellpadding="2">
-                        <tr>
-                            <th>Jahr</th>
-                            <th>Total</th>
-                            <th>Jan</th>
-                            <th>Feb</th>
-                            <th>Mar</th>
-                            <th>Apr</th>
-                            <th>Mai</th>
-                            <th>Jun</th>
-                            <th>Jul</th>
-                            <th>Aug</th>
-                            <th>Sep</th>
-                            <th>Oct</th>
-                            <th>Nov</th>
-                            <th>Dec</th>
-                        </tr>';
-                for ($year = '2013'; $year <= date('Y'); $year++) {
-                    $html .= '
-                        <tr>
-                            <td>' . $year . '</td>
-                            <td>' . 
-                    $instRepo->findWebsitesBetween(
-                        $websitesPath,
-                        new \DateTime(date($year . '-01-01 00:00:00')),
-                        new \DateTime(date($year . '-12-31 23:59:59'))
-                    ) . '
-                            </td>';
-                    for ($month = 1; $month <= 12; $month++) {
-                        if ($month < 10) {
-                            $month = '0'.$month;
-                        }
-                        $html .= '
-                            <td>' . 
-                        $instRepo->findWebsitesBetween(
-                            $websitesPath,
-                            new \DateTime(date($year . '-' . $month . '-01 00:00:00')),
-                            new \DateTime(date($year . '-' . $month . '-t 23:59:59'))
-                        ) . '
-                            </td>';
-                    }
-                    $html .= '
-                        </tr>';
-                }
-                $html .= '
-                    </table>';
-                $template->setVariable(array(
-                    'TABLE' => $html,
-                ));
+                $this->parseSectionStatistics($template, $cmd);
                 break;
+
             default:
-                $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
-                $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
-                    'header' => 'Websites',
+                $this->parseSectionWebsites($template, $cmd);
+                break;
+        }
+    }
+
+    public function parseSectionSettings(\Cx\Core\Html\Sigma $template, array $cmd) {
+        global $_ARRAYLANG;
+
+        $config = \Env::get('config');
+        if (!empty($cmd[1]) && $cmd[1]=='email') {   
+            $template->setVariable(array(
+                'TABLE' => \Cx\Core\MailTemplate\Controller\MailTemplate::adminView('MultiSite', 'nonempty', $config['corePagingLimit'], 'settings/email')->get(),
+            ));
+        } elseif(!empty($cmd[1]) && $cmd[1]=='website_service_servers'){
+            $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
+            if(empty($websiteServiceServers)){
+                $websiteServiceServers = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer();
+            }
+            $view = new \Cx\Core\Html\Controller\ViewGenerator($websiteServiceServers,
+                array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_WEBSITE_SERVICE_SERVERS'],
                     'functions' => array(
                         'edit' => true,
+                        'add' => true,
                         'delete' => true,
                         'sorting' => true,
                         'paging' => true,       // cannot be turned off yet
                         'filtering' => false,   // this does not exist yet
                     ),
                     'fields' => array(
-                        'id' => array('showOverview' => false),
-                        'name' => array(
-                            'header' => 'TXT_MULTISITE_SITE_ADDRESS',
-                            'readonly' => true,
-                            'table' => array(
-                                'parse' => function($value) {
-                                    //$websiteUrl = '<a href="https://' . $value . '.cloudrexx.com/" target="_blank">' . $value . '</a>';
-                                    $websiteUrl = '<a href="'.ComponentController::getApiProtocol() . $value . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'" target="_blank">' . $value . '</a>';
-                                    //$backendLogin = ' (<a href="?cmd=MultiSite&adminLogin=' . $value . '" target="_blank">BE</a>)';
-                                    return $websiteUrl; //. $backendLogin;
-                                },
-                            ),
+                        'id' => array(
+                            'showOverview' => false,
                         ),
-                        'status' => array('header' => 'Status',
+                        'hostname' => array(
+                            'header' => 'Hostname',
                             'table' => array(
-                                'parse' => function($value, $arrData) {
-                            $stateOnline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE;
-                            $stateOffline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE;
-                            $stateOnlineSelected = ($value == $stateOnline) ? 'selected' : '';
-                            $stateOfflineSelected = ($value == $stateOffline) ? 'selected' : '';
-                            if ($value == $stateOnline || $value == $stateOffline) {
-                                $dropDownDisplay = '<select class="changeWebsiteStatus" data-websiteDetails= "'.$arrData['id'].'-'.$arrData['name'].'"><option value = ' . $stateOnline . ' ' . $stateOnlineSelected . '>' . $stateOnline . '</option>'
-                                        . '<option value = ' . $stateOffline . ' ' . $stateOfflineSelected . '>' . $stateOffline . '</option>';
-                                return $dropDownDisplay;
-                            } else {
-                                return $value;
-                            }
-                        },
-                            )),
-                        'language' => array('showOverview' => false),
-                        'websiteServiceServerId' => array(
-                            'header' => 'Website Service Server',
-                            'table' => array(
-                                'parse' => function($value) {
-                                    try {
-                                        $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findBy(array('id' => $value));
-                                        if ($websiteServiceServer) {
-                                            return contrexx_raw2xhtml($websiteServiceServer[0]->getLabel().' ('.$websiteServiceServer[0]->getHostname()).')';
-                                        }
-                                    } catch (\Exception $e) {}
-                                    return 'Managed by this system';
-                                },
-                            ),
+                                 'parse' => function($value) {
+                                    $websiteServiceServerRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                                    $websiteServiceServer           = $websiteServiceServerRepository->findOneBy(array('hostname' => $value));
+                                    $response   = JsonMultiSite::executeCommandOnServiceServer('ping', array(), $websiteServiceServer);
+                                    if ($response && $response->status == 'success' && $response->data->status == 'success'){
+                                        $statusIcon       = '<img src="'. '../core/Core/View/Media/icons/status_green.gif"'. ' alt='."status_green".'/>';
+                                        $hostNameStatus   = $statusIcon."&nbsp;".$value."&nbsp;".'<span class="'. 'icon-info tooltip-trigger"'. '></span><span class="'. 'tooltip-message"'. '> Bidirectional communication successfully established </span>';
+                                        return $hostNameStatus;
+                                    } else {
+                                       $statusIcon      = '<img src="'. '../core/Core/View/Media/icons/status_red.gif"'. ' alt='."status_red".'/>';
+                                       $hostNameStatus  = $statusIcon."&nbsp;".$value."&nbsp;".'<span class="'. 'icon-info tooltip-trigger"'. '></span><span class="'. 'tooltip-message"'. '>'.$response->data->message.'</span>';
+                                       return $hostNameStatus;
+                                    }
+                                 },
+                             ),
                         ),
-                        'ipAddress' => array('header' => 'IP Address'),
-                        'ownerId' => array(
-                            'header' => 'Owner',
-                            'table' => array(
-                                'parse' => function($value) {
-                                    return \FWUser::getParsedUserTitle($value);
-                                },
-                            ),
+                        'label' => array(
+                            'header' => 'Name',
+                        ),
+                        'isDefault' => array(
+                            'header' => 'Default Server',
                         ),
                         'secretKey' => array(
-                            'readonly'      => true,
-                            'showOverview'  => false,
+                            'showOverview' => false,
                         ),
                         'installationId' => array(
-                            'readonly'      => true,
-                            'showOverview'  => false,
+                            'showOverview' => false,
                         ),
-                    ),
-                ));
-                $template->setVariable('TABLE', $view->render());
-                break;
+                        'httpAuthMethod' => array(
+                            'showOverview' => false,
+                        ),
+                        'httpAuthUsername' => array(
+                            'showOverview' => false,
+                        ),
+                        'httpAuthPassword' => array(
+                            'showOverview' => false,
+                        ),
+                    )
+                )
+            );
+            $template->setVariable('TABLE', $view->render());
+        } elseif (!empty($cmd[1]) && $cmd[1]=='codebases') {
+            $codeBasePath   = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository');
+            $codebaseScannedDir = array_values(array_diff(scandir($codeBasePath), array('..', '.')));
+            $codebaseRepositoryDataArray[] = array(
+                'Version_number'  => $config['coreCmsVersion'],
+                'default'         => '',
+                'Code_Name'       => $config['coreCmsCodeName'],
+                'Release_Date'    => date(ASCMS_DATE_FORMAT_DATE, $config['coreCmsReleaseDate']),
+                'Path'            => \Env::get('cx')->getCodeBaseDocumentRootPath() 
+            );
+            
+            foreach ($codebaseScannedDir as $value) {
+                $configFile = $codeBasePath.'/'.$value.'/installer/config/config.php';
+                if (file_exists($configFile)) {
+                    $configContents = file_get_contents($codeBasePath.'/'.$value.'/' .$scannedDir[0]. '/installer/config/config.php');
+                    if (preg_match_all('/\\$_CONFIG\\[\'(.*?)\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $matches)) {
+                            $configValues = array_combine($matches[1], $matches[2]);
+                            $codebaseRepositoryDataArray[] = array(
+                                'Version_number' => $configValues['coreCmsVersion'],
+                                'default'        => $value,
+                                'Code_Name'      => $configValues['coreCmsCodeName'],
+                                'Release_Date'   => $configValues['coreCmsReleaseDate'],
+                                'Path'           => $codeBasePath.'/'.$value
+                                );
+                    }
+                    
+                }          
+            }
+            
+            $codebaseRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($codebaseRepositoryDataArray);
+            $codeBase = new \Cx\Core\Html\Controller\ViewGenerator($codebaseRepositoryDataSet,
+                array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_CODEBASES'],
+                    'fields' => array(
+                        'Version_number' => array(
+                            'header' => 'Version number'
+                         ),
+                        'default' => array(
+                            'header'  => 'Default',
+                            'table' => array(
+                                'parse' => function($value) {
+                                    $checked = ($value == \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase')) ? 'checked="checked"' : '';
+                                    $content = '<input type = "radio" class="defaultCodeBase" name = "defaultCodeBase" '.$checked.' value ="'.$value.'"/>';
+                                    return $content;
+                                },
+                            ),
+                        ),
+                        'Code_Name' => array(
+                            'header' => 'Code Name',
+                        ),
+                        'Release_Date' => array(
+                            'header' => 'Release Date',
+                        ),
+                        'Path' => array(
+                            'header' => 'Path'
+                        )
+                    )
+                )
+            );
+            $template->setVariable('TABLE', $codeBase->render());
+            
+        } else{
+            $this->settings($template);
         }
     }
+
+    public function parseSectionStatistics(\Cx\Core\Html\Sigma $template, array $cmd) {
+        //dynamic use websites path
+        //self::errorHandler();
+        //\Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config');
+        $websitesPath=\Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        // this a very ugly BETA with no much comment and wrong english in it
+        $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll());
+        $html = '
+            <p>
+                Heute: ' . 
+                $instRepo->findWebsitesBetween(
+                    $websitesPath,
+                    new \DateTime(date('Y-m-d 00:00:00')),
+                    new \DateTime(date('Y-m-d 23:59:59'))
+                ) . ' Accounts<br />
+                Total: ' . $websites->size() . ' Accounts
+            </p>
+            <p><form>';
+        /*$filterTable = new \BackendTable(array('width'=>'100%'));
+        $filterTable->setCellContents(0, 0, 'Filter', 'th');
+        $filterTable->setCellContents(1, 0, '
+            <input type="datetime" class="datetime" name="startdate" />
+            <input type="datetime" class="datetime" name="enddate" />
+            <input type="submit" class="button" name="submit" />
+        ', 'td', 0, false);
+        $html .= $filterTable;*/
+        $html .= '
+            </form></p>
+            <table border="1" style="border-collapse: collapse;" cellpadding="2">
+                <tr>
+                    <th>Jahr</th>
+                    <th>Total</th>
+                    <th>Jan</th>
+                    <th>Feb</th>
+                    <th>Mar</th>
+                    <th>Apr</th>
+                    <th>Mai</th>
+                    <th>Jun</th>
+                    <th>Jul</th>
+                    <th>Aug</th>
+                    <th>Sep</th>
+                    <th>Oct</th>
+                    <th>Nov</th>
+                    <th>Dec</th>
+                </tr>';
+        for ($year = '2013'; $year <= date('Y'); $year++) {
+            $html .= '
+                <tr>
+                    <td>' . $year . '</td>
+                    <td>' . 
+            $instRepo->findWebsitesBetween(
+                $websitesPath,
+                new \DateTime(date($year . '-01-01 00:00:00')),
+                new \DateTime(date($year . '-12-31 23:59:59'))
+            ) . '
+                    </td>';
+            for ($month = 1; $month <= 12; $month++) {
+                if ($month < 10) {
+                    $month = '0'.$month;
+                }
+                $html .= '
+                    <td>' . 
+                $instRepo->findWebsitesBetween(
+                    $websitesPath,
+                    new \DateTime(date($year . '-' . $month . '-01 00:00:00')),
+                    new \DateTime(date($year . '-' . $month . '-t 23:59:59'))
+                ) . '
+                    </td>';
+            }
+            $html .= '
+                </tr>';
+        }
+        $html .= '
+            </table>';
+        $template->setVariable(array(
+            'TABLE' => $html,
+        ));
+    }
     
+    public function parseSectionWebsites(\Cx\Core\Html\Sigma $template, array $cmd) {
+        $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
+            'header' => 'Websites',
+            'functions' => array(
+                'edit' => true,
+                'delete' => true,
+                'sorting' => true,
+                'paging' => true,       // cannot be turned off yet
+                'filtering' => false,   // this does not exist yet
+            ),
+            'fields' => array(
+                'id' => array('showOverview' => false),
+                'name' => array(
+                    'header' => 'TXT_MULTISITE_SITE_ADDRESS',
+                    'readonly' => true,
+                    'table' => array(
+                        'parse' => function($value) {
+                            $websiteUrl = '<a href="'.ComponentController::getApiProtocol() . $value . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'" target="_blank">' . $value . '</a>';
+                            return $websiteUrl;
+                        },
+                    ),
+                ),
+                'status' => array('header' => 'Status',
+                    'table' => array(
+                        'parse' => function($value, $arrData) {
+                    $stateOnline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE;
+                    $stateOffline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE;
+                    $stateOnlineSelected = ($value == $stateOnline) ? 'selected' : '';
+                    $stateOfflineSelected = ($value == $stateOffline) ? 'selected' : '';
+                    if ($value == $stateOnline || $value == $stateOffline) {
+                        $dropDownDisplay = '<select class="changeWebsiteStatus" data-websiteDetails= "'.$arrData['id'].'-'.$arrData['name'].'"><option value = ' . $stateOnline . ' ' . $stateOnlineSelected . '>' . $stateOnline . '</option>'
+                                . '<option value = ' . $stateOffline . ' ' . $stateOfflineSelected . '>' . $stateOffline . '</option>';
+                        return $dropDownDisplay;
+                    } else {
+                        return $value;
+                    }
+                },
+                    )),
+                'language' => array('showOverview' => false),
+                'websiteServiceServerId' => array(
+                    'header' => 'Website Service Server',
+                    'table' => array(
+                        'parse' => function($value) {
+                            try {
+                                $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findBy(array('id' => $value));
+                                if ($websiteServiceServer) {
+                                    return contrexx_raw2xhtml($websiteServiceServer[0]->getLabel().' ('.$websiteServiceServer[0]->getHostname()).')';
+                                }
+                            } catch (\Exception $e) {}
+                            return 'Managed by this system';
+                        },
+                    ),
+                ),
+                'ipAddress' => array('header' => 'IP Address'),
+                'ownerId' => array(
+                    'header' => 'Owner',
+                    'table' => array(
+                        'parse' => function($value) {
+                            return \FWUser::getParsedUserTitle($value);
+                        },
+                    ),
+                ),
+                'secretKey' => array(
+                    'readonly'      => true,
+                    'showOverview'  => false,
+                ),
+                'installationId' => array(
+                    'readonly'      => true,
+                    'showOverview'  => false,
+                ),
+            ),
+        ));
+        $template->setVariable('TABLE', $view->render());
+    }
+
     /**
      * Set up the page with a list of all Settings  
      * Stores the settings if requested to.
