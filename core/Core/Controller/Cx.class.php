@@ -816,6 +816,10 @@ namespace Cx\Core\Core\Controller {
              * Because we overwrite the Gedmo model (so we need to load our model
              * before doctrine loads the Gedmo one)
              */
+            if (class_exists('Env', false)) {
+                $this->cl = \Env::get('ClassLoader');
+                return;
+            }
             require_once($this->getCodeBaseCorePath().'/ClassLoader/ClassLoader.class.php');
             $this->cl = new \Cx\Core\ClassLoader\ClassLoader($this, true, $this->customizingPath);
         }
@@ -830,6 +834,13 @@ namespace Cx\Core\Core\Controller {
             /**
              * Environment repository
              */
+            if (class_exists('Env', false)) {
+                \Env::set('cx', $this);
+                \Env::set('config', $_CONFIG);
+                \Env::set('ftpConfig', $_FTPCONFIG);
+                return;
+            }
+
             require_once($this->cl->getFilePath($this->codeBaseCorePath . '/Env.class.php'));
             \Env::set('cx', $this);
             \Env::set('ClassLoader', $this->cl);            
