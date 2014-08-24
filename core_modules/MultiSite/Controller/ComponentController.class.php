@@ -31,6 +31,7 @@ class MultiSiteException extends \Exception {}
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
    // const MAX_WEBSITE_NAME_LENGTH = 18; 
+    const MODE_NONE = 'none';
     const MODE_MANAGER = 'manager';
     const MODE_SERVICE = 'service';
     const MODE_HYBRID = 'hybrid';
@@ -356,8 +357,8 @@ throw new MultiSiteException('Refactor this method!');
             // config group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('mode','none', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none,'.self::MODE_MANAGER.':'.self::MODE_MANAGER.','.self::MODE_SERVICE.':'.self::MODE_SERVICE.','.self::MODE_HYBRID.':'.self::MODE_HYBRID, 'config')){
+                && !\Cx\Core\Setting\Controller\Setting::add('mode',self::MODE_NONE, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::MODE_NONE.':'.self::MODE_NONE.','.self::MODE_MANAGER.':'.self::MODE_MANAGER.','.self::MODE_SERVICE.':'.self::MODE_SERVICE.','.self::MODE_HYBRID.':'.self::MODE_HYBRID, 'config')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Mode");
             }
           
