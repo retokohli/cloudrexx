@@ -434,11 +434,10 @@ class Website extends \Cx\Model\Base\EntityBase {
         \Env::get('em')->persist($this);
         \Env::get('em')->flush();
         
-        $this->messages = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'];
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
-            || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
+            || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID
+        ) {
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-// TODO: implement protocl support
             $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
@@ -480,7 +479,9 @@ class Website extends \Cx\Model\Base\EntityBase {
                 //$this->removeWebsite($websiteName);
                 throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException(array('object' => 'form', 'type' => 'success', 'message' => "Your website <a href='".ComponentController::getApiProtocol(). $websiteDomain/"'>$websiteDomain</a> has been build successfully. Unfortunately, we were unable to send you a message to the address <strong>$websiteMail</strong> with further instructions on how to proceed. Our helpdesk team will get in touch with you as soon as possible. We apologize for any inconvenience."));
             }
-            return $this->messages;
+            return array(
+                'status' => 'success',
+            );
         }
 
         return array(

@@ -183,10 +183,33 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $order->createSubscription($product, $subscriptionOptions);
                     \Env::get('em')->persist($order);
                     \Env::get('em')->flush();
-            
-                    return $order->complete();
+                    $order->complete();
+                    $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website   = $websiteRepository->findOneBy(array('name' => $websiteName));
+                    return array(
+                        'status' => 'success',
+                        'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'], '<a href=="'.ComponentController::getApiProtocol().$website->getBaseDn()->getName().'">"'.$website->getBaseDn()->getName().'</a>'),
+                    );
                 } catch (\Exception $e) {
-                    throw new MultiSiteJsonException($e->getMessage());
+                    $config = \Env::get('config');
+                    \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+                    \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
+                        'section' => 'MultiSite',
+                        //'lang_id' => $langId,
+                        'key' => 'setupError',
+                        'to' => $config['coreAdminEmail'],
+                        'search' => array(
+                            '[[ERROR]]',
+                        ),
+                        'replace' => array(
+                            $e->getMessage(),
+                        ),
+                    ));
+                    throw new MultiSiteJsonException(array(
+                        'object' => 'form',
+                        'type' => 'error',
+                        'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATION_ERROR'], contrexx_raw2xhtml($objUser->getEmail())),
+                    ));
                 }
             } else {
                 throw new MultiSiteJsonException('Problem in creating user');  
@@ -236,7 +259,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     public function createUser($params) {
-        if (!empty($params['post'])) {
+        if (empty($params['post'])) {
+            throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::createUser.');
+        }
+
+        try {
             $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
             if (!empty($params['post']['userId'])) {
                 $objUser->setMultiSiteId($params['post']['userId']);
@@ -255,10 +282,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             //call \User\store function to store all the info of new user
             if (!$objUser->store()) {
-                throw new MultiSiteJsonException($objUser->error_msg);
+                \DBG::msg('Adding user failed: '.$objUser->getErrorMsg());
+                throw new MultiSiteJsonException($objUser->getErrorMsg());
             } else {
+                \DBG::msg('User successfully created');
                 return array('userId' => $objUser->getId());
             }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException($e->getMessage());    
         }
     }
 

@@ -75,7 +75,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_LONG'] = 'Site name can 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_WRONG_CHARS'] = 'The name must contain only lowercase letters (a-z) and numbers.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'That email is already registered - %s.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'] = 'Log in';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Thank you for the registration! Please check your inbox (ended up in spam folder?). We sent an email to you with your credentials and first hints. Good luck.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Congratulations! Your website %s is ready! Please check your inbox (ended up in spam folder?). We sent an email to you with your credentials and first hints. Good luck.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATION_ERROR'] = 'Oops, we were unable to setup your website. A technician will immediately address the issue and will inform you on the email address %s as soon as your website is ready for use.';
 
 // Registration Module
 $_ARRAYLANG['TXT_MULTISITE_TITLE']='Get started with your own website now';
