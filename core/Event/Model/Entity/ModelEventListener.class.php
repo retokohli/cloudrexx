@@ -36,7 +36,16 @@ class ModelEventListener implements EventListener {
         $eventArgs = current($eventArgs);
         if (
             $eventArgs instanceof \Doctrine\ORM\Event\LifecycleEventArgs &&
-            !($eventArgs->getEntity() instanceof $this->entityClass)
+            get_class($eventArgs->getEntity()) != $this->entityClass &&
+            get_class($eventArgs->getEntity()) != 'Cx\\Model\\Proxies\\' . str_replace('\\', '', $this->entityClass) . 'Proxy'
+            // Important: the above two get_class() conditions could also be replace by the following:
+            // !($eventArgs->getEntity() instanceof $this->entityClass)
+            //
+            // But this causes unexpected results. In case a model does extend an other model,
+            // then all events registered to the base model are inherited by extending model.
+            // The latter might not be wanted. Therefore events must explicitly be registered
+            // to extending models and thus we shall not use the simplified 'instanceof'
+            // check at this point.
         ) {
             return;
         }
