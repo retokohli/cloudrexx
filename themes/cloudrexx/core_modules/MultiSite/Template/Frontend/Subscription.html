@@ -9,40 +9,9 @@
             <h2 class="panel-title">Active Sites</h2>
         </div>
         <div class="panel-body">
-
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Site Name</th>
-                        <th>Plan</th>
-                        <th>Next Invoice</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="#">Foo</a></td>
-                        <td>Free</td>
-                        <td>-</td>
-                        <td>
-                                <button type="button" class="btn btn-default btn-sm">Preview</button>
-                                <button type="button" class="btn btn-default btn-sm">Manage</button>
-                                <button type="button" class="btn btn-default btn-sm">Upgrade</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="#">Chennai</a></td>
-                        <td>Business</td>
-                        <td>10.10.2014</td>
-                        <td>
-                                <button type="button" class="btn btn-default btn-sm">Preview</button>
-                                <button type="button" class="btn btn-default btn-sm">Manage</button>
-                                <button type="button" class="btn btn-default btn-sm">Upgrade</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
+            <div class="table-responsive" id="multisite_active_site">
+                <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+            </div>
         </div>
     </div>
 
@@ -53,40 +22,9 @@
             <h2 class="panel-title">Trial Sites</h2>
         </div>
         <div class="panel-body">
-
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Site Name</th>
-                        <th>Plan</th>
-                        <th>Expiry Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="#">Demo</a></td>
-                        <td>Trial</td>
-                        <td>30.09.2014</td>
-                        <td>
-                                <button type="button" class="btn btn-default btn-sm">Preview</button>
-                                <button type="button" class="btn btn-default btn-sm">Manage</button>
-                                <button type="button" class="btn btn-default btn-sm">Upgrade</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><a href="#">MyPage</a></td>
-                        <td>Trial</td>
-                        <td>10.10.2014</td>
-                        <td>
-                                <button type="button" class="btn btn-default btn-sm">Preview</button>
-                                <button type="button" class="btn btn-default btn-sm">Manage</button>
-                                <button type="button" class="btn btn-default btn-sm">Upgrade</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
+            <div class="table-responsive" id="multisite_trial_site">
+                <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+            </div>
         </div>
     </div>
 
@@ -97,29 +35,32 @@
             <h2 class="panel-title">Expired Sites</h2>
         </div>
         <div class="panel-body">
-
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Site Name</th>
-                        <th>Plan</th>
-                        <th>Expiry Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><a href="#">Thun</a></td>
-                        <td>Trial</td>
-                        <td>01.05.2013</td>
-                        <td>
-                                <button type="button" class="btn btn-default btn-sm">Reactivate</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
+            <div class="table-responsive" id="multisite_expired_site">
+                <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+            </div>
         </div>
     </div>
 
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    function  loadContent(jQuerySelector, url) {
+        jQuery.ajax({
+            dataType: 'html',
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                if (data) {
+                    jQuery(jQuerySelector).html(data);
+                }
+            },
+            fail: function(data) {}
+        });
+    }
+    loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+    loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
+    loadContent('#multisite_expired_site', '/api/MultiSite/Subscription/Expired?status=expired');
+});
+/* ]]> */
+</script>

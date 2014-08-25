@@ -1,0 +1,24 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Site Name</th>
+            <th>Plan</th>
+            <th>Next Invoice</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- BEGIN showActiveSite -->
+        <tr>
+            <td><a href="#">{MULTISITE_ACTIVE_SITE_NAME}</a></td>
+            <td>{MULTISITE_ACTIVE_SITE_PLAN}</td>
+            <td>{MULTISITE_ACTIVE_SITE_INVOICE_DATE}</td>
+            <td>
+                <button type="button" class="btn btn-default btn-sm">Preview</button>
+                <button type="button" class="btn btn-default btn-sm">Manage</button>
+                <button type="button" class="btn btn-default btn-sm">Upgrade</button>
+            </td>
+        </tr>
+        <!-- END showActiveSite -->
+    </tbody>
+</table>
