@@ -1,8 +1,8 @@
 <?php
 /**
- * ModelSetting Repository
+ * YamlSetting Repository
  *
- * Repository to manage the modelSetting entities.
+ * Repository to manage the YamlSetting entities.
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
@@ -13,31 +13,26 @@
 namespace Cx\Core\Setting\Model\Repository;
 
 /**
- * ModelSetting Repository
+ * YamlSetting Repository
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_setting
  */
-class ModelSettingRepositoryException extends \Exception {};
+class YamlSettingRepositoryException extends \Exception {};
 
 /**
- * ModelSetting Repository
+ * YamlSetting Repository
  *
- * Repository to manage the modelSetting entities.
+ * Repository to manage the YamlSetting entities.
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_setting
  */
-class ModelSettingRepository extends \Cx\Core\Model\Controller\YamlRepository {
-    /**
-     * Constructor to initialize the YamlRepository with source
-     * file config/DomainRepository.yml.
-     */
-    public function __construct() {}
+class YamlSettingRepository extends \Cx\Core\Model\Controller\YamlRepository {
     
     public function initialize($repositoryPath) {
         parent::__construct($repositoryPath);

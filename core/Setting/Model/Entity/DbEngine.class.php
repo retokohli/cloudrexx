@@ -26,7 +26,7 @@ namespace Cx\Core\Setting\Model\Entity;
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */
-class Db extends Engine{
+class DbEngine extends Engine{
     /**
      * Initialize the settings entries from the database with key/value pairs
      * for the current section and the given group
@@ -48,7 +48,7 @@ class Db extends Engine{
         global $objDatabase;
 
         if (empty($section)) {
-            die("\Cx\Core\Setting\Model\Entity\Db::init($section, $group): ERROR: Missing \$section parameter!");
+            die("\Cx\Core\Setting\Model\Entity\DbEngine::init($section, $group): ERROR: Missing \$section parameter!");
             //return false;
         }
         self::flush();
@@ -146,17 +146,17 @@ class Db extends Engine{
         global $objDatabase;
         // TODO: Add error messages for individual errors
         if (empty(self::$section)) {
-            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Empty section!");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::update(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
         // or the setting does not exist
         if (empty($name)) {
-            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Empty name!");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::update(): ERROR: Empty name!");
             return false;
         }
         if (!isset(self::$arrSettings[$name])) {
-            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Unknown setting name '$name'!");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
         $objResult = $objDatabase->Execute("
@@ -194,19 +194,19 @@ class Db extends Engine{
         global $objDatabase;
         if (!isset(self::$section)) {
             // TODO: Error message
-            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty section!");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
         if (empty($name)) {
-            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty name!");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Empty name!");
             return false;
         }
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
             if (!self::$group) {
-                \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty group!");
+                \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Empty group!");
                 return false;
             }
             $group = self::$group;
@@ -219,7 +219,7 @@ class Db extends Engine{
         // Note that getValue() returns null if the entry is not present
         $old_value = self::getValue($name);
         if (isset($old_value)) {
-            // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            // \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
 
@@ -239,7 +239,7 @@ class Db extends Engine{
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Query failed: $query");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Query failed: $query");
             return false;
         }
         return true;
