@@ -100,10 +100,10 @@ class ViewManager
     public $getPath;                          // $_GET['path']
     public $path;                             // current path
     public $webPath;                          // current web path
-    public $codeBasePath;                     // code base path
-    public $websitePath;                      // website path
-    public $codeBaseThemesFilePath;           // default codebase  themes path
-    public $websiteThemesFilePath;           // website current themes path
+    public $codeBaseThemesPath;               // code base path
+    public $websiteThemesPath;                // website path
+    public $codeBaseThemesFilePath;           // default codebase current themes path
+    public $websiteThemesFilePath;            // website current themes path
     public $tableExists;                      // Table exists
     public $oldTable;                         // old Theme-Table name
 
@@ -117,17 +117,17 @@ class ViewManager
         //add preview.gif to required files
         $this->filenames[] = 'images/preview.gif';
         //get path variables
-        $this->path = ASCMS_THEMES_PATH.'/';
-        $this->arrWebPaths  = array(ASCMS_THEMES_WEB_PATH.'/');
-        $this->codeBasePath = !empty(\Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase')) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.\Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase').'/themes/'  :  \Env::get('cx')->getCodeBaseThemesPath().'/';
-        $this->websitePath  = \Env::get('cx')->getWebsiteThemesPath();
+        $this->path = \Env::get('cx')->getWebsiteThemesPath() . '/';
+        $this->arrWebPaths  = array(\Env::get('cx')->getWebsiteThemesWebPath() . '/');
+        $this->codeBaseThemesPath = \Env::get('cx')->getCodeBaseThemesPath() . '/';
+        $this->websiteThemesPath  = \Env::get('cx')->getWebsiteThemesPath() . '/';
         $this->themeZipPath = '/themezips/';
-        $this->_archiveTempWebPath = ASCMS_TEMP_WEB_PATH.$this->themeZipPath;
-        $this->_archiveTempPath = ASCMS_PATH.$this->_archiveTempWebPath;
+        $this->_archiveTempWebPath = \Env::get('cx')->getWebsiteTempWebPath() . $this->themeZipPath;
+        $this->_archiveTempPath = \Env::get('cx')->getCodeBasePath() .$this->_archiveTempWebPath;
         //create /tmp/zip path if it doesnt exists
         if (!file_exists($this->_archiveTempPath)){
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_TEMP_PATH.$this->themeZipPath)){
-                $this->strErrMessage=ASCMS_TEMP_PATH.$this->themeZipPath .":".$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder(\Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath)){
+                $this->strErrMessage = \Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath .":".$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
             }
         }
         $this->webPath = $this->arrWebPaths[0];
@@ -284,10 +284,11 @@ class ViewManager
         //check GETs for action
         if (!empty($_GET['export'])){
             $archiveURL=$this->_exportFile();
-            if (is_string($archiveURL)){
-                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".$archiveURL);
-                exit;
-            }
+            $objHTTPDownload = new \HTTP_Download();
+            $objHTTPDownload->setFile($archiveURL);
+            $objHTTPDownload->setContentDisposition(HTTP_Download, $_GET['export'].'.zip');
+            $objHTTPDownload->setContentType();
+            $objHTTPDownload->send('application/force-download');
         }
         if (!empty($_GET['import'])){
             $this->importFile();
@@ -331,7 +332,7 @@ class ViewManager
                                               'TXT_VERSION'                   => $_ARRAYLANG['TXT_VERSION'],
                                               'TXT_DESCRIPTION'               => $_ARRAYLANG['TXT_DESCRIPTION'],
                                               'THEMES_MENU'                   => $this->getThemesDropdown(),
-                                              'CONTREXX_BASE_URL'             => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
+                                              'CONTREXX_BASE_URL'             => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . \Env::get('cx')->getCodeBaseOffsetPath() . '/',
         ));
         //create themelist
         $themes = $this->themeRepository->findAll();
@@ -575,7 +576,7 @@ class ViewManager
     private function importFile()
     {
         global $_ARRAYLANG;
-        require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
+        require_once(\Env::get('cx')->getCodeBaseLibraryPath().'/pclzip/pclzip.lib.php');
 
         $this->_cleantmp();
         switch($_GET['import']) {
@@ -651,7 +652,7 @@ class ViewManager
             $tmpfilename = basename($URL['path']);
             if (strlen($tmpfilename) < 3) $tmpfilename = '_unknown_upload_';
 // TODO: use session temp
-            $tempFile = ASCMS_TEMP_PATH.'/'.$tmpfilename.microtime().'.zip';
+            $tempFile = \Env::get('cx')->getWebsiteTempPath() .'/'.$tmpfilename.microtime().'.zip';
             $fh = fopen($tempFile,'w');
             fputs($fh, $archive);
             return $tempFile;
@@ -669,7 +670,7 @@ class ViewManager
      */
     function _exportFile()
     {
-        require_once(ASCMS_LIBRARY_PATH.'/pclzip/pclzip.lib.php');
+        require_once(\Env::get('cx')->getCodeBaseLibraryPath() . '/pclzip/pclzip.lib.php');
         global $_ARRAYLANG;
         //clean up tmp folder
         $this->_cleantmp();
@@ -704,7 +705,7 @@ class ViewManager
                     return false;
                 }
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath.$theme.'.zip');
-                return $this->_archiveTempWebPath.$theme.'.zip';
+                return $this->_archiveTempPath.$theme.'.zip';     
             }
         }
         $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
@@ -870,7 +871,7 @@ class ViewManager
             'TXT_CHANNELS'                          => $_ARRAYLANG['TXT_CHANNELS'],
             'TXT_MODULE_URLS'                       => $_ARRAYLANG['TXT_MODULE_URLS'],
             'TXT_CONTACT'                           => $_ARRAYLANG['TXT_CONTACT'],
-            'CONTREXX_BASE_URL'                     => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
+            'CONTREXX_BASE_URL'                     => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . \Env::get('cx')->getCodeBaseOffsetPath() . '/',
         ));
     }
 
@@ -1093,8 +1094,8 @@ class ViewManager
 
         try {
             
-            $objFile = new \Cx\Lib\FileSystem\File($this->websitePath.$themes.'/'.$themesPage);
-            if(!file_exists($this->websitePath.$themes.'/'.$themesPage)){
+            $objFile = new \Cx\Lib\FileSystem\File($this->websiteThemesPath.$themes.'/'.$themesPage);
+            if(!file_exists($this->websiteThemesPath.$themes.'/'.$themesPage)){
                $objFile->touch(); 
             }
             $objFile->write($pageContent);
@@ -1202,7 +1203,7 @@ class ViewManager
 
         $directory = new \RecursiveDirectoryIterator($this->path.$themes);
         $iterator = new \RecursiveIteratorIterator($directory);
-        $objects = new \RegexIterator($iterator, '/^.+'.$themesFile.'$/i', RecursiveRegexIterator::GET_MATCH);
+        $objects = new \RegexIterator($iterator, '/^.+'.$themesFile.'$/i', \RecursiveRegexIterator::GET_MATCH);
 
         // iterate through all objects in the folder and search for matching files
         foreach ($objects as $object) {
@@ -1367,7 +1368,7 @@ class ViewManager
         try {
             $this->themeRepository->saveComponentData($theme);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] . ': ' . ASCMS_THEMES_PATH . '/' . $theme->getFoldername() . '/component.yml';
+            $this->strErrMessage = $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] . ': ' . \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername() . '/component.yml';
         }
     }
     
@@ -1605,8 +1606,8 @@ class ViewManager
             $themesPage = "index.html";
         }
         if ($themes != "") {
-            $this->codeBaseThemesFilePath = $this->codeBasePath.$themes;
-            $this->websiteThemesFilePath  = $this->websitePath.$themes;
+            $this->codeBaseThemesFilePath = $this->codeBaseThemesPath.$themes;
+            $this->websiteThemesFilePath  = $this->websiteThemesPath.$themes;
             if (file_exists($this->codeBaseThemesFilePath)) {
                 $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
                 $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
@@ -1615,88 +1616,27 @@ class ViewManager
                 $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
                 $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
             }
-            
+
             $mergedFiles = $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
-            
-            
+            $this->sortFilesFolders($mergedFiles);
             foreach($mergedFiles as $folderName => $fileName) {
                $folderIcon = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
-//                echo $folderIcon;
-                //adding the virtual folder as "application template folder" under the "Layout"
-                //appending the core_modules and modules folder under the "application template folder"
-                $applicationFolders = array('core_modules', 'modules');
-                $appFolderExists = false;
-                foreach ($applicationFolders as $applicationFilesPath) {
-                    $appFolderExists = true;
-                    if ($folderName == $applicationFilesPath) {
-                        
-                        $result = array();
-                        $result .= $this->getUlLi($fileName, $applicationFilesPath.'/'); 
-                        $objTemplate->setVariable(array(
-                                        'THEME_APPL_FOLDER_NAME' => $applicationFilesPath, 
-                                        'THEME_APPL_FOLDER_ICON' => $folderIcon, 
-                                        'THEME_APPL_FOLDERS'     => $result, 
-                                    ));
-                        
-                    } 
-                    $objTemplate->parse('application_folders');
-                }
-               
-                if ($appFolderExists) {
-                    $objTemplate->touchBlock('application_template');
-                } else {
-                    $objTemplate->hideBlock('application_template');
-                }
-                
-                 if (!is_array($fileName)) {
-                    // appending the home.*  files under  Homepage Template folder
-                    if (preg_match('/^home(.*).html/', $fileName) == 1) {
-                        $displayedFiles[] = $fileName;
-                        $filePath = (file_exists($this->websiteThemesFilePath . '/' . $path . $fileName)) ? $this->websiteThemesFilePath . '/' . $path .$fileName : $this->codeBaseThemesFilePath . '/'. $path .$fileName;
-                        $icon             = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
-                        $cssId            = ($_POST['themesPage'] ==  $fileName) ? 'activeFile' : '';
-                        $objTemplate->setVariable(array(
-                            'THEME_HOME_LAYOUT_ICON'            => $icon, 
-                            'THEME_HOME_LAYOUT_NAME'            => $fileName, 
-                            'THEME_HOME_LAYOUT_CSS_ID'          => $cssId, 
-                        ));
-                        $objTemplate->parse('home_template');
-                    }
-                    
-                    // appending the content.*  files under  Content Template folder
-                    if (preg_match('/^content(.*).html/', $fileName) == 1) {
-                        $displayedFiles[] = $fileName;
-                        $filePath = (file_exists($this->websiteThemesFilePath . '/' . $path . $fileName)) ? $this->websiteThemesFilePath . '/' . $path .$fileName : $this->codeBaseThemesFilePath . '/'. $path .$fileName;
-                        $icon             = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
-                        $cssId            = ($_POST['themesPage'] ==  $fileName) ? 'activeFile' : '';
-                        $objTemplate->setVariable(array(
-                            'THEME_CONTENT_LAYOUT_ICON'            => $icon, 
-                            'THEME_CONTENT_LAYOUT_NAME'            => $fileName, 
-                            'THEME_CONTENT_LAYOUT_CSS_ID'          => $cssId, 
-                        ));
-                        $objTemplate->parse('content_template');
-                    } 
-                }
-                
+
                 if (is_array($fileName)) {
-                        if(!in_array($folderName, $applicationFolders)) {
-                            $result     = $this->getUlLi($fileName, $folderName.'/');
-                            $objTemplate->setVariable(array(
-                                'THEME_REMAINING_FOLDERS' => '<li>'.$folderIcon.'<a href="javascript:void(0);" >' . $folderName . '</a>' . PHP_EOL.$result.'</li>', 
-                            ));
-                        }
-                        $objTemplate->parse('remaining_files_folders');
+                        $result     = $this->getUlLi($fileName, $folderName.'/');
+                        $objTemplate->setVariable(array(
+                            'THEMES_FOLDERS' => '<li>'.$folderIcon.'<a href="javascript:void(0);" >' . $folderName . '</a>' . PHP_EOL.$result.'</li>', 
+                        ));
+                        $objTemplate->parse('themeFolders');
 
                 } else {
-                    if (!in_array($fileName, $displayedFiles) && !in_array(pathinfo($fileName, PATHINFO_EXTENSION), array("yml"))) {
-                        $filePath = (file_exists($this->websiteThemesFilePath . '/' . $path . $fileName)) ? $this->websiteThemesFilePath . '/' . $path .$fileName : $this->codeBaseThemesFilePath . '/'. $path .$fileName;
-                        $icon             = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
-                        $cssId     = ($_POST['themesPage'] ==  $fileName) ? 'activeFile' : '';
-                        $objTemplate->setVariable(array(
-                            'THEME_REMAINING_FOLDERS' => "<li><img height='16' width='16' alt='icon' src='" . $icon . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage' id = '$cssId' data-rel='" . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL, 
-                        ));
-                    }
-                    $objTemplate->parse('remaining_files_folders');
+                    $filePath = (file_exists($this->websiteThemesFilePath . '/' . $fileName)) ? $this->websiteThemesFilePath . '/' . $fileName : $this->codeBaseThemesFilePath . '/'. $fileName;
+                    $icon             = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
+                    $cssId     = ($_POST['themesPage'] ==  $fileName) ? 'activeFile' : '';
+                    $objTemplate->setVariable(array(
+                       'THEMES_FILES' => "<li><img height='16' width='16' alt='icon' src='" . $icon . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage' id = '$cssId' data-rel='" . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL, 
+                    ));
+                    $objTemplate->parse('themeFiles');
                 }
                 
                 $objTemplate->setVariable(array(
@@ -1711,7 +1651,36 @@ class ViewManager
         }
         return $result;
     }
-
+    
+    /**
+     * Sorting the array recursively
+     * 
+     * @param array $mergedFiles - merged array
+     */
+    function sortFilesFolders(& $mergedFiles) {
+        ksort($mergedFiles);
+        $cmp = function($a, $b) {
+            if ($a == $b || is_array($a) || is_array($b)) {
+                return -1;
+            }
+            return ($a < $b) ? -1 : 1;
+        };            
+        uasort($mergedFiles, $cmp);        
+        foreach ($mergedFiles as & $value) {
+            if (is_array($value)) {
+                $this->sortFilesFolders($value);
+            }
+        }        
+    }
+    
+    /**
+     * Getting the files and folders in a ul li format
+     * 
+     * @param type $folder - folders and files
+     * @param string $path - path of the file
+     * 
+     * @return string $result
+     */
     function getUlLi($folder, $path) {
         $result .= '<ul>';
         foreach ($folder as $folderName => $fileName) {
@@ -1722,20 +1691,22 @@ class ViewManager
                 $result .= $this->getUlLi($fileName, $path);
                 $result .= '</li>' . PHP_EOL;
             } else {
-                if (!in_array(pathinfo($fileName, PATHINFO_EXTENSION), array("yml"))) {
-                    $filePath = (file_exists($this->websiteThemesFilePath . '/' . $path . $fileName)) ? $this->websiteThemesFilePath . '/' . $path .$fileName : $this->codeBaseThemesFilePath . '/'. $path .$fileName;
-                    $iconDisp    = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
-                    $cssId   = ($_POST['themesPage'] == $folderName . '/' . $fileName) ? 'activeFile' : '';
-                    $result .= "<li><img height='16' width='16' alt='icon' src='" . $iconDisp . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage'  id = '$cssId' data-rel='" . $path . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL;
-                }
-                
+                $filePath = (file_exists($this->websiteThemesFilePath . '/' . $path . $fileName)) ? $this->websiteThemesFilePath . '/' . $path .$fileName : $this->codeBaseThemesFilePath . '/'. $path .$fileName;
+                $iconDisp    = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
+                $cssId   = ($_POST['themesPage'] == $folderName . '/' . $fileName) ? 'activeFile' : '';
+                $result .= "<li><img height='16' width='16' alt='icon' src='" . $iconDisp . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage'  id = '$cssId' data-rel='" . $path . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL;
             }
         }
         $result .= '</ul>';
         return $result;
     }
+    
     /**
+     * Converting the files and folders in array format recursively
      * 
+     * @param \DirectoryIterator $it - DirectoryIterator class object for the array
+     * 
+     * @return array $result 
      */
     function directoryIteratorToArray(\DirectoryIterator $it) {
         $result = array();
@@ -1755,7 +1726,12 @@ class ViewManager
     }
     
     /**
+     * merging the array recursively without any duplicates
      * 
+     * @param array $array1 
+     * @param array $array2 
+     * 
+     * @return array $merged
      */
     function array_merge_recursive_distinct(array &$array1, &$array2 = null)
     {
@@ -1764,10 +1740,10 @@ class ViewManager
       if (is_array($array2))
         foreach ($array2 as $key => $val)
           if (is_array($array2[$key]))
-            $merged[$key] = is_array($merged[$key]) ? $this->array_merge_recursive_distinct($merged[$key], $array2[$key]) : $array2[$key];
+              $merged[$key] = is_array($merged[$key]) ? $this->array_merge_recursive_distinct($merged[$key], $array2[$key]) : $array2[$key];
           else
-            $merged[$key] = $val;
-
+              $merged[$key] = $val;
+              
       return $merged;
     }
     
@@ -1824,10 +1800,10 @@ class ViewManager
         $themes = $themes->getFoldername();
         if (!isset($themesPage)) {
             $themesPage = "index.html";
-        }        
+        }    
         if ($themes != "" && $themesPage != ""){
-            $websiteFile = $this->websitePath.$themes.'/'.$themesPage;       
-            $codebaseFile = $this->codeBasePath.$themes.'/'.$themesPage;       
+            $websiteFile = $this->websiteThemesPath.$themes.'/'.$themesPage;       
+            $codebaseFile = $this->codeBaseThemesPath.$themes.'/'.$themesPage;       
             $file = file_exists($websiteFile) ? $websiteFile :  $codebaseFile; 
            
             if (file_exists($file)) {
@@ -1888,7 +1864,7 @@ class ViewManager
 
         //copy "not available" preview.gif as default preview image
         if (!file_exists($this->path.$themeDirectory.'/images/preview.gif')) {
-            if (!\Cx\Lib\FileSystem\FileSystem::copy_file(ASCMS_DOCUMENT_ROOT.'/core/Core/View/Media/preview.gif', $this->path.$themeDirectory.'/images/preview.gif')) {
+            if (!\Cx\Lib\FileSystem\FileSystem::copy_file(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Core/View/Media/preview.gif', $this->path.$themeDirectory.'/images/preview.gif')) {
                 $this->strErrMessage = sprintf($_ARRAYLANG['TXT_UNABLE_TO_CREATE_FILE'], contrexx_raw2xhtml($this->path.$themeDirectory.'/images/preview.gif'));
                 return false;
             }
