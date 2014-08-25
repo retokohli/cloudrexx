@@ -409,12 +409,27 @@ namespace Cx\Core\Core\Controller {
         protected $websiteTempPath = null;
         
         /**
+         * The offset path to the temp storage location (/tmp)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_TEMP_WEB_PATH.
+         * @var string
+         */
+        protected $websiteTempWebPath = null;
+        
+        /**
          * The absolute path to the themes storage location (/themes)
          * of the associated Data repository of the website.
          * Formerly known as ASCMS_THEMES_PATH.
          * @var string
          */
         protected $websiteThemesPath = null;
+        /**
+         * The offset path to the themes storage location (/themes)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_THEMES_WEB_PATH.
+         * @var string
+         */
+        protected $websiteThemesWebPath = null;
         
         /**
          * This creates instances of this class
@@ -2206,7 +2221,9 @@ namespace Cx\Core\Core\Controller {
             $this->websiteCustomizingPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_CUSTOMIZING;
             $this->websiteCustomizingWebPath    = $this->websiteOffsetPath . self::FOLDER_NAME_CUSTOMIZING;
             $this->websiteTempPath              = $this->websiteDocumentRootPath . self::FOLDER_NAME_TEMP;
+            $this->websiteTempWebPath           = $this->websiteOffsetPath . self::FOLDER_NAME_TEMP;
             $this->websiteThemesPath            = $this->websiteDocumentRootPath . '/themes';
+            $this->websiteThemesWebPath         = $this->websiteOffsetPath . '/themes';
         }
 
         /**
@@ -2275,6 +2292,16 @@ namespace Cx\Core\Core\Controller {
         }
         
         /**
+         * Return the offset path to the temp storage location (/tmp)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_TEMP_WEB_PATH.
+         * @return string
+         */
+        public function getWebsiteTempWebPath() {
+            return $this->websiteTempWebPath;
+        }
+        
+        /**
          * Return the relative path to the backend of the website (/cadmin).
          * @return string
          */
@@ -2290,6 +2317,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteThemesPath() {
             return $this->websiteThemesPath;
+        }
+        
+        /**
+         * Return the offset path to the themes storage location (/themes)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_THEMES_WEB_PATH.
+         * @return string
+         */
+        public function getWebsiteThemesWebPath() {
+            return $this->websiteThemesWebPath;
         }
     }
 }
