@@ -69,7 +69,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
         }
-
+        
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         // allow access only if mode is MODE_MANAGER or MODE_HYBRID
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(self::MODE_MANAGER, self::MODE_HYBRID))) {
@@ -163,6 +163,85 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $objTemplate->get();
                         break;
 
+                    case 'Subscription':
+                        $pageCmd = $subcommand;
+                        if (!empty($arguments[1])) {
+                            $pageCmd .= '_'.$arguments[1];
+                        }
+                        if (!empty($arguments[2])) {
+                            $pageCmd .= '_'.$arguments[2];
+                        }
+                        
+                        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+                        $page->setVirtual(true);
+                        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+                        $page->setCmd($pageCmd);
+                        $page->setModule('MultiSite');
+                        $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+                        $objTemplate = new \Cx\Core\Html\Sigma();
+                        $objTemplate->setTemplate($pageContent);
+                        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+                        
+                        $objUser = \FWUser::getFWUserObject()->objUser;
+                        if (!$objUser->login()) {
+                            echo 'Access denied';
+                            break;
+                        }
+                        $crmContactId = $objUser->getCrmUserId();
+                        if (empty($crmContactId)) {
+                            echo 'Not a MultiSite User';
+                            break;
+                        }
+                        
+                        $status = isset($_GET['status']) ? contrexx_input2raw($_GET['status']) : '';
+                        $excludeProduct = isset($_GET['exclude_product']) ? array_map('contrexx_input2raw', $_GET['exclude_product']) : '';
+                        $includeProduct = isset($_GET['include_product']) ? array_map('contrexx_input2raw', $_GET['include_product']) : '';
+                        $orderRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order');
+                        $orders    = $orderRepo->findBy(array('contactId' => $crmContactId));
+                        foreach ($orders As $order) {
+                            foreach ($order->getSubscriptions() As $subscription) {
+                                $website = $subscription->getProductEntity();
+                                $product = $subscription->getProduct();
+                                $expireDate = $subscription->getExpirationDate();
+                                $now = new \DateTime('now');   
+                                switch($status) {
+                                    case 'valid':
+                                        if ($expireDate > $now) {
+                                            //get active sites
+                                            if (!empty($excludeProduct) && !in_array($product->getId(), $excludeProduct)) {
+                                                $objTemplate->setVariable(array(
+                                                    'MULTISITE_ACTIVE_SITE_NAME'         => $website->getName(),
+                                                    'MULTISITE_ACTIVE_SITE_PLAN'         => $product->getName(),
+                                                    'MULTISITE_ACTIVE_SITE_INVOICE_DATE' => $subscription->getRenewalDate()->format('d.m.Y')
+                                                ));
+                                                $objTemplate->parse('showActiveSite');
+                                            }
+                                            //get trial sites
+                                            if (!empty($includeProduct) && in_array($product->getId(), $includeProduct)) {
+                                                $objTemplate->setVariable(array(
+                                                    'MULTISITE_TRIAL_SITE_NAME'         => $website->getName(),
+                                                    'MULTISITE_TRIAL_SITE_PLAN'         => $product->getName(),
+                                                    'MULTISITE_TRIAL_SITE_EXPIRE_DATE'  => $expireDate->format('d.m.Y')
+                                                ));
+                                                $objTemplate->parse('showTrialSite');
+                                            }
+                                        }
+                                        break;
+                                    case 'expired':
+                                        if ($expireDate <= $now) {
+                                            $objTemplate->setVariable(array(
+                                                'MULTISITE_EXPIRED_SITE_NAME'   => $website->getName(),
+                                                'MULTISITE_EXPIRED_SITE_PLAN'   => $product->getName(),
+                                                'MULTISITE_EXPIRED_SITE_DATE'   => $expireDate->format('d.m.Y')
+                                            ));
+                                            $objTemplate->parse('showExpiredSite');
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                        echo $objTemplate->get();
+                        break;
                     default:
                         break;
                 }
