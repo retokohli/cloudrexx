@@ -198,8 +198,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $includeProduct = isset($_GET['include_product']) ? array_map('contrexx_input2raw', $_GET['include_product']) : '';
                         $orderRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order');
                         $orders    = $orderRepo->findBy(array('contactId' => $crmContactId));
-                        foreach ($orders As $order) {
-                            foreach ($order->getSubscriptions() As $subscription) {
+                        foreach ($orders as $order) {
+                            foreach ($order->getSubscriptions() as $subscription) {
                                 $website = $subscription->getProductEntity();
                                 $product = $subscription->getProduct();
                                 $expireDate = $subscription->getExpirationDate();
