@@ -81,10 +81,10 @@ class Setting{
     const TYPE_PASSWORD = 'password';
     
     /**
-     * Default \Cx\Core\Setting\Model\Entity\Db    
+     * Default \Cx\Core\Setting\Model\Entity\DbEngine    
      *
      */
-    private static $engineType = '\Cx\Core\Setting\Model\Entity\Db'; 
+    private static $engineType = '\Cx\Core\Setting\Model\Entity\DbEngine'; 
     
     
     /**
@@ -135,14 +135,14 @@ class Setting{
     {
         
         if($engine=="Database" || empty($engine)){ //default
-            \Cx\Core\Setting\Model\Entity\Db::init($section, $group);
-            self::setEngineType('\Cx\Core\Setting\Model\Entity\Db');
+            \Cx\Core\Setting\Model\Entity\DbEngine::init($section, $group);
+            self::setEngineType('\Cx\Core\Setting\Model\Entity\DbEngine');
         }elseif($engine=="FileSystem"){ //optional
             \Cx\Core\Setting\Model\Entity\FileSystem::init($section, $group, $fileSystemConfigRepository);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\FileSystem');
-        }elseif($engine=="YamlSetting"){ //optional
-            \Cx\Core\Setting\Model\Entity\YamlSetting::init($section, $group, $fileSystemConfigRepository);
-            self::setEngineType('\Cx\Core\Setting\Model\Entity\YamlSetting');
+        }elseif($engine=="Yaml"){ //optional
+            \Cx\Core\Setting\Model\Entity\YamlEngine::init($section, $group, $fileSystemConfigRepository);
+            self::setEngineType('\Cx\Core\Setting\Model\Entity\YamlEngine');
         }else{
             throw new SettingException('Invalid arguments supplied');
             return false;

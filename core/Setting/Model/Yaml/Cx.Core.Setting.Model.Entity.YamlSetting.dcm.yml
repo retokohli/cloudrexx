@@ -1,6 +1,6 @@
-Cx\Core\Setting\Model\Entity\ModelSetting:
+Cx\Core\Setting\Model\Entity\YamlSetting:
   type: YamlEntity
-  repositoryClass: Cx\Core\Setting\Model\Repository\ModelSettingRepository
+  repositoryClass: Cx\Core\Setting\Model\Repository\YamlSettingRepository
   indexes:
     name_index:
       columns: [ name ]
