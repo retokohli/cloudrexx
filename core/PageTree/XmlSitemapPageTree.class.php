@@ -153,7 +153,7 @@ class XmlSitemapPageTree extends PageTree {
         $xml = $this->render();
         
         try {
-            $filePath = \Cx::getWebsiteDocumentRootPath();
+            $filePath = \Env::get('cx')->getWebsiteDocumentRootPath();
             $objFile = new \Cx\Lib\FileSystem\File($filePath . self::$strFilePath . '/' . $filename);
             $objFile->touch();
             $objFile->write($xml);
