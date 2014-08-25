@@ -286,7 +286,7 @@ class ViewManager
             $archiveURL=$this->_exportFile();
             $objHTTPDownload = new \HTTP_Download();
             $objHTTPDownload->setFile($archiveURL);
-            $objHTTPDownload->setContentDisposition(HTTP_Download, $_GET['export'].'.zip');
+            $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, $_GET['export'].'.zip');
             $objHTTPDownload->setContentType();
             $objHTTPDownload->send('application/force-download');
         }
