@@ -18,8 +18,6 @@ Cx\Modules\Order\Model\Entity\Order:
     subscriptions:
       targetEntity: Cx\Modules\Order\Model\Entity\Subscription
       mappedBy: order
-
-  oneToMany: # inverse side
     invoices:
       targetEntity: Cx\Modules\Order\Model\Entity\Invoice
       mappedBy: order
