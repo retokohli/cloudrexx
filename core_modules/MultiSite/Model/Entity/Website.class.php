@@ -425,6 +425,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: setupMultiSiteConfig..');
             $this->setupMultiSiteConfig($websiteName);
             \DBG::msg('Website: createContrexxUser..');
+            $this->setupRobotsFile($websiteName);
             $this->createContrexxUser($websiteName);
             $this->status = self::STATE_ONLINE;
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
@@ -1074,6 +1075,21 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 \Env::get('em')->remove($domain);
                 break;
             }   
+        }
+    }
+    /**
+     * setup Robots File
+     * 
+     * @param string $websiteName websitename
+     * 
+     * @throws WebsiteException
+     */
+    public function setupRobotsFile($websiteName) {
+        try {
+            $setupRobotFile = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsiteSkeleton/robots.txt');
+            $setupRobotFile->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/robots.txt');
+        }  catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            throw new WebsiteException('Unable to setup robot file: '.$e->getMessage());
         }
     }
 }
