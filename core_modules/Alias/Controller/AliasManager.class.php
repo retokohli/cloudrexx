@@ -238,10 +238,9 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        \Env::get('ClassLoader')->loadFile(ASCMS_FRAMEWORK_PATH . '/Validator.class.php');
         $objCx = \ContrexxJavascript::getInstance();
         $objCx->setVariable(array(
-            'regExpUriProtocol'  => VALIDATOR_REGEX_URI_PROTO,
+            'regExpUriProtocol'  =>  \FWValidator::REGEX_URI_PROTO,
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,
             'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET,
         ), 'alias');
