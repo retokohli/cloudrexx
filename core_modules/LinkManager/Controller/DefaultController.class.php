@@ -105,7 +105,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
         \Cx\Core\Setting\Controller\Setting::init('LinkManager', 'config');
         $pageLimit = \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage');
         $parameter = './index.php?cmd='.$this->moduleName;
-        $this->template->setVariable('ENTRIES_PAGING', \Paging::get($parameter, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_LINKS'], $this->crawlerRepository->crawlerEntryCount(), $pageLimit, true, $pos, 'pos'));
+        $this->template->setVariable('ENTRIES_PAGING', \Paging::get($parameter, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_LINKS'], $this->crawlerRepository->crawlerEntryCount(), $pageLimit, true, $pos, 'pos'));
         $crawlers = $this->crawlerRepository->getCrawlerRunEntries($pos, $pageLimit);
         
         $i = 1;

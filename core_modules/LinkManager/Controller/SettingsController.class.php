@@ -103,7 +103,7 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller {
                 if (in_array($settingName, $includeFromSave)) {
                     \Cx\Core\Setting\Controller\Setting::set($settingName, $settingValue);
                     \Cx\Core\Setting\Controller\Setting::update($settingName);
-                    \Message::ok($_ARRAYLANG['TXT_MODULE_LINKMANAGER_SUCCESS_MSG']);
+                    \Message::ok($_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_SUCCESS_MSG']);
                 }
             }
         }
