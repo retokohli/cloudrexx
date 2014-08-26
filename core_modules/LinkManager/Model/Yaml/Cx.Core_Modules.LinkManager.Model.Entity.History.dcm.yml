@@ -1,6 +1,6 @@
 Cx\Core_Modules\LinkManager\Model\Entity\History:
   type: entity
-  table: module_linkmanager_history
+  table: core_module_linkmanager_history
   repositoryClass: Cx\Core_Modules\LinkManager\Model\Repository\HistoryRepository
   id: 
     id:
