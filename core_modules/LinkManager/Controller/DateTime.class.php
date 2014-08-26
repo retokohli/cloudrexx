@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_linkmanager
+ * @subpackage  coremodule_linkmanager
  */
 
 namespace Cx\Core_Modules\LinkManager\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Core_Modules\LinkManager\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_linkmanager
+ * @subpackage  coremodule_linkmanager
  */
 
 class DateTime extends \DateTime {

@@ -1,5 +1,5 @@
 # Step 1: Insert Modul into components table
-INSERT INTO `contrexx_component` (`name`, `type`) VALUES ('LinkManager', 'module');
+INSERT INTO `contrexx_component` (`name`, `type`) VALUES ('LinkManager', 'core_module');
 # Step 2: Insert Module into Modules table
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`) 
 VALUES (95, 'LinkManager', 'Comvation', 'TXT_MODULE_LINKMANAGER_DESCRIPTION', 'y', 0, 0, 1);
@@ -15,7 +15,7 @@ INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`
 
 
 # Create Tables
-CREATE TABLE IF NOT EXISTS `contrexx_module_linkmanager_crawler` (
+CREATE TABLE IF NOT EXISTS `contrexx_core_module_linkmanager_crawler` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lang` tinyint(2) NOT NULL,
   `startTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `contrexx_module_linkmanager_crawler` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE TABLE IF NOT EXISTS `contrexx_module_linkmanager_history` (
+CREATE TABLE IF NOT EXISTS `contrexx_core_module_linkmanager_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lang` tinyint(2) NOT NULL,
   `requestedPath` text COLLATE utf8_unicode_ci NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `contrexx_module_linkmanager_history` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
-CREATE TABLE IF NOT EXISTS `contrexx_module_linkmanager_link` (
+CREATE TABLE IF NOT EXISTS `contrexx_core_module_linkmanager_link` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lang` tinyint(2) NOT NULL,
   `requestedPath` text COLLATE utf8_unicode_ci NOT NULL,
