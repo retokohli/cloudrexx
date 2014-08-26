@@ -1,0 +1,42 @@
+/**
+ * Backend style sheet
+ *
+ * @copyright   Comvation AG
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_linkmanager
+ */
+
+div.paging {
+    float: left;
+    padding: 5px 0px 5px 0px;
+}
+
+#crawler-cover { float: left; width: 100%; margin: 10px; }
+
+#last-run { float: left; width: 40%;}
+
+#crawler-statistics { float: left; width: 60%; }
+
+#last-run table tr th { border-bottom: 1px solid black; }
+
+#ajaxMessageDiv {
+    width: 100px;
+    position: fixed;
+    left: 39%;
+    background-color: #fff;
+    padding: 10px 100px 8px 100px;
+    font-size: 12px;
+    top: 0;
+    border: 1px solid #0A85C8;
+}
+
+span.ajaxMsg { float: left; margin-left: 7px;}
+
+table.lastRun td { border-bottom: 0px;}
+
+.brokenLink { background-color: #FDAE48 !important;}
+
+.brokenLinkImage { background-image: url("../Media/crawlerLink.png"); background-repeat: no-repeat; background-position: center;}
+
+.brokenImage { background-image: url("../Media/crawlerImg.png"); background-repeat: no-repeat; background-position: center;}
