@@ -1,6 +1,6 @@
 Cx\Core_Modules\LinkManager\Model\Entity\Link:
   type: entity
-  table: module_linkmanager_link
+  table: core_module_linkmanager_link
   repositoryClass: Cx\Core_Modules\LinkManager\Model\Repository\LinkRepository
   id: 
     id:
