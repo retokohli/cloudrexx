@@ -182,6 +182,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $objTemplate->setTemplate($pageContent);
                         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
                         
+                        $sessionObj = \cmsSession::getInstance();
                         $objUser = \FWUser::getFWUserObject()->objUser;
                         if (!$objUser->login()) {
                             echo 'Access denied';
@@ -601,6 +602,12 @@ throw new MultiSiteException('Refactor this method!');
 
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         // Event Listener must be registered before preContentLoad event
+
+        // do not register any Event Listeners in case MultiSite mode is not set
+        if (!\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            return;
+        }
+
         $evm = \Env::get('cx')->getEvents();
         $evm->addEvent('model/payComplete');
         $domainEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\DomainEventListener();
