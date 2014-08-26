@@ -2608,6 +2608,65 @@ CREATE TABLE `contrexx_module_knowledge_tags_articles` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_linkmanager_crawler` (
+  `id` int(11) NOT NULL auto_increment,
+  `lang` tinyint(2) NOT NULL,
+  `startTime` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `endTime` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `totalLinks` int(11) NOT NULL,
+  `totalBrokenLinks` int(11) NOT NULL,
+  `runStatus` enum('running','incomplete','completed') NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_linkmanager_history` (
+  `id` int(11) NOT NULL auto_increment,
+  `lang` tinyint(2) NOT NULL,
+  `requestedPath` text NOT NULL,
+  `linkStatusCode` int(1) default NULL,
+  `entryTitle` varchar(255) NOT NULL,
+  `moduleName` varchar(100) default NULL,
+  `moduleAction` varchar(100) default NULL,
+  `moduleParams` varchar(255) default NULL,
+  `detectedTime` timestamp NOT NULL,
+  `flagStatus` tinyint(2) NOT NULL,
+  `updatedBy` int(2) NOT NULL,
+  `requestedLinkType` varchar(25) default NULL,
+  `refererPath` text,
+  `leadPath` text NOT NULL,
+  `linkStatus` tinyint(2) NOT NULL,
+  `linkRecheck` tinyint(2) NOT NULL,
+  `brokenLinkText` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_linkmanager_link` (
+  `id` int(11) NOT NULL auto_increment,
+  `lang` tinyint(2) NOT NULL,
+  `requestedPath` text NOT NULL,
+  `linkStatusCode` int(1) default NULL,
+  `entryTitle` varchar(255) NOT NULL,
+  `moduleName` varchar(100) default NULL,
+  `moduleAction` varchar(100) default NULL,
+  `moduleParams` varchar(255) default NULL,
+  `detectedTime` timestamp NOT NULL,
+  `flagStatus` tinyint(2) NOT NULL,
+  `updatedBy` int(2) NOT NULL,
+  `requestedLinkType` varchar(25) default NULL,
+  `refererPath` text,
+  `leadPath` text,
+  `linkStatus` tinyint(2) NOT NULL,
+  `linkRecheck` tinyint(2) NOT NULL,
+  `brokenLinkText` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_livecam` (
   `id` int(10) unsigned NOT NULL default '1',
   `currentImagePath` varchar(255) NOT NULL default '/webcam/cam1/current.jpg',
