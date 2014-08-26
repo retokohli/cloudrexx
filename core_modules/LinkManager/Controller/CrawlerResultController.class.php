@@ -96,8 +96,8 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         \JS::activate('cx');
         $objCx = \ContrexxJavascript::getInstance();
         $objCx->setVariable(array(
-            'updateSuccessMsg'  => $_ARRAYLANG['TXT_MODULE_LINKMANAGER_UPDATE_SUCCESS_MSG'],
-            'loadingLabel'      => $_ARRAYLANG['TXT_MODULE_LINKMANAGER_LABEL_LOADING']
+            'updateSuccessMsg'  => $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_UPDATE_SUCCESS_MSG'],
+            'loadingLabel'      => $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_LABEL_LOADING']
         ), 'LinkManager');
         
         if (isset($_POST['checkAgain'])) {
@@ -111,7 +111,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         \Cx\Core\Setting\Controller\Setting::init('LinkManager', 'config');
         $pageLimit = \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage');
         $parameter = './index.php?cmd='.$this->moduleName.'&act=crawlerResult';
-        $this->template->setVariable('ENTRIES_PAGING', \Paging::get($parameter, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_LINKS'], $this->linkRepository->brokenLinkCount(), $pageLimit, true, $pos, 'pos'));
+        $this->template->setVariable('ENTRIES_PAGING', \Paging::get($parameter, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_LINKS'], $this->linkRepository->brokenLinkCount(), $pageLimit, true, $pos, 'pos'));
         $brokenLinks = $this->linkRepository->getBrokenLinks($pos, $pageLimit);
         
         $i = 1;
@@ -120,13 +120,13 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
             foreach ($brokenLinks As $brokenLink) {
                 $this->template->setVariable(array(
                     $this->moduleNameLang.'_BROKEN_LINK_ID'          => contrexx_raw2xhtml($brokenLink->getId()),
-                    $this->moduleNameLang.'_BROKEN_LINK_IMAGE'       => $brokenLink->getBrokenLinkText() == $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_IMAGE'] ? 'brokenImage' : 'brokenLinkImage',
+                    $this->moduleNameLang.'_BROKEN_LINK_IMAGE'       => $brokenLink->getBrokenLinkText() == $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE'] ? 'brokenImage' : 'brokenLinkImage',
                     $this->moduleNameLang.'_BROKEN_LINK_TEXT'        => $brokenLink->getBrokenLinkText(),
                     $this->moduleNameLang.'_BROKEN_LINK_URL'         => contrexx_raw2xhtml($brokenLink->getRequestedPath()),
                     $this->moduleNameLang.'_BROKEN_LINK_REFERER'     => contrexx_raw2xhtml($brokenLink->getLeadPath()).'&pos='.$pos.'&csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),
                     $this->moduleNameLang.'_BROKEN_LINK_MODULE_NAME' => contrexx_raw2xhtml($brokenLink->getModuleName()),
                     $this->moduleNameLang.'_BROKEN_LINK_ENTRY_TITLE' => contrexx_raw2xhtml($brokenLink->getEntryTitle()),
-                    $this->moduleNameLang.'_BROKEN_LINK_STATUS_CODE' => $brokenLink->getLinkStatusCode() == 0 ? $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NON_EXISTING_DOMAIN'] : contrexx_raw2xhtml($brokenLink->getLinkStatusCode()),
+                    $this->moduleNameLang.'_BROKEN_LINK_STATUS_CODE' => $brokenLink->getLinkStatusCode() == 0 ? $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NON_EXISTING_DOMAIN'] : contrexx_raw2xhtml($brokenLink->getLinkStatusCode()),
                     $this->moduleNameLang.'_BROKEN_LINK_STATUS'      => $brokenLink->getLinkStatus() ? $brokenLink->getLinkStatus() : 0,
                     $this->moduleNameLang.'_BROKEN_LINK_STATUS_CHECKED' => $brokenLink->getLinkStatus() ? 'checked' : '',
                     $this->moduleNameLang.'_BROKEN_LINK_DETECTED'    => \Cx\Core_Modules\LinkManager\Controller\DateTime::formattedDateAndTime($brokenLink->getDetectedTime()),
@@ -191,7 +191,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
                         if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
                             $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
                             if (!empty($imgSrc)) {
-                                ${$link->getEntryTitle()}[$imgSrc] = $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_IMAGE'];
+                                ${$link->getEntryTitle()}[$imgSrc] = $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE'];
                             }
                         }
                     } 
@@ -199,7 +199,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
                     foreach($html->find('a') as $element) {
                         $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $link->getRefererPath());
                         if (!empty($aHref)) {
-                            $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_LINK'];
+                            $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
                             ${$link->getEntryTitle()}[$aHref] = $linkText;
                         }
                     }
@@ -248,7 +248,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         }
         $this->em->flush();
         
-        \Message::ok($_ARRAYLANG['TXT_MODULE_LINKMANAGER_SUCCESS_MSG']);
+        \Message::ok($_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_SUCCESS_MSG']);
     }
     
     /**

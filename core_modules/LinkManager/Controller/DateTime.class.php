@@ -34,7 +34,7 @@ class DateTime extends \DateTime {
     {
         global $_ARRAYLANG;
         
-        return $time->format('d.m.Y - H.i').' '.$_ARRAYLANG['TXT_MODULE_LINKMANAGER_LABEL_CLOCK'];
+        return $time->format('d.m.Y - H.i').' '.$_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_LABEL_CLOCK'];
     }
     
     /**

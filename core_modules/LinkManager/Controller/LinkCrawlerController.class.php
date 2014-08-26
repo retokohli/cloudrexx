@@ -253,7 +253,7 @@ class LinkCrawlerController {
         $_ARRAYLANG = $objInit->loadLanguageData('LinkManager');
 
         $refererUrlResponse = $this->checkUrlStatus($url, $request);
-        $this->storeUrlInfos($request, $url, $url, 0, $referPageId, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_LINK']);
+        $this->storeUrlInfos($request, $url, $url, 0, $referPageId, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK']);
         if ($refererUrlResponse) {
             $refererUrlBody = $refererUrlResponse->getBody();
             $html           = \str_get_html($refererUrlBody);
@@ -263,7 +263,7 @@ class LinkCrawlerController {
                 foreach ($html->find(ASCMS_LINKMANAGER_CONTENT_HREF_QUERY) As $element) {
                     $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $url);
                     if (!empty($aHref) && $this->isLinkExists($aHref, true)) {
-                        $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_LINK'];
+                        $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
                         $this->storeUrlInfos($request, $aHref, $url, 0, $referPageId, $linkText);
                     }
                 }
@@ -271,7 +271,7 @@ class LinkCrawlerController {
                     if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
                         $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
                         if (!empty($imgSrc) && $this->isLinkExists($imgSrc, true)) {
-                            $this->storeUrlInfos($request, $imgSrc, $url, 1, $referPageId, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_IMAGE']);
+                            $this->storeUrlInfos($request, $imgSrc, $url, 1, $referPageId, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE']);
                         }
                     }
                 }
@@ -288,7 +288,7 @@ class LinkCrawlerController {
                     if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
                         $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
                         if (!empty($imgSrc) && $this->isLinkExists($imgSrc)) {
-                            $this->storeUrlInfos($request, $imgSrc, $url, 1, $referPageId, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_IMAGE']);
+                            $this->storeUrlInfos($request, $imgSrc, $url, 1, $referPageId, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE']);
                         }
                     }
                 } 
@@ -297,7 +297,7 @@ class LinkCrawlerController {
                 foreach($html->find('a') as $element) {
                     $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $url);
                     if (!empty($aHref) && $this->isLinkExists($aHref)) {
-                        $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_LINK'];
+                        $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
                         $this->storeUrlInfos($request, $aHref, $url, 0, $referPageId, $linkText);
                     }
                 }
