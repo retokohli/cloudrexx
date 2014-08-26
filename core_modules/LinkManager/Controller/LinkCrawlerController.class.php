@@ -413,7 +413,7 @@ class LinkCrawlerController {
             }
 
             if (!empty($referPageId)) {
-                $backendReferUrl = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/cadmin/index.php?cmd=content&page='.$referPageId;
+                $backendReferUrl = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/cadmin/index.php?cmd=ContentManager&page='.$referPageId;
             }
             //save the link
             $linkInputValues = array(
