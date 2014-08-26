@@ -9,7 +9,7 @@
  * @subpackage  module_linkmanager
  */
 
-namespace Cx\Modules\LinkManager\Controller;
+namespace Cx\Core_Modules\LinkManager\Controller;
 
 /**
  * The class SettingsController for setting the entries count per page
@@ -94,15 +94,15 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        \SettingDb::init('LinkManager', 'config');
+        \Cx\Core\Setting\Controller\Setting::init('LinkManager', 'config');
         //get post values
         $settings = isset($_POST['setting']) ? $_POST['setting'] : array();
         if (isset($_POST['save'])) {
             $includeFromSave = array('entriesPerPage');
             foreach($settings As $settingName => $settingValue) {
                 if (in_array($settingName, $includeFromSave)) {
-                    \SettingDb::set($settingName, $settingValue);
-                    \SettingDb::update($settingName);
+                    \Cx\Core\Setting\Controller\Setting::set($settingName, $settingValue);
+                    \Cx\Core\Setting\Controller\Setting::update($settingName);
                     \Message::ok($_ARRAYLANG['TXT_MODULE_LINKMANAGER_SUCCESS_MSG']);
                 }
             }
@@ -110,7 +110,7 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller {
         
         //get the settings values from DB
         $this->template->setVariable(array(
-            $this->moduleNameLang.'_ENTRIES_PER_PAGE'   => \SettingDb::getValue('entriesPerPage')
+            $this->moduleNameLang.'_ENTRIES_PER_PAGE'   => \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage')
         ));
     }        
 }

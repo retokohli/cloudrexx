@@ -9,7 +9,7 @@
  * @subpackage  module_linkmanager
  */
 
-namespace Cx\Modules\LinkManager\Controller;
+namespace Cx\Core_Modules\LinkManager\Controller;
 
 /**
  * LinkCrawlerControllerException
@@ -51,19 +51,19 @@ class LinkCrawlerController {
     
     /**
      * CrawlerRepository instance 
-     * @var \Cx\Modules\LinkManager\Model\Repository\CrawlerRepository $crawlerRepo
+     * @var \Cx\Core_Modules\LinkManager\Model\Repository\CrawlerRepository $crawlerRepo
      */
     private $crawlerRepo  = null;
     
     /**
      * LinkRepository instance 
-     * @var \Cx\Modules\LinkManager\Model\Repository\LinkRepository $linkRepo
+     * @var \Cx\Core_Modules\LinkManager\Model\Repository\LinkRepository $linkRepo
      */
     private $linkRepo     = null;
     
     /**
      * HistoryRepository instance 
-     * @var \Cx\Modules\LinkManager\Model\Repository\HistoryRepository $historyRepo
+     * @var \Cx\Core_Modules\LinkManager\Model\Repository\HistoryRepository $historyRepo
      */
     private $historyRepo  = null;
     
@@ -98,9 +98,9 @@ class LinkCrawlerController {
         $this->em        = \Env::em();
         if ($this->em) {
             $this->pageRepo    = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $this->crawlerRepo = $this->em->getRepository('Cx\Modules\LinkManager\Model\Entity\Crawler');
-            $this->linkRepo    = $this->em->getRepository('Cx\Modules\LinkManager\Model\Entity\Link');
-            $this->historyRepo = $this->em->getRepository('Cx\Modules\LinkManager\Model\Entity\History');
+            $this->crawlerRepo = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Crawler');
+            $this->linkRepo    = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Link');
+            $this->historyRepo = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\History');
         }
         
         \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/SimpleHtmlDom.php');
@@ -261,7 +261,7 @@ class LinkCrawlerController {
             if ($html) {
                 //First check the page content href and src
                 foreach ($html->find(ASCMS_LINKMANAGER_CONTENT_HREF_QUERY) As $element) {
-                    $aHref = \Cx\Modules\LinkManager\Controller\Url::checkPath($element->href, $url);
+                    $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $url);
                     if (!empty($aHref) && $this->isLinkExists($aHref, true)) {
                         $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_LINK'];
                         $this->storeUrlInfos($request, $aHref, $url, 0, $referPageId, $linkText);
@@ -269,7 +269,7 @@ class LinkCrawlerController {
                 }
                 foreach ($html->find(ASCMS_LINKMANAGER_CONTENT_IMG_QUERY) As $element) {
                     if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
-                        $imgSrc = \Cx\Modules\LinkManager\Controller\Url::checkPath($element->src, null);
+                        $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
                         if (!empty($imgSrc) && $this->isLinkExists($imgSrc, true)) {
                             $this->storeUrlInfos($request, $imgSrc, $url, 1, $referPageId, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_IMAGE']);
                         }
@@ -286,7 +286,7 @@ class LinkCrawlerController {
                 // Find all images 
                 foreach($html->find('img') as $element) {
                     if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
-                        $imgSrc = \Cx\Modules\LinkManager\Controller\Url::checkPath($element->src, null);
+                        $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
                         if (!empty($imgSrc) && $this->isLinkExists($imgSrc)) {
                             $this->storeUrlInfos($request, $imgSrc, $url, 1, $referPageId, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_IMAGE']);
                         }
@@ -295,7 +295,7 @@ class LinkCrawlerController {
                 
                 // Find all links 
                 foreach($html->find('a') as $element) {
-                    $aHref = \Cx\Modules\LinkManager\Controller\Url::checkPath($element->href, $url);
+                    $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $url);
                     if (!empty($aHref) && $this->isLinkExists($aHref)) {
                         $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_LINK'];
                         $this->storeUrlInfos($request, $aHref, $url, 0, $referPageId, $linkText);
@@ -396,7 +396,7 @@ class LinkCrawlerController {
         
         if ($response) {
             
-            $internalFlag = \Cx\Modules\LinkManager\Controller\Url::isInternalUrl($requestedUrl);
+            $internalFlag = \Cx\Core_Modules\LinkManager\Controller\Url::isInternalUrl($requestedUrl);
             $flagStatus   = ($urlStatus == '200') ? 1 : 0;
             $linkType     = $internalFlag ? 'internal' : 'external';
         
@@ -526,7 +526,7 @@ class LinkCrawlerController {
      * Add and edit the crawler details
      * 
      * @param array $inputArray
-     * @param \Cx\Modules\LinkManager\Model\Entity\Crawler $crawler
+     * @param \Cx\Core_Modules\LinkManager\Model\Entity\Crawler $crawler
      * 
      * @return integer
      */
@@ -538,7 +538,7 @@ class LinkCrawlerController {
             }
             
             if (empty($crawler)) {
-                $crawler  = new \Cx\Modules\LinkManager\Model\Entity\Crawler;
+                $crawler  = new \Cx\Core_Modules\LinkManager\Model\Entity\Crawler;
             }
             $crawler->updateFromArray($inputArray);
         
@@ -556,7 +556,7 @@ class LinkCrawlerController {
      * Add and edit the link details
      * 
      * @param array $inputArray
-     * @param \Cx\Modules\LinkManager\Model\Entity\Link $link
+     * @param \Cx\Core_Modules\LinkManager\Model\Entity\Link $link
      */
     public function modifyLink(array $inputArray = array(), $link = '')
     {
@@ -566,7 +566,7 @@ class LinkCrawlerController {
             }
             
             if (empty($link)) {
-                $link = new \Cx\Modules\LinkManager\Model\Entity\Link;
+                $link = new \Cx\Core_Modules\LinkManager\Model\Entity\Link;
             }
             $link->updateFromArray($inputArray);
         
@@ -582,7 +582,7 @@ class LinkCrawlerController {
      * Add and Edit the history link details
      * 
      * @param array $inputArray
-     * @param \Cx\Modules\LinkManager\Model\Entity\History $history
+     * @param \Cx\Core_Modules\LinkManager\Model\Entity\History $history
      */
     public function modifyHistory(array $inputArray = array(), $history = '')
     {
@@ -592,7 +592,7 @@ class LinkCrawlerController {
             }
             
             if (empty($history)) {
-                $history = new \Cx\Modules\LinkManager\Model\Entity\History;
+                $history = new \Cx\Core_Modules\LinkManager\Model\Entity\History;
             }
             $history->updateFromArray($inputArray);
         

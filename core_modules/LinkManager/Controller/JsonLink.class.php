@@ -1,18 +1,18 @@
 <?php
 
 /**
- * JSON Adapter for Cx\Modules\LinkManager\Model\Entity\Link
+ * JSON Adapter for Cx\Core_Modules\LinkManager\Model\Entity\Link
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  module_json
  */
 
-namespace Cx\Modules\LinkManager\Controller;
+namespace Cx\Core_Modules\LinkManager\Controller;
 use \Cx\Core\Json\JsonAdapter;
 
 /**
- * JSON Adapter for Cx\Modules\LinkManager\Model\Entity\Link
+ * JSON Adapter for Cx\Core_Modules\LinkManager\Model\Entity\Link
  * the class JsonLink handles, the link status whether the link is resolved or not.
  * 
  * @copyright   Comvation AG
@@ -29,7 +29,7 @@ class JsonLink implements JsonAdapter {
     
     /**
      * Reference to the Doctrine NodeRepo
-     * @var \Cx\Modules\LinkManager\Model\Repository\LinkRepository
+     * @var \Cx\Core_Modules\LinkManager\Model\Repository\LinkRepository
      */
     private $linkRepo = null;
     
@@ -47,7 +47,7 @@ class JsonLink implements JsonAdapter {
     public function __construct() {
         $this->em = \Env::em();
         if ($this->em) {
-            $this->linkRepo = $this->em->getRepository('\Cx\Modules\LinkManager\Model\Entity\Link');
+            $this->linkRepo = $this->em->getRepository('\Cx\Core_Modules\LinkManager\Model\Entity\Link');
         }
     }
     
@@ -87,7 +87,7 @@ class JsonLink implements JsonAdapter {
         $solvedLinkStat = isset($_GET['status']) ? $_GET['status'] : 0;
         
         $result  = array();
-        $objUser = new \Cx\Modules\LinkManager\Controller\User();
+        $objUser = new \Cx\Core_Modules\LinkManager\Controller\User();
         if ($objUser) {
             $user = $objUser->getUpdatedUserName(0, 1);
         }

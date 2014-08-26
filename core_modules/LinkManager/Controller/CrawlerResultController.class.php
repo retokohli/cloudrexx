@@ -9,7 +9,7 @@
  * @subpackage  module_linkmanager
  */
 
-namespace Cx\Modules\LinkManager\Controller;
+namespace Cx\Core_Modules\LinkManager\Controller;
 
 /**
  * 
@@ -36,13 +36,13 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
     
     /**
      * LinkRepository instance 
-     * @var \Cx\Modules\LinkManager\Model\Repository\LinkRepository $linkRepository
+     * @var \Cx\Core_Modules\LinkManager\Model\Repository\LinkRepository $linkRepository
      */
     protected $linkRepository;
     
     /**
      * CrawlerRepository instance 
-     * @var \Cx\Modules\LinkManager\Model\Repository\CrawlerRepository $crawlerRepository
+     * @var \Cx\Core_Modules\LinkManager\Model\Repository\CrawlerRepository $crawlerRepository
      */
     protected $crawlerRepository;
     
@@ -74,11 +74,11 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         
         $this->template          = $template;
         $this->em                = $this->cx->getDb()->getEntityManager();
-        $this->linkRepository    = $this->em->getRepository('Cx\Modules\LinkManager\Model\Entity\Link');
-        $this->crawlerRepository = $this->em->getRepository('Cx\Modules\LinkManager\Model\Entity\Crawler');
+        $this->linkRepository    = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Link');
+        $this->crawlerRepository = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Crawler');
         
         //register backend js
-        \JS::registerJS('modules/LinkManager/View/Script/LinkManagerBackend.js');
+        \JS::registerJS('core_modules/LinkManager/View/Script/LinkManagerBackend.js');
         \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/SimpleHtmlDom.php');
         
         $this->showCrawlerResult();
@@ -108,14 +108,14 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         //get parameters
         $pos = isset($_GET['pos']) ? $_GET['pos'] : 0;
         //set the settings value from DB
-        \SettingDb::init('LinkManager', 'config');
-        $pageLimit = \SettingDb::getValue('entriesPerPage');
+        \Cx\Core\Setting\Controller\Setting::init('LinkManager', 'config');
+        $pageLimit = \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage');
         $parameter = './index.php?cmd='.$this->moduleName.'&act=crawlerResult';
         $this->template->setVariable('ENTRIES_PAGING', \Paging::get($parameter, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_LINKS'], $this->linkRepository->brokenLinkCount(), $pageLimit, true, $pos, 'pos'));
         $brokenLinks = $this->linkRepository->getBrokenLinks($pos, $pageLimit);
         
         $i = 1;
-        $objUser = new \Cx\Modules\LinkManager\Controller\User();
+        $objUser = new \Cx\Core_Modules\LinkManager\Controller\User();
         if ($brokenLinks && $brokenLinks->count() > 0) {
             foreach ($brokenLinks As $brokenLink) {
                 $this->template->setVariable(array(
@@ -129,7 +129,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
                     $this->moduleNameLang.'_BROKEN_LINK_STATUS_CODE' => $brokenLink->getLinkStatusCode() == 0 ? $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NON_EXISTING_DOMAIN'] : contrexx_raw2xhtml($brokenLink->getLinkStatusCode()),
                     $this->moduleNameLang.'_BROKEN_LINK_STATUS'      => $brokenLink->getLinkStatus() ? $brokenLink->getLinkStatus() : 0,
                     $this->moduleNameLang.'_BROKEN_LINK_STATUS_CHECKED' => $brokenLink->getLinkStatus() ? 'checked' : '',
-                    $this->moduleNameLang.'_BROKEN_LINK_DETECTED'    => \Cx\Modules\LinkManager\Controller\DateTime::formattedDateAndTime($brokenLink->getDetectedTime()),
+                    $this->moduleNameLang.'_BROKEN_LINK_DETECTED'    => \Cx\Core_Modules\LinkManager\Controller\DateTime::formattedDateAndTime($brokenLink->getDetectedTime()),
                     $this->moduleNameLang.'_BROKEN_LINK_UPDATED_BY'  => $brokenLink->getUpdatedBy() ? contrexx_raw2xhtml($objUser->getUpdatedUserName($brokenLink->getUpdatedBy(), 0)) : '',
                     $this->moduleNameLang.'_CRAWLER_BROKEN_LINK'     => ($brokenLink->getLinkRecheck() && $brokenLink->getLinkStatus()) ? 'brokenLink' : '',
                     $this->moduleNameLang.'_CRAWLER_RUN_ROW'         => 'row'.(++$i % 2 + 1),
@@ -189,7 +189,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
                     // Find all images 
                     foreach($html->find('img') as $element) {
                         if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
-                            $imgSrc = \Cx\Modules\LinkManager\Controller\Url::checkPath($element->src, null);
+                            $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
                             if (!empty($imgSrc)) {
                                 ${$link->getEntryTitle()}[$imgSrc] = $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_IMAGE'];
                             }
@@ -197,7 +197,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
                     } 
                     // Find all links 
                     foreach($html->find('a') as $element) {
-                        $aHref = \Cx\Modules\LinkManager\Controller\Url::checkPath($element->href, $link->getRefererPath());
+                        $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $link->getRefererPath());
                         if (!empty($aHref)) {
                             $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_LINK'];
                             ${$link->getEntryTitle()}[$aHref] = $linkText;
@@ -278,7 +278,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
                     }
                     
                     $objFWUser    = \FWUser::getFWUserObject();
-                    $internalFlag = \Cx\Modules\LinkManager\Controller\Url::isInternalUrl($link);
+                    $internalFlag = \Cx\Core_Modules\LinkManager\Controller\Url::isInternalUrl($link);
                     $flagStatus   = ($urlStatus == '200') ? 1 : 0;
                     $linkType     = $internalFlag ? 'internal' : 'external';
                 
@@ -304,7 +304,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
      * Add and edit the link details
      * 
      * @param array $inputArray
-     * @param \Cx\Modules\LinkManager\Model\Entity\Link $link
+     * @param \Cx\Core_Modules\LinkManager\Model\Entity\Link $link
      */
     public function modifyLink(array $inputArray = array(), $link = '')
     {
@@ -314,7 +314,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
             }
             
             if (empty($link)) {
-                $link = new \Cx\Modules\LinkManager\Model\Entity\Link;
+                $link = new \Cx\Core_Modules\LinkManager\Model\Entity\Link;
             }
         
             $link->updateFromArray($inputArray);        

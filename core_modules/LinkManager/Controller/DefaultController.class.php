@@ -9,7 +9,7 @@
  * @subpackage  module_linkmanager
  */
 
-namespace Cx\Modules\LinkManager\Controller;
+namespace Cx\Core_Modules\LinkManager\Controller;
 
 /**
  * The class DefaultController for display the latest run details and display all the crawler runs
@@ -35,7 +35,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
     
     /**
      * CrawlerRepository instance 
-     * @var \Cx\Modules\LinkManager\Model\Repository\CrawlerRepository $crawlerRepository
+     * @var \Cx\Core_Modules\LinkManager\Model\Repository\CrawlerRepository $crawlerRepository
      */
     protected $crawlerRepository;
     
@@ -67,7 +67,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
         
         $this->template          = $template;
         $this->em                = $this->cx->getDb()->getEntityManager();
-        $this->crawlerRepository = $this->em->getRepository('Cx\Modules\LinkManager\Model\Entity\Crawler');
+        $this->crawlerRepository = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Crawler');
         
         $this->showCrawlerRuns();
     }
@@ -85,9 +85,9 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
         $lastRunResult = $this->crawlerRepository->getLatestRunDetails();
         if ($lastRunResult) {
             $this->template->setVariable(array(
-                $this->moduleNameLang.'_LAST_RUN_STARTTIME'       => \Cx\Modules\LinkManager\Controller\DateTime::formattedDateAndTime($lastRunResult[0]->getStartTime()),
-                $this->moduleNameLang.'_LAST_RUN_ENDTIME'         => \Cx\Modules\LinkManager\Controller\DateTime::formattedDateAndTime($lastRunResult[0]->getEndTime()),
-                $this->moduleNameLang.'_LAST_RUN_DURATION'        => \Cx\Modules\LinkManager\Controller\DateTime::diffTime($lastRunResult[0]->getStartTime(), $lastRunResult[0]->getEndTime()),
+                $this->moduleNameLang.'_LAST_RUN_STARTTIME'       => \Cx\Core_Modules\LinkManager\Controller\DateTime::formattedDateAndTime($lastRunResult[0]->getStartTime()),
+                $this->moduleNameLang.'_LAST_RUN_ENDTIME'         => \Cx\Core_Modules\LinkManager\Controller\DateTime::formattedDateAndTime($lastRunResult[0]->getEndTime()),
+                $this->moduleNameLang.'_LAST_RUN_DURATION'        => \Cx\Core_Modules\LinkManager\Controller\DateTime::diffTime($lastRunResult[0]->getStartTime(), $lastRunResult[0]->getEndTime()),
                 $this->moduleNameLang.'_LAST_RUN_TOTAL_LINKS'     => $lastRunResult[0]->getTotalLinks(),
                 $this->moduleNameLang.'_LAST_RUN_BROKEN_LINKS'    => $lastRunResult[0]->getTotalBrokenLinks(),
                 ));
@@ -102,8 +102,8 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
         $pos       = isset($_GET['pos']) ? $_GET['pos'] : 0;
         $langArray = \FWLanguage::getLanguageArray();
         //set the settings value from DB
-        \SettingDb::init('LinkManager', 'config');
-        $pageLimit = \SettingDb::getValue('entriesPerPage');
+        \Cx\Core\Setting\Controller\Setting::init('LinkManager', 'config');
+        $pageLimit = \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage');
         $parameter = './index.php?cmd='.$this->moduleName;
         $this->template->setVariable('ENTRIES_PAGING', \Paging::get($parameter, $_ARRAYLANG['TXT_MODULE_LINKMANAGER_LINKS'], $this->crawlerRepository->crawlerEntryCount(), $pageLimit, true, $pos, 'pos'));
         $crawlers = $this->crawlerRepository->getCrawlerRunEntries($pos, $pageLimit);
@@ -114,9 +114,9 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
                 $this->template->setVariable(array(
                     $this->moduleNameLang.'_CRAWLER_RUN_ID'            => $crawler->getId(),
                     $this->moduleNameLang.'_CRAWLER_RUN_LANGUAGE'      => $langArray[$crawler->getLang()]['name'],
-                    $this->moduleNameLang.'_CRAWLER_RUN_STARTTIME'     => \Cx\Modules\LinkManager\Controller\DateTime::formattedDateAndTime($crawler->getStartTime()),
-                    $this->moduleNameLang.'_CRAWLER_RUN_ENDTIME'       => \Cx\Modules\LinkManager\Controller\DateTime::formattedDateAndTime($crawler->getEndTime()),
-                    $this->moduleNameLang.'_CRAWLER_RUN_DURATION'      => \Cx\Modules\LinkManager\Controller\DateTime::diffTime($crawler->getStartTime(), $crawler->getEndTime()),
+                    $this->moduleNameLang.'_CRAWLER_RUN_STARTTIME'     => \Cx\Core_Modules\LinkManager\Controller\DateTime::formattedDateAndTime($crawler->getStartTime()),
+                    $this->moduleNameLang.'_CRAWLER_RUN_ENDTIME'       => \Cx\Core_Modules\LinkManager\Controller\DateTime::formattedDateAndTime($crawler->getEndTime()),
+                    $this->moduleNameLang.'_CRAWLER_RUN_DURATION'      => \Cx\Core_Modules\LinkManager\Controller\DateTime::diffTime($crawler->getStartTime(), $crawler->getEndTime()),
                     $this->moduleNameLang.'_CRAWLER_RUN_TOTAL_LINKS'   => $crawler->getTotalLinks(),
                     $this->moduleNameLang.'_CRAWLER_RUN_BROKEN_LINKS'  => $crawler->getTotalBrokenLinks(),
                     $this->moduleNameLang.'_CRAWLER_RUN_STATUS'        => ucfirst($crawler->getRunStatus()),
