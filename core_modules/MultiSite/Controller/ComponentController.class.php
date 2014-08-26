@@ -79,7 +79,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $objInit, $_ARRAYLANG;
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-
+        \DBG::activate();
         switch ($command) {
             case 'MultiSite':
                 switch ($subcommand) {
@@ -194,53 +194,33 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             break;
                         }
                         
-                        $status = isset($_GET['status']) ? contrexx_input2raw($_GET['status']) : '';
+                        //Get the input values
+                        $status         = isset($_GET['status']) ? contrexx_input2raw($_GET['status']) : '';
                         $excludeProduct = isset($_GET['exclude_product']) ? array_map('contrexx_input2raw', $_GET['exclude_product']) : '';
                         $includeProduct = isset($_GET['include_product']) ? array_map('contrexx_input2raw', $_GET['include_product']) : '';
+                        //Get the orders based on CRM contact id and get params
                         $orderRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order');
-                        $orders    = $orderRepo->findBy(array('contactId' => $crmContactId));
-                        foreach ($orders as $order) {
-                            foreach ($order->getSubscriptions() as $subscription) {
-                                $website = $subscription->getProductEntity();
-                                $product = $subscription->getProduct();
-                                $expireDate = $subscription->getExpirationDate();
-                                $now = new \DateTime('now');   
-                                switch($status) {
-                                    case 'valid':
-                                        if ($expireDate > $now) {
-                                            //get active sites
-                                            if (!empty($excludeProduct) && !in_array($product->getId(), $excludeProduct)) {
-                                                $objTemplate->setVariable(array(
-                                                    'MULTISITE_ACTIVE_SITE_NAME'         => $website->getName(),
-                                                    'MULTISITE_ACTIVE_SITE_PLAN'         => $product->getName(),
-                                                    'MULTISITE_ACTIVE_SITE_INVOICE_DATE' => $subscription->getRenewalDate()->format('d.m.Y')
-                                                ));
-                                                $objTemplate->parse('showActiveSite');
-                                            }
-                                            //get trial sites
-                                            if (!empty($includeProduct) && in_array($product->getId(), $includeProduct)) {
-                                                $objTemplate->setVariable(array(
-                                                    'MULTISITE_TRIAL_SITE_NAME'         => $website->getName(),
-                                                    'MULTISITE_TRIAL_SITE_PLAN'         => $product->getName(),
-                                                    'MULTISITE_TRIAL_SITE_EXPIRE_DATE'  => $expireDate->format('d.m.Y')
-                                                ));
-                                                $objTemplate->parse('showTrialSite');
-                                            }
-                                        }
-                                        break;
-                                    case 'expired':
-                                        if ($expireDate <= $now) {
-                                            $objTemplate->setVariable(array(
-                                                'MULTISITE_EXPIRED_SITE_NAME'   => $website->getName(),
-                                                'MULTISITE_EXPIRED_SITE_PLAN'   => $product->getName(),
-                                                'MULTISITE_EXPIRED_SITE_DATE'   => $expireDate->format('d.m.Y')
-                                            ));
-                                            $objTemplate->parse('showExpiredSite');
-                                        }
-                                        break;
+                        $orders    = $orderRepo->getOrdersByCriteria($crmContactId, $status, $excludeProduct, $includeProduct);
+                        
+                        //parse the Site Details
+                        if (!empty($orders)) {
+                            foreach ($orders as $order) {
+                                foreach ($order->getSubscriptions() as $subscription) {
+                                    $website = $subscription->getProductEntity();
+                                    $product = $subscription->getProduct();
+                                    $objTemplate->setVariable(array(
+                                        'MULTISITE_WEBSITE_NAME' => $website->getName(),
+                                        'MULTISITE_WEBSITE_PLAN' => $product->getName(),
+                                        'MULTISITE_WEBSITE_INVOICE_DATE' => $subscription->getRenewalDate()->format('d.m.Y'),
+                                        'MULTISITE_WEBSITE_EXPIRE_DATE' => $subscription->getExpirationDate()->format('d.m.Y')
+                                    ));
+                                    $objTemplate->parse('showSiteDetails');
                                 }
                             }
+                        } else {
+                            $objTemplate->touchBlock('noSiteFound');
                         }
+
                         echo $objTemplate->get();
                         break;
                     default:
