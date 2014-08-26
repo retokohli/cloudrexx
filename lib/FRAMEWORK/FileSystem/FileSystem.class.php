@@ -617,7 +617,7 @@ class FileSystem
      * @param   string    $folder_path    The path of the folder
      * @return  boolean                   True on success, false otherwise
      */
-    static function make_folder($folder_path)
+    static function make_folder($folder_path, $recursive = false)
     {
         self::path_relative_to_root($folder_path);
         if (self::exists($folder_path)) {
@@ -627,13 +627,13 @@ class FileSystem
             }
 //DBG::log("File::make_folder($folder_path): FAIL, a file of the name $folder_path exists already<br />");
             return false;
-        }
+        } 
 
         \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path));
-        @mkdir(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path);
+        @mkdir(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path, self::CHMOD_FOLDER, $recursive ? true : false);
         if (!self::exists($folder_path)) {
 //DBG::log("File::make_folder($folder_path): FAIL, cannot create folder ".\Env::get('cx')->getWebsiteDocumentRootPath()."/$folder_path<br />");
-            if (!self::make_folder_ftp($folder_path)) {
+            if (!self::make_folder_ftp($folder_path, $recursive)) {
 //DBG::log("File::make_folder($folder_path): FAIL, cannot create folder FTP ".\Env::get('cx')->getWebsiteDocumentRootPath()."/$folder_path<br />");
                 return false;
             }
@@ -662,7 +662,7 @@ class FileSystem
      * @return  boolean                   True on success, false otherwise
      * @access  private
      */
-    private static function make_folder_ftp($folder_path)
+    private static function make_folder_ftp($folder_path, $recursive = false)
     {
         global $_FTPCONFIG;
 
@@ -674,6 +674,16 @@ class FileSystem
         }
         @ftp_mkdir(self::$connection, self::$ftpPath.'/'.$folder_path);
         if (!self::exists($folder_path)) {
+            if ($recursive) {
+                @ftp_chdir(self::$connection, self::$ftpPath);
+                $parts = explode('/',$folder_path);
+                foreach($parts as $part){
+                   if(!@ftp_chdir(self::$connection, $part)){
+                      @ftp_mkdir(self::$connection, $part);
+                      @ftp_chdir(self::$connection, $part);
+                   }
+                }
+            }            
 //DBG::log("File::make_folder_ftp($folder_path): Failed to create folder ".self::$ftpPath."/$folder_path<br />");
             return false;
         }
