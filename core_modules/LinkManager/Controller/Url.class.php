@@ -8,7 +8,7 @@
  * @subpackage  module_linkmanager
  */
 
-namespace Cx\Modules\LinkManager\Controller;
+namespace Cx\Core_Modules\LinkManager\Controller;
 
 /**
  * The class Url for checking the link is internal or external and for checking the url is correct or not

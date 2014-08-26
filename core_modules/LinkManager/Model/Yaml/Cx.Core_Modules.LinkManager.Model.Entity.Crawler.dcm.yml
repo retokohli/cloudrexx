@@ -1,7 +1,7 @@
-Cx\Modules\LinkManager\Model\Entity\Crawler:
+Cx\Core_Modules\LinkManager\Model\Entity\Crawler:
   type: entity
   table: module_linkmanager_crawler
-  repositoryClass: Cx\Modules\LinkManager\Model\Repository\CrawlerRepository
+  repositoryClass: Cx\Core_Modules\LinkManager\Model\Repository\CrawlerRepository
   id: 
     id:
       type: integer

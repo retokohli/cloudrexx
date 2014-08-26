@@ -1,7 +1,7 @@
-Cx\Modules\LinkManager\Model\Entity\Link:
+Cx\Core_Modules\LinkManager\Model\Entity\Link:
   type: entity
   table: module_linkmanager_link
-  repositoryClass: Cx\Modules\LinkManager\Model\Repository\LinkRepository
+  repositoryClass: Cx\Core_Modules\LinkManager\Model\Repository\LinkRepository
   id: 
     id:
       type: integer

@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  module_linkmanager
 */
-namespace Cx\Modules\LinkManager\Model\Entity;
+namespace Cx\Core_Modules\LinkManager\Model\Entity;
 
 /**
  * Crawler Entity

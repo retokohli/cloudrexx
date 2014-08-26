@@ -9,7 +9,7 @@
  * @subpackage  module_linkmanager
  */
 
-namespace Cx\Modules\LinkManager\Model\Repository;
+namespace Cx\Core_Modules\LinkManager\Model\Repository;
 
 /**
  * The class CrawlerRepository for getting the last run details and get all the crawler run details from db
@@ -32,7 +32,7 @@ class CrawlerRepository extends \Doctrine\ORM\EntityRepository {
     {   
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('crawler')
-            ->from('Cx\Modules\LinkManager\Model\Entity\Crawler', 'crawler')
+            ->from('Cx\Core_Modules\LinkManager\Model\Entity\Crawler', 'crawler')
             ->where("crawler.lang = :lang")
             ->orderBy("crawler.id", "DESC")
             ->getDql();
@@ -51,7 +51,7 @@ class CrawlerRepository extends \Doctrine\ORM\EntityRepository {
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('crawler')
-           ->from('Cx\Modules\LinkManager\Model\Entity\Crawler', 'crawler')
+           ->from('Cx\Core_Modules\LinkManager\Model\Entity\Crawler', 'crawler')
            ->where('crawler.runStatus != :runStatus')
            ->orderBy("crawler.id", "DESC")
            ->getDql();
@@ -84,7 +84,7 @@ class CrawlerRepository extends \Doctrine\ORM\EntityRepository {
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('crawler')
-            ->from('Cx\Modules\LinkManager\Model\Entity\Crawler', 'crawler')
+            ->from('Cx\Core_Modules\LinkManager\Model\Entity\Crawler', 'crawler')
             ->orderBy("crawler.id", "DESC")
             ->getQuery();
         $qb->setFirstResult($pos)->setMaxResults($pageLimit);

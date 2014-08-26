@@ -8,7 +8,7 @@
  * @subpackage  modules_skeleton
  */
 
-namespace Cx\Modules\LinkManager\Controller;
+namespace Cx\Core_Modules\LinkManager\Controller;
 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
@@ -77,7 +77,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             new $controllerName($this->getSystemComponentController(), $this->cx, $this->template, $this->submenuName);
         } else { 
             // instantiate the default View Controller
-            new \Cx\Modules\LinkManager\Controller\DefaultController($this->getSystemComponentController(), $this->cx, $this->template);
+            new \Cx\Core_Modules\LinkManager\Controller\DefaultController($this->getSystemComponentController(), $this->cx, $this->template);
         }
     }   
     

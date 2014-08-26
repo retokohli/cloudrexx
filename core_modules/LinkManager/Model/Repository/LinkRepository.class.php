@@ -9,7 +9,7 @@
  * @subpackage  module_linkmanager
  */
 
-namespace Cx\Modules\LinkManager\Model\Repository;
+namespace Cx\Core_Modules\LinkManager\Model\Repository;
 
 /**
  * LinkRepository
@@ -33,7 +33,7 @@ class LinkRepository extends \Doctrine\ORM\EntityRepository {
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('link')
-           ->from('Cx\Modules\LinkManager\Model\Entity\Link', 'link')     
+           ->from('Cx\Core_Modules\LinkManager\Model\Entity\Link', 'link')     
            ->where('link.flagStatus = :flagStatus')
            ->orderBy('link.id', 'DESC')
            ->getDql();
@@ -76,7 +76,7 @@ class LinkRepository extends \Doctrine\ORM\EntityRepository {
     public function getSelectedLinks($ids = array())
     {
         try {
-            $query = $this->getEntityManager()->createQuery('SELECT l FROM Cx\Modules\LinkManager\Model\Entity\Link l WHERE l.id IN ('.implode(',', $ids).')');
+            $query = $this->getEntityManager()->createQuery('SELECT l FROM Cx\Core_Modules\LinkManager\Model\Entity\Link l WHERE l.id IN ('.implode(',', $ids).')');
             $objResult = $query->getResult(); 
             if (!$objResult) {
                 $objResult = array();
@@ -111,7 +111,7 @@ class LinkRepository extends \Doctrine\ORM\EntityRepository {
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('link')
-           ->from('Cx\Modules\LinkManager\Model\Entity\Link', 'link')     
+           ->from('Cx\Core_Modules\LinkManager\Model\Entity\Link', 'link')     
            ->where('link.detectedTime < :start')
            ->andWhere('link.lang = :lang')
            ->getDql();
@@ -132,7 +132,7 @@ class LinkRepository extends \Doctrine\ORM\EntityRepository {
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('link')
-           ->from('Cx\Modules\LinkManager\Model\Entity\Link', 'link')     
+           ->from('Cx\Core_Modules\LinkManager\Model\Entity\Link', 'link')     
            ->where('link.detectedTime > :start')
            ->andWhere('link.flagStatus = :flagStatus')
            ->andWhere('link.lang = :lang')
@@ -156,7 +156,7 @@ class LinkRepository extends \Doctrine\ORM\EntityRepository {
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('link')
-           ->from('Cx\Modules\LinkManager\Model\Entity\Link', 'link')     
+           ->from('Cx\Core_Modules\LinkManager\Model\Entity\Link', 'link')     
            ->where('link.detectedTime > :start')
            ->andWhere('link.lang = :lang')
            ->orderBy('link.id', 'DESC')

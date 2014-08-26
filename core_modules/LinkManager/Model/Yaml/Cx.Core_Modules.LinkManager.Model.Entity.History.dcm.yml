@@ -1,7 +1,7 @@
-Cx\Modules\LinkManager\Model\Entity\History:
+Cx\Core_Modules\LinkManager\Model\Entity\History:
   type: entity
   table: module_linkmanager_history
-  repositoryClass: Cx\Modules\LinkManager\Model\Repository\HistoryRepository
+  repositoryClass: Cx\Core_Modules\LinkManager\Model\Repository\HistoryRepository
   id: 
     id:
       type: integer

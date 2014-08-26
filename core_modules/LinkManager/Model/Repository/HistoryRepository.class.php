@@ -9,7 +9,7 @@
  * @subpackage  module_linkmanager
  */
 
-namespace Cx\Modules\LinkManager\Model\Repository;
+namespace Cx\Core_Modules\LinkManager\Model\Repository;
 
 /**
  * LinkRepository
