@@ -8,15 +8,20 @@
         </tr>
     </thead>
     <tbody>
-        <!-- BEGIN showExpiredSite -->
+        <!-- BEGIN showSiteDetails -->
         <tr>
-            <td><a href="#">{MULTISITE_EXPIRED_SITE_NAME}</a></td>
-            <td>{MULTISITE_EXPIRED_SITE_PLAN}</td>
-            <td>{MULTISITE_EXPIRED_SITE_DATE}</td>
+            <td><a href="#">{MULTISITE_WEBSITE_NAME}</a></td>
+            <td>{MULTISITE_WEBSITE_PLAN}</td>
+            <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
             <td>
                 <button type="button" class="btn btn-default btn-sm">Reactivate</button>
             </td>
         </tr>
-        <!-- END showExpiredSite -->
+        <!-- END showSiteDetails -->
+        <!-- BEGIN noSiteFound -->
+        <tr>
+            <td>Currently none</td>
+        </tr>
+        <!-- END noSiteFound -->
     </tbody>
 </table>
