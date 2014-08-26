@@ -18,6 +18,6 @@ init(\Cx\Core\Core\Controller\Cx::MODE_MINIMAL);
 
 define('PROCESS_TIME', time());
 foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) { 
-    new Cx\Modules\LinkManager\Controller\LinkCrawlerController($lang['id'], $lang['lang']);
+    new Cx\Core_Modules\LinkManager\Controller\LinkCrawlerController($lang['id'], $lang['lang']);
 }
 
