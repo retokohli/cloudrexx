@@ -11,7 +11,6 @@
  */
 namespace Cx\Modules\Egov\Controller;
 // load validator class for Regex-Constants in static array $arrCheckTypes
-\Env::get('ClassLoader')->loadFile(ASCMS_FRAMEWORK_PATH . '/Validator.class.php');
 
 /**
  * EgovLibrary
@@ -32,12 +31,12 @@ class EgovLibrary {
             'name' => 'TXT_EGOV_REGEX_EVERYTHING',
         ),
         2 => array(
-            'regex' => VALIDATOR_REGEX_EMAIL_JS,
+            'regex' => \FWValidator::REGEX_EMAIL_JS,
             'name' => 'TXT_EGOV_REGEX_EMAIL',
             'modifiers' => 'i',
         ),
         3 => array(
-            'regex' => VALIDATOR_REGEX_URI_JS,
+            'regex' => \FWValidator::REGEX_URI_JS,
             'name' => 'TXT_EGOV_REGEX_URL',
             'modifiers' => 'i',
         ),

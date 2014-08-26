@@ -16,7 +16,6 @@ namespace Cx\Core_Modules\Contact\Controller;
 /**
  * @ignore
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
 
 /**
  * ContactLib
@@ -169,12 +168,12 @@ class ContactLib
                 'name'  => 'TXT_CONTACT_REGEX_EVERYTHING'
             ),
             2   => array(
-                'regex'     => VALIDATOR_REGEX_EMAIL_JS,
+                'regex'     => \FWValidator::REGEX_EMAIL_JS,
                 'name'      => 'TXT_CONTACT_REGEX_EMAIL',
                 'modifiers' => 'i'
             ),
             3   => array(
-                'regex'     => VALIDATOR_REGEX_URI_JS,
+                'regex'     => \FWValidator::REGEX_URI_JS,
                 'name'      => 'TXT_CONTACT_REGEX_URL',
                 'modifiers' => 'i'
             ),

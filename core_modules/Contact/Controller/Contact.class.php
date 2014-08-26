@@ -1499,7 +1499,7 @@ CODE;
     function _getEmailAdressOfString($string)
     {
         $arrMatch = array();
-        if (preg_match('/'.VALIDATOR_REGEX_EMAIL.'/', $string, $arrMatch)) {
+        if (preg_match('/'.\FWValidator::REGEX_EMAIL.'/', $string, $arrMatch)) {
             return $arrMatch[0];
         } else {
             return false;
