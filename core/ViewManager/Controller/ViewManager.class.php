@@ -123,7 +123,7 @@ class ViewManager
         $this->websiteThemesPath  = \Env::get('cx')->getWebsiteThemesPath() . '/';
         $this->themeZipPath = '/themezips/';
         $this->_archiveTempWebPath = \Env::get('cx')->getWebsiteTempWebPath() . $this->themeZipPath;
-        $this->_archiveTempPath = \Env::get('cx')->getCodeBasePath() .$this->_archiveTempWebPath;
+        $this->_archiveTempPath = \Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath;
         //create /tmp/zip path if it doesnt exists
         if (!file_exists($this->_archiveTempPath)){
             if (!\Cx\Lib\FileSystem\FileSystem::make_folder(\Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath)){
@@ -289,6 +289,7 @@ class ViewManager
             $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, $_GET['export'].'.zip');
             $objHTTPDownload->setContentType();
             $objHTTPDownload->send('application/force-download');
+            exit;
         }
         if (!empty($_GET['import'])){
             $this->importFile();
@@ -332,7 +333,7 @@ class ViewManager
                                               'TXT_VERSION'                   => $_ARRAYLANG['TXT_VERSION'],
                                               'TXT_DESCRIPTION'               => $_ARRAYLANG['TXT_DESCRIPTION'],
                                               'THEMES_MENU'                   => $this->getThemesDropdown(),
-                                              'CONTREXX_BASE_URL'             => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . \Env::get('cx')->getCodeBaseOffsetPath() . '/',
+                                              'CONTREXX_BASE_URL'             =>  \Env::get('cx')->getWebsiteOffsetPath() . '/',
         ));
         //create themelist
         $themes = $this->themeRepository->findAll();
@@ -614,7 +615,7 @@ class ViewManager
 
                 //create database entry
                 $this->validateThemeName($themeName);
-                $this->replaceThemeName($themeDirectoryFromArchive, $themeDirectory, $this->path . $arrDirectories[0]);
+                $this->replaceThemeName($themeDirectoryFromArchive, $themeDirectory, $this->websiteThemesPath . $arrDirectories[0]);
                 $this->insertSkinIntoDb($themeName, $themeDirectory);
                 $this->strOkMessage = contrexx_raw2xhtml($themeName).' ('.$themeDirectory.') '.$_ARRAYLANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
                 break;
@@ -871,7 +872,7 @@ class ViewManager
             'TXT_CHANNELS'                          => $_ARRAYLANG['TXT_CHANNELS'],
             'TXT_MODULE_URLS'                       => $_ARRAYLANG['TXT_MODULE_URLS'],
             'TXT_CONTACT'                           => $_ARRAYLANG['TXT_CONTACT'],
-            'CONTREXX_BASE_URL'                     => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . \Env::get('cx')->getCodeBaseOffsetPath() . '/',
+            'CONTREXX_BASE_URL'                     =>  \Env::get('cx')->getWebsiteOffsetPath() . '/',
         ));
     }
 
@@ -1091,9 +1092,12 @@ class ViewManager
 
         // Change the replacement variables from [[TITLE]] into {TITLE}
         $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,$pageContent);
-
+        
         try {
-            
+            if (!file_exists($this->websiteThemesPath.$themes.'/'.$themesPage)) {
+                $dir = str_replace(basename($themesPage),"", $themesPage);
+                \Cx\Lib\FileSystem\FileSystem::make_folder($this->websiteThemesPath.$themes.'/'.$dir, true);
+            }
             $objFile = new \Cx\Lib\FileSystem\File($this->websiteThemesPath.$themes.'/'.$themesPage);
             if(!file_exists($this->websiteThemesPath.$themes.'/'.$themesPage)){
                $objFile->touch(); 
@@ -1658,19 +1662,26 @@ class ViewManager
      * @param array $mergedFiles - merged array
      */
     function sortFilesFolders(& $mergedFiles) {
-        ksort($mergedFiles);
+        $kcmp = function($a, $b) {
+            return is_string($a) ? 0 : 1;
+        };
+        uksort($mergedFiles, $kcmp);
+        
         $cmp = function($a, $b) {
-            if ($a == $b || is_array($a) || is_array($b)) {
+            if (is_array($a) || is_array($b)) {
                 return -1;
             }
-            return ($a < $b) ? -1 : 1;
-        };            
-        uasort($mergedFiles, $cmp);        
+            if ($a == $b) {
+                return 0;
+            }
+            return strcasecmp($a, $b) >= 0 ? 1 : -1;
+        };
+        uasort($mergedFiles, $cmp);
         foreach ($mergedFiles as & $value) {
             if (is_array($value)) {
                 $this->sortFilesFolders($value);
             }
-        }        
+        }
     }
     
     /**
