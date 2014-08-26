@@ -6,7 +6,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_linkmanager
+ * @subpackage  coremodule_linkmanager
  */
 
 namespace Cx\Core_Modules\LinkManager\Model\Repository;
@@ -17,6 +17,6 @@ namespace Cx\Core_Modules\LinkManager\Model\Repository;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_linkmanager
+ * @subpackage  coremodule_linkmanager
  */
 class HistoryRepository extends \Doctrine\ORM\EntityRepository {}

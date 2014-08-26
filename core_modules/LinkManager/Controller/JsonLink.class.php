@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_json
+ * @subpackage  coremodule_linkmanager
  */
 
 namespace Cx\Core_Modules\LinkManager\Controller;
@@ -18,7 +18,7 @@ use \Cx\Core\Json\JsonAdapter;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_json
+ * @subpackage  coremodule_linkmanager
  */
 class JsonLink implements JsonAdapter {
     /**

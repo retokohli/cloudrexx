@@ -6,7 +6,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_linkmanager
+ * @subpackage  coremodule_linkmanager
 */
 namespace Cx\Core_Modules\LinkManager\Model\Entity;
 
@@ -16,7 +16,7 @@ namespace Cx\Core_Modules\LinkManager\Model\Entity;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_linkmanager
+ * @subpackage  coremodule_linkmanager
  */
 class Crawler {
     
