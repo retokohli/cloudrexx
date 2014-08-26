@@ -1,9 +1,22 @@
 <?php
-require_once dirname(dirname(dirname(dirname(__FILE__)))).'/core/Core/init.php';
+require_once dirname(dirname(__FILE__)).'/core/Core/init.php';
 $cx = init('minimal');
+$path = $argv[1];
+if (strpos('/', $path) !== 0) {
+    $path = dirname(dirname(__FILE__)).'/'.$path;
+}
+if (substr($path, -1) != '/') {
+    $path .= '/';
+}
+$structureDump = $path.'contrexx_dump_structure.sql';
+$dataDump = $path.'contrexx_dump_data.sql';
 
-$structureDump = 'installer/data/contrexx_dump_structure.sql';
-$dataDump = 'installer/data/contrexx_dump_data.sql';
+if (!file_exists($structureDump)) {
+    die("Structure dump not found: $structureDump".PHP_EOL);
+}
+if (!file_exists($dataDump)) {
+    die("Data dump not found: $dataDump".PHP_EOL);
+}
 
 try {
     $file = new \Cx\Lib\FileSystem\File($structureDump);
