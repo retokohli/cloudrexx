@@ -2,19 +2,19 @@
 <form name="crawlerResult" id="crawlerResult" method="post">
     <table id="crawlerResultTable" class="adminlist" cellspacing="0" cellpadding="5" border="0" width="100%" >
         <tr>
-            <th colspan="10">{TXT_MODULE_LINKMANAGER_BROKEN_LINKS}</th>
+            <th colspan="10">{TXT_CORE_MODULE_LINKMANAGER_BROKEN_LINKS}</th>
         </tr>
         <tr class="row3">
-            <td width="2%">&nbsp;&nbsp;{TXT_MODULE_LINKMANAGER_INITIAL}</td>
+            <td width="2%">&nbsp;&nbsp;{TXT_CORE_MODULE_LINKMANAGER_INITIAL}</td>
             <td width="4%">&nbsp;</td>
-            <td width="10%">{TXT_MODULE_LINKMANAGER_BROKEN_LINK}</td>
-            <td width="28%">{TXT_MODULE_LINKMANAGER_CRAWLED_PAGE}</td>
-            <td width="8%">{TXT_MODULE_LINKMANAGER_FOUND_MODULE}</td>
-            <td width="15%">{TXT_MODULE_LINKMANAGER_ENTRY_NAME}</td>
-            <td width="12%">{TXT_MODULE_LINKMANAGER_STATUS_CODE}</td>
-            <td width="10%">{TXT_MODULE_LINKMANAGER_DETECTED}</td>
-            <td width="1%">{TXT_MODULE_LINKMANAGER_SOLVED}</td>
-            <td width="10%">{TXT_MODULE_LINKMANAGER_UPDATED_BY}</td>
+            <td width="10%">{TXT_CORE_MODULE_LINKMANAGER_BROKEN_LINK}</td>
+            <td width="28%">{TXT_CORE_MODULE_LINKMANAGER_CRAWLED_PAGE}</td>
+            <td width="8%">{TXT_CORE_MODULE_LINKMANAGER_FOUND_MODULE}</td>
+            <td width="15%">{TXT_CORE_MODULE_LINKMANAGER_ENTRY_NAME}</td>
+            <td width="12%">{TXT_CORE_MODULE_LINKMANAGER_STATUS_CODE}</td>
+            <td width="10%">{TXT_CORE_MODULE_LINKMANAGER_DETECTED}</td>
+            <td width="1%">{TXT_CORE_MODULE_LINKMANAGER_SOLVED}</td>
+            <td width="10%">{TXT_CORE_MODULE_LINKMANAGER_UPDATED_BY}</td>
         </tr>
         <!-- BEGIN LinkManagerCrawlerResultList -->
         <tr class="{LINKMANAGER_CRAWLER_RUN_ROW} {LINKMANAGER_CRAWLER_BROKEN_LINK}">
@@ -34,16 +34,16 @@
         <!-- END LinkManagerCrawlerResultList -->
         <!-- BEGIN LinkManagerNoCrawlerResultFound -->
         <tr class="row1">
-            <td colspan="10">{TXT_MODULE_LINKMANAGER_NO_RESULT_FOUND}</td>
+            <td colspan="10">{TXT_CORE_MODULE_LINKMANAGER_NO_RESULT_FOUND}</td>
         </tr>
         <!-- END LinkManagerNoCrawlerResultFound -->
     </table>
     <br>
     <img height="22" border="0" width="38" src="../core/Core/View/Media/icons/arrow.gif" alt=":" />
     <a href="#" onclick="changeCheckboxes('crawlerResult', 'selected[]', true);
-        return false;">{TXT_MODULE_LINKMANAGER_SELECT_ALL}</a> / 
+        return false;">{TXT_CORE_MODULE_LINKMANAGER_SELECT_ALL}</a> / 
     <a href="#" onclick="changeCheckboxes('crawlerResult', 'selected[]', false);
-        return false;">{TXT_MODULE_LINKMANAGER_DESELECT_ALL}</a>
+        return false;">{TXT_CORE_MODULE_LINKMANAGER_DESELECT_ALL}</a>
     <input type="submit" name="checkAgain" value="{TXT_MODULE_LINKMANAGER_CHECK_AGAIN}"/>
     <br>
 </form>
