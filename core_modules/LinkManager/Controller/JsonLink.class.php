@@ -76,6 +76,15 @@ class JsonLink implements JsonAdapter {
     }
     
     /**
+     * Returns default permission as object
+     * Has no restrictions
+     * @return null
+     */
+    public function getDefaultPermissions(){
+        return null;
+    }
+    
+    /**
      * Edit the link status(link resolved or not)
      * 
      * @return array
