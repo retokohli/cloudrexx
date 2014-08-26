@@ -715,6 +715,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function ping() 
     {
+        global $_CONFIG;
+        
+        //Check the system is in maintenance mode or not
+        if ($_CONFIG['systemStatus'] !='on') {
+            return array('status' => 'error', 'message' => 'Service Server is currently in maintenance mode');
+        }
+        
         $resp = self::executeCommandOnManager('pong');
         if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
             return array('status' => 'success');
