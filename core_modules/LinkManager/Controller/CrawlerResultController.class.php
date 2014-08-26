@@ -123,7 +123,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
                     $this->moduleNameLang.'_BROKEN_LINK_IMAGE'       => $brokenLink->getBrokenLinkText() == $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NO_IMAGE'] ? 'brokenImage' : 'brokenLinkImage',
                     $this->moduleNameLang.'_BROKEN_LINK_TEXT'        => $brokenLink->getBrokenLinkText(),
                     $this->moduleNameLang.'_BROKEN_LINK_URL'         => contrexx_raw2xhtml($brokenLink->getRequestedPath()),
-                    $this->moduleNameLang.'_BROKEN_LINK_REFERER'     => contrexx_raw2xhtml($brokenLink->getLeadPath()).'&pos='.$pos.'&csrf='.\CSRF::code(),
+                    $this->moduleNameLang.'_BROKEN_LINK_REFERER'     => contrexx_raw2xhtml($brokenLink->getLeadPath()).'&pos='.$pos.'&csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),
                     $this->moduleNameLang.'_BROKEN_LINK_MODULE_NAME' => contrexx_raw2xhtml($brokenLink->getModuleName()),
                     $this->moduleNameLang.'_BROKEN_LINK_ENTRY_TITLE' => contrexx_raw2xhtml($brokenLink->getEntryTitle()),
                     $this->moduleNameLang.'_BROKEN_LINK_STATUS_CODE' => $brokenLink->getLinkStatusCode() == 0 ? $_ARRAYLANG['TXT_MODULE_LINKMANAGER_NON_EXISTING_DOMAIN'] : contrexx_raw2xhtml($brokenLink->getLinkStatusCode()),
