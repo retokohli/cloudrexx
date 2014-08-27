@@ -99,7 +99,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     }
 
     public function isRenewable() {
-        return $this->renewable;
+        return $this->getRenewable();
     }
 
     public function setRenewable($renewable) {
@@ -111,7 +111,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     }
 
     public function isExpirable() {
-        return $this->expirable;
+        return $this->getExpirable();
     }
 
     public function setExpirable($expirable) {
@@ -120,6 +120,10 @@ class Product extends \Cx\Model\Base\EntityBase {
 
     public function getUpgradable() {
         return $this->upgradable;
+    }
+
+    public function isUpgradable() {
+        return $this->getUpgradable();
     }
 
     public function setUpgradable($upgradable) {
