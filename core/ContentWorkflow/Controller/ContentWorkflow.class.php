@@ -155,7 +155,7 @@ class ContentWorkflow extends \Module {
         $countLogEntries = $this->logRepo->countLogEntries($this->cmd);
         
         // Paging
-        $strPaging = getPaging($countLogEntries, $this->intPos, '&cmd=workflow&act='.$strPagingAct, '', true);
+        $strPaging = getPaging($countLogEntries, $this->intPos, '&cmd=ContentWorkflow&act='.$strPagingAct, '', true);
         $this->tpl->setVariable('HISTORY_PAGING', $strPaging);
         
         // Gets the log entries
@@ -258,7 +258,7 @@ class ContentWorkflow extends \Module {
         $countLogEntries = $this->logRepo->countLogEntries('deleted');
         
         // Paging
-        $strPaging = getPaging($countLogEntries, $this->intPos, '&cmd=workflow&act=deleted', '', true);
+        $strPaging = getPaging($countLogEntries, $this->intPos, '&cmd=ContentWorkflow&act=deleted', '', true);
         $this->tpl->setVariable('HISTORY_PAGING', $strPaging);
         
         // Gets the log entries
