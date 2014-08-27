@@ -1,0 +1,55 @@
+<script type="text/javascript">
+    function toggleDebuggingFlags(show) {
+        var target = $J('#debugging_flags');
+        if (show)
+            target.show();
+        else
+            target.hide();
+    }
+</script>
+<form name="settings_form" id="configSettingsTabs" method="post" action="index.php?cmd=Config&amp;act=update">
+<table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">        
+    <tr>
+        <th colspan="2">{TXT_TITLE_SET5}</th>
+    </tr>        
+    <tr class="row2">
+        <td width="25%">{TXT_DEBUGGING_STATUS}&nbsp;</td>
+        <td width="75%">
+            <div>
+                <input type="radio" id="debugging_status_on" name="debugging[status]" {SETTINGS_DEBUGGING_ON} value="on" onclick="toggleDebuggingFlags(true);"/><label for="debugging_status_on">{TXT_RADIO_ON}</label>&nbsp;
+                <input type="radio" id="debugging_status_off" name="debugging[status]" {SETTINGS_DEBUGGING_OFF} value="off" onclick="toggleDebuggingFlags(false);"/><label for="debugging_status_off">{TXT_RADIO_OFF}</label>&nbsp;
+                <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_DEBUGGING_EXPLANATION}</span>
+            </div>
+            <div id="debugging_flags" {DEBUGGING_HIDE_FLAGS}>
+                <div>
+                    <input type="checkbox" id="debugging_flag_log" name="debugging[flag_log]" {SETTINGS_DEBUGGING_FLAG_LOG}/><label for="debugging_flag_log">{TXT_SETTINGS_DEBUGGING_FLAG_LOG}</label>&nbsp;
+                </div>
+                <div>
+                    <input type="checkbox" id="debugging_flag_php" name="debugging[flag_php]" {SETTINGS_DEBUGGING_FLAG_PHP}/><label for="debugging_flag_php">{TXT_SETTINGS_DEBUGGING_FLAG_PHP}</label>&nbsp;
+                </div>
+                <div>
+                    <input type="checkbox" id="debugging_flag_db" name="debugging[flag_db]" {SETTINGS_DEBUGGING_FLAG_DB}/><label for="debugging_flag_db">{TXT_SETTINGS_DEBUGGING_FLAG_DB}</label>&nbsp;
+                </div>
+                <div>
+                    <input type="checkbox" id="debugging_flag_db_change" name="debugging[flag_db_change]" {SETTINGS_DEBUGGING_FLAG_DB_CHANGE}/><label for="debugging_flag_db_change">{TXT_SETTINGS_DEBUGGING_FLAG_DB_CHANGE}</label>&nbsp;
+                </div>
+                <div>
+                    <input type="checkbox" id="debugging_flag_db_error" name="debugging[flag_db_error]" {SETTINGS_DEBUGGING_FLAG_DB_ERROR}/><label for="debugging_flag_db_error">{TXT_SETTINGS_DEBUGGING_FLAG_DB_ERROR}</label>&nbsp;
+                </div>
+                <div>
+                    <input type="checkbox" id="debugging_flag_db_trace" name="debugging[flag_db_trace]" {SETTINGS_DEBUGGING_FLAG_DB_TRACE}/><label for="debugging_flag_db_trace">{TXT_SETTINGS_DEBUGGING_FLAG_DB_TRACE}</label>&nbsp;
+                </div>
+                <div>
+                    <input type="checkbox" id="debugging_log_file" name="debugging[flag_log_file]" {SETTINGS_DEBUGGING_FLAG_LOG_FILE}/><label for="debugging_flag_log_file">{TXT_SETTINGS_DEBUGGING_FLAG_LOG_FILE}</label>&nbsp;
+                </div>
+                <div>
+                    <input type="checkbox" id="debugging_flag_log_firephp" name="debugging[flag_log_firephp]" {SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP}/><label for="debugging_flag_log_firephp">{TXT_SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP}</label>&nbsp;
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+    <input type="submit" value="{TXT_SAVE_CHANGES}" name="submit" />
+</form>
+
+

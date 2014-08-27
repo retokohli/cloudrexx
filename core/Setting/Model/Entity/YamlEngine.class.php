@@ -63,9 +63,8 @@ class YamlEngine extends Engine{
         self::$filename =  $configRepository . '/'.$section.'.yml';
         
         if (!isset(self::$yamlSettingRepo)) {
-            self::$yamlSettingRepo = new \Cx\Core\Setting\Model\Repository\YamlSettingRepository();
+            self::$yamlSettingRepo = new \Cx\Core\Setting\Model\Repository\YamlSettingRepository(self::$filename);
         }
-        self::$yamlSettingRepo->initialize(self::$filename);
         self::$arrSettings = self::load();
     }
 
@@ -274,9 +273,9 @@ class YamlEngine extends Engine{
             $objYamlSetting->setValues($values);
             $objYamlSetting->setOrd($ord);
         
-            \Env::get('em')->persist($objYamlSetting);
-            \Env::get('em')->flush();
-        } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
+            self::$yamlSettingRepo->add($objYamlSetting);
+            self::$yamlSettingRepo->flush();
+            } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
             \DBG::msg($e->getMessage());
             return false;
         }

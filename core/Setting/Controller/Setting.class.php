@@ -561,9 +561,9 @@ class Setting{
                 break;
 // 20120508 UNTESTED!
               case self::TYPE_RADIO:
-                $checked = self::splitValues($value);
+                $checked = $value;
                 $element =
-                    \Html::getRadioGroup($name, $values, $values);
+                    \Html::getRadioGroup($name, $values, $checked);
                 break;
 
 // More...
@@ -588,13 +588,18 @@ class Setting{
             
             //add Tooltip
             $toolTips='';
+            $toolTipsHelp ='';
             if (isset($_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'])) {
                 // generate tooltip for configuration option
                 $toolTips='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'].'</span>';
             }
+            if (isset($_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP_HELP'])) {
+                // generate tooltip for configuration option
+                $toolTipsHelp ='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP_HELP'].'</span>';
+            }
             $objTemplateLocal->setVariable(array(
                 'CORE_SETTING_NAME' => $_ARRAYLANG[$prefix.strtoupper($name)].$toolTips,
-                'CORE_SETTING_VALUE' => $element,
+                'CORE_SETTING_VALUE' => $element.$toolTipsHelp,
                 'CORE_SETTING_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
             ));
             $objTemplateLocal->parseCurrentBlock();
