@@ -14,10 +14,6 @@
 namespace Cx\Core_Modules\Contact\Controller;
 
 /**
- * @ignore
- */
-
-/**
  * ContactLib
  *
  * @copyright   CONTREXX CMS - COMVATION AG
