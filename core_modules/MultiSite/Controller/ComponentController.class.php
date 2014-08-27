@@ -658,6 +658,8 @@ throw new MultiSiteException('Refactor this method!');
                     break;
                 }
 
+// TODO: this offline mode has been caused by the MultiSite Manager -> Therefore, we should not return the Website's custom offline page.
+//       Instead we shall show the Cloudrexx offline page
                 throw new \Exception('Website is currently not online');
                 break;
 
@@ -677,7 +679,7 @@ throw new MultiSiteException('Refactor this method!');
         if (   in_array($cx->getMode(), array($cx::MODE_BACKEND, $cx::MODE_COMMAND))
             && $requestedDomainName != $managerDomain->getName()
         ) {
-            header('Location: '.ASCMS_PROTOCOL.'//'.$marketingWebsiteDomainName, true, 301);
+            header('Location: '.$this->getApiProtocol().$marketingWebsiteDomainName, true, 301);
             exit;
         }
     }
@@ -697,7 +699,7 @@ throw new MultiSiteException('Refactor this method!');
             && $requestedDomainName != $marketingWebsiteDomainName
             && $requestedDomainName != $customerPanelDomainName
         ) {
-            header('Location: '.ASCMS_PROTOCOL.'/'.$marketingWebsiteDomainName, true, 301);
+            header('Location: '.$this->getApiProtocol().$marketingWebsiteDomainName, true, 301);
             exit;
         }
 
@@ -744,14 +746,16 @@ throw new MultiSiteException('Refactor this method!');
      */
     public static function getApiProtocol() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol')) {
-            case 'mixed':
-                $protocolUrl = \Env::get('cx')->getRequest()->getUrl()->getProtocol() . '://';
-                break;
             case 'http':
                 $protocolUrl = 'http://';
                 break;
             case 'https':
                 $protocolUrl = 'https://';
+                break;
+            case 'mixed':
+// TODO: this is a workaround for Websites, as they are not aware of the related configuration option
+            default:
+                return empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http://' : 'https://';
                 break;
         }
         return $protocolUrl;
