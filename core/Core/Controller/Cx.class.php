@@ -567,7 +567,12 @@ namespace Cx\Core\Core\Controller {
              */
             } catch (\Exception $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
-                echo file_get_contents($this->codeBaseDocumentRootPath . '/offline.html');
+                if (file_exists($this->websiteDocumentRootPath . '/offline.html')) {
+                    $offlinePath = $this->websiteDocumentRootPath;
+                } else {
+                    $offlinePath = $this->codeBaseDocumentRootPath;
+                }
+                echo file_get_contents($offlinePath . '/offline.html');
                 \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
                 \DBG::dump($e->getTrace());
@@ -831,11 +836,9 @@ namespace Cx\Core\Core\Controller {
              * Because we overwrite the Gedmo model (so we need to load our model
              * before doctrine loads the Gedmo one)
              */
-            if (class_exists('Env', false)) {
-                $this->cl = \Env::get('ClassLoader');
-                return;
+            if (!class_exists('Cx\Core\ClassLoader\ClassLoader', false)) {
+                require_once($this->getCodeBaseCorePath().'/ClassLoader/ClassLoader.class.php');
             }
-            require_once($this->getCodeBaseCorePath().'/ClassLoader/ClassLoader.class.php');
             $this->cl = new \Cx\Core\ClassLoader\ClassLoader($this, true, $this->customizingPath);
         }
 
@@ -849,14 +852,9 @@ namespace Cx\Core\Core\Controller {
             /**
              * Environment repository
              */
-            if (class_exists('Env', false)) {
-                \Env::set('cx', $this);
-                \Env::set('config', $_CONFIG);
-                \Env::set('ftpConfig', $_FTPCONFIG);
-                return;
+            if (!class_exists('Env', false)) {
+                require_once($this->cl->getFilePath($this->codeBaseCorePath . '/Env.class.php'));
             }
-
-            require_once($this->cl->getFilePath($this->codeBaseCorePath . '/Env.class.php'));
             \Env::set('cx', $this);
             \Env::set('ClassLoader', $this->cl);            
             \Env::set('config', $_CONFIG);
