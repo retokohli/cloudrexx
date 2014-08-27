@@ -1,6 +1,4 @@
 <?php
-include_once(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
-
 /*~ class.phpmailer.php
 .---------------------------------------------------------------------------.
 |  Software: PHPMailer - PHP email class                                    |
