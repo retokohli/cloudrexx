@@ -56,6 +56,24 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
     }
     
+        public function prePersist($eventArgs) {
+        \DBG::msg('MultiSite (UserEventListener): prePersist');
+         
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                        throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
+    }
+
     public function preUpdate($eventArgs) {
         \DBG::msg('MultiSite (UserEventListener): preUpdate');
         $objUser = $eventArgs->getEntity();
@@ -66,6 +84,11 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
                         throw new \Exception('Website Owner can only be modified within the Customer Panel.');
+                    }
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                        throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
                     }
                     break;
                 default:
@@ -88,6 +111,11 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         throw new \Exception('Website Owner can only be modified within the Customer Panel.');
                     }
                     break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                        throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
+                    }
+                    break;  
                 default:
                     break;
             }

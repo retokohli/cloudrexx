@@ -617,6 +617,7 @@ throw new MultiSiteException('Refactor this method!');
         $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteEventListener);
         
         $userEventListener    = new \Cx\Core_Modules\MultiSite\Model\Event\UserEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'User', $userEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'User', $userEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'User', $userEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'User', $userEventListener);
