@@ -163,8 +163,8 @@ IF EXIST "!installation_path!\workbench.config" (
                         $file-^>write($response-^>getBody(^)^);^
                     } catch(\Cx\Lib\FileSystem\FileSystemException $e^) {}^
                     ^echo 'Extracting Files..'. PHP_EOL;^
-                    $archive=new \PclZip(ASCMS_DOCUMENT_ROOT . '/!filename!'^);^                    
-                    if (($files = $archive-^>extract(PCLZIP_OPT_PATH, ASCMS_DOCUMENT_ROOT, PCLZIP_OPT_REMOVE_PATH, '!filename!'^)^) ^^!= 0^) {^                        
+                    $archive=new \PclZip(ASCMS_DOCUMENT_ROOT . '/!filename!'^);^
+                    if (($files = $archive-^>extract(PCLZIP_OPT_PATH, ASCMS_DOCUMENT_ROOT, PCLZIP_OPT_REMOVE_PATH, '!filename!'^)^) ^^!= 0^) {^
                         foreach ($files as $file^) {^
                             if (^^!in_array($file['status'],array('ok','filtered','already_a_directory'^)^)^) {^
                                 \DBG::log($archive-^>errorInfo(true^)^);^
