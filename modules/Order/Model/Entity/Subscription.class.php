@@ -126,7 +126,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
 
     public function getExpirationDate() {
-        return $expirationDate;
+        return $this->expirationDate;
     }
 
     public function setExpirationDate($expirationDate) {
@@ -134,7 +134,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
 
     public function getProductEntityId() {
-        return $productEntityId;
+        return $this->productEntityId;
     }
 
     public function setProductEntityId($productEntityId) {
@@ -155,7 +155,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
 
     public function getPaymentAmount() {
-        return $paymentAmount;
+        return $this->paymentAmount;
     }
 
     public function setPaymentAmount($paymentAmount) {
@@ -163,7 +163,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
 
     public function getPaymentState() {
-        return $paymentState;
+        return $this->paymentState;
     }
 
     public function setPaymentState($paymentState) {
@@ -171,7 +171,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
 
     public function getRenewalUnit() {
-        return $renewalUnit;
+        return $this->renewalUnit;
     }
 
     public function setRenewalUnit($renewalUnit) {
@@ -179,7 +179,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
 
     public function getRenewalQuantifier() {
-        return $renewalQuantifier;
+        return $this->renewalQuantifier;
     }
 
     public function setRenewalQuantifier($renewalQuantifier) {
@@ -187,7 +187,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
 
     public function getRenewalDate() {
-        return $renewalDate;
+        return $this->renewalDate;
     }
 
     public function setRenewalDate($renewalDate) {
