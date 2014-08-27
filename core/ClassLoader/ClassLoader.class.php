@@ -38,6 +38,15 @@ class ClassLoader {
         $this->cx = $cx;
         $this->basePath = $cx->getCodeBaseDocumentRootPath();
         $this->customizingPath = $customizingPath;
+
+        // Check if there is already an other instance of the Contrexx ClassLoader running.
+        // If so, we shall unregister it.
+        if (class_exists('Env', false)) {
+            $oldClassLoader = \Env::get('ClassLoader');
+            if ($oldClassLoader) {
+                spl_autoload_unregister(array($oldClassLoader, 'autoload'));
+            }
+        }
         spl_autoload_register(array($this, 'autoload'));
         if ($useLegacyAsFallback) {
             $this->legacyClassLoader = new LegacyClassLoader($this, $cx);
