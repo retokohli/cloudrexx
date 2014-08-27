@@ -1,3 +1,4 @@
+<!-- BEGIN showSiteTable -->
 <table class="table">
     <thead>
         <tr>
@@ -10,7 +11,7 @@
     <tbody>
         <!-- BEGIN showSiteDetails -->
         <tr>
-            <td><a href="#">{MULTISITE_WEBSITE_NAME}</a></td>
+            <td>{MULTISITE_WEBSITE_NAME}</td>
             <td>{MULTISITE_WEBSITE_PLAN}</td>
             <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
             <td>
@@ -18,10 +19,9 @@
             </td>
         </tr>
         <!-- END showSiteDetails -->
-        <!-- BEGIN noSiteFound -->
-        <tr>
-            <td>Currently none</td>
-        </tr>
-        <!-- END noSiteFound -->
     </tbody>
 </table>
+<!-- END showSiteTable -->
+<!-- BEGIN noSiteFound -->
+<div>Currently none</div>
+<!-- END noSiteFound -->
