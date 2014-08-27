@@ -34,7 +34,7 @@ class YamlSettingRepositoryException extends \Exception {};
  */
 class YamlSettingRepository extends \Cx\Core\Model\Controller\YamlRepository {
     
-    public function initialize($repositoryPath) {
+    public function __construct($repositoryPath) {
         parent::__construct($repositoryPath);
     }
 }

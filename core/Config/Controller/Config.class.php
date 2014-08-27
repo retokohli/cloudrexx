@@ -45,6 +45,7 @@ class Config
     {
         $this->strSettingsFile = ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/config/settings.php';
         $this->checkWritePermissions();
+        self::init();
     }
 
     private function setNavigation()
@@ -66,12 +67,12 @@ class Config
      * This method displays a warning message on top of the page when the ftp connection failed or the configuration
      * is disabled
      */
-    protected function checkFtpAccess() {
-        global $objTemplate, $_ARRAYLANG;
+    protected function checkFtpAccess($template) {
+        global $_ARRAYLANG;
         // if ftp access is not activated or not possible to connect (not correct credentials)
         if(!\Cx\Lib\FileSystem\FileSystem::init()) {
-            $objTemplate->setVariable('TXT_SETTING_FTP_CONFIG_WARNING', sprintf($_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'], ASCMS_DOCUMENT_ROOT . '/config/configuration.php'));
-            $objTemplate->parse('settings_ftp_config_warning');
+            \Message::add($_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] . ASCMS_DOCUMENT_ROOT . '/config/configuration.php' . "</div>" . $template->get(), \Message::CLASS_ERROR);
+            return true;
         }
     }
 
@@ -176,57 +177,14 @@ class Config
      * @global  array   Core language
      * @global  \Cx\Core\Html\Sigma
      */
-    function showSettings()
+   function showSettings()
     {
-        global $objDatabase, $_ARRAYLANG, $objTemplate, $_CONFIG, $_FRONTEND_LANGID;
-
-        \JS::activate('jquery');
-
-        $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings', 'settings.html');
-
-        // check whether the ftp configurations are correct or not
-        $this->checkFtpAccess();
-
-        $this->strPageTitle = $_ARRAYLANG['TXT_SYSTEM_SETTINGS'];
-
-        $objResult = $objDatabase->Execute('SELECT setid,
-                                                   setname,
-                                                   setvalue,
-                                                   setmodule
-                                            FROM '.DBPREFIX.'settings');
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $arrSettings[$objResult->fields['setname']] = $objResult->fields['setvalue'];
-                $objResult->MoveNext();
-            }
-        }
-
-        //Show the main domain dropdown 
-        $objMainDomain = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $domains = $objMainDomain->findAll();
-        foreach ($domains As $domain) {
-            $objTemplate->setVariable(array(
-               'SETTINGS_DOMAIN_ID'             => $domain->getId(),
-               'SETTINGS_DOMAIN_NAME'           => $domain->getName(),
-               'SETTINGS_DOMAIN_SELECTED'       => ($domain->getId() == $arrSettings['mainDomainId']) ? 'selected' : '',
-               'SETTINGS_HOSTDOMAIN_SELECTED'   => (empty($arrSettings['mainDomainId']) && $domain->getName() == $_CONFIG['domainUrl']) 
-                                                     || ($domain->getName() == $_CONFIG['domainUrl'] && !$objMainDomain->findBy(array('id' => $arrSettings['mainDomainId']))) ? 'selected' : ''
-            ));
-            $objTemplate->parse('showDomainName');
-        }
-        
-        $objTemplate->setGlobalVariable(array(
-            'TXT_RADIO_ON'                    => $_ARRAYLANG['TXT_ACTIVATED'],
-            'TXT_RADIO_OFF'                   => $_ARRAYLANG['TXT_DEACTIVATED']
-        ));
-        $objTemplate->setVariable(array(
-            'TXT_ADD'                                   => $_ARRAYLANG['TXT_ADD'],
-            'TXT_TITLE_SET1'                            => $_ARRAYLANG['TXT_SETTINGS_TITLE_MISC'],
-            'TXT_TITLE_SET2'                            => $_ARRAYLANG['TXT_ADMIN_AREA'],
-            'TXT_TITLE_SET3'                            => $_ARRAYLANG['TXT_SECURITY'],
-            'TXT_TITLE_SET4'                            => $_ARRAYLANG['TXT_SETTINGS_TITLE_CONTACT'],
+        global $objTemplate,$_ARRAYLANG;
+        $template = new \Cx\Core\Html\Sigma();
+        $templateObj = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Config/View/Template/Backend');
+        $templateObj->loadTemplateFile('development_tools.html');
+        $templateObj->setVariable(array(
             'TXT_TITLE_SET5'                            => $_ARRAYLANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
-            'TXT_TITLE_SET6'                            => $_ARRAYLANG['TXT_OTHER_CONFIG_OPTIONS'],
             'TXT_DEBUGGING_STATUS'                      => $_ARRAYLANG['TXT_DEBUGGING_STATUS'],
             'TXT_DEBUGGING_FLAGS'                       => $_ARRAYLANG['TXT_DEBUGGING_FLAGS'],
             'TXT_SETTINGS_DEBUGGING_FLAG_LOG'           => $_ARRAYLANG['TXT_SETTINGS_DEBUGGING_FLAG_LOG'],
@@ -239,141 +197,59 @@ class Config
             'TXT_SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP'   => $_ARRAYLANG['TXT_SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP'],
             'TXT_DEBUGGING_EXPLANATION'                 => $_ARRAYLANG['TXT_DEBUGGING_EXPLANATION'],
             'TXT_SAVE_CHANGES'                          => $_ARRAYLANG['TXT_SAVE'],
-            'TXT_SYSTEM_STATUS'                         => $_ARRAYLANG['TXT_SETTINGS_SYSTEMSTATUS'],
-            'TXT_SYSTEM_STATUS_HELP'                    => $_ARRAYLANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
-            'TXT_IDS_STATUS'                            => $_ARRAYLANG['TXT_SETTINGS_IDS'],
-            'TXT_IDS_STATUS_HELP'                       => $_ARRAYLANG['TXT_SETTINGS_IDS_HELP'],
-            'TXT_XML_SITEMAP_STATUS'                    => $_ARRAYLANG['TXT_SETTINGS_XML_SITEMAP'],
-            'TXT_XML_SITEMAP_STATUS_HELP'               => $_ARRAYLANG['TXT_SETTINGS_XML_SITEMAP_HELP'],
-            'TXT_GLOBAL_TITLE'                          => $_ARRAYLANG['TXT_SETTINGS_GLOBAL_TITLE'],
-            'TXT_GLOBAL_TITLE_HELP'                     => $_ARRAYLANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
-            'TXT_MAIN_DOMAIN'                           => $_ARRAYLANG['TXT_MAIN_DOMAIN'],
-            'TXT_PAGING_LIMIT'                          => $_ARRAYLANG['TXT_SETTINGS_PAGING_LIMIT'],
-            'TXT_PAGING_LIMIT_HELP'                     => $_ARRAYLANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
-            'TXT_SEARCH_RESULT'                         => $_ARRAYLANG['TXT_SETTINGS_SEARCH_RESULT'],
-            'TXT_SEARCH_RESULT_HELP'                    => $_ARRAYLANG['TXT_SETTINGS_SEARCH_RESULT_HELP'],
-            'TXT_SESSION_LIVETIME'                      => $_ARRAYLANG['TXT_SETTINGS_SESSION_LIVETIME'],
-            'TXT_SESSION_LIVETIME_HELP'                 => $_ARRAYLANG['TXT_SETTINGS_SESSION_LIVETIME_HELP'],
-            'TXT_SESSION_LIFETIME_REMEMBER_ME'          => $_ARRAYLANG['TXT_SETTINGS_SESSION_LIFETIME_REMEMBER_ME'],
-            'TXT_SESSION_LIFETIME_REMEMBER_ME_HELP'     => $_ARRAYLANG['TXT_SETTINGS_SESSION_LIFETIME_HELP_REMEMBER_ME'],
-            'TXT_DNS_SERVER'                            => $_ARRAYLANG['TXT_SETTINGS_DNS_SERVER'],
-            'TXT_DNS_SERVER_HELP'                       => $_ARRAYLANG['TXT_SETTINGS_DNS_SERVER_HELP'],
-            'TXT_ADMIN_NAME'                            => $_ARRAYLANG['TXT_SETTINGS_ADMIN_NAME'],
-            'TXT_ADMIN_EMAIL'                           => $_ARRAYLANG['TXT_SETTINGS_ADMIN_EMAIL'],
-            'TXT_CONTACT_EMAIL'                         => $_ARRAYLANG['TXT_SETTINGS_CONTACT_EMAIL'],
-            'TXT_CONTACT_EMAIL_HELP'                    => $_ARRAYLANG['TXT_SETTINGS_CONTACT_EMAIL_HELP'],
-            'TXT_CONTACT_COMPANY'                       => $_ARRAYLANG['TXT_SETTINGS_CONTACT_COMPANY'],
-            'TXT_CONTACT_ADDRESS'                       => $_ARRAYLANG['TXT_SETTINGS_CONTACT_ADDRESS'],
-            'TXT_CONTACT_ZIP'                           => $_ARRAYLANG['TXT_SETTINGS_CONTACT_ZIP'],
-            'TXT_CONTACT_PLACE'                         => $_ARRAYLANG['TXT_SETTINGS_CONTACT_PLACE'],
-            'TXT_CONTACT_COUNTRY'                       => $_ARRAYLANG['TXT_SETTINGS_CONTACT_COUNTRY'],
-            'TXT_CONTACT_PHONE'                         => $_ARRAYLANG['TXT_SETTINGS_CONTACT_PHONE'],
-            'TXT_CONTACT_FAX'                           => $_ARRAYLANG['TXT_SETTINGS_CONTACT_FAX'],
-            'TXT_SEARCH_VISIBLE_CONTENT_ONLY'           => $_ARRAYLANG['TXT_SEARCH_VISIBLE_CONTENT_ONLY'],
-            'TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'        => $_ARRAYLANG['TXT_SYSTEM_DETECT_BROWSER_LANGUAGE'],
-            'TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'          => $_ARRAYLANG['TXT_SYSTEM_DEFAULT_LANGUAGE_HELP'],
-            'TXT_GOOGLE_MAPS_API_KEY_HELP'              => $_ARRAYLANG['TXT_GOOGLE_MAPS_API_KEY_HELP'],
-            'TXT_GOOGLE_MAPS_API_KEY'                   => $_ARRAYLANG['TXT_GOOGLE_MAPS_API_KEY'],
-            'TXT_FRONTEND_EDITING_STATUS'               => $_ARRAYLANG['TXT_SETTINGS_FRONTEND_EDITING'],
-            'TXT_FRONTEND_EDITING_STATUS_HELP'          => $_ARRAYLANG['TXT_SETTINGS_FRONTEND_EDITING_HELP'],
-            'TXT_USE_CUSTOMIZING_STATUS'                => $_ARRAYLANG['TXT_USE_CUSTOMIZING_STATUS'],
-            'TXT_USE_CUSTOMIZING_STATUS_HELP'           => preg_replace("/%1/", ASCMS_CUSTOMIZING_WEB_PATH, $_ARRAYLANG['TXT_USE_CUSTOMIZING_STATUS_HELP']),
-            'TXT_CORE_LIST_PROTECTED_PAGES'             => $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES'],
-            'TXT_CORE_LIST_PROTECTED_PAGES_HELP'        => $_ARRAYLANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
-            'TXT_CORE_TIMEZONE'                         => $_ARRAYLANG['TXT_CORE_TIMEZONE'],
-            'TXT_DASHBOARD_NEWS'                        => $_ARRAYLANG['TXT_DASHBOARD_NEWS'],
-            'TXT_DASHBOARD_STATISTICS'                  => $_ARRAYLANG['TXT_DASHBOARD_STATISTICS'],
-            'TXT_GOOGLE_ANALYTICS_TRACKING_ID'          => $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'],
-            'TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'     => $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'],
-            'TXT_PASSWORD_COMPLEXITY'                   => $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'],
-            'TXT_PASSWORD_COMPLEXITY_INFO'              => $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO']
-        ));
-
-        if ($this->isWritable()) {
-            $objTemplate->parse('settings_submit_button');
-        } else {
-            $objTemplate->hideBlock('settings_submit_button');
-        }
-
-        // There was a lot of htmlentities() in the list below, which is not needed,
-        // as every setting entry is already passed through htmlspecialchars() when
-        // saved. See function updateSettings() below
-        $objTemplate->setVariable(array(
-            'SETTINGS_CONTACT_EMAIL'                        => contrexx_raw2xhtml($arrSettings['contactFormEmail']),
-            'SETTINGS_CONTACT_COMPANY'                      => contrexx_raw2xhtml($arrSettings['contactCompany']),
-            'SETTINGS_CONTACT_ADDRESS'                      => contrexx_raw2xhtml($arrSettings['contactAddress']),
-            'SETTINGS_CONTACT_ZIP'                          => contrexx_raw2xhtml($arrSettings['contactZip']),
-            'SETTINGS_CONTACT_PLACE'                        => contrexx_raw2xhtml($arrSettings['contactPlace']),
-            'SETTINGS_CONTACT_COUNTRY'                      => contrexx_raw2xhtml($arrSettings['contactCountry']),
-            'SETTINGS_CONTACT_PHONE'                        => contrexx_raw2xhtml($arrSettings['contactPhone']),
-            'SETTINGS_CONTACT_FAX'                          => contrexx_raw2xhtml($arrSettings['contactFax']),
-            'SETTINGS_ADMIN_EMAIL'                          => $arrSettings['coreAdminEmail'],
-            'SETTINGS_ADMIN_NAME'                           => $arrSettings['coreAdminName'],
-            'SETTINGS_GLOBAL_TITLE'                         => $arrSettings['coreGlobalPageTitle'],
-            'SETTINGS_PAGING_LIMIT'                         => intval($arrSettings['corePagingLimit']),
-            'SETTINGS_SEARCH_RESULT_LENGTH'                 => intval($arrSettings['searchDescriptionLength']),
-            'SETTINGS_SESSION_LIFETIME'                     => intval($arrSettings['sessionLifeTime']),
-            'SETTINGS_SESSION_LIFETIME_REMEMBER_ME'         => $arrSettings['sessionLifeTimeRememberMe'],
-            'SETTINGS_DNS_SERVER'                           => $arrSettings['dnsServer'],
-            'SETTINGS_IDS_RADIO_ON'                         => ($arrSettings['coreIdsStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_IDS_RADIO_OFF'                        => ($arrSettings['coreIdsStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_XML_SITEMAP_ON'                       => ($arrSettings['xmlSitemapStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_XML_SITEMAP_OFF'                      => ($arrSettings['xmlSitemapStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_SYSTEMSTATUS_ON'                      => ($arrSettings['systemStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_SYSTEMSTATUS_OFF'                     => ($arrSettings['systemStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_SEARCH_VISIBLE_CONTENT_ON'            => ($arrSettings['searchVisibleContentOnly'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_SEARCH_VISIBLE_CONTENT_OFF'           => ($arrSettings['searchVisibleContentOnly'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_DETECT_BROWSER_LANGUAGE_ON'           => ($arrSettings['languageDetection'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_DETECT_BROWSER_LANGUAGE_OFF'          => ($arrSettings['languageDetection'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_FRONTEND_EDITING_ON'                  => ($arrSettings['frontendEditingStatus'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_FRONTEND_EDITING_OFF'                 => ($arrSettings['frontendEditingStatus'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_USE_CUSTOMIZING_ON'                  => ($arrSettings['useCustomizings'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_USE_CUSTOMIZING_OFF'                 => ($arrSettings['useCustomizings'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_GOOGLE_MAPS_API_KEY'                  => $arrSettings['googleMapsAPIKey'],
-            'SETTINGS_LIST_PROTECTED_PAGES_ON'              => ($arrSettings['coreListProtectedPages'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_LIST_PROTECTED_PAGES_OFF'             => ($arrSettings['coreListProtectedPages'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_TIMEZONE_OPTIONS'                     => $this->getTimezoneOptions($arrSettings['timezone']),
-            'SETTINGS_DASHBOARD_NEWS_ON'                    => ($arrSettings['dashboardNews'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_DASHBOARD_NEWS_OFF'                   => ($arrSettings['dashboardNews'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_DASHBOARD_STATISTICS_ON'              => ($arrSettings['dashboardStatistics'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_DASHBOARD_STATISTICS_OFF'             => ($arrSettings['dashboardStatistics'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_GOOGLE_ANALYTICS_TRACKING_ID'         => $arrSettings['googleAnalyticsTrackingId'],
-            'SETTINGS_PASSWORD_COMPLEXITY_ON'               => ($arrSettings['passwordComplexity'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_PASSWORD_COMPLEXITY_OFF'              => ($arrSettings['passwordComplexity'] == 'off') ? 'checked="checked"' : '',
-        ));
-
-        $objTemplate->setVariable(array(
-            'TXT_ADVANCED_UPLOAD_STATUS_BACKEND'        => $_ARRAYLANG['TXT_ADVANCED_UPLOAD_STATUS_BACKEND'],
-            'TXT_ADVANCED_UPLOAD_STATUS_FRONTEND'       => $_ARRAYLANG['TXT_ADVANCED_UPLOAD_STATUS_FRONTEND'],
-            'SETTINGS_ADVANCED_UPLOAD_BACKEND_ON'       => ($arrSettings['advancedUploadBackend'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_ADVANCED_UPLOAD_BACKEND_OFF'      => ($arrSettings['advancedUploadBackend'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON'      => ($arrSettings['advancedUploadFrontend'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF'     => ($arrSettings['advancedUploadFrontend'] == 'off') ? 'checked="checked"' : ''
-        ));
-
-        $objTemplate->setVariable(array(
-            'TXT_SETTINGS_PROTOCOL_HTTPS_HELP'          => $_ARRAYLANG['TXT_SETTINGS_PROTOCOL_HTTPS_HELP'],
-            'TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND'       => $_ARRAYLANG['TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND'],
-            'TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND'      => $_ARRAYLANG['TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND'],
-            'TXT_FORCE_PROTOCOL_NONE'                   => $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_NONE'],
-            'TXT_FORCE_PROTOCOL_HTTP'                   => $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTP'],
-            'TXT_FORCE_PROTOCOL_HTTPS'                  => $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTPS'],
-            'SETTINGS_FORCE_PROTOCOL_FRONTEND_NONE'     => (substr($arrSettings['forceProtocolFrontend'], 0, 4) != 'http' ? ' selected="selected"' : ''),
-            'SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTP'     => ($arrSettings['forceProtocolFrontend'] == 'http' ? ' selected="selected"' : ''),
-            'SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTPS'    => ($arrSettings['forceProtocolFrontend'] == 'https' ? ' selected="selected"' : ''),
-            'SETTINGS_FORCE_PROTOCOL_BACKEND_NONE'     => (substr($arrSettings['forceProtocolBackend'], 0, 4) != 'http' ? ' selected="selected"' : ''),
-            'SETTINGS_FORCE_PROTOCOL_BACKEND_HTTP'     => ($arrSettings['forceProtocolBackend'] == 'http' ? ' selected="selected"' : ''),
-            'SETTINGS_FORCE_PROTOCOL_BACKEND_HTTPS'    => ($arrSettings['forceProtocolBackend'] == 'https' ? ' selected="selected"' : ''),
-        ));
-
-        $objTemplate->setVariable(array(
-            'TXT_SETTINGS_FORCE_DOMAIN_URL_HELP'        => $_ARRAYLANG['TXT_SETTINGS_FORCE_DOMAIN_URL_HELP'],
-            'TXT_SETTINGS_FORCE_DOMAIN_URL'             => $_ARRAYLANG['TXT_SETTINGS_FORCE_DOMAIN_URL'],
-            'SETTINGS_FORCE_DOMAIN_URL_ON'              => ($arrSettings['forceDomainUrl'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_FORCE_DOMAIN_URL_OFF'              => ($arrSettings['forceDomainUrl'] == 'off') ? 'checked="checked"' : '',
-        ));
-        
-        $this->setDebuggingVariables($objTemplate);
+            'TXT_RADIO_ON'                              => $_ARRAYLANG['TXT_ACTIVATED'],
+            'TXT_RADIO_OFF'                             => $_ARRAYLANG['TXT_DEACTIVATED']
+            ));
+        $this->setDebuggingVariables($templateObj);
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'site', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::show(
+                $template,
+                'index.php?cmd=Config&act=update',
+                $_ARRAYLANG['TXT_CORE_CONFIG_SITE'],
+                'Site',
+                'TXT_CORE_CONFIG_'
+                );
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::show(
+                $template,
+                'index.php?cmd=Config&act=update',
+                $_ARRAYLANG['TXT_CORE_CONFIG_ADMINISTRATIONAREA'], 
+                'Administration area', 
+                'TXT_CORE_CONFIG_'
+                );
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'security', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::show(
+                $template,
+                'index.php?cmd=Config&act=update',
+                $_ARRAYLANG['TXT_CORE_CONFIG_SECURITY'],
+                'Security',
+                'TXT_CORE_CONFIG_'
+                );
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::show(
+                $template,
+                'index.php?cmd=Config&act=update',
+                $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTINFORMATION'],
+                'Contact Information', 
+                'TXT_CORE_CONFIG_'
+                );
+        \Cx\Core\Setting\Controller\Setting::show_external(
+                $template,
+                'Development Tools',
+                $templateObj->get()
+                );
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::show(
+                $template,
+                'index.php?cmd=Config&act=update',
+                $_ARRAYLANG['TXT_CORE_CONFIG_OTHERCONFIGURATIONS'],
+                'other Configuration Options', 
+                'TXT_CORE_CONFIG_'
+                );
+       
+                if (!$this->checkFtpAccess($template)) {
+                    $objTemplate->setVariable('ADMIN_CONTENT', $template->get());
+              } 
     }
 
     /**
@@ -383,17 +259,17 @@ class Config
      * @param   string      $selectedTimezone   name of the selected timezone
      * @return  string      $timezoneOptions    available timezones as HTML <option></option>
      */
-    private function getTimezoneOptions($selectedTimezone) {
-        $timezoneOptions = '';
+    private function getTimezoneOptions() {
+        $timezoneOptions = array();
         foreach (timezone_identifiers_list() as $timezone) {
             $dateTimeZone = new \DateTimeZone($timezone);
             $dateTime     = new \DateTime('now', $dateTimeZone);
             $timeOffset   = $dateTimeZone->getOffset($dateTime);
             $plusOrMinus  = $timeOffset < 0 ? '-' : '+';
             $gmt          = 'GMT ' . $plusOrMinus . ' ' . gmdate('g:i', $timeOffset);
-            $timezoneOptions .= '<option value="'.$timezone.'"'.(($timezone == $selectedTimezone) ? ' selected="selected"' : '').'>'.$timezone.' ('.$gmt.')</option>';
+            $timezoneOptions[] = $timezone.":".$timezone."(".$gmt.")";
         }
-        return $timezoneOptions;
+        return implode(',',$timezoneOptions);
     }
 
     /**
@@ -1086,4 +962,232 @@ class Config
             ));
         $objTemplate->setVariable('DOMAINS_CONTENT', $view->render());
     }
+    
+     /**
+     * Fixes database errors.   
+     *
+     * @return  boolean                 False.  Always.
+     * @throws  \Cx\Lib\Update_DatabaseException
+     */
+    static function init() {
+        try {
+            
+            //setup site
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
+            if (\Cx\Core\Setting\Controller\Setting::getValue('systemStatus') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('systemStatus','on', 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Page Status");
+            }
+            
+            if (\Cx\Core\Setting\Controller\Setting::getValue('languageDetection') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('languageDetection','on', 2,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'Activated,Deactivated', 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Auto Detect Language");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('coreGlobalPageTitle') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('coreGlobalPageTitle','Default Installation', 3,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Global Page Title");
+            }
+
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mainDomainId') === NULL 
+                    && !\Cx\Core\Setting\Controller\Setting::add('mainDomainId', '', 4, \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::getDomains(), 'site') ) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Main Domain");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('forceDomainUrl') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('forceDomainUrl','off', 5,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Home Page Url");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('coreListProtectedPages') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('coreListProtectedPages','off', 6,
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protected Pages");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('searchVisibleContentOnly','on', 7,
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Visible Contents");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('advancedUploadFrontend') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('advancedUploadFrontend','off', 8,
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Visible Contents");
+            }
+            
+            if (\Cx\Core\Setting\Controller\Setting::getValue('forceProtocolFrontend ') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolFrontend','none', 9,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
+            }
+           //setup administration
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml');
+            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNews') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','on', 1,
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard News");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardStatistics') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardStatistics','off', 2,
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard Statistics");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('advancedUploadBackend') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('advancedUploadBackend','on', 3,
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for advanced Upload Tools");
+            }
+             if (\Cx\Core\Setting\Controller\Setting::getValue('sessionLifeTime') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('sessionLifeTime','3600', 4,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for session Length");
+            }
+             if (\Cx\Core\Setting\Controller\Setting::getValue('sessionLifeTimeRememberMe') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('sessionLifeTimeRememberMe','1209600', 5,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for session Length Remember");
+            }
+             if (\Cx\Core\Setting\Controller\Setting::getValue('dnsServer') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('dnsServer','ns1.contrexxhosting.com', 6,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dns Server");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('timezone ') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('timezone','Europe/Zurich', 7,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::getTimezoneOptions(), 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Time zone");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('forceProtocolBackend ') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolBackend','none', 8,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use Administrator");
+            }
+            
+            //setup security
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml');
+            if (\Cx\Core\Setting\Controller\Setting::getValue('coreIdsStatus ') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('coreIdsStatus','off', 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'security')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Security system notifications ");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordComplexity ') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('passwordComplexity','off', 2,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'security')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Passwords must meet the complexity requirements");
+            }
+
+            
+            //setup contact info
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml');
+            if (\Cx\Core\Setting\Controller\Setting::getValue('coreAdminName') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('coreAdminName','Administrator', 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core Admin Name");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('coreAdminEmail') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('coreAdminEmail','info@example.com', 2,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core Admin Email");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('contactFormEmail') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('contactFormEmail','info@example.com', 3,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Form Email");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('contactCompany') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('contactCompany','Ihr Firmenname', 4,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Company");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('contactAddress') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('contactAddress','Musterstrasse 12', 5,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Address");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('contactZip') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('contactZip','3600', 6,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Zip");
+            }
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml');
+            if (\Cx\Core\Setting\Controller\Setting::getValue('contactPlace') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('contactPlace','Musterhausen', 7,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Place");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('contactCountry') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('contactCountry','Musterland', 8,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Country");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('contactPhone') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('contactPhone','033 123 45 67', 9,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Phone");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('contactFax') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('contactFax','033 123 45 68', 10,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Fax");
+            }
+            //setup otherConfigurationOptions
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml');
+            if (\Cx\Core\Setting\Controller\Setting::getValue('xmlSitemapStatus') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('xmlSitemapStatus','on', 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for XML Sitemap");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('frontendEditingStatus') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('frontendEditingStatus','on', 2,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Frontend Editing");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('useCustomizings') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('useCustomizings','off', 3,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Customizing");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('corePagingLimit') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('corePagingLimit','30', 4,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Records per page");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('searchDescriptionLength') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('searchDescriptionLength','150', 5,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Number of Characters in Search Results");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('googleMapsAPIKey') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('googleMapsAPIKey','', 6,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Google-Map API key ");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('googleAnalyticsTrackingId ') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('googleAnalyticsTrackingId','', 7,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Google Analytics Tracking ID");
+            }
+
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
+        // Always
+        return false;
+    }
+    /**
+     * Shows the all domains page
+     * 
+     * @access  private
+     * @return  string
+     */
+    private function getDomains() {
+        $objMainDomain = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $domains = $objMainDomain->findAll();
+        foreach ($domains As $domain) {
+            $display[] = $domain->getId() . ':' . $domain->getName();
+        }
+        return implode(',', $display);
+    }
+
 }
