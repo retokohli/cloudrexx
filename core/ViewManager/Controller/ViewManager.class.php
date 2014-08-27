@@ -1636,8 +1636,8 @@ class ViewManager
 
                 } else {
                     $filePath = (file_exists($this->websiteThemesFilePath . '/' . $fileName)) ? $this->websiteThemesFilePath . '/' . $fileName : $this->codeBaseThemesFilePath . '/'. $fileName;
-                    $icon             = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
-                    $cssId     = ($_POST['themesPage'] ==  $fileName) ? 'activeFile' : '';
+                    $icon     = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
+                    $cssId    = ($_POST['themesPage'] ==  $fileName) ? 'activeFile' : '';
                     $objTemplate->setVariable(array(
                        'THEMES_FILES' => "<li><img height='16' width='16' alt='icon' src='" . $icon . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage' id = '$cssId' data-rel='" . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL, 
                     ));
@@ -1695,6 +1695,7 @@ class ViewManager
      * @return string $result
      */
     function getUlLi($folder, $path) {
+        $imgPath = $path;
         $result .= '<ul>';
         foreach ($folder as $folderName => $fileName) {
             if (is_array($fileName)) {
@@ -1704,8 +1705,8 @@ class ViewManager
                 $result .= $this->getUlLi($fileName, $path);
                 $result .= '</li>' . PHP_EOL;
             } else {
-                $filePath = (file_exists($this->websiteThemesFilePath . '/' . $path . $fileName)) ? $this->websiteThemesFilePath . '/' . $path .$fileName : $this->codeBaseThemesFilePath . '/'. $path .$fileName;
-                $iconDisp    = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
+                $filePath = (file_exists($this->websiteThemesFilePath . '/' . $imgPath . $fileName)) ? $this->websiteThemesFilePath . '/' . $imgPath .$fileName : $this->codeBaseThemesFilePath . '/'. $imgPath .$fileName;
+                $iconDisp = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
                 $cssId   = ($_POST['themesPage'] == $folderName . '/' . $fileName) ? 'activeFile' : '';
                 $result .= "<li><img height='16' width='16' alt='icon' src='" . $iconDisp . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage'  id = '$cssId' data-rel='" . $path . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL;
             }
