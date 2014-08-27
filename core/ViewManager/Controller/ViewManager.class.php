@@ -1662,26 +1662,27 @@ class ViewManager
      * @param array $mergedFiles - merged array
      */
     function sortFilesFolders(& $mergedFiles) {
-        $kcmp = function($a, $b) {
-            return is_string($a) ? 0 : 1;
-        };
-        uksort($mergedFiles, $kcmp);
-        
-        $cmp = function($a, $b) {
-            if (is_array($a) || is_array($b)) {
-                return -1;
-            }
-            if ($a == $b) {
-                return 0;
-            }
-            return strcasecmp($a, $b) >= 0 ? 1 : -1;
-        };
-        uasort($mergedFiles, $cmp);
-        foreach ($mergedFiles as & $value) {
+        $tmp1 = array();
+        $tmp2 = array();
+        foreach ($mergedFiles as $key => $value) {
             if (is_array($value)) {
-                $this->sortFilesFolders($value);
+                $tmp1[$key] = $value;
+            } else {
+                $tmp2[] = $value;
             }
         }
+
+        if ($tmp1) {
+            uksort($tmp1, 'strcasecmp');
+            foreach ($tmp1 as $key => & $value) {
+                $this->sortFilesFolders($value);            
+            }
+        }
+        if ($tmp2) {
+            uasort($tmp2, 'strcasecmp');
+        }
+
+        $mergedFiles = array_merge($tmp1, $tmp2);        
     }
     
     /**
