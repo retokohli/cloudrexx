@@ -79,7 +79,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $objInit, $_ARRAYLANG;
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-        \DBG::activate();
+        
         switch ($command) {
             case 'MultiSite':
                 switch ($subcommand) {
@@ -209,16 +209,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     $website = $subscription->getProductEntity();
                                     $product = $subscription->getProduct();
                                     $objTemplate->setVariable(array(
-                                        'MULTISITE_WEBSITE_NAME' => $website->getName(),
-                                        'MULTISITE_WEBSITE_PLAN' => $product->getName(),
-                                        'MULTISITE_WEBSITE_INVOICE_DATE' => $subscription->getRenewalDate()->format('d.m.Y'),
-                                        'MULTISITE_WEBSITE_EXPIRE_DATE' => $subscription->getExpirationDate()->format('d.m.Y')
+                                        'MULTISITE_WEBSITE_NAME'         => $website->getName(),
+                                        'MULTISITE_WEBSITE_LINK'         => $this->getApiProtocol() . $website->getBaseDn()->getName(),
+                                        'MULTISITE_WEBSITE_BACKEND_LINK' => $this->getApiProtocol() . $website->getBaseDn()->getName() . '/cadmin',
+                                        'MULTISITE_WEBSITE_PLAN'         => $product->getName(),
+                                        'MULTISITE_WEBSITE_INVOICE_DATE' => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
+                                        'MULTISITE_WEBSITE_EXPIRE_DATE'  => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : ''
                                     ));
+                                    if ($status == 'valid') {
+                                        $product->isUpgradable() ? $objTemplate->touchBlock('showUpgradeButton') : $objTemplate->hideBlock('showUpgradeButton');
+                                    }
                                     $objTemplate->parse('showSiteDetails');
                                 }
                             }
                         } else {
                             $objTemplate->touchBlock('noSiteFound');
+                            $objTemplate->hideBlock('showSiteTable');
                         }
 
                         echo $objTemplate->get();
