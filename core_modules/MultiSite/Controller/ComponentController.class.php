@@ -439,23 +439,29 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database multiSite Domain");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteUrl') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('marketingWebsiteUrl','https://'.$_CONFIG['domainUrl'], 4,
+            if (\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('marketingWebsiteDomain',$_CONFIG['domainUrl'], 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Marketing Website URL");
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Marketing Website Domain");
+            }
+// TODO: this should be an existing domain from Cx\Core\Net
+            if (\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('customerPanelDomain',$_CONFIG['domainUrl'], 5,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Customer Panel Domain");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('unavailablePrefixes', 'account,admin,demo,dev,mail,media,my,staging,test,www', 5,
+                && !\Cx\Core\Setting\Controller\Setting::add('unavailablePrefixes', 'account,admin,demo,dev,mail,media,my,staging,test,www', 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Unavailable website names");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMaxLength',80, 6,
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMaxLength',80, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Maximal length of website names");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMinLength',4, 7,
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMinLength',4, 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Minimal length of website names");
             }
@@ -656,35 +662,44 @@ throw new MultiSiteException('Refactor this method!');
 
     protected function verifyBackendAndCommandRequest($cx) {
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $mainDomain = $domainRepository->getMainDomain()->getName();
-        // Allow access to backend and command-mode only through Main Domain.
+        $managerDomain = $domainRepository->getMainDomain();
+        $marketingWebsiteDomainName = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
+        $requestedDomainName = $_SERVER['HTTP_HOST'];
+
+        // Allow access to backend and command-mode only through Manager domain (-> Main Domain).
         // Other requests will be forwarded to the Marketing Website of MultiSite.
         if (   in_array($cx->getMode(), array($cx::MODE_BACKEND, $cx::MODE_COMMAND))
-            && $_SERVER['HTTP_HOST'] != $mainDomain
+            && $requestedDomainName != $managerDomain->getName()
         ) {
-            header('Location: '.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteUrl'), true, 301);
+            header('Location: '.ASCMS_PROTOCOL.'//'.$marketingWebsiteDomainName, true, 301);
             exit;
         }
     }
 
     protected function verifyFrontendRequest($cx) {
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        // Allow access to frontend only on known domains.
-        // Known domains are usually the Main Domain as well as the domain used for the Customer Panel.
+        $managerDomain = $domainRepository->getMainDomain();
+        $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
+        $marketingWebsiteDomainName = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
+        $requestedDomainName = $_SERVER['HTTP_HOST'];
+
+        // Allow access to frontend only on domain of Marketing Website and Customer Panel.
         // Other requests will be forwarded to the Marketing Website of MultiSite.
         if (   $cx->getMode() == $cx::MODE_FRONTEND
-            && !$domainRepository->findOneBy(array('name' => $_SERVER['HTTP_HOST']))
+            && !empty($marketingWebsiteDomainName)
+            && !empty($customerPanelDomainName)
+            && $requestedDomainName != $marketingWebsiteDomainName
+            && $requestedDomainName != $customerPanelDomainName
         ) {
-            header('Location: '.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteUrl'), true, 301);
+            header('Location: '.ASCMS_PROTOCOL.'/'.$marketingWebsiteDomainName, true, 301);
             exit;
         }
 
-        // In case the Main Domain has been requested,
+        // In case the Manager domain has been requested,
         // the user will automatically be redirected to the backend.
-        return;
-        $mainDomain = $domainRepository->getMainDomain()->getName();
-        if (   !in_array($cx->getMode(), array($cx::MODE_BACKEND, $cx::MODE_COMMAND))
-            && $_SERVER['HTTP_HOST'] == $mainDomain
+        if (   $cx->getMode() == $cx::MODE_FRONTEND
+            && $customerPanelDomainName != $managerDomain->getName()
+            && $requestedDomainName == $managerDomain->getName()
         ) {
             $backendUrl = \Env::get('cx')->getWebsiteBackendPath();
             header('Location: '.$backendUrl);
