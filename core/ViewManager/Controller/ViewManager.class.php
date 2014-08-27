@@ -1621,8 +1621,9 @@ class ViewManager
                 $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
             }
 
-            $mergedFiles = $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
-            $this->sortFilesFolders($mergedFiles);
+            $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
+            $this->sortFilesFolders($codeBaseFiles);
+            $mergedFiles = $codeBaseFiles;
             foreach($mergedFiles as $folderName => $fileName) {
                $folderIcon = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
 
@@ -1747,16 +1748,19 @@ class ViewManager
      */
     function array_merge_recursive_distinct(array &$array1, &$array2 = null)
     {
-      $merged = $array1;
-
-      if (is_array($array2))
-        foreach ($array2 as $key => $val)
-          if (is_array($array2[$key]))
-              $merged[$key] = is_array($merged[$key]) ? $this->array_merge_recursive_distinct($merged[$key], $array2[$key]) : $array2[$key];
-          else
-              $merged[$key] = $val;
-              
-      return $merged;
+        foreach ($array2 as $key => $value) {
+            if (is_array($value)) {
+                if (array_key_exists($key, $array1)) {
+                    $this->array_merge_recursive_distinct($array1[$key], $value);
+                } else {
+                    $array1[$key] = $value;
+                }
+            } else {
+                if (!in_array($value, $array1)) {
+                    $array1[] = $value;
+                }
+            }
+        }
     }
     
     /**
