@@ -145,26 +145,33 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
         if (!empty($params['post'])) {
             $websiteName = contrexx_input2raw($params['post']['multisite_address']);
-            $user = $this->createUser(array('post' => array('email' => $params['post']['multisite_email_address'])));
+            $arrSettings = \User_Setting::getSettings();
+            $user = $this->createUser(array('post' => array(
+                'active'=> true,
+                'email' => $params['post']['multisite_email_address'],
+                'groups'=> explode(',', $arrSettings['assigne_to_groups']['value']),
+            )));
             // create a new CRM Contact and link it to the User account
             if (!empty($user['userId'])) {
-                $objFWUser = \FWUser::getFWUserObject();
-                $objUser   = $objFWUser->objUser->getUser(intval($user['userId']));
-// TODO: add check if user could be loaded
-                
-                $objUser->objAttribute->first();
-                while (!$objUser->objAttribute->EOF) {
-                    $arrProfile['fields'][] = array('special_type' => 'access_'.$objUser->objAttribute->getId());
-                    $arrProfile['data'][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-                    $objUser->objAttribute->next();
-                }
-                
-                $arrProfile['fields'][] = array('special_type' => 'access_email');
-                $arrProfile['data'][]   = $objUser->getEmail();
-                $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-                $crmContactId  = $objCrmLibrary->addCrmContact($arrProfile);
-                
                 try {
+                    $objFWUser = \FWUser::getFWUserObject();
+                    $objUser   = $objFWUser->objUser->getUser(intval($user['userId']));
+                    if (!$objUser) {
+                        throw new MultiSiteJsonException("Unable to load user account {$user['userId']}.");
+                    }
+
+                    $objUser->objAttribute->first();
+                    while (!$objUser->objAttribute->EOF) {
+                        $arrProfile['fields'][] = array('special_type' => 'access_'.$objUser->objAttribute->getId());
+                        $arrProfile['data'][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
+                        $objUser->objAttribute->next();
+                    }
+                    
+                    $arrProfile['fields'][] = array('special_type' => 'access_email');
+                    $arrProfile['data'][]   = $objUser->getEmail();
+                    $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+                    $crmContactId  = $objCrmLibrary->addCrmContact($arrProfile);
+                
                     $id = 1;
                     $subscriptionOptions = array(
                         // set hard-coded to 'month'
@@ -270,6 +277,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         try {
+            //check email validity
+            if (!\FWValidator::isEmail($params['post']['email'])) {
+                throw new MultiSiteJsonException('The email you entered is invalid.');
+            }
+            //check email existence
+            self::verifyEmail($params['post']['email']);
+
             $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
             if (!empty($params['post']['userId'])) {
                 $objUser->setMultiSiteId($params['post']['userId']);
@@ -279,13 +293,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $objUser->setAdminStatus(!empty($params['post']['admin']) ? (bool)$params['post']['admin'] : false);
             $objUser->setPassword(\User::make_password(8,true));
             
-            //check email validity
-            if (!\FWValidator::isEmail($params['post']['email'])) {
-                throw new MultiSiteJsonException('The email you entered is invalid.');
+            if (!empty($params['post']['groups'])) {
+                $objUser->setGroups($params['post']['groups']);
             }
-            //check email existence
-            self::verifyEmail($params['post']['email']);
-            
+
             //call \User\store function to store all the info of new user
             if (!$objUser->store()) {
                 \DBG::msg('Adding user failed: '.$objUser->getErrorMsg());
