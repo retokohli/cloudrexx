@@ -1,45 +1,72 @@
-<div class="col-lg-4">
+<div class="col-lg-6">
 
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <h2 class="panel-title">My Websites</h2>
         </div>
-        <div class="panel-body">
-            ...
-            <div class="pull-right">
-                <a href="{NODE_MULTISITE_WEBSITES}" class="btn btn-default" role="button">More</a>
-            </div>
+        <div class="panel-body" id="multisite_sites">
+            <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
         </div>
     </div>
 
 </div>
 
-<div class="col-lg-4">
+<!-- <div class="col-lg-4">
 
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <h2 class="panel-title">Bills and payments</h2>
         </div>
         <div class="panel-body">
-            ...
+            <div class="table-responsive" id="multisite_invoice">
+                <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+            </div>
             <div class="pull-right">
                 <a href="{NODE_MULTISITE_BILLING}" class="btn btn-default" role="button">More</a>
             </div>
         </div>
     </div>
 
-</div>
+</div> -->
 
-<div class="col-lg-4">
+<div class="col-lg-6">
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <h2 class="panel-title">My Profile</h2>
         </div>
         <div class="panel-body">
-            ...
+            <div class="table-responsive" id="multisite_user">
+                <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+            </div>
             <div class="pull-right">
                 <a href="{NODE_MULTISITE_USER}" class="btn btn-default" role="button">More</a>
             </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    function  loadContent(jQuerySelector, url, replace) {
+        jQuery.ajax({
+            dataType: 'html',
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                if (data) {
+                    if (replace) {
+                        jQuery(jQuerySelector).replaceWith(data);
+                    } else {
+                        jQuery(jQuerySelector).html(data);
+                    }
+                }
+            },
+            fail: function(data) {}
+        });
+    }
+    loadContent('#multisite_sites', '/api/MultiSite/Subscription/Summary?status=valid', true);
+    //loadContent('#multisite_invoice', '/api/MultiSite/Invoice');
+    loadContent('#multisite_user', '/api/MultiSite/User/Summary');
+});
+/* ]]> */
+</script>
