@@ -199,6 +199,11 @@ namespace Cx\Core
          */
         public function isCoreModule($moduleName)
         {
+            // Workaround due to customizing to set News is Module
+            // so it could be used as main navigation entry in backend.
+            if ($moduleName == 'News') {
+                return true;
+            }
             return in_array($moduleName, $this->arrCoreModules);
         }
 
