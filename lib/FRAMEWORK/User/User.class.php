@@ -2155,6 +2155,26 @@ class User extends User_Profile
         return false;
     }
 
+    /**
+     * Set new password as md5 sum of password
+     * @param   string $hashedPassword The md5 sum of the new password to be set
+     */
+    public function setHashedPassword($hashedPassword) {
+        $this->password = $hashedPassword;
+    }
+
+    /**
+     * Returns the md5 sum of the newly set password of the user account if it has been changed.
+     * This method only returns the password (its md5 sum) of the user account in case it has
+     * been changed using {@see \User::setPassword()}.
+     * This method's purpose is to have the newly set password (its md5 sum) available in
+     * the model events through it.
+     * @return  string  The newly set password of the user account
+     */
+    public function getPassword() {
+        return $this->password;
+    }
+
 
     /**
      * Set frontend language ID of user

@@ -63,6 +63,10 @@ class User_Profile
         $arrDate = array();
         $arrDateFormat = array();
         foreach ($arrProfile as $attributeId => $arrValue) {
+            if (!is_array($arrValue)) {
+                continue;
+            }
+
             $objAttribute = $this->objAttribute->getById($attributeId);
             if (in_array($objAttribute->getType(), array('menu_option', 'group', 'frame', 'history'))) {
                 continue;
