@@ -83,6 +83,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($command) {
             case 'MultiSite':
                 switch ($subcommand) {
+                    case 'Signup':
+// TODO: remove backwards compatibility
                     case 'signup':
                         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
                         $objTemplate->loadTemplateFile('Signup.html');
@@ -108,6 +110,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'MULTISITE_SIGNUP_URL'          => $signUpUrl->toString(),
                             'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
                             'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
+                        ));
+                        echo $objTemplate->get();
+                        break;
+
+                    case 'Login':
+                        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
+                        $objTemplate->loadTemplateFile('Login.html');
+                        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+                        $langData = $objInit->loadLanguageData('Login');
+                        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+                        $langData = $objInit->loadLanguageData('core');
+                        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+                        $objTemplate->setVariable(array(
+                            'TITLE'                 => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
+                            'TXT_LOGIN_PASSWORD'    => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
+                            'TXT_LOGIN_USERNAME'    => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
+                            'TXT_LOGIN_REMEMBER_ME' => $_ARRAYLANG['TXT_CORE_REMEMBER_ME'],
+                            'TXT_LOGIN_LOGIN'       => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
+                            'TXT_LOGIN_PASSWORD_LOST'=> $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
                         ));
                         echo $objTemplate->get();
                         break;
