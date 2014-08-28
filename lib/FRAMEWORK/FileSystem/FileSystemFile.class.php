@@ -49,12 +49,18 @@ class FileSystemFile implements FileInterface
             throw new FileSystemFileException('No file path specified!');
         }
         
-        if (strpos($file, \Env::get('cx')->getWebsiteDocumentRootPath()) === 0) {
+        // $file is specified by absolute file system path of operating system
+        if (   strpos($file, \Env::get('cx')->getWebsiteDocumentRootPath()) === 0
+            || strpos($file, \Env::get('cx')->getCodeBaseDocumentRootPath()) === 0
+        ) {
             $this->filePath = $file;
+        // $file is specified by relative path of Website's offset path
         } elseif (\Env::get('cx')->getWebsiteOffsetPath() && strpos($file, \Env::get('cx')->getWebsiteOffsetPath()) === 0) {
             $this->filePath = \Env::get('cx')->getWebsitePath() . $file;
+        // $file is specified by absolute path from Website's document root
         } elseif (strpos($file, '/') === 0) {
             $this->filePath = \Env::get('cx')->getWebsiteDocumentRootPath() . $file;
+        // $file path is unkown -> assuming its relative from Website's document root
         } else {
             $this->filePath = \Env::get('cx')->getWebsiteDocumentRootPath() . '/'.$file;
         }
