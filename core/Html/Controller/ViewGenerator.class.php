@@ -203,7 +203,7 @@ class ViewGenerator {
              * trigger pre- and postRemove event
              * execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
              */
-            $deleteId = contrexx_input2raw($_GET['deleteid']);
+            $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
             if ($deleteId!='') {
                 $entityObject = $this->object->getEntry($deleteId);
                 if (empty($entityObject)) {
