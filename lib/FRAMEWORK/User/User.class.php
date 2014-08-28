@@ -2171,7 +2171,7 @@ class User extends User_Profile
      * the model events through it.
      * @return  string  The newly set password of the user account
      */
-    public function getPassword() {
+    public function getHashedPassword() {
         return $this->password;
     }
 
