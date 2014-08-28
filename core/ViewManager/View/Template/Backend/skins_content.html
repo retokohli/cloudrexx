@@ -14,11 +14,11 @@
 
         $J("#jstree").jstree({
             "ui": {
-                "initially_select": ["activeFile"]
+                "initially_select": ["activeFolder"]
             },
             "core": {
                 "animation": 1,
-                "initially_open": ["activeFile"]
+                "initially_open": ["activeFolder"]
             }
 
 
@@ -63,8 +63,9 @@
         width: 0px;
     }
     .jstree #activeFile{
-        color: #1A74BD;
+        color: black;
         cursor: pointer;
+        font-weight: bold;
     }
     .icon{
         margin-top: 8px;
