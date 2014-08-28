@@ -44,4 +44,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 
         $this->cx->getTemplate()->setRoot($cachedRoot);        
     }
+    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $evm = \Env::get('cx')->getEvents();
+        $settingEventListener = new \Cx\Core\Setting\Model\Event\SettingEventListener();
+        
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\Setting\\Model\\Entity\\YamlSetting', $settingEventListener);
+        $evm->addModelListener('postFlush', 'Cx\\Core\\Setting\\Model\\Entity\\YamlSetting', $settingEventListener);
+    }
+
 }
