@@ -562,28 +562,41 @@ class Website extends \Cx\Model\Base\EntityBase {
     * @param $websiteName name of the website
     * */
     protected function setupDataFolder($websiteName){
-        // create folders and chmod with 0755
-        // otherwise the file system class will set 777
+        // website's data repository
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
-            
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
+
+        // config
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config');
+
+        // tmp
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp');
+
         // themes
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');
-        // create media folders
+        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');     
+
+        // media
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media');
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/checkout');
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/checkout');
+        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive1');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive1');
+        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive2');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive2');
+        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive3');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive3');
+        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive4');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive4');
+        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/FileSharing');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/FileSharing');    
+
+        // images
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images');
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images/content');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images/content');
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/feed');
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/feed');
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images/attach');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images/attach');
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images/Shop');
@@ -604,18 +617,10 @@ class Website extends \Cx\Model\Base\EntityBase {
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images/Podcast');
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images/Blog');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/images/Blog');
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive1');
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive1');
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive2');
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive2');
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive3');
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive3');
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive4');
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/archive4');
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/FileSharing');
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media/FileSharing');    
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');     
+
+        // feed
+        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/feed');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/feed');
     }    
      /*
     * function setupConfiguration to create configuration
@@ -624,9 +629,12 @@ class Website extends \Cx\Model\Base\EntityBase {
     * */
     protected function setupConfiguration($websiteName, $objDb, $objDbUser){
         global $_PATHCONFIG;
+
+        $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+
         // setup base configuration (configuration.php)
         try {
-            $configuration = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsiteSkeleton/config/configuration.php');
+            $configuration = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton/config/configuration.php');
             $configuration->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/configuration.php');
 
             $newConf = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/configuration.php');
@@ -654,7 +662,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         // setup basic configuration (settings.php)
         try {
-            $settings = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsiteSkeleton/config/settings.php');
+            $settings = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton/config/settings.php');
             $settings->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/settings.php');
             $newSettings = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/settings.php');
             $settingsData = preg_replace_callback(
@@ -687,13 +695,19 @@ class Website extends \Cx\Model\Base\EntityBase {
             $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
             $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
             \Cx\Core\Config\Controller\Config::init($websiteConfigPath);
+
+            // we must re-initialize the original MultiSite settings of the main installation
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            // we must re-initialize the original MultiSite settings of the main installation
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+
             throw new WebsiteException('Unable to setup settings file: '.$e->getMessage());
         }
         
         // setup preInitHooks.yml
         try {
-            $preInit = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseConfigPath() . '/preInitHooks.yml');
+            $preInit = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getConfigFolderName() . '/preInitHooks.yml');
             $preInit->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/preInitHooks.yml');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new WebsiteException('Unable to set up preInitHooks.yml: '.$e->getMessage());
@@ -701,24 +715,11 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         // setup DomainRepository.yml
         try {
-            $domainRepository = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsiteSkeleton/config/DomainRepository.yml');
+            $domainRepository = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton/config/DomainRepository.yml');
             $domainRepository->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/DomainRepository.yml');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new WebsiteException('Unable to set up DomainRepository.yml: '.$e->getMessage());
         }
-
-        // tmp/legacyClassCache.tmp
-// TODO: Extend LegacyClassLoader by a read-only legacyClassCache located in the Code Base (core/ClassLoader/Data/LegacyClassCache.tmp).
-//       Move the existing legacyClassCache.tmp from /tmp to the new location.
-//       Implement a custom website classCache.tmp that is generated by the website itself (should only contain new classes of non-core extensions)
-        # copy file
-        /*try {
-            $classCache = new \Cx\Lib\FileSystem\File($this->cl->getFilePath(ASCMS_CORE_MODULE_PATH.'/MultiSite/Data/WebsiteSkeleton/tmp/legacyClassCache.tmp'));
-            $classCache->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp/legacyClassCache.tmp');
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            //\DBG::msg($e->getMessage());
-            throw new WebsiteException('error in copying legacyClassCache.tmp');
-        }*/
     }
 
     protected function setupMultiSiteConfig($websiteName)
@@ -1094,7 +1095,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function setupRobotsFile($websiteName) {
         try {
-            $setupRobotFile = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsiteSkeleton/robots.txt');
+            $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+            $setupRobotFile = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton/robots.txt');
             $setupRobotFile->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/robots.txt');
         }  catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new WebsiteException('Unable to setup robot file: '.$e->getMessage());
