@@ -424,9 +424,11 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
             \DBG::msg('Website: setupMultiSiteConfig..');
             $this->setupMultiSiteConfig($websiteName);
-            \DBG::msg('Website: createContrexxUser..');
+            \DBG::msg('Website: setupRobotsFile..');
             $this->setupRobotsFile($websiteName);
+            \DBG::msg('Website: createContrexxUser..');
             $this->createContrexxUser($websiteName);
+            \DBG::msg('Website: Set state to '.self::STATE_ONLINE);
             $this->status = self::STATE_ONLINE;
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
             \DBG::msg('Website: setup process.. DONE');
