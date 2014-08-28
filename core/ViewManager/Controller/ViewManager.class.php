@@ -1709,8 +1709,8 @@ class ViewManager
             } else {
                 $filePath = (file_exists($this->websiteThemesFilePath . '/' . $imgPath . $fileName)) ? $this->websiteThemesFilePath . '/' . $imgPath .$fileName : $this->codeBaseThemesFilePath . '/'. $imgPath .$fileName;
                 $iconDisp = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
-                $cssId   = ($_POST['themesPage'] == $path . $fileName) ? 'activeFile' : '';
-                $result .= "<li><img height='16' width='16' alt='icon' src='" . $iconDisp . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage'  id = '$cssId' data-rel='" . $path . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL;
+                $cssId   = ($_POST['themesPage'] == $imgPath . $fileName) ? 'activeFile' : '';
+                $result .= "<li><img height='16' width='16' alt='icon' src='" . $iconDisp . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage'  id = '$cssId' data-rel='" . $imgPath . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL;
             }
         }
         $result .= '</ul>';
