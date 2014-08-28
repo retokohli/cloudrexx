@@ -656,15 +656,13 @@ throw new MultiSiteException('Refactor this method!');
         // If the MultiSite module has not been configured, then 'mode' will be set to null.
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case self::MODE_MANAGER:
-                $this->verifyBackendAndCommandRequest($cx);
-                $this->verifyFrontendRequest($cx);
+                $this->verifyRequest($cx);
                 break;
 
             case self::MODE_HYBRID:
             case self::MODE_SERVICE:
                 $this->deployWebsite($cx);
-                $this->verifyBackendAndCommandRequest($cx);
-                $this->verifyFrontendRequest($cx);
+                $this->verifyRequest($cx);
                 break;
 
             case self::MODE_WEBSITE:
@@ -691,28 +689,30 @@ throw new MultiSiteException('Refactor this method!');
         }
     }
 
-    protected function verifyBackendAndCommandRequest($cx) {
-        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $managerDomain = $domainRepository->getMainDomain();
-        $marketingWebsiteDomainName = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
-        $requestedDomainName = $_SERVER['HTTP_HOST'];
-
-        // Allow access to backend and command-mode only through Manager domain (-> Main Domain).
-        // Other requests will be forwarded to the Marketing Website of MultiSite.
-        if (   in_array($cx->getMode(), array($cx::MODE_BACKEND, $cx::MODE_COMMAND))
-            && $requestedDomainName != $managerDomain->getName()
-        ) {
-            header('Location: '.$this->getApiProtocol().$marketingWebsiteDomainName, true, 301);
-            exit;
-        }
-    }
-
-    protected function verifyFrontendRequest($cx) {
+    protected function verifyRequest($cx) {
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $managerDomain = $domainRepository->getMainDomain();
         $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
         $marketingWebsiteDomainName = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
         $requestedDomainName = $_SERVER['HTTP_HOST'];
+
+        // Allow access to backend only through Manager domain (-> Main Domain).
+        // Other requests will be forwarded to the Marketing Website of MultiSite.
+        if (   $cx->getMode() == $cx::MODE_BACKEND
+            && $requestedDomainName != $managerDomain->getName()
+        ) {
+            header('Location: '.$this->getApiProtocol().$marketingWebsiteDomainName, true, 301);
+            exit;
+        }
+        // Allow access to command-mode only through Manager domain (-> Main Domain) and Customer Panel domain
+        // Other requests will be forwarded to the Marketing Website of MultiSite.
+        if (   $cx->getMode() == $cx::MODE_COMMAND
+            && $requestedDomainName != $managerDomain->getName()
+            && $requestedDomainName != $customerPanelDomainName
+        ) {
+            header('Location: '.$this->getApiProtocol().$marketingWebsiteDomainName, true, 301);
+            exit;
+        }
 
         // Allow access to frontend only on domain of Marketing Website and Customer Panel.
         // Other requests will be forwarded to the Marketing Website of MultiSite.
