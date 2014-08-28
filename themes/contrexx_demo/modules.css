@@ -47,7 +47,7 @@ form .is_required {
 }
 form .contactFormGroup {
     float: left;
-    width: 326px;
+    width: 100%;
 }
 form .contactFormGroup input[type=checkbox] {
     clear: left;
@@ -60,18 +60,18 @@ form .formUploadedFiles,
 form .contactFormUpload div,
 form .formUploadedFiles div {
     float: left;
-    width: 326px;
+    width: 100%;
 }
 form .contactFormUpload ul,
 form .formUploadedFiles ul {
     float: left;
-    width: 326px;
+    width: 100%;
     padding: 0 0 5px 0;
 }
 form .contactFormUpload li,
 form .formUploadedFiles li {
     float: left;
-    width: 306px;
+    width: 100%;
     padding: 0 0 5px 20px;
     margin: 0 0 5px 0;
     border-bottom: 1px solid #DDDDDD;
@@ -259,7 +259,7 @@ div.row2 {
     float: left;
     width: auto;
     clear: both;
-    margin: 2px 0 5px 0;
+    margin: 0px 0 5px 0;
     white-space: normal;
     font-weight: normal;
 }
@@ -290,7 +290,7 @@ div.row2 {
     display: none;
     width: 100%;
     padding: 15px 0 0 0;
-    color: #FF0000;
+    /*color: #FF0000;*/
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR VOTING MODULE               */
@@ -2680,7 +2680,6 @@ dl.data_module img {
 .noCaption {
     width: auto;
     float: left;
-    margin-left: 4px;
 }
 #news-social-media li {
     float: left;
