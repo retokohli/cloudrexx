@@ -59,7 +59,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             // protocol workaround as option multiSiteProtocol is not set on WEBSITE
             'createUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'updateUser'            => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'updateUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'updateOwnUser'         => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'unMapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
@@ -353,27 +353,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $objUser->setBackendLanguage(isset($data['multisite_user_backend_language']) ? intval($data['multisite_user_backend_language']) : $objUser->getBackendLanguage());
         $objUser->setEmailAccess(isset($data['multisite_user_email_access']) && $objUser->isAllowedToChangeEmailAccess() ? contrexx_input2raw($data['multisite_user_email_access']) : $objUser->getEmailAccess());
         $objUser->setProfileAccess(isset($data['multisite_user_profile_access']) && $objUser->isAllowedToChangeProfileAccess() ? contrexx_input2raw($data['multisite_user_profile_access']) : $objUser->getProfileAccess());
+        isset($data['multisite_password']) ? $objUser->setHashedPassword(contrexx_input2raw($data['multisite_password'])) : null;
         if (!empty($data['multisite_user_password']) || !empty($params['post']['multisite_user_account_password'])) {
             $password = !empty($data['multisite_user_password']) ? trim(contrexx_stripslashes($data['multisite_user_password'])) : (!empty($params['post']['multisite_user_account_password']) ? trim(contrexx_stripslashes($params['post']['multisite_user_account_password'])) : '');
             $confirmedPassword = !empty($data['multisite_user_password_confirmed']) ? trim(contrexx_stripslashes($data['multisite_user_password_confirmed'])) : (!empty($params['post']['multisite_user_account_password_confirmed']) ? trim(contrexx_stripslashes($params['post']['multisite_user_account_password_confirmed'])) : '');
             if (!$objUser->setPassword($password, $confirmedPassword)) {
+                \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
                 throw new MultiSiteJsonException(array(
                     'object'    => 'password',
                     'type'      => 'danger',
-                    'message'   => $objUser->getErrorMsg(),
+                    'message'   => join("\n", $objUser->getErrorMsg()),
                 ));
             }
         }
         
         $objUser->setProfile($data);
         if (!$objUser->store()) {
+            \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
             throw new MultiSiteJsonException(array(
                 'object'    => 'form',
                 'type'      => 'danger',
-                'message'   => $objUser->getErrorMsg(),
+                'message'   => join("\n", $objUser->getErrorMsg()),
             ));
         }
                 
+        \DBG::msg("JsonMultiSite (updateUser): User {$objUser->getId()} successfully updated.");
         return true;
     } 
 
