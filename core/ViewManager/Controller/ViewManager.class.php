@@ -1883,7 +1883,12 @@ class ViewManager
 
         //copy "not available" preview.gif as default preview image
         if (!file_exists($this->path.$themeDirectory.'/images/preview.gif')) {
-            if (!\Cx\Lib\FileSystem\FileSystem::copy_file(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Core/View/Media/preview.gif', $this->path.$themeDirectory.'/images/preview.gif')) {
+            try{
+                $objFile = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Core/View/Media/preview.gif');
+                $objFile->copy($this->path.$themeDirectory.'/images/preview.gif');
+            }
+            catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
                 $this->strErrMessage = sprintf($_ARRAYLANG['TXT_UNABLE_TO_CREATE_FILE'], contrexx_raw2xhtml($this->path.$themeDirectory.'/images/preview.gif'));
                 return false;
             }
