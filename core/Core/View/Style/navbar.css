@@ -57,7 +57,7 @@ table#subnavbar_level1 .navi a:hover,
 table#subnavbar_level1 .navi a:focus,
 table#subnavbar_level1 .navi a:active,
 table#subnavbar_level1 .navi a.active {
-    background: #85be0b;
+    background: #4eaa09;
     color: #ffffff;
 }
 
@@ -105,6 +105,6 @@ table#subnavbar_level1 form[name="userFrontendLangIdForm"] select {
 #subnavbar_level2 a:focus,
 #subnavbar_level2 a:active,
 #subnavbar_level2 a.active {
-    background: #df961e;
+    background: #da7a0c;
     color: #ffffff;
 }
