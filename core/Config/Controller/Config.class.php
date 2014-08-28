@@ -901,11 +901,11 @@ class Config
      * @return  boolean                 False.  Always.
      * @throws  \Cx\Lib\Update_DatabaseException
      */
-    static function init() {
+    static function init($configPath = null) {
         try {
             
             //site group
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('systemStatus') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('systemStatus','on', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
@@ -954,7 +954,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
             }
            //administrationArea group
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml');
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNews') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','on', 1,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
@@ -997,7 +997,7 @@ class Config
             }
             
             //security group
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml');
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('coreIdsStatus ') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('coreIdsStatus','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'security')){
@@ -1009,7 +1009,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Passwords must meet the complexity requirements");
             }
             //contactInformation group
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml');
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('coreAdminName') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('coreAdminName','Administrator', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
@@ -1040,7 +1040,7 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Zip");
             }
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml');
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('contactPlace') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('contactPlace','Musterhausen', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
@@ -1062,7 +1062,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Fax");
             }
             //otherConfigurations group
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml');
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('xmlSitemapStatus') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('xmlSitemapStatus','on', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){

@@ -683,6 +683,10 @@ class Website extends \Cx\Model\Base\EntityBase {
                 $newSettings->getData()
             );
             $newSettings->write($settingsData);
+            
+            $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+            $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
+            \Cx\Core\Config\Controller\Config::init($websiteConfigPath);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new WebsiteException('Unable to setup settings file: '.$e->getMessage());
         }
