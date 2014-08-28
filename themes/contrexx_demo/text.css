@@ -136,7 +136,8 @@ textarea {
     -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; 
 }
-input[type="submit"], input[type="reset"], input[type=button] {color: #414141;}
+input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus{outline: none;}
+input[type="submit"], input[type="reset"], input[type=button] {color: #414141; font-size: 13px;}
 textarea {color: #7d7d7d;}
 select {
     display: block;
@@ -178,6 +179,7 @@ input[type=radio] {
     margin: 3px 10px 3px 0;
     padding: 0;
     border: 0 none;
+    clear: both;
 }
 input[type=checkbox] {
     float: left;

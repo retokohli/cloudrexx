@@ -1,3 +1,4 @@
+body #workbenchWarning{display: none;}
 #fe_toolbar_tab {
     box-sizing: content-box;
     -moz-box-sizing: content-box;
@@ -1528,3 +1529,17 @@ p#loginerror {
 .horizontal-list .fa.fa-facebook:hover {background-color: #4568B2;}
 .horizontal-list .fa.fa-google-plus:hover {background-color: #DD4B39;}
 .horizontal-list .fa.fa-rss:hover {background-color: #ec6621;}
+.checkbox:last-child, .radio:last-child {
+    margin-bottom: 0;
+}
+.checkbox:first-child, .radio:first-child {
+    margin-top: 0;
+}
+.contact.row hr {
+    padding: 0;
+    margin: 6px 0 0px 0;
+}
+input[type="file"]{height: auto;}
+.radio label, .checkbox label {
+    height: 20px;
+}
