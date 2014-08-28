@@ -4350,8 +4350,8 @@ $WhereStatement = '';
                     $arrLists = array();
                 
                     if (isset($_POST['newsletter_recipient_associated_list'])) {
-                        foreach (explode(',', $_POST['newsletter_recipient_associated_list']) as $listId) {                    
-                            array_push($arrLists, intval($listId));
+                        foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
+                            array_push($arrLists, intval($listId));             
                         }                
                     }
                     $EmailList = str_replace(array(']','[',"\t","\n","\r"), ' ', $_REQUEST["Emails"]);
