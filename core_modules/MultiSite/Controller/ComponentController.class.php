@@ -148,6 +148,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $page->setCmd($pageCmd);
                         $page->setModule('MultiSite');
                         $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+                        \LinkGenerator::parseTemplate($pageContent);
                         $objTemplate = new \Cx\Core\Html\Sigma();
                         $objTemplate->setTemplate($pageContent);
                         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -199,6 +200,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $page->setCmd($pageCmd);
                         $page->setModule('MultiSite');
                         $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+                        \LinkGenerator::parseTemplate($pageContent);
                         $objTemplate = new \Cx\Core\Html\Sigma();
                         $objTemplate->setTemplate($pageContent);
                         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -237,7 +239,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                         'MULTISITE_WEBSITE_INVOICE_DATE' => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
                                         'MULTISITE_WEBSITE_EXPIRE_DATE'  => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : ''
                                     ));
-                                    if ($status == 'valid') {
+                                    if ($status == 'valid' && $objTemplate->blockExists('showUpgradeButton')) {
                                         $product->isUpgradable() ? $objTemplate->touchBlock('showUpgradeButton') : $objTemplate->hideBlock('showUpgradeButton');
                                     }
                                     $objTemplate->parse('showSiteDetails');
@@ -247,7 +249,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             $objTemplate->touchBlock('noSiteFound');
                             $objTemplate->hideBlock('showSiteTable');
                         }
-
                         echo $objTemplate->get();
                         break;
                     default:
