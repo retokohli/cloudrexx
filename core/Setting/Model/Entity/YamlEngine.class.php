@@ -144,12 +144,11 @@ class YamlEngine extends Engine{
         $success = true;
         try {
             foreach (self::$arrSettings As $yamlSettingName => $yamlSettingValue) {
-                $objYamlSetting = self::$yamlSettingRepo->findOneBy(array('name' => $yamlSettingName, 'section' => self::section));
+                $objYamlSetting = self::$yamlSettingRepo->findOneBy(array('name' => $yamlSettingName, 'section' => self::$section));
                 $objYamlSetting->setValue($yamlSettingValue['value']);
             
-                \Env::get('em')->persist($objYamlSetting);
             }
-            \Env::get('em')->flush();
+            self::$yamlSettingRepo->flush();
         } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
             \DBG::msg($e->getMessage());
             return false;
@@ -200,8 +199,7 @@ class YamlEngine extends Engine{
                 $objYamlSetting = self::$yamlSettingRepo->findOneBy(array('name' => $name, 'section' => self::$section));
                 $objYamlSetting->setValue(self::$arrSettings[$name]['value']);
             
-                \Env::get('em')->persist($objYamlSetting);
-                \Env::get('em')->flush();
+                self::$yamlSettingRepo->flush();
             } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
                 \DBG::msg($e->getMessage());
                 return false;
@@ -367,4 +365,18 @@ class YamlEngine extends Engine{
         }
        
     } 
+    /**
+     * To check the file is writable or not
+     *
+     * @return  boolean True or false
+     * @static
+     * 
+     */
+    static function isWritable() {
+        if (\Cx\Lib\FileSystem\FileSystem::makeWritable(self::$filename)) {
+            return true;
+        }
+        return false;
+    }
+
 }
