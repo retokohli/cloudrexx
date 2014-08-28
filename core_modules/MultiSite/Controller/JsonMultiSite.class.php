@@ -150,6 +150,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (!empty($user['userId'])) {
                 $objFWUser = \FWUser::getFWUserObject();
                 $objUser   = $objFWUser->objUser->getUser(intval($user['userId']));
+// TODO: add check if user could be loaded
                 
                 $objUser->objAttribute->first();
                 while (!$objUser->objAttribute->EOF) {
@@ -199,10 +200,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         'to' => $config['coreAdminEmail'],
                         'search' => array(
                             '[[ERROR]]',
+                            '[[WEBSITE_NAME]]',
+                            '[[CUSTOMER_EMAIL]]',
                             '[[DBG_LOG]]',
                         ),
                         'replace' => array(
                             $e->getMessage(),
+                            $websiteName,
+                            $params['post']['multisite_email_address'],
                             join("\n", \DBG::getMemoryLogs()),
                         ),
                     ));
