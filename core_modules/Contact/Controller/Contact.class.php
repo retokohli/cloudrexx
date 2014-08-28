@@ -1401,7 +1401,7 @@ CODE;
         $message .= $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION']." : ".contrexx_raw2xhtml($arrFormData['meta']['browser'])."\n";
 
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            $objMail = new phpmailer();
+            $objMail = new \phpmailer();
 
             if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
                 if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
