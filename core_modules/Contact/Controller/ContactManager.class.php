@@ -1768,11 +1768,11 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $sourcecode = array();
         $this->initContactForms();
 
-        $sourcecode[] = '<div id="contactFeedback">{CONTACT_FEEDBACK_TEXT}</div>
+        $sourcecode[] = '<div class="text-warning" id="contactFeedback">{CONTACT_FEEDBACK_TEXT}</div>
 <div id="contactDescription"><!-- BEGIN formText -->'.($preview ? $this->arrForms[$id]['lang'][$lang]['text'] : '{'.$id.'_FORM_TEXT}').'<!-- END formText --></div>
-<div id="contactFormError">'.($preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}').'</div>
+<div class="text-danger" id="contactFormError">'.($preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}').'</div>
 <!-- BEGIN contact_form -->
-<form id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" action="'.($preview ? '../' : '').'index.php?section=Contact&amp;cmd='.$id.'" method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();">
+<form role="form" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" action="'.($preview ? '../' : '').'index.php?section=Contact&amp;cmd='.$id.'" method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();">
     <fieldset id="contactFrame">
     <legend>'.($preview ? $this->arrForms[$id]['lang'][$lang]['name'] : '{'.$id.'_FORM_NAME}').'</legend>';
 
@@ -1784,13 +1784,14 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             }
 
             if ($arrField['type'] != 'fieldset' && $arrField['type'] != 'hidden') {
-                $sourcecode[] = '<div class="contact row">';
+                $sourcecode[] = '<div class="contact row form-group">';
             }
             
             switch ($arrField['type']) {
                 case 'label':
                 case 'hidden':
                 case 'horizontalLine':
+                case 'checkbox':
                     break;
                 case 'fieldset':
                     $sourcecode[] = '</fieldset>';
@@ -1822,7 +1823,9 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     break;
 
                 case 'checkbox':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1" {SELECTED_'.$fieldId.'} />';
+                    $sourcecode[] = '<div class="checkbox"><label for="contactFormFieldId_'.$fieldId.'"><input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1" {SELECTED_'.$fieldId.'} />'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label></div>';
                     break;
 
                 case 'checkboxGroup':
@@ -1830,7 +1833,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
                     $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
                     foreach ($options as $index => $option) {
-                        $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.contrexx_raw2xhtml($option).'" {SELECTED_'.$fieldId.'_'.$index.'}/><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label>';
+                        $sourcecode[] = '<div class="checkbox"><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'"><input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.contrexx_raw2xhtml($option).'" {SELECTED_'.$fieldId.'_'.$index.'}/>'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label></div>';
                     }
                     $sourcecode[] = '</div>';
                     break;
@@ -1887,7 +1890,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
                     $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
                     foreach ($options as $index => $option) {
-                        $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
+                        $sourcecode[] .= '<div class="radio"><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'"><input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} />'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label></div>';
                     }
                     $sourcecode[] = '</div>';
                     break;
@@ -1960,22 +1963,22 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $sourcecode[] = '<link href="../core_modules/Contact/View/Style/form.css" rel="stylesheet" type="text/css" />';
 
             if ($this->arrForms[$id]['useCaptcha']) {
-                $sourcecode[] = '<div class="contact row">';
+                $sourcecode[] = '<div class="contact row form-group">';
                 $sourcecode[] = '<label>'.$_ARRAYLANG["TXT_CONTACT_CAPTCHA"].'</label>';
                 $sourcecode[] = \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode();
                 $sourcecode[] = '</div>';
             }
         } else {
             $sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
-            $sourcecode[] = '<div class="contact row">';
+            $sourcecode[] = '<div class="contact row form-group">';
             $sourcecode[] = '<label>{TXT_CONTACT_CAPTCHA}</label>';
             $sourcecode[] = '{CONTACT_CAPTCHA_CODE}';
             $sourcecode[] = '</div>';
             $sourcecode[] = "<!-- END contact_form_captcha -->";
         }
 
-        $sourcecode[] = '<div class="contact row">';
-        $sourcecode[] = '<label>&nbsp;</label><input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
+        $sourcecode[] = '<div class="contact row form-group">';
+        $sourcecode[] = '<input class="contactFormClass_button btn btn-default" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button btn btn-default" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
         $sourcecode[] = '<input type="hidden" name="unique_id" value="{CONTACT_UNIQUE_ID}" />';
         $sourcecode[] = '</div>';
         $sourcecode[] = "</fieldset>";
