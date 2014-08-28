@@ -223,7 +223,7 @@ class YamlRepository {
         // an other entity present in the repository with the same ID.
         $id = $this->getIdentifierOfEntity($entity);
         if ($id && isset($this->entities[$id])) {
-            throw new \YamlRepositoryException("Unable to add new entity to repository. A entity by the specified primary identifier {$this->getIdentifierOfEntity($entity)} is already present in the repository.");
+            throw new YamlRepositoryException("Unable to add new entity to repository. A entity by the specified primary identifier {$this->getIdentifierOfEntity($entity)} is already present in the repository.");
         } else {
             // assign new ID to entity
             call_user_func(array($entity, "set".ucfirst($this->entityIdentifier)), $this->getNewEntityIdentifier());

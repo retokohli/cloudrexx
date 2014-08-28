@@ -44,8 +44,8 @@ class Config
     function __construct()
     {
         $this->strSettingsFile = ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/config/settings.php';
-        $this->checkWritePermissions();
         self::init();
+        $this->checkWritePermissions(); 
     }
 
     private function setNavigation()
@@ -67,25 +67,19 @@ class Config
      * This method displays a warning message on top of the page when the ftp connection failed or the configuration
      * is disabled
      */
-    protected function checkFtpAccess($template) {
+    protected function checkFtpAccess() {
         global $_ARRAYLANG;
         // if ftp access is not activated or not possible to connect (not correct credentials)
         if(!\Cx\Lib\FileSystem\FileSystem::init()) {
-            \Message::add($_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] . ASCMS_DOCUMENT_ROOT . '/config/configuration.php' . "</div>" . $template->get(), \Message::CLASS_ERROR);
-            return true;
-        }
+            \Message::add(sprintf($_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'], \Env::get('cx')->getWebsiteDocumentRootPath() . '/config/configuration.php'), \Message::CLASS_ERROR);
+            }
     }
 
-    private function checkWritePermissions()
-    {
+    private function checkWritePermissions() {
         global $_ARRAYLANG;
-
-        if (\Cx\Lib\FileSystem\FileSystem::makeWritable($this->strSettingsFile)
-        ) {
-            $this->writable = true;
-        } else {
-            $this->writable = false;
-            $this->strErrMessage[] = sprintf($_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], $this->strSettingsFile);
+        $this->writable = \Cx\Core\Setting\Model\Entity\YamlEngine::isWritable();
+        if (!$this->writable){
+            \Message::warning(sprintf($_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], $this->strSettingsFile));
         }
     }
 
@@ -115,12 +109,7 @@ class Config
             case 'Domain':
                 $this->showDomains();
                 break;
-            case 'update':
-                $this->updateSettings();
-                $this->writeSettingsFile();
-                $this->showSettings();
-                break;
-
+           
             case 'cache':
                 $boolShowStatus = false;
                 $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
@@ -181,6 +170,7 @@ class Config
     {
         global $objTemplate,$_ARRAYLANG;
         $template = new \Cx\Core\Html\Sigma();
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_system', 'settings.html');
         $templateObj = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Config/View/Template/Backend');
         $templateObj->loadTemplateFile('development_tools.html');
         $templateObj->setVariable(array(
@@ -201,10 +191,14 @@ class Config
             'TXT_RADIO_OFF'                             => $_ARRAYLANG['TXT_DEACTIVATED']
             ));
         $this->setDebuggingVariables($templateObj);
+        
+        \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
+        \Cx\Core\Setting\Controller\Setting::storeFromPost();
+        
         \Cx\Core\Setting\Controller\Setting::init('Config', 'site', 'Yaml');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
-                'index.php?cmd=Config&act=update',
+                'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_SITE'],
                 'Site',
                 'TXT_CORE_CONFIG_'
@@ -212,7 +206,7 @@ class Config
         \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea', 'Yaml');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
-                'index.php?cmd=Config&act=update',
+                'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_ADMINISTRATIONAREA'], 
                 'Administration area', 
                 'TXT_CORE_CONFIG_'
@@ -220,7 +214,7 @@ class Config
         \Cx\Core\Setting\Controller\Setting::init('Config', 'security', 'Yaml');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
-                'index.php?cmd=Config&act=update',
+                'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_SECURITY'],
                 'Security',
                 'TXT_CORE_CONFIG_'
@@ -228,7 +222,7 @@ class Config
         \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation', 'Yaml');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
-                'index.php?cmd=Config&act=update',
+                'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTINFORMATION'],
                 'Contact Information', 
                 'TXT_CORE_CONFIG_'
@@ -241,15 +235,14 @@ class Config
         \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations', 'Yaml');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
-                'index.php?cmd=Config&act=update',
+                'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_OTHERCONFIGURATIONS'],
                 'other Configuration Options', 
                 'TXT_CORE_CONFIG_'
                 );
-       
-                if (!$this->checkFtpAccess($template)) {
-                    $objTemplate->setVariable('ADMIN_CONTENT', $template->get());
-              } 
+              $this->checkFtpAccess();
+              $objTemplate->setVariable('SETTINGS_TABLE', $template->get());
+              $objTemplate->parse('settings_system');
     }
 
     /**
@@ -307,90 +300,6 @@ class Config
         return '';
     }
 
-    /**
-     * Update settings
-     *
-     * @global  ADONewConnection
-     * @global  array   Core language
-     * @global  array   Configuration
-     */
-    function updateSettings()
-    {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objTemplate;
-
-        if (isset($_POST['setvalue'][87]) && !in_array((!empty($_POST['setvalue'][87]) ? $_POST['setvalue'][87] : ''), timezone_identifiers_list())) {
-            $this->strErrMessage[] = $_ARRAYLANG['TXT_CORE_TIMEZONE_INVALID'];
-            return;
-        }
-
-        $checkWebsiteAccess = false;
-        foreach ($_POST['setvalue'] as $id => $value) {
-            switch (intval($id)) {
-                case 53:
-                    $arrMatch = array();
-                    if (preg_match('#^https?://(.*)$#', $value, $arrMatch)) {
-                        $value = $arrMatch[1];
-                    }
-                    $_CONFIG['domainUrl'] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
-                    break;
-                case 54:
-                    $_CONFIG['xmlSitemapStatus'] = $value;
-                    break;
-                case 71:
-                    $_CONFIG['coreListProtectedPages'] = $value;
-                    break;
-                case 43:
-                case 50:
-                case 54:
-                case 55:
-                case 56:
-                case 63:
-                case 67:
-                case 69:
-                case 70:
-                case 71:
-                case 85:
-                case 86:
-                case 89:
-                    $value = ($value == 'on') ? 'on' : 'off';
-                    break;
-                case 57:
-                    if ($_CONFIG['forceProtocolFrontend'] != $value) {
-                        if (!$this->checkAccessibility($value)) {
-                            $value = 'none';
-                        }
-                        $_CONFIG['forceProtocolFrontend'] = $value;
-                    }
-                    break;
-                case 58:
-                    if ($_CONFIG['forceProtocolBackend'] != $value) {
-                        if (!$this->checkAccessibility($value)) {
-                            $value = 'none';
-                        }
-                        $_CONFIG['forceProtocolBackend'] = $value;
-                    }
-                    break;
-                case 59:
-                    $useHttps = $_CONFIG['forceProtocolBackend'] == 'https';
-                    $protocol = 'http';
-                    if ($useHttps == 'https') {
-                        $protocol = 'https';
-                    }
-                    $value = $this->checkAccessibility($protocol) ? $value : 'off';
-                    $_CONFIG['forceDomainUrl'] = $value;
-                    break;
-            }
-            $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
-                                    SET `setvalue` = "'.contrexx_input2db($value).'"
-                                    WHERE `setid` = '.intval($id));
-        }
-        
-        if (isset($_POST['debugging'])) {
-            $this->updateDebugSettings(!empty($_POST['debugging']) ? $_POST['debugging'] : null);
-        }
-        $this->strOkMessage = $_ARRAYLANG['TXT_SETTINGS_UPDATED'];
-    }
-    
     /**
      * Checks whether the currently configured domain url is accessible 
      * @param string $protocol the protocol to check for access
@@ -524,13 +433,17 @@ class Config
     {
         global $objDatabase,$_ARRAYLANG;
 
-        if (!$this->isWritable()) {
+        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($this->strSettingsFile)) {
             $this->strOkMessage = '';
-            $this->strErrMessage[] = $this->strSettingsFile.' '.$_ARRAYLANG['TXT_SETTINGS_ERROR_WRITABLE'];
+            \Message::add($this->strSettingsFile.' '.$_ARRAYLANG['TXT_SETTINGS_ERROR_WRITABLE'], \Message::CLASS_ERROR);
             return false;
         }
-
-        //Header & Footer
+        //get values from ymlsetting
+        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
+        $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
+        foreach ($ymlArray as $key => $ymlValue){
+                $ymlArrayValues[$ymlValue['section']][$key] = $ymlArray[$key]['value'];
+        }
         $strHeader    = "<?php\n";
         $strHeader .= "/**\n";
         $strHeader .= "* This file is generated by the \"settings\"-menu in your CMS.\n";
@@ -579,9 +492,28 @@ class Config
             $strBody .= "*/\n";
 
             foreach($arrInner as $strName => $strValue) {
+                if (array_key_exists($strName, $ymlArrayValues['Config'])) {
+                    continue;
+                }
                 $strBody .= sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$strName.'\']');
                 $strBody .= "= ";
                 $strBody .= ($this->isANumber($strValue) ? $strValue : '"'.str_replace('"', '\"', $strValue).'"').";\n";
+            }
+            $strBody .= "\n";
+        }
+        
+        //write the values from settings yml
+        foreach ($ymlArrayValues as $section => $sectionValues) {
+            $strBody .= "/**\n";
+            $strBody .= "* -------------------------------------------------------------------------\n";
+            $strBody .= "* ".ucfirst($section)."\n";
+            $strBody .= "* -------------------------------------------------------------------------\n";
+            $strBody .= "*/\n";
+
+            foreach($sectionValues as $sectionName => $sectionNameValue) {
+                $strBody .= sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$sectionName.'\']');
+                $strBody .= "= ";
+                $strBody .= ($this->isANumber($sectionNameValue) ? $sectionNameValue : '"'.str_replace('"', '\"', $sectionNameValue).'"').";\n";
             }
             $strBody .= "\n";
         }
@@ -972,7 +904,7 @@ class Config
     static function init() {
         try {
             
-            //setup site
+            //site group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
             if (\Cx\Core\Setting\Controller\Setting::getValue('systemStatus') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('systemStatus','on', 1,
@@ -1021,7 +953,7 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
             }
-           //setup administration
+           //administrationArea group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml');
             if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNews') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','on', 1,
@@ -1064,7 +996,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use Administrator");
             }
             
-            //setup security
+            //security group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml');
             if (\Cx\Core\Setting\Controller\Setting::getValue('coreIdsStatus ') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('coreIdsStatus','off', 1,
@@ -1076,9 +1008,7 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'security')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Passwords must meet the complexity requirements");
             }
-
-            
-            //setup contact info
+            //contactInformation group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml');
             if (\Cx\Core\Setting\Controller\Setting::getValue('coreAdminName') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('coreAdminName','Administrator', 1,
@@ -1131,7 +1061,7 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Fax");
             }
-            //setup otherConfigurationOptions
+            //otherConfigurations group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml');
             if (\Cx\Core\Setting\Controller\Setting::getValue('xmlSitemapStatus') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('xmlSitemapStatus','on', 1,
