@@ -45,6 +45,8 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem', $websiteConfigPath);
                 \Cx\Core\Setting\Controller\Setting::set('websiteState', $website->getStatus());
                 \Cx\Core\Setting\Controller\Setting::update('websiteState');
+                // we must re-initialize the original MultiSite settings of the main installation
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
                 break;
 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
