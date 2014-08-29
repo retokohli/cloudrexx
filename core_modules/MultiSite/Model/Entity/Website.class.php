@@ -382,7 +382,6 @@ class Website extends \Cx\Model\Base\EntityBase {
         $websiteName = $this->getName();
         $websiteMail = $this->owner->getEmail(); 
         $websiteIp = null;
-        $websitePassword = \User::make_password(8, true);
 
         // language
         $lang = $this->owner->getBackendLanguage();
@@ -428,15 +427,26 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupRobotsFile($websiteName);
             \DBG::msg('Website: createContrexxUser..');
             $this->createContrexxUser($websiteName);
+
+            \DBG::msg('Website: prepare reset password function..');
+            $this->owner->setRestoreKey();
+            // hard-coded to 1 day
+            $this->owner->setRestoreKeyTime(86400);
+            $this->owner->store();
+            $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner);
+
+            \DBG::msg('Website: setup process.. DONE');
             \DBG::msg('Website: Set state to '.self::STATE_ONLINE);
             $this->status = self::STATE_ONLINE;
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
-            \DBG::msg('Website: setup process.. DONE');
         }
 
         \Env::get('em')->persist($this);
         \Env::get('em')->flush();
-        
+
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE) {
+            throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException('MultiSite mode was set to Website at the end of setup process. No E-Mail was sent to '.$this->owner->getEmail());
+        }
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID
         ) {
@@ -444,6 +454,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+            // send ADMIN mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                 'section' => 'MultiSite',
                 'lang_id' => $langId,
@@ -466,13 +477,14 @@ class Website extends \Cx\Model\Base\EntityBase {
                     '<customer-name>',
                     '<subscription:trial / business>'),
             ));
+            // send CUSTOMER mail
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                 'section' => 'MultiSite',
                 'lang_id' => $langId,
                 'key' => 'createInstance',
                 'to' => $websiteMail,
-                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD]]'),
-                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePassword),
+                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD_URL]]'),
+                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePasswordUrl),
             ))) {
             //  TODO: Implement proper error handler:
             //       removeWebsite() must not be called from within this method.
