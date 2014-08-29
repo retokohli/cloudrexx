@@ -65,9 +65,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function executeCommand($command, $arguments) {
+        global $objInit, $_ARRAYLANG;
+
         $subcommand = null;
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
+        }
+        $pageCmd = $subcommand;
+        if (!empty($arguments[1])) {
+            $pageCmd .= '_'.$arguments[1];
+        }
+        if (!empty($arguments[2])) {
+            $pageCmd .= '_'.$arguments[2];
         }
         
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
@@ -76,19 +85,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
-        global $objInit, $_ARRAYLANG;
+        // define frontend language
+// TODO: implement multilanguage support for API command
+        if (!defined('FRONTEND_LANG_ID')) {
+            define('FRONTEND_LANG_ID', 1);
+        }
+
+        // load language data of MultiSite component
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
+        // load application template
+        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+        $page->setVirtual(true);
+        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+        $page->setCmd($pageCmd);
+        $page->setModule('MultiSite');
+        $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+        \LinkGenerator::parseTemplate($pageContent, true, new \Cx\Core\Net\Model\Entity\Domain(\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')));
+        $objTemplate = new \Cx\Core\Html\Sigma();
+        $objTemplate->setTemplate($pageContent);
+        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+
         switch ($command) {
             case 'MultiSite':
                 switch ($subcommand) {
                     case 'Signup':
-// TODO: remove backwards compatibility
-                    case 'signup':
-                        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
-                        $objTemplate->loadTemplateFile('Signup.html');
-                        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
                         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
                         $mainDomain = $domainRepository->getMainDomain()->getName();
                         $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
@@ -115,9 +137,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
 
                     case 'Login':
-                        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
-                        $objTemplate->loadTemplateFile('Login.html');
-                        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
                         $langData = $objInit->loadLanguageData('Login');
                         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
                         $langData = $objInit->loadLanguageData('core');
@@ -134,25 +153,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
 
                     case 'User':
-                        $pageCmd = $subcommand;
-                        if (!empty($arguments[1])) {
-                            $pageCmd .= '_'.$arguments[1];
-                        }
-                        if (!empty($arguments[2])) {
-                            $pageCmd .= '_'.$arguments[2];
-                        }
-
-                        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
-                        $page->setVirtual(true);
-                        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
-                        $page->setCmd($pageCmd);
-                        $page->setModule('MultiSite');
-                        $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
-                        \LinkGenerator::parseTemplate($pageContent);
-                        $objTemplate = new \Cx\Core\Html\Sigma();
-                        $objTemplate->setTemplate($pageContent);
-                        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
                         // profile attribute labels are stored in core-lang
                         global $objInit, $_CORELANG;
                         $langData = $objInit->loadLanguageData('core');
@@ -186,25 +186,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
 
                     case 'Subscription':
-                        $pageCmd = $subcommand;
-                        if (!empty($arguments[1])) {
-                            $pageCmd .= '_'.$arguments[1];
-                        }
-                        if (!empty($arguments[2])) {
-                            $pageCmd .= '_'.$arguments[2];
-                        }
-                        
-                        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
-                        $page->setVirtual(true);
-                        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
-                        $page->setCmd($pageCmd);
-                        $page->setModule('MultiSite');
-                        $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
-                        \LinkGenerator::parseTemplate($pageContent);
-                        $objTemplate = new \Cx\Core\Html\Sigma();
-                        $objTemplate->setTemplate($pageContent);
-                        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-                        
                         $sessionObj = \cmsSession::getInstance();
                         $objUser = \FWUser::getFWUserObject()->objUser;
                         if (!$objUser->login()) {
