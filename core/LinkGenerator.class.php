@@ -39,10 +39,18 @@ class LinkGenerator {
      */
     protected $fetchingDone = false;
     protected $absoluteUris = false;
+    protected $domain = null;
 
-    public static function parseTemplate(&$content, $absoluteUris = false)
+    /**
+     * Replace all occurrences of node-placeholders (NODE_...) by their
+     * URL-representation.
+     * @param   mixed $content  Either a string or an array of strings in which the node-placeholders shall be replaced by their URL-representation.
+     * @param   boolean $absoluteUris   Set to TRUE to replace the node-placeholders by absolute URLs.
+     * @param   Cx\Core\Net\Model\Entity\Domain $domain Set the domain that shall be used when absolute URLs shall be generated.
+     */
+    public static function parseTemplate(&$content, $absoluteUris = false, \Cx\Core\Net\Model\Entity\Domain $domain = null)
     {
-        $lg = new LinkGenerator($absoluteUris);
+        $lg = new LinkGenerator($absoluteUris, $domain);
 
         if (!is_array($content)) {
             $arrTemplates = array(&$content);
@@ -61,8 +69,9 @@ class LinkGenerator {
         }
     }
     
-    public function __construct($absoluteUris = false) {
+    public function __construct($absoluteUris = false, $domain = null) {
         $this->absoluteUris = $absoluteUris;
+        $this->domain = $domain;
     }
 
     /**
@@ -205,20 +214,43 @@ class LinkGenerator {
             if (!$data instanceof \Cx\Core\Routing\Url) {
                 if (!empty($data['module'])) {
                     try {
-                        $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang'], array(), '', false)->toString($this->absoluteUris);
+                        $url = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang'], array(), '', false);
+                        if ($this->absoluteUris && $this->domain) {
+                            $url->setDomain($this->domain);
+                        }
+                        $this->placeholders[$placeholder] = $url->toString($this->absoluteUris);
                     } catch (\Cx\Core\Routing\UrlException $e) {
                         if ($data['lang'] && $data['cmd']) {
-                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'].'_'.$data['lang'], FRONTEND_LANG_ID)->toString($this->absoluteUris);
+                            $url = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'].'_'.$data['lang'], FRONTEND_LANG_ID);
+                            if ($this->absoluteUris && $this->domain) {
+                                $url->setDomain($this->domain);
+                            }
+                            $this->placeholders[$placeholder] = $url->toString($this->absoluteUris);
                         } else if ($data['lang'] && empty($data['cmd'])) {
-                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID)->toString($this->absoluteUris);
+                            $url = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID);
+                            if ($this->absoluteUris && $this->domain) {
+                                $url->setDomain($this->domain);
+                            }
+                            $this->placeholders[$placeholder] = $url->toString($this->absoluteUris);
                         } else {
-                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $data['lang'])->toString($this->absoluteUris);
+                            $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $data['lang']);
+                            if ($this->absoluteUris && $this->domain) {
+                                $url->setDomain($this->domain);
+                            }
+                            $this->placeholders[$placeholder] = $url->toString($this->absoluteUris);
                         }
                     }
                 } else {
-                    $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $data['lang'])->toString($this->absoluteUris);
+                    $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $data['lang']);
+                    if ($this->absoluteUris && $this->domain) {
+                        $url->setDomain($this->domain);
+                    }
+                    $this->placeholders[$placeholder] = $url->toString($this->absoluteUris);
                 }
             } else {
+                if ($this->absoluteUris && $this->domain) {
+                    $data->setDomain($this->domain);
+                }
                 $this->placeholders[$placeholder] = $data->toString($this->absoluteUris);
             }
         }
