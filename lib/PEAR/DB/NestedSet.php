@@ -359,7 +359,7 @@ class DB_NestedSet {
         }
         // Todo: Only load the node class when needed
         include_once(ASCMS_LIBRARY_PATH.'/PEAR/DB/NestedSet/Node.php');
-        $c = & new $classname($dsn, $params);
+        $c = new $classname($dsn, $params);
         return $c;
     }
     // }}}
@@ -2006,7 +2006,7 @@ class DB_NestedSet {
                 $nodes[$node_id] = $row;
             } else {
                 // Create an instance of the node container
-                $nodes[$node_id] = & new DB_NestedSet_Node($row);
+                $nodes[$node_id] = new DB_NestedSet_Node($row);
             }
         }
         return $nodes;
