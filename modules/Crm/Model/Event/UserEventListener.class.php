@@ -43,7 +43,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $crmId = $objUsers->getCrmUserId();
         if(!empty($crmId)) {
             $objCrmLib = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-            $objCrmLib->setContactPersonProfile($arrProfile, $objUsers->getId());
+            $objCrmLib->setContactPersonProfile($arrProfile, $objUsers->getId(), $objUsers->getFrontendLanguage());
         }
     }
 
