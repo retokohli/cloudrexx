@@ -1303,7 +1303,7 @@ class User extends User_Profile
 
     public function setRestoreKey()
     {
-        $this->restore_key = md5($this->username.$this->regdate.time());
+        $this->restore_key = md5($this->email.$this->regdate.time());
         $this->restore_key_time = time() + 3600;
     }
 

@@ -418,9 +418,9 @@ class FWUser extends User_Setting
      * @global array
      * @global integer
      */
-    public function restorePassword($email)
+    public function restorePassword($email, $sendNotificationEmail = true)
     {
-        global $_CORELANG, $_CONFIG, $_LANGID;
+        global $_CORELANG;
 
 // TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
 // original code:
@@ -437,76 +437,11 @@ class FWUser extends User_Setting
 // workaround code:
             while (!$objUser->EOF) {
 // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
-            $objUserMail = $this->getMail();
             $objUser->setRestoreKey();
-            if ($objUser->store() &&
-                (
-                    $objUserMail->load('reset_pw', $_LANGID) ||
-                    $objUserMail->load('reset_pw')
-                ) &&
-                (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
-                ($objMail = new PHPMailer()) !== false
-            ) {
-                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
-                    }
-                }
-
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $objUserMail->getSenderMail();
-                $objMail->FromName = $objUserMail->getSenderName();
-                $objMail->AddReplyTo($objUserMail->getSenderMail());
-                $objMail->Subject = $objUserMail->getSubject();
-
-                if ($this->isBackendMode()) {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
-                } else {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=Login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
-                }
-
-                if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
-                    $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-                    $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
-                        array(
-                            '[[USERNAME]]',
-                            '[[URL]]',
-                            '[[SENDER]]'
-                        ),
-                        array(
-                            $objUser->getUsername(),
-                            $restorLink,
-                            $objUserMail->getSenderName()
-                        ),
-                        $objUserMail->getBodyText()
-                    );
-                }
-                if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
-                    $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
-                    $objMail->Body = str_replace(
-                        array(
-                            '[[USERNAME]]',
-                            '[[URL]]',
-                            '[[SENDER]]'
-                        ),
-                        array(
-                            htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                            $restorLink,
-                            htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
-                        ),
-                        $objUserMail->getBodyHtml()
-                    );
-                }
-
-                $objMail->AddAddress($objUser->getEmail());
-
-
-                if ($objMail->Send()) {
+            if ($objUser->store()) {
+                if (!$sendNotificationEmail) {
+                    $status = true;
+                } elseif ($this->sendRestorePasswordEmail($objUser)) {
 // TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
 // original code:
 //                    return true;
@@ -537,6 +472,87 @@ class FWUser extends User_Setting
         return false;
     }
 
+    protected function sendRestorePasswordEmail($objUser) {
+        global $_CONFIG, $_LANGID;
+
+        $objUserMail = $this->getMail();
+        if (   !$objUserMail->load('reset_pw', $_LANGID)
+            && !$objUserMail->load('reset_pw')
+        ) {
+            return false;
+        }
+        $objMail = new PHPMailer();
+        if (!$objMail) {
+            return false;
+        }
+
+        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+            if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                $objMail->IsSMTP();
+                $objMail->Host = $arrSmtp['hostname'];
+                $objMail->Port = $arrSmtp['port'];
+                $objMail->SMTPAuth = true;
+                $objMail->Username = $arrSmtp['username'];
+                $objMail->Password = $arrSmtp['password'];
+            }
+        }
+
+        $objMail->CharSet = CONTREXX_CHARSET;
+        $objMail->From = $objUserMail->getSenderMail();
+        $objMail->FromName = $objUserMail->getSenderName();
+        $objMail->AddReplyTo($objUserMail->getSenderMail());
+        $objMail->Subject = $objUserMail->getSubject();
+
+        $restoreLink = self::getPasswordRestoreLink($this->isBackendMode(), $objUser);
+
+        if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
+            $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
+            $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
+                array(
+                    '[[USERNAME]]',
+                    '[[URL]]',
+                    '[[SENDER]]'
+                ),
+                array(
+                    $objUser->getUsername(),
+                    $restoreLink,
+                    $objUserMail->getSenderName()
+                ),
+                $objUserMail->getBodyText()
+            );
+        }
+        if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
+            $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
+            $objMail->Body = str_replace(
+                array(
+                    '[[USERNAME]]',
+                    '[[URL]]',
+                    '[[SENDER]]'
+                ),
+                array(
+                    htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                    $restoreLink,
+                    htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                ),
+                $objUserMail->getBodyHtml()
+            );
+        }
+
+        $objMail->AddAddress($objUser->getEmail());
+        return $objMail->Send();
+    }
+
+    public static function getPasswordRestoreLink($isBackendMode, $objUser) {
+        global $_CONFIG;
+
+        if ($isBackendMode) {
+            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+        } else {
+            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=Login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+        }
+
+        return $restoreLink;
+    }
 
     /**
      * Format the author and publisher title
