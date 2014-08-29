@@ -179,6 +179,10 @@ class Url {
         return $this->domain;
     }
 
+    public function setDomain(\Cx\Core\Net\Model\Entity\Domain $domain) {
+        $this->domain = $this->protocol . '://'. $domain->getName() . '/';
+    }
+
     public function getPath() {
         return $this->path;
     }
