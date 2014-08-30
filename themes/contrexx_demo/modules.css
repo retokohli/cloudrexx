@@ -48,6 +48,7 @@ form .is_required {
 form .contactFormGroup {
     float: left;
     width: 100%;
+    margin-bottom: -3px;
 }
 form .contactFormGroup input[type=checkbox] {
     clear: left;
@@ -1747,6 +1748,7 @@ div.row2 {
 }
 #newsletter .newsletterFormGroup {
     float: left;
+    margin-bottom: -2px;
 }
 #newsletter .newsletterFormGroup input[type=radio] {
     clear: left;

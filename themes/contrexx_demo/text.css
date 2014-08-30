@@ -139,6 +139,11 @@ textarea {
 input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus{outline: none;}
 input[type="submit"], input[type="reset"], input[type=button] {color: #414141; font-size: 13px;}
 textarea {color: #7d7d7d;}
+select.form-control {
+    padding: 7px 8px;
+    color: #7d7d7d;
+    font-size: 13px;
+}
 select {
     display: block;
     width: 100%;
