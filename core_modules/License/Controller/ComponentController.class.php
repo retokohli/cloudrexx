@@ -73,7 +73,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $oldState = $license->getState();
                 $license->check();
                 if ($oldState != $license->getState()) {
-                    $license->save(new \Cx\Core\Config\Controller\Config(), $objDatabase);
+                    $license->save($objDatabase);
                 }
                 if ($license->isFrontendLocked()) {
                     // Since throwing an exception now results in showing offline.html, we can simply do
@@ -157,7 +157,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $license->check();
                     if ($license->getState() == \Cx\Core_Modules\License\License::LICENSE_NOK) {
                         $plainCmd = 'license';
-                        $license->save(new \Cx\Core\Config\Controller\Config(), $objDatabase);
+                        $license->save($objDatabase);
                     }
                     $lc = \Cx\Core_Modules\License\LicenseCommunicator::getInstance(\Env::get('config'));
                     $lc->addJsUpdateCode($_CORELANG, $license, $plainCmd == 'license');

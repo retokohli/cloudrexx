@@ -372,53 +372,50 @@ class License {
      * @param \settingsManager $settingsManager
      * @param \ADONewConnection $objDb 
      */
-    public function save($settingsManager, $objDb) {
-        // WARNING, this is the ugly way:
-        global $_POST;
-        $oldpost = $_POST;
-        unset($_POST);
-        
-        $_POST['setvalue'][75] = $this->getInstallationId();                                // installationId
-        $_POST['setvalue'][76] = $this->getLicenseKey();                                    // licenseKey
-        $_POST['setvalue'][90] = $this->getState();                                         // licenseState
-        $_POST['setvalue'][91] = $this->getValidToDate();                                   // licenseValidTo
-        $_POST['setvalue'][92] = $this->getEditionName();                                   // coreCmsEdition
+    public function save($objDb) {
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml');
+        \Cx\Core\Setting\Controller\Setting::set('cacheEnabled', $_POST['cachingStatus']);
+
+        \Cx\Core\Setting\Controller\Setting::set('installationId', $this->getInstallationId());
+        \Cx\Core\Setting\Controller\Setting::set('licenseKey', $this->getLicenseKey());
+        \Cx\Core\Setting\Controller\Setting::set('licenseState', $this->getState());
+        \Cx\Core\Setting\Controller\Setting::set('licenseValidTo', $this->getValidToDate());
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsEdition', $this->getEditionName());
         
         // we must encode the serialized objects to prevent that non-ascii chars
         // get written into the config/settings.php file
-        $_POST['setvalue'][93] = base64_encode(serialize($this->getMessages()));            // licenseMessage
-        
-        $_POST['setvalue'][94] = $this->getCreatedAtDate();                                 // licenseCreatedAt
-        $_POST['setvalue'][95] = base64_encode(serialize($this->getRegisteredDomains()));   // licenseDomains
-        $_POST['setvalue'][96] = base64_encode(serialize($this->getGrayzoneMessages()));    // licenseGrayzoneMessages
-        
-        $_POST['setvalue'][97] = $this->getVersion()->getNumber();                          // coreCmsVersion
-        $_POST['setvalue'][98] = $this->getVersion()->getCodeName();                        // coreCmsCodeName
-        $_POST['setvalue'][99] = $this->getVersion()->getState();                           // coreCmsStatus
-        $_POST['setvalue'][100] = $this->getVersion()->getReleaseDate();                    // coreCmsReleaseDate
+        \Cx\Core\Setting\Controller\Setting::set('licenseMessage', base64_encode(serialize($this->getMessages())));
+
+        \Cx\Core\Setting\Controller\Setting::set('licenseCreatedAt', $this->getCreatedAtDate());
+        \Cx\Core\Setting\Controller\Setting::set('licenseDomains', base64_encode(serialize($this->getRegisteredDomains())));
+        \Cx\Core\Setting\Controller\Setting::set('licenseGrayzoneMessages', base64_encode(serialize($this->getGrayzoneMessages())));
+
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $this->getVersion()->getNumber());
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsCodeName', $this->getVersion()->getCodeName());
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsStatus', $this->getVersion()->getState());
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsReleaseDate', $this->getVersion()->getReleaseDate());
         
         // see comment above why we encode the serialized data here
-        $_POST['setvalue'][101] = base64_encode(serialize($this->getPartner()));            // licensePartner
-        $_POST['setvalue'][102] = base64_encode(serialize($this->getCustomer()));           // licenseCustomer
-        
-        $_POST['setvalue'][103] = base64_encode(serialize($this->getAvailableComponents()));// availableComponents
-        
-        $_POST['setvalue'][104] = $this->getUpgradeUrl();                                   // upgradeUrl
-        $_POST['setvalue'][105] = ($this->isUpgradable() ? 'on' : 'off');                   // isUpgradable
+        \Cx\Core\Setting\Controller\Setting::set('licensePartner', base64_encode(serialize($this->getPartner())));
+        \Cx\Core\Setting\Controller\Setting::set('licenseCustomer', base64_encode(serialize($this->getCustomer())));
 
-        $_POST['setvalue'][106] = base64_encode(serialize($this->getDashboardMessages()));  // dashboardMessages
+        \Cx\Core\Setting\Controller\Setting::set('availableComponents', base64_encode(serialize($this->getAvailableComponents())));
+        
+        \Cx\Core\Setting\Controller\Setting::set('upgradeUrl', $this->getUpgradeUrl());
+        \Cx\Core\Setting\Controller\Setting::set('isUpgradable', ($this->isUpgradable() ? 'on' : 'off'));
 
-        $_POST['setvalue'][112] = $this->getVersion()->getName();                           // coreCmsName
-        
-        $_POST['setvalue'][114] = $this->getGrayzoneTime();                                 // licenseGrayzoneTime
-        $_POST['setvalue'][115] = $this->getFrontendLockTime();                             // licenseLockTime
-        $_POST['setvalue'][116] = $this->getRequestInterval();                              // licenseUpdateInterval
-        
-        $_POST['setvalue'][117] = $this->getFirstFailedUpdateTime();                        // licenseFailedUpdate
-        $_POST['setvalue'][118] = $this->getLastSuccessfulUpdateTime();                     // licenseSuccessfulUpdate
-        
-        $settingsManager->updateSettings();
-        $settingsManager->writeSettingsFile();
+        \Cx\Core\Setting\Controller\Setting::set('dashboardMessages', base64_encode(serialize($this->getDashboardMessages())));
+
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsName', $this->getVersion()->getName());
+                
+        \Cx\Core\Setting\Controller\Setting::set('licenseGrayzoneTime', $this->getGrayzoneTime());
+        \Cx\Core\Setting\Controller\Setting::set('licenseLockTime', $this->getFrontendLockTime());
+        \Cx\Core\Setting\Controller\Setting::set('licenseUpdateInterval', $this->getRequestInterval());
+                
+        \Cx\Core\Setting\Controller\Setting::set('licenseFailedUpdate', $this->getFirstFailedUpdateTime());
+        \Cx\Core\Setting\Controller\Setting::set('licenseSuccessfulUpdate', $this->getLastSuccessfulUpdateTime());
+
+        \Cx\Core\Setting\Controller\Setting::updateAll();
         
         $query = '
             UPDATE
@@ -438,8 +435,6 @@ class License {
                 `name` IN(\'' . implode('\', \'', $this->getLegalComponentsList()) . '\')
         ';
         $objDb->Execute($query);
-        unset($_POST);
-        $_POST = $oldpost;
     }
     
     /**

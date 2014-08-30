@@ -15,9 +15,9 @@ $J(document).ready(function() {
         
         var elementId = $J(this).attr('id');
         if (elementId == 'news_delete') {
-            var id = 85;
+            var id = 'dashboardNews';
         } else {
-            var id = 86;
+            var id = 'dashboardStatistics';
         }
         $J.ajax({
             url: 'index.php?act=deactivateSetting',

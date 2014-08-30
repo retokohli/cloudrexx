@@ -257,7 +257,7 @@ class YamlEngine extends Engine{
         // Note that getValue() returns null if the entry is not present
         $old_value = self::getValue($name);
         if (isset($old_value)) {
-            // \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
         
@@ -365,18 +365,4 @@ class YamlEngine extends Engine{
         }
        
     } 
-    /**
-     * To check the file is writable or not
-     *
-     * @return  boolean True or false
-     * @static
-     * 
-     */
-    static function isWritable() {
-        if (\Cx\Lib\FileSystem\FileSystem::makeWritable(self::$filename)) {
-            return true;
-        }
-        return false;
-    }
-
 }

@@ -105,24 +105,20 @@ class Permission
      */
     public static function createNewDynamicAccessId()
     {
-        global $objDatabase, $_CONFIG;
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml');
+        $newAccessId = \Cx\Core\Setting\Controller\Setting::get('lastAccessId') + 1;
+        \Cx\Core\Setting\Controller\Setting::set('lastAccessId', $newAccessId);
+        if (!\Cx\Core\Setting\Controller\Setting::update('lastAccessId')) {
+            return false;
+        }
 
-        $lastAccessId = $_CONFIG['lastAccessId'];
-        $newAccessId = $_CONFIG['lastAccessId'] + 1;
+        // verify that the update was successful
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml');
+        if (\Cx\Core\Setting\Controller\Setting::get('lastAccessId') != $newAccessId) {
+            return false;
+        }
 
-        $objSettings = new \Cx\Core\Config\Controller\Config();
-        if ($objSettings->isWritable()) {
-            if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$newAccessId." WHERE `setname` = 'lastAccessId'")
-                && $objSettings->writeSettingsFile()
-            ) {
-                $_CONFIG['lastAccessId'] = $newAccessId;
-                return $newAccessId;
-            } else {
-                $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'");
-            }
-        }        
-
-        return false;
+        return $newAccessId;
     }
 
     /**

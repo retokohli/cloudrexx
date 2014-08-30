@@ -72,20 +72,13 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
      * @global     object    $objDatabase
      * @return    array    $arrSettings
      */
-    function getSettings()
-    {
-        global $objDatabase;
-
+    function getSettings() {
         $arrSettings = array();
+        \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
+        $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
 
-        $objResult = $objDatabase->Execute('SELECT	setname,
-                                                        setvalue
-                                        FROM	' . DBPREFIX . 'settings
-                                        WHERE	setname LIKE "cache%"
-                                ');
-        while (!$objResult->EOF) {
-            $arrSettings[$objResult->fields['setname']] = $objResult->fields['setvalue'];
-            $objResult->MoveNext();
+        foreach ($ymlArray as $key => $ymlValue){
+            $arrSettings[$key] = $ymlValue['value'];
         }
 
         return $arrSettings;
@@ -309,31 +302,16 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             return;
         }
 
-        $strStatus = ($_POST['cachingStatus'] == 'on') ? 'on' : 'off';
-        $intExpiration = intval($_POST['cachingExpiration']);
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml');
+        \Cx\Core\Setting\Controller\Setting::set('cacheEnabled', $_POST['cachingStatus']);
+        \Cx\Core\Setting\Controller\Setting::set('cacheExpiration', intval($_POST['cachingExpiration']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheUserCache', contrexx_input2db($_POST['usercache']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheOPCache', contrexx_input2db($_POST['opcache']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheDbStatus', contrexx_input2db($_POST['cacheDbStatus']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheVarnishStatus', contrexx_input2db($_POST['cacheVarnishStatus']));
 
-        $objDatabase->Execute('	UPDATE	' . DBPREFIX . 'settings
-								SET		setvalue="' . $strStatus . '"
-								WHERE	setname="cacheEnabled"
-								LIMIT	1
-							');
-
-        $objDatabase->Execute('	UPDATE	' . DBPREFIX . 'settings
-								SET		setvalue="' . $intExpiration . '"
-								WHERE	setname="cacheExpiration"
-								LIMIT	1
-							');
-        
-        $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['usercache']) . '" WHERE setname="cacheUserCache"');
-        $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['opcache']) . '" WHERE setname="cacheOPCache"');
-        
-        $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['cacheOpStatus']) . '" WHERE setname="cacheOpStatus"');
-        $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['cacheDbStatus']) . '" WHERE setname="cacheDbStatus"');
-        $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['cacheVarnishStatus']) . '" WHERE setname="cacheVarnishStatus"');        
-        
-        $_CONFIG['cacheUserCache'] = contrexx_input2raw($_POST['usercache']);
-        $_CONFIG['cacheOPCache'] = contrexx_input2raw($_POST['opcache']);
-        
         if(!empty($_POST['memcacheSettingIp']) || !empty($_POST['memcacheSettingPort'])){
             $settings = json_encode(
                 array(
@@ -341,9 +319,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     'port' => !empty($_POST['memcacheSettingPort']) ? intval($_POST['memcacheSettingPort']) : '11211',
                 )
             );
-            $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_raw2db($settings) . '" WHERE setname="cacheUserCacheMemcacheConfig"');
-            
-            $_CONFIG['cacheUserCacheMemcacheConfig'] = $settings;
+            \Cx\Core\Setting\Controller\Setting::set('cacheUserCacheMemcacheConfig', $settings);
         }
         
         if(!empty($_POST['varnishCachingIp']) || !empty($_POST['varnishCachingPort'])){
@@ -353,14 +329,11 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
                     'port' => !empty($_POST['varnishCachingPort']) ? intval($_POST['varnishCachingPort']) : '8080',
                 )
             );
-            $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($settings) . '" WHERE setname="cacheProxyCacheVarnishConfig"');
-            
-            $_CONFIG['cacheProxyCacheVarnishConfig'] = $settings;
+            \Cx\Core\Setting\Controller\Setting::set('cacheProxyCacheVarnishConfig', $settings);
         }
         
+        \Cx\Core\Setting\Controller\Setting::updateAll();
         $this->arrSettings = $this->getSettings();
-
-        $this->objSettings->writeSettingsFile();
         $this->initUserCaching(); // reinit user caches (especially memcache)
         $this->initOPCaching(); // reinit opcaches
         $this->getActivatedCacheEngines();

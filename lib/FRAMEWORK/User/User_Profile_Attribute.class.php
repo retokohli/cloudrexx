@@ -1008,14 +1008,9 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                     }
                 }
             } else {
-                $lastAccessId = $_CONFIG['lastAccessId'];
-                ++$lastAccessId;
-                if ($objDatabase->Execute("UPDATE `".DBPREFIX."access_user_".($this->isCoreAttribute($this->id) ? 'core_' : '')."attribute` SET `access_id` = ".$lastAccessId." WHERE `id` = '".$this->id."'") !== false &&
-                    $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'") !== false
-                ) {
-                    $this->arrAttributes[$this->id]['access_id'] = $this->access_id = $_CONFIG['lastAccessId'] = $lastAccessId;
-                    $objSettings = new \Cx\Core\Config\Controller\Config();
-                    $objSettings->writeSettingsFile();
+                $accessId = \Permission::createNewDynamicAccessId();
+                if ($accessId && $objDatabase->Execute("UPDATE `".DBPREFIX."access_user_".($this->isCoreAttribute($this->id) ? 'core_' : '')."attribute` SET `access_id` = ".$accessId." WHERE `id` = '".$this->id."'") !== false) {
+                    $this->arrAttributes[$this->id]['access_id'] = $this->access_id = $accessId;
                 } else {
                     return false;
                 }
