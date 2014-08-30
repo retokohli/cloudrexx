@@ -66,45 +66,7 @@ class ComponentHandler {
      * @var array
      */
     private $components = array(
-        'Resolver',
-        'Security',
-        'Cache',
-        'Session',
-        'Language', // Backend only
-        'License',
-        'FwUser',
-        
-        'Upload',
-        'Captcha',
-        'FrontendEditing',
-        'JsonData',
-        'Newsletter',
-        'Downloads',
-        'Feed',
-        'Immo',
-        'Stats',
-        'Block',
-        'Data',
-        'Teasers',
-        'Knowledge',
-        'Calendar',
-        'News',
-        'MediaDir',
-        'Blog',
-        'Voting',
-        'Podcast',
-        'Gallery',
-        'Directory',
-        'Forum',
-        'Banner',
-        'Market',
-        'Shop',
-        
-        // backend only
-        'Js',
         'ComponentHandler',
-        'Csrf',
-        'Message',
     );
     
     /**

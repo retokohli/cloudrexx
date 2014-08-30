@@ -118,20 +118,11 @@ class LegacyComponentHandler {
         // now follows the loooooooooooong list of old code:
         $this->exceptions = array(
             'frontend' => array(
-                'preResolve' => array(
-                ),
-                'postResolve' => array(
-                ),
-                'preContentLoad' => array(
-                ),
-                'postContentLoad' => array(
-                    /*'FrontendEditing' => function() {
-                        $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\ComponentController();
-                        $frontendEditing->preFinalize();
-                    },*/
-                ),
-                'load' => array(
-                ),
+                'preResolve' => array(),
+                'postResolve' => array(),
+                'preContentLoad' => array(),
+                'postContentLoad' => array(),
+                'load' => array(),
             ),
             'backend' => array(
                 'preResolve' => array(
@@ -172,9 +163,7 @@ class LegacyComponentHandler {
                         //$intAccessIdOffset = intval(MODULE_INDEX)*1000;
                     },
                 ),
-                'postResolve' => array(
-                    
-                ),
+                'postResolve' => array(),
                 'load' => array(
                     'noaccess' => function() {
                         global $cl, $_CORELANG, $objTemplate, $_CONFIG;
