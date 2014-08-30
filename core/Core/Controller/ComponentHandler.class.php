@@ -270,6 +270,6 @@ class ComponentHandler {
             throw new ComponentException('This is an ugly legacy component(' . $componentName . '), load via LegacyComponentHandler!');
         }
         $component->load($page);
-        \DBG::msg('<b>WELL, THIS IS ONE NICE COMPONENT!</b>');
+        //\DBG::msg('<b>WELL, THIS IS ONE NICE COMPONENT!</b>');
     }
 }
