@@ -71,6 +71,7 @@ class YamlEngine extends Engine{
     static function load() {
         if (!empty(self::$yamlSettingRepo)) {
             $yamlSettings = self::$yamlSettingRepo->findAll();
+            $yamlSettingArray = array();
             if (isset($yamlSettings)) {
                 foreach ($yamlSettings As $yamlSetting) {
                     $yamlSettingArray[$yamlSetting->getName()] = array(

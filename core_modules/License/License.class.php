@@ -373,8 +373,7 @@ class License {
      * @param \ADONewConnection $objDb 
      */
     public function save($objDb) {
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml');
-        \Cx\Core\Setting\Controller\Setting::set('cacheEnabled', $_POST['cachingStatus']);
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'license','Yaml');
 
         \Cx\Core\Setting\Controller\Setting::set('installationId', $this->getInstallationId());
         \Cx\Core\Setting\Controller\Setting::set('licenseKey', $this->getLicenseKey());

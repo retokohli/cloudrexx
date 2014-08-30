@@ -1,37 +1,38 @@
 <?php
 /**
- * SettingEventListener
+ * YamlSettingEventListener
  *  
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
+ * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  core_setting 
+ * @subpackage  core_config
  */
 
-namespace Cx\Core\Setting\Model\Event;
+namespace Cx\Core\Config\Model\Event;
 
 /**
- * SettingEventListenerException
+ * YamlSettingEventListenerException
  * 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
+ * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @package     contrexx
- * @subpackage  core_setting 
+ * @subpackage  core_config
  */
-class SettingEventListenerException extends \Exception {}
+class YamlSettingEventListenerException extends \Exception {}
 
 /**
- * SettingEventListener
+ * YamlSettingEventListener
  * 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
+ * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @package     contrexx
- * @subpackage  core_setting 
+ * @subpackage  core_config
  */
-class SettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-    
-    public function preUpdate($eventArgs) 
-    {
+class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+    public function preUpdate($eventArgs) {
         global $_CONFIG,$_ARRAYLANG;
         try {
             $objSetting = $eventArgs->getEntity();
@@ -39,24 +40,10 @@ class SettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
             $configObj = new \Cx\Core\Config\Controller\Config();
             
             switch ($objSetting->getName()) {
-                case 'cacheUserCache':
-                case 'cacheOPCache':
-                case 'cacheUserCacheMemcacheConfig':
-                case 'cacheProxyCacheVarnishConfig':
-                case 'coreSmtpServer':
-                case 'xmlSitemapStatus':
-                case 'coreListProtectedPages':
-                case 'newsTeasersStatus':
-                case 'blockStatus':
-                case 'blockRandom':
-                case 'lastAccessId':
-                    $_CONFIG[$objSetting->getName()] = $value;
-                    break;
-
                 case 'timezone':
                     if (!in_array($value, timezone_identifiers_list())) {
                         \Message::add($_ARRAYLANG['TXT_CORE_TIMEZONE_INVALID'], \Message::CLASS_ERROR);
-                        throw new SettingEventListenerException($_ARRAYLANG['TXT_CORE_TIMEZONE_INVALID']);
+                        throw new YamlSettingEventListenerException($_ARRAYLANG['TXT_CORE_TIMEZONE_INVALID']);
                     }
                     break;
              
@@ -65,22 +52,7 @@ class SettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                     if (preg_match('#^https?://(.*)$#', $value, $arrMatch)) {
                         $value = $arrMatch[1];
                     }
-                    $objSetting->setValue($value);
-                    $_CONFIG['domainUrl'] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
-                    break;
-
-                case 'cacheEnabled':
-                case 'xmlSitemapStatus':
-                case 'systemStatus':
-                case 'searchVisibleContentOnly':
-                case 'languageDetection':
-                case 'frontendEditingStatus':
-                case 'coreListProtectedPages':
-                case 'dashboardNews':
-                case 'dashboardStatistics':
-                case 'passwordComplexity':
-                    // this might be obsolete
-                    $value = ($value == 'on') ? 'on' : 'off';
+                    $value = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
                     $objSetting->setValue($value);
                     break;
 
@@ -90,7 +62,6 @@ class SettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                             $value = 'none';
                         }
                         $objSetting->setValue($value);
-                        $_CONFIG['forceProtocolFrontend'] = $value;
                     }
                     break;
 
@@ -100,7 +71,6 @@ class SettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                             $value = 'none';
                         }
                         $objSetting->setValue($value);
-                        $_CONFIG['forceProtocolBackend'] = $value;
                     }
                     break;
 
@@ -112,28 +82,24 @@ class SettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                     }
                     $value = $configObj->checkAccessibility($protocol) ? $value : 'off';
                     $objSetting->setValue($value);
-                    $_CONFIG['forceDomainUrl'] = $value;
                     break;
             }
-            
-            \Env::set('config', $_CONFIG);
-        } catch (Exception $e) {
+        } catch (YamlSettingEventListenerException $e) {
             \DBG::msg($e->getMessage());
         }
     }
-    
-    public function postFlush($eventArgs) 
-    {
+
+    public function postFlush($eventArgs) {
         try {
-            $configObj = new \Cx\Core\Config\Controller\Config();
-            $configObj->writeSettingsFile();
-        } catch (Exception $e) {
+            $config = new \Cx\Core\Config\Controller\Config();
+            $config->updatePhpCache();
+        } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
     }
     
     public function onEvent($eventName, array $eventArgs) {
+        \DBG::msg(__METHOD__);
         $this->$eventName(current($eventArgs));
     }
-    
 }

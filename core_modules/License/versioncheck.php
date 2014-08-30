@@ -4,6 +4,10 @@ global $sessionObj, $_CONFIG, $_CORELANG, $objUser, $objDatabase;
 if (!isset($objUser) || !isset($objDatabase) || !isset($license)) {
     require_once dirname(dirname(dirname(__FILE__))).'/core/Core/init.php';
     $cx = init('minimal');
+    // In mode 'minimal' we have to manually register event listeners.
+    // The listener registerYamlSettingEventListener is used to update the
+    // settings.php file.
+    \Cx\Core\Config\Controller\ComponentController::registerYamlSettingEventListener();
 }
 
 // Init user

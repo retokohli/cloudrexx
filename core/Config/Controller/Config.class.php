@@ -496,8 +496,8 @@ class Config
      * Write all settings to the config file
      *
      */
-    public function writeSettingsFile() {
-        global $_ARRAYLANG;
+    public function updatePhpCache() {
+        global $_ARRAYLANG, $_CONFIG;
 
         if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($this->strSettingsFile)) {
             \Message::add($this->strSettingsFile.' '.$_ARRAYLANG['TXT_SETTINGS_ERROR_WRITABLE'], \Message::CLASS_ERROR);
@@ -509,7 +509,8 @@ class Config
         $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
         $intMaxLen = 0;
         foreach ($ymlArray as $key => $ymlValue){
-            $ymlArrayValues[$ymlValue['group']][$key] = $ymlArray[$key]['value'];
+            $_CONFIG[$key] = $ymlValue['value'];
+            $ymlArrayValues[$ymlValue['group']][$key] = $ymlValue['value'];
 
             // special case to add legacy domainUrl configuration option
             if ($key == 'mainDomainId') {
@@ -526,6 +527,9 @@ class Config
             $intMaxLen = (strlen($key) > $intMaxLen) ? strlen($key) : $intMaxLen;
         }
         $intMaxLen += strlen('$_CONFIG[\'\']') + 1; //needed for formatted output
+
+        // update environment
+        \Env::set('config', $_CONFIG);
 
         $strHeader  = "<?php\n";
         $strHeader .= "/**\n";
@@ -567,7 +571,7 @@ class Config
 
         return false;
     }
-    
+
     /**
      * Check whether the given string is a number or not.
      * Integers with leading zero results in 0, this method prevents that.
@@ -1069,7 +1073,6 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Zip");
             }
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('contactPlace') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('contactPlace','Musterhausen', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
@@ -1130,6 +1133,7 @@ class Config
             }
 
             // core
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('coreSmtpServer') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('coreSmtpServer','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')){
@@ -1230,6 +1234,7 @@ class Config
             }
 
             // release
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsEdition') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('coreCmsEdition','Business Enterprise', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
@@ -1262,6 +1267,7 @@ class Config
             }
 
             // license
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'license','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('licenseKey') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseKey','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
@@ -1349,6 +1355,7 @@ class Config
             }
 
             // cache
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('cacheEnabled') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheEnabled','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
