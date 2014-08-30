@@ -2,17 +2,21 @@
     <!-- BEGIN newsletter_error_message -->
     <div class="errorMessage text-danger">
         {NEWSLETTER_ERROR_MESSAGE}</div>
-    <!-- END newsletter_error_message --><!-- BEGIN newsletter_ok_message -->
+    <!-- END newsletter_error_message -->
+    <!-- BEGIN newsletter_ok_message -->
     <div class="okMessage text-success">
         {NEWSLETTER_OK_MESSAGE}</div>
-    <!-- END newsletter_ok_message --><!-- BEGIN newsletterForm -->
+    <!-- END newsletter_ok_message -->
+    <!-- BEGIN newsletterForm -->
     <div class="form">
         <form role="form" action="{NODE_NEWSLETTER_SUBSCRIBE}" method="post" name="newsletter">
             <!-- BEGIN recipient_profile -->
             <fieldset>
                 <legend>Anmeldeformular</legend>
                 <div class="newsletter row form-group">
-                    <label for="email">{TXT_NEWSLETTER_EMAIL_ADDRESS}</label> <input maxlength="255" name="email" type="text" value="{NEWSLETTER_EMAIL}" /></div>
+                    <label for="email">{TXT_NEWSLETTER_EMAIL_ADDRESS}</label> 
+                    <input maxlength="255" name="email" type="text" value="{NEWSLETTER_EMAIL}" />
+                </div>
                 <!-- BEGIN recipient_sex -->
                 <div class="newsletter row form-group">
                     <label>{TXT_NEWSLETTER_SEX} {NEWSLETTER_RECIPIENT_SEX_MANDATORY}</label>
@@ -104,9 +108,22 @@
                 <!-- END recipient_fax --><!-- BEGIN recipient_birthday -->
                 <div class="newsletter row form-group">
                     <label>{TXT_NEWSLETTER_BIRTHDAY} {NEWSLETTER_RECIPIENT_BIRTHDAY_MANDATORY}</label> 
-                    <select name="day" style="width:75px"><option value="0">{TXT_NEWSLETTER_RECIPIENT_DATE}</option><!-- BEGIN birthday_day --><option {SELECTED_DAY} value="{USERS_BIRTHDAY_DAY}">{USERS_BIRTHDAY_DAY_NAME}</option><!-- END birthday_day --></select> 
-                    <select name="month" style="width:170px"><option value="0">{TXT_NEWSLETTER_RECIPIENT_MONTH}</option><!-- BEGIN birthday_month --><option value="{USERS_BIRTHDAY_MONTH}" {SELECTED_MONTH}>{USERS_BIRTHDAY_MONTH_NAME}</option><!-- END birthday_month --></select> 
-                    <select name="year" style="width:75px"><option value="0">{TXT_NEWSLETTER_RECIPIENT_YEAR}</option><!-- BEGIN birthday_year --><option value="{USERS_BIRTHDAY_YEAR}" {SELECTED_YEAR}>{USERS_BIRTHDAY_YEAR}</option><!-- END birthday_year --></select></div>
+                    <select class="form-control" name="day" style="width:75px"><option value="0">{TXT_NEWSLETTER_RECIPIENT_DATE}</option>
+                        <!-- BEGIN birthday_day -->
+                        <option {SELECTED_DAY} value="{USERS_BIRTHDAY_DAY}">{USERS_BIRTHDAY_DAY_NAME}</option>
+                        <!-- END birthday_day -->
+                    </select> 
+                    <select class="form-control" name="month" style="width:170px"><option value="0">{TXT_NEWSLETTER_RECIPIENT_MONTH}</option>
+                        <!-- BEGIN birthday_month -->
+                        <option value="{USERS_BIRTHDAY_MONTH}" {SELECTED_MONTH}>{USERS_BIRTHDAY_MONTH_NAME}</option>
+                        <!-- END birthday_month -->
+                    </select> 
+                    <select class="form-control" name="year" style="width:75px"><option value="0">{TXT_NEWSLETTER_RECIPIENT_YEAR}</option>
+                        <!-- BEGIN birthday_year -->
+                        <option value="{USERS_BIRTHDAY_YEAR}" {SELECTED_YEAR}>{USERS_BIRTHDAY_YEAR}</option>
+                        <!-- END birthday_year -->
+                    </select>
+                </div>
                 <!-- END recipient_birthday --><!-- BEGIN recipient_website -->
                 <div class="newsletter row form-group">
                     <label for="website">{TXT_NEWSLETTER_WEBSITE} {NEWSLETTER_RECIPIENT_WEBSITE_MANDATORY}</label> 
@@ -121,12 +138,20 @@
                 <div class="newsletter row form-group">
                     <label>Newsletter-Listen</label>
                     <div class="newsletterFormGroup">
-                        <!-- BEGIN newsletter_list --><input id="list_{NEWSLETTER_LIST_ID}" name="list[{NEWSLETTER_LIST_ID}]" type="checkbox" value="1" {NEWSLETTER_LIST_SELECTED} /> <label class="noCaption" for="list_{NEWSLETTER_LIST_ID}">{NEWSLETTER_LIST_NAME}</label> <!-- END newsletter_list --></div>
-                </div>
+                        <!-- BEGIN newsletter_list -->
+                        <div class="checkbox">
+                            <label class="noCaption" for="list_{NEWSLETTER_LIST_ID}">
+                                <input id="list_{NEWSLETTER_LIST_ID}" name="list[{NEWSLETTER_LIST_ID}]" type="checkbox" value="1" {NEWSLETTER_LIST_SELECTED} /> 
+                                {NEWSLETTER_LIST_NAME}
+                            </label> 
+                        </div>
+                        <!-- END newsletter_list -->
+
+                    </div>
             </fieldset>
             <!-- END newsletter_lists -->
             <div class="newsletter row form-group">
-                <input class="btn btn-primary" name="recipient_save" type="submit" value="{TXT_NEWSLETTER_SAVE}" /></div>
+                <input class="btn btn-default" name="recipient_save" type="submit" value="{TXT_NEWSLETTER_SAVE}" /></div>
         </form>
     </div>
     <!-- END newsletterForm -->
