@@ -767,27 +767,18 @@ class BlockLibrary
     *
     * @access    private
     * @param    array     $arrSettings
-    * @global   ADONewConnection
-    * @global   integer
     */
     function _saveSettings($arrSettings)
     {
-        global $objDatabase, $_CONFIG;
-
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
         if (isset($arrSettings['blockStatus'])) {
-            $_CONFIG['blockStatus'] = (string) $arrSettings['blockStatus'];
-            $query = "UPDATE ".DBPREFIX."settings SET setvalue='".$arrSettings['blockStatus']."' WHERE setname='blockStatus'";
-            $objDatabase->Execute($query);
+            \Cx\Core\Setting\Controller\Setting::set('blockStatus', $arrSettings['blockStatus']);
+            \Cx\Core\Setting\Controller\Setting::update('blockStatus');
         }
-
         if (isset($arrSettings['blockRandom'])) {
-            $_CONFIG['blockRandom'] = (string) $arrSettings['blockRandom'];
-            $query = "UPDATE ".DBPREFIX."settings SET setvalue='".$arrSettings['blockRandom']."' WHERE setname='blockRandom'";
-            $objDatabase->Execute($query);
+            \Cx\Core\Setting\Controller\Setting::set('blockRandom', $arrSettings['blockRandom']);
+            \Cx\Core\Setting\Controller\Setting::update('blockRandom');
         }
-
-        $objSettings = new \Cx\Core\Config\Controller\Config();
-        $objSettings->writeSettingsFile();
     }
 
     /**

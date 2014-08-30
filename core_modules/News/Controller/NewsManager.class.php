@@ -3075,13 +3075,12 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 }
             }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='" . implode(";", $defaultTeasers) . "' WHERE name='news_default_teasers'");
-            $_CONFIG['newsTeasersStatus'] = isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0;
-            $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$_CONFIG['newsTeasersStatus']."' WHERE setname='newsTeasersStatus'");
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+            \Cx\Core\Setting\Controller\Setting::set('newsTeasersStatus', isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0);
+            \Cx\Core\Setting\Controller\Setting::update('newsTeasersStatus');
             $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'];
             $this->getSettings();
             $this->createRSS();
-            $objSettings = new \Cx\Core\Config\Controller\Config();
-            $objSettings->writeSettingsFile();
         }
     }
 

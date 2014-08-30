@@ -34,7 +34,7 @@ try {
 } catch (\Exception $e) {
     $license->check();
     if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
-        $license->save(new \Cx\Core\Config\Controller\Config(), $objDatabase);
+        $license->save($objDatabase);
     }
     if (!isset($_GET['silent']) || $_GET['silent'] != 'true') {
         echo "false";
@@ -43,7 +43,7 @@ try {
 }
 $license->check();
 if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
-    $license->save(new \Cx\Core\Config\Controller\Config(), $objDatabase);
+    $license->save($objDatabase);
 }
 
 if (!$objUser->login(true)) {

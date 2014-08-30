@@ -288,21 +288,14 @@ class Home {
         );
     }
     
-    private function deactivateSetting($id)
+    private function deactivateSetting($config)
     {
         global $objDatabase;
         
         if (\Permission::checkAccess(17, 'static', true)) {
-            $query = '
-                UPDATE `'.DBPREFIX.'settings`
-                SET `setvalue` = "off"
-                WHERE `setid` = '.$id.'
-            ';
-            $objResult = $objDatabase->Execute($query);
-            
-            if ($objResult) {
-                $objSettings = new \Cx\Core\Config\Controller\Config();
-                $objSettings->writeSettingsFile();
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml');
+            \Cx\Core\Setting\Controller\Setting::set($config, 'off');
+            if (\Cx\Core\Setting\Controller\Setting::update($config)) {
                 die('success');
             }
         }

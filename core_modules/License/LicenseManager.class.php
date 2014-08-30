@@ -53,7 +53,7 @@ class LicenseManager {
                 if ($license->checkSum(contrexx_input2db($post['licenseKey']))) {
                     $license->setLicenseKey(contrexx_input2db($post['licenseKey']));
                     // save it before we check it, so we only change the license key
-                    $license->save($sm, $this->db);
+                    $license->save($this->db);
                     $license->check();
                     $this->license = $license;
                 }
@@ -61,14 +61,14 @@ class LicenseManager {
                 // This is only a backup if javascript is bogus
                 try {
                     $lc->update($this->license, $this->config, true, false, $this->lang);
-                    $this->license->save(new \Cx\Core\Config\Controller\Config(), $this->db);
+                    $this->license->save($this->db);
                 } catch (\Exception $e) {}
             }
         }
         if (!file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
             try {
                 $lc->update($this->license, $this->config, true, true, $this->lang);
-                $this->license->save(new \Cx\Core\Config\Controller\Config(), $this->db);
+                $this->license->save($this->db);
             } catch (\Exception $e) {}
         }
         if (file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
