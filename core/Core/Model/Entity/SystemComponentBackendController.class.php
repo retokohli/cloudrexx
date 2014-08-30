@@ -49,7 +49,7 @@ abstract class SystemComponentBackendController extends Controller {
             $cmd = explode('/', contrexx_input2raw($_GET['act']));
         }
         
-        $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory() . '/View/Template/Backend');
+        $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory(true) . '/View/Template/Backend');
         $filename = $cmd[0] . '.html';
         $testFilename = $cmd[0];
         if (!\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $filename)) {
@@ -139,10 +139,10 @@ abstract class SystemComponentBackendController extends Controller {
         }
         
         // default css and js
-        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Style/Backend.css'))) {
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Style/Backend.css'))) {
             \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Backend.css', 1));
         }
-        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Script/Backend.js'))) {
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Script/Backend.js'))) {
             \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Backend.js', 1));
         }
         
