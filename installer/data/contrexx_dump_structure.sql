@@ -205,21 +205,6 @@ CREATE TABLE `contrexx_backend_areas` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_backups` (
-  `id` int(5) unsigned NOT NULL auto_increment,
-  `date` varchar(14) NOT NULL default '',
-  `version` varchar(20) NOT NULL default '',
-  `edition` varchar(30) NOT NULL default '',
-  `type` enum('sql','csv') NOT NULL default 'sql',
-  `description` varchar(100) NOT NULL default '',
-  `usedtables` text NOT NULL,
-  `size` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `date` (`date`)
-) ENGINE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_component` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
@@ -381,15 +366,6 @@ CREATE TABLE `contrexx_core_module_multisite_domain` (
   KEY `name` (`name`),
   KEY `componentId` (`componentId`),
   CONSTRAINT `contrexx_core_module_multisite_domain_ibfk_1` FOREIGN KEY (`componentId`) REFERENCES `contrexx_core_module_multisite_website` (`id`)
-) ENGINE=InnoDB;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_core_module_multisite_user_website` (
-  `websiteId` int(11) unsigned NOT NULL,
-  `multiSiteUserId` int(11) unsigned NOT NULL,
-  `userId` int(5) unsigned NOT NULL,
-  `role` enum('admin','user') NOT NULL default 'user'
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
