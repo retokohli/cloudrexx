@@ -336,6 +336,7 @@ class Setting{
      * @param   string              $prefix       The optional prefix for
      *                                            language variables.
      *                                            Defaults to 'TXT_'
+     * @param   boolean             $readOnly     Optional argument to make the generated form read-only. Defaults to false.
      * @return  boolean                           True on success, false otherwise
      * @todo    Add functionality to handle arrays within arrays
      * @todo    Add functionality to handle special form elements
@@ -348,7 +349,7 @@ class Setting{
      *                   I.e. if the language variable for an option is TXT_CORE_MODULE_MULTISITE_INSTANCESPATH, 
      *                   then the option's tooltip language variable key would be TXT_CORE_MODULE_MULTISITE_INSTANCESPATH_TOOLTIP
      */
-    static function show(&$objTemplateLocal, $uriBase, $section='', $tab_name='', $prefix='TXT_') 
+    static function show(&$objTemplateLocal, $uriBase, $section='', $tab_name='', $prefix='TXT_', $readOnly = false) 
     {
         global $_CORELANG;
         $engineType=self::getEngineType();
@@ -377,7 +378,7 @@ class Setting{
                     $tab_name, $section));
             return false;
         }
-        self::show_section($objTemplateLocal, $section, $prefix);
+        self::show_section($objTemplateLocal, $section, $prefix, $readOnly);
         // The tabindex must be set in the form name in any case
         $objTemplateLocal->setGlobalVariable(
             'CORE_SETTING_TAB_INDEX', $engineType::$tab_index);
@@ -394,6 +395,16 @@ class Setting{
             $objTemplateLocal->touchBlock('core_setting_header');
             $objTemplateLocal->touchBlock('core_setting_tab_row');
             $objTemplateLocal->parse('core_setting_tab_row');
+
+            // parse submit button (or hide if $readOnly is set)
+            if ($objTemplateLocal->blockExists('core_setting_submit')) {
+                if ($readOnly) {
+                    $objTemplateLocal->hideBlock('core_setting_submit');
+                } else {
+                    $objTemplateLocal->touchBlock('core_setting_submit');
+                    $objTemplateLocal->parse('core_setting_submit');
+                }
+            }
             $objTemplateLocal->touchBlock('core_setting_tab_div');
             $objTemplateLocal->parse('core_setting_tab_div');
         }
@@ -416,7 +427,7 @@ class Setting{
      *                                            Defaults to 'TXT_'
      * @return  boolean                           True on success, false otherwise
      */
-    static function show_section(&$objTemplateLocal, $section='', $prefix='TXT_')
+    static function show_section(&$objTemplateLocal, $section='', $prefix='TXT_', $readOnly = false)
     {
         global $_ARRAYLANG, $_CORELANG; $engineType=self::getEngineType();
         $arrSettings=$engineType::getArraySetting();
@@ -452,7 +463,11 @@ class Setting{
             switch ($type) {
               // Dropdown menu
               case self::TYPE_DROPDOWN:
-                $arrValues = self::splitValues($arrSetting['values']);
+                if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
+                    $arrValues = self::splitValues(call_user_func($matches[1]));
+                } else {
+                    $arrValues = self::splitValues($arrSetting['values']);
+                }
 //DBG::log("Values: ".var_export($arrValues, true));
                 $element = \Html::getSelect(
                     $name, $arrValues, $value,
@@ -461,14 +476,15 @@ class Setting{
                     (   isset ($arrValues[$value])
                      && is_numeric($arrValues[$value])
                         ? 'text-align: right;' : '').
-                    '"');
+                    '"'.
+                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
                 break;
               case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
                 $element = \Html::getSelect(
                     $name,
                     User_Profile_Attribute::getCustomAttributeNameArray(),
                     $arrSetting['value'], '', '',
-                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'
+                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
                 );
                 break;
               case self::TYPE_DROPDOWN_USERGROUP:
@@ -476,13 +492,18 @@ class Setting{
                     $name,
                     UserGroup::getNameArray(),
                     $arrSetting['value'],
-                    '', '', 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'
+                    '', '', 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
                 );
                 break;
               case self::TYPE_WYSIWYG:
                 // These must be treated differently, as wysiwyg editors
                 // claim the full width
-                $element = new \Cx\Core\Wysiwyg\Wysiwyg($name, $value);
+                if ($readOnly) {
+// TODO: this might be dangerous! should be rewritten probably
+                    $element = $value;
+                } else {
+                    $element = new \Cx\Core\Wysiwyg\Wysiwyg($name, $value);
+                }
                 $objTemplateLocal->setVariable(array(
                     'CORE_SETTING_ROW' => $_ARRAYLANG[$prefix.strtoupper($name)],
                     'CORE_SETTING_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
@@ -506,7 +527,7 @@ class Setting{
                         Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
                         // "values" defines the MIME types allowed
                         $arrSetting['values'],
-                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"', true,
+                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''), true,
                         ($value
                           ? $value
                           : 'media/'.
@@ -532,7 +553,7 @@ class Setting{
                         '__'.$name,
                         $_ARRAYLANG[strtoupper($prefix.$name).'_LABEL'],
                         'button', false,
-                        $event
+                        $event.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
                     ).
                     // The posted value is set to 1 when confirmed,
                     // before the form is posted
@@ -542,7 +563,7 @@ class Setting{
 
               case self::TYPE_TEXTAREA:
                 $element =
-                    \Html::getTextarea($name, $value, 80, 8, '');
+                    \Html::getTextarea($name, $value, 80, 8, ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
 //                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.$value_align.'"');
                 break;
 
@@ -551,19 +572,19 @@ class Setting{
                 $value_true = current($arrValues);
                 $element =
                     \Html::getCheckbox($name, $value_true, false,
-                        in_array($value, $arrValues));
+                        in_array($value, $arrValues), '', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
                 break;
               case self::TYPE_CHECKBOXGROUP:
                 $checked = self::splitValues($value);
                 $element =
                     \Html::getCheckboxGroup($name, $values, $values, $checked,
-                        '', '', '<br />', '', '');
+                        '', '', '<br />', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''), '');
                 break;
 // 20120508 UNTESTED!
               case self::TYPE_RADIO:
                 $checked = $value;
                 $element =
-                    \Html::getRadioGroup($name, $values, $checked);
+                    \Html::getRadioGroup($name, $values, $checked, '', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
                 break;
 
 // More...
@@ -571,7 +592,7 @@ class Setting{
 //                break;
                 case self::TYPE_PASSWORD:
                 $element =
-                    \Html::getInputPassword($name, $value, 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
+                    \Html::getInputPassword($name, $value, 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
                 break;
                 
               // Default to text input fields
@@ -583,7 +604,8 @@ class Setting{
                         $name, $value, false,
                         'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.
                         (is_numeric($value) ? 'text-align: right;' : '').
-                        '"');
+                        '"'.
+                        ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
             }
             
             //add Tooltip
@@ -598,7 +620,7 @@ class Setting{
                 $toolTipsHelp ='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP_HELP'].'</span>';
             }
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTING_NAME' => $_ARRAYLANG[$prefix.strtoupper($name)].$toolTips,
+                'CORE_SETTING_NAME' => (isset($_ARRAYLANG[$prefix.strtoupper($name)]) ? $_ARRAYLANG[$prefix.strtoupper($name)] : $name).$toolTips,
                 'CORE_SETTING_VALUE' => $element.$toolTipsHelp,
                 'CORE_SETTING_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
             ));
