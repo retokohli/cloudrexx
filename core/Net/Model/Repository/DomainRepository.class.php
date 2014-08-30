@@ -46,6 +46,8 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
         $hostName->setVirtual(true);
         //attach the hostname domain entity to repository
         $this->add($hostName);
+        // set ID to 0 to make it having the same ID constantly
+        $hostName->setId(0);
     }
     
     public function getMainDomain() {
