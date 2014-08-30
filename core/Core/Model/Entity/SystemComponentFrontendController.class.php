@@ -37,10 +37,10 @@ abstract class SystemComponentFrontendController extends Controller {
         $componentTemplate->setTemplate($page->getContent());
         
         // default css and js
-        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Style/Frontend.css'))) {
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Style/Frontend.css'))) {
             \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Frontend.css', 1));
         }
-        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Script/Frontend.js'))) {
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Script/Frontend.js'))) {
             \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Frontend.js', 1));
         }
         
