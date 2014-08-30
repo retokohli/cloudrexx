@@ -251,6 +251,10 @@ class YamlRepository {
      * Flush the current state of the repository into the file system.
      */
     public function flush() {
+        if (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_MINIMAL) {
+            \DBG::msg('WARNING: '.__METHOD__.'() initialized in Cx mode "'.\Cx\Core\Core\Controller\Cx::MODE_MINIMAL.'". EventListeners have not yet been registered. This might break the system! Flushing a repository at this point is highly unadvisable!');
+        }
+
         $entitiesToPersist = array();
         foreach ($this->entities as $entity) {
             // Validation must be done before checking for virtual entities.
