@@ -42,7 +42,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objTemplate = $this->cx->getTemplate();
 
                 \Permission::checkAccess(177, 'static');
-                $objLicense = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, \Env::get('config'), $objDatabase);
+                $config = \Env::get('config');
+                $objLicense = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, $config, $objDatabase);
                 $objLicense->getPage($_POST, $_CORELANG);
                 break;
 
