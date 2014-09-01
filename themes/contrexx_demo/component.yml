@@ -1,7 +1,0 @@
-DlcInfo:
-  name: contrexx_demo
-  description: ''
-  type: template
-  publisher: 'Comvation AG'
-  versions: { state: stable, number: 1.0.0, releaseDate: '' }
-  dependencies: {  }
