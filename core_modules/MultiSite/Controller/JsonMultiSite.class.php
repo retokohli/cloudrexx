@@ -68,7 +68,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setWebsiteState'       => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'updateWebsiteState'    => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'ping'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'pong'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
+            'pong'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'setLicense'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -267,7 +268,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
             }
             \Env::get('em')->flush();
-            return $objWebsite->setup();
+            return $objWebsite->setup($params['post']['options']);
         } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
             throw new MultiSiteJsonException($e->getMessage());    
         }
@@ -898,6 +899,40 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
+    /**
+     * Set the license
+     * 
+     * @global ADOConnection $objDatabase
+     * @param array $params
+     * 
+     * @return boolean
+     * @throws \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException
+     */
+    public function setLicense($params) {
+        global $objDatabase;
+        
+        if (empty($params['post']['legalComponents'])) {
+            return false;
+        }
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_SERVICE:
+                    $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website = $webRepo->findOneById($params['post']['websiteId']);
+                    self::executeCommandOnWebsite('setLicense', array('legalComponents' => $params['post']['legalComponents']), $website);
+                    break;
+                case ComponentController::MODE_WEBSITE:
+                    $license = \Env::get('cx')->getLicense();
+                    $license->setLegalComponents($params['post']['legalComponents']);
+                    $license->save($objDatabase);
+                    break;
+            }
+        } catch (\Exception $e) {
+            throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Unable to setup license: '.$e->getMessage());
+        }
+    }
+
     /**
      * Returns the $isIscRequest value
      * 

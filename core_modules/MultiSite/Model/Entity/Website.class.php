@@ -374,7 +374,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     /**
      * Creates a new website
      */
-    public function setup() {
+    public function setup($options) {
         global $_DBCONFIG, $_ARRAYLANG;
         
         \DBG::msg('Website::setup()');
@@ -407,6 +407,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'userId'      => $this->owner->getId(),
                 'websiteName' => $websiteName,
                 'websiteId'   => $this->getId(),
+                'options'     => $options  
                 );
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createWebsite', $params, $this->websiteServiceServer);
             if(!$resp || $resp->status == 'error'){
@@ -428,6 +429,8 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
             \DBG::msg('Website: setupMultiSiteConfig..');
             $this->setupMultiSiteConfig($websiteName);
+            \DBG::msg('Website: setupLicense..');
+            $this->setupLicense($options);
             \DBG::msg('Website: setupRobotsFile..');
             $this->setupRobotsFile($websiteName);
             \DBG::msg('Website: createContrexxUser..');
@@ -1148,6 +1151,40 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 \Env::get('em')->remove($domain);
                 break;
             }   
+        }
+    }
+    
+    /**
+     * Set up the license
+     * 
+     * @param array $options
+     * 
+     * @return boolean
+     */
+    public function setupLicense($options) {
+        \DBG::msg('Website: setup License..');
+        if (empty($options['subscription'])) {
+            return;
+        }
+        
+        switch ($options['subscription']) {
+            case 'Trial':
+                $legalComponents = array('Access', 'Agb', 'Alias', 'Block', 'Cache', 'Captcha', 'ComponentManager', 'Config', 'Contact', 'ContentManager',
+                                            'ContentWorkflow', 'core', 'Csrf', 'Error', 'FileBrowser', 'FileSharing', 'FrontendEditing', 'fulllanguage',
+                                            'Home', 'Ids', 'Imprint', 'JavaScript', 'JsonData', 'language', 'LanguageManager', 'License', 'Login', 'logout',
+                                            'Media', 'Media1', 'Media2', 'Media3', 'Media4', 'Message', 'MultiSite', 'Net', 'News', 'Newsletter', 
+                                            'Privacy', 'Recommend', 'Search', 'Security', 'Session', 'Shell', 'Sitemap', 'Stats', 'U2u', 'Upload',
+                                            'ViewManager');
+                break;
+        }
+        
+        if (!empty($legalComponents)) {
+            $params = array(
+                'websiteId'       => $this->id,  
+                'legalComponents' => $legalComponents
+            );
+            //send the JSON Request 'setLicense' command from service to website
+            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $params, $this);
         }
     }
 }

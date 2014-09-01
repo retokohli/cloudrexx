@@ -96,8 +96,9 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         \DBG::msg('MultiSite (WebsiteEventListener): payComplete');
         $subscription = $eventArgs->getEntity();
         $website      = $subscription->getProductEntity();
+        $entityAttributes = $subscription->getProduct()->getEntityAttributes();
         if ($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-            return $website->setup();
+            return $website->setup($entityAttributes);
         }
     }
 
