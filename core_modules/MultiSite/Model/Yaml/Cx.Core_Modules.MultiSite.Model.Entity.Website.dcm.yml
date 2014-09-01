@@ -36,10 +36,19 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       type: string
       length: 40  
       
-  oneToMany: # inverse side
+  manyToMany:
+    # unidirectional association
     domains:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Domain
-      mappedBy: website
+      joinTable:
+        name: core_module_multisite_website_domain
+        joinColumns:
+          website_id:
+            referencedColumnName: id
+        inverseJoinColumns:
+          domain_id:
+            referencedColumnName: id
+            unique: true
 
   manyToOne: # owning side
     websiteServiceServer:

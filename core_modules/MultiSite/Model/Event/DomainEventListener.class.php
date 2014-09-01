@@ -33,11 +33,8 @@ class DomainEventListenerException extends \Exception {}
  */
 class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function postRemove($eventArgs) {
-        \DBG::msg('MultiSite (DomainEventListener): postRemove');
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            // if MultiSite-mode set to 'manager' or 'hybrid': remove DNS record
-            // if MultiSite-mode set to 'service' or 'hybrid': update Domain-Cache
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
             $domain  = $eventArgs->getEntity();
             if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
@@ -47,13 +44,13 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         $this->removeDnsRecord($domain, 'postRemove');
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                        $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+                        $this->domainMapping($domain, $mode, 'unMapDomain');
                     break;
                 default:
                     break;
                 }
             } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+                $this->domainMapping($domain, $mode, 'unMapDomain');
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -61,11 +58,10 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     public function preUpdate($eventArgs) {
-        \DBG::msg('MultiSite (DomainEventListener): preUpdate');
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
-            $domain  = $eventArgs->getEntity();
+            $mode   = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $domain = $eventArgs->getEntity();
             if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
@@ -73,13 +69,13 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         $this->updateDnsRecord($domain, 'preUpdate');
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                        $this->domainMapping($eventArgs, $mode, 'updateDomain');
+                        $this->domainMapping($domain, $mode, 'updateDomain');
                     break;
                 default:
                     break;
                 }
             } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                $this->domainMapping($eventArgs, $mode, 'updateDomain');
+                $this->domainMapping($domain, $mode, 'updateDomain');
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -87,7 +83,6 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     public function prePersist($eventArgs) {
-        \DBG::msg('MultiSite (DomainEventListener): prePersist');
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
@@ -97,21 +92,22 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                         $this->addDnsRecord($domain, 'prePersist');
-                    break;
+                        break;
 
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    if($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN) {
-                        $this->domainMapping($eventArgs, $mode, 'mapDomain');
-                    }
-                    break;
-                default:
-                    break;
+                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                        if($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN) {
+                            $this->domainMapping($domain, $mode, 'mapDomain');
+                        }
+                        break;
+
+                    default:
+                        break;
                 }
             } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
                 // The mapping of $domain must only be performed for external domains. The BaseDN and FQDN must not be mapped, as they have already been mapped by the manager.
                 // Note: It is important that the BaseDN and FQDN are not being stored in the DomainRepository.yml file.
                 // Otherwise the domain mapping would result in an infinite loop
-                $this->domainMapping($eventArgs, $mode, 'mapDomain');
+                $this->domainMapping($domain, $mode, 'mapDomain');
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -119,7 +115,6 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     public function postPersist($eventArgs) {
-        \DBG::msg('MultiSite (DomainEventListener): postPersist');
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
@@ -139,19 +134,23 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     private function updateDnsRecord($domain, $event) {
+        $this->logEvent($event, $domain);
         $this->removeDnsRecord($domain, $event);
         $this->addDnsRecord($domain, $event);
     }
 
     private function removeDnsRecord($domain, $event) {
+        $this->logEvent($event, $domain);
         $this->manipulateDnsRecord($domain, 'remove', $event);
     }
 
     private function addDnsRecord($domain, $event) {
+        $this->logEvent($event, $domain);
         $this->manipulateDnsRecord($domain, 'add', $event);
     }
 
     private function manipulateDnsRecord($domain, $operation, $event) {
+        $this->logEvent('DNS '.$operation, $domain);
         switch ($domain->getType()) {
             case \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN:
                 // FQDN shall not be persisted in postPersist event
@@ -216,50 +215,70 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $domainRepository->exportDomainAndWebsite();
     }
 
-    private function domainMapping($eventArgs , $mode, $event) {
-        //post array
-        $domain = $eventArgs->getEntity();
+    private function domainMapping($domain, $mode, $event) {
+        $this->logEvent($event, $domain);
         $params = array(
+            // The actual domain name that shall be mapped to a MultiSite component (Website, Service or Manager)
             'domainName'        => $domain->getName(),
-            'coreNetDomainId'   => ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) ? $domain->getId() : 
-                                       ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain ? $domain->getCoreNetDomainId() : ''),
-            'componentType'     => $mode
+
+            // If Net-domain, then we take the ID of the Net-Domain as new coreNetDomainId.
+            // This only works as the YamlRepository (on which the Net-domain is managed by,
+            // assigns a new ID as soon as a new Net-domain gets attached to the YamlRepository.
+            // Otherwise, if MultiSite-domain, then we are in the process of forwarding a
+            // mapping request to the Manager Server. Therefore, the coreNetDomainId can be
+            // fetched from the domain object itself.
+            'coreNetDomainId'   => ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) ? $domain->getCoreNetDomainId() : $domain->getId(),
+
+            // If Net-domain, then we are in the process of mapping a new domain to the currently
+            // running MultiSite component (Website, Service or Manager) which is identified by $mode.
+            // Otherwise, if MultiSite-domain, then we are in the process of forwarding a
+            // mapping request to the Manager Server. Therefore, the componentType can be
+            // fetched from the domain object itself.
+            'componentType'     => ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) ? $domain->getComponentType() : $mode,
+
+            // If Net-domain, then componentId has to be set to 0 to mark the domain
+            // being mapped to the current MultiSite component (Website, Service or Manager).
+            // Otherwise, if MultiSite-domain, then we are in the process of forwarding a
+            // mapping request to the Manager Server. Therefore, the componentId can be
+            // fetched from the domain object itself.
+            'componentId'       => ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) ? $domain->getComponentId() : 0, 
         );
-        
-        if (empty($mode) || empty($event)) {
-            return;
-        }
-        
+
         switch ($mode) {
-            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
-                    $website = $domain->getWebsite();
-                    $params['componentId'] = $website ? $website->getId() : '';
-                }
-                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($event, $params);
-            break;
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer($event, $params);
-            break;
+                $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer($event, $params);
+                break;
+
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($event, $params);
+                break;
+
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                 $config = \Env::get('config');
-                $params['post'] = array(
-                    'domainName'      => $domain->getName(),
-                    'auth'            => json_encode(array('sender' => $config['domainUrl'])),
-                    'coreNetDomainId' => ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) ? $domain->getId() : 
-                                            ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain ? $domain->getCoreNetDomainId() : ''),
-                    'componentType'   => $mode
-                );
-                $objJsonMultiSite = new \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite();
-                $objJsonMultiSite->$event($params);
+                $params['auth'] = json_encode(array('sender' => $config['domainUrl']));
+                try {
+                    $objJsonMultiSite = new \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite();
+                    $objJsonMultiSite->$event(array('post' => $params));
+                } catch (\Exception $e) {
+                    throw new DomainEventListenerException($e->getMessage());
+                }
                 return;
                 break;
+
             default:
                 return;
                 break;
-        }           
+        }
+
+        if (!$result || $result->status != 'success') {
+            throw new DomainEventListenerException($result->message);
+        }
     } 
+
+    protected function logEvent($eventName, $domain) {
+        \DBG::msg("MultiSite (DomainEventListener): $eventName ({$domain->getName()} / ".get_class($domain).")");
+    }
     
     public function onEvent($eventName, array $eventArgs) {        
         $this->$eventName(current($eventArgs));

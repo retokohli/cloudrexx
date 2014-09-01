@@ -200,24 +200,26 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     );
                 } catch (\Exception $e) {
                     $config = \Env::get('config');
-                    \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
-                    \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
-                        'section' => 'MultiSite',
-                        'key' => 'setupError',
-                        'to' => $config['coreAdminEmail'],
-                        'search' => array(
-                            '[[ERROR]]',
-                            '[[WEBSITE_NAME]]',
-                            '[[CUSTOMER_EMAIL]]',
-                            '[[DBG_LOG]]',
-                        ),
-                        'replace' => array(
-                            $e->getMessage(),
-                            $websiteName,
-                            $params['post']['multisite_email_address'],
-                            join("\n", \DBG::getMemoryLogs()),
-                        ),
-                    ));
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+                        \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+                        \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
+                            'section' => 'MultiSite',
+                            'key' => 'setupError',
+                            'to' => $config['coreAdminEmail'],
+                            'search' => array(
+                                '[[ERROR]]',
+                                '[[WEBSITE_NAME]]',
+                                '[[CUSTOMER_EMAIL]]',
+                                '[[DBG_LOG]]',
+                            ),
+                            'replace' => array(
+                                $e->getMessage(),
+                                $websiteName,
+                                $params['post']['multisite_email_address'],
+                                join("\n", \DBG::getMemoryLogs()),
+                            ),
+                        ));
+                    }
                     throw new MultiSiteJsonException(array(
                         'object' => 'form',
                         'type'      => 'danger',
@@ -524,53 +526,96 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param type $params
      * @return type
      */
-    public function mapDomain($params){
-        if (!empty($params['post']) && !empty($params['post']['domainName'])) {
-            try {                
-                $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
+    public function mapDomain($params) {
+        if (   empty($params['post'])
+            || empty($params['post']['domainName'])
+            || empty($params['post']['auth'])
+            || empty($params['post']['componentType'])
+            || !isset($params['post']['componentId'])
+            || !isset($params['post']['coreNetDomainId'])
+        ) {
+            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Insufficient mapping information supplied.');
+        }
 
-                if (empty($authenticationValue) || !is_array($authenticationValue)) {
-                    return false;
-                }
-                
-                $componentId = 0;
-                switch (true) {
-                    case (!empty($params['post']['componentId'])):
-                        $componentId = $params['post']['componentId'];
-                        break;
-                    case ($params['post']['componentType'] == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE):
-                        $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
+        $authenticationValue = json_decode($params['post']['auth'], true);
+        if (empty($authenticationValue) || !is_array($authenticationValue)) {
+            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Insufficient mapping information supplied.');
+        }
+
+        try {
+            // create a new domain entity that shall be used for the mapping
+            $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);
+
+            $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+            switch ($params['post']['componentType']) {
+                case ComponentController::MODE_SERVICE:
+                    // If componentType is MODE_SERVICE, then we are about to
+                    // map the domain to a Service Server. Therefore, we have
+                    // to fetch the ID of the Service Server the domain shall
+                    // be mapped to.
+                    $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
                         ->findOneBy(array('hostname' => $authenticationValue['sender']));
-                        $componentId = $websiteServiceServer->getId();
-                        break;
-                }
-                
-                $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-                $domain     = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
-                $website    = $domain ? $domain->getWebsite() : '';
-                
-                if (isset($website) && $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                    $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);                
+                    if (!$websiteServiceServer) {
+                        throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
+                    }
+                    $componentId = $websiteServiceServer->getId();
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                        case ComponentController::MODE_MANAGER:
+                            // componentId is the ID of a Website that the domain shall be mapped to
+                            $componentId = $params['post']['componentId'];
+                            $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($componentId);
+                            if (!$website) {
+                                throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Website-ID: '.$componentId);
+                            }
+                            break;
+
+                        case ComponentController::MODE_HYBRID:
+                        case ComponentController::MODE_SERVICE:
+                            // componentId is the ID of the Website the request was made from
+                            $objWebsiteDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
+                            if (!$objWebsiteDomain) {
+                                throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                            }
+                            $website = $objWebsiteDomain->getWebsite();
+                            if (!$website) {
+                                throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                            }
+                            $componentId = $website->getId();
+                            break;
+
+                        default:
+                            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode'));
+                            break;
+                    }
+
                     $website->mapDomain($objDomain);
-                    $objDomain->setCoreNetDomainId($params['post']['coreNetDomainId']);
-                    $objDomain->setComponentType($params['post']['componentType']);
-                    $objDomain->setComponentId($componentId);
-                
-                    \Env::get('em')->persist($objDomain);
+// TODO: will this trigger a request to the service server, then update the domains there and then again trigger a request back to the manager and will then end in an infinite loop????
                     \Env::get('em')->persist($website);
-                } else {
-                    $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);
-                    $objDomain->setCoreNetDomainId($params['post']['coreNetDomainId']);
-                    $objDomain->setComponentType($params['post']['componentType']);
-                    $objDomain->setComponentId($componentId);
-                    \Env::get('em')->persist($objDomain);
-                }
-                
-                \Env::get('em')->flush();
-                
-            } catch (\Exception $e) {
-                return $e->getMessage();
+                    break;
+
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                default:
+                    // If componentType is MANAGER or HYBRID, then we are about to map
+                    // a Net-domain to the own system. Therefore setting componentId to null 
+                    // will reference the domain to be mapped to ourself.
+                    // Using NULL instead of 0 is important. As to the database scheme
+                    // the domain map/unmap process would not work properly, if we use 0 at this point.
+                    $componentId = null;
+                    break;
             }
+
+            $objDomain->setComponentType($params['post']['componentType']);
+            $objDomain->setComponentId($componentId);
+            $objDomain->setCoreNetDomainId($params['post']['coreNetDomainId']);
+            \Env::get('em')->persist($objDomain);
+            \Env::get('em')->flush();
+            return true;
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException($e->getMessage());
         }
     }        
     
@@ -582,30 +627,103 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function unMapDomain($params)
     {
-        if (!empty($params['post']) && !empty($params['post']['domainName'])) {
-            $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
+        if (   empty($params['post'])
+            || empty($params['post']['domainName'])
+            || empty($params['post']['auth'])
+            || empty($params['post']['componentType'])
+            || !isset($params['post']['componentId'])
+            || !isset($params['post']['coreNetDomainId'])
+        ) {
+            throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Insufficient mapping information supplied.');
+        }
 
-            if (empty($authenticationValue) || !is_array($authenticationValue)) {
-                return false;
-            }
-            
+        $authenticationValue = json_decode($params['post']['auth'], true);
+        if (empty($authenticationValue) || !is_array($authenticationValue)) {
+            throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Insufficient mapping information supplied.');
+        }
+
+        try {
+            $website = null;
+
             $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-            $domain     = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
-            $website    = $domain ? $domain->getWebsite() : '';
-            
-            if (isset($website) && $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                $website->unmapDomain($params['post']['domainName']);
-                \Env::get('em')->persist($website);
-            } else {
-                $objDomainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-                $objDomain     = $objDomainRepo->findOneBy(array('name' => $params['post']['domainName']));
-                \Env::get('em')->remove($objDomain);
-                \Env::get('em')->persist($objDomain);
+            switch ($params['post']['componentType']) {
+                case ComponentController::MODE_SERVICE:
+                    // If componentType is MODE_SERVICE, then we are about to
+                    // unmap the domain from a Service Server. Therefore, we have
+                    // to fetch the ID of the Service Server the domain shall
+                    // be unmapped from.
+                    $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
+                        ->findOneBy(array('hostname' => $authenticationValue['sender']));
+                    if (!$websiteServiceServer) {
+                        throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
+                    }
+                    $componentId = $websiteServiceServer->getId();
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                        case ComponentController::MODE_MANAGER:
+                            // componentId is the ID of a Website that the domain shall be unmapped from
+                            $componentId = $params['post']['componentId'];
+                            $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($componentId);
+                            if (!$website) {
+                                throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Website-ID: '.$componentId);
+                            }
+                            break;
+
+                        case ComponentController::MODE_HYBRID:
+                        case ComponentController::MODE_SERVICE:
+                            // componentId is the ID of the Website the request was made from
+                            $objWebsiteDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
+                            if (!$objWebsiteDomain) {
+                                throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                            }
+                            $website = $objWebsiteDomain->getWebsite();
+                            if (!$website) {
+                                throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                            }
+                            $componentId = $website->getId();
+                            break;
+
+                        default:
+                            throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode'));
+                            break;
+                    }
+                    break;
+
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                default:
+                    // If componentType is MANAGER or HYBRID, then we are about to unmap
+                    // a Net-domain from the own system. Therefore setting componentId to null 
+                    // will reference the domain to be mapped to ourself.
+                    $componentId = null;
+                    break;
             }
-            
+            $objDomain = $domainRepo->findOneBy(array(
+                'name'              => $params['post']['domainName'],
+                'componentType'     => $params['post']['componentType'],
+                'componentId'       => $componentId,
+                'coreNetDomainId'   => $params['post']['coreNetDomainId'],
+            ));
+
+            if (!$objDomain) {
+                throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Domain to remove not found.');
+            }
+
+            if ($website && $objDomain->getWebsite() == $website) {
+                // Website::unMapDomain() does also call remove() on the entity manager
+                $website->unMapDomain($objDomain);
+            } else {
+                \Env::get('em')->remove($objDomain);
+            }
             \Env::get('em')->flush();
+            return true;
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException($e->getMessage());
         }
     }
+
     /**
      * update the default codeBase
      * 
@@ -634,36 +752,97 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return string
      */
     public function updateDomain($params) {
+        if (   empty($params['post'])
+            || empty($params['post']['domainName'])
+            || empty($params['post']['auth'])
+            || empty($params['post']['componentType'])
+            || !isset($params['post']['componentId'])
+            || !isset($params['post']['coreNetDomainId'])
+        ) {
+            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Insufficient mapping information supplied.');
+        }
 
-        if (!empty($params['post']) && !empty($params['post']['domainName']) && !empty($params['post']['domainId'])) {
-            $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
+        $authenticationValue = json_decode($params['post']['auth'], true);
+        if (empty($authenticationValue) || !is_array($authenticationValue)) {
+            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Insufficient mapping information supplied.');
+        }
 
-            if (empty($authenticationValue) || !is_array($authenticationValue)) {
-                return false;
+        try {
+            $website = null;
+
+            $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+            switch ($params['post']['componentType']) {
+                case ComponentController::MODE_SERVICE:
+                    // If componentType is MODE_SERVICE, then we are about to
+                    // update the domain of a Service Server. Therefore, we have
+                    // to fetch the ID of the Service Server the domain shall
+                    // be updated of.
+                    $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
+                        ->findOneBy(array('hostname' => $authenticationValue['sender']));
+                    if (!$websiteServiceServer) {
+                        throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
+                    }
+                    $componentId = $websiteServiceServer->getId();
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                        case ComponentController::MODE_MANAGER:
+                            // componentId is the ID of a Website that the domain shall be updated of
+                            $componentId = $params['post']['componentId'];
+                            $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($componentId);
+                            if (!$website) {
+                                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Website-ID: '.$componentId);
+                            }
+                            break;
+
+                        case ComponentController::MODE_HYBRID:
+                        case ComponentController::MODE_SERVICE:
+                            // componentId is the ID of the Website the request was made from
+                            $objWebsiteDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
+                            if (!$objWebsiteDomain) {
+                                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                            }
+                            $website = $objWebsiteDomain->getWebsite();
+                            if (!$website) {
+                                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                            }
+                            $componentId = $website->getId();
+                            break;
+
+                        default:
+                            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode'));
+                            break;
+                    }
+                    break;
+
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                default:
+                    // If componentType is MANAGER or HYBRID, then we are about to update
+                    // a Net-domain from the own system. Therefore setting componentId to null 
+                    // will reference the domain to be mapped to ourself.
+                    $componentId = null;
+                    break;
             }
-            try {
-                switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-                    case ComponentController::MODE_MANAGER:
-                    case ComponentController::MODE_HYBRID:
-                        $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-                        $domain = $domainRepo->findOneBy(array('coreNetDomainId' => $params['post']['coreNetDomainId'], 'componentType' => $params['post']['componentType']));
-                        $domain->setName($params['post']['domainName']);
-                        break;
+            $objDomain = $domainRepo->findOneBy(array(
+                'componentType'     => $params['post']['componentType'],
+                'componentId'       => $componentId,
+                'coreNetDomainId'   => $params['post']['coreNetDomainId'],
+            ));
 
-                    case ComponentController::MODE_SERVICE:
-                        $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-                        $objDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
-                        $domain = $domainRepo->findOneBy(array('componentId' => $objDomain->getWebsite()->getId(), 'coreNetDomainId' => $params['post']['coreNetDomainId']));
-                        $domain->setName($params['post']['domainName']);
-                        break;
-                }
-                \Env::get('em')->persist($domain);
-                \Env::get('em')->flush();
-            } catch (\Exception $e) {
-                return $e->getMessage();
+            if (!$objDomain) {
+                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Domain to update not found.');
             }
+
+            $objDomain->setName($params['post']['domainName']);
+            \Env::get('em')->flush();
+            return true;
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException($e->getMessage());
         }
     }
+
     /**
      * set Website State
      * 

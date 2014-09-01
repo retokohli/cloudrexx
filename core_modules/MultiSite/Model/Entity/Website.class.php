@@ -99,6 +99,11 @@ class Website extends \Cx\Model\Base\EntityBase {
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
      */
+    private $domainAliases;
+    
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
+     */
     private $domains;
     
     /*
@@ -427,14 +432,6 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupRobotsFile($websiteName);
             \DBG::msg('Website: createContrexxUser..');
             $this->createContrexxUser($websiteName);
-
-            \DBG::msg('Website: prepare reset password function..');
-            $this->owner->setRestoreKey();
-            // hard-coded to 1 day
-            $this->owner->setRestoreKeyTime(86400);
-            $this->owner->store();
-            $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner);
-
             \DBG::msg('Website: setup process.. DONE');
             \DBG::msg('Website: Set state to '.self::STATE_ONLINE);
             $this->status = self::STATE_ONLINE;
@@ -450,6 +447,13 @@ class Website extends \Cx\Model\Base\EntityBase {
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID
         ) {
+            \DBG::msg('Website: prepare reset password function..');
+            $this->owner->setRestoreKey();
+            // hard-coded to 1 day
+            $this->owner->setRestoreKeyTime(86400);
+            $this->owner->store();
+            $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner);
+
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             // write mail
@@ -805,6 +809,23 @@ class Website extends \Cx\Model\Base\EntityBase {
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
     }
 
+    /**
+     * setup Robots File
+     * 
+     * @param string $websiteName websitename
+     * 
+     * @throws WebsiteException
+     */
+    protected function setupRobotsFile($websiteName) {
+        try {
+            $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+            $setupRobotFile = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton/robots.txt');
+            $setupRobotFile->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/robots.txt');
+        }  catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            throw new WebsiteException('Unable to setup robot file: '.$e->getMessage());
+        }
+    }
+
     protected function createContrexxUser($websiteName)
     {
         $params = array(
@@ -1011,9 +1032,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
         }
         $fqdn = new Domain($this->name.'.'.$serviceServerHostname);
         $fqdn->setType(Domain::TYPE_FQDN);
-        $this->fqdn = $fqdn;
-        $this->mapDomain($this->fqdn);
-        \Env::get('em')->persist($this->fqdn);
+        $fqdn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
+        $this->mapDomain($fqdn);
+        \Env::get('em')->persist($fqdn);
     }
     
     /**
@@ -1021,12 +1042,17 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */    
     public function getFqdn(){
-        if ($this->fqdn) {
-            return $this->fqdn;
+        // fetch FQDN from Domain repository
+        if (!$this->fqdn) {
+            foreach ($this->domains as $domain) {
+                if ($domain->getType() == Domain::TYPE_FQDN) {
+                    $this->fqdn = $domain;
+                    break;
+                }
+            }
         }
 
-        // fetch FQDN from Domain repository
-        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_FQDN, 'componentId' => $this->id));
+        return $this->fqdn;
     }   
     
     /**
@@ -1036,9 +1062,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
     function setBaseDn(){
         $baseDn = new Domain($this->name.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
         $baseDn->setType(Domain::TYPE_BASE_DOMAIN);
-        $this->baseDn = $baseDn;
-        $this->mapDomain($this->baseDn);
-        \Env::get('em')->persist($this->baseDn);
+        $baseDn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
+        $this->mapDomain($baseDn);
+        \Env::get('em')->persist($baseDn);
     }
     
     /**
@@ -1046,12 +1072,17 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */    
     public function getBaseDn(){
-        if ($this->baseDn) {
-            return $this->baseDn;
+        // fetch baseDn from Domain repository
+        if (!$this->baseDn) {
+            foreach ($this->domains as $domain) {
+                if ($domain->getType() == Domain::TYPE_BASE_DOMAIN) {
+                    $this->baseDn = $domain;
+                    break;
+                }
+            }
         }
 
-        // fetch baseDn from Domain repository
-        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_BASE_DOMAIN, 'componentId' => $this->id)); 
+        return $this->baseDn;
     }
     
     /**
@@ -1059,7 +1090,16 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */   
     public function getDomainAliases(){
-        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_EXTERNAL_DOMAIN, 'componentId' => $this->id));
+        // fetch domain aliases from Domain repository
+        if (!$this->domainAliases) {
+            foreach ($this->domains as $domain) {
+                if ($domain->getType() == Domain::TYPE_EXTERNAL_DOMAIN) {
+                    $this->domainAliases[] = $domain;
+                }
+            }
+        }
+
+        return $this->domainAliases;
     }
 
     /**
@@ -1068,8 +1108,6 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @return Doctrine\Common\Collections\Collection $domains
      */
     public function getDomains() {
-        $this->domains = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('componentId' => $this->id));
-
         return $this->domains;
     }
     
@@ -1081,37 +1119,35 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function mapDomain(Domain $domain) {
         $domain->setWebsite($this);
         $this->domains[] = $domain;
+
+        switch ($domain->getType()) {
+            case DOMAIN::TYPE_FQDN:
+                $this->fqdn = $domain;
+                break;
+
+            case DOMAIN::TYPE_BASE_DOMAIN:
+                $this->baseDn = $domain;
+                break;
+
+            case DOMAIN::TYPE_EXTERNAL_DOMAIN:
+            default:
+                $domain->settype(DOMAIN::TYPE_EXTERNAL_DOMAIN);
+                $this->domainAliases[] = $domain;
+                break;
+        }
     }
     
     /**
-     * 
-     * unmapDomain
+     * unMapDomain
      *
      * @param string $name websitename
      */  
-    public function unmapDomain($name){
-        
-        foreach ($this->getDomainAliases() as $domain) {
-            if($domain->name == $name) {
+    public function unMapDomain($domain){
+        foreach ($this->getDomainAliases() as $domainAlias) {
+            if($domainAlias == $domain) {
                 \Env::get('em')->remove($domain);
                 break;
             }   
-        }
-    }
-    /**
-     * setup Robots File
-     * 
-     * @param string $websiteName websitename
-     * 
-     * @throws WebsiteException
-     */
-    public function setupRobotsFile($websiteName) {
-        try {
-            $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
-            $setupRobotFile = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton/robots.txt');
-            $setupRobotFile->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/robots.txt');
-        }  catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            throw new WebsiteException('Unable to setup robot file: '.$e->getMessage());
         }
     }
 }

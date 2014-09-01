@@ -67,6 +67,9 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
             $objUser = $saleOptions['customer'];
             $website = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
             \Env::get('em')->persist($website);
+            // flush $website to database -> subscription will need the ID of $website
+            // to properly work
+            \Env::get('em')->flush();
             return $website;
 	} catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
             throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException($e->getMessage());    

@@ -93,11 +93,21 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     }
 
     /**
-     * Set website
+     * Get website
      *
      * @param Cx\Core_Modules\MultiSite\Model\Entity\Website $website
      */
     public function getWebsite() {
+        if (!$this->website) {
+            $query = \Env::get('em')->createQuery('SELECT website FROM Cx\Core_Modules\MultiSite\Model\Entity\Website website JOIN website.domains domain WHERE domain.id = ?1');
+            $query->setParameter(1, $this->id);
+            $query->setMaxResults(1);
+            $websites = $query->getResult();
+            if (isset($websites[0])) {
+                $this->website = $websites[0];
+            }
+        }
+
         return $this->website;
     }
 

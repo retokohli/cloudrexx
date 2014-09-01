@@ -31,6 +31,29 @@ class WebsiteEventListenerException extends \Exception {}
  * @subpackage  coremodule_multisite
  */
 class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+    public function preUpdate($eventArgs) {
+        \DBG::msg('MultiSite (WebsiteEventListener): preUpdate');
+        $em      = $eventArgs->getEntityManager();
+        $uow     = $em->getUnitOfWork();
+        $website = $eventArgs->getEntity();
+        $domains = $website->getDomains();
+
+        foreach ($domains as $domain) {
+            \DBG::msg('Update domain (map to new IP of Website): '.$domain->getName());
+            if ($domain->getComponentType() == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE
+                && $domain->getWebsite()
+                && !$domain->getComponentId()
+            ) {
+                \DBG::msg('Domain: Set component ID to website ID: '.$domain->getWebsite()->getId());
+                $domain->setComponentId($domain->getWebsite()->getId());
+                $uow->computeChangeSet(
+                    $em->getClassMetadata('Cx\Core_Modules\MultiSite\Model\Entity\Domain'),
+                    $domain
+                );
+            }
+        }
+    }
+
     public function postUpdate($eventArgs) {
         \DBG::msg('MultiSite (WebsiteEventListener): postUpdate');
         $em      = $eventArgs->getEntityManager();
@@ -61,8 +84,8 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 $websiteServiceServer = $website->getWebsiteServiceServer();
 
                 $params = array(
-                'websiteId'   => $website->getId(),
-                'status'      => $website->getStatus(),
+                    'websiteId'   => $website->getId(),
+                    'status'      => $website->getStatus(),
                 );
                 \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('setWebsiteState', $params, $websiteServiceServer);
                 break;

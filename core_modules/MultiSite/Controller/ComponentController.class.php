@@ -474,6 +474,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Minimal length of website names");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('sendSetupError','0', 9,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for sendSetupError");
+            }
 
             // websiteSetup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
@@ -616,6 +621,7 @@ throw new MultiSiteException('Refactor this method!');
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         
         $websiteEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
         $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteEventListener);
         
@@ -745,6 +751,7 @@ throw new MultiSiteException('Refactor this method!');
         }
 
         // no website found. Abort website-deployment and let Contrexx process with the regular system initialization (i.e. most likely with the Website Service Website)
+        \DBG::msg("MultiSite: Loading Website Service...");
         return false;
     }
     

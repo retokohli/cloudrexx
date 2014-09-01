@@ -23,11 +23,3 @@ Cx\Core_Modules\MultiSite\Model\Entity\Domain:
       type: integer
     coreNetDomainId:
       type: integer
-  manyToOne: # owning side
-    website:
-      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
-      inversedBy: domains 
-      joinColumn:
-        name: componentId
-        referencedColumnName: id
-        cascade: [remove]
