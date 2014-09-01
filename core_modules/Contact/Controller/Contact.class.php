@@ -787,8 +787,8 @@ CODE;
                     $folderName .= $suffix;
                     
                     //try to make the folder and change target accordingly on success
-                    if(\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
-                        \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
+                    if(\Cx\Lib\FileSystem\FileSystem::make_folder(\Env::get('cx')->getWebsitePath().ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
+                        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Env::get('cx')->getWebsitePath().ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
                         $depositionTarget .= $folderName.'/';
                     }
                     $this->depositionTarget[$fieldId] = $depositionTarget;
@@ -802,7 +802,7 @@ CODE;
                 if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
                     throw new \Cx\Core_Modules\Contact\Controller\ContactException("could not find temporary upload directory '$tmpUploadDir'");
 
-                $h = opendir(ASCMS_PATH.$tmpUploadDir);
+                $h = opendir(\Env::get('cx')->getWebsitePath().$tmpUploadDir);
                 while(false !== ($f = readdir($h))) {
                     if($f != '..' && $f != '.') {
                         //do not overwrite existing files.
