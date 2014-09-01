@@ -255,10 +255,16 @@ class JsonData {
             }
         }
         if ($response->getStatus() != 200) {
+            \DBG::msg(__METHOD__.' Request failed! Status: '.$response->getStatus());
             return false;
         }
         
-        return json_decode($response->getBody());
+        $body = json_decode($response->getBody());
+        if ($body === NULL) {
+            \DBG::msg(__METHOD__.' failed!');
+            \DBG::dump($response->getBody());
+        }
+        return $body;
     }
     
     /**
