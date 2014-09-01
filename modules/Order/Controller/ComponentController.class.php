@@ -20,12 +20,4 @@ namespace Cx\Modules\Order\Controller;
  * @package     contrexx
  * @subpackage  module_order
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController
-{
-    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        // Event Listener must be registered before preContentLoad event
-        $evm = \Env::get('cx')->getEvents();
-        $subscriptionEventListener = new \Cx\Modules\Order\Model\Event\SubscriptionEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $subscriptionEventListener);
-    }
-}
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {}
