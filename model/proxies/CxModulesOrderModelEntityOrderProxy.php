@@ -120,7 +120,7 @@ class CxModulesOrderModelEntityOrderProxy extends \Cx\Modules\Order\Model\Entity
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'contactId', 'invoices');
+        return array('__isInitialized__', 'id', 'contactId', 'subscriptions', 'invoices');
     }
 
     public function __clone()
