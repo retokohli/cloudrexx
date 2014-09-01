@@ -1,6 +1,6 @@
 <script type="text/javascript">
-    $J(document).ready(function () {
-        $J('.news-image').each(function () {
+    $J(document).ready(function() {
+        $J('.news-image').each(function() {
             if ($J.trim($J(this).html()) == '') {
                 $J(this).siblings('.news-text').css('width', '100%');
                 $J(this).remove();
@@ -23,12 +23,16 @@
 <!-- BEGIN news_list -->
 <ul id="news">
     <!-- BEGIN newsrow -->
-    <li class="{NEWS_CSS}">
+    <li class="{NEWS_CSS} container-fluid">
         <h3>{NEWS_LINK_TITLE}</h3>
-        <div class="news-image">{NEWS_IMAGE}</div>
-        <div class="news-text">
-            <div class="news-teaser">{NEWS_TEASER}</div>
-            <div class="news-info">{NEWS_DATE} &bull; {NEWS_CATEGORY}<!-- BEGIN news_comments_count --> &bull; {NEWS_COUNT_COMMENTS}<!-- END news_comments_count --></div>
+        <div class="row">
+            <div class="news-image col-md-2">{NEWS_IMAGE}</div>
+            <div class="news-text col-md-10">
+                <div class="news-teaser">{NEWS_TEASER}</div>
+                <div class="news-info">{NEWS_DATE} &bull; {NEWS_CATEGORY}
+                    <!-- BEGIN news_comments_count --> &bull; {NEWS_COUNT_COMMENTS}<!-- END news_comments_count -->
+                </div>
+            </div>
         </div>
     </li>
     <!-- END newsrow -->
