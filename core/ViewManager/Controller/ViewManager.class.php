@@ -1609,6 +1609,8 @@ class ViewManager
         if (!isset($themesPage)) {
             $themesPage = "index.html";
         }
+        $codeBaseFiles = array();
+        $websiteThemesFiles = array();
         if ($themes != "") {
             $this->codeBaseThemesFilePath = $this->codeBaseThemesPath.$themes;
             $this->websiteThemesFilePath  = $this->websiteThemesPath.$themes;
