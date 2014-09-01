@@ -132,6 +132,10 @@ class License {
         return $this->availableComponents;
     }
     
+    public function setAvailableComponents($availableComponents) {
+        $this->availableComponents = $availableComponents;
+    }
+    
     public function getLegalComponentsList() {
         return $this->legalComponents;
     }

@@ -925,6 +925,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
                 case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
+                    $license->setAvailableComponents($params['post']['legalComponents']);
                     $license->setLegalComponents($params['post']['legalComponents']);
                     $license->save($objDatabase);
                     break;
