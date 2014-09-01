@@ -501,6 +501,12 @@
     #content-wrapper {
         padding-bottom: 168px;
     }
+    .news-image {
+        margin-right: 0;
+        width: 100%;
+        padding-right: 15px;
+        margin-bottom: 10px;
+    }
     .social-foot {
         float: none;
         width: 30%;

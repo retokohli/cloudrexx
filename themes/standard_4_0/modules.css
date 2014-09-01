@@ -1610,16 +1610,16 @@ div.row2 {
 }
 .news-image {
     float: left;
-    width: 13%;
-    margin-right: 10px;
+    margin-right: -5px;
+    width: 14.2%;
+    padding-right: 0;
 }
 .news-image img {
-    max-width: 100%;
-    max-height: auto;
+    width: 100%;
+    height: auto;
 }
 .news-text {
     float: left;
-    width: 85%;
 }
 .news-teaser {
     float: left;
