@@ -135,6 +135,10 @@ class License {
     public function getLegalComponentsList() {
         return $this->legalComponents;
     }
+
+    public function setLegalComponents($legalComponents) {
+        $this->legalComponents = $legalComponents;
+    }
     
     public function isInLegalComponents($componentName) {
         return in_array($componentName, $this->legalComponents);
