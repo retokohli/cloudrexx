@@ -401,7 +401,17 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: Forward setup() to Website Service Server');
             $isServiceServer = false;
             //create user account in website service server
-            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createUser', array('userId' => $this->owner->getId(), 'email'  => $this->owner->getEmail()), $this->websiteServiceServer);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createUser', array('userId' => $this->owner->getId(), 'email'  => $this->owner->getEmail()), $this->websiteServiceServer);
+            if(!$resp || $resp->status == 'error'){
+                $errMsg = isset($resp->message) ? $resp->message : '';
+                if (isset($resp->log)) {
+                    \DBG::appendLogsToMemory($resp->log);
+                }
+                throw new WebsiteException('Problem in creating website owner '.$errMsg);    
+            }
+            if (isset($resp->log)) {
+                \DBG::appendLogsToMemory($resp->log);
+            }
             //create website in website service server
             $params = array(
                 'userId'      => $this->owner->getId(),
@@ -412,7 +422,13 @@ class Website extends \Cx\Model\Base\EntityBase {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createWebsite', $params, $this->websiteServiceServer);
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
+                if (isset($resp->log)) {
+                    \DBG::appendLogsToMemory($resp->log);
+                }
                 throw new WebsiteException('Problem in creating website '.$errMsg);    
+            }
+            if (isset($resp->log)) {
+                \DBG::appendLogsToMemory($resp->log);
             }
             $this->ipAddress = $resp->data->websiteIp;
             $this->codeBase  = $resp->data->codeBase;

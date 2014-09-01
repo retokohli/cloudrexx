@@ -140,6 +140,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     * @param post parameters
     * */
     public function signup($params) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
         // load text-variables of module MultiSite
         global $_ARRAYLANG, $objInit;
         $langData = $objInit->loadLanguageData('MultiSite');
@@ -239,6 +242,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param type $params  
     */
     public function createWebsite($params) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
         // load text-variables of module MultiSite
         global $_ARRAYLANG, $objInit;
         
@@ -271,11 +277,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             \Env::get('em')->flush();
             return $objWebsite->setup($params['post']['options']);
         } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
-            throw new MultiSiteJsonException($e->getMessage());    
+            throw new MultiSiteJsonException(array(
+                'log'      => \DBG::getMemoryLogs(),
+                'message'   => $e->getMessage(),
+            ));
         }
     }
 
     public function createUser($params) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
         if (empty($params['post'])) {
             throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::createUser.');
         }
@@ -310,7 +322,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 return array('userId' => $objUser->getId());
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException($e->getMessage());    
+            throw new MultiSiteJsonException(array(
+                'log'      => \DBG::getMemoryLogs(),
+                'message'   => $e->getMessage(),
+            ));
         }
     }
 
@@ -855,6 +870,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
          if (!empty($params['post'])) {
             $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $website = $webRepo->findOneById($params['post']['websiteId']);
+            if (!$website) {
+                throw new MultiSiteJsonException('JsonMultiSite::setWebsiteState() failed: Website by ID '.$params['post']['websiteId'].' not found.');
+            }
             $website->setStatus($params['post']['status']);
             \Env::get('em')->persist($website);
             \Env::get('em')->flush();
@@ -993,6 +1011,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
             throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
         }
+// TODO: test if the following works
+        /*if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
+            return self::$command(array('post' => $params));
+        }*/
         $host = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
         $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
         $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');

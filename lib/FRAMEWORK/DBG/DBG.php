@@ -735,6 +735,8 @@ class DBG
 
     private static function _log($text, $firephp_action='log', $additional_args=null)
     {
+        if (!self::isLogWorthy($text)) return;
+
         if (self::$log_firephp
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
@@ -777,6 +779,19 @@ class DBG
         return self::$memory_logs;
     }
 
+
+    private static function isLogWorthy($text) {
+        $unworthLogs = array();
+        //$unworthLogs = array('File', 'FTPFile');
+        if (empty($unworthLogs)) {
+            return true;
+        }
+        return !preg_match('/^MSG: ('.join('|', $unworthLogs).')[^:]*:/', $text);
+    }
+
+    public static function appendLogsToMemory($logs) {
+        self::$memory_logs = array_merge(self::$memory_logs, $logs);
+    }
 
     public static function setSQLQueryCache($msg)
     {
