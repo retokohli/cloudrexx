@@ -711,7 +711,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             );
             $newSettings->write($settingsData);
             
-            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', array('websiteName' => $websiteName), $this);
+            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', array(), $this);
 
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             // we must re-initialize the original MultiSite settings of the main installation

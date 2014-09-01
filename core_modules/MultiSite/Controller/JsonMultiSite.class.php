@@ -1095,20 +1095,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param array $params
      * 
      */
-    public function setupConfig($params) {
+    public function setupConfig() {
         global $_CONFIG;
         
-        if (empty($params['post']['websiteName'])) {
-            return false;
-        }
-        $websiteName = $params['post']['websiteName'];
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
-        $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
+        \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
         if (\Cx\Core\Setting\Controller\Setting::getValue('installationId') === NULL 
                 && !\Cx\Core\Setting\Controller\Setting::add('installationId', $_CONFIG['installationId'], 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')) {
             throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
         }
-        \Cx\Core\Config\Controller\Config::init($websiteConfigPath);
+        \Cx\Core\Config\Controller\Config::init();
 
         // we must re-initialize the original MultiSite settings of the main installation
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
