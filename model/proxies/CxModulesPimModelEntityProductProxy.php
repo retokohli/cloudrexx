@@ -141,6 +141,12 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getUpgradable();
     }
 
+    public function isUpgradable()
+    {
+        $this->_load();
+        return parent::isUpgradable();
+    }
+
     public function setUpgradable($upgradable)
     {
         $this->_load();
