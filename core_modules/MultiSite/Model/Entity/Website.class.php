@@ -711,12 +711,8 @@ class Website extends \Cx\Model\Base\EntityBase {
             );
             $newSettings->write($settingsData);
             
-            $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
-            $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
-            \Cx\Core\Config\Controller\Config::init($websiteConfigPath);
+            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', array('websiteName' => $websiteName), $this);
 
-            // we must re-initialize the original MultiSite settings of the main installation
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             // we must re-initialize the original MultiSite settings of the main installation
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');

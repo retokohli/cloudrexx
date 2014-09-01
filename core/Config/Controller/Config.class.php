@@ -201,11 +201,12 @@ class Config
             'TXT_RADIO_ON'                              => $_ARRAYLANG['TXT_ACTIVATED'],
             'TXT_RADIO_OFF'                             => $_ARRAYLANG['TXT_DEACTIVATED']
             ));
-        if (isset($_POST['debugging'])) {
-            $this->updateDebugSettings($_POST['debugging']);
+        if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+            if (isset($_POST['debugging'])) {
+                $this->updateDebugSettings($_POST['debugging']);
+            }
+            $this->setDebuggingVariables($templateObj);
         }
-        $this->setDebuggingVariables($templateObj);
-
         \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
         \Cx\Core\Setting\Controller\Setting::storeFromPost();
         
@@ -245,11 +246,13 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
-        \Cx\Core\Setting\Controller\Setting::show_external(
+        if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+            \Cx\Core\Setting\Controller\Setting::show_external(
                 $template,
                 'Development Tools',
                 $templateObj->get()
-                );
+            );
+        }
         \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations', 'Yaml');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
@@ -1017,10 +1020,13 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for session Length Remember");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('dnsServer') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('dnsServer','ns1.contrexxhosting.com', 6,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dns Server");
+            
+            if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('dnsServer') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('dnsServer','ns1.contrexxhosting.com', 6,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dns Server");
+                }
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('timezone') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('timezone','Europe/Zurich', 7,
@@ -1111,10 +1117,12 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Frontend Editing");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('useCustomizings') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('useCustomizings','off', 3,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Customizing");
+            if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('useCustomizings') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('useCustomizings','off', 3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Customizing");
+                }
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('corePagingLimit') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('corePagingLimit','30', 4,

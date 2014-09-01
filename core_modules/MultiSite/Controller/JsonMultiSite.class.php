@@ -70,6 +70,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'ping'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'pong'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setLicense'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'setupConfig'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -1085,6 +1086,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword'),
         );
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+    }
+    
+     /**
+     * setup the config options
+     * 
+     * @param array $params
+     * 
+     */
+    public function setupConfig($params) {
+        global $_CONFIG;
+        
+        if (empty($params['post']['websiteName'])) {
+            return false;
+        }
+        $websiteName = $params['post']['websiteName'];
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
+        if (\Cx\Core\Setting\Controller\Setting::getValue('installationId') === NULL 
+                && !\Cx\Core\Setting\Controller\Setting::add('installationId', $_CONFIG['installationId'], 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')) {
+            throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
+        }
+        \Cx\Core\Config\Controller\Config::init($websiteConfigPath);
+
+        // we must re-initialize the original MultiSite settings of the main installation
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
     }
 
 }
