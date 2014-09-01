@@ -364,14 +364,13 @@ CREATE TABLE `contrexx_core_module_multisite_domain` (
   `coreNetDomainId` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
-  KEY `componentId` (`componentId`),
-  CONSTRAINT `contrexx_core_module_multisite_domain_ibfk_1` FOREIGN KEY (`componentId`) REFERENCES `contrexx_core_module_multisite_website` (`id`)
+  KEY `componentId` (`componentId`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_website` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(200) NOT NULL,
   `codeBase` varchar(50) NOT NULL,
   `language` varchar(50) NOT NULL,
@@ -383,6 +382,17 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `installationId` varchar(40) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `name_index` (`name`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_website_domain` (
+  `website_id` int(11) unsigned NOT NULL,
+  `domain_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY  (`website_id`,`domain_id`),
+  UNIQUE KEY `domain_id` (`domain_id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_domain_ibfk_2` FOREIGN KEY (`domain_id`) REFERENCES `contrexx_core_module_multisite_domain` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_module_multisite_website_domain_ibfk_1` FOREIGN KEY (`website_id`) REFERENCES `contrexx_core_module_multisite_website` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
