@@ -1169,8 +1169,8 @@ class BasicEntityPersister
                     $conditionSql .= $this->_getSQLTableAlias($this->_class->name) . '.';
                 }
                 
-
-                $conditionSql .= $this->_class->associationMappings[$field]['joinColumns'][0]['name'];
+                // bugfix http://www.doctrine-project.org/jira/browse/DDC-2808
+                $conditionSql .= $this->_class->associationMappings[$field]['joinTable']['joinColumns'][0]['name'];
             } else if ($assoc !== null && strpos($field, " ") === false && strpos($field, "(") === false) {
                 // very careless developers could potentially open up this normally hidden api for userland attacks,
                 // therefore checking for spaces and function calls which are not allowed.
