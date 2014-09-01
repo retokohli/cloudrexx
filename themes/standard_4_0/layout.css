@@ -12,6 +12,7 @@ body > iframe {display: none;}
 html, body {
     height: 100%;
 }
+body a:hover {text-decoration: none;}
 .wrapper {
     position: relative;
     min-height: 100%;
@@ -174,6 +175,7 @@ html, body {
 }
 #metanavigation li a:hover {
     color: #0A85C8;
+    text-decoration: none;
 }
 #metanavigation li#select-language {
     z-index: 6;
@@ -566,6 +568,7 @@ html, body {
 #subnavigation li.level-2 a.active {
     background-image: url('images/nav-2-active.png');
     background-position: 15px 15px;
+    text-decoration: none;a
 }
 #subnavigation li.level-3 a:hover,
 #subnavigation li.level-3 a.active,
@@ -943,6 +946,7 @@ span.disconnected {
 }
 .navigation li a:hover {
     color: rgb(18, 146, 221);
+    text-decoration: none;
 }
 #home-block a:hover {
     background-color: #e6e6e6;
