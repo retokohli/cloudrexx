@@ -4177,8 +4177,8 @@ $WhereStatement = '';
                 $arrLists = array();
 
                 if (isset($_POST['newsletter_recipient_associated_list'])) {
-                    foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
-                        array_push($arrLists, intval($listId));             
+                    foreach (explode(',', $_POST['newsletter_recipient_associated_list']) as $listId) {                    
+                        array_push($arrLists, intval($listId));
                     }                
                 }
                 $EmailCount = 0;
