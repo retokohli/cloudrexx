@@ -256,6 +256,8 @@ class JsonData {
         }
         if ($response->getStatus() != 200) {
             \DBG::msg(__METHOD__.' Request failed! Status: '.$response->getStatus());
+            \DBG::msg('URL: '.$url);
+            \DBG::dump($data);
             return false;
         }
         
