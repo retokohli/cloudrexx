@@ -1091,9 +1091,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     
      /**
      * setup the config options
-     * 
-     * @param array $params
-     * 
      */
     public function setupConfig() {
         global $_CONFIG;
