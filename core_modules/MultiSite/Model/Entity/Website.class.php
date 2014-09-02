@@ -478,6 +478,8 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupMultiSiteConfig($websiteName);
             \DBG::msg('Website: initializeConfig..');
             $this->initializeConfig($websiteName);
+            \DBG::msg('Website: initializeLanguage..');
+            $this->initializeLanguage();
             \DBG::msg('Website: setupLicense..');
             $this->setupLicense($options);
             \DBG::msg('Website: setupRobotsFile..');
@@ -1254,5 +1256,13 @@ throw new WebsiteException('implement secret-key algorithm first!');
             //send the JSON Request 'setLicense' command from service to website
             \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $params, $this);
         }
+    }
+    
+    /**
+     * Initialize the language
+     */
+    public function initializeLanguage() {
+        //send the JSON Request 'setDefaultLanguage' command from service to website
+        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setDefaultLanguage', array('langId' => $this->language), $this);
     }
 }

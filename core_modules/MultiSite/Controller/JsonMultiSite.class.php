@@ -72,6 +72,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setLicense'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'setupConfig'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getDefaultWebsiteIp'   => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'setDefaultLanguage'    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -1168,5 +1169,37 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'status'            => 'success',
             'defaultWebsiteIp'  => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp'),
         );
+    }
+    
+    /**
+     * Set the default language
+     * 
+     * @global \Cx\Core_Modules\MultiSite\Controller\ADOConnection $objDatabase
+     * @param array $params
+     * 
+     * @return boolean
+     * @throws MultiSiteJsonException
+     */
+    public function setDefaultLanguage($params) {
+        global $objDatabase;
+        
+        if (empty($params['post']['langId'])) {
+            return;
+        }
+        
+        try {
+            $deactivateIds = array();
+            $arrLang = \FWLanguage::getLanguageArray();
+            foreach ($arrLang As $key => $value) {
+                if ($key != $params['post']['langId']) {
+                    $deactivateIds[] = $key;
+                }
+            }
+            $fields = array('backend' => 0, 'frontend' => 0);
+            $query = \SQL::update('languages', $fields, array('escape' => true)) . ' WHERE `id` In (' . implode(', ', $deactivateIds) . ')';
+            $objDatabase->Execute($query);
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: Updating Language status.' . $e->getMessage());
+        }
     }
 }
