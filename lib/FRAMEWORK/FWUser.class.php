@@ -542,13 +542,17 @@ class FWUser extends User_Setting
         return $objMail->Send();
     }
 
-    public static function getPasswordRestoreLink($isBackendMode, $objUser) {
+    public static function getPasswordRestoreLink($isBackendMode, $objUser, $websitePath = null) {
         global $_CONFIG;
 
+        if (!$websitePath) {
+            $websitePath = $_CONFIG['domainUrl'] . \Env::get('cx')->getWebsiteOffsetPath();
+        }
+
         if ($isBackendMode) {
-            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$websitePath.\Env::get('cx')->getBackendFolderName()."/index.php?cmd=Login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
         } else {
-            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=Login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$websitePath."/?section=Login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
         }
 
         return $restoreLink;
