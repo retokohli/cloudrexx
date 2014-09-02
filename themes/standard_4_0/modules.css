@@ -10,6 +10,7 @@ form > fieldset > div {
 /* Start old contact form structure */
 form p {
     width: 100%;
+    margin-bottom: 0;
 }
 .login-error-msg {
     color: #ff0000;
@@ -19,6 +20,7 @@ form p {
 form p label {
     float: left;
     width: auto;
+    font-weight: normal;
 }
 .regForm #access_user_newsletters-1 {
     margin-left: 0;
@@ -1608,7 +1610,7 @@ div.row2 {
     border-bottom: 1px solid #D6D6D6;
     background: none;
 }
-.news-image {
+.news-image.col-md-2 {
     float: left;
     margin-right: -5px;
     width: 14.2%;

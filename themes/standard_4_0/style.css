@@ -84,7 +84,7 @@
     #content-wrapper {
         padding-bottom: 210px;
     }
-    h1, .h1 {
+    #page h1, .h1 {
         font-size: 26px;
     }
     #home-page-wrapper {
@@ -595,6 +595,12 @@
     #profile-left-button {
         padding-left: 0;
     }
+    #page {
+        width: 72.7%;
+    }
+    #sidebar {
+        width: 25%;
+    }
     #subnavigation {
         display: none;
     }
@@ -603,6 +609,9 @@
     .home-box.col-md-4 {width: 31.4%;margin-right: 28px;}
     #content-wrapper {
         padding-bottom: 168px;
+    }
+    #page {
+        width: 75.9%;
     }
     .social-foot {
         float: none;

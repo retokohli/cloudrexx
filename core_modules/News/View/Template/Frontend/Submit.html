@@ -1,12 +1,12 @@
-<font color="#FF0000">{NEWS_STATUS_MESSAGE}</font> 
+<font class="text-danger">{NEWS_STATUS_MESSAGE}</font> 
 <!-- BEGIN news_submit_form -->
-<form method="post" action="{NODE_NEWS_SUBMIT}">
+<form role="form" method="post" action="{NODE_NEWS_SUBMIT}">
     <fieldset>
         <legend>{TXT_NEWS_MESSAGE}</legend>
         <div><label for="newsTitle">{TXT_TITLE}</label><input id="newsTitle" name="newsTitle" value="{NEWS_TITLE}" type="text" /></div>
         <div>
             <label for="newsCat">{TXT_CATEGORY}</label>
-            <select id="newsCat" name="newsCat">
+            <select class="form-control" id="newsCat" name="newsCat">
                 <!-- BEGIN news_category_menu -->
                 <option value="{NEWS_CATEGORY_ID}">{NEWS_CATEGORY_TITLE}</option>
                 <!-- END news_category_menu -->
@@ -16,10 +16,18 @@
         <div>
             <label>{TXT_TYPE}</label>
             <div class="contactFormGroup">
-                <input type="radio" class="newsTypeRedirect" name="newsTypeRedirect" value="0" checked="checked" />
-                <label class="noCaption">{TXT_NEWS_MESSAGE}</label><br />
-                <input type="radio" class="newsTypeRedirect" name="newsTypeRedirect" value="1" />
-                <label class="noCaption">{TXT_NEWS_REDIRECT_LABEL}</label>
+                <div class="radio">
+                    <label class="noCaption">
+                        <input type="radio" class="newsTypeRedirect" name="newsTypeRedirect" value="0" checked="checked" />
+                        {TXT_NEWS_MESSAGE}
+                    </label>
+                </div>
+                <div class="radio">
+                    <label class="noCaption">
+                        <input type="radio" class="newsTypeRedirect" name="newsTypeRedirect" value="1" />
+                        {TXT_NEWS_REDIRECT_LABEL}
+                    </label>
+                </div>
             </div>
         </div>
         <div class="newsContent">{NEWS_TEXT}</div>
@@ -37,7 +45,10 @@
     <!-- BEGIN news_submit_form_captcha -->
     <div><label>{TXT_NEWS_CAPTCHA}</label>{NEWS_CAPTCHA_CODE}</div>
     <!-- END news_submit_form_captcha -->
-    <div><input type="submit" name="submitNews" value="Hinzufügen" /><input type="reset" onclick="CKEDITOR.instances['newsText'].setData()" /></div>
+    <div>
+        <input class="btn btn-default" type="submit" name="submitNews" value="Hinzufügen" />
+        <input class="btn btn-default" type="reset" onclick="CKEDITOR.instances['newsText'].setData()" />
+    </div>
 </form>
 <!-- END news_submit_form --> 
 <!-- BEGIN news_submitted --> 

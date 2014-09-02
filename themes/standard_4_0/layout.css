@@ -483,6 +483,7 @@ body a:hover {text-decoration: none;}
 #sidebar {
     float: left;
     padding: 0;
+    width: 22.566667%;
 }
 #subnavigation {
     float: left;
@@ -750,6 +751,7 @@ body a:hover {text-decoration: none;}
     -moz-box-sizing: border-box;
     background: #FFFFFF;
     margin-right: 14px;
+    width: 76.2%;
 }
 #page.full-width {
     margin: 0;
@@ -1546,4 +1548,16 @@ p#loginerror {
 input[type="file"]{height: auto;}
 .radio label, .checkbox label {
     height: 20px;
+}
+.btn.btn-default {
+    font-size: 13px;
+}
+fieldset .checkbox, fieldset .radio {
+    padding-left: 0;
+}
+.newsContent {
+    margin-top: 9px;
+}
+#newsUrl2 {
+    margin-bottom: 5px;
 }
