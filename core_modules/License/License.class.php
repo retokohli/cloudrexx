@@ -199,6 +199,10 @@ class License {
         return $this->dashboardMessages;
     }
 
+    public function setDashboardMessages($dashboardMessages) {
+        $this->dashboardMessages = $dashboardMessages;
+    }
+
     public function setMessages($messages) {
         $this->messages = $messages;
     }    
@@ -296,6 +300,10 @@ class License {
     
     public function getFrontendLockTime() {
         return $this->frontendLockTime;
+    }
+    
+    public function setUpdateInterval($requestInterval) {
+        $this->requestInterval = $requestInterval;
     }
     
     public function getRequestInterval() {
