@@ -69,10 +69,18 @@ class TestCommand extends Command {
         
         // check for the component type
         if (isset($arguments[2]) && in_array($arguments[2], $arrComponentTypes)) {
-            $this->getTestingFoldersByType($arguments[2], $useCustomizing);
+            if (isset($arguments[3])) {
+                $componentFolder        = $this->getModuleFolder($arguments[3], $arguments[2], $useCustomizing);
+                if (!$this->addTestingFolderToArray($arguments[3], $componentFolder)) {
+                    $this->interface->show(ASCMS_TESTING_FOLDER . " not exists in the component ". $arguments[3] .'!');
+                    return;
+                }
+            } else {
+                $this->getTestingFoldersByType($arguments[2], $useCustomizing);
+            }
         } elseif (!empty ($arguments[2])) {
             // check whether it a valid component
-            $componentName = $arguments[2];            
+            $componentName = $arguments[2];
             
             foreach ($arrComponentTypes as $cType) {
                 $componentFolder        = $this->getModuleFolder($componentName, $cType, $useCustomizing);
@@ -116,7 +124,8 @@ class TestCommand extends Command {
         require_once $phpUnitTestPath.'/PHPUnit/Autoload.php';
 
         define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
-                
+                    
+        $command = new \PHPUnit_TextUI_Command;
         foreach ($this->testingFolders as $testingFolder) {
             $_SERVER['argv'] = $argv = array(
                 $phpUnitTestPath,
@@ -125,7 +134,7 @@ class TestCommand extends Command {
             );
             $_SERVER['argc'] = count($argv);
 
-            \PHPUnit_TextUI_Command::main(false);
+            $command->run($_SERVER['argv'], false);
         }
         
         $this->interface->show('Done');
