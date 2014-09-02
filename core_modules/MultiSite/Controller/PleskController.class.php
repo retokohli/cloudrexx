@@ -610,4 +610,127 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $xmldoc->appendChild($packet);
         return $packet;
     }
+    
+    /**
+     * Create new FTP Account
+     * 
+     * @param string  $userName       FTP user name
+     * @param string  $password       FTP password
+     * @param string  $homePath       FTP accessible path
+     * @param integer $subscriptionId webspace id
+     * 
+     * @return object
+     * @throws ApiRequestException
+     */
+    public function addFtpAccount($userName, $password, $homePath, $subscriptionId) {
+        \DBG::msg("MultiSite (PleskController): Creating Ftp Account.");
+        if (empty($userName) || empty($password) || empty($homePath) || empty($subscriptionId)) {
+            return;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+        $ftpUser = $xmldoc->createElement('ftp-user');
+        $packet->appendChild($ftpUser);
+        $addTag = $xmldoc->createElement('add');
+        $ftpUser->appendChild($addTag);
+        $ftpLogin = $xmldoc->createElement('name', $userName);
+        $addTag->appendChild($ftpLogin);
+        $ftpPassword = $xmldoc->createElement('password', $password);
+        $addTag->appendChild($ftpPassword);
+        $home = $xmldoc->createElement('home', $homePath);
+        $addTag->appendChild($home);
+        $permissions = $xmldoc->createElement('permissions');
+        $addTag->appendChild($permissions);
+        $permissionReadAccess = $xmldoc->createElement('read', true);
+        $permissions->appendChild($permissionReadAccess);
+        $permissionWriteAccess = $xmldoc->createElement('write', true);
+        $permissions->appendChild($permissionWriteAccess);
+        $webspaceId = $xmldoc->createElement('webspace-id', $subscriptionId);
+        $addTag->appendChild($webspaceId);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'ftp-user'}->{'add'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in creating Ftp Account: {$error}");
+        }
+        return $resultNode;	
+    }
+    
+    /**
+     * Delete the FTP Account
+     * 
+     * @param string $userName FTP user name
+     * 
+     * @return object
+     * @throws ApiRequestException
+     */
+    public function removeFtpAccount($userName) {
+        \DBG::msg("MultiSite (PleskController): Deleting Ftp Account.");
+        if (empty($userName)) {
+            return;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+        $ftpUser = $xmldoc->createElement('ftp-user');
+        $packet->appendChild($ftpUser);
+        $delTag = $xmldoc->createElement('del');
+        $ftpUser->appendChild($delTag);
+        $filterTag = $xmldoc->createElement('filter');
+        $delTag->appendChild($filterTag);
+        $ftpLogin = $xmldoc->createElement('name', $userName);
+        $filterTag->appendChild($ftpLogin);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'ftp-user'}->{'del'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in deleting Ftp Account: {$error}");
+        }
+        return $response;    
+    }
+    
+    /**
+     * Change the FTP Account password
+     * 
+     * @param string $userName FTP user name
+     * @param string $password FTP password
+     * 
+     * @return object
+     * @throws ApiRequestException
+     */
+    public function changeFtpAccountPassword($userName, $password) {
+        \DBG::msg("MultiSite (PleskController): Changing Ftp Account Password.");
+        if (empty($userName) || empty($password)) {
+            return;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+        $ftpUser = $xmldoc->createElement('ftp-user');
+        $packet->appendChild($ftpUser);
+        $setTag = $xmldoc->createElement('set');
+        $ftpUser->appendChild($setTag);
+        $filterTag = $xmldoc->createElement('filter');
+        $setTag->appendChild($filterTag);
+        $ftpLogin = $xmldoc->createElement('name', $userName);
+        $filterTag->appendChild($ftpLogin);
+        $valuesTag = $xmldoc->createElement('values');
+        $setTag->appendChild($valuesTag);
+        $ftpPassword = $xmldoc->createElement('password', $password);
+        $valuesTag->appendChild($ftpPassword);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'ftp-user'}->{'set'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in changing the Ftp Account password: {$error}");
+        }
+        return $response;    
+    }
 }
