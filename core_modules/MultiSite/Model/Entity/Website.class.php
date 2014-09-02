@@ -1240,8 +1240,16 @@ throw new WebsiteException('implement secret-key algorithm first!');
         
         if (!empty($legalComponents)) {
             $params = array(
-                'websiteId'       => $this->id,  
-                'legalComponents' => $legalComponents
+                'websiteId'         => $this->id,
+                'legalComponents'   => $legalComponents,
+                'state'             => \Cx\Core_Modules\License\License::LICENSE_OK,
+                'validTo'           => 2733517333,
+                'updateInterval'    => 8760,
+                'dashboardMessages' => array(
+                    1 => 'Testen Sie unsere gesamte Leistungsvielfalt bis zum 08.09.2014 völlig kostenlos!
+                          In der kostenlosen Testphase bis zum 08.09.2014 haben Sie uneingeschränkten Zugriff auf sämtliche Funktionen. Sie können unser Produkt also ausgiebig testen. Überzeugen Sie sich von unserer Leistungsvielfalt und wählen Sie dann einfach die für Ihre Anforderungen geeignete Mitgliedschaftsart aus. Für eine individuelle Beratung, auch im Zusammenhang mit der Anwendung unserer Software, stehen wir Ihnen gerne zur Verfügung!
+                          Nach dieser Testphase erhält ihr Account automatisch den Status FREE (kostenlos)!',
+                )
             );
             //send the JSON Request 'setLicense' command from service to website
             \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $params, $this);

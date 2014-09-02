@@ -968,6 +968,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
                 case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
+                    $license->setState($params['post']['state']);
+                    $license->setValidToDate($params['post']['validTo']);
+                    $license->setUpdateInterval($params['post']['updateInterval']);
+                    $license->setDashboardMessages($params['post']['dashboardMessages']);
                     $license->setAvailableComponents($params['post']['legalComponents']);
                     $license->setLegalComponents($params['post']['legalComponents']);
                     $license->save($objDatabase);
