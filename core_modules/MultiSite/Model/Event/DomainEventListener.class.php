@@ -41,7 +41,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
-                        $this->removeDnsRecord($domain, 'postRemove');
+                        $this->manipulateDnsRecord($domain, 'remove', 'postRemove');
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                         $this->domainMapping($domain, $mode, 'unMapDomain');
@@ -66,7 +66,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
-                        $this->updateDnsRecord($domain, 'preUpdate');
+                        $this->manipulateDnsRecord($domain, 'update', 'preUpdate');
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                         $this->domainMapping($domain, $mode, 'updateDomain');
@@ -91,7 +91,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
-                        $this->addDnsRecord($domain, 'prePersist');
+                        $this->manipulateDnsRecord($domain, 'add', 'prePersist');
                         break;
 
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
@@ -131,22 +131,6 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
-    }
-
-    private function updateDnsRecord($domain, $event) {
-        $this->logEvent($event, $domain);
-        $this->removeDnsRecord($domain, $event);
-        $this->addDnsRecord($domain, $event);
-    }
-
-    private function removeDnsRecord($domain, $event) {
-        $this->logEvent($event, $domain);
-        $this->manipulateDnsRecord($domain, 'remove', $event);
-    }
-
-    private function addDnsRecord($domain, $event) {
-        $this->logEvent($event, $domain);
-        $this->manipulateDnsRecord($domain, 'add', $event);
     }
 
     private function manipulateDnsRecord($domain, $operation, $event) {
@@ -203,6 +187,14 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             case 'remove':
                 $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                 $hostingController->removeDnsRecord($type, $domain->getName(), $domain->getPleskId());
+                break;
+
+            case 'update':
+                $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                $recordId = $hostingController->updateDnsRecord($type, $domain->getName(), $value, \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'), $domain->getPleskId());
+                if ($recordId != $domain->getPleskId()) {
+                    $domain->setPleskId($recordId);
+                }
                 break;
 
             default:

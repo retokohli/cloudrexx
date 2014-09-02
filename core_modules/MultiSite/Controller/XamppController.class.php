@@ -160,4 +160,9 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): remove DNS-record: $type / $host / $id");
         return true;
     }
+
+    public function updateDnsRecord($type, $host, $value, $zone = null, $zoneId = null, $id = null){
+        \DBG::msg("MultiSite (XamppController): update DNS-record: $type / $host / $value / $zone / $zoneId / $id");
+        return null;
+    }
 }

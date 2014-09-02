@@ -471,6 +471,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @param integer   $zoneId Id of plesk subscription to add the record to
      */
     public function addDnsRecord($type = 'A', $host, $value, $zone, $zoneId){
+        \DBG::msg("MultiSite (PleskController): add DNS-record: $type / $host / $value / $zone / $zoneId");
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $dns = $xmldoc->createElement('dns');
@@ -491,6 +492,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $value = $xmldoc->createElement('value', $value);
         $addRec->appendChild($value);
         
+        \DBG::dump($xmldoc->saveXML());
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->dns->{'add_rec'}->result;
         $errcode = $resultNode->errcode;
@@ -509,6 +511,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @param integer   $recordId   DNS-Record-Id of the plesk subscription
      */
     public function removeDnsRecord($type, $host, $recordId) {
+        \DBG::msg("MultiSite (PleskController): remove DNS-record: $type / $host / $recordId");
         if (empty($recordId)) {
             return false;
         }
@@ -518,10 +521,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $packet->appendChild($dns);       
         $delRec = $xmldoc->createElement('del_rec');
         $dns->appendChild($delRec);
+
         $filter = $xmldoc->createElement('filter');
         $delRec->appendChild($filter);       
+
         $id = $xmldoc->createElement('id', $recordId);
         $filter->appendChild($id);
+
+        \DBG::dump($xmldoc->saveXML());
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->dns->{'del_rec'}->result;
         $errcode = $resultNode->errcode;
@@ -531,6 +538,60 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             throw new ApiRequestException("Error in deleting DNS Record: {$error}");
         }
         return $response; 
+    }
+
+    public function updateDnsRecord($type, $host, $value, $zone, $zoneId, $recordId){
+        \DBG::msg("MultiSite (PleskController): update DNS-record: $type / $host / $value / $zone / $zoneId / $recordId");
+
+        if (!$recordId) {
+            \DBG::msg("MultiSite (PleskController): None existant DNS-record -> going to add DNS-record");
+            return $this->addDnsRecord($type, $host, $value, $zone, $zoneId);
+        }
+
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        $dns = $xmldoc->createElement('dns');
+        $packet->appendChild($dns);
+
+        $getRec = $xmldoc->createElement('get_rec');
+        $dns->appendChild($getRec);
+
+        $filter = $xmldoc->createElement('filter');
+        $getRec->appendChild($filter);       
+        
+        //$siteIdTag = $xmldoc->createElement('site-id', $zoneId);
+        //$filter->appendChild($siteIdTag);
+
+        $id = $xmldoc->createElement('id', $recordId);
+        $filter->appendChild($id);
+        
+        \DBG::dump($xmldoc->saveXML());
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->dns->{'get_rec'}->result;
+        $errcode = $resultNode->errcode;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            $error = (isset($systemError)?$systemError:$resultNode->errtext);
+            throw new ApiRequestException("Error in fetching DNS Record: {$error}");
+        }
+
+        $recordType = $resultNode->data->type;
+        $recordHost = substr($resultNode->data->host, 0, -1);
+        $recordValue = $resultNode->data->value;
+        if ($recordType == 'CNAME') {
+            $recordValue = substr($recordValue, 0, -1);
+        }
+        if (   $recordType != $type
+            || $recordHost != $host
+            || $recordValue != $value
+        ) {
+            \DBG::msg("MultiSite (PleskController): DNS-record has changed -> going to update DNS-record");
+            $this->removeDnsRecord($type, $host, $recordId);
+            return $this->addDnsRecord($type, $host, $value, $zone, $zoneId);
+        }
+
+        // record is up to date -> return existing record-ID
+        return $recordId;
     }
     
     /**
