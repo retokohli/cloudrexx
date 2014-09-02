@@ -50,7 +50,8 @@ jQuery(document).ready(function() {
                 type: "POST",
                 beforeSend: function(){
                     // show progress screen
-                    jQuery(cx_multisite.signUpForm).find('.alert').remove();
+                    jQuery(cx_multisite.signUpForm).find('.multisite-status').find('.alert').remove();
+                    jQuery(cx_multisite.signUpForm).find('.multisite-form').find('.alert').remove();
                     jQuery('.multisite-status').hide();
                     jQuery(cx_multisite.signUpForm).find('.modal-header').hide();
                     jQuery(cx_multisite.signUpForm).find('.multisite-form').hide();
