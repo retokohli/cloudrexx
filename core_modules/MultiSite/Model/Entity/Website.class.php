@@ -124,11 +124,40 @@ class Website extends \Cx\Model\Base\EntityBase {
         $this->owner = $userObj;
         $this->ownerId = $userObj->getId();
         $this->installationId = $this->generateInstalationId();
-        $this->ipAddress = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
 
         if ($websiteServiceServer) {
             $this->setWebsiteServiceServer($websiteServiceServer);
         }
+
+        // set IP of Website
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                if ($this->id) {
+                    break;
+                }
+                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getDefaultWebsiteIp', array(), $this->websiteServiceServer);
+                if(!$resp || $resp->status == 'error'){
+                    $errMsg = isset($resp->message) ? $resp->message : '';
+                    if (isset($resp->log)) {
+                        \DBG::appendLogsToMemory($resp->log);
+                    }
+                    throw new WebsiteException('Unable to fetch defaultWebsiteIp from Service Server: '.$errMsg);    
+                }
+                if (isset($resp->log)) {
+                    \DBG::appendLogsToMemory($resp->log);
+                }
+                $this->ipAddress = $resp->data->defaultWebsiteIp;
+                break;
+
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                $this->ipAddress = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
+                break;
+
+            default:
+                break;
+        }
+
         $this->secretKey = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey();
         $this->validate();
         $this->codeBase = \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase');
@@ -404,6 +433,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createUser', array('userId' => $this->owner->getId(), 'email'  => $this->owner->getEmail()), $this->websiteServiceServer);
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
+                \DBG::dump($errMsg);
                 if (isset($resp->log)) {
                     \DBG::appendLogsToMemory($resp->log);
                 }
@@ -422,6 +452,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createWebsite', $params, $this->websiteServiceServer);
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
+                \DBG::dump($errMsg);
                 if (isset($resp->log)) {
                     \DBG::appendLogsToMemory($resp->log);
                 }
@@ -445,6 +476,8 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
             \DBG::msg('Website: setupMultiSiteConfig..');
             $this->setupMultiSiteConfig($websiteName);
+            \DBG::msg('Website: initializeConfig..');
+            $this->initializeConfig($websiteName);
             \DBG::msg('Website: setupLicense..');
             $this->setupLicense($options);
             \DBG::msg('Website: setupRobotsFile..');
@@ -471,7 +504,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             // hard-coded to 1 day
             $this->owner->setRestoreKeyTime(86400);
             $this->owner->store();
-            $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner);
+            $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain'));
 
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
@@ -726,13 +759,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 $newSettings->getData()
             );
             $newSettings->write($settingsData);
-            
-            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', array(), $this);
-
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            // we must re-initialize the original MultiSite settings of the main installation
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-
             throw new WebsiteException('Unable to setup settings file: '.$e->getMessage());
         }
         
@@ -750,6 +777,27 @@ class Website extends \Cx\Model\Base\EntityBase {
             $domainRepository->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/DomainRepository.yml');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new WebsiteException('Unable to set up DomainRepository.yml: '.$e->getMessage());
+        }
+    }
+
+    protected function initializeConfig($websiteName) {
+        $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+        try {
+            $config = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton/config/Config.yml');
+            $config->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/Config.yml');
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', array(), $this);
+            if(!$resp || $resp->status == 'error'){
+                $errMsg = isset($resp->message) ? $resp->message : '';
+                if (isset($resp->log)) {
+                    \DBG::appendLogsToMemory($resp->log);
+                }
+                throw new WebsiteException($errMsg);    
+            }
+            if (isset($resp->log)) {
+                \DBG::appendLogsToMemory($resp->log);
+            }
+        } catch (\Exception $e) {
+            throw new WebsiteException('Unable to setup config Config.yml on Website: '.$e->getMessage());    
         }
     }
 
@@ -939,7 +987,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     protected function initDb($type, $objUser, $objDbUser, $langId, $websitedb) {
         $dumpFilePath = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
-        $fp = @fopen(\Env::get('ClassLoader')->getFilePath($dumpFilePath.'/installer/data/contrexx_dump_' . $type . '.sql'), "r");
+        $fp = @fopen($dumpFilePath.'/installer/data/contrexx_dump_' . $type . '.sql', "r");
         if ($fp === false) {
             throw new \Exception('File not found');
         }
