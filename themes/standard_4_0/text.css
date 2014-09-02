@@ -27,8 +27,9 @@ footer, header, hgroup, menu, nav, section {
 body {
     line-height: 1;
 }
-ol, ul {
+body ol,body ul {
     list-style: none;
+    margin-bottom: 0;
 }
 blockquote, q {
     quotes: none;
@@ -81,13 +82,14 @@ ul.horizontal-list li {
     float: left;
     padding: 0 10px 0 0;
     margin: 0 10px 0 0;
+    background: none;
 }
 ul.horizontal-list li.last {
     padding: 0 !important;
     margin: 0 !important;
     background: none !important;
 }
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     padding: 10px 0 10px 0;
     line-height: 1.4;
     color: #151515;
@@ -237,4 +239,9 @@ input[disabled=disabled]:hover {
 }
 legend {
     display: none;
+}
+h1, .h1, h2, .h2, h3, .h3 {margin-top: 0;margin-bottom: 0;}
+fieldset .radio input[type="radio"],fieldset .radio-inline input[type="radio"],fieldset .checkbox input[type="checkbox"],fieldset .checkbox-inline input[type="checkbox"]{margin-left: -17px;}
+fieldset .radio label,fieldset .checkbox label {
+    padding-left: 17px;
 }

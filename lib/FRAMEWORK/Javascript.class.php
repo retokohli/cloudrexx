@@ -325,6 +325,15 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         ),
         'twitter-bootstrap' => array(
             'versions' => array(
+                '3.2.0' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.2.0/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.2.0/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
                 '3.1.0' => array(
                     'jsfiles' => array(
                         'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',

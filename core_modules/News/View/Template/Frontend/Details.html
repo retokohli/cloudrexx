@@ -43,13 +43,13 @@
 
 <!-- BEGIN news_comments -->
     <!-- BEGIN news_add_comment -->
-        <input id="news-toggle" type="submit" value="Kommentar schreiben" />
-        <form id="news-comment-form" method="post" action="index.php?section=News&amp;cmd=details&amp;newsid={NEWS_ID}">
+        <input class="btn btn-default" id="news-toggle" type="submit" value="Kommentar schreiben" />
+        <form role="form" id="news-comment-form" method="post" action="index.php?section=News&amp;cmd=details&amp;newsid={NEWS_ID}">
             <fieldset> 
                 <legend>{TXT_NEWS_ADD_COMMENT}</legend>
 
                 <!-- BEGIN news_add_comment_error -->
-                <div class="news-error">{NEWS_ADD_COMMENT_ERROR}</div>
+                <div class="news-error text-danger">{NEWS_ADD_COMMENT_ERROR}</div>
                 <!-- END news_add_comment_error -->
 
                 <!-- BEGIN news_add_comment_name -->
@@ -74,7 +74,7 @@
                 </p>
                 <!-- END news_add_comment_captcha -->
 
-                <p><input name="news_add_comment" type="submit" value="{TXT_NEWS_ADD}" /></p>
+                <p><input class="btn btn-default" name="news_add_comment" type="submit" value="{TXT_NEWS_ADD}" /></p>
             </fieldset>
         </form>
     <!-- END news_add_comment -->
