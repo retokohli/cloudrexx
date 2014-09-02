@@ -70,7 +70,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'ping'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'pong'                  => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setLicense'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'setupConfig'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
+            'setupConfig'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'getDefaultWebsiteIp'   => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -199,6 +200,28 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $order->complete();
                     $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website   = $websiteRepository->findOneBy(array('name' => $websiteName));
+// TODO: remove once setup process works flawlessly
+                    // send setup protocol anyway
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+                        \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+                        \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
+                            'section' => 'MultiSite',
+                            'key' => 'setupError',
+                            'to' => $config['coreAdminEmail'],
+                            'search' => array(
+                                '[[ERROR]]',
+                                '[[WEBSITE_NAME]]',
+                                '[[CUSTOMER_EMAIL]]',
+                                '[[DBG_LOG]]',
+                            ),
+                            'replace' => array(
+                                'SETUP SUCCESSFUL',
+                                $websiteName,
+                                $params['post']['multisite_email_address'],
+                                join("\n", \DBG::getMemoryLogs()),
+                            ),
+                        ));
+                    }
                     return array(
                         'status' => 'success',
                         'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'], '<a href=="'.ComponentController::getApiProtocol().$website->getBaseDn()->getName().'">"'.$website->getBaseDn()->getName().'</a>'),
@@ -776,12 +799,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             || !isset($params['post']['componentId'])
             || !isset($params['post']['coreNetDomainId'])
         ) {
-            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Insufficient mapping information supplied.');
+            \DBG::dump($params);
+            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied: '.var_export($params, true));
         }
 
         $authenticationValue = json_decode($params['post']['auth'], true);
         if (empty($authenticationValue) || !is_array($authenticationValue)) {
-            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Insufficient mapping information supplied.');
+            \DBG::dump($params);
+            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied.'.var_export($params, true));
         }
 
         try {
@@ -1100,7 +1125,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
             throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode HYBRID or SERVICE.');
         }
-        $host = $website->getBaseDn()->getName();
+        // JsonData requests shall be made to the FQDN of the Website,
+        // as the BaseDn might not yet work as it depends on the DNS synchronization.
+        $host = $website->getFqdn()->getName();
         $installationId = $website->getInstallationId();
         $secretKey = $website->getSecretKey();
         $httpAuth = array(
@@ -1128,4 +1155,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
     }
 
+    public function getDefaultWebsiteIp() {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') != ComponentController::MODE_SERVICE) {
+            throw new MultiSiteJsonException('JsonMultiSite::getDefaultWebsiteIp() failed: Command is only on Website Service Server available.');
+        }
+
+        return array(
+            'status'            => 'success',
+            'defaultWebsiteIp'  => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp'),
+        );
+    }
 }
