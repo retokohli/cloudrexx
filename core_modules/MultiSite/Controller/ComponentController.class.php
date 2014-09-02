@@ -111,11 +111,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case 'MultiSite':
                 switch ($subcommand) {
                     case 'Signup':
+                        $websiteName = isset($arguments['multisite_address']) ? contrexx_input2xhtml($arguments['multisite_address']) : '';
                         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
                         $mainDomain = $domainRepository->getMainDomain()->getName();
                         $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
                         $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
                         $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
+                        $termsUrl = '<a href="/de/Rechtliches/AGBs" target="_blank">AGB</a>';
                         $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
                         $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
                         $objTemplate->setVariable(array(
@@ -129,9 +131,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'POST_URL'                      => '',
                             'MULTISITE_ADDRESS_MIN_LENGTH'  => $websiteNameMinLength,
                             'MULTISITE_ADDRESS_MAX_LENGTH'  => $websiteNameMaxLength,
+                            'MULTISITE_ADDRESS'             => $websiteName,
                             'MULTISITE_SIGNUP_URL'          => $signUpUrl->toString(),
                             'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
                             'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
+                            'TXT_MULTISITE_ACCEPT_TERMS'    => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
+                            'TXT_MULTISITE_BUILD_WEBSITE_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'],
+                            'TXT_MULTISITE_BUILD_WEBSITE_MSG' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'],
                         ));
                         echo $objTemplate->get();
                         break;
