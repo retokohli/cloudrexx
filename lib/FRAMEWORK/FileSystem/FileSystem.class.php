@@ -748,20 +748,16 @@ class FileSystem
      * @param   string    $force          Overwrite if true
      * @return  boolean                   True on success, false otherwise
      */
-    static function copy_file($source_path, $target_path, $force=false)
-    {
-        self::path_relative_to_root($source_path);
-        self::path_relative_to_root($target_path);
+    static function copy_file($source_path, $target_path, $force = false) {
         if (self::exists($target_path) && !$force)
             return false;
-        if (!copy(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$source_path,
-                \Env::get('cx')->getWebsiteDocumentRootPath().'/'.$target_path)) {
-            if (!self::copy_file_ftp($source_path, $target_path))
-                return false;
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($source_path);
+            $objFile->copy($target_path, $force);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
         }
-        return self::chmod($target_path, self::CHMOD_FILE);
     }
-
 
     /**
      * Copies a file from the source to the target path by means of FTP
