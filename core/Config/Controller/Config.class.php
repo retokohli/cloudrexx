@@ -215,7 +215,7 @@ class Config
                 $template,
                 'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_SITE'],
-                'Site',
+                $_ARRAYLANG['TXT_CORE_CONFIG_SITE'],
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
@@ -224,7 +224,7 @@ class Config
                 $template,
                 'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_ADMINISTRATIONAREA'], 
-                'Administration area', 
+                $_ARRAYLANG['TXT_CORE_CONFIG_ADMINISTRATIONAREA'], 
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
@@ -233,7 +233,7 @@ class Config
                 $template,
                 'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_SECURITY'],
-                'Security',
+                $_ARRAYLANG['TXT_CORE_CONFIG_SECURITY'],
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
@@ -242,14 +242,14 @@ class Config
                 $template,
                 'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTINFORMATION'],
-                'Contact Information', 
+                $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTINFORMATION'],
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
         if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
             \Cx\Core\Setting\Controller\Setting::show_external(
                 $template,
-                'Development Tools',
+                $_ARRAYLANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
                 $templateObj->get()
             );
         }
@@ -258,7 +258,7 @@ class Config
                 $template,
                 'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_OTHERCONFIGURATIONS'],
-                'other Configuration Options', 
+                $_ARRAYLANG['TXT_CORE_CONFIG_OTHERCONFIGURATIONS'],
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
