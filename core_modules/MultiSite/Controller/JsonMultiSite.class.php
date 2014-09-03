@@ -956,10 +956,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function setLicense($params) {
         global $objDatabase;
         
-        if (empty($params['post']['legalComponents'])) {
-            return false;
-        }
-        
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_SERVICE:
@@ -969,12 +965,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
                 case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
-                    $license->setState($params['post']['state']);
-                    $license->setValidToDate($params['post']['validTo']);
-                    $license->setUpdateInterval($params['post']['updateInterval']);
-                    $license->setDashboardMessages($params['post']['dashboardMessages']);
-                    $license->setAvailableComponents($params['post']['legalComponents']);
-                    $license->setLegalComponents($params['post']['legalComponents']);
+                    if (isset($params['post']['state'])) {
+                        $license->setState($params['post']['state']);
+                    }
+                    if (isset($params['post']['validTo'])) {
+                        $license->setValidToDate($params['post']['validTo']);
+                    }
+                    if (isset($params['post']['updateInterval'])) {
+                        $license->setUpdateInterval($params['post']['updateInterval']);
+                    }
+                    if (isset($params['post']['dashboardMessages'])) {
+                        $license->setDashboardMessages($params['post']['dashboardMessages']);
+                    }
+                    if (isset($params['post']['legalComponents'])) {
+                        $license->setAvailableComponents($params['post']['legalComponents']);
+                        $license->setLegalComponents($params['post']['legalComponents']);
+                    }
                     $license->save($objDatabase);
                     break;
             }
