@@ -58,9 +58,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
      */
     public function preResolve(\Cx\Core\Routing\Url $request) {
-// TODO: Deactivated license check for now. Implement new behavior.
-        return true;
-
         global $objDatabase;
 
         $config = \Env::get('config');
