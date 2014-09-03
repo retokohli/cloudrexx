@@ -245,3 +245,29 @@ fieldset .radio input[type="radio"],fieldset .radio-inline input[type="radio"],f
 fieldset .radio label,fieldset .checkbox label {
     padding-left: 17px;
 }
+.img-responsive, .thumbnail > img, .thumbnail a > img, .carousel-inner > .item img, .carousel-inner > .item > a > img {
+    display: block;
+    max-width: 102.2%;
+    height: auto;
+}
+/**/
+html {
+    font-family: sans-serif;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    overflow-y: scroll;
+}
+h1 {
+    font-size: 34px;
+    margin: 0;
+}
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: arial;
+    color: #414141;
+    font-size: 13px;
+    margin: 0;
+}
