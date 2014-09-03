@@ -117,7 +117,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
                         $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
                         $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
-                        $termsUrl = '<a href="'.\Cx\Core\Setting\Controller\Setting::getValue('termsUrl').'" target="_blank">AGB</a>';
+                        $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl'));
+                        \LinkGenerator::parseTemplate($termsUrlValue);
+                        $termsUrl = '<a href="'.$termsUrlValue.'" target="_blank">AGB</a>';
                         $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
                         $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
                         $objTemplate->setVariable(array(
@@ -486,7 +488,7 @@ throw new MultiSiteException('Refactor this method!');
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for sendSetupError");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('termsUrl') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('termsUrl','', 10,
+                && !\Cx\Core\Setting\Controller\Setting::add('termsUrl','[[NODE_AGB]]', 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for URL to T&Cs");
             }
