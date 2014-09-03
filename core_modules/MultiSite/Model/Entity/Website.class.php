@@ -464,6 +464,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->ipAddress = $resp->data->websiteIp;
             $this->codeBase  = $resp->data->codeBase;
             $this->status    = $resp->data->state;
+            $ftpAccPassword  = $resp->data->ftpPassword;
         } else {
             \DBG::msg('Website: setup process..');
             $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
@@ -472,6 +473,8 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupDatabase($langId, $this->owner, $objDb, $objDbUser);
             \DBG::msg('Website: setupDataFolder..');
             $this->setupDataFolder($websiteName);
+            \DBG::msg('Website: setupFtpAccount..');
+            $ftpAccountPassword = $this->setupFtpAccount($websiteName);
             \DBG::msg('Website: setupConfiguration..');
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
             \DBG::msg('Website: setupMultiSiteConfig..');
@@ -541,8 +544,8 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'lang_id' => $langId,
                 'key' => 'createInstance',
                 'to' => $websiteMail,
-                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD_URL]]'),
-                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePasswordUrl),
+                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD_URL]]', '[[WEBSITE_FTP_USER]]', '[[WEBSITE_FTP_PASSWORD]]'),
+                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePasswordUrl, $websiteName, $ftpAccPassword),
             ))) {
             //  TODO: Implement proper error handler:
             //       removeWebsite() must not be called from within this method.
@@ -558,10 +561,11 @@ class Website extends \Cx\Model\Base\EntityBase {
         }
 
         return array(
-            'status' => 'success',
-            'websiteIp' => $websiteIp,
-            'codeBase' => $this->codeBase,
-            'state' => $this->status
+            'status'      => 'success',
+            'websiteIp'   => $websiteIp,
+            'codeBase'    => $this->codeBase,
+            'state'       => $this->status,
+            'ftpPassword' => $ftpAccountPassword
         );
     }
     
@@ -1266,5 +1270,27 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function initializeLanguage() {
         //send the JSON Request 'setDefaultLanguage' command from service to website
         \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setDefaultLanguage', array('langId' => $this->language), $this);
+    }
+    
+    /**
+     * Create the Ftp-Account
+     * 
+     * @param string $websiteName website's name
+     * 
+     * @return boolean
+     */
+    public function setupFtpAccount($websiteName) {
+        
+        if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
+            //create FTP-Account
+            $password = \User::make_password(8, true);
+            $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsiteSubscriptionId'));
+
+            if ($accountId) {
+                return $password;
+            }
+        }
+
+        return false;
     }
 }

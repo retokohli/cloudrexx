@@ -165,4 +165,19 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): update DNS-record: $type / $host / $value / $zone / $zoneId / $id");
         return null;
     }
+    
+    public function addFtpAccount($userName, $password, $homePath, $subscriptionId) {
+        \DBG::msg("MultiSite (XamppController): add Ftp-Account: $userName / $password / $homePath / $subscriptionId");
+        return null;
+    }
+    
+    public function removeFtpAccount($userName) {
+        \DBG::msg("MultiSite (XamppController): remove Ftp-Account: $userName");
+        return true;
+    }
+    
+    public function changeFtpAccountPassword($userName, $password) {
+        \DBG::msg("MultiSite (XamppController): update Ftp-Account Password: $userName / $password");
+        return null;
+    }
 }

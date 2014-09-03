@@ -543,6 +543,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting Repository for Contrexx Code Bases");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('createFtpAccountOnSetup', 0, 11,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'websiteSetup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Create FTP account during website setup");
+            }
 
             // websiteManager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager','FileSystem');

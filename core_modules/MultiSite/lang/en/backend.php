@@ -63,6 +63,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITEHTTPAUTHPASSWORD'] = "HTTP Authent
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITEUSERID'] = "User ID of Website Owner";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TERMSURL'] = "URL to T&Cs"; 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TERMSURL_TOOLTIP'] = "The absolute URL (incl. protocol) to the webpage listing the terms & conditions";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATEFTPACCOUNTONSETUP'] = "Create FTP account during website setup";
 
 // settings status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTCODEBASE_SUCCESSFUL_CREATION']      = "Default Code Base has been set successfully";
