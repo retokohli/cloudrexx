@@ -38,7 +38,7 @@ class LicenseManager {
         $this->license->check();
         if ($this->template) {
             $this->template->setVariable('CONTENT_NAVIGATION', '
-                <a href="index.php?cmd=license" class="active">'.$_CORELANG['TXT_LICENSE'].'</a>
+                <a href="index.php?cmd=License" class="active">'.$_CORELANG['TXT_LICENSE'].'</a>
             ');
         }
     }
