@@ -149,7 +149,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             ';
                     $res = $objDatabase->Execute($query);
                     if (!$res->fields['is_licensed']) {
-                        $plainCmd = in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ?'license' : 'Home' ;
+                        $plainCmd = in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ?'License' : 'Home' ;
                     }
                 }
 
@@ -157,11 +157,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (\Env::get('cx')->getUser()->objUser->login(true)) {
                     $license->check();
                     if ($license->getState() == \Cx\Core_Modules\License\License::LICENSE_NOK) {
-                        $plainCmd = in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ?'license' : 'Home' ;
+                        $plainCmd = in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ?'License' : 'Home' ;
                         $license->save($objDatabase);
                     }
                     $lc = \Cx\Core_Modules\License\LicenseCommunicator::getInstance(\Env::get('config'));
-                    $lc->addJsUpdateCode($_CORELANG, $license, $plainCmd == 'license');
+                    $lc->addJsUpdateCode($_CORELANG, $license, $plainCmd == 'License');
                 }
                 break;
 
