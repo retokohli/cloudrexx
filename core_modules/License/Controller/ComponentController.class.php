@@ -133,7 +133,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
                 // check if the requested module is active:
-                if (!in_array($plainCmd, array('Login', 'license', 'noaccess', ''))) {
+                if (!in_array($plainCmd, array('Login', 'noaccess', ''))) {
                     $query = '
                                 SELECT
                                     modules.is_licensed
@@ -149,7 +149,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             ';
                     $res = $objDatabase->Execute($query);
                     if (!$res->fields['is_licensed']) {
-                        $plainCmd = 'license';
+                        $plainCmd = in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ?'license' : 'Home' ;
                     }
                 }
 
@@ -157,7 +157,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (\Env::get('cx')->getUser()->objUser->login(true)) {
                     $license->check();
                     if ($license->getState() == \Cx\Core_Modules\License\License::LICENSE_NOK) {
-                        $plainCmd = 'license';
+                        $plainCmd = in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ?'license' : 'Home' ;
                         $license->save($objDatabase);
                     }
                     $lc = \Cx\Core_Modules\License\LicenseCommunicator::getInstance(\Env::get('config'));
