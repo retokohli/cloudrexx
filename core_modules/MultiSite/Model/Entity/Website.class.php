@@ -464,7 +464,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->ipAddress = $resp->data->websiteIp;
             $this->codeBase  = $resp->data->codeBase;
             $this->status    = $resp->data->state;
-            $ftpAccPassword  = $resp->data->ftpPassword;
+            $ftpAccountPassword  = $resp->data->ftpPassword;
         } else {
             \DBG::msg('Website: setup process..');
             $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
@@ -545,7 +545,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'key' => 'createInstance',
                 'to' => $websiteMail,
                 'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD_URL]]', '[[WEBSITE_FTP_USER]]', '[[WEBSITE_FTP_PASSWORD]]'),
-                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePasswordUrl, $websiteName, $ftpAccPassword),
+                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePasswordUrl, $websiteName, $ftpAccountPassword),
             ))) {
             //  TODO: Implement proper error handler:
             //       removeWebsite() must not be called from within this method.
