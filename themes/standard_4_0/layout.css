@@ -907,6 +907,7 @@ span.disconnected {
 }
 .nav-right li.modal-nav a {
     padding-right: 21px;
+    float: left;
 }
 .nav-right li.modal-nav {
     padding-right: 0;
@@ -921,9 +922,10 @@ span.disconnected {
     font-size: 15px;
     margin-right: 38px;
 }
-.nav-right li:nth-of-type(1), .nav-right li:nth-of-type(2) {
+.nav-right li:nth-of-type(1) {
     padding-top: 5px;
 }
+.nav-right li:nth-of-type(2) {}
 .nav-right li:nth-of-type(4) {
     padding-top: 5px;
     text-transform: uppercase;
@@ -1000,16 +1002,6 @@ span.disconnected {
 form .row {
     margin: 0;
 }
-body #workbenchWarning {
-    margin-bottom: 20px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    color: #a94442;
-    background-color: #f2dede;
-    border-color: #ebccd1;
-    height: 52px;
-    padding: 15px;
-}
 /*Mobile navigation START here*/
 .mobile-nav .navigation {
     width: 100%;
@@ -1050,13 +1042,10 @@ body #workbenchWarning {
     bottom: 127px;
     font-size: 50px;
 }
-.home-box.col-md-4 {
-    width: 31.7%;
-    margin-right: 28px;
-    height: auto;
-    float: left;
+.home-box.col-md-6 {
+    width: 48.8%;
 }
-.home-box.last.col-md-4, .home-box.last.col-sm-4 {
+.home-box.last.col-md-6, .home-box.last.col-sm-4 {
     margin-right: 0;
 }
 #myModal {display: none;}
@@ -1069,6 +1058,7 @@ body #workbenchWarning {
     padding-right: 21px;
     color: #fff;
     font-size: 15px;
+    float: left;
     font-family: ubuntu;
 }
 .modal-nav button:hover {

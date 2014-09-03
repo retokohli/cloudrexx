@@ -54,13 +54,14 @@
                                 <li class="modal-nav">
                                     <!-- BEGIN access_logged_out -->
                                     <button class="open" data-toggle="modal" data-target="#myModal">Login</button>
+                                    <a href="{NODE_ACCESS_SIGNUP}">Registrieren</a>
                                     <!-- END access_logged_out -->
                                     <!-- BEGIN access_logged_in -->
                                     <a href="{NODE_ACCESS_SETTINGS_PROFILE}">{ACCESS_USER_USERNAME}</a>
                                     <a href="{LOGOUT_URL}">Logout</a>
                                     <!-- END access_logged_in -->
                                 </li>
-                                <li><a href="{NODE_ACCESS_SIGNUP}">Registrieren</a></li>
+                                <!--<li></li>-->
                                 <li>
                                     <form id="search-form" action="{NODE_SEARCH}" method="get">
                                         <input id="search-input" type="text" name="term" value=""  />

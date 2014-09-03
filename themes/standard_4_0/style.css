@@ -483,6 +483,10 @@
     #shop .shop-price td {
         width: 50%;
     }
+    .home-box.col-md-6 {
+        width: 100%;
+        margin-bottom: 27px;
+    }
     #shop .shop-price td:nth-of-type(2) {
         text-align: right !important;
     }
@@ -604,6 +608,9 @@
     #subnavigation {
         display: none;
     }
+    .home-box.col-md-6 {
+        width: 48.1%;
+    }
 }
 @media (min-width: 980px) and (max-width: 1199px) {
     .home-box.col-md-4 {width: 31.4%;margin-right: 28px;}
@@ -659,6 +666,9 @@
     }
     #profile-left-button {
         padding-left: 35.5%;
+    }
+    .home-box.col-md-6 {
+        width: 48.5%;
     }
     #subnavigation {display: none;}
 }

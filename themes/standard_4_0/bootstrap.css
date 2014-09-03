@@ -3,6 +3,7 @@
 * Copyright 2011-2014 Twitter, Inc.
 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
 */
+
 /*!
  * Generated using the Bootstrap Customizer (http://getbootstrap.com/customize/?id=f54c67e514531943ae07)
  * Config saved to config.json and https://gist.github.com/f54c67e514531943ae07
@@ -12,7 +13,6 @@ html {
     font-family: sans-serif;
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
-    overflow-y: scroll;
 }
 body {
     margin: 0;
@@ -63,6 +63,10 @@ strong {
 dfn {
     font-style: italic;
 }
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
 mark {
     background: #ff0;
     color: #000;
@@ -112,6 +116,8 @@ input,
 optgroup,
 select,
 textarea {
+    color: inherit;
+    font: inherit;
     margin: 0;
 }
 button {
@@ -924,10 +930,11 @@ img {
 .img-responsive,
 .thumbnail > img,
 .thumbnail a > img,
-.carousel-inner > .item img,
+.carousel-inner > .item > img,
 .carousel-inner > .item > a > img {
     display: block;
-    max-width: 102.2%;
+    width: 100% \9;
+    max-width: 100%;
     height: auto;
 }
 .img-rounded {
@@ -5836,10 +5843,10 @@ button.close {
     .carousel-control .icon-prev {
         margin-left: -15px;
     }
-/*    .carousel-control .glyphicon-chevron-right,
-    .carousel-control .icon-next {
-        margin-right: -15px;
-    }*/
+    /*    .carousel-control .glyphicon-chevron-right,
+        .carousel-control .icon-next {
+            margin-right: -15px;
+        }*/
     .carousel-caption {
         left: 20%;
         right: 20%;

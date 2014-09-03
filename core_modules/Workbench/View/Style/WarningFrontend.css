@@ -5,8 +5,14 @@
     left: 0;
     z-index: 1000001;
     width: 100%;
-    height: 20px;
     text-align:center;
-    background-color: orange;
     marquee-style: scroll;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    height: 52px;
+    padding: 15px;
 }

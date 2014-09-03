@@ -922,14 +922,14 @@ div.row2 {
 #blog div.entries h2 a{
     color: #222222;
 }
-#blog div.entries h2 a:hover{
-    color: #95A105;
+#blog div.entries h2 a:hover {
+    color: rgb(18, 146, 221);
 }
 .posted a{
     color:#777777
 }
 .posted a:hover{
-    color:#95A105
+    color: rgb(18, 146, 221);
 }
 #blog div.comments,
 #blog div.code,
