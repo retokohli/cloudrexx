@@ -161,9 +161,17 @@ a:active {
     color: #ffffff;
 }
 
-#metanavigation a.license-upgrade {
-    padding-left: 18px;
-    background: url(../Media/metanavigation_upgrade.png) no-repeat;
+#metanavigation a span.license-upgrade {
+    padding-bottom: 7px;
+    padding-left: 20px;
+    background: url(../Media/icon-upgrade.png) no-repeat;
+}
+#metanavigation a.license-upgrade_bg {
+    background: none repeat scroll 0 0 #fff;
+    float: left;
+    margin-right: 10px;
+    margin-top: -20px;
+    padding: 20px 12.5px;
 }
 
 #metanavigation a.frontend {
@@ -862,7 +870,6 @@ li.nav_upgrade > a {
 
 .breadcrumb li.level_3 {
     font-size: 13px;
-    background
 }
 
 .breadcrumb li a {
