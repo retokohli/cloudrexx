@@ -1249,7 +1249,7 @@ class Config
             // release
             \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml', $configPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsEdition') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('coreCmsEdition','Business Enterprise', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('coreCmsEdition','Open Source', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsEdition");
             }
@@ -1264,7 +1264,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsCodeName");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsStatus') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('coreCmsStatus','stable', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('coreCmsStatus','Stable', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsStatus");
             }
@@ -1292,7 +1292,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseState");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('licenseValidTo') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseValidTo','1437391805', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseValidTo','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseValidTo");
             }
@@ -1316,13 +1316,18 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for upgradeUrl");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseGrayzoneMessages') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseGrayzoneMessages','', 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseGrayzoneMessages");
+            }
             if (\Cx\Core\Setting\Controller\Setting::getValue('licenseGrayzoneTime') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseGrayzoneTime','14', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseGrayzoneTime");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('licenseLockTime') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseLockTime','false', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseLockTime','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseLockTime");
             }
@@ -1337,7 +1342,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseFailedUpdate");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('licenseSuccessfulUpdate') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseSuccessfulUpdate','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseSuccessfulUpdate','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseSuccessfulUpdate");
             }
@@ -1357,12 +1362,12 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for availableComponents");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardMessages') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardMessages','YToxOntzOjI6ImRlIjtPOjMxOiJDeFxDb3JlX01vZHVsZXNcTGljZW5zZVxNZXNzYWdlIjo2OntzOjQxOiIAQ3hcQ29yZV9Nb2R1bGVzXExpY2Vuc2VcTWVzc2FnZQBsYW5nQ29kZSI7czoyOiJkZSI7czozNzoiAEN4XENvcmVfTW9kdWxlc1xMaWNlbnNlXE1lc3NhZ2UAdGV4dCI7czo5MjoiU2llIGJlbnV0emVuIGRlbiBSZWxlYXNlIENhbmRpZGF0ZSB2b24gQ29udHJleHggMy4gS2xpY2tlbiBTaWUgaGllciB1bSBOZXVpZ2tlaXRlbiB6dSBzZWhlbiEiO3M6Mzc6IgBDeFxDb3JlX01vZHVsZXNcTGljZW5zZVxNZXNzYWdlAHR5cGUiO3M6MTA6Indhcm5pbmdib3giO3M6Mzc6IgBDeFxDb3JlX01vZHVsZXNcTGljZW5zZVxNZXNzYWdlAGxpbmsiO3M6MjE6ImluZGV4LnBocD9jbWQ9bGljZW5zZSI7czo0MzoiAEN4XENvcmVfTW9kdWxlc1xMaWNlbnNlXE1lc3NhZ2UAbGlua1RhcmdldCI7czo1OiJfc2VsZiI7czo0ODoiAEN4XENvcmVfTW9kdWxlc1xMaWNlbnNlXE1lc3NhZ2UAc2hvd0luRGFzaGJvYXJkIjtiOjE7fX0=', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardMessages','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardMessages");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('isUpgradable') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('isUpgradable','off', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('isUpgradable','on', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for isUpgradable");
             }
