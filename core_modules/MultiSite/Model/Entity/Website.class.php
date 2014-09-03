@@ -897,6 +897,8 @@ class Website extends \Cx\Model\Base\EntityBase {
             'email' => $this->owner->getEmail(),
             'active'=> 1,
             'admin' => 1,
+            // assign user to first user group 
+            'groups' => array(1),
         );
         $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('createUser', $params, $this);
         if(!$resp || $resp->status == 'error'){
@@ -1235,7 +1237,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                                             'ContentWorkflow', 'core', 'Csrf', 'Error', 'FileBrowser', 'FileSharing', 'FrontendEditing', 'fulllanguage',
                                             'Home', 'Ids', 'Imprint', 'JavaScript', 'JsonData', 'language', 'LanguageManager', 'License', 'Login', 'logout',
                                             'Media', 'Media1', 'Media2', 'Media3', 'Media4', 'Message', 'MultiSite', 'Net', 'News', 'Newsletter', 
-                                            'Privacy', 'Recommend', 'Search', 'Security', 'Session', 'Shell', 'Sitemap', 'Stats', 'U2u', 'Upload',
+                                            'Privacy', 'Search', 'Security', 'Session', 'Shell', 'Sitemap', 'Stats', 'U2u', 'Upload',
                                             'ViewManager');
                 break;
         }
