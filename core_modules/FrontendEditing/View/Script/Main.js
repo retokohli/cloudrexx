@@ -551,7 +551,7 @@ cx.fe.toolbar.hide = function() {
     // hide anchor boxes
     cx.fe.toolbar.hideBoxes();
     
-    var toolbarOffset = parseInt(cx.jQuery("#workbenchWarning").height());
+    var toolbarOffset = parseInt(cx.jQuery("#workbenchWarning").outerHeight());
     if (!toolbarOffset) {
         toolbarOffset = 0;
     }
@@ -574,7 +574,7 @@ cx.fe.toolbar.hide = function() {
 cx.fe.toolbar.show = function() {
     // do the css
     
-    var toolbarOffset = parseInt(cx.jQuery("#workbenchWarning").height());
+    var toolbarOffset = parseInt(cx.jQuery("#workbenchWarning").outerHeight());
     if (!toolbarOffset) {
         toolbarOffset = 0;
     }
