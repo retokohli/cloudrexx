@@ -637,13 +637,16 @@ class Website extends \Cx\Model\Base\EntityBase {
     * */
     protected function setupDataFolder($websiteName){
         // website's data repository
-        \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
+        try {
+            \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
+            \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
 
-        $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
-        $codeBaseWebsiteSkeletonPath = $codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton';
-        \Cx\Lib\FileSystem\FileSystem::copy_folder($codeBaseWebsiteSkeletonPath, \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
-        
+            $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+            $codeBaseWebsiteSkeletonPath = $codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton';
+            \Cx\Lib\FileSystem\FileSystem::copy_folder($codeBaseWebsiteSkeletonPath, \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            throw new WebsiteException('Unable to setup data folder: '.$e->getMessage());
+        }
     }    
      /*
     * function setupConfiguration to create configuration
@@ -1155,37 +1158,41 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @return boolean
      */
     public function setupLicense($options) {
-        \DBG::msg('Website: setup License..');
-        if (empty($options['subscription'])) {
-            return;
-        }
-        
-        switch ($options['subscription']) {
-            case 'Trial':
-                $legalComponents = array('Access', 'Agb', 'Alias', 'Block', 'Cache', 'Captcha', 'ComponentManager', 'Config', 'Contact', 'ContentManager',
-                                            'ContentWorkflow', 'core', 'Csrf', 'Error', 'FileBrowser', 'FileSharing', 'FrontendEditing', 'fulllanguage',
-                                            'Home', 'Ids', 'Imprint', 'JavaScript', 'JsonData', 'language', 'LanguageManager', 'License', 'Login', 'logout',
-                                            'Media', 'Media1', 'Media2', 'Media3', 'Media4', 'Message', 'MultiSite', 'Net', 'News', 'Newsletter', 
-                                            'Privacy', 'Search', 'Security', 'Session', 'Shell', 'Sitemap', 'Stats', 'U2u', 'Upload',
-                                            'ViewManager');
-                break;
-        }
-        
-        if (!empty($legalComponents)) {
-            $params = array(
-                'websiteId'         => $this->id,
-                'legalComponents'   => $legalComponents,
-                'state'             => \Cx\Core_Modules\License\License::LICENSE_OK,
-                'validTo'           => 2733517333,
-                'updateInterval'    => 8760,
-                'dashboardMessages' => array(
-                    1 => 'Testen Sie unsere gesamte Leistungsvielfalt bis zum 08.09.2014 völlig kostenlos!
-                          In der kostenlosen Testphase bis zum 08.09.2014 haben Sie uneingeschränkten Zugriff auf sämtliche Funktionen. Sie können unser Produkt also ausgiebig testen. Überzeugen Sie sich von unserer Leistungsvielfalt und wählen Sie dann einfach die für Ihre Anforderungen geeignete Mitgliedschaftsart aus. Für eine individuelle Beratung, auch im Zusammenhang mit der Anwendung unserer Software, stehen wir Ihnen gerne zur Verfügung!
-                          Nach dieser Testphase erhält ihr Account automatisch den Status FREE (kostenlos)!',
-                )
-            );
-            //send the JSON Request 'setLicense' command from service to website
-            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $params, $this);
+        try {
+            \DBG::msg('Website: setup License..');
+            if (empty($options['subscription'])) {
+                return;
+            }
+
+            switch ($options['subscription']) {
+                case 'Trial':
+                    $legalComponents = array('Access', 'Agb', 'Alias', 'Block', 'Cache', 'Captcha', 'ComponentManager', 'Config', 'Contact', 'ContentManager',
+                                                'ContentWorkflow', 'core', 'Csrf', 'Error', 'FileBrowser', 'FileSharing', 'FrontendEditing', 'fulllanguage',
+                                                'Home', 'Ids', 'Imprint', 'JavaScript', 'JsonData', 'language', 'LanguageManager', 'License', 'Login', 'logout',
+                                                'Media', 'Media1', 'Media2', 'Media3', 'Media4', 'Message', 'MultiSite', 'Net', 'News', 'Newsletter', 
+                                                'Privacy', 'Search', 'Security', 'Session', 'Shell', 'Sitemap', 'Stats', 'U2u', 'Upload',
+                                                'ViewManager');
+                    break;
+            }
+
+            if (!empty($legalComponents)) {
+                $params = array(
+                    'websiteId'         => $this->id,
+                    'legalComponents'   => $legalComponents,
+                    'state'             => \Cx\Core_Modules\License\License::LICENSE_OK,
+                    'validTo'           => 2733517333,
+                    'updateInterval'    => 8760,
+                    'dashboardMessages' => array(
+                        1 => 'Testen Sie unsere gesamte Leistungsvielfalt bis zum 08.09.2014 völlig kostenlos!
+                              In der kostenlosen Testphase bis zum 08.09.2014 haben Sie uneingeschränkten Zugriff auf sämtliche Funktionen. Sie können unser Produkt also ausgiebig testen. Überzeugen Sie sich von unserer Leistungsvielfalt und wählen Sie dann einfach die für Ihre Anforderungen geeignete Mitgliedschaftsart aus. Für eine individuelle Beratung, auch im Zusammenhang mit der Anwendung unserer Software, stehen wir Ihnen gerne zur Verfügung!
+                              Nach dieser Testphase erhält ihr Account automatisch den Status FREE (kostenlos)!',
+                    )
+                );
+                //send the JSON Request 'setLicense' command from service to website
+                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $params, $this);
+            }
+        } catch (\Exception $e) {
+            throw new WebsiteException('Unable to setup license: '.$e->getMessage());
         }
     }
     
@@ -1194,7 +1201,11 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function initializeLanguage() {
         //send the JSON Request 'setDefaultLanguage' command from service to website
-        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setDefaultLanguage', array('langId' => $this->language), $this);
+        try {
+            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setDefaultLanguage', array('langId' => $this->language), $this);
+        } catch (\Exception $e) {
+            throw new WebsiteException('Unable to initialize the language: '.$e->getMessage());
+        }        
     }
     
     /**
@@ -1205,17 +1216,20 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @return boolean
      */
     public function setupFtpAccount($websiteName) {
-        
-        if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
-            //create FTP-Account
-            $password = \User::make_password(8, true);
-            $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsiteSubscriptionId'));
+        try {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
+                //create FTP-Account
+                $password = \User::make_password(8, true);
+                $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsiteSubscriptionId'));
 
-            if ($accountId) {
-                return $password;
+                if ($accountId) {
+                    return $password;
+                }
             }
-        }
 
-        return false;
+            return false;
+        } catch (\Exception $e) {
+            throw new WebsiteException('Unable to setup ftp account: '.$e->getMessage());
+        }    
     }
 }
