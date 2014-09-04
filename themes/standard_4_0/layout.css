@@ -810,7 +810,7 @@ body a:hover {text-decoration: none;}
     background: #fff;
     position: absolute;
     bottom: 0;
-    padding-bottom: 7px;
+    padding-bottom: 9px;
 }
 #footer .inner > div {
     font-family: 'Ubuntu';
@@ -827,7 +827,7 @@ body a:hover {text-decoration: none;}
 }
 #footer-bottom .footer-left {
     float: left;
-    margin-right: 86px;
+    margin-right: 111px;
     padding-top: 12px;
 }
 .horizontal-list.no-bg {
@@ -1550,4 +1550,19 @@ fieldset .checkbox, fieldset .radio {
 }
 #newsUrl2 {
     margin-bottom: 5px;
+}
+.carousel .carousel-indicators {
+    bottom: 0;
+}
+.navbar-toggle {
+    padding: 4px 8px;
+    margin-top: 7px;
+    border: 1px solid #fff;
+}
+.navbar-toggle .icon-bar {
+    background: #fff;
+}
+.breadcrumb {
+    padding: 8px 0px;
+    background-color: transparent;
 }
