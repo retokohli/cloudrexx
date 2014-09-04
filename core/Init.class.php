@@ -555,7 +555,11 @@ class InitCMS
         $themeFolder = '';
         $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();        
         if ($page->getUseCustomContentForAllChannels()) {
-            $themeFolder = $themeRepository->findById($page->getSkin())->getFoldername();
+            $theme = $themeRepository->findById($page->getSkin());
+            if (!$theme) {
+                $theme = $themeRepository->getDefaultTheme($page->getLang());
+            }
+            $themeFolder = $theme->getFoldername();
         } elseif (!empty($this->customContentTemplate)) {
             $themeFolder = $themeRepository->findById($this->channelThemeId)->getFoldername();
         }
