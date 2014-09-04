@@ -461,6 +461,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Marketing Website Domain");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', 'http://'.$_CONFIG['domainUrl'].'/feed/news_headlines_de.xml', 5,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
+            }
 // TODO: this should be an existing domain from Cx\Core\Net
             if (\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('customerPanelDomain',$_CONFIG['domainUrl'], 5,

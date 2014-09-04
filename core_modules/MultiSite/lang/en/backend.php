@@ -29,6 +29,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MULTISITEDOMAIN']='Domain of MultiSite sy
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MULTISITEDOMAIN_TOOLTIP']='Set the domain that shall be used by the MultiSite system. New Websites will be created as subdomains of the specified domain. I.e.: if this option is set to <b>example.com</b>,then a new Website, called <i>foo</i>, will be accessable through the subdomain <b>foo.example.com</b>.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MARKETINGWEBSITEDOMAIN']='Domain of Marketing Website';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MARKETINGWEBSITEDOMAIN_TOOLTIP']='Set the Domain where the <i>Marketing Website</i> of the MultiSite system is located. Invalid HTTP-Requests to this Contrexx installation will automatically be forwarded to the given Domain.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DASHBOARDNEWSSRC']='URL to dashboard news RSS feed';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CUSTOMERPANELDOMAIN']='Domain of Customer Panel';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CUSTOMERPANELDOMAIN_TOOLTIP']='Set the Domain where the <i>Customer Pnael</i> of the MultiSite system is located.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PLESKHOST']='Hostname of Plesk server';

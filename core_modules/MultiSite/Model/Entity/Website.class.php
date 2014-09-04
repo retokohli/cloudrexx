@@ -700,6 +700,9 @@ class Website extends \Cx\Model\Base\EntityBase {
                         case 'installationId':
                             $value = $this->installationId;
                             break;
+                        case 'dashboardNewsSrc':
+                            $value = \Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc');
+                            break;
                         default:
                             return $originalString;
                             break;
