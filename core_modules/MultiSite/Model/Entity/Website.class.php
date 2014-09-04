@@ -638,9 +638,6 @@ class Website extends \Cx\Model\Base\EntityBase {
     protected function setupDataFolder($websiteName){
         // website's data repository
         try {
-            \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
-            \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);
-
             $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
             $codeBaseWebsiteSkeletonPath = $codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton';
             \Cx\Lib\FileSystem\FileSystem::copy_folder($codeBaseWebsiteSkeletonPath, \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName);

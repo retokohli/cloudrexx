@@ -608,6 +608,25 @@ class FileSystem
         }
     }
 
+    static function path_absolute_to_os_root(&$path) {
+        
+        // $path is specified by absolute file system path of operating system
+        if (   strpos($path, \Env::get('cx')->getWebsiteDocumentRootPath()) === 0
+            || strpos($path, \Env::get('cx')->getCodeBaseDocumentRootPath()) === 0
+        ) {
+            $path = $path;
+        // $path is specified by relative path of Website's offset path
+        } elseif (\Env::get('cx')->getWebsiteOffsetPath() && strpos($path, \Env::get('cx')->getWebsiteOffsetPath()) === 0) {
+            $path = \Env::get('cx')->getWebsitePath() . $path;
+        // $path is specified by absolute path from Website's document root
+        } elseif (strpos($path, '/') === 0) {
+            $path = \Env::get('cx')->getWebsiteDocumentRootPath() . $path;
+        // $path path is unkown -> assuming its relative from Website's document root
+        } else {
+            $path = \Env::get('cx')->getWebsiteDocumentRootPath() . '/'.$path;
+        }
+        
+    }
 
     /**
      * Creates the folder for the given path
@@ -704,8 +723,10 @@ class FileSystem
      */
     public static function copy_folder($source_path, $target_path, $force=false)
     {
-        self::path_relative_to_root($source_path);
-        self::path_relative_to_root($target_path);
+        
+        self::path_absolute_to_os_root($source_path);
+        self::path_absolute_to_os_root($target_path);
+        
         if (self::exists($target_path)) {
             if (!$force)
                 return false;
@@ -714,22 +735,27 @@ class FileSystem
                 return false;
             }
         }
-        $directory = @opendir(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$source_path);
+        
+        $directory = @opendir($source_path);
         $file = @readdir($directory);
         while ($file) {
             if (preg_match('/^\.\.?$/', $file)) {
                 $file = @readdir($directory);
                 continue;
             }
-            if (is_file(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$source_path.'/'.$file)) {
-                if (!self::copy_file(
+            if (is_dir($source_path.'/'.$file)) {
+                if (!self::copy_folder(
                     $source_path.'/'.$file, $target_path.'/'.$file, $force)) {
                     return false;
                 }
             } else {
-                if (!self::copy_folder(
-                    $source_path.'/'.$file, $target_path.'/'.$file, $force)) {
-                    return false;
+                try {
+                    $objFile = new \Cx\Lib\FileSystem\File($source_path.'/'.$file);
+                    if (!$objFile->copy($target_path.'/'.$file, $force)) {
+                        return false;
+                    }
+                } catch (FileSystemException $e) {
+                    \DBG::msg($e->getMessage());
                 }
             }
             $file = @readdir($directory);
