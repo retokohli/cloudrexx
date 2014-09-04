@@ -1045,7 +1045,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public static function executeCommandOnManager($command, $params = array()) {
 
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
-            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
         }
 // TODO: test if the following works
         /*if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
@@ -1070,7 +1070,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public static function executeCommandOnMyServiceServer($command, $params) {
 
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_WEBSITE))) {
-            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode WEBSITE.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode WEBSITE.');
         }
         $host = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
         $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');
@@ -1091,7 +1091,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public static function executeCommandOnServiceServerOfWebsite($command, $params, $website) {
 
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER))) {
-            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode MANAGER.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode MANAGER.');
         }
         $websiteServiceServer = $website->getWebsiteServiceServer();
         $host = $websiteServiceServer->getHostname();
@@ -1113,7 +1113,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public static function executeCommandOnServiceServer($command, $params, $websiteServiceServer) {
         
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER))) {
-            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode MANAGER.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode MANAGER.');
         }
         $host = $websiteServiceServer->getHostname();
         $installationId = $websiteServiceServer->getInstallationId();
@@ -1134,7 +1134,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public static function executeCommandOnWebsite($command, $params, $website) {
 
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
-            throw new MultiSiteJsonException('Command executeCommandOnWebsite is only available in MultiSite-mode HYBRID or SERVICE.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode HYBRID or SERVICE.');
         }
         // JsonData requests shall be made to the FQDN of the Website,
         // as the BaseDn might not yet work as it depends on the DNS synchronization.
