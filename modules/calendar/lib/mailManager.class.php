@@ -201,9 +201,6 @@ class CalendarMailManager extends CalendarLibrary {
                 }
                 $eventManager->_setNextSeriesElement($lastEvent);
             }
-
-
-            $objEvent = new CalendarEvent($eventId);
             
             $objRegistration = null;
             if(!empty($regId)) {
