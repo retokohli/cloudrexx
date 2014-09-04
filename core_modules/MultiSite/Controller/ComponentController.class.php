@@ -555,6 +555,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Create FTP account during website setup");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('passwordSetupMethod', 'auto', 12,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'auto:Automatically, interactive:Interactive', 'websiteSetup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Password set method during website setup");
+            }
 
             // websiteManager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager','FileSystem');

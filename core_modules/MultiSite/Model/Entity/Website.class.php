@@ -505,14 +505,11 @@ class Website extends \Cx\Model\Base\EntityBase {
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID
         ) {
             \DBG::msg('Website: prepare reset password function..');
-            $this->owner->setRestoreKey();
-            // hard-coded to 1 day
-            $this->owner->setRestoreKeyTime(86400);
-            $this->owner->store();
-            $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain'));
-
+            $websitePasswordUrl = self::generatePasswordRestoreUrl();
+            $websitePassword    = self::generateAccountPassword();
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+            $passwordBlock = \Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') == 'auto' ? 'WEBSITE_PASSWORD_AUTO' : 'WEBSITE_PASSWORD_INTERACTIVE';
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
             // send ADMIN mail
@@ -544,9 +541,18 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'lang_id' => $langId,
                 'key' => 'createInstance',
                 'to' => $websiteMail,
-                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD_URL]]', '[[WEBSITE_FTP_USER]]', '[[WEBSITE_FTP_PASSWORD]]'),
-                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePasswordUrl, $websiteName, $ftpAccountPassword),
-            ))) {
+                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]','[[WEBSITE_FTP_USER]]', '[[WEBSITE_FTP_PASSWORD]]'),
+                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websiteName, $ftpAccountPassword),
+                'substitution' => array(
+                            $passwordBlock => array(
+                                '0' => array(
+                                    'WEBSITE_PASSWORD' => $websitePassword,
+                                    'WEBSITE_MAIL' => $websiteMail,
+                                    'WEBSITE_PASSWORD_URL' => $websitePasswordUrl,
+                                ),
+                            )
+                        ),
+                    ))) {
             //  TODO: Implement proper error handler:
             //       removeWebsite() must not be called from within this method.
             //       Instead, in case the setup process fails, a proper exception must be thrown.
@@ -1239,4 +1245,43 @@ throw new WebsiteException('implement secret-key algorithm first!');
             throw new WebsiteException('Unable to setup ftp account: '.$e->getMessage());
         }    
     }
+    
+    /**
+     * generate password restore url
+     * 
+     * @return string
+     */
+    public function generatePasswordRestoreUrl() {
+        $this->owner->setRestoreKey();
+        // hard-coded to 1 day
+        $this->owner->setRestoreKeyTime(86400);
+        $this->owner->store();
+        $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain'));
+        return $websitePasswordUrl;
+    }
+
+    /**
+     * generate account password
+     * 
+     * @return string
+     */
+    public function generateAccountPassword() {
+        
+        $newPassword = \User::make_password(8, true);
+        $params = array(
+            'userId' => $this->ownerId,
+            'multisite_user_account_password' => $newPassword
+        );
+        try {
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('updateUser', $params);
+            if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                return $newPassword;
+            } else {
+                throw new WebsiteException('Unable to generate account password: Error in generate account password');
+            }
+        } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
+            throw new WebsiteException('Unable to generate account password: '.$e->getMessage());
+        }  
+    }
+
 }
