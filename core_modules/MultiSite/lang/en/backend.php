@@ -85,6 +85,7 @@ $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS']='Site Address';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME']='The name must contain only lowercase letters (a-z) and numbers and must be at least %1$s characters, but no longer than %2$s characters.';
 $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON']='Create Site';
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS']='I confirm that I have read, understand and agree to the %s.';
+$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME']='Terms & Conditions';
 
 // Sign up status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'The name %s has been taken already. Please choose an other name for your own site.';

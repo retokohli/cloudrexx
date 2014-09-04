@@ -19,6 +19,7 @@ $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS']='Website Adresse';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME']='Der Name darf nur aus Kleinbuchstaben (a-z) und Zahlen bestehen und muss eine Länge zwischen %1$s und %2$s Zeichen aufweisen.';
 $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON']='Seite erstellen';
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS']='Ja, ich habe die %s gelesen und akzeptiere diese.';
+$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME']='AGB';
 
 // Sign up status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'Eine Website mit dem Namen %s besteht bereits. Bitte wählen Sie einen anderen Namen.';
