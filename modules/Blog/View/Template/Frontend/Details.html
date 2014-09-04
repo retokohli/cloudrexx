@@ -43,7 +43,7 @@
     {BLOG_DETAILS_COMMENTS_JAVASCRIPT}
     <h3><a name="comments">{TXT_COMMENTS}</a></h3>
     <!-- BEGIN showCommentRows -->
-        <div class="comments">
+        <div class="comments bg-primary">
             <div class="comment_avatar">{BLOG_DETAILS_COMMENT_AVATAR}</div>
             <div class="comment_title"><strong>{BLOG_DETAILS_COMMENT_TITLE}</strong></div>
             <div class="comment_posted">{BLOG_DETAILS_COMMENT_POSTED}</div>
@@ -63,7 +63,7 @@
                 <p><label>{TXT_COMMENT_ADD_SUBJECT}</label><input type="text" name="frmAddComment_Subject" value="{BLOG_DETAILS_COMMENT_ADD_SUBJECT}" class="blogCommentInput" /></p>
                 <p><label>{TXT_COMMENT_ADD_COMMENT}</label>{BLOG_DETAILS_COMMENT_ADD_COMMENT}</p>
                 <!-- BEGIN comment_captcha --><p><label for="coreCaptchaCode">{TXT_COMMENT_CAPTCHA}</label>{COMMENT_CAPTCHA_CODE}</p><!-- END comment_captcha -->
-                <p><input type="submit" name="frmAddComment_Submit" value="{TXT_COMMENT_ADD_SUBMIT}" /></p>
+                <p><input type="submit" class="btn btn-default" name="frmAddComment_Submit" value="{TXT_COMMENT_ADD_SUBMIT}" /></p>
             </form>
         </fieldset>
     </div>

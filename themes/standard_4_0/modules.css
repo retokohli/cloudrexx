@@ -22,6 +22,15 @@ form p label {
     width: auto;
     font-weight: normal;
 }
+.label {
+    display: inline;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    text-align: left;
+}
 .regForm #access_user_newsletters-1 {
     margin-left: 0;
     margin-right: 5px;
@@ -939,6 +948,7 @@ div.row2 {
     background-color: #f9f9f9;
     border: 1px dotted #E6E6E6;
     clear:both;
+    color: #505050;
 }
 #blog div.message_error {
     color: #ff0000;
@@ -2994,4 +3004,19 @@ input[name="recipient_save"] {
 .profile.networks td {
     float: none;
     width: auto;
+}
+input[type="radio"],
+input[type="checkbox"] {
+    margin: 4px 5px 0 0px;
+    height: auto;
+    line-height: normal;
+}
+.nav li > a:hover,
+.nav li > a:focus {
+    text-decoration: none;
+    color: #000;
+    background-color: #eeeeee;
+}
+.modal-content {
+    width: 100%;
 }
