@@ -97,9 +97,9 @@ class TestCommand extends Command {
             }
         }
                 
-        $phpUnitTestPath = ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit';
+        $phpUnitTestPath = ASCMS_LIBRARY_PATH.'/PHPUnit';
         if(!file_exists($phpUnitTestPath)) {
-            $this->interface->show("PhpUnit is not found in ". ASCMS_DOCUMENT_ROOT.ASCMS_TESTING_FOLDER.'/PHPUnit');
+            $this->interface->show("PhpUnit is not found in ". $phpUnitTestPath);
             return;
         }
 
@@ -109,7 +109,7 @@ class TestCommand extends Command {
         }
 
         // Needs to change the dir because files might be loaded by its relative path inside PHPUnit
-        chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit');
+        chdir($phpUnitTestPath);
         require_once $phpUnitTestPath.'/PHP/CodeCoverage/Filter.php';
         \PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
 
