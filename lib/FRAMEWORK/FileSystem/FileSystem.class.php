@@ -756,6 +756,7 @@ class FileSystem
                     }
                 } catch (FileSystemException $e) {
                     \DBG::msg($e->getMessage());
+                    return false;
                 }
             }
             $file = @readdir($directory);
