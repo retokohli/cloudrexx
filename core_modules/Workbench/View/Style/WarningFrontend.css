@@ -1,4 +1,3 @@
-
 #workbenchWarning {
     position: fixed;
     top: 0;
@@ -7,9 +6,8 @@
     width: 100%;
     text-align:center;
     marquee-style: scroll;
-    margin-bottom: 20px;
+    margin-bottom: 52px;
     border: 1px solid transparent;
-    border-radius: 4px;
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
