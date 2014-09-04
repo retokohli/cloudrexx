@@ -1161,7 +1161,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
         }
         if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc') === NULL 
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', $_CONFIG['dashboardNewsSrc'], 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')) {
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', $_CONFIG['dashboardNewsSrc'], 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')) {
             throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
         }
         \Cx\Core\Config\Controller\Config::init();
