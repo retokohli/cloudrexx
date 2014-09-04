@@ -1245,6 +1245,11 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for useKnowledgePlaceholders");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc','http://www.contrexx.com/feed/news_headlines_de.xml', 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
+            }
 
             // release
             \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml', $configPath);
