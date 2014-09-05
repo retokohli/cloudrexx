@@ -1,0 +1,22 @@
+<!-- START settings_ftp.html -->
+<form name="settings_ftp" method="post" action="index.php?cmd=Config&amp;act=Ftp">
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th colspan="2">{TXT_SETTINGS_FTP}</th>
+        </tr>
+        <tr class="row1">
+            <td width="200">{TXT_SETTINGS_FTP_SERVER}:</td>
+            <td>{FTP_SERVER_NAME}</td>
+        </tr>
+        <tr class="row2">
+            <td>{TXT_SETTINGS_FTP_USER}:</td>
+            <td>{FTP_USER_NAME}</td>
+        </tr>
+        <tr class="row2">
+            <td>{TXT_SETTINGS_FTP_PASSWORD}:</td>
+            <td><span id="password">***</span>&nbsp;&nbsp;<input id="resetPassword" type="button" name="resetPassword" value="{TXT_SETTINGS_RESET_PASSWORD}"></td>
+        </tr>
+
+    </table>
+</form>
+<!-- END settings_ftp.html -->

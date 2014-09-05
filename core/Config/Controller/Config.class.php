@@ -61,6 +61,7 @@ class Config
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '') .
             '<a href="index.php?cmd=Config&amp;act=Domain" class="'.($this->act == 'Domain' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_DOMAINS'].'</a>'
+            . '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>'
         );
     }
 
@@ -122,6 +123,10 @@ class Config
         $boolShowStatus = true;
 
         switch ($_GET['act']) {
+            case 'Ftp':
+                $this->showFtp();
+                break;
+            
             case 'Domain':
                 $this->showDomains();
                 break;
@@ -1456,5 +1461,26 @@ class Config
             $display[] = $domain->getId() . ':' . $domain->getName();
         }
         return implode(',', $display);
+    }
+    
+    public function showFtp() {
+        global $_ARRAYLANG, $objTemplate, $_CONFIG;
+        
+        $this->strPageTitle = $_ARRAYLANG['TXT_SETTINGS_FTP'];
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_ftp', 'settings_ftp.html');
+        
+        $websiteName = explode('.', $_CONFIG['domainUrl']);
+        $objTemplate->setVariable(array(
+            'FTP_SERVER_NAME'   => 'ftps://' . $_CONFIG['domainUrl'],
+            'FTP_USER_NAME'     => $websiteName[0],
+        ));
+        
+        $objTemplate->setVariable(array(
+            'TXT_SETTINGS_FTP'            => $_ARRAYLANG['TXT_SETTINGS_FTP'],
+            'TXT_SETTINGS_FTP_SERVER'     => $_ARRAYLANG['TXT_SETTINGS_FTP_SERVER'],
+            'TXT_SETTINGS_FTP_USER'       => $_ARRAYLANG['TXT_SETTINGS_FTP_USER'],
+            'TXT_SETTINGS_FTP_PASSWORD'   => $_ARRAYLANG['TXT_SETTINGS_FTP_PASSWORD'],
+            'TXT_SETTINGS_RESET_PASSWORD' => $_ARRAYLANG['TXT_SETTINGS_RESET_PASSWORD'],
+        ));
     }
 }
