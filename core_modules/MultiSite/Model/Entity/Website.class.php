@@ -504,12 +504,20 @@ class Website extends \Cx\Model\Base\EntityBase {
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID
         ) {
-            \DBG::msg('Website: prepare reset password function..');
-            $websitePasswordUrl = self::generatePasswordRestoreUrl();
-            $websitePassword    = self::generateAccountPassword();
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-            $passwordBlock = \Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') == 'auto' ? 'WEBSITE_PASSWORD_AUTO' : 'WEBSITE_PASSWORD_INTERACTIVE';
+
+            // set user account password
+            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') == 'auto') {
+                \DBG::msg('Website: generate password for Cloudrexx user..');
+                $passwordBlock = 'WEBSITE_PASSWORD_AUTO';
+                $websitePassword    = self::generateAccountPassword();
+            } else {
+                \DBG::msg('Website: generate reset password link for Cloudrexx user..');
+                $passwordBlock = 'WEBSITE_PASSWORD_INTERACTIVE';
+                $websitePasswordUrl = self::generatePasswordRestoreUrl();
+            }
+
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
             // send ADMIN mail
@@ -1256,7 +1264,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         // hard-coded to 1 day
         $this->owner->setRestoreKeyTime(86400);
         $this->owner->store();
-        $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain'));
+        $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
         return $websitePasswordUrl;
     }
 
