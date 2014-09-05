@@ -915,7 +915,7 @@ class Config
                             }
                             $mainDomainIcon = '';
                             if ($value == $mainDomainName) {
-                                $mainDomainIcon = ' <img src="/core/Core/View/Media/icons/Home.png" title="Main Domain" />';
+                                $mainDomainIcon = ' <img src="'.\Env::get('cx')->getCodeBaseCoreWebPath().'/Core/View/Media/icons/Home.png" title="Main Domain" />';
                             }
                             return $value.$mainDomainIcon;
                         },
