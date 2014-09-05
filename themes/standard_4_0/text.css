@@ -356,3 +356,17 @@ modal-footer {
     right: 50%;
     margin-right: 0;
 }
+.carousel-indicators {
+    bottom: -10px;
+}
+.carousel-indicators .active {
+    width: 10px;
+    height: 10px;
+}
+.carousel-control .glyphicon-chevron-right,
+.carousel-control .icon-next {
+    margin-right: 0;
+}
+.carousel-indicators {
+    bottom: 0;
+}

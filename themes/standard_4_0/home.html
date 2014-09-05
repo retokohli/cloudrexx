@@ -30,21 +30,27 @@
                 {CONTENT_TEXT}
             </div>
         </div>
-        <div id="home-boxes">
-            <div class="home-box col-md-6 col-sm-12">
-                <h2>News</h2>
-                {HEADLINES_FILE}
-                <a class="more-link" href="{NODE_NEWS}">Weitere News</a>
-            </div>
-            <div class="home-box last col-md-6 col-sm-12">
-                <h2>Newsletter</h2>
-                <div id="home-newsletter">
-                    Sie m&ouml;chten gerne regelm&auml;ssig &uuml;ber die neusten Themen informiert werden? Dann melden Sie sich einfach hier f&uuml;r unseren kostenlosen Newsletter an:
-                    <form name="newsletter" action="{NODE_NEWSLETTER_SUBSCRIBE}" method="post">
-                        <input type="hidden" name="list[1]" value="1" />
-                        <input type="text" onfocus="this.value = ''" name="email" value="E-mail address" maxlength="255" />
-                        <button name="recipient_save">Anmelden</button>
-                    </form>
+        <div id="home-boxes" class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="home-box">
+                        <h2>News</h2>
+                        {HEADLINES_FILE}
+                        <a class="more-link" href="{NODE_NEWS}">Weitere News</a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="home-box last">
+                        <h2>Newsletter</h2>
+                        <div id="home-newsletter">
+                            Sie m&ouml;chten gerne regelm&auml;ssig &uuml;ber die neusten Themen informiert werden? Dann melden Sie sich einfach hier f&uuml;r unseren kostenlosen Newsletter an:
+                            <form name="newsletter" action="{NODE_NEWSLETTER_SUBSCRIBE}" method="post">
+                                <input type="hidden" name="list[1]" value="1" />
+                                <input type="text" onfocus="this.value = ''" name="email" value="E-mail address" maxlength="255" />
+                                <button name="recipient_save">Anmelden</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

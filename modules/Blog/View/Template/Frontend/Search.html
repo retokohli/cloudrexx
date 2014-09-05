@@ -1,12 +1,12 @@
 <div id="blog">
 	{BLOG_SEARCH_JAVASCRIPT}
 	<div class="searchform">
-		<form action="index.php?section=Blog&amp;cmd=search" name="frmDoSearch" method="post">
-            <fieldset>
+		<form role="form" action="index.php?section=Blog&amp;cmd=search" name="frmDoSearch" method="post">
+            <fieldset id="searchfield">
                 <legend>Kategorien durchsuchen</legend>
                 <p><label>{TXT_SEARCH_MODUS_KEYWORD}</label><input type="text" value="{BLOG_SEARCH_KEYWORD_STRING}" name="frmDoSearch_Keyword_String" /></p>
                 <p><label>Kategorie</label>{BLOG_SEARCH_KEYWORD_CATEGORIES}</p>
-                <p><input type="submit" value="{TXT_SEARCH_SUBMIT}" name="frmDoSearch_Submit" /></p>
+                <p id="fieldlast"><input class="btn btn-default" type="submit" value="{TXT_SEARCH_SUBMIT}" name="frmDoSearch_Submit" /></p>
             </fieldset>
             <fieldset>
                 <legend>Suche nach Datum</legend>

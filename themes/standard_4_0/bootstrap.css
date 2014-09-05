@@ -5751,12 +5751,18 @@ button.close {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 .carousel-control.left {
+    background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);
+    background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
 }
 .carousel-control.right {
     left: auto;
     right: 0;
+    background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);
+    background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
 }
@@ -5785,7 +5791,7 @@ button.close {
 .carousel-control .icon-next,
 .carousel-control .glyphicon-chevron-right {
     right: 50%;
-    /*margin-right: -10px;*/
+    margin-right: -10px;
 }
 .carousel-control .icon-prev,
 .carousel-control .icon-next {
@@ -5802,7 +5808,7 @@ button.close {
 }
 .carousel-indicators {
     position: absolute;
-    bottom: -10px;
+    bottom: 10px;
     left: 50%;
     z-index: 15;
     width: 60%;
@@ -5825,8 +5831,8 @@ button.close {
 }
 .carousel-indicators .active {
     margin: 0;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background-color: #ffffff;
 }
 .carousel-caption {
@@ -5858,15 +5864,18 @@ button.close {
     .carousel-control .icon-prev {
         margin-left: -15px;
     }
-/*    .carousel-control .glyphicon-chevron-right,
+    .carousel-control .glyphicon-chevron-right,
     .carousel-control .icon-next {
         margin-right: -15px;
-    }*/
+    }
     .carousel-caption {
         left: 20%;
         right: 20%;
         padding-bottom: 30px;
     }
+    .carousel-indicators {
+        bottom: 20px;
+}
 }
 .clearfix:before,
 .clearfix:after,
@@ -6007,7 +6016,7 @@ button.close {
         display: inline-block !important;
     }
 }
-@media (min-width: 768px) and (max-width: 979px) {
+@media (min-width: 768px) and (max-width: 991px) {
     .visible-sm {
         display: block !important;
     }
@@ -6022,22 +6031,22 @@ button.close {
         display: table-cell !important;
     }
 }
-@media (min-width: 768px) and (max-width: 979px) {
+@media (min-width: 768px) and (max-width: 991px) {
     .visible-sm-block {
         display: block !important;
     }
 }
-@media (min-width: 768px) and (max-width: 979px) {
+@media (min-width: 768px) and (max-width: 991px) {
     .visible-sm-inline {
         display: inline !important;
     }
 }
-@media (min-width: 768px) and (max-width: 979px) {
+@media (min-width: 768px) and (max-width: 991px) {
     .visible-sm-inline-block {
         display: inline-block !important;
     }
 }
-@media (min-width: 980px) and (max-width: 1199px) {
+@media (min-width: 992px) and (max-width: 1199px) {
     .visible-md {
         display: block !important;
     }
@@ -6052,17 +6061,17 @@ button.close {
         display: table-cell !important;
     }
 }
-@media (min-width: 980px) and (max-width: 1199px) {
+@media (min-width: 992px) and (max-width: 1199px) {
     .visible-md-block {
         display: block !important;
     }
 }
-@media (min-width: 980px) and (max-width: 1199px) {
+@media (min-width: 992px) and (max-width: 1199px) {
     .visible-md-inline {
         display: inline !important;
     }
 }
-@media (min-width: 980px) and (max-width: 1199px) {
+@media (min-width: 992px) and (max-width: 1199px) {
     .visible-md-inline-block {
         display: inline-block !important;
     }
@@ -6102,12 +6111,12 @@ button.close {
         display: none !important;
     }
 }
-@media (min-width: 768px) and (max-width: 979px) {
+@media (min-width: 768px) and (max-width: 991px) {
     .hidden-sm {
         display: none !important;
     }
 }
-@media (min-width: 980px) and (max-width: 1199px) {
+@media (min-width: 992px) and (max-width: 1199px) {
     .hidden-md {
         display: none !important;
     }
