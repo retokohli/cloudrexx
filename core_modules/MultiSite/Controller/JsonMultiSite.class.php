@@ -428,7 +428,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
                 
         \DBG::msg("JsonMultiSite (updateUser): User {$objUser->getId()} successfully updated.");
-        return true;
+        return array('status' => 'success');
     } 
 
     /**
@@ -968,7 +968,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_SERVICE:
                     $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website = $webRepo->findOneById($params['post']['websiteId']);
-                    self::executeCommandOnWebsite('setLicense', array('legalComponents' => $params['post']['legalComponents']), $website);
+                    $resp = self::executeCommandOnWebsite('setLicense', array('legalComponents' => $params['post']['legalComponents']), $website);                   
+                    if ($resp && $resp->data->status == 'success') {
+                        return array('status' => 'success');
+                    }
                     break;
                 case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
@@ -988,9 +991,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $license->setAvailableComponents($params['post']['legalComponents']);
                         $license->setLegalComponents($params['post']['legalComponents']);
                     }
-                    $license->save($objDatabase);
+                    if($license->save($objDatabase)) {
+                        return array('status' => 'success');
+                    }
                     break;
             }
+            return array('status' => 'error');
         } catch (\Exception $e) {
             throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Unable to setup license: '.$e->getMessage());
         }
@@ -1186,6 +1192,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         // we must re-initialize the original MultiSite settings of the main installation
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
+        return array('status' => 'success');
     }
 
     public function getDefaultWebsiteIp() {
