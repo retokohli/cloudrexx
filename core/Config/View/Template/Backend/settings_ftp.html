@@ -1,4 +1,36 @@
 <!-- START settings_ftp.html -->
+<script type="text/javascript">
+    (function($) {
+        cx.ready(function() {
+            $('#resetPassword').click(function() {
+                url = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=resetFtpPassword";
+                cx.jQuery.ajax({
+                    dataType: "json",
+                    url: url,
+                    type: "POST",
+                    success: function(response) {
+                        if (response.message && response.status == 'error') {
+                            cx.tools.StatusMessage.showMessage(response.message, null, 2000);
+                        } else {
+                            if (response.data.status == 'success') {
+                                $('#password').val(response.data.password);
+                            }
+                            if (response.data.message) {
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                            }
+                        }
+                    }
+                });
+            });
+
+        });
+    })(jQuery);
+</script>
+<style>
+    .ui-dialog.noTitle .ui-dialog-titlebar {
+        display: none;
+    }
+</style>
 <form name="settings_ftp" method="post" action="index.php?cmd=Config&amp;act=Ftp">
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
         <tr>
