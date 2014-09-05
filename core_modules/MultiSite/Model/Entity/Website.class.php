@@ -485,9 +485,9 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->initializeLanguage();
             \DBG::msg('Website: setupLicense..');
             $this->setupLicense($options);
-            \DBG::msg('Website: setupRobotsFile..');
+            //            \DBG::msg('Website: setupRobotsFile..');
             //            $this->setupRobotsFile($websiteName);
-            //            \DBG::msg('Website: createContrexxUser..');
+            \DBG::msg('Website: createContrexxUser..');
             $this->createContrexxUser($websiteName);
             \DBG::msg('Website: setup process.. DONE');
             \DBG::msg('Website: Set state to '.self::STATE_ONLINE);
