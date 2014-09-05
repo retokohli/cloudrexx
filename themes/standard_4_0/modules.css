@@ -104,9 +104,13 @@ form .formUploadedFiles .deleteIcon {
     text-indent: 16px;
     background: url('../../cadmin/images/icons/delete.gif') no-repeat;
 }
+fieldset select {
+    color: #7d7d7d;
+}
 form label {
     float: left;
     width: 100%;
+    margin-bottom: 5px;
 }
 label[for="access_user_tos"] {
     width: 95%;

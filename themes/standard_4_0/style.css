@@ -16,6 +16,9 @@
         margin-bottom: 0;
         padding-bottom: 0;
     }
+    #home-boxes {
+        padding: 0 15px;
+    }
     .navbar-header {float: right;}
     #subnavigation {display: none;}
     .login-content {
@@ -488,10 +491,6 @@
     #shop .shop-price td {
         width: 50%;
     }
-    .home-box.col-md-6 {
-        width: 100%;
-        margin-bottom: 27px;
-    }
     #shop .shop-price td:nth-of-type(2) {
         text-align: right !important;
     }
@@ -613,9 +612,6 @@
     #subnavigation {
         display: none;
     }
-    .home-box.col-md-6 {
-        width: 48.1%;
-    }
 }
 @media (min-width: 980px) and (max-width: 1199px) {
     .home-box.col-md-4 {width: 31.4%;margin-right: 28px;}
@@ -624,6 +620,9 @@
     }
     #page {
         width: 75.9%;
+    }
+    #sidebar {
+        width: 22.566667%;
     }
     .social-foot {
         float: none;
@@ -672,9 +671,6 @@
     #profile-left-button {
         padding-left: 35.5%;
     }
-    .home-box.col-md-6 {
-        width: 48.5%;
-    }
     #subnavigation {display: none;}
 }
 @media (min-width: 1200px) {
@@ -683,7 +679,7 @@
     }
 }
 @media (min-width: 768px) {
-    .navbar-header {
+    .row .navbar-header {
         float: right;
     }
     .navbar-collapse.collapse {
@@ -692,7 +688,7 @@
         padding-bottom: 0;
         overflow: visible !important;
     }
-    .modal-dialog {
+    .modal .modal-dialog {
         width: 917px;
         margin: 30px auto;
         margin-top: 60px;
