@@ -278,6 +278,13 @@ namespace Cx\Core\Core\Controller {
         protected $codeBaseCorePath = null;
 
         /**
+         * The offset path to the core components (/core)
+         * of the Code Base of the Contrexx installation.
+         * @var string
+         */
+        protected $codeBaseCoreWebPath = null;
+
+        /**
          * The absolute path used to access the backend template
          * of the Code Base of the Contrexx installation
          * Formerly known as ASCMS_ADMIN_TEMPLATE_PATH
@@ -2048,8 +2055,9 @@ namespace Cx\Core\Core\Controller {
             $this->codeBaseDocumentRootPath     = $this->codeBasePath . $this->codeBaseOffsetPath;
             $this->codeBaseConfigPath           = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CONFIG;
             $this->codeBaseCorePath             = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CORE;
+            $this->codeBaseCoreWebPath          = $this->codeBaseOffsetPath . self::FOLDER_NAME_CORE;
             $this->codeBaseAdminTemplatePath    = $this->codeBaseCorePath . '/Core/View/Template/Backend';
-            $this->codeBaseAdminTemplateWebPath = $this->codeBaseOffsetPath . self::FOLDER_NAME_CORE . '/Core/View/Template/Backend';
+            $this->codeBaseAdminTemplateWebPath = $this->codeBaseCoreWebPath . '/Core/View/Template/Backend';
             $this->codeBaseCoreModulePath       = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CORE_MODULE;
             $this->codeBaseCoreModuleWebPath    = $this->codeBaseOffsetPath . self::FOLDER_NAME_CORE_MODULE;
             $this->codeBaseLibraryPath          = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_LIBRARY;
@@ -2106,6 +2114,15 @@ namespace Cx\Core\Core\Controller {
          */
         public function getCodeBaseCorePath() {
             return $this->codeBaseCorePath;
+        }
+
+        /**
+         * Return the offset path to the core components (/core)
+         * of the Code Base of the Contrexx installation.
+         * @return string
+         */
+        public function getCodeBaseCoreWebPath() {
+            return $this->codeBaseCoreWebPath;
         }
 
         /**
