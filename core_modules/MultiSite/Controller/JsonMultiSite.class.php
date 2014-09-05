@@ -73,6 +73,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setupConfig'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getDefaultWebsiteIp'   => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setDefaultLanguage'    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'resetFtpPassword'      => \Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_WEBSITE ? 
+                                        new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'IsWebsiteOwner')) :
+                                        (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_SERVICE ? 
+                                                new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')) : '')
         );  
     }
 
@@ -1270,6 +1274,67 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $objDatabase->Execute($activateQuery);
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: Updating Language status.' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Check current user is website owner or not
+     * 
+     * @return boolean
+     */
+    public function IsWebsiteOwner() {
+        if (\FWUser::getFWUserObject()->objUser->getId() == \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId')) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Reset the FTP Password
+     * 
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function resetFtpPassword($params) {
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_WEBSITE:
+                    $response = self::executeCommandOnMyServiceServer('resetFtpPassword', array());
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return array('status' => 'success', 'message' => 'Your FTP password has been reset successfully.', 'password' => $response->data->password);
+                    }
+                    break;
+                case ComponentController::MODE_SERVICE:
+                    $authenticationValue = json_decode($params['post']['auth'], true);
+                    if (empty($authenticationValue) || !is_array($authenticationValue)) {
+                        \DBG::dump($params);
+                        throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
+                    }
+
+                    $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+                    $domain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
+                    if (!$domain) {
+                        throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Unkown Website: ' . $authenticationValue['sender']);
+                    }
+
+                    $website = $domain->getWebsite();
+                    if (!$website) {
+                        throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Unkown Website: ' . $authenticationValue['sender']);
+                    }
+
+                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                    $password = \User::make_password(8, true);
+                    if ($hostingController->changeFtpAccountPassword($website->getName(), $password)) {
+                        return array('status' => 'success', 'password' => $password);
+                    }
+                    break;
+            }
+
+            return array('status' => 'failed', 'message' => 'Resetting your FTP password failed! Try again.');
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Updating FTP password.' . $e->getMessage());
         }
     }
 }

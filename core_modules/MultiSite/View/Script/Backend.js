@@ -45,5 +45,21 @@
                  $(this).val($(this).data('lastValue'));
             }
         });
+        $('#resetPassword').click(function(){
+            url = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=resetFtpPassword";
+            cx.jQuery.ajax({
+                dataType: "json",
+                url: url,
+                type: "POST",
+                success: function(response) {
+                    if (response.data.status == 'success') {
+                        $('#password').val(response.data.password);
+                    }
+                    if (response.data.message) {
+                        cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                    }
+                }
+            });
+        });
     });
 })(jQuery);

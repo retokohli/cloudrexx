@@ -549,24 +549,35 @@ class Website extends \Cx\Model\Base\EntityBase {
                     '<subscription:trial / business>'),
             ));
             // send CUSTOMER mail
-            \DBG::msg('Website: send notification email > CUSTOMER');
-            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
+            $info = array(
                 'section' => 'MultiSite',
                 'lang_id' => $langId,
                 'key' => 'createInstance',
                 'to' => $websiteMail,
-                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]','[[WEBSITE_FTP_USER]]', '[[WEBSITE_FTP_PASSWORD]]'),
-                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websiteName, $ftpAccountPassword),
+                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]'),
+                'replace' => array($websiteDomain, $websiteName, $websiteMail),
                 'substitution' => array(
-                            $passwordBlock => array(
-                                '0' => array(
-                                    'WEBSITE_PASSWORD' => $websitePassword,
-                                    'WEBSITE_MAIL' => $websiteMail,
-                                    'WEBSITE_PASSWORD_URL' => $websitePasswordUrl,
-                                ),
-                            )
+                    $passwordBlock => array(
+                        '0' => array(
+                            'WEBSITE_PASSWORD' => $websitePassword,
+                            'WEBSITE_MAIL' => $websiteMail,
+                            'WEBSITE_PASSWORD_URL' => $websitePasswordUrl,
                         ),
-                    ))) {
+                    )
+                ),
+            );
+            //If $ftpAccountPassword is set, then add related entry to substitution
+            if (isset($ftpAccountPassword)) {
+                $info['substitution']['WEBSITE_FTP'] = array(
+                    '0' => array(
+                        'WEBSITE_DOMAIN'       => $websiteDomain,
+                        'WEBSITE_FTP_USER'     => $websiteName,
+                        'WEBSITE_FTP_PASSWORD' => $ftpAccountPassword
+                    )
+                );
+            }
+            \DBG::msg('Website: send notification email > CUSTOMER');
+            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($info)) {
             //  TODO: Implement proper error handler:
             //       removeWebsite() must not be called from within this method.
             //       Instead, in case the setup process fails, a proper exception must be thrown.
