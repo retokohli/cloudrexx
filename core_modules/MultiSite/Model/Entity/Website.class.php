@@ -499,7 +499,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         \Env::get('em')->flush();
 
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE) {
-            throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException('MultiSite mode was set to Website at the end of setup process. No E-Mail was sent to '.$this->owner->getEmail());
+            throw new WebsiteException('MultiSite mode was set to Website at the end of setup process. No E-Mail was sent to '.$this->owner->getEmail());
         }
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID
@@ -511,16 +511,19 @@ class Website extends \Cx\Model\Base\EntityBase {
             if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') == 'auto') {
                 \DBG::msg('Website: generate password for Cloudrexx user..');
                 $passwordBlock = 'WEBSITE_PASSWORD_AUTO';
-                $websitePassword    = self::generateAccountPassword();
+                $websitePassword = $this->generateAccountPassword();
             } else {
                 \DBG::msg('Website: generate reset password link for Cloudrexx user..');
                 $passwordBlock = 'WEBSITE_PASSWORD_INTERACTIVE';
-                $websitePasswordUrl = self::generatePasswordRestoreUrl();
+                $websitePasswordUrl = $this->generatePasswordRestoreUrl();
             }
+
+            \DBG::msg('Website: SETUP COMPLETED > OK');
 
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
             // send ADMIN mail
+            \DBG::msg('Website: send notification email > ADMIN');
             \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                 'section' => 'MultiSite',
                 'lang_id' => $langId,
@@ -544,6 +547,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                     '<subscription:trial / business>'),
             ));
             // send CUSTOMER mail
+            \DBG::msg('Website: send notification email > CUSTOMER');
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                 'section' => 'MultiSite',
                 'lang_id' => $langId,
@@ -566,14 +570,15 @@ class Website extends \Cx\Model\Base\EntityBase {
             //       Instead, in case the setup process fails, a proper exception must be thrown.
             //       Then the object that executed the setup() method must handle the exception
             //       and call the removeWebsite() method if required.
-                //$this->removeWebsite($websiteName);
                 throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException(array('object' => 'form', 'type' => 'success', 'message' => "Your website <a href='".ComponentController::getApiProtocol(). $websiteDomain/"'>$websiteDomain</a> has been build successfully. Unfortunately, we were unable to send you a message to the address <strong>$websiteMail</strong> with further instructions on how to proceed. Our helpdesk team will get in touch with you as soon as possible. We apologize for any inconvenience."));
             }
+            \DBG::msg('Website: SETUP COMPLETED > ALL DONE');
             return array(
                 'status' => 'success',
             );
         }
 
+        \DBG::msg('Website: send setup response to Manager..');
         return array(
             'status'      => 'success',
             'websiteIp'   => $websiteIp,
@@ -1278,7 +1283,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
         $newPassword = \User::make_password(8, true);
         $params = array(
             'userId' => $this->ownerId,
-            'multisite_user_account_password' => $newPassword
+            'multisite_user_password'           => $newPassword,
+            'multisite_user_password_confirmed' => $newPassword,
         );
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('updateUser', $params);
