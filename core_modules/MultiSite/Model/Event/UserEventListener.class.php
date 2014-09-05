@@ -134,13 +134,17 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $objUser->objAttribute->next();
         }
         //get user's other details
-        $arrUserDetails['multisite_user_username'] = $objUser->getUsername();
-        $arrUserDetails['multisite_user_email']    = $objUser->getEmail();
-        $arrUserDetails['multisite_user_frontend_language'] = $objUser->getFrontendLanguage();
-        $arrUserDetails['multisite_user_backend_language']  = $objUser->getBackendLanguage();
-        $arrUserDetails['multisite_user_email_access']      = $objUser->getEmailAccess();
-        $arrUserDetails['multisite_user_profile_access']    = $objUser->getProfileAccess();
-        $arrUserDetails['multisite_password']               = $objUser->getHashedPassword();
+        $params = array(
+            'userId'                                    => $objUser->getId(),
+            'multisite_user_profile_attribute'          => $arrUserDetails,
+            'multisite_user_account_username'           => $objUser->getUsername(),
+            'multisite_user_account_email'              => $objUser->getEmail(),
+            'multisite_user_account_frontend_language'  => $objUser->getFrontendLanguage(),
+            'multisite_user_account_backend_language'   => $objUser->getBackendLanguage(),
+            'multisite_user_account_email_access'       => $objUser->getEmailAccess(),
+            'multisite_user_account_profile_access'     => $objUser->getProfileAccess(),
+            'multisite_user_md5_password'               => $objUser->getHashedPassword(),
+        );
         try {
             $objJsonData = new \Cx\Core\Json\JsonData();
             switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
@@ -159,10 +163,6 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         $websiteServiceServer   = $webServerRepo->findOneBy(array('id' => $websiteServiceServerId));
                     
                         if ($websiteServiceServer) {
-                            $params = array(
-                                'userId'                           => $objUser->getId(),
-                                'multisite_user_profile_attribute' => $arrUserDetails,
-                            );
                             \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateUser', $params, $websiteServiceServer);
                         }
                     }
@@ -173,10 +173,6 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $websites  = $webRepo->findBy(array('ownerId' => $objUser->getId()));
                     foreach ($websites As $website) {
-                        $params = array(
-                            'userId'                           => $objUser->getId(),
-                            'multisite_user_profile_attribute' => $arrUserDetails,
-                        );
                         \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('updateUser', $params, $website);
                     }
                     break;

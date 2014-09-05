@@ -362,8 +362,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return  boolean     TRUE on success, FALSE on failure.
      */
     public function updateUser($params) {
-        $data = array();
+        if (empty($params['post'])) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'No data supplied',
+            ));
+        }
+
         $objFWUser = \FWUser::getFWUserObject();
+        $data = $params['post'];
         
         switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
@@ -392,21 +400,41 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             default:
                 break;
         }
-        if (isset($params['post']['multisite_user_profile_attribute'])) {
-            $data = $params['post']['multisite_user_profile_attribute'];
-        }
         
-        isset($data['multisite_user_username']) ? $objUser->setUsername(trim(contrexx_input2raw($data['multisite_user_username']))) : null;
-        $objUser->setEmail(isset($data['multisite_user_email']) ? trim(contrexx_input2raw($data['multisite_user_email'])) : (isset($params['post']['multisite_user_account_email']) ? trim(contrexx_input2raw($params['post']['multisite_user_account_email'])) : $objUser->getEmail()));
-        $currentLangId = $objUser->getFrontendLanguage();
-        $objUser->setFrontendLanguage(isset($data['multisite_user_frontend_language']) ? intval($data['multisite_user_frontend_language']) : $objUser->getFrontendLanguage());
-        $objUser->setBackendLanguage(isset($data['multisite_user_backend_language']) ? intval($data['multisite_user_backend_language']) : $objUser->getBackendLanguage());
-        $objUser->setEmailAccess(isset($data['multisite_user_email_access']) && $objUser->isAllowedToChangeEmailAccess() ? contrexx_input2raw($data['multisite_user_email_access']) : $objUser->getEmailAccess());
-        $objUser->setProfileAccess(isset($data['multisite_user_profile_access']) && $objUser->isAllowedToChangeProfileAccess() ? contrexx_input2raw($data['multisite_user_profile_access']) : $objUser->getProfileAccess());
-        isset($data['multisite_password']) ? $objUser->setHashedPassword(contrexx_input2raw($data['multisite_password'])) : null;
-        if (!empty($data['multisite_user_password']) || !empty($params['post']['multisite_user_account_password'])) {
-            $password = !empty($data['multisite_user_password']) ? trim(contrexx_stripslashes($data['multisite_user_password'])) : (!empty($params['post']['multisite_user_account_password']) ? trim(contrexx_stripslashes($params['post']['multisite_user_account_password'])) : '');
-            $confirmedPassword = !empty($data['multisite_user_password_confirmed']) ? trim(contrexx_stripslashes($data['multisite_user_password_confirmed'])) : (!empty($params['post']['multisite_user_account_password_confirmed']) ? trim(contrexx_stripslashes($params['post']['multisite_user_account_password_confirmed'])) : '');
+        // set account data
+        if (isset($data['multisite_user_account_username'])) {
+            $objUser->setUsername(trim(contrexx_input2raw($data['multisite_user_account_username'])));
+        }
+        if (isset($data['multisite_user_account_email'])) {
+            $objUser->setEmail(trim(contrexx_input2raw($data['multisite_user_account_email'])));
+        }
+        if (isset($data['multisite_user_account_frontend_language'])) {
+            $objUser->setFrontendLanguage(intval($data['multisite_user_account_frontend_language']));
+        }
+        if (isset($data['multisite_user_account_backend_language'])) {
+            $objUser->setBackendLanguage(intval($data['multisite_user_account_backend_language']));
+        }
+        if (isset($data['multisite_user_account_email_access']) && $objUser->isAllowedToChangeEmailAccess()) {
+            $objUser->setEmailAccess(contrexx_input2raw($data['multisite_user_account_email_access']));
+        }
+        if (isset($data['multisite_user_account_profile_access']) && $objUser->isAllowedToChangeProfileAccess()) {
+            $objUser->setProfileAccess(contrexx_input2raw($data['multisite_user_account_profile_access']));
+        }
+
+        // set profile data
+        if (isset($data['multisite_user_profile_attribute'])) {
+            $objUser->setProfile($data['multisite_user_profile_attribute']);
+        }
+
+        // set md5 hashed password
+        if (isset($data['multisite_user_md5_password'])) {
+            $objUser->setHashedPassword(contrexx_input2raw($data['multisite_user_md5_password']));
+        }
+
+        // set new plain text password
+        if (!empty($data['multisite_user_account_password'])) {
+            $password = contrexx_input2raw($data['multisite_user_account_password']);
+            $confirmedPassword = !empty($data['multisite_user_account_password_confirmed']) ? contrexx_input2raw($data['multisite_user_account_password_confirmed']) : '';
             if (!$objUser->setPassword($password, $confirmedPassword)) {
                 \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
                 throw new MultiSiteJsonException(array(
@@ -416,8 +444,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 ));
             }
         }
-        
-        $objUser->setProfile($data);
+
         if (!$objUser->store()) {
             \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
             throw new MultiSiteJsonException(array(

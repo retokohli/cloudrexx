@@ -508,6 +508,8 @@ class Website extends \Cx\Model\Base\EntityBase {
             $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
 
             // set user account password
+            $websitePassword = '';
+            $websitePasswordUrl = '';
             if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') == 'auto') {
                 \DBG::msg('Website: generate password for Cloudrexx user..');
                 $passwordBlock = 'WEBSITE_PASSWORD_AUTO';
@@ -1283,8 +1285,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
         $newPassword = \User::make_password(8, true);
         $params = array(
             'userId' => $this->ownerId,
-            'multisite_user_password'           => $newPassword,
-            'multisite_user_password_confirmed' => $newPassword,
+            'multisite_user_account_password'           => $newPassword,
+            'multisite_user_account_password_confirmed' => $newPassword,
         );
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('updateUser', $params);
