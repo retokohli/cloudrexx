@@ -1253,7 +1253,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $objDatabase;
         
         if (empty($params['post']['langId'])) {
-            return;
+            throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: Updating Language status.');
         }
         
         try {
@@ -1272,6 +1272,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             //set the lang($params['post']['langId']) as default
             $activateQuery = \SQL::update('languages', array('backend' => 1, 'frontend' => 1, 'is_default' => 'true'), array('escape' => true)) . ' WHERE `id` = ' . $params['post']['langId'];
             $objDatabase->Execute($activateQuery);
+            return array('status' => 'success');
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: Updating Language status.' . $e->getMessage());
         }
