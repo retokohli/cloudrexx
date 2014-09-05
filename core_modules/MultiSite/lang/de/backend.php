@@ -14,6 +14,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS'] = 'Einstellungen';
 
 // Sign up interface
 $_ARRAYLANG['TXT_MULTISITE_TITLE']='Erstellen Sie jetzt Ihre eigene Website';
+$_ARRAYLANG['TXT_MULTISITE_CLOSE']='Schliessen';
 $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS']='E-Mail Adresse';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS']='Website Adresse';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME']='Der Name darf nur aus Kleinbuchstaben (a-z) und Zahlen bestehen und muss eine Länge zwischen %1$s und %2$s Zeichen aufweisen.';

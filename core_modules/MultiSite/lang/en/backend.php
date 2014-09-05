@@ -82,6 +82,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_CODEBASES'] = 'Code Bases';
 
 // Sign up interface
 $_ARRAYLANG['TXT_MULTISITE_TITLE']='Get started with your own website now';
+$_ARRAYLANG['TXT_MULTISITE_CLOSE']='Close';
 $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS']='Email Address';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS']='Site Address';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME']='The name must contain only lowercase letters (a-z) and numbers and must be at least %1$s characters, but no longer than %2$s characters.';
