@@ -1018,8 +1018,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $license->setAvailableComponents($params['post']['legalComponents']);
                         $license->setLegalComponents($params['post']['legalComponents']);
                     }
-                    if($license->save($objDatabase)) {
+                    try {
+                        $license->save($objDatabase);
                         return array('status' => 'success');
+                    } catch (\Exception $e) {
+                        throw new MultiSiteJsonException('Unable to save the setup license'.$e->getMessage());
                     }
                     break;
             }
