@@ -61,10 +61,7 @@ class YamlEngine extends Engine{
         self::$section = $section;
         self::$group = $group;
         self::$filename =  $configRepository . '/'.$section.'.yml';
-        
-        if (!isset(self::$yamlSettingRepo)) {
-            self::$yamlSettingRepo = new \Cx\Core\Setting\Model\Repository\YamlSettingRepository(self::$filename);
-        }
+        self::$yamlSettingRepo = new \Cx\Core\Setting\Model\Repository\YamlSettingRepository(self::$filename);
         self::$arrSettings = self::load();
     }
 
