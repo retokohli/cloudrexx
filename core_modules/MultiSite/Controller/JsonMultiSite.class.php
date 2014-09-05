@@ -249,6 +249,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             ),
                         ));
                     }
+                    \DBG::msg($e->getMessage());
                     throw new MultiSiteJsonException(array(
                         'object' => 'form',
                         'type'      => 'danger',
@@ -310,7 +311,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
     public function createUser($params) {
         if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+            if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+                \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+            }
         }
         if (empty($params['post'])) {
             throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::createUser.');
@@ -359,9 +362,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return  boolean     TRUE on success, FALSE on failure.
      */
     public function updateUser($params) {
+        $data = array();
         $objFWUser = \FWUser::getFWUserObject();
         
         switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                 $objUser = $objFWUser->objUser->getUser(intval($params['post']['userId']));
@@ -387,7 +392,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             default:
                 break;
         }
-        $data = $params['post']['multisite_user_profile_attribute'];
+        if (isset($params['post']['multisite_user_profile_attribute'])) {
+            $data = $params['post']['multisite_user_profile_attribute'];
+        }
         
         isset($data['multisite_user_username']) ? $objUser->setUsername(trim(contrexx_input2raw($data['multisite_user_username']))) : null;
         $objUser->setEmail(isset($data['multisite_user_email']) ? trim(contrexx_input2raw($data['multisite_user_email'])) : (isset($params['post']['multisite_user_account_email']) ? trim(contrexx_input2raw($params['post']['multisite_user_account_email'])) : $objUser->getEmail()));
@@ -1047,10 +1054,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
         }
-// TODO: test if the following works
-        /*if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
-            return self::$command(array('post' => $params));
-        }*/
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
+\DBG::msg('JsonMultiSite: execut directly on manager');
+            $config = \Env::get('config');
+            $params['auth'] = json_encode(array('sender' => $config['domainUrl']));
+            try {
+                $objJsonMultiSite = new self();
+                $result = $objJsonMultiSite->$command(array('post' => $params));
+                // Convert $result (which is an array) into an object
+                // as JsonData->getJson (called by self::executeCommand())
+                // would do/return that.
+                return json_decode(json_encode(array('status' => 'success', 'data' => $result)));
+            } catch (\Exception $e) {
+                throw new MultiSiteJsonException($e->getMessage());
+            }
+        }
         $host = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
         $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
         $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
