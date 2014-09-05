@@ -125,7 +125,7 @@ class TestCommand extends Command {
 
         define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
                     
-        $command = new \PHPUnit_TextUI_Command;
+        $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();
         foreach ($this->testingFolders as $testingFolder) {
             $_SERVER['argv'] = $argv = array(
                 $phpUnitTestPath,
