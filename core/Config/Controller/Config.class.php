@@ -71,10 +71,18 @@ class Config
      */
     protected function checkFtpAccess() {
         global $_ARRAYLANG;
+
+        // Only check FTP access if SystemInfo has been licensed.
+        // SystemInfo is a component that allows access to the webserver.
+        // SystemInfo should only be licensed if the website is run on a self-hosted environment
+        if (!in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+            return;
+        }
+
         // if ftp access is not activated or not possible to connect (not correct credentials)
         if(!\Cx\Lib\FileSystem\FileSystem::init()) {
             \Message::add(sprintf($_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'], \Env::get('cx')->getWebsiteDocumentRootPath() . '/config/configuration.php'), \Message::CLASS_ERROR);
-            }
+        }
     }
 
     private function checkWritePermissions() {
@@ -265,7 +273,10 @@ class Config
 
 
         // show also hidden settins
-        if (isset($_GET['all'])) {
+        if (   in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())
+            && \Permission::hasAllAccess()
+            && isset($_GET['all'])
+        ) {
             \Cx\Core\Setting\Controller\Setting::init('Config', 'core', 'Yaml');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
