@@ -74,8 +74,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getDefaultWebsiteIp'   => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setDefaultLanguage'    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'resetFtpPassword'      => \Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_WEBSITE ? 
-                                        new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'IsWebsiteOwner')) :
-                                        (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_SERVICE ? 
+                                        new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkResetFtpPasswordAccess')) :
+                                        (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_SERVICE ||
+                                            \Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_HYBRID ? 
                                                 new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')) : '')
         );  
     }
@@ -1283,7 +1284,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return boolean
      */
-    public function IsWebsiteOwner() {
+    public function isWebsiteOwner() {
         if (\FWUser::getFWUserObject()->objUser->getId() == \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId')) {
             return true;
         }
@@ -1299,15 +1300,23 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException
      */
     public function resetFtpPassword($params) {
+        // load text-variables of module MultiSite
+        global $_ARRAYLANG, $objInit;
+        
+        //load language file 
+        $langData = $objInit->loadLanguageData('MultiSite');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_WEBSITE:
                     $response = self::executeCommandOnMyServiceServer('resetFtpPassword', array());
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return array('status' => 'success', 'message' => 'Your FTP password has been reset successfully.', 'password' => $response->data->password);
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_MSG'], 'password' => $response->data->password);
                     }
                     break;
                 case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:
                     $authenticationValue = json_decode($params['post']['auth'], true);
                     if (empty($authenticationValue) || !is_array($authenticationValue)) {
                         \DBG::dump($params);
@@ -1333,9 +1342,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
 
-            return array('status' => 'failed', 'message' => 'Resetting your FTP password failed! Try again.');
+            return array('status' => 'failed', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG']);
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Updating FTP password.' . $e->getMessage());
         }
+    }
+    
+    /**
+     * Check the Authentication access for resetting the FTP password
+     * 
+     * @return boolean
+     */
+    public function checkResetFtpPasswordAccess() {
+        if ($this->isWebsiteOwner()) {
+            return true;
+        }
+        return false;
     }
 }

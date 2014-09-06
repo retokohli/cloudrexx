@@ -106,6 +106,11 @@ class Website extends \Cx\Model\Base\EntityBase {
      */
     private $domains;
     
+    /**
+     * @var string $ftpUser
+     */
+    private $ftpUser;
+    
     /*
      * Constructor
      * */
@@ -400,6 +405,25 @@ class Website extends \Cx\Model\Base\EntityBase {
     {
         return $this->installationId;
     }
+    
+    /**
+     * Set the FTP user name
+     * 
+     * @param string $ftpUser
+     */
+    public function setFtpUser($ftpUser) {
+        $this->ftpUser = $ftpUser;
+    }
+    
+    /**
+     * Get the FTP user name
+     * 
+     * @return string
+     */
+    public function getFtpUser() {
+        return $this->ftpUser;
+    }
+    
     /**
      * Creates a new website
      */
@@ -495,6 +519,11 @@ class Website extends \Cx\Model\Base\EntityBase {
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
         }
 
+        //set ftp user name if ftp not empty
+        if (!empty($ftpAccountPassword)) {
+            $this->ftpUser = $websiteName;
+        }
+        
         \Env::get('em')->persist($this);
         \Env::get('em')->flush();
 
@@ -825,6 +854,11 @@ class Website extends \Cx\Model\Base\EntityBase {
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteState', $this->status, 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::STATE_ONLINE.':'.self::STATE_ONLINE.','.self::STATE_OFFLINE.':'.self::STATE_OFFLINE.','.self::STATE_INIT.':'.self::STATE_INIT.','.self::STATE_SETUP.':'.self::STATE_SETUP, 'website')){
                     throw new \Exception("Failed to add website entry for website state");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteName') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteName', $this->name, 9,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
+                    throw new \Exception("Failed to add website entry for website name");
             }
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation

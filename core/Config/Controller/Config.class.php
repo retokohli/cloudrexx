@@ -1469,10 +1469,15 @@ class Config
         $this->strPageTitle = $_ARRAYLANG['TXT_SETTINGS_FTP'];
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_ftp', 'settings_ftp.html');
         
-        $websiteName = explode('.', $_CONFIG['domainUrl']);
+        //get the ftp server name
+        $domainRepo  = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
+        $objDomain   = $domainRepo->findOneBy(array('id' => 0));
+        //get the ftp user name
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
+        $ftpUserName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
         $objTemplate->setVariable(array(
-            'FTP_SERVER_NAME'   => 'ftps://' . $_CONFIG['domainUrl'],
-            'FTP_USER_NAME'     => $websiteName[0],
+            'FTP_SERVER_NAME'   => 'ftps://' . $objDomain->getName(),
+            'FTP_USER_NAME'     => $ftpUserName,
         ));
         
         $objTemplate->setVariable(array(

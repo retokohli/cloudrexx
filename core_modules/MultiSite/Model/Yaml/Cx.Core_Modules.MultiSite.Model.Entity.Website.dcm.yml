@@ -35,6 +35,9 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
     installationId:
       type: string
       length: 40  
+    ftpUser:
+      type: string
+      length: 200
       
   manyToMany:
     # unidirectional association
