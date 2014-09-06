@@ -1250,7 +1250,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $objDatabase;
         
         if (empty($params['post']['langId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: Updating Language status.');
+            throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: No language specified.');
         }
         
         try {
