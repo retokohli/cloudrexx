@@ -1,7 +1,6 @@
 <?php
-include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
-class ValidationTest extends DoctrineTestCase
+class ValidationTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     /**
      * @expectedException \Cx\Model\Base\ValidationException

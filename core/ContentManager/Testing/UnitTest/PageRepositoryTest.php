@@ -1,9 +1,7 @@
 <?php
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
-include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
-
-class PageRepositoryTest extends DoctrineTestCase
+class PageRepositoryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     public function testTreeByTitle() {
         $repo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');

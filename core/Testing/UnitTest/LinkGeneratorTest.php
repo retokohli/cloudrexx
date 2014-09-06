@@ -1,10 +1,9 @@
 <?php
 //those tests were broken by making all methods static and introducing constants to the code.
 //left below for reference purposes.
-include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 /* include_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php'); */
 
-class LinkGeneratorTest extends DoctrineTestCase {
+class LinkGeneratorTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     public function testDummyTestToAvoidPHPUnitWarning() {
     }
 /*     protected $nodeId; */
