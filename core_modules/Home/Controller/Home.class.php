@@ -138,7 +138,22 @@ class Home {
         if ($message && strlen($message->getText()) && $message->showInDashboard()) {
             $licenseManager = new \Cx\Core_Modules\License\LicenseManager('', null, $_CORELANG, $_CONFIG, $objDatabase);
             $objTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($licenseManager->getReplacedMessageText($message)));
-            $objTemplate->setVariable('MESSAGE_TYPE', contrexx_raw2xhtml($message->getType()));
+            $licenseType = $message->getType();
+            switch ($licenseType) {
+                case '--this case is not defined by license --':
+                    $bsCalloutType = 'danger';
+                    break;
+
+                case 'alertbox':
+                    $bsCalloutType = 'warning';
+                    break;
+
+                case 'okbox':
+                default:
+                    $bsCalloutType = 'info';
+                    break;
+            }
+            $objTemplate->setVariable('MESSAGE_TYPE', $bsCalloutType);
             $objTemplate->setVariable('MESSAGE_LINK', contrexx_raw2xhtml($message->getLink()));
             $objTemplate->setVariable('MESSAGE_LINK_TARGET', contrexx_raw2xhtml($message->getLinkTarget()));
         }
@@ -181,10 +196,19 @@ class Home {
         $objRss->parse();
         $arrItems = $objRss->getItems();
         if (!empty($arrItems) && ($_CONFIG['dashboardNews'] == 'on')) {
-            $objTemplate->setVariable(array(
-                'NEWS_TITLE' => $arrItems[0]['title'],
-                'NEWS_LINK'  => $arrItems[0]['link'],
-            ));
+            if (empty($arrItems[0]['description'])) {
+                $objTemplate->setVariable(array(
+                    'NEWS_CONTENT'  => $arrItems[0]['title'],
+                    'NEWS_LINK'     => $arrItems[0]['link'],
+                ));
+                $objTemplate->hideBlock('news_title');
+            } else {
+                $objTemplate->setVariable(array(
+                    'NEWS_TITLE'    => $arrItems[0]['title'],
+                    'NEWS_CONTENT'  => $arrItems[0]['description'],
+                    'NEWS_LINK'     => $arrItems[0]['link'],
+                ));
+            }
             $objTemplate->parse('news');
         } else {
             $objTemplate->hideBlock('news');

@@ -1597,3 +1597,51 @@ a.cke_dialog_ui_button_ok:hover {
 #configSettingsTabs tr td input[type="radio"]:first-child{
     margin:3px 3px 3px -1px;
 }
+
+
+/* Base styles (regardless of theme) */
+.bs-callout {
+    margin: 20px 0;
+    padding: 15px 30px 15px 15px;
+    border: 1px solid #eee;
+    border-left: 3px solid #eee;
+}
+.bs-callout h4 {
+    margin-top: 0;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code,
+.bs-callout .highlight {
+    background-color: #fff;
+}
+#dashboard .bs-callout {
+    padding-right: 15px;
+    margin: 0 0 15px 0;
+}
+/* Themes for different contexts */
+.bs-callout-danger {
+    border-left-color: #b94a48;
+}
+.bs-callout-warning {
+    border-left-color: #da7a0c;
+}
+.bs-callout-info {
+    border-left-color: #0a85c8;
+}
+.bs-callout-danger h4,
+.bs-callout-danger a.alert-link {
+    color: #b94a48;
+}
+.bs-callout-warning h4,
+.bs-callout-warning a.alert-link {
+    color: #da7a0c;
+}
+.bs-callout-info h4,
+.bs-callout-info a.alert-link {
+    color: #0a85c8;
+}
+.bs-callout a.alert-link {
+    font-weight: bold;
+}

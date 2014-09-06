@@ -104,7 +104,7 @@ $J(document).ready(function() {
 
 <div id="dashboard">
     <!-- BEGIN message -->
-    <div id="license_message" class="upgrade {MESSAGE_TYPE}">
+    <div class="bs-callout bs-callout-{MESSAGE_TYPE}">
         <a href="{MESSAGE_LINK}" target="{MESSAGE_LINK_TARGET}">
             {MESSAGE_TITLE}
         </a>
@@ -112,13 +112,18 @@ $J(document).ready(function() {
     <!-- END message -->
     
     <!-- BEGIN news -->
-    <div id="news_message" class="news infobox">
+    <div class="bs-callout bs-callout-info">
         <a href="{NEWS_LINK}" target="_blank">
-            {NEWS_TITLE}
+            <!-- BEGIN news_delete -->
+            <span id="news_delete" class="close">&times;</span>
+            <!-- END news_delete -->
+            <!-- BEGIN news_title -->
+            <h4>{NEWS_TITLE}</h4>
+            <!-- END news_title -->
+            <!-- BEGIN news_content -->
+            {NEWS_CONTENT}
+            <!-- END news_content -->
         </a>
-        <!-- BEGIN news_delete -->
-        <span id="news_delete" class="close">&times;</span>
-        <!-- END news_delete -->
     </div>
     <!-- END news -->
     
