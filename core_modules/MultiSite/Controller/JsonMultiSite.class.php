@@ -73,11 +73,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setupConfig'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getDefaultWebsiteIp'   => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setDefaultLanguage'    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'resetFtpPassword'      => \Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_WEBSITE ? 
-                                        new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkResetFtpPasswordAccess')) :
-                                        (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_SERVICE ||
-                                            \Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_HYBRID ? 
-                                                new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')) : '')
+            'resetFtpPassword'      => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkResetFtpPasswordAccess'))
         );  
     }
 
@@ -1285,6 +1281,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function isWebsiteOwner() {
+        //check user logged in or not
+        if (!\FWUser::getFWUserObject()->objUser->login()) {
+            return false;
+        }
+        
+        //Check the user is website owner or not
         if (\FWUser::getFWUserObject()->objUser->getId() == \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId')) {
             return true;
         }
@@ -1353,9 +1355,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return boolean
      */
-    public function checkResetFtpPasswordAccess() {
-        if ($this->isWebsiteOwner()) {
-            return true;
+    public function checkResetFtpPasswordAccess($params) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case ComponentController::MODE_WEBSITE:
+                if ($this->isWebsiteOwner()) {
+                    return true;
+                }
+                break;
+            case ComponentController::MODE_SERVICE:
+            case ComponentController::MODE_HYBRID:
+                if ($this->auth($params)) {
+                    return true;
+                }
+                break;
         }
         return false;
     }
