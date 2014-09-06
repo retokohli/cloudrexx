@@ -65,7 +65,7 @@ class Media extends MediaLibrary
                                     'Media2' => ASCMS_MEDIA2_WEB_PATH . '/',
                                     'Media3' => ASCMS_MEDIA3_WEB_PATH . '/',
                                     'Media4' => ASCMS_MEDIA4_WEB_PATH . '/');
-        $this->docRoot = ASCMS_PATH;
+        $this->docRoot = \Env::get('cx')->getWebsitePath();
 
         // sigma template
         $this->pageContent = $pageContent;
@@ -110,7 +110,7 @@ class Media extends MediaLibrary
     {
         global $_ARRAYLANG, $template;
         $this->webPath = $this->getWebPath($this->arrWebPaths[$this->archive]);
-        $this->path = ASCMS_PATH.$this->webPath;
+        $this->path = \Env::get('cx')->getWebsitePath().$this->webPath;
         $this->getCmd = !empty($_GET['cmd']) ? '&amp;cmd='.htmlentities($_GET['cmd'], ENT_QUOTES, CONTREXX_CHARSET) : '';
 
         $this->_overviewMedia();
