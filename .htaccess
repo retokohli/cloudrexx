@@ -19,7 +19,7 @@
 
     # MultiSite: Map requests to CONTENT DATA of a Website
     RewriteCond %{ENV:REDIRECT_END} !1
-    RewriteCond %{REQUEST_URI} ^/(media|images)/
+    RewriteCond %{REQUEST_URI} ^/(feed|media|images)/
     RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}}/$1 [L,QSA,E=END:1]
 
     # MultiSite: Try to map the request of a webdesign template file to the
