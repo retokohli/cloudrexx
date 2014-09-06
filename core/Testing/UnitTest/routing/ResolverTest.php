@@ -1,10 +1,8 @@
 <?php
-include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
-
 use Cx\Core\Routing\Resolver as Resolver;
 use Cx\Core\Routing\Url as Url;
 
-class ResolverTest extends DoctrineTestCase
+class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     protected $mockFallbackLanguages = array(
         1 => 2,

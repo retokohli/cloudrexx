@@ -1,7 +1,6 @@
 <?php
-include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
-class NodeTest extends DoctrineTestCase
+class NodeTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     public function testPagesByLang() {
         $root = new \Cx\Core\ContentManager\Model\Entity\Node();

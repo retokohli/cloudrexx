@@ -1,7 +1,6 @@
 <?php
-include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
-class PageTest extends DoctrineTestCase
+class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     public function testValidation() {
         $rootNode = new \Cx\Core\ContentManager\Model\Entity\Node();

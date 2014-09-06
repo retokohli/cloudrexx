@@ -1,9 +1,7 @@
 <?php
 use \Cx\Core\Json\Adapter\Block\JsonBlock as JsonBlock;
 
-include_once(ASCMS_TEST_PATH.'/testCases/ContrexxTestCase.php');
-
-class BlockTest extends \ContrexxTestCase {
+class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     /**
      * @covers JsonBlock::getBlockContent
      * @expectedException \Cx\Core\Json\Adapter\Block\NoPermissionException

@@ -1,7 +1,6 @@
 <?php
-include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
-class PageEventListenerTest extends DoctrineTestCase
+class PageEventListenerTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     public function testUniqueSlugGeneration() {
         $root = new \Cx\Core\ContentManager\Model\Entity\Node();
