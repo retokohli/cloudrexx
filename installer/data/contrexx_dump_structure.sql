@@ -380,6 +380,7 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `ipAddress` varchar(45) NOT NULL,
   `ownerId` int(11) NOT NULL,
   `installationId` varchar(40) NOT NULL,
+  `ftpUser` varchar(200) default NULL,
   PRIMARY KEY  (`id`),
   KEY `name_index` (`name`)
 ) ENGINE=InnoDB;
