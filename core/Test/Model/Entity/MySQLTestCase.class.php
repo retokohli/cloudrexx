@@ -1,6 +1,26 @@
 <?php
-require_once('ContrexxTestCase.php');
 
+/**
+ * MySQLTestCase
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @author      ss4u <ss4u.comvation@gmail.com>
+ * @package     contrexx
+ * @subpackage  core_test
+ */
+
+namespace Cx\Core\Test\Model\Entity;
+
+/**
+ * MySQLTestCase
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @author      ss4u <ss4u.comvation@gmail.com>
+ * @package     contrexx
+ * @subpackage  core_test
+ */
 class MySQLTestCase extends ContrexxTestCase {
     protected static $database;
 
