@@ -135,7 +135,7 @@ class Home {
         }
         $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
         $message = $license->getMessage(true, \FWLanguage::getLanguageCodeById(BACKEND_LANG_ID), $_CORELANG);
-        if ($message && strlen($message->getText()) && $message->showInDashboard()) {
+        if ($message instanceof \Cx\Core_Modules\License\Message && strlen($message->getText()) && $message->showInDashboard()) {
             $licenseManager = new \Cx\Core_Modules\License\LicenseManager('', null, $_CORELANG, $_CONFIG, $objDatabase);
             $objTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($licenseManager->getReplacedMessageText($message)));
             $licenseType = $message->getType();
@@ -192,7 +192,7 @@ class Home {
             $objTemplate->hideBlock('stats_javascript');
         }
 
-        $objRss = new \XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml?version=' . $_CONFIG['coreCmsVersion']);
+        $objRss = new \XML_RSS($_CONFIG['dashboardNewsSrc'] . '?version=' . $_CONFIG['coreCmsVersion']);
         $objRss->parse();
         $arrItems = $objRss->getItems();
         if (!empty($arrItems) && ($_CONFIG['dashboardNews'] == 'on')) {
