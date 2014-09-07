@@ -1,70 +1,131 @@
-jQuery(document).ready(function() {
-    function registerFormHandlers() {
-        jQuery("#multisite_signup_form").submit(submitHandler);
-        jQuery('#multisite_email_address').bind('change', verifyEmail);
-        jQuery('#multisite_address').bind('change', verifyAddress);
+function cx_multisite_signup(options) {
+    var options = options;
+    var ongoingRequest = false;
+    var ongoingSetup = false;
+    var submitRequested = false;
+    var signUpForm;
+    var objModal;
+    var objMail;
+    var objAddress;
+    var objTerms;
+
+    function initSignUpForm() {
+        signUpForm = jQuery('#multisite_signup_form');
+        objModal = signUpForm.parents('.modal');
+        objModal.on('show.bs.modal', init);
+        objModal.find('.multisite_cancel').on('click', cancelSetup);
+
+        signUpForm.submit(submitForm);
+
+        objMail = objModal.find('#multisite_email_address');
+        objMail.bind('change', verifyEmail);
+
+        objAddress = objModal.find('#multisite_address');
+        objAddress.bind('change', verifyAddress);
+
+        objTerms = objModal.find('#multisite_terms');
+        objTerms.bind('change', verifyTerms);
+
+        objModal.find('.multisite_submit').on('click', submitForm);
+
+        init();
+    }
+
+    function cancelSetup() {
+        ongoingRequest = false;
+        ongoingSetup = false;
+        submitRequested = false;
+    }
+
+    function init() {
+        if (ongoingRequest) {
+            return;
+        }
+
+        if (typeof(cx_multisite_options) != 'undefined') {
+            options = cx_multisite_options;
+        }
+
+        setFormHeader(options.headerInitTxt);
+        hideProgress();
+        showForm();
+
+        clearFormStatus();
+
+        if (typeof(options.email) == 'string' && !objMail.val()) {
+            objMail.val(options.email);
+        }
+        //objMail.data('valid', false);
+        objMail.data('verifyUrl', options.emailUrl);
+        objMail.change();
+
+        if (typeof(options.address) == 'string' && !objAddress.val()) {
+            objAddress.val(options.address);
+        }
+        //objAddress.data('valid', false);
+        objAddress.data('verifyUrl', options.addressUrl);
+        objAddress.change();
+
+        //objTerms.data('valid', false);
+        objTerms.change();
+
+        setFormButtonState('close', false);
+        setFormButtonState('cancel', true, true);
+        setFormButtonState('submit', true, false);
     }
 
     function verifyEmail() {
-        jQuery('#multisite_email_address').next('.alert').remove();
-
-        if (!this.checkValidity()) {
-            return;
-        }
-
-        jQuery.ajax({
-            dataType: "json",
-            url: cx_multisite.emailUrl,
-            data: {multisite_email_address : jQuery(this).val()},
-            type: "POST",
-            success: parseResponse
-        });
+        verifyInput(this, {multisite_email_address : jQuery(this).val()});
     }
 
     function verifyAddress() {
-        jQuery('.multisite-address').next('.alert').remove();
+        verifyInput(this, {multisite_address : jQuery(this).val()});
+    }
 
-        if (!this.checkValidity()) {
+    function verifyTerms() {
+        verifyInput(this);
+    }
+
+    function verifyInput(domElement, data) {
+        jQuery(domElement).next('.alert').remove();
+
+        jQuery(domElement).data('valid', false);
+        if (!domElement.checkValidity()) {
+            verifyForm();
             return;
         }
 
-        jQuery.ajax({
-            dataType: "json",
-            url: cx_multisite.addressUrl,
-            data: {multisite_address : jQuery(this).val()},
-            type: "POST",
-            success: parseResponse
-        });
-    }
+        jQuery(domElement).prop('disabled', true);
 
-    function submitHandler() {
-        try {
-            cx_multisite.signUpForm = this;
+        if (jQuery(domElement).data('verifyUrl')) {
             jQuery.ajax({
                 dataType: "json",
-                url: cx_multisite.signUpUrl,
-                data: {
-                    multisite_email_address : jQuery(this).find("#multisite_email_address").val(),
-                    multisite_address : jQuery(this).find("#multisite_address").val()
-                },
+                url: jQuery(domElement).data('verifyUrl'),
+                data: data,
                 type: "POST",
-                beforeSend: function(){
-                    // show progress screen
-                    jQuery(cx_multisite.signUpForm).find('.multisite-status').find('.alert').remove();
-                    jQuery(cx_multisite.signUpForm).find('.multisite-form').find('.alert').remove();
-                    jQuery('.multisite-status').hide();
-                    jQuery(cx_multisite.signUpForm).find('.modal-header').hide();
-                    jQuery(cx_multisite.signUpForm).find('.multisite-form').hide();
-                    jQuery(cx_multisite.signUpForm).find('.multisite-progress').show();
-                    jQuery(cx_multisite.signUpForm).find('.modal-footer').hide();
-                },
-                success: parseResponse,
-                error: function(response, statusMessage, error) {
-// TODO: replace statusMessage by a generic error message with guidance on how to contact the helpdesk
-                    message = 'Unfortunately, the build process of your website failed.';
-                    setMessage(statusMessage, 'danger');
-                }
+                success: function(response){parseResponse(response, domElement);}
             });
+        } else {
+            parseResponse({status:'success',data:{status:'success'}}, domElement);
+        }
+    }
+
+    function verifyForm() {
+        setFormButtonState('submit', true, isFormValid());
+    }
+
+    function submitForm() {
+        try {
+            if (!isFormValid()) {
+                return;
+            }
+
+            if (submitRequested) {
+                return;
+            }
+            //signUpForm.find(':input').prop('disabled', true);
+            submitRequested = true;
+            callSignUp();
         } catch (e) {}
 
         // always return false. We don't want to form to get actually submitted
@@ -72,13 +133,90 @@ jQuery(document).ready(function() {
         return false;
     }
 
-    function parseResponse(response) {
-        jQuery(cx_multisite.signUpForm).find('.multisite-progress').hide();
+    function isFormValid() {
+        return (   objMail.data('valid')
+                && objAddress.data('valid')
+                && objTerms.data('valid'));
+    }
 
-        if (!response.message && !response.data) return;
+    function setFormHeader(headerTxt) {
+        objModal.find('.modal-header .modal-title').html(headerTxt);
+    }
 
+    function setFormButtonState(btnName, show, active) {
+        btn = objModal.find('.multisite_' + btnName);
+        show ? btn.show() : btn.hide();
+        btn.prop('disabled', !active);
+    }
+    
+    function callSignUp() {
+        try {
+            ongoingRequest = true;
+            setFormButtonState('close', false, false);
+            setFormButtonState('cancel', true, true);
+            setFormButtonState('submit', false, false);
+            setFormHeader(options.headerSetupTxt);
+
+            hideForm();
+            showProgress();
+
+            jQuery.ajax({
+                dataType: "json",
+                url: options.signUpUrl,
+                data: {
+                    multisite_email_address : objMail.val(),
+                    multisite_address : objAddress.val()
+                },
+                type: "POST",
+                success: function(response){parseResponse(response, null);},
+                error: function(response, statusMessage, error) {
+                    showSystemError();
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    function parseResponse(response, objCaller) {
+        hideProgress();
+
+        if (!response.status) {
+            showSystemError();
+            return;
+        }
+
+        // handle form validation
+        if (objCaller) {
+            jQuery(objCaller).prop('disabled', false);
+
+            // fetch verification state of form element
+            if (response.status == 'success') {
+                jQuery(objCaller).data('valid', true);
+            } else {
+                jQuery(objCaller).data('valid', false);
+                type = 'danger';
+                message = response.message;
+                if (typeof(response.message) == 'object') {
+                    message = typeof(response.message.message) != null ? response.message.message : null;
+                    type = typeof(response.message.type) != null ? response.message.type : null;
+                }
+                jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(jQuery(objCaller));
+            }
+            verifyForm();
+
+            return;
+        }
+
+        // handle signup
         switch (response.status) {
             case 'success':
+                // this is a workaround for 
+                if (!response.message && !response.data) {
+                    showSystemError();
+                    return;
+                }
+
                 message = response.data.message;
                 setMessage(message, 'success');
                 break;
@@ -93,8 +231,6 @@ jQuery(document).ready(function() {
                     errorMessage = typeof(response.message.message) != null ? response.message.message : null;
                     errorType = typeof(response.message.type) != null ? response.message.type : null;
                 }
-                jQuery(cx_multisite.signUpForm).find('.multisite-form').show();
-                jQuery(cx_multisite.signUpForm).find('.modal-footer').show();
                 setMessage(errorMessage, errorType, errorObject);
                 break;
         }
@@ -102,32 +238,71 @@ jQuery(document).ready(function() {
 
     function setMessage(message, type, errorObject) {
         if (!type) type = 'info';
+        objElement = null;
 
         switch (errorObject) {
             case 'email':
-                jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(jQuery('#multisite_email_address'));
-                break;
-
+                objElement = objMail;
             case 'address':
-                jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(jQuery('.multisite-address'));
+                if (!objElement) objElement = objAddress;
+
+                setFormHeader(options.headerInitTxt);
+                setFormButtonState('close', false);
+                setFormButtonState('cancel', true, true);
+                setFormButtonState('submit', true, false);
+                hideProgress();
+                showForm();
+                jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(objElement);
+                objElement.data('valid', false);
+                cancelSetup();
                 break;
 
             case 'form':
-                jQuery(cx_multisite.signUpForm).find('.modal-header').hide();
-                jQuery(cx_multisite.signUpForm).find('.multisite-form').hide();
-                jQuery(cx_multisite.signUpForm).find('.modal-footer').hide();
-                jQuery('.multisite-status').children().remove();
-                jQuery('.multisite-status').append('<div class="alert alert-' + type + '" role="alert">' + message + '</div>');
-                jQuery('.multisite-status').show();
-                break;
-
             default:
-                jQuery('.multisite-status').children().remove();
-                jQuery('.multisite-status').append('<div class="alert alert-' + type + '" role="alert">' + message + '</div>');
-                jQuery('.multisite-status').show();
+                setFormHeader(options.headerErrorTxt);
+                setFormButtonState('close', false);
+                setFormButtonState('cancel', true, true);
+                setFormButtonState('submit', false);
+                hideForm();
+                hideProgress();
+                setFormStatus(type, message);
+                cancelSetup();
                 break;
         }
     }
 
-    registerFormHandlers();
-});
+    function showSystemError() {
+        setMessage(options.messageErrorTxt, 'danger');
+    }
+
+    function showForm() {
+        objModal.find('.multisite-form').show();
+    }
+
+    function hideForm() {
+        objModal.find('.multisite-form').hide();
+    }
+
+    function showProgress() {
+        objModal.find('.multisite-progress').show();
+    }
+
+    function hideProgress() {
+        objModal.find('.multisite-progress').hide();
+    }
+
+    function clearFormStatus() {
+        objModal.find('.multisite-status').hide();
+        objModal.find('.multisite-status').children().remove();
+    }
+
+    function setFormStatus(type, message) {
+        clearFormStatus();
+        objModal.find('.multisite-status').append('<div class="alert alert-' + type + '" role="alert">' + message + '</div>');
+        objModal.find('.multisite-status').show();
+    }
+
+    initSignUpForm();
+}
+
+jQuery(document).ready(cx_multisite_signup(cx_multisite_options));

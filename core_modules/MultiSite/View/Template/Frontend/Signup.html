@@ -1,11 +1,28 @@
-<script type="text/javascript" src="{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
-cx_multisite = {
-    signUpUrl: '{MULTISITE_SIGNUP_URL}',
-    emailUrl: '{MULTISITE_EMAIL_URL}',
-    addressUrl: '{MULTISITE_ADDRESS_URL}'
-};
+jQuery(document).ready(function(){
+    if (typeof(cx_multisite_options) == 'undefined') {
+        cx_multisite_options = {};
+    }
+    var options = {
+        email: '',
+        address: '',
+        signUpUrl: '{MULTISITE_SIGNUP_URL}',
+        emailUrl: '{MULTISITE_EMAIL_URL}',
+        addressUrl: '{MULTISITE_ADDRESS_URL}',
+        headerInitTxt: '{TITLE}',
+        headerSetupTxt: '{TXT_MULTISITE_BUILD_WEBSITE_TITLE} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />',
+        headerSuccessTxt: '{TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE}',
+        headerErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_TITLE}',
+        messageErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_MSG}'
+    };
+    for (var option in options) {
+        if (!cx_multisite_options[option]) {
+            cx_multisite_options[option] = options[option];
+        }
+    }
+    jQuery.getScript('{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js');
+});
 /* ]]> */
 </script>
 <style type="text/css">
@@ -16,44 +33,42 @@ cx_multisite = {
 }
 /* ]]> */
 </style>
-<form id="multisite_signup_form" role="form">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{TXT_MULTISITE_CLOSE}</span></button>
         <h4 class="modal-title">{TITLE}</h4>
     </div>
     <div class="modal-body multisite-status"></div>
+
     <div class="modal-body multisite-form">
-        <div class="form-group">
-            <input id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" title="We'll send you an email to this address to activate your account." placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
-        </div>
-
-        <div class="form-group">
-            <div class="input-group multisite-address">
-                <input id="multisite_address" name="multisite_address" type="text" maxlength="{MULTISITE_ADDRESS_MAX_LENGTH}" pattern="[a-z0-9]{{MULTISITE_ADDRESS_MIN_LENGTH},{MULTISITE_ADDRESS_MAX_LENGTH}}" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" value="{MULTISITE_ADDRESS}" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
-                <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
+<!-- TODO is form required ?? -->
+        <form id="multisite_signup_form" role="form">
+            <div class="form-group">
+                <input id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" title="{TXT_MULTISITE_EMAIL_INFO}" placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
             </div>
-        </div>
 
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" required="">{TXT_MULTISITE_ACCEPT_TERMS}
-            </label>
-        </div>
+            <div class="form-group">
+                <div class="input-group multisite-address">
+                    <input id="multisite_address" name="multisite_address" type="text" maxlength="{MULTISITE_ADDRESS_MAX_LENGTH}" pattern="[a-z0-9]{{MULTISITE_ADDRESS_MIN_LENGTH},{MULTISITE_ADDRESS_MAX_LENGTH}}" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" value="{MULTISITE_ADDRESS}" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
+                    <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
+                </div>
+            </div>
+
+            <div class="checkbox">
+                <label>
+                    <input id="multisite_terms" type="checkbox" required="">{TXT_MULTISITE_ACCEPT_TERMS}
+                </label>
+            </div>
+        </form>
     </div>
 
     <div class="modal-body multisite-progress">
-        <div class="alert alert-info" role="alert">
-            <div>
-                <strong>{TXT_MULTISITE_BUILD_WEBSITE_TITLE} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></strong>
-            </div>
-            <div>
-                {TXT_MULTISITE_BUILD_WEBSITE_MSG}
-            </div>
+        <div>
+            {TXT_MULTISITE_BUILD_WEBSITE_MSG}
         </div>
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">{TXT_MULTISITE_CLOSE}</button>
-        <button type="submit" class="btn btn-primary">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+        <button type="button" class="btn btn-default multisite_close" data-dismiss="modal">{TXT_MULTISITE_CLOSE}</button>
+        <button type="button" class="btn btn-default multisite_cancel" data-dismiss="modal">Abbrechen{TXT_MULTISITE_CANCEL}</button>
+        <button type="button" class="btn btn-primary multisite_submit" disabled="disabled">{TXT_MULTISITE_CREATE_WEBSITE}</button>
     </div>
-</form>

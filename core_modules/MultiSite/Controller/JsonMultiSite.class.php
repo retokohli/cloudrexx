@@ -12,6 +12,9 @@
 namespace Cx\Core_Modules\MultiSite\Controller;
 
 class MultiSiteJsonException extends \Exception {
+    protected $object;
+    protected $type = 'danger';
+
     /**
      * Overwriting the default Exception constructor
      * The default Exception constructor only accepts $message to be a string.
@@ -19,8 +22,28 @@ class MultiSiteJsonException extends \Exception {
      * that can then be sent back in the JsonData-response.
      */
     public function __construct($message = null, $code = 0, Exception $previous = null) {
-        parent::__construct('', $code, $previous);
-        $this->message = $message;
+        if (is_array($message)) {
+            $msg = $message['message'];
+            if (isset($message['object'])) {
+                $this->object = $message['object'];
+            }
+            if (isset($message['type'])) {
+                $this->type = $message['type'];
+            }
+        } else {
+            $msg = $message;
+        }
+        parent::__construct($msg, $code, $previous);
+        // overwrite $message to pass exception data to JsonData
+        $this->message=$message;
+    }
+
+    public function getObject() {
+        return $this->object;
+    }
+
+    public function getType() {
+        return $this->type;
     }
 }
 /**
@@ -101,20 +124,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException An array with further information about the already used email address
      */
     public function email($params) {
+        global $_ARRAYLANG;
+
         if (!isset($params['post']['multisite_email_address'])) {
             return;
         }
 
-        self::verifyEmail($params['post']['multisite_email_address']);
-    }
+        //check email validity
+        if (!\FWValidator::isEmail($params['post']['multisite_email_address'])) {
+            $this->loadLanguageData();
+            throw new MultiSiteJsonException(array(
+                'object'    => 'email',
+                'type'      => 'danger',
+                'message'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL'],
+            ));
+        }
 
-    public static function verifyEmail($email) {
-        global $_ARRAYLANG;
-
-        if (!\User::isUniqueEmail($email)) {
-            global $_ARRAYLANG, $objInit;
-            $langData = $objInit->loadLanguageData('MultiSite');
-            $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        if (!\User::isUniqueEmail($params['post']['multisite_email_address'])) {
+            $this->loadLanguageData();
 
 // TODO: set login url
             $loginUrl = '';
@@ -127,6 +154,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
 
+    protected function loadLanguageData() {
+        global $_ARRAYLANG, $objInit;
+        $langData = $objInit->loadLanguageData('MultiSite');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+    }
+
     public function address($params) {
         if (!isset($params['post']['multisite_address'])) {
             return;
@@ -134,7 +167,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try {
             \Cx\Core_Modules\MultiSite\Model\Entity\Website::validateName(contrexx_input2raw($params['post']['multisite_address']));
         } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
-            throw new MultiSiteJsonException(array('object' => 'address', 'type' => 'warning', 'message' => $e->getMessage()));
+            throw new MultiSiteJsonException(array(
+                'object'    => 'address',
+                'type'      => 'warning',
+                'message'   => $e->getMessage()
+            ));
         }
     }
 
@@ -143,123 +180,145 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     * @param post parameters
     * */
     public function signup($params) {
+        global $_ARRAYLANG;
+
+        // abort in case command has been requested without any data
+        if (empty($params['post'])) {
+            return;
+        }
+
         if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
             \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
         }
-        // load text-variables of module MultiSite
-        global $_ARRAYLANG, $objInit;
-        $langData = $objInit->loadLanguageData('MultiSite');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-        $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
-        if (!empty($params['post'])) {
+
+        // Validate address and email before starting with the actual sign up process.
+        // Those methods throw an individual exception that can be parsed by the sign up form.
+        // Therefore, those shall not be called in the below try/catch block
+        $this->address($params);
+        $this->email($params);
+
+        try {
+            // load text-variables of module MultiSite
+            $this->loadLanguageData();
+
+            // set website name
             $websiteName = contrexx_input2raw($params['post']['multisite_address']);
+
+            // create new user account
             $arrSettings = \User_Setting::getSettings();
             $user = $this->createUser(array('post' => array(
                 'active'=> true,
                 'email' => $params['post']['multisite_email_address'],
                 'groups'=> explode(',', $arrSettings['assigne_to_groups']['value']),
             )));
-            // create a new CRM Contact and link it to the User account
-            if (!empty($user['userId'])) {
-                try {
-                    $objFWUser = \FWUser::getFWUserObject();
-                    $objUser   = $objFWUser->objUser->getUser(intval($user['userId']));
-                    if (!$objUser) {
-                        throw new MultiSiteJsonException("Unable to load user account {$user['userId']}.");
-                    }
 
-                    $objUser->objAttribute->first();
-                    while (!$objUser->objAttribute->EOF) {
-                        $arrProfile['fields'][] = array('special_type' => 'access_'.$objUser->objAttribute->getId());
-                        $arrProfile['data'][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-                        $objUser->objAttribute->next();
-                    }
-                    
-                    $arrProfile['fields'][] = array('special_type' => 'access_email');
-                    $arrProfile['data'][]   = $objUser->getEmail();
-                    $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-                    $crmContactId  = $objCrmLibrary->addCrmContact($arrProfile);
-                
-                    $id = 1;
-                    $subscriptionOptions = array(
-                        // set hard-coded to 'month'
-                        // later we shall use $_POST['renewalUnit'] instead
-                        'renewalUnit'       => \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH,
-                        // set hard-coded to '1'
-                        // later we shall use $_POST['renewalQuantifier'] instead
-                        'renewalQuantifier' => 1,
-                        'websiteName'       => $websiteName,
-                        'customer'          => $objUser,
-                    );
-                    $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
-                    $product = $productRepository->findOneBy(array('id' => $id));
-                    //create a new subscription for product #1 to order
-                    $order = new \Cx\Modules\Order\Model\Entity\Order();
-                    $order->setContactId($crmContactId);
-                    $order->createSubscription($product, $subscriptionOptions);
-                    \Env::get('em')->persist($order);
-                    \Env::get('em')->flush();
-                    $order->complete();
-                    $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website   = $websiteRepository->findOneBy(array('name' => $websiteName));
-// TODO: remove once setup process works flawlessly
-                    // send setup protocol anyway
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
-                        \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
-                        \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
-                            'section' => 'MultiSite',
-                            'key' => 'setupError',
-                            'to' => $config['coreAdminEmail'],
-                            'search' => array(
-                                '[[ERROR]]',
-                                '[[WEBSITE_NAME]]',
-                                '[[CUSTOMER_EMAIL]]',
-                                '[[DBG_LOG]]',
-                            ),
-                            'replace' => array(
-                                'SETUP SUCCESSFUL',
-                                $websiteName,
-                                $params['post']['multisite_email_address'],
-                                join("\n", \DBG::getMemoryLogs()),
-                            ),
-                        ));
-                    }
-                    return array(
-                        'status' => 'success',
-                        'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'], '<a href=="'.ComponentController::getApiProtocol().$website->getBaseDn()->getName().'">"'.$website->getBaseDn()->getName().'</a>'),
-                    );
-                } catch (\Exception $e) {
-                    $config = \Env::get('config');
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
-                        \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
-                        \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
-                            'section' => 'MultiSite',
-                            'key' => 'setupError',
-                            'to' => $config['coreAdminEmail'],
-                            'search' => array(
-                                '[[ERROR]]',
-                                '[[WEBSITE_NAME]]',
-                                '[[CUSTOMER_EMAIL]]',
-                                '[[DBG_LOG]]',
-                            ),
-                            'replace' => array(
-                                $e->getMessage(),
-                                $websiteName,
-                                $params['post']['multisite_email_address'],
-                                join("\n", \DBG::getMemoryLogs()),
-                            ),
-                        ));
-                    }
-                    \DBG::msg($e->getMessage());
-                    throw new MultiSiteJsonException(array(
-                        'object' => 'form',
-                        'type'      => 'danger',
-                        'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATION_ERROR'], contrexx_raw2xhtml($objUser->getEmail())),
-                    ));
-                }
-            } else {
-                throw new MultiSiteJsonException('Problem in creating user');  
+            $objFWUser = \FWUser::getFWUserObject();
+            $objUser = $objFWUser->objUser->getUser(intval($user['userId']));
+            if (!$objUser) {
+                throw new MultiSiteJsonException("Unable to load user account {$user['userId']}.");
             }
+
+            // create a new CRM Contact and link it to the User account
+            $objUser->objAttribute->first();
+            while (!$objUser->objAttribute->EOF) {
+                $arrProfile['fields'][] = array('special_type' => 'access_'.$objUser->objAttribute->getId());
+                $arrProfile['data'][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
+                $objUser->objAttribute->next();
+            }
+            
+            $arrProfile['fields'][] = array('special_type' => 'access_email');
+            $arrProfile['data'][] = $objUser->getEmail();
+            $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+            $crmContactId = $objCrmLibrary->addCrmContact($arrProfile);
+        
+            // create a new order 
+            $order = new \Cx\Modules\Order\Model\Entity\Order();
+            $order->setContactId($crmContactId);
+
+// TODO: Product ID should be supplied by POST-data.
+//       If not set, then the ID should be taken from a MultiSite configuration option 'defaultProductId'
+            $id = 1;
+            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+            $product = $productRepository->findOneBy(array('id' => $id));
+
+            // create new subscription of selected product
+            $subscriptionOptions = array(
+                // set hard-coded to 'month'
+                // later we shall use $_POST['renewalUnit'] instead
+                'renewalUnit'       => \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH,
+                // set hard-coded to '1'
+                // later we shall use $_POST['renewalQuantifier'] instead
+                'renewalQuantifier' => 1,
+                'websiteName'       => $websiteName,
+                'customer'          => $objUser,
+            );
+            $order->createSubscription($product, $subscriptionOptions);
+
+            \Env::get('em')->persist($order);
+            \Env::get('em')->flush();
+
+            // create the website in the payComplete event
+            $order->complete();
+
+            // fetch the newly build website from the repository
+            $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $website   = $websiteRepository->findOneBy(array('name' => $websiteName));
+
+// TODO: remove once setup process works flawlessly
+            // send setup protocol anyway
+            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+                \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+                \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
+                    'section' => 'MultiSite',
+                    'key' => 'setupError',
+                    'to' => $config['coreAdminEmail'],
+                    'search' => array(
+                        '[[ERROR]]',
+                        '[[WEBSITE_NAME]]',
+                        '[[CUSTOMER_EMAIL]]',
+                        '[[DBG_LOG]]',
+                    ),
+                    'replace' => array(
+                        'SETUP SUCCESSFUL',
+                        $websiteName,
+                        $params['post']['multisite_email_address'],
+                        join("\n", \DBG::getMemoryLogs()),
+                    ),
+                ));
+            }
+            $websiteLink = '<a href=="'.ComponentController::getApiProtocol().$website->getBaseDn()->getName().'">'.$website->getBaseDn()->getName().'</a>';
+            return array(
+                'status'    => 'success',
+                'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'], $websiteLink),
+            );
+        } catch (\Exception $e) {
+            $config = \Env::get('config');
+            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+                \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+                \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
+                    'section' => 'MultiSite',
+                    'key' => 'setupError',
+                    'to' => $config['coreAdminEmail'],
+                    'search' => array(
+                        '[[ERROR]]',
+                        '[[WEBSITE_NAME]]',
+                        '[[CUSTOMER_EMAIL]]',
+                        '[[DBG_LOG]]',
+                    ),
+                    'replace' => array(
+                        $e->getMessage(),
+                        $websiteName,
+                        $params['post']['multisite_email_address'],
+                        join("\n", \DBG::getMemoryLogs()),
+                    ),
+                ));
+            }
+            \DBG::msg($e->getMessage());
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATION_ERROR'], contrexx_raw2xhtml($objUser->getEmail())),
+            ));
         }
     }
 
@@ -271,17 +330,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
             \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
         }
-        // load text-variables of module MultiSite
-        global $_ARRAYLANG, $objInit;
+
+// TODO: what do we actually need the language data for? We should load the language data at the certain place where it is actually being used
+        $this->loadLanguageData('MultiSite');
         
         $objFWUser   = \FWUser::getFWUserObject();
         $objUser     = $objFWUser->objUser->getUser(contrexx_input2raw($params['post']['userId']));
         $websiteId   = isset($params['post']['websiteId']) ? contrexx_input2raw($params['post']['websiteId']) : '';
         $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
-        
-        //load language file 
-        $langData = $objInit->loadLanguageData('MultiSite');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
         $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
         $websiteServiceServer = null;
@@ -316,17 +372,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
             }
         }
-        if (empty($params['post'])) {
-            throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::createUser.');
-        }
 
         try {
-            //check email validity
-            if (!\FWValidator::isEmail($params['post']['email'])) {
-                throw new MultiSiteJsonException('The email you entered is invalid.');
+            if (empty($params['post'])) {
+                throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::createUser.');
             }
-            //check email existence
-            self::verifyEmail($params['post']['email']);
 
             $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
             if (!empty($params['post']['userId'])) {
@@ -341,7 +391,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $objUser->setGroups($params['post']['groups']);
             }
 
-            //call \User\store function to store all the info of new user
             if (!$objUser->store()) {
                 \DBG::msg('Adding user failed: '.$objUser->getErrorMsg());
                 throw new MultiSiteJsonException($objUser->getErrorMsg());
@@ -351,7 +400,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
         } catch (\Exception $e) {
             throw new MultiSiteJsonException(array(
-                'log'      => \DBG::getMemoryLogs(),
+                'log'       => \DBG::getMemoryLogs(),
                 'message'   => $e->getMessage(),
             ));
         }
@@ -986,7 +1035,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param array $params
      * 
      * @return boolean
-     * @throws \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException
+     * @throws MultiSiteJsonException
      */
     public function setLicense($params) {
         global $objDatabase;
@@ -1029,7 +1078,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             return array('status' => 'error');
         } catch (\Exception $e) {
-            throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Unable to setup license: '.$e->getMessage());
+            throw new MultiSiteJsonException('Unable to setup license: '.$e->getMessage());
         }
     }
 
@@ -1213,11 +1262,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
         if (\Cx\Core\Setting\Controller\Setting::getValue('installationId') === NULL 
                 && !\Cx\Core\Setting\Controller\Setting::add('installationId', $_CONFIG['installationId'], 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')) {
-            throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
+            throw new MultiSiteJsonException("Failed to add Setting entry for installationId");
         }
         if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc') === NULL 
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', $_CONFIG['dashboardNewsSrc'], 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')) {
-            throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
+            throw new MultiSiteJsonException("Failed to add Setting entry for dashboardNewsSrc");
         }
         \Cx\Core\Config\Controller\Config::init();
 

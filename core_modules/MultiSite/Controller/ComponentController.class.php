@@ -141,6 +141,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'TXT_MULTISITE_ACCEPT_TERMS'    => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
                             'TXT_MULTISITE_BUILD_WEBSITE_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'],
                             'TXT_MULTISITE_BUILD_WEBSITE_MSG' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'],
+                            'TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'],
+                            'TXT_MULTISITE_BUILD_ERROR_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'],
+                            'TXT_MULTISITE_BUILD_ERROR_MSG' => $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'],
+// TODO: add configuration option for contact details and replace the hard-coded e-mail address on the next line
+                            'TXT_MULTISITE_EMAIL_INFO'      => sprintf($_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO'], 'info@cloudrexx.com'),
                         ));
                         echo $objTemplate->get();
                         break;

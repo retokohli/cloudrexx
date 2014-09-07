@@ -607,12 +607,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             }
             \DBG::msg('Website: send notification email > CUSTOMER');
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($info)) {
-            //  TODO: Implement proper error handler:
-            //       removeWebsite() must not be called from within this method.
-            //       Instead, in case the setup process fails, a proper exception must be thrown.
-            //       Then the object that executed the setup() method must handle the exception
-            //       and call the removeWebsite() method if required.
-                throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException(array('object' => 'form', 'type' => 'success', 'message' => "Your website <a href='".ComponentController::getApiProtocol(). $websiteDomain/"'>$websiteDomain</a> has been build successfully. Unfortunately, we were unable to send you a message to the address <strong>$websiteMail</strong> with further instructions on how to proceed. Our helpdesk team will get in touch with you as soon as possible. We apologize for any inconvenience."));
+                throw new WebsiteException(__METHOD__.': Unable to send welcome e-mail to user');
             }
             \DBG::msg('Website: SETUP COMPLETED > ALL DONE');
             return array(
@@ -811,54 +806,54 @@ class Website extends \Cx\Model\Base\EntityBase {
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('mode', \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE.':'.\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE, 'config')){
-                    throw new \Exception("Failed to add Setting entry for MultiSite mode");
+                    throw new WebsiteException("Failed to add Setting entry for MultiSite mode");
             }
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem', $websiteConfigPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHostname') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHostname', $serviceHostname, 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
-                    throw new \Exception("Failed to add Setting entry for Hostname of Website Service");
+                    throw new WebsiteException("Failed to add Setting entry for Hostname of Website Service");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceSecretKey', $this->secretKey, 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
-                    throw new \Exception("Failed to add Setting entry for SecretKey of Website Service");
+                    throw new WebsiteException("Failed to add Setting entry for SecretKey of Website Service");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceInstallationId', $serviceInstallationId, 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
-                    throw new \Exception("Failed to add Setting entry for InstallationId of Website Service");
+                    throw new WebsiteException("Failed to add Setting entry for InstallationId of Website Service");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteUserId', 0, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
-                    throw new \Exception("Failed to add Setting entry for InstallationId of Website User Id");
+                    throw new WebsiteException("Failed to add Setting entry for InstallationId of Website User Id");
             }
 // TODO: HTTP-Authentication details of Website Service Server must be set
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthMethod', $websiteHttpAuthMethod, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'website')){
-                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Method of Website Service");
+                    throw new WebsiteException("Failed to add Setting entry for HTTP Authentication Method of Website Service");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthUsername', $websiteHttpAuthUsername, 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
-                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Username of Website Service");
+                    throw new WebsiteException("Failed to add Setting entry for HTTP Authentication Username of Website Service");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthPassword', $websiteHttpAuthPassword, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
-                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Password of Website Service");
+                    throw new WebsiteException("Failed to add Setting entry for HTTP Authentication Password of Website Service");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteState', $this->status, 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::STATE_ONLINE.':'.self::STATE_ONLINE.','.self::STATE_OFFLINE.':'.self::STATE_OFFLINE.','.self::STATE_INIT.':'.self::STATE_INIT.','.self::STATE_SETUP.':'.self::STATE_SETUP, 'website')){
-                    throw new \Exception("Failed to add website entry for website state");
+                    throw new WebsiteException("Failed to add website entry for website state");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteName') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteName', $this->name, 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
-                    throw new \Exception("Failed to add website entry for website name");
+                    throw new WebsiteException("Failed to add website entry for website name");
             }
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation
@@ -983,13 +978,13 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @param type $type
      * @param type $mail
      * @return boolean|string
-     * @throws \Exception 
+     * @throws WebsiteException
      */
     protected function initDb($type, $objUser, $objDbUser, $langId, $websitedb) {
         $dumpFilePath = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
         $fp = @fopen($dumpFilePath.'/installer/data/contrexx_dump_' . $type . '.sql', "r");
         if ($fp === false) {
-            throw new \Exception('File not found');
+            throw new WebsiteException('File not found');
         }
 
         $line = 1;

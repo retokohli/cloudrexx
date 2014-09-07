@@ -90,6 +90,7 @@ $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME']='The name must contain only low
 $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON']='Create Site';
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS']='I confirm that I have read, understand and agree to the %s.';
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME']='Terms & Conditions';
+$_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO']='We\'ll send you an email to this address to activate your account.';
 
 // Sign up status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'The name %s has been taken already. Please choose an other name for your own site.';
@@ -97,11 +98,15 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_SHORT'] = 'Site name mus
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_LONG'] = 'Site name can be no longer than %s characters.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_WRONG_CHARS'] = 'The name must contain only lowercase letters (a-z) and numbers.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'That email is already registered - %s.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL'] = 'The entered email address is invalid.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'] = 'Log in';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Congratulations! Your website %s is ready! Please check your inbox (ended up in spam folder?). We sent an email to you with your credentials and first hints. Good luck.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATION_ERROR'] = 'Oops, we were unable to setup your website. A technician will immediately address the issue and will inform you on the email address %s as soon as your website is ready for use.';
-$_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'] = 'Building your Website';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATION_ERROR'] = 'We were unable to setup your website. A technician will immediately address the issue and will inform you on the email address %s as soon as your website is ready for use.';
+$_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'] = 'Building your Website..';
+$_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'] = 'Congratulations!';
+$_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'] = 'Oops..';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'] = 'This might take a few minutes. You will be informed on the supplied email address once your website is online and ready to use.';
+$_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'] = 'Unfortunately, the build process of your website failed. If this did happen before, please contact our customer service under %s.';
 
 //Reset FTP password status message
 $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG'] = 'Resetting your FTP password failed! Try again.';
