@@ -25,6 +25,8 @@ class Sigma extends \HTML_Template_Sigma {
     
     public function __construct($root = '', $cacheRoot = '') {
         parent::__construct($root, $cacheRoot);
+        $this->removeVariablesRegExp = '@' . $this->openingDelimiter . '(' . $this->variablenameRegExp . ')\s*'
+            . $this->closingDelimiter . '@sm';
         $this->setErrorHandling(PEAR_ERROR_DIE);
     }
     
