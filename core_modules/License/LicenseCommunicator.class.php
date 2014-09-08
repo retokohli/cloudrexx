@@ -342,6 +342,8 @@ class LicenseCommunicator {
                         }, 1000);
                     }
                     
+                    //var versionCheckUrl = "../core_modules/License/versioncheck.php?force=true";
+                    var versionCheckUrl = "../api/licup?force=true";
                     var versionCheckResponseHandler = function(data, allowUserAgent) {';
             $sm = new \Cx\Core\Config\Controller\Config();
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
@@ -350,7 +352,7 @@ class LicenseCommunicator {
                             reloadManager = false;
                             cx.jQuery.getScript("http://updatesrv1.contrexx.com/?' . implode('&', $userAgentRequestArguments) . '", function() {
                                 cx.jQuery.post(
-                                    "../core_modules/License/versioncheck.php?force=true",
+                                    versionCheckUrl,
                                     {"response": JSON.stringify(licenseUpdateUserAgentRequestResponse)}
                                 ).success(function(data) {
                                     reloadManager = true;
@@ -386,7 +388,7 @@ class LicenseCommunicator {
                         licenseMessage.show();
 
                         cx.jQuery.get(
-                            "../core_modules/License/versioncheck.php?force=true"
+                            versionCheckUrl
                         ).success(function(data) {
                             versionCheckResponseHandler(data, true);
                         }).error(function(data) {
