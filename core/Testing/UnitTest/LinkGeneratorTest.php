@@ -1,8 +1,28 @@
 <?php
-//those tests were broken by making all methods static and introducing constants to the code.
-//left below for reference purposes.
-/* include_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php'); */
 
+/**
+ * LinkGeneratorTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_linkGenerator
+ */
+
+namespace Cx\Core\Testing\UnitTest;
+
+/**
+ * LinkGeneratorTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_linkGenerator
+ */
 class LinkGeneratorTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     public function testDummyTestToAvoidPHPUnitWarning() {
     }

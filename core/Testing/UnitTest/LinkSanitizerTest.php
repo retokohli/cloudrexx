@@ -1,8 +1,29 @@
 <?php
-include_once(ASCMS_TEST_PATH.'/testCases/ContrexxTestCase.php');
-include_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
 
-class LinkSanitizerTest extends ContrexxTestCase {
+/**
+ * LinkSanitizerTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_linkSanitizer
+ */
+
+namespace Cx\Core\Testing\UnitTest;
+
+/**
+ * LinkSanitizerTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_linkSanitizer
+ */
+class LinkSanitizerTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
     public function testReplace() {
         //src, "
         $content = '<img src="index.php?cmd=a&module=b" />';      
@@ -40,7 +61,7 @@ class LinkSanitizerTest extends ContrexxTestCase {
         $offset = '/cms/';
         $langDir = 'de/';
        
-        $ls = new LinkSanitizer($offset.$langDir, $in);
+        $ls = new \LinkSanitizer($offset.$langDir, $in);
         $this->assertEquals($expectedOut, $ls->replace());      
     }
 }
