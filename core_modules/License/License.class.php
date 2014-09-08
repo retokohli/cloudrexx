@@ -202,6 +202,14 @@ class License {
     public function setDashboardMessages($dashboardMessages) {
         $this->dashboardMessages = $dashboardMessages;
     }
+    
+    public function getIsUpgradables() {
+        return $this->isUpgradable;
+    }
+    
+    public function setIsUpgradables($isUpgradable) {
+        $this->isUpgradable = $isUpgradable;
+    }
 
     public function setMessages($messages) {
         $this->messages = $messages;

@@ -1068,6 +1068,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $license->setAvailableComponents($params['post']['legalComponents']);
                         $license->setLegalComponents($params['post']['legalComponents']);
                     }
+                    if (isset($params['post']['isUpgradable'])) {
+                        $license->setIsUpgradables($params['post']['isUpgradable']);
+                    }
                     try {
                         $license->save($objDatabase);
                         return array('status' => 'success');
