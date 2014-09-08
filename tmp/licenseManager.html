@@ -87,11 +87,11 @@
             appendIcon: function(element, id) {
                 if (this.checkKey(element.val(), id)) {
                     element.parent().children("img").remove();
-                    element.after(" <img src=\"images/icons/check.gif\" />");
+                    element.after(" <img src=\"../core/Core/View/Media/icons/check.gif\" />");
                     jQuery("input[name=save]").attr("disabled", false);
                 } else {
                     element.parent().children("img").remove();
-                    element.after(" <img src=\"images/icons/delete.gif\" />");
+                    element.after(" <img src=\"../core/Core/View/Media/icons/delete.gif\" />");
                     jQuery("input[name=save]").attr("disabled", true);
                 }
             }
@@ -114,7 +114,7 @@
         }
     });
 </script>
-<form method="post" action="index.php?cmd=License">
+<form method="post" action="index.php?cmd=license">
     <table class="adminlist" width="100%">
         <tr>
             <th width="15%">{TXT_LICENSE_OVERVIEW}</th>
