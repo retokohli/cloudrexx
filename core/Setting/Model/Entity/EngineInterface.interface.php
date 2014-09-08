@@ -83,6 +83,18 @@ interface EngineInterface {
      *                                null otherwise
      */
     static function getValue($name);
+    
+    /**
+     * Returns the true or false for given the setting name
+     * 
+     * If the settings have not been initialized (see {@see init()}), or
+     * if no setting of that name is present in the current set, false
+     * is returned.
+     * @param   string    $name       The settings name
+     * @return  boolean               The if setting name is exist returned true,
+     *                                false otherwise
+     */
+    static function isDefined($name);
 
     /**
      * Updates a setting

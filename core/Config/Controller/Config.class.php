@@ -963,47 +963,47 @@ class Config
         try {
             //site group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('systemStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('systemStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('systemStatus','on', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Page Status");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('languageDetection') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('languageDetection')
                 && !\Cx\Core\Setting\Controller\Setting::add('languageDetection','on', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Auto Detect Language");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreGlobalPageTitle') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreGlobalPageTitle')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreGlobalPageTitle','Contrexx Example Website', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Global Page Title");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('mainDomainId') === NULL 
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('mainDomainId') 
                     && !\Cx\Core\Setting\Controller\Setting::add('mainDomainId', '0', 4,
                     \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getDomains()}', 'site') ) {
                 throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Main Domain");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('forceDomainUrl') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceDomainUrl')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceDomainUrl','off', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Home Page Url");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreListProtectedPages') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreListProtectedPages')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreListProtectedPages','off', 6,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protected Pages");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('searchVisibleContentOnly')
                 && !\Cx\Core\Setting\Controller\Setting::add('searchVisibleContentOnly','on', 7,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Visible Contents");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('advancedUploadFrontend') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('advancedUploadFrontend')
                 && !\Cx\Core\Setting\Controller\Setting::add('advancedUploadFrontend','off', 8,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Visible Contents");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('forceProtocolFrontend') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceProtocolFrontend')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolFrontend','none', 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
@@ -1011,45 +1011,45 @@ class Config
 
             //administrationArea group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNews') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNews')
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','on', 1,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard News");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardStatistics') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardStatistics')
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardStatistics','off', 2,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard Statistics");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('advancedUploadBackend') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('advancedUploadBackend')
                 && !\Cx\Core\Setting\Controller\Setting::add('advancedUploadBackend','on', 3,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for advanced Upload Tools");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('sessionLifeTime') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('sessionLifeTime')
                 && !\Cx\Core\Setting\Controller\Setting::add('sessionLifeTime','3600', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for session Length");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('sessionLifeTimeRememberMe') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('sessionLifeTimeRememberMe')
                 && !\Cx\Core\Setting\Controller\Setting::add('sessionLifeTimeRememberMe','1209600', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for session Length Remember");
             }
             
             if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
-                if (\Cx\Core\Setting\Controller\Setting::getValue('dnsServer') === NULL
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('dnsServer')
                     && !\Cx\Core\Setting\Controller\Setting::add('dnsServer','ns1.contrexxhosting.com', 6,
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dns Server");
                 }
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('timezone') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('timezone')
                 && !\Cx\Core\Setting\Controller\Setting::add('timezone','Europe/Zurich', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getTimezoneOptions()}', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Time zone");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('forceProtocolBackend') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceProtocolBackend')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolBackend','none', 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use Administrator");
@@ -1057,12 +1057,12 @@ class Config
             
             //security group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreIdsStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreIdsStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreIdsStatus','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'security')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Security system notifications ");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordComplexity') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('passwordComplexity')
                 && !\Cx\Core\Setting\Controller\Setting::add('passwordComplexity','off', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'security')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Passwords must meet the complexity requirements");
@@ -1070,52 +1070,52 @@ class Config
 
             //contactInformation group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreAdminName') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreAdminName')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreAdminName','Administrator', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core Admin Name");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreAdminEmail') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreAdminEmail')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreAdminEmail','info@example.com', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core Admin Email");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('contactFormEmail') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactFormEmail')
                 && !\Cx\Core\Setting\Controller\Setting::add('contactFormEmail','info@example.com', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Form Email");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('contactCompany') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactCompany')
                 && !\Cx\Core\Setting\Controller\Setting::add('contactCompany','Ihr Firmenname', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Company");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('contactAddress') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactAddress')
                 && !\Cx\Core\Setting\Controller\Setting::add('contactAddress','Musterstrasse 12', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Address");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('contactZip') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactZip')
                 && !\Cx\Core\Setting\Controller\Setting::add('contactZip','3600', 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Zip");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('contactPlace') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactPlace')
                 && !\Cx\Core\Setting\Controller\Setting::add('contactPlace','Musterhausen', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Place");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('contactCountry') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactCountry')
                 && !\Cx\Core\Setting\Controller\Setting::add('contactCountry','Musterland', 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Country");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('contactPhone') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactPhone')
                 && !\Cx\Core\Setting\Controller\Setting::add('contactPhone','033 123 45 67', 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Phone");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('contactFax') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactFax')
                 && !\Cx\Core\Setting\Controller\Setting::add('contactFax','033 123 45 68', 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for contact Fax");
@@ -1123,39 +1123,39 @@ class Config
 
             //otherConfigurations group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('xmlSitemapStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('xmlSitemapStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('xmlSitemapStatus','on', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for XML Sitemap");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('frontendEditingStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('frontendEditingStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('frontendEditingStatus','on', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Frontend Editing");
             }
             if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
-                if (\Cx\Core\Setting\Controller\Setting::getValue('useCustomizings') === NULL
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('useCustomizings')
                     && !\Cx\Core\Setting\Controller\Setting::add('useCustomizings','off', 3,
                     \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Customizing");
                 }
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('corePagingLimit') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('corePagingLimit')
                 && !\Cx\Core\Setting\Controller\Setting::add('corePagingLimit','30', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Records per page");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('searchDescriptionLength') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('searchDescriptionLength')
                 && !\Cx\Core\Setting\Controller\Setting::add('searchDescriptionLength','150', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Number of Characters in Search Results");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('googleMapsAPIKey') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('googleMapsAPIKey')
                 && !\Cx\Core\Setting\Controller\Setting::add('googleMapsAPIKey','', 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Google-Map API key ");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('googleAnalyticsTrackingId') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('googleAnalyticsTrackingId')
                 && !\Cx\Core\Setting\Controller\Setting::add('googleAnalyticsTrackingId','', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Google Analytics Tracking ID");
@@ -1163,17 +1163,17 @@ class Config
 
             // core
             \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreSmtpServer') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreSmtpServer')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreSmtpServer','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreSmtpServer");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('lastAccessId') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('lastAccessId')
                 && !\Cx\Core\Setting\Controller\Setting::add('lastAccessId','1', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'core')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for lastAccessId");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('installationId') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('installationId')
                 && !\Cx\Core\Setting\Controller\Setting::add('installationId','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
@@ -1181,87 +1181,87 @@ class Config
 
             // component
             \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('bannerStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('bannerStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('bannerStatus','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for bannerStatus");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('spamKeywords') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('spamKeywords')
                 && !\Cx\Core\Setting\Controller\Setting::add('spamKeywords','sex, viagra', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, '', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for spamKeywords");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('newsTeasersStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('newsTeasersStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('newsTeasersStatus','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for newsTeasersStatus");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('feedNewsMLStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('feedNewsMLStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('feedNewsMLStatus','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for feedNewsMLStatus");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('calendarheadlines') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('calendarheadlines')
                 && !\Cx\Core\Setting\Controller\Setting::add('calendarheadlines','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for calendarheadlines");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('calendarheadlinescount') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('calendarheadlinescount')
                 && !\Cx\Core\Setting\Controller\Setting::add('calendarheadlinescount','5', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for calendarheadlinescount");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('calendardefaultcount') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('calendardefaultcount')
                 && !\Cx\Core\Setting\Controller\Setting::add('calendardefaultcount','16', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for calendardefaultcount");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('calendarheadlinescat') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('calendarheadlinescat')
                 && !\Cx\Core\Setting\Controller\Setting::add('calendarheadlinescat','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for calendarheadlinescat");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('blockStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('blockStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('blockStatus','1', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for blockStatus");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('blockRandom') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('blockRandom')
                 && !\Cx\Core\Setting\Controller\Setting::add('blockRandom','1', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for blockRandom");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('directoryHomeContent') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('directoryHomeContent')
                 && !\Cx\Core\Setting\Controller\Setting::add('directoryHomeContent','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for directoryHomeContent");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('forumHomeContent') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('forumHomeContent')
                 && !\Cx\Core\Setting\Controller\Setting::add('forumHomeContent','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for forumHomeContent");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('podcastHomeContent') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('podcastHomeContent')
                 && !\Cx\Core\Setting\Controller\Setting::add('podcastHomeContent','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for podcastHomeContent");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('forumTagContent') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('forumTagContent')
                 && !\Cx\Core\Setting\Controller\Setting::add('forumTagContent','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for forumTagContent");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('dataUseModule') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dataUseModule')
                 && !\Cx\Core\Setting\Controller\Setting::add('dataUseModule','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dataUseModule");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('useKnowledgePlaceholders') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('useKnowledgePlaceholders')
                 && !\Cx\Core\Setting\Controller\Setting::add('useKnowledgePlaceholders','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for useKnowledgePlaceholders");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc')
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc','http://www.contrexx.com/feed/news_headlines_de.xml', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
@@ -1269,32 +1269,32 @@ class Config
 
             // release
             \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsEdition') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsEdition')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreCmsEdition','Open Source', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsEdition");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsVersion') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsVersion')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreCmsVersion','4.0.0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsVersion");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsCodeName') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsCodeName')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreCmsCodeName','Nandri', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsCodeName");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreCmsStatus','Stable', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsStatus");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsReleaseDate') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsReleaseDate')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreCmsReleaseDate','1348783200', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsReleaseDate");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('coreCmsName') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsName')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreCmsName','Contrexx', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsName");
@@ -1302,92 +1302,92 @@ class Config
 
             // license
             \Cx\Core\Setting\Controller\Setting::init('Config', 'license','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseKey') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseKey')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseKey','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseKey");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseState') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseState')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseState','OK', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseState");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseValidTo') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseValidTo')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseValidTo','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseValidTo");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseMessage') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseMessage')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseMessage','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseMessage");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licensePartner') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licensePartner')
                 && !\Cx\Core\Setting\Controller\Setting::add('licensePartner','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licensePartner");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseCustomer') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCustomer')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseCustomer','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseCustomer");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('upgradeUrl') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('upgradeUrl')
                 && !\Cx\Core\Setting\Controller\Setting::add('upgradeUrl','http://license.contrexx.com/', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for upgradeUrl");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseGrayzoneMessages') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseGrayzoneMessages')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseGrayzoneMessages','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseGrayzoneMessages");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseGrayzoneTime') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseGrayzoneTime')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseGrayzoneTime','14', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseGrayzoneTime");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseLockTime') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseLockTime')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseLockTime','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseLockTime");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseUpdateInterval') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseUpdateInterval')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseUpdateInterval','24', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseUpdateInterval");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseFailedUpdate') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseFailedUpdate')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseFailedUpdate','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseFailedUpdate");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseSuccessfulUpdate') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseSuccessfulUpdate')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseSuccessfulUpdate','0', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseSuccessfulUpdate");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseCreatedAt') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCreatedAt')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseCreatedAt");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('licenseDomains') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseDomains')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseDomains','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseDomains");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('availableComponents') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('availableComponents')
                 && !\Cx\Core\Setting\Controller\Setting::add('availableComponents','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for availableComponents");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardMessages') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardMessages')
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardMessages','', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardMessages");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('isUpgradable') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('isUpgradable')
                 && !\Cx\Core\Setting\Controller\Setting::add('isUpgradable','on', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for isUpgradable");
@@ -1395,47 +1395,47 @@ class Config
 
             // cache
             \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml', $configPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheEnabled') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheEnabled')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheEnabled','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheEnabled");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheExpiration') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheExpiration')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheExpiration','86400', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheExpiration");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheOpStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheOpStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheOpStatus','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOpStatus");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheDbStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheDbStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheDbStatus','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheDbStatus");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheVarnishStatus') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheVarnishStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheVarnishStatus','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheVarnishStatus");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheUserCache') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCache')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCache','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCache");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheOPCache') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheOPCache')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheOPCache','off', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOPCache");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheProxyCacheVarnishConfig') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheProxyCacheVarnishConfig')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheProxyCacheVarnishConfig','{"ip":"127.0.0.1","port":"8080"}', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheProxyCacheVarnishConfig");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('cacheUserCacheMemcacheConfig') === NULL
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCacheMemcacheConfig')
                 && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCacheMemcacheConfig','{"ip":"127.0.0.1","port":11211}', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCacheMemcacheConfig");

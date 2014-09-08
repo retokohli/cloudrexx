@@ -194,6 +194,22 @@ class Setting{
         return $engineType::getValue($name);  
     }
     /**
+     * Returns the true or false, if settings name is exist or not .
+     *
+     * If the settings have not been initialized (see {@see init()}), or
+     * if no setting of that name is present in the current set, false
+     * is returned.
+     * @param   string    $name       The settings name
+     * @return  boolean               The settings name, if present,
+     *                                true otherwise false
+     */
+    static function isDefined($name)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::isDefined($name);  
+        
+    }
+    /**
      * Updates a setting
      *
      * If the setting name exists and the new value is not equal to
