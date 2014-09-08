@@ -491,29 +491,42 @@ class Website extends \Cx\Model\Base\EntityBase {
             $ftpAccountPassword  = $resp->data->ftpPassword;
         } else {
             \DBG::msg('Website: setup process..');
+
             $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
+
             \DBG::msg('Website: setupDatabase..');
             $this->setupDatabase($langId, $this->owner, $objDb, $objDbUser);
+
             \DBG::msg('Website: setupDataFolder..');
             $this->setupDataFolder($websiteName);
+
             \DBG::msg('Website: setupFtpAccount..');
             $ftpAccountPassword = $this->setupFtpAccount($websiteName);
+
             \DBG::msg('Website: setupConfiguration..');
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
+
             \DBG::msg('Website: setupMultiSiteConfig..');
             $this->setupMultiSiteConfig($websiteName);
+
             \DBG::msg('Website: initializeConfig..');
             $this->initializeConfig($websiteName);
+
             \DBG::msg('Website: initializeLanguage..');
             $this->initializeLanguage();
+
             \DBG::msg('Website: setupLicense..');
             $this->setupLicense($options);
-            //            \DBG::msg('Website: setupRobotsFile..');
-            //            $this->setupRobotsFile($websiteName);
+
+            // \DBG::msg('Website: setupRobotsFile..');
+            // $this->setupRobotsFile($websiteName);
+
             \DBG::msg('Website: createContrexxUser..');
             $this->createContrexxUser($websiteName);
+
             \DBG::msg('Website: setup process.. DONE');
+
             \DBG::msg('Website: Set state to '.self::STATE_ONLINE);
             $this->status = self::STATE_ONLINE;
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
@@ -1295,7 +1308,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
                 //create FTP-Account
                 $password = \User::make_password(8, true);
-                $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsiteSubscriptionId'));
+                $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
 
                 if ($accountId) {
                     return $password;
