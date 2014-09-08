@@ -503,6 +503,16 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for URL to T&Cs");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('createFtpAccountOnSetup', 0, 11,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Create FTP account during website setup");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('passwordSetupMethod', 'auto', 12,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'auto:Automatically, interactive:Interactive', 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Password set method during website setup");
+            }
 
             // websiteSetup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
@@ -555,16 +565,6 @@ throw new MultiSiteException('Refactor this method!');
                 && !\Cx\Core\Setting\Controller\Setting::add('codeBaseRepository', \Env::get('cx')->getCodeBaseDocumentRootPath() . '/codeBases', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting Repository for Contrexx Code Bases");
-            }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('createFtpAccountOnSetup', 0, 11,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Create FTP account during website setup");
-            }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('passwordSetupMethod', 'auto', 12,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'auto:Automatically, interactive:Interactive', 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Password set method during website setup");
             }
 
             // websiteManager group
