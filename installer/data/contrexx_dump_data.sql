@@ -566,7 +566,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (92,'Shell','core
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (93,'Order','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (94,'Pim','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (95,'LinkManager','core_module');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (96,'Test','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (98,'Test','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
