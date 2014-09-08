@@ -107,6 +107,20 @@ class YamlEngine extends Engine{
     }
 
     /**
+     * Returns true or false for the given setting name, if exist means true,
+     * otherwise false
+     * 
+     * @return  boolean
+     */
+    static function isDefined($name)
+    { 
+        if (isset(self::$arrSettings[$name]['name'])) {
+            return true;   
+        }
+        return false;
+    }
+    
+    /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
      *
