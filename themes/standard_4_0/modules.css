@@ -2746,9 +2746,6 @@ form#search {
 input[name="downloads_category_name"] {
     margin-bottom: 20px;
 }
-.title img {
-    top: 0 !important;
-}
 .file_info td {
     float: left;
     width: 50%;

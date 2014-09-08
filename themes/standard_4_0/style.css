@@ -54,10 +54,10 @@
     #shop div.images a img {
         height: auto;
     }
-    #searchfield p#fieldlast {
+    .searchform #searchfield p#fieldlast {
         padding-top: 0;
     }
-    #searchfield p {
+    .searchform #searchfield p {
         width: 100%;
         margin-right: 0;
     }
@@ -169,7 +169,7 @@
     .news-text {clear: both;margin-top: 10px;}
     #blog form p {padding-left: 0;}
     #blog form p label {margin: 0;}
-    #blog div.search_date{padding: 0;}
+    #page #blog div.search_date{padding: 0;}
     #news-social-media li {clear: both;}
     #news-social-media .facebook {margin-bottom: 5px;}
     #captcha #coreCaptchaLabel {white-space: normal;}
@@ -708,6 +708,9 @@
 @media (min-width: 768px) {
     .row .navbar-header {
         float: right;
+    }
+    .navbar-header .navbar-toggle {
+        display: block;
     }
     .navbar-collapse.collapse {
         display: none !important;
