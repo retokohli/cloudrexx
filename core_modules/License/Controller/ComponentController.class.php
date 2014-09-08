@@ -46,10 +46,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objLicense = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, $config, $objDatabase);
                 $objLicense->getPage($_POST, $_CORELANG);
                 break;
-
             default:
                 break;
         }
+    }
+    
+    public function executeCommand($command, $arguments) {
+        require_once($this->getDirectory() . '/versioncheck.php');
+        die();
     }
 
     /**
@@ -166,5 +170,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
+    
+    /**
+     * Returns a list of command mode commands provided by this component
+     * @return array List of command names
+     */
+    public function getCommandsForCommandMode() {
+        return array('licup');
+    }
 
+    /**
+     * Returns the description for a command provided by this component
+     * @param string $command The name of the command to fetch the description from
+     * @param boolean $short Wheter to return short or long description
+     * @return string Command description
+     */
+    public function getCommandDescription($command, $short = false) {
+        return 'Updates Contrexx license';
+    }
 }
