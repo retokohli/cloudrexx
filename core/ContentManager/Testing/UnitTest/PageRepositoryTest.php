@@ -1,6 +1,28 @@
 <?php
-use Doctrine\Common\Util\Debug as DoctrineDebug;
 
+/**
+ * PageRepositoryTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_contentmanager
+ */
+
+namespace Cx\Core\ContentManager\Testing\UnitTest;
+
+/**
+ * PageRepositoryTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_contentmanager
+ */
 class PageRepositoryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     public function testTreeByTitle() {

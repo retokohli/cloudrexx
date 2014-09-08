@@ -1,5 +1,28 @@
 <?php
 
+/**
+ * ValidationTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_contentmanager
+ */
+
+namespace Cx\Core\ContentManager\Testing\UnitTest;
+
+/**
+ * ValidationTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_contentmanager
+ */
 class ValidationTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     /**
