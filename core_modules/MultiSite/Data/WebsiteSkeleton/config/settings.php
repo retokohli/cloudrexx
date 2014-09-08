@@ -25,3 +25,11 @@ $_CONFIG['installationId']            = "";
 */
 $_CONFIG['dashboardNewsSrc']          = "";
 
+/**
+* -------------------------------------------------------------------------
+* ContactInformation
+* -------------------------------------------------------------------------
+*/
+$_CONFIG['coreAdminEmail']            = "";
+$_CONFIG['contactFormEmail']          = "";
+

@@ -1264,13 +1264,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $_CONFIG;
         
         \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
-        if (\Cx\Core\Setting\Controller\Setting::getValue('installationId') === NULL 
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('installationId')
                 && !\Cx\Core\Setting\Controller\Setting::add('installationId', $_CONFIG['installationId'], 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')) {
             throw new MultiSiteJsonException("Failed to add Setting entry for installationId");
         }
-        if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc') === NULL 
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc') 
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', $_CONFIG['dashboardNewsSrc'], 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')) {
             throw new MultiSiteJsonException("Failed to add Setting entry for dashboardNewsSrc");
+        }
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreAdminEmail') 
+                && !\Cx\Core\Setting\Controller\Setting::add('coreAdminEmail', $_CONFIG['coreAdminEmail'], 3, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')) {
+            throw new MultiSiteJsonException("Failed to add Setting entry for coreAdminEmail");
+        }
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactFormEmail') 
+                && !\Cx\Core\Setting\Controller\Setting::add('contactFormEmail', $_CONFIG['contactFormEmail'], 4, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')) {
+            throw new MultiSiteJsonException("Failed to add Setting entry for contactFormEmail");
         }
         \Cx\Core\Config\Controller\Config::init();
 

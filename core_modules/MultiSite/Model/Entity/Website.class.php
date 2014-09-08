@@ -754,6 +754,12 @@ class Website extends \Cx\Model\Base\EntityBase {
                         case 'dashboardNewsSrc':
                             $value = \Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc');
                             break;
+                        case 'coreAdminEmail':
+                            $value = \Cx\Core\Setting\Controller\Setting::getValue('coreAdminEmail');
+                            break;
+                        case 'contactFormEmail':
+                            $value = \Cx\Core\Setting\Controller\Setting::getValue('contactFormEmail');
+                            break;
                         default:
                             return $originalString;
                             break;
