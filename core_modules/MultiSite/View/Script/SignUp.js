@@ -258,10 +258,20 @@ function cx_multisite_signup(options) {
                 break;
 
             case 'form':
-            default:
                 setFormHeader(options.headerErrorTxt);
                 setFormButtonState('close', false);
                 setFormButtonState('cancel', true, true);
+                setFormButtonState('submit', false);
+                hideForm();
+                hideProgress();
+                setFormStatus(type, message);
+                cancelSetup();
+                break;
+
+            default:
+                setFormHeader(options.headerSuccessTxt);
+                setFormButtonState('close', true, true);
+                setFormButtonState('cancel', false);
                 setFormButtonState('submit', false);
                 hideForm();
                 hideProgress();
