@@ -416,6 +416,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             
             if (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'server', 'FileSystem');
+                \Cx\Core\Setting\Controller\Setting::show(
+                    $objTemplate,
+                    'index.php?cmd=MultiSite&act=settings',
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
+                    'Server',
+                    'TXT_CORE_MODULE_MULTISITE_'
+                );
+            }
+
+            if (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup', 'FileSystem');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
@@ -438,8 +449,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'TXT_CORE_MODULE_MULTISITE_'
                 );
             }
-
-            if (in_array($mode, array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+            
+           if (in_array($mode, array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup', 'FileSystem');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,

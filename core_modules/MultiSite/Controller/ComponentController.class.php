@@ -444,14 +444,17 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::MODE_NONE.':'.self::MODE_NONE.','.self::MODE_MANAGER.':'.self::MODE_MANAGER.','.self::MODE_SERVICE.':'.self::MODE_SERVICE.','.self::MODE_HYBRID.':'.self::MODE_HYBRID, 'config')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Mode");
             }
-          
-            // setup group
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup','FileSystem');
+            
+            // server group
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'server','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteController','xampp', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'xampp:XAMPP,plesk:Plesk', 'setup')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'xampp:XAMPP,plesk:Plesk', 'server')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user website Controller");
             }
+            
+            // setup group
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('multiSiteProtocol','mixed', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'mixed:Allow insecure (HTTP) and secure (HTTPS) connections,http:Allow only insecure (HTTP) connections,https:Allow only secure (HTTPS) connections', 'setup')){
