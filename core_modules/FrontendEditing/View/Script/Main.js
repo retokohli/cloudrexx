@@ -485,7 +485,7 @@ cx.fe.toolbar = function() {
                     // don't show inline editor if the content and title cannot be found
                     if ((
                             cx.fe.page.type == "content"
-                                    || (cx.fe.page.type == "application" && cx.fe.page.module == "home"))) {
+                                    || (cx.fe.page.type == "application" && cx.fe.page.module == "Home"))) {
                         // init the inline ckeditor
                             cx.fe.contentEditor.start(true);
                         cx.fe.toolbar.showAnchors(true, true); // show both anchors, history and options
@@ -510,7 +510,7 @@ cx.fe.toolbar = function() {
         if (cx.fe.page.type == "content" ||
             (
                 cx.fe.page.type == "application" &&
-                cx.fe.page.module == "home"
+                cx.fe.page.module == "Home"
             )
            ) {
             cx.jQuery("#fe_toolbar_startEditMode").show();
@@ -1075,7 +1075,7 @@ cx.fe.history.load = function(pos) {
     }
 
     cx.jQuery("#fe_history .fe_box").html(
-        "<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "/lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>"
+        "<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>"
     );
     cx.jQuery("#fe_history .fe_box").load(
         cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10" + hideDrafts,
