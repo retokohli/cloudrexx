@@ -924,6 +924,7 @@ class Config
                     'header' => $_ARRAYLANG['TXT_NAME'],
                     'table' => array(
                         'parse' => function($value) {
+                            global $_ARRAYLANG;
                             static $mainDomainName;
                             if (empty($mainDomainName)) {
                                 $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
@@ -931,7 +932,7 @@ class Config
                             }
                             $mainDomainIcon = '';
                             if ($value == $mainDomainName) {
-                                $mainDomainIcon = ' <img src="'.\Env::get('cx')->getCodeBaseCoreWebPath().'/Core/View/Media/icons/Home.png" title="Main Domain" />';
+                                $mainDomainIcon = ' <img src="'.\Env::get('cx')->getCodeBaseCoreWebPath().'/Core/View/Media/icons/Home.png" title="'.$_ARRAYLANG['TXT_CORE_CONFIG_MAINDOMAINID'].'" />';
                             }
                             return $value.$mainDomainIcon;
                         },
