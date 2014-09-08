@@ -15,12 +15,12 @@
     # MultiSite: Map requests to MEDIA RESOURCES of the Code Base of a Website
     RewriteCond %{ENV:REDIRECT_END} !1
     RewriteCond %{REQUEST_URI} ^/(core|core_modules|lib|modules)/
-    RewriteRule (.*) ${websiteDomainCodeBaseMap:%{HTTP_HOST}}/$1 [L,QSA,E=END:1]
+    RewriteRule (.*) ${websiteDomainCodeBaseMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # MultiSite: Map requests to CONTENT DATA of a Website
     RewriteCond %{ENV:REDIRECT_END} !1
     RewriteCond %{REQUEST_URI} ^/(feed|media|images)/
-    RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}}/$1 [L,QSA,E=END:1]
+    RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # MultiSite: Try to map the request of a webdesign template file to the
     #            website's data repository.
@@ -29,7 +29,7 @@
     RewriteCond %{ENV:REDIRECT_END} !1
     RewriteCond %{REQUEST_URI} ^/(themes)/
     RewriteCond %PATH_DOCUMENT_ROOT%${websiteDomainContentMap:%{HTTP_HOST}}%{REQUEST_URI} -f
-    RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}}/$1 [L,QSA,E=END:1]
+    RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # MultiSite: Try to map the request of a the webdesign template file to
     #            the website's Code Base.
@@ -38,7 +38,7 @@
     RewriteCond %{ENV:REDIRECT_END} !1
     RewriteCond %{REQUEST_URI} ^/(themes)/
     RewriteCond %PATH_DOCUMENT_ROOT%${websiteDomainCodeBaseMap:%{HTTP_HOST}}%{REQUEST_URI} -f
-    RewriteRule (.*) ${websiteDomainCodeBaseMap:%{HTTP_HOST}}/$1 [L,QSA,E=END:1]
+    RewriteRule (.*) ${websiteDomainCodeBaseMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # Resolve language specific sitemap.xml
     RewriteRule ^(\w+)\/sitemap.xml$ sitemap_$1.xml [L,NC]
