@@ -267,6 +267,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 // TODO: remove once setup process works flawlessly
             // send setup protocol anyway
             if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+                $config = \Env::get('config');
                 \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
                 \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                     'section' => 'MultiSite',
@@ -286,7 +287,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     ),
                 ));
             }
-            $websiteLink = '<a href=="'.ComponentController::getApiProtocol().$website->getBaseDn()->getName().'">'.$website->getBaseDn()->getName().'</a>';
+            $websiteLink = '<a href="'.ComponentController::getApiProtocol().$website->getBaseDn()->getName().'" target="_blank">'.$website->getBaseDn()->getName().'</a>';
             return array(
                 'status'    => 'success',
                 'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'], $websiteLink),
