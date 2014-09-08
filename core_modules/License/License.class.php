@@ -203,11 +203,11 @@ class License {
         $this->dashboardMessages = $dashboardMessages;
     }
     
-    public function getIsUpgradables() {
+    public function getIsUpgradable() {
         return $this->isUpgradable;
     }
     
-    public function setIsUpgradables($isUpgradable) {
+    public function setIsUpgradable($isUpgradable) {
         $this->isUpgradable = $isUpgradable;
     }
 
