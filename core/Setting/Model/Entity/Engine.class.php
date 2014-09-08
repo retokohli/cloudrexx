@@ -164,6 +164,25 @@ abstract class Engine implements EngineInterface {
         return null;
     }
 
+     /**
+     * Returns the true or false for given the setting name
+     * 
+     * If the settings have not been initialized (see {@see init()}), or
+     * if no setting of that name is present in the current set, false
+     * is returned.
+     * @param   string    $name       The settings name
+     * @return  boolean               The if setting name is exist returned true,
+     *                                false otherwise
+     */
+    public static function isDefined($name)
+    { 
+        if (isset(self::$arrSettings[$name]['name'])) {
+            return true;   
+        }
+        return false;
+    }
+    
+    
     /**
      * Updates a setting
      *

@@ -1394,53 +1394,54 @@ class Config
             }
 
             // cache
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml', $configPath);
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheEnabled')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheEnabled','off', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheEnabled");
+            if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+                \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml', $configPath);
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheEnabled')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheEnabled','off', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheEnabled");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheExpiration')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheExpiration','86400', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheExpiration");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheOpStatus')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheOpStatus','off', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOpStatus");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheDbStatus')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheDbStatus','off', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheDbStatus");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheVarnishStatus')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheVarnishStatus','off', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheVarnishStatus");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCache')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCache','off', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCache");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheOPCache')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheOPCache','off', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOPCache");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheProxyCacheVarnishConfig')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheProxyCacheVarnishConfig','{"ip":"127.0.0.1","port":"8080"}', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheProxyCacheVarnishConfig");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCacheMemcacheConfig')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCacheMemcacheConfig','{"ip":"127.0.0.1","port":11211}', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCacheMemcacheConfig");
+                }
             }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheExpiration')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheExpiration','86400', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheExpiration");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheOpStatus')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheOpStatus','off', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOpStatus");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheDbStatus')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheDbStatus','off', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheDbStatus");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheVarnishStatus')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheVarnishStatus','off', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheVarnishStatus");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCache')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCache','off', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCache");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheOPCache')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheOPCache','off', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOPCache");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheProxyCacheVarnishConfig')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheProxyCacheVarnishConfig','{"ip":"127.0.0.1","port":"8080"}', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheProxyCacheVarnishConfig");
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCacheMemcacheConfig')
-                && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCacheMemcacheConfig','{"ip":"127.0.0.1","port":11211}', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'cache')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCacheMemcacheConfig");
-            }
-
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
