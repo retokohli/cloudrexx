@@ -1,6 +1,29 @@
 <?php
+
+/**
+ * BlockTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_block
+ */
+
+namespace Cx\Modules\Block\Testing\UnitTest;
 use \Cx\Core\Json\Adapter\Block\JsonBlock as JsonBlock;
 
+/**
+ * BlockTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_block
+ */
 class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     /**
      * @covers JsonBlock::getBlockContent
@@ -8,7 +31,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      */
     public function testGetBlockContentNoPermission() {
         global $sessionObj;
-        $sessionObj = !$sessionObj ? new \cmsSession() : $sessionObj;
+        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
         $jsonBlock = new JsonBlock();
         $jsonBlock->getBlockContent(array('get' => array('block' => 1, 'lang' => 'de')));
     }
@@ -19,7 +42,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      */
     public function testGetBlockContentNotEnoughArguments() {
         global $sessionObj;
-        $sessionObj = !$sessionObj ? new \cmsSession() : $sessionObj;
+        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
         
@@ -33,7 +56,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      */
     public function testGetBlockContentNoBlockFound() {
         global $sessionObj;
-        $sessionObj = !$sessionObj ? new \cmsSession() : $sessionObj;
+        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
         
@@ -46,7 +69,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      */
     public function testGetBlockContent() {
         global $sessionObj;
-        $sessionObj = !$sessionObj ? new \cmsSession() : $sessionObj;
+        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
         
@@ -61,7 +84,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      */
     public function testSaveBlockContentNotEnoughArguments() {
         global $sessionObj;
-        $sessionObj = !$sessionObj ? new \cmsSession() : $sessionObj;
+        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
         
@@ -74,7 +97,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
      */
     public function testSaveBlockContent() {
         global $sessionObj;
-        $sessionObj = !$sessionObj ? new \cmsSession() : $sessionObj;
+        $sessionObj = !$sessionObj ? \cmsSession::getInstance() : $sessionObj;
         $user = \FWUser::getFWUserObject()->objUser->getUser(1);
         \FWUser::loginUser($user);
         

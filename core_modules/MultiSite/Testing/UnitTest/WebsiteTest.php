@@ -1,8 +1,29 @@
 <?php
+
 /**
+ * WebsiteTest
  * Test cases for the class Cx\Core_Modules\MultiSite\Model\Entity\Website
- *
- * @author ss4u <ss4u.comvation@gmail.com>
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_contentmanager
+ */
+
+namespace Cx\Core_Modules\MultiSite\Testing\UnitTest;
+
+/**
+ * WebsiteTest
+ * Test cases for the class Cx\Core_Modules\MultiSite\Model\Entity\Website
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_contentmanager
  */
 class WebsiteTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     
