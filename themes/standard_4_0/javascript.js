@@ -1,40 +1,48 @@
 (function($) {
     $(document).ready(function() {
+        /*Header trasparent START here*/
         var fadeSpeed = 10, fadeTo = 0.6, topDistance = 30;
         var topbarME = function() {
-            $jq11('.header').fadeTo(fadeSpeed, 1);
+            $('.header').fadeTo(fadeSpeed, 1);
         }, topbarML = function() {
-            $jq11('.header').fadeTo(fadeSpeed, fadeTo);
+            $('.header').fadeTo(fadeSpeed, fadeTo);
         };
         var inside = false;
-        $jq11(window).scroll(function() {
-            position = $jq11(window).scrollTop();
+        $(window).scroll(function() {
+            position = $(window).scrollTop();
             if (position > topDistance && !inside) {
 
                 topbarML();
-                $jq11('.header').bind('mouseenter', topbarME);
-                $jq11('.header').bind('mouseleave', topbarML);
+                $('.header').bind('mouseenter', topbarME);
+                $('.header').bind('mouseleave', topbarML);
                 inside = true;
             }
 
             else if (position < topDistance) {
                 topbarME();
-                $jq11('.header').unbind('mouseenter', topbarME);
-                $jq11('.header').unbind('mouseleave', topbarML);
+                $('.header').unbind('mouseenter', topbarME);
+                $('.header').unbind('mouseleave', topbarML);
                 inside = false;
             }
         });
-        $jq11('.carousel').carousel({
-            interval: 2000
-        });
-        $jq11('#social-media div').css('float', 'left');
-        $('.btn-navbar').toggle(function() {
-            $('section, footer').animate({right: '100%'}, 10);
-            $('.mobile-nav').css('visibility', 'visible');
-        }, function() {
+        /*Header trasparent END here*/
+        /*Mobile naviagtion START here*/
+        function navHide() {
             $('section, footer').animate({right: '0'}, 10);
             $('.mobile-nav').css('visibility', 'hidden');
+            $('.btn-navbar').one("click", navOpen);
+        }
+        function navOpen() {
+            $('section, footer').animate({right: '100%'}, 10);
+            $('.mobile-nav').css('visibility', 'visible');
+            $('.btn-navbar').one("click", navHide);
+        }
+        $('.btn-navbar').one("click", navOpen);
+        /*Mobile naviagtion END here*/
+        $('.carousel').carousel({
+            interval: 2000
         });
+        $('#social-media div').css('float', 'left');
         $('.profile.networks .btn-google').removeClass('btn-google').addClass('btn-google-plus');
         $('.profile.networks .fa-google').removeClass('fa-google').addClass('fa-google-plus');
         $('.profile.networks .fa-facebook').removeClass('fa-facebook').addClass('fa-facebook-square');
