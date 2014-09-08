@@ -1,7 +1,30 @@
 <?php
+
+/**
+ * ResolverTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_resolver
+ */
+
+namespace Cx\Core\Testing\Routing;
 use Cx\Core\Routing\Resolver as Resolver;
 use Cx\Core\Routing\Url as Url;
 
+/**
+ * ResolverTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_resolver
+ */
 class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     protected $mockFallbackLanguages = array(

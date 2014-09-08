@@ -1,9 +1,30 @@
 <?php
+
+/**
+ * ResolverTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_resolver
+ */
+
+namespace Cx\Core\Testing\Routing;
 use Cx\Core\Routing\Url as Url;
 
-include_once(ASCMS_TEST_PATH.'/testCases/ContrexxTestCase.php');
-
-class URLTest extends \ContrexxTestCase {
+/**
+ * ResolverTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  core_resolver
+ */
+class URLTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
     public function testDomainAndPath() {
         $url = new Url('http://example.com/');
         $this->assertEquals('http://example.com/', $url->getDomain());
