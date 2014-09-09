@@ -690,29 +690,61 @@ class ViewManager
             $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
             return false;
         }
-
-        if (is_dir($this->path.$theme)){
+        $this->codeBaseThemesFilePath = $this->codeBaseThemesPath.$theme;
+        $this->websiteThemesFilePath  = $this->websiteThemesPath.$theme;
+        if (is_dir($this->codeBaseThemesFilePath) || is_dir($this->websiteThemesFilePath)) {
+            $selectedThemeFiles = $this->getThemesFiles();
             $archive = new \PclZip($this->_archiveTempPath.$theme.'.zip');
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
-            $files = $archive->create($this->path.$theme, PCLZIP_OPT_REMOVE_PATH, $this->path);
-            if (!is_array($files)){
-                $this->strErrMessage = $this->_archiveTempPath.$theme.'.zip'.': '.$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
-                return false;
-            }
-            foreach($files as $file){
-                //status check
-                if (!in_array($file['status'],array('ok','filtered'))){
-                    $this->strErrMessage = $_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'].': '.$archive->errorInfo(true);
-                    return false;
-                }
-                \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath.$theme.'.zip');
-                return $this->_archiveTempPath.$theme.'.zip';     
-            }
+            $this->createZipFolder($selectedThemeFiles, '', $archive);
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath.$theme.'.zip');
+            return $this->_archiveTempPath.$theme.'.zip';     
         }
         $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
         return false;
     }
+    /**
+     * create the archive file to tmp folder
+     *
+     * @param array  $themeFilesArray  themes files in array
+     * @param string $folder           folder name
+     * @param object $archive          contains the PclZip archive object
+     *     
+     */
+    function createZipFolder($themeFilesArray, $folder = '/', $archive) {
+        global $_ARRAYLANG;
+        foreach ($themeFilesArray as $folderName => $fileName) {
+            if (is_array($fileName)) {
+                $this->createZipFolder($fileName, $folder . '/' . $folderName, $archive);
+            } else {
+                $themesFilePath = file_exists($this->websiteThemesFilePath . $folder . '/' . $fileName) ? $this->websiteThemesFilePath : $this->codeBaseThemesFilePath;
+                if ($archive->add($themesFilePath . $folder . '/' . $fileName, PCLZIP_OPT_REMOVE_PATH, $themesFilePath) == 0) {
+                    throw new \Exception($_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] . ': ' . $archive->errorInfo(true));
+                }
+            }
+        }
+    }
 
+    /**
+     * get the themes files from codeBaseThemesFilePath and websiteThemesFilePath
+     *
+     * @return  array
+     */
+    function getThemesFiles() {
+
+        if (file_exists($this->codeBaseThemesFilePath)) {
+            $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
+            $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
+        }
+        if (file_exists($this->websiteThemesFilePath)) {
+            $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
+            $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
+        }
+
+        $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
+        $this->sortFilesFolders($codeBaseFiles);
+        return $codeBaseFiles;
+    }
 
     /**
      * activates the theme for the current default language
@@ -1614,18 +1646,7 @@ class ViewManager
         if ($themes != "") {
             $this->codeBaseThemesFilePath = $this->codeBaseThemesPath.$themes;
             $this->websiteThemesFilePath  = $this->websiteThemesPath.$themes;
-            if (file_exists($this->codeBaseThemesFilePath)) {
-                $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
-                $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
-            }
-            if (file_exists($this->websiteThemesFilePath)) {
-                $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
-                $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
-            }
-
-            $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
-            $this->sortFilesFolders($codeBaseFiles);
-            $mergedFiles = $codeBaseFiles;
+            $mergedFiles = $this->getThemesFiles();
             foreach($mergedFiles as $folderName => $fileName) {
                $folderIcon = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
 
