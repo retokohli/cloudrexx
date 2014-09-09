@@ -22,6 +22,7 @@ class ViewGenerator {
      * @throws ViewGeneratorException 
      */
     public function __construct($object, $options = array()) {
+        global $_ARRAYLANG;
         try {
             $this->options = $options;
             $entityNS=null;
@@ -117,7 +118,7 @@ class ViewGenerator {
                         \Env::get('em')->persist($entityObj);
                         \Env::get('em')->flush();
                     }
-                    \Message::add('Entity have been added sucessfully!');   
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL']);   
                     $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                     $actionUrl->setParam('add', null);
                     \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
@@ -189,7 +190,7 @@ class ViewGenerator {
                         } else {
                             \Env::get('em')->flush();    
                         }
-                        \Message::add('Entity have been updated sucessfully!');   
+                        \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL']);   
                     } else {
                         \Message::add('Cannot save, Invalid argument!', \Message::CLASS_ERROR);
                     }
@@ -224,7 +225,7 @@ class ViewGenerator {
                             \Env::get('em')->remove($entityObj);
                             \Env::get('em')->flush();
                         }
-                        \Message::add('Entity have been deleted sucessfully!');   
+                        \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);   
                     }
                 }
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
@@ -238,6 +239,7 @@ class ViewGenerator {
     }
     
     public function render(&$isSingle = false) {
+        global $_ARRAYLANG;
         if (!empty($_GET['add']) 
             && !empty($this->options['functions']['add'])) {
             $isSingle = true;
@@ -259,7 +261,7 @@ class ViewGenerator {
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             if (!empty($this->options['functions']['add'])) {
                 $actionUrl->setParam('add', 1);
-                $addBtn = '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
+                $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
             }
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable

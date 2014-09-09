@@ -1383,3 +1383,10 @@ $_ARRAYLANG['TXT_CORE_ENTITY'] = "Eintrag";
 $_ARRAYLANG['TXT_MODULE_ORDER'] = "Bestellung";
 $_ARRAYLANG['TXT_MODULE_ORDER_DESCRIPTIOn'] = "Bestellungen";
 $_ARRAYLANG['TXT_MODULE_PIM'] = "Produkte";
+
+$_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'] ='Der neue Eintrag wurde erfolgreich hinzugefügt.';
+$_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'] ='Der Eintrag wurde erfolgreich aktualisiert.';
+$_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL'] ='Der Eintrag wurde erfolgreich gelöscht.';
+$_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Bitte bestätigen Sie den Löschvorgang des ausgewählten Eintrages.';
+$_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Eintrag bearbeiten';
+$_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Eintrag löschen';
