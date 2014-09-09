@@ -165,22 +165,24 @@ class BackendTable extends HTML_Table {
     }
     
     protected function getFunctionsCode($rowname, $functions, $virtual = false ) {
+        global $_ARRAYLANG;
+        
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
         if(!$virtual){
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl = clone $baseUrl;
                 $editUrl->setParam('editid', $rowname);
-                $code .= '<a href="' . $editUrl . '" class="edit"></a>';
+                $code .= '<a href="' . $editUrl . '" class="edit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'].'"></a>';
             }
             if (isset($functions['delete']) && $functions['delete']) {
                 $deleteUrl = clone $baseUrl;
                 $deleteUrl->setParam('deleteid', $rowname);
                 $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\Csrf::code();
-                $onclick ='if (confirm(\'Do you really want to delete?\'))'.
+                $onclick ='if (confirm(\''.$_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))'.
                         'window.location.replace(\''.$deleteUrl.'\');';
                 $_uri = 'javascript:void(0);';
-                $code .= '<a onclick="'.$onclick.'" href="'.$_uri.'" class="delete"></a>';
+                $code .= '<a onclick="'.$onclick.'" href="'.$_uri.'" class="delete" title="'.$_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'].'"></a>';
             }
         }
         return $code . '</span>';
