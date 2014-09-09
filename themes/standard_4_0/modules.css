@@ -65,7 +65,11 @@ form .contactFormGroup input[type=checkbox] {
     clear: left;
 }
 form #uploadFormField_uploadWidget {
-    padding: 0 0 0 250px;
+    padding: 0;
+}
+form #uploadFormField_uploadWidget ul {
+    padding-left: 0;
+    margin-left: 0;
 }
 form .contactFormUpload,
 form .formUploadedFiles,
@@ -2095,11 +2099,12 @@ dl.data_module img {
 }
 #downloads div.overview div.row div.category {
     float: left;
-    width: 51%;
+    width: 100%;
     padding: 0 0 5px 0;
 }
 #downloads div.overview div.row div.category div.title {
     font-weight: bold;
+    width: 100%;
 }
 #downloads div.overview div.row div.category div.content a {
     color: black;

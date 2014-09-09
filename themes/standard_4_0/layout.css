@@ -514,6 +514,9 @@ body a:hover {text-decoration: none;}
 #subnavigation li a.no-border {
     border: 0;
 }
+#subnavigation li.level-2:last-child a {
+    border-bottom: 0;
+}
 #subnavigation li.level-3 a {
     width: 100%;
     padding: 0 5px 1px 45px;
@@ -989,11 +992,6 @@ span.disconnected {
     width: 100%;
 }
 /*digital assest management page*/
-.overview .row {
-    margin: 0;
-    width: 50%;
-    float: left;
-}
 #contactFrame .row {
     margin: 0;
 }
@@ -1533,7 +1531,7 @@ p#loginerror {
     padding: 0;
     margin: 6px 0 0px 0;
 }
-input[type="file"]{height: auto;}
+input[type="file"]{height: auto;float: left;}
 .radio label, .checkbox label {
     height: 20px;
 }
