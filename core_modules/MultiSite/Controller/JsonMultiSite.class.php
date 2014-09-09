@@ -96,7 +96,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setupConfig'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getDefaultWebsiteIp'   => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setDefaultLanguage'    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'resetFtpPassword'      => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkResetFtpPasswordAccess'))
+            'resetFtpPassword'      => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkResetFtpPasswordAccess')),
+            'updateServiceServerSetup' => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -1435,5 +1436,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 break;
         }
         return false;
+    }
+        
+    /*
+     * Updating setup data in servers
+     * 
+     * @return boolean
+     */
+    public function updateServiceServerSetup($params) {
+            
+        if (empty($params['post'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::updateServiceServerSetup(): Updating setup data in server failed due to empty params in post method.');
+        }
+        
+        try {
+            $_POST = $params['post'];
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', null, 'FileSystem');  
+            //check form post
+            if (isset($_POST)   && !empty($_POST['bsubmit'])) {
+                if (isset($_POST['websitePath']))  {
+                    $_POST['websitePath']=rtrim($_POST['websitePath'],"/");
+                }
+                \Cx\Core\Setting\Controller\Setting::storeFromPost();
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::updateServiceServerSetup() failed: Updating setup data in server .' . $e->getMessage());
+        }
     }
 }

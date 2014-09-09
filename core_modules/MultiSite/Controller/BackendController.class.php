@@ -389,7 +389,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     static function settings($objTemplate)
     { 
         global $_ARRAYLANG;
-        
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', null, 'FileSystem');  
             //check form post
@@ -397,11 +397,24 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if (isset($_POST['websitePath']))  {
                     $_POST['websitePath']=rtrim($_POST['websitePath'],"/");
                 }
+                if (isset($_GET['active_tab']) && $_GET['active_tab'] == 3 && ($mode == ComponentController::MODE_MANAGER || ComponentController::MODE_HYBRID)) {
+                    $webServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
+                    foreach ($webServiceServers as $webServiceServer) {
+                        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateServiceServerSetup', $_POST, $webServiceServer);
+                        if (!$resp || $resp->status == 'error') {
+                            $errMsg = isset($resp->message) ? $resp->message : '';
+                            \DBG::dump($errMsg);
+                            if (isset($resp->log)) {
+                                \DBG::appendLogsToMemory($resp->log);
+                            }
+                            throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Problem in service servers update setup process'.$errMsg);    
+                        }
+                    }
+                }
                 \Cx\Core\Setting\Controller\Setting::storeFromPost();
             }
 
             // fetch MultiSite operation mode and set websiteController
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
             $websiteController = \Cx\Core\Setting\Controller\Setting::getValue('websiteController');
 
             if ($mode != ComponentController::MODE_WEBSITE) {
