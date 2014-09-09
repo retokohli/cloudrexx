@@ -8,9 +8,6 @@
         bottom: 27%;
         font-size: 18px;
     }
-    body #workbenchWarning {
-        font-size: 10px;
-    }
     .carousel-indicators {
         bottom: 0px;
         margin-bottom: 0;
@@ -84,7 +81,7 @@
         width: 100%;
         float: left;
     }
-    select[name="catId"] {
+    form select[name="catId"] {
         width: 100%;
         margin-bottom: 15px;
     }
@@ -208,8 +205,8 @@
         width: 100%;
         padding: 0;
     }
-    #shop figure a, #checkout .right, #checkout .left {width: 100%;}
-    #shop figure a .categorie-image-wrapper {
+    #page #shop figure a, #checkout .right, #checkout .left {width: 100%;}
+    #page #shop figure a .categorie-image-wrapper {
         width: 100%;
         height: auto;
     }
@@ -217,7 +214,7 @@
         width: 70%;
         height: auto;
     }
-    #downloads div.overview div.row div.category {
+    #page #downloads div.overview div.row div.category {
         width: 100%;
         padding: 0 0 15px 0;
     }

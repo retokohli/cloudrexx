@@ -1,189 +1,191 @@
-<div id="downloads">
-<form name="downloads_search" method="get" action="{DOWNLOADS_SEARCH_URL}">
-    <input type="hidden" name="section" value="Downloads" />
-    <input type="hidden" name="category" value="{DOWNLOADS_SEARCH_CATEGORY}" />
-    <input type="text" name="downloads_search_keyword" value="{DOWNLOADS_SEARCH_KEYWORD}" />
-    <input type="submit" value="{TXT_DOWNLOADS_SEARCH}" />
-</form>
-
-<!-- BEGIN downloads_overview -->
-<div class="overview">
-    <h2>{TXT_DOWNLOADS_CATEGORIES}</h2>
-    <!-- BEGIN downloads_overview_row -->
+<div id="downloads" class="container-fluid">
     <div class="row">
-        <!-- BEGIN downloads_overview_category -->
-        <div class="category">
-            <div class="title">
-                <a href="index.php?section=Downloads&amp;category={DOWNLOADS_CATEGORY_ID}"><img src="modules/Downloads/View/Media/folder_front.gif" alt="modules/Downloads/View/Media/folder_front.gif" style="position: relative; top: 4px;" />{DOWNLOADS_CATEGORY_NAME} ({DOWNLOADS_CATEGORY_DOWNLOADS_COUNT})</a>
-            </div>
-            <div class="content">
-                <!-- BEGIN downloads_overview_subcategory_list -->
-                    <!-- BEGIN downloads_overview_subcategory -->
-                    <a href="index.php?section=Downloads&amp;category={DOWNLOADS_SUBCATEGORY_ID}">{DOWNLOADS_SUBCATEGORY_NAME}</a>, 
-                    <!-- END downloads_overview_subcategory -->
-                <!-- END downloads_overview_subcategory_list -->
-                <a href="index.php?section=Downloads&amp;category={DOWNLOADS_CATEGORY_ID}" class="more">{TXT_DOWNLOADS_MORE}...</a>
-            </div>
-        </div>
-        <!-- END downloads_overview_category -->
-    </div>
-    <!-- END downloads_overview_row -->
-</div>
-<!-- END downloads_overview -->
-
-<!-- BEGIN downloads_crumbtrail -->
-<div class="breadcrumb">
-<a href="index.php?section=Downloads" title="{TXT_DOWNLOADS_START}">{TXT_DOWNLOADS_START}</a> <!-- BEGIN downloads_crumb --> &raquo; <a href="index.php?section=Downloads&amp;category={DOWNLOADS_CRUMB_ID}">{DOWNLOADS_CRUMB_NAME}</a> <!-- END downloads_crumb -->
-</div>
-<!-- END downloads_crumbtrail -->
-
-<!-- BEGIN downloads_category -->
-<div class="category-info">
-    <h2 class="category">{DOWNLOADS_CATEGORY_NAME}</h2>
-    {DOWNLOADS_CATEGORY_DESCRIPTION}
-</div>
-<!-- END downloads_category -->
-
-<!-- BEGIN downloads_subcategory_list -->
-<div class="subcategories">
-    <!-- BEGIN downloads_subcategory -->
-        <div class="category">
-            <div class="title">
-                <a href="index.php?section=Downloads&amp;category={DOWNLOADS_SUBCATEGORY_ID}"><img src="modules/Downloads/View/Media/folder_front.gif" alt="modules/Downloads/View/Media/folder_front.gif" style="position: relative; top: 4px;" />{DOWNLOADS_SUBCATEGORY_NAME}</a>
+        <form role="form" name="downloads_search" method="get" action="{DOWNLOADS_SEARCH_URL}">
+            <input type="hidden" name="section" value="Downloads" />
+            <input type="hidden" name="category" value="{DOWNLOADS_SEARCH_CATEGORY}" />
+            <input type="text" name="downloads_search_keyword" value="{DOWNLOADS_SEARCH_KEYWORD}" />
+            <input type="submit" class="btn btn-default" value="{TXT_DOWNLOADS_SEARCH}" />
+        </form>
+        <!-- BEGIN downloads_overview -->
+        <div class="overview container-fluid">
+            <div class="row">
+                <h2>{TXT_DOWNLOADS_CATEGORIES}</h2>
+                <!-- BEGIN downloads_overview_row -->
+                <div class="col-md-6 col-sm-12">
+                    <!-- BEGIN downloads_overview_category -->
+                    <div class="category row">
+                        <div class="title">
+                            <a href="index.php?section=Downloads&amp;category={DOWNLOADS_CATEGORY_ID}"><img src="modules/Downloads/View/Media/folder_front.gif" alt="modules/Downloads/View/Media/folder_front.gif" style="position: relative; top: 4px;" />{DOWNLOADS_CATEGORY_NAME} ({DOWNLOADS_CATEGORY_DOWNLOADS_COUNT})</a>
+                        </div>
+                        <div class="content">
+                            <!-- BEGIN downloads_overview_subcategory_list -->
+                            <!-- BEGIN downloads_overview_subcategory -->
+                            <a href="index.php?section=Downloads&amp;category={DOWNLOADS_SUBCATEGORY_ID}">{DOWNLOADS_SUBCATEGORY_NAME}</a>, 
+                            <!-- END downloads_overview_subcategory -->
+                            <!-- END downloads_overview_subcategory_list -->
+                            <a href="index.php?section=Downloads&amp;category={DOWNLOADS_CATEGORY_ID}" class="more">{TXT_DOWNLOADS_MORE}...</a>
+                        </div>
+                    </div>
+                    <!-- END downloads_overview_category -->
+                </div>
+                <!-- END downloads_overview_row -->
             </div>
         </div>
-    <!-- END downloads_subcategory -->
-</div>
-<!-- END downloads_subcategory_list -->
+        <!-- END downloads_overview -->
 
-<!-- BEGIN downloads_file_list -->
-<div class="file_list">
-    <h2>{TXT_DOWNLOADS_DOWNLOADS}</h2>
-    <!-- BEGIN downloads_file -->
-    <div class="file {DOWNLOADS_FILE_ROW_CLASS}">
-        <div class="infos">
-            <h3><a href="{DOWNLOADS_FILE_DETAIL_SRC}">{DOWNLOADS_FILE_NAME}</a></h3>
-            <div class="shortdetail_top"><img src="modules/Downloads/View/Media/pie_chart.png" alt="{TXT_DOWNLOADS_VIEWED}" /> {TXT_DOWNLOADS_VIEWED}: {DOWNLOADS_FILE_VIEWS}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/bar_chart.png" alt="{TXT_DOWNLOADS_DOWNLOADED}" /> {TXT_DOWNLOADS_DOWNLOADED}: {DOWNLOADS_FILE_DOWNLOAD_COUNT}<br /></div>{DOWNLOADS_FILE_SHORT_DESCRIPTION}<br /><br />
-            <div class="shortdetail_bottom"><img src="modules/Downloads/View/Media/license.gif" alt="{TXT_DOWNLOADS_LICENSE}" /> {TXT_DOWNLOADS_LICENSE}: {DOWNLOADS_FILE_LICENSE}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/modify.png" alt="{TXT_DOWNLOADS_VERSION}" /> {TXT_DOWNLOADS_VERSION}: {DOWNLOADS_FILE_VERSION}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/profile.png" alt="{TXT_DOWNLOADS_AUTHOR}" /> {TXT_DOWNLOADS_AUTHOR}: {DOWNLOADS_FILE_AUTHOR}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/info.png" alt="{TXT_DOWNLOADS_WEBSITE}" /> {TXT_DOWNLOADS_WEBSITE}: {DOWNLOADS_FILE_WEBSITE}</div>
+        <!-- BEGIN downloads_crumbtrail -->
+        <div class="breadcrumb">
+            <a href="index.php?section=Downloads" title="{TXT_DOWNLOADS_START}">{TXT_DOWNLOADS_START}</a> <!-- BEGIN downloads_crumb --> &raquo; <a href="index.php?section=Downloads&amp;category={DOWNLOADS_CRUMB_ID}">{DOWNLOADS_CRUMB_NAME}</a> <!-- END downloads_crumb -->
         </div>
-        <div class="image"><a href="{DOWNLOADS_FILE_DETAIL_SRC}">{DOWNLOADS_FILE_THUMBNAIL}</a></div>
-        <div class="delete">{DOWNLOADS_FILE_DELETE_ICON}</div>
-    </div>
-    <!-- END downloads_file -->
-    <div class="paging">
-        {DOWNLOADS_FILE_PAGING}
-    </div>
-</div>
-<!-- END downloads_file_list -->
+        <!-- END downloads_crumbtrail -->
 
-<!-- BEGIN downloads_file_detail -->
-<div class="file">
-    <h2>{DOWNLOADS_FILE_NAME}</h2>
-    <div class="infos">
-    	<div class="detail_desc">
-    	{DOWNLOADS_FILE_DESCRIPTION}<br />	
-    	</div>
-    	<div class="image"><a href="{DOWNLOADS_FILE_IMAGE_SRC}" target="_blank"><img src="{DOWNLOADS_FILE_THUMBNAIL_SRC}" alt="thumbnail" /></a></div>
-    	<div class="download"><h3><a href="{DOWNLOADS_FILE_DOWNLOAD_LINK_SRC}">{DOWNLOADS_FILE_ICON} {TXT_DOWNLOADS_DOWNLOAD}</a></h3></div>
-		<div class="file_info">
-		
-		<table summary="download infomations">
-			<tr class="row2">
-				<td class="title"><img src="modules/Downloads/View/Media/modify.png" alt="{TXT_DOWNLOADS_VERSION}" /> {TXT_DOWNLOADS_VERSION}:</td>
-				<td>{DOWNLOADS_FILE_VERSION}</td>
-			</tr>
-			<tr class="row1">
-				<td class="title"><img src="modules/Downloads/View/Media/info.png" alt="{TXT_DOWNLOADS_WEBSITE}" /> {TXT_DOWNLOADS_WEBSITE}:</td>
-				<td>{DOWNLOADS_FILE_WEBSITE}</td>
-			</tr>
-			<tr class="row2">
-				<td class="title"><img src="modules/Downloads/View/Media/profile.png" alt="{TXT_DOWNLOADS_AUTHOR}" /> {TXT_DOWNLOADS_AUTHOR}:</td>
-				<td>{DOWNLOADS_FILE_AUTHOR}</td>
-			</tr>
-			<tr class="row1">
-				<td class="title"><img src="modules/Downloads/View/Media/mtime.gif" alt="{TXT_DOWNLOADS_LAST_UPDATED}" /> {TXT_DOWNLOADS_LAST_UPDATED}:</td>
-				<td>{DOWNLOADS_FILE_LAST_UPDATED}</td>
-			</tr>
-			<tr class="row2">
-				<td class="title"><img src="modules/Downloads/View/Media/size.gif" alt="{TXT_DOWNLOADS_SIZE}" /> {TXT_DOWNLOADS_SIZE}:</td>
-				<td>{DOWNLOADS_FILE_SIZE}</td>
-			</tr>
-			<tr class="row1">
-				<td class="title"><img src="modules/Downloads/View/Media/license.gif" alt="{TXT_DOWNLOADS_LICENSE}" /> {TXT_DOWNLOADS_LICENSE}:</td>
-				<td>{DOWNLOADS_FILE_LICENSE}</td>
-			</tr>
-			<tr class="row2">
-				<td class="title"><img src="modules/Downloads/View/Media/bar_chart.png" alt="{TXT_DOWNLOADS_DOWNLOADED}" /> {TXT_DOWNLOADS_DOWNLOADED}:</td>
-				<td>{DOWNLOADS_FILE_DOWNLOAD_COUNT}</td>
-			</tr>
-			<tr class="row1">
-				<td class="title"><img src="modules/Downloads/View/Media/pie_chart.png" alt="{TXT_DOWNLOADS_VIEWED}" /> {TXT_DOWNLOADS_VIEWED}:</td>
-				<td>{DOWNLOADS_FILE_VIEWS}</td>
-			</tr>
-		</table>
-		</div>	
-		<div class="file_owner">{TXT_DOWNLOADS_ADDED_BY} <a href="index.php?section=Access&amp;cmd=user&amp;id={DOWNLOADS_FILE_OWNER_ID}" title="{DOWNLOADS_FILE_OWNER}">{DOWNLOADS_FILE_OWNER}</a></div>
-	</div>
-    <!-- BEGIN downloads_file_category_list -->
-    <div class="file_addon">
-        <h3>{TXT_DOWNLOADS_RELATED_CATEGORIES}</h3>
+        <!-- BEGIN downloads_category -->
+        <div class="category-info">
+            <h2 class="category">{DOWNLOADS_CATEGORY_NAME}</h2>
+            {DOWNLOADS_CATEGORY_DESCRIPTION}
+        </div>
+        <!-- END downloads_category -->
+
+        <!-- BEGIN downloads_subcategory_list -->
         <div class="subcategories">
-            <!-- BEGIN downloads_file_category -->
+            <!-- BEGIN downloads_subcategory -->
             <div class="category">
                 <div class="title">
-                    <a href="index.php?section=Downloads&amp;category={DOWNLOADS_FILE_CATEGORY_ID}"><img src="modules/Downloads/View/Media/folder_front.gif" alt="{DOWNLOADS_FILE_CATEGORY_NAME}" style="position: relative; top: 4px;" />{DOWNLOADS_FILE_CATEGORY_NAME}</a>
+                    <a href="index.php?section=Downloads&amp;category={DOWNLOADS_SUBCATEGORY_ID}"><img src="modules/Downloads/View/Media/folder_front.gif" alt="modules/Downloads/View/Media/folder_front.gif" style="position: relative; top: 4px;" />{DOWNLOADS_SUBCATEGORY_NAME}</a>
                 </div>
             </div>
-            <!-- END downloads_file_category -->
+            <!-- END downloads_subcategory -->
         </div>
+        <!-- END downloads_subcategory_list -->
+
+        <!-- BEGIN downloads_file_list -->
+        <div class="file_list">
+            <h2>{TXT_DOWNLOADS_DOWNLOADS}</h2>
+            <!-- BEGIN downloads_file -->
+            <div class="file {DOWNLOADS_FILE_ROW_CLASS}">
+                <div class="infos">
+                    <h3><a href="{DOWNLOADS_FILE_DETAIL_SRC}">{DOWNLOADS_FILE_NAME}</a></h3>
+                    <div class="shortdetail_top"><img src="modules/Downloads/View/Media/pie_chart.png" alt="{TXT_DOWNLOADS_VIEWED}" /> {TXT_DOWNLOADS_VIEWED}: {DOWNLOADS_FILE_VIEWS}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/bar_chart.png" alt="{TXT_DOWNLOADS_DOWNLOADED}" /> {TXT_DOWNLOADS_DOWNLOADED}: {DOWNLOADS_FILE_DOWNLOAD_COUNT}<br /></div>{DOWNLOADS_FILE_SHORT_DESCRIPTION}<br /><br />
+                    <div class="shortdetail_bottom"><img src="modules/Downloads/View/Media/license.gif" alt="{TXT_DOWNLOADS_LICENSE}" /> {TXT_DOWNLOADS_LICENSE}: {DOWNLOADS_FILE_LICENSE}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/modify.png" alt="{TXT_DOWNLOADS_VERSION}" /> {TXT_DOWNLOADS_VERSION}: {DOWNLOADS_FILE_VERSION}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/profile.png" alt="{TXT_DOWNLOADS_AUTHOR}" /> {TXT_DOWNLOADS_AUTHOR}: {DOWNLOADS_FILE_AUTHOR}&nbsp;&nbsp;<img src="modules/Downloads/View/Media/info.png" alt="{TXT_DOWNLOADS_WEBSITE}" /> {TXT_DOWNLOADS_WEBSITE}: {DOWNLOADS_FILE_WEBSITE}</div>
+                </div>
+                <div class="image"><a href="{DOWNLOADS_FILE_DETAIL_SRC}">{DOWNLOADS_FILE_THUMBNAIL}</a></div>
+                <div class="delete">{DOWNLOADS_FILE_DELETE_ICON}</div>
+            </div>
+            <!-- END downloads_file -->
+            <div class="paging">
+                {DOWNLOADS_FILE_PAGING}
+            </div>
+        </div>
+        <!-- END downloads_file_list -->
+
+        <!-- BEGIN downloads_file_detail -->
+        <div class="file">
+            <h2>{DOWNLOADS_FILE_NAME}</h2>
+            <div class="infos">
+                <div class="detail_desc">
+                    {DOWNLOADS_FILE_DESCRIPTION}<br />	
+                </div>
+                <div class="image"><a href="{DOWNLOADS_FILE_IMAGE_SRC}" target="_blank"><img src="{DOWNLOADS_FILE_THUMBNAIL_SRC}" alt="thumbnail" /></a></div>
+                <div class="download"><h3><a href="{DOWNLOADS_FILE_DOWNLOAD_LINK_SRC}">{DOWNLOADS_FILE_ICON} {TXT_DOWNLOADS_DOWNLOAD}</a></h3></div>
+                <div class="file_info">
+
+                    <table summary="download infomations">
+                        <tr class="row2">
+                            <td class="title"><img src="modules/Downloads/View/Media/modify.png" alt="{TXT_DOWNLOADS_VERSION}" /> {TXT_DOWNLOADS_VERSION}:</td>
+                            <td>{DOWNLOADS_FILE_VERSION}</td>
+                        </tr>
+                        <tr class="row1">
+                            <td class="title"><img src="modules/Downloads/View/Media/info.png" alt="{TXT_DOWNLOADS_WEBSITE}" /> {TXT_DOWNLOADS_WEBSITE}:</td>
+                            <td>{DOWNLOADS_FILE_WEBSITE}</td>
+                        </tr>
+                        <tr class="row2">
+                            <td class="title"><img src="modules/Downloads/View/Media/profile.png" alt="{TXT_DOWNLOADS_AUTHOR}" /> {TXT_DOWNLOADS_AUTHOR}:</td>
+                            <td>{DOWNLOADS_FILE_AUTHOR}</td>
+                        </tr>
+                        <tr class="row1">
+                            <td class="title"><img src="modules/Downloads/View/Media/mtime.gif" alt="{TXT_DOWNLOADS_LAST_UPDATED}" /> {TXT_DOWNLOADS_LAST_UPDATED}:</td>
+                            <td>{DOWNLOADS_FILE_LAST_UPDATED}</td>
+                        </tr>
+                        <tr class="row2">
+                            <td class="title"><img src="modules/Downloads/View/Media/size.gif" alt="{TXT_DOWNLOADS_SIZE}" /> {TXT_DOWNLOADS_SIZE}:</td>
+                            <td>{DOWNLOADS_FILE_SIZE}</td>
+                        </tr>
+                        <tr class="row1">
+                            <td class="title"><img src="modules/Downloads/View/Media/license.gif" alt="{TXT_DOWNLOADS_LICENSE}" /> {TXT_DOWNLOADS_LICENSE}:</td>
+                            <td>{DOWNLOADS_FILE_LICENSE}</td>
+                        </tr>
+                        <tr class="row2">
+                            <td class="title"><img src="modules/Downloads/View/Media/bar_chart.png" alt="{TXT_DOWNLOADS_DOWNLOADED}" /> {TXT_DOWNLOADS_DOWNLOADED}:</td>
+                            <td>{DOWNLOADS_FILE_DOWNLOAD_COUNT}</td>
+                        </tr>
+                        <tr class="row1">
+                            <td class="title"><img src="modules/Downloads/View/Media/pie_chart.png" alt="{TXT_DOWNLOADS_VIEWED}" /> {TXT_DOWNLOADS_VIEWED}:</td>
+                            <td>{DOWNLOADS_FILE_VIEWS}</td>
+                        </tr>
+                    </table>
+                </div>	
+                <div class="file_owner">{TXT_DOWNLOADS_ADDED_BY} <a href="index.php?section=Access&amp;cmd=user&amp;id={DOWNLOADS_FILE_OWNER_ID}" title="{DOWNLOADS_FILE_OWNER}">{DOWNLOADS_FILE_OWNER}</a></div>
+            </div>
+            <!-- BEGIN downloads_file_category_list -->
+            <div class="file_addon">
+                <h3>{TXT_DOWNLOADS_RELATED_CATEGORIES}</h3>
+                <div class="subcategories">
+                    <!-- BEGIN downloads_file_category -->
+                    <div class="category">
+                        <div class="title">
+                            <a href="index.php?section=Downloads&amp;category={DOWNLOADS_FILE_CATEGORY_ID}"><img src="modules/Downloads/View/Media/folder_front.gif" alt="{DOWNLOADS_FILE_CATEGORY_NAME}" style="position: relative; top: 4px;" />{DOWNLOADS_FILE_CATEGORY_NAME}</a>
+                        </div>
+                    </div>
+                    <!-- END downloads_file_category -->
+                </div>
+            </div>
+            <!-- END downloads_file_category_list -->
+            <!-- BEGIN downloads_related_file_list -->
+            <div>
+                <h3>{TXT_DOWNLOADS_RELATED_DOWNLOADS}</h3>
+                <ul>
+                    <!-- BEGIN downloads_related_file -->
+                    <li><a href="{DOWNLOADS_RELATED_FILE_DETAIL_SRC}">{DOWNLOADS_RELATED_FILE_NAME}</a></li>
+                    <!-- END downloads_related_file -->
+                </ul>
+            </div>
+            <!-- END downloads_related_file_list -->
+        </div>
+        <!-- END downloads_file_detail -->
+        <div style="clear:both;">
+            <!-- BEGIN downloads_simple_file_upload -->
+            <form action="">
+                <input class="btn btn-default" type="button" value="{TXT_DOWNLOADS_UPLOAD_FILE}" name="exposedComboUploaderStarter" id="exposedComboUploaderStarter" />
+            </form>
+            {COMBO_UPLOADER_CODE}
+            <script type="text/javascript">
+                cx.ready(function() {
+                    var uploader = cx.instances.get('exposed_combo_uploader', 'uploader');
+                    uploader.dialog().bind('close', function() {
+                        window.location = '{DOWNLOADS_UPLOAD_REDIRECT_URL}';
+                    });
+                }, true);
+            </script>
+            <!-- END downloads_simple_file_upload -->
+            <!-- BEGIN downloads_advanced_file_upload -->
+            <fieldset>
+                <legend>{TXT_DOWNLOADS_ADD_NEW_FILE}</legend>
+                {DOWNLOADS_FILE_UPLOAD_BUTTON}
+            </fieldset>
+            <!-- END downloads_advanced_file_upload -->
+
+            <br />
+
+            <!-- BEGIN downloads_create_category -->
+            <form name="downloads_create_category" method="post" action="{DOWNLOADS_CREATE_CATEGORY_URL}">
+                <fieldset>
+                    <legend>{TXT_DOWNLOADS_CREATE_NEW_DIRECTORY}</legend>
+                    <input type="text" name="downloads_category_name" value="" /> 
+                    <input class="btn btn-default" type="submit" value="{TXT_DOWNLOADS_CREATE_DIRECTORY}" />
+                </fieldset>
+            </form>
+            <!-- END downloads_create_category -->
+        </div>
+        {DOWNLOADS_JS}
     </div>
-    <!-- END downloads_file_category_list -->
-    <!-- BEGIN downloads_related_file_list -->
-    <div>
-        <h3>{TXT_DOWNLOADS_RELATED_DOWNLOADS}</h3>
-        <ul>
-            <!-- BEGIN downloads_related_file -->
-            <li><a href="{DOWNLOADS_RELATED_FILE_DETAIL_SRC}">{DOWNLOADS_RELATED_FILE_NAME}</a></li>
-            <!-- END downloads_related_file -->
-        </ul>
-    </div>
-    <!-- END downloads_related_file_list -->
-</div>
-<!-- END downloads_file_detail -->
-
-<br />
-<div style="clear:both;">
-<!-- BEGIN downloads_simple_file_upload -->
-<form action="">
-    <input type="button" value="{TXT_DOWNLOADS_UPLOAD_FILE}" name="exposedComboUploaderStarter" id="exposedComboUploaderStarter" />
-</form>
-{COMBO_UPLOADER_CODE}
-<script type="text/javascript">
-	cx.ready(function(){
-		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
-		uploader.dialog().bind('close',function(){
-			window.location = '{DOWNLOADS_UPLOAD_REDIRECT_URL}';
-		});
-	},true);
-</script>
-<!-- END downloads_simple_file_upload -->
-<!-- BEGIN downloads_advanced_file_upload -->
-<fieldset>
-    <legend>{TXT_DOWNLOADS_ADD_NEW_FILE}</legend>
-    {DOWNLOADS_FILE_UPLOAD_BUTTON}
-</fieldset>
-<!-- END downloads_advanced_file_upload -->
-
-<br />
-
-<!-- BEGIN downloads_create_category -->
-<form name="downloads_create_category" method="post" action="{DOWNLOADS_CREATE_CATEGORY_URL}">
-    <fieldset>
-        <legend>{TXT_DOWNLOADS_CREATE_NEW_DIRECTORY}</legend>
-        <input type="text" name="downloads_category_name" value="" /> <input type="submit" value="{TXT_DOWNLOADS_CREATE_DIRECTORY}" />
-    </fieldset>
-</form>
-<!-- END downloads_create_category -->
-</div>
-{DOWNLOADS_JS}
 </div>
