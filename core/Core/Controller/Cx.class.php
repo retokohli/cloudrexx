@@ -1440,6 +1440,13 @@ namespace Cx\Core\Core\Controller {
 
             try {
                 $contentTemplate = self::getContentTemplateOfPage($this->resolvedPage, $plainSection);
+
+                // In case $contentTemplate is empty, do not replace placeholder {APPLICATION_DATA}.
+                // In such cases the loaded component does have the opportunity to manulay parse {APPLICATION_DATA} itself.
+                if (empty($contentTemplate)) {
+                    return;
+                }
+
                 $this->resolvedPage->setContent(str_replace('{APPLICATION_DATA}', $contentTemplate, $this->resolvedPage->getContent()));
             } catch (\Exception $e) {
                 throw new \Exception('Error Loading the content template:' . $e);
@@ -1459,22 +1466,32 @@ namespace Cx\Core\Core\Controller {
                 $cmd              = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd()); 
                 $customAppTemplate= !$page->getApplicationTemplate() ? $cmd.'.html' : $page->getApplicationTemplate();
                 $moduleFolderName = contrexx_isCoreModule($page->getModule()) ? 'core_modules' : 'modules';
+                $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
                 
-                //displaying the application template for all output channels
-                if ($page->getUseCustomApplicationTemplateForAllChannels()) {
+                // use application template for all output channels
+                if ($page->getUseCustomApplicationTemplateForAllChannels() && $page->getSkin()) {
                     $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
-                    $themeFolderName = $page->getSkin() ? $themeRepo->findById($page->getSkin())->getFoldername() : \Env::get('init')->getCurrentThemesPath();
-                } else {
-                    $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
+                    $themeFolderName = $themeRepo->findById($page->getSkin())->getFoldername();
                 }
+
+                // use default theme in case a custom set theme is no longer available
                 if (empty($themeFolderName)) {
                     $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
                     $themeFolderName = $themeRepo->getDefaultTheme($themeType, $page->getLang())->getFoldername();
                 }
                 
+                // load custom application template from page's theme
                 $themePath = \Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate;
+                if (file_exists($themePath)) {
+                    return file_get_contents($themePath);
+                }
+
+                // load default application template from component
                 $modulePath = \Env::get('ClassLoader')->getFilePath(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/'.$moduleFolderName.'/'.$component.'/View/Template/Frontend/'.$cmd.'.html');
-                return file_exists($themePath) ? file_get_contents($themePath) : (file_exists($modulePath) ? file_get_contents($modulePath) : '');
+                if (file_exists($modulePath)) {
+                    return file_get_contents($modulePath);
+                }
+                return;
             } catch (\Exception $e) {
                 throw new \Exception('Error fetching the content template:' . $e);
             }
