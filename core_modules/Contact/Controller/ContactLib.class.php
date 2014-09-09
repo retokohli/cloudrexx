@@ -1484,5 +1484,247 @@ JS_isRequiredSelect;
 JS_misc;
         return $code;
     }
+    
+    /*
+     * Generates the HTML Source code of the Submission form designed in backend
+     * @id      Submission form id
+     * @lang    Language for which source code to be generated
+     * @preview Boolean, generated preview source or raw source
+     * @show    Boolean, generated frontend code
+     */
+    function getSourceCode($id, $lang, $preview = false, $show = false)
+    {
+        global $_ARRAYLANG, $objInit, $objDatabase;
+
+        $hasFileInput = false; //remember if we added a file input -> this would need the uploader to be initialized
+
+        $arrFields = $this->getFormFields($id);
+        $sourcecode = array();
+        $this->initContactForms();
+
+        $sourcecode[] = '<div class="text-warning" id="contactFeedback">{CONTACT_FEEDBACK_TEXT}</div>
+<div id="contactDescription"><!-- BEGIN formText -->'.($preview ? $this->arrForms[$id]['lang'][$lang]['text'] : '{'.$id.'_FORM_TEXT}').'<!-- END formText --></div>
+<div class="text-danger" id="contactFormError">'.($preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}').'</div>
+<!-- BEGIN contact_form -->
+<form role="form" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" action="'.($preview ? '../' : '').'index.php?section=Contact&amp;cmd='.$id.'" method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();">
+    <fieldset id="contactFrame">
+    <legend>'.($preview ? $this->arrForms[$id]['lang'][$lang]['name'] : '{'.$id.'_FORM_NAME}').'</legend>';
+
+        foreach ($arrFields as $fieldId => $arrField) {
+            if ($arrField['is_required']) {
+                $required = '<strong class="is_required">*</strong>';
+            } else {
+                $required = '';
+            }
+
+            if ($arrField['type'] != 'fieldset' && $arrField['type'] != 'hidden') {
+                $sourcecode[] = '<div class="contact row form-group">';
+            }
+            
+            switch ($arrField['type']) {
+                case 'label':
+                case 'hidden':
+                case 'horizontalLine':
+                case 'checkbox':
+                    break;
+                case 'fieldset':
+                    $sourcecode[] = '</fieldset>';
+                    $sourcecode[] = '<fieldset id="contactFormFieldId_'.$fieldId.'">';
+                    $sourcecode[] = "<legend>".($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")."</legend>";
+                    break;
+                case 'checkboxGroup':
+                case 'radio':
+                    $sourcecode[] = '<label>'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label>';
+                    break;
+                case 'date':
+                    $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label>';
+                    break;
+                default:
+                    $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label>';
+            }
+
+            $arrField['lang'][$lang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$lang]['value']);
+            $fieldType                        = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
+            switch ($fieldType) {
+                case 'label':
+                    $sourcecode[] = '<div class="contactFormClass_'.$arrField['type'].'">'.contrexx_raw2xhtml($arrField['lang'][$lang]['value']).'</div>';
+                    break;
+
+                case 'checkbox':
+                    $sourcecode[] = '<div class="checkbox"><label for="contactFormFieldId_'.$fieldId.'"><input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1" {SELECTED_'.$fieldId.'} />'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label></div>';
+                    break;
+
+                case 'checkboxGroup':
+                    $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
+                    $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
+                    $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
+                    foreach ($options as $index => $option) {
+                        $sourcecode[] = '<div class="checkbox"><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'"><input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.contrexx_raw2xhtml($option).'" {SELECTED_'.$fieldId.'_'.$index.'}/>'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label></div>';
+                    }
+                    $sourcecode[] = '</div>';
+                    break;
+
+                case 'country':
+                case 'access_country':
+                    $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                    if ($arrField['is_required'] == 1) {
+                        $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."</option>";
+                    } else {
+                        $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."</option>";
+                    }
+                    if ($preview) {
+                        while (!$objResult->EOF) {
+                            $sourcecode[] = "<option value=\"".$objResult->fields['name']."\" >".$objResult->fields['name']."</option>";
+                            $objResult->MoveNext();
+                        }
+                    } else {
+                        $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                        $sourcecode[] = "<option value=\"{".$fieldId."_VALUE}\" {SELECTED_".$fieldId."} >{".$fieldId."_VALUE}</option>";
+                        $sourcecode[] = "<!-- END field_".$fieldId." -->";
+                    }
+                    $sourcecode[] = "</select>";
+                    break;
+
+                case 'date':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" />';
+                    break;
+                case 'access_birthday':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '{'.$fieldId.'_VALUE}').'" />';
+                    break;
+
+                case 'file':
+                case 'multi_file':
+                    $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget_'.$fieldId.'"></div>';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" disabled="disabled"/></div>';
+                    break;
+                
+                case 'hidden':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : "{".$fieldId."_VALUE}").'" />';
+                    break;
+
+                case 'horizontalLine':
+                    $sourcecode[] = '<hr />';
+                    break;
+                
+                case 'password':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
+                    break;
+
+                case 'radio':
+                    $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
+                    $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
+                    $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
+                    foreach ($options as $index => $option) {
+                        $sourcecode[] .= '<div class="radio"><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'"><input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} />'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label></div>';
+                    }
+                    $sourcecode[] = '</div>';
+                    break;
+
+                case 'access_title':
+                case 'access_gender':
+                    // collect user attribute options
+                    $arrOptions = array();
+                    $accessAttributeId = str_replace('access_', '', $fieldType);
+                    $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById($accessAttributeId);
+
+                    // get options
+                    $arrAttribute = $objAttribute->getChildren();
+                    foreach ($arrAttribute as $attributeId) {
+                        $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById($attributeId);
+                        $arrOptions[] = $objAttribute->getName(FRONTEND_LANG_ID);
+                    }
+
+                    // options will be used for select input generation
+                    $arrField['lang'][FRONTEND_LANG_ID]['value'] = implode(',', $arrOptions);
+
+                case 'select':
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                    if ($preview) {
+                        $options = explode(',', $arrField['lang'][FRONTEND_LANG_ID]['value']);
+                        foreach ($options as $index => $option) {
+                            $sourcecode[] = "<option value='".contrexx_raw2xhtml($option)."'>". contrexx_raw2xhtml($option) ."</option>";
+                        }
+                    } else {
+                        $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                        $sourcecode[] = "<option value='{".$fieldId."_VALUE}' {SELECTED_".$fieldId."}>". '{'.$fieldId.'_VALUE}'."</option>";
+                        $sourcecode[] = "<!-- END field_".$fieldId." -->";
+                    }
+                    $sourcecode[] = "</select>";
+                    break;
+
+                case 'textarea':
+                    $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
+                    break;
+                case 'recipient':
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                    if ($preview) {
+                        foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
+                            $sourcecode[] = "<option value='".$index."'>". $arrRecipient['lang'][$lang] ."</option>";
+                        }
+                    } else {
+                        $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                        $sourcecode[] = "<option value='{".$fieldId."_VALUE_ID}' {SELECTED_".$fieldId."} >". '{'.$fieldId.'_VALUE}'."</option>";
+                        $sourcecode[] = "<!-- END field_".$fieldId." -->";
+                    }
+                    $sourcecode[] = "</select>";
+                    break;
+                case 'fieldset':
+                    break;
+                default:
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '{'.$fieldId.'_VALUE}').'" />';
+                    break;
+            }
+
+            if ($arrField['type'] != 'fieldset' && $arrField['type'] != 'hidden') {
+                $sourcecode[] = '</div>';
+            }
+        }
+
+        if ($preview) {
+            $themeId = $objInit->arrLang[FRONTEND_LANG_ID]['themesid'];
+            if (($objRS = $objDatabase->SelectLimit("SELECT `foldername` FROM `".DBPREFIX."skins` WHERE `id` = ".$themeId, 1)) !== false) {
+                $themePath = $objRS->fields['foldername'];
+            }
+            $sourcecode[] = '<link href="../core_modules/Contact/View/Style/form.css" rel="stylesheet" type="text/css" />';
+
+            if ($this->arrForms[$id]['useCaptcha']) {
+                $sourcecode[] = '<div class="contact row form-group">';
+                $sourcecode[] = '<label>'.$_ARRAYLANG["TXT_CONTACT_CAPTCHA"].'</label>';
+                $sourcecode[] = \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode();
+                $sourcecode[] = '</div>';
+            }
+        } else {
+            $sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
+            $sourcecode[] = '<div class="contact row form-group">';
+            $sourcecode[] = '<label>{TXT_CONTACT_CAPTCHA}</label>';
+            $sourcecode[] = '{CONTACT_CAPTCHA_CODE}';
+            $sourcecode[] = '</div>';
+            $sourcecode[] = "<!-- END contact_form_captcha -->";
+        }
+
+        $sourcecode[] = '<div class="contact row form-group">';
+        $sourcecode[] = '<input class="contactFormClass_button btn btn-default" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button btn btn-default" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
+        $sourcecode[] = '<input type="hidden" name="unique_id" value="{CONTACT_UNIQUE_ID}" />';
+        $sourcecode[] = '</div>';
+        $sourcecode[] = "</fieldset>";
+        $sourcecode[] = "</form>";
+        $sourcecode[] = "<!-- END contact_form -->";
+
+        $sourcecode[] = $preview ? $this->_getJsSourceCode($id, $arrFields, $preview, $show) : "{CONTACT_JAVASCRIPT}";
+
+        if ($show) {
+            $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
+        }
+        
+        return implode("\n", $sourcecode);
+    }
 }
-?>

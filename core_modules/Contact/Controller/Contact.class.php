@@ -137,6 +137,12 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $this->handleUniqueId();
         $uploaderCode = '';
         
+        // load requested form's source code if required
+        if ($this->objTemplate->placeholderExists('APPLICATION_DATA')) {
+            // load form's source code
+            $this->objTemplate->addBlock('APPLICATION_DATA', 'application_data', $this->getSourceCode($formId, $_LANGID));
+        }
+        
         $this->objTemplate->setVariable(array(
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
             'TXT_CONTACT_SUBMIT'    => $_ARRAYLANG['TXT_CONTACT_SUBMIT'],
