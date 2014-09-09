@@ -481,7 +481,10 @@ namespace Cx\Core\Core\Controller {
                 return $instance;
             }
             $instance = new static($mode, $configFilePath);
-            self::$instances[$configFilePath] = array($instance);
+            if (!isset(self::$instances[$configFilePath])) {
+                self::$instances[$configFilePath] = array();
+            }
+            self::$instances[$configFilePath][] = $instance;
             self::$preferredInstance = $instance;
             return $instance;
         }
