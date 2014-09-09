@@ -1063,7 +1063,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $license->setUpdateInterval($params['post']['updateInterval']);
                     }
                     if (isset($params['post']['dashboardMessages'])) {
-                        $license->setDashboardMessages($params['post']['dashboardMessages']);
+                        $dashboardMessages = array();
+                        foreach ($params['post']['dashboardMessages'] as $lang => $value) {
+                            $dashboardMessages[] = new \Cx\Core_Modules\License\Message($lang, $value['text'], $value['type'], $value['link'], $value['linkTarget'], true);
+                        }
+                        $license->setDashboardMessages($dashboardMessages);
                     }
                     if (isset($params['post']['legalComponents'])) {
                         $license->setAvailableComponents($params['post']['legalComponents']);

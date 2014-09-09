@@ -1263,9 +1263,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 'updateInterval'    => 8760,
                 'isUpgradable'      => true,
                 'dashboardMessages' => array(
-                    1 => 'Testen Sie unsere gesamte Leistungsvielfalt bis zum 08.09.2014 völlig kostenlos!
+                    \FWLanguage::getLanguageCodeById(1) => array(
+                        'text' => 'Testen Sie unsere gesamte Leistungsvielfalt bis zum 08.09.2014 völlig kostenlos!
                           In der kostenlosen Testphase bis zum 08.09.2014 haben Sie uneingeschränkten Zugriff auf sämtliche Funktionen. Sie können unser Produkt also ausgiebig testen. Überzeugen Sie sich von unserer Leistungsvielfalt und wählen Sie dann einfach die für Ihre Anforderungen geeignete Mitgliedschaftsart aus. Für eine individuelle Beratung, auch im Zusammenhang mit der Anwendung unserer Software, stehen wir Ihnen gerne zur Verfügung!
                           Nach dieser Testphase erhält ihr Account automatisch den Status FREE (kostenlos)!',
+                        'type'       => 'okbox',
+                        'link'       => null,
+                        'linkTarget' => null
+                    ),
                 )
             );
             //send the JSON Request 'setLicense' command from service to website
