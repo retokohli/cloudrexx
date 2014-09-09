@@ -872,6 +872,11 @@ class Website extends \Cx\Model\Base\EntityBase {
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add website entry for website name");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteFtpUser', $this->name, 10,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
+                    throw new WebsiteException("Failed to add website entry for website FTP user");
+            }
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
@@ -1306,7 +1311,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
                 //create FTP-Account
                 $password = \User::make_password(8, true);
-                $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
+                $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath'), \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
 
                 if ($accountId) {
                     return $password;

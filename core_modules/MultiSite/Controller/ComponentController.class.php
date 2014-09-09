@@ -569,6 +569,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting Repository for Contrexx Code Bases");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteFtpPath', '', 11,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting Repository for website FTP path");
+            }
 
             // websiteManager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager','FileSystem');

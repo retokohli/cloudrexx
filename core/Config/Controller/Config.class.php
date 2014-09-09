@@ -54,6 +54,7 @@ class Config
     {
         global $objTemplate, $_ARRAYLANG;
 
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
         $objTemplate->setVariable('CONTENT_NAVIGATION','
             <a href="?cmd=Config" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'
             .(in_array('CacheManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="?cmd=Config&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'].'</a>' : '')  .
@@ -61,7 +62,7 @@ class Config
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '') .
             '<a href="index.php?cmd=Config&amp;act=Domain" class="'.($this->act == 'Domain' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_DOMAINS'].'</a>'
-            . '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>'
+            . (!empty(\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser')) ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
         );
     }
 
@@ -1476,7 +1477,12 @@ class Config
         $objDomain   = $domainRepo->findOneBy(array('id' => 0));
         //get the ftp user name
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
-        $ftpUserName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+        $ftpUserName = \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser');
+        
+        if (empty($ftpUserName)) {
+            throw new \Exception('FTP Failed to load: Website Ftp User is empty');
+        }
+        
         $objTemplate->setVariable(array(
             'FTP_SERVER_NAME'   => 'ftps://' . $objDomain->getName(),
             'FTP_USER_NAME'     => $ftpUserName,
