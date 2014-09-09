@@ -76,9 +76,22 @@ namespace Cx\Core\Core\Controller {
          * Holds references to all currently loaded Cx instances
          * 
          * The first one is the normally used one, all others are special.
+         * This is a two dimensional array. The first level key is the
+         * configuration file path. Each of these entries contains a list of
+         * all Contrexx instances for this config file.
          * @var array
          */
         protected static $instances = array();
+        
+        /**
+         * Holds the reference to preferred instance of this class
+         *
+         * Normally this is the first instance. In special environments (an
+         * example would be the environment for the MultiSite component) this
+         * may be a different instance.
+         * @var Cx
+         */
+        protected static $preferredInstance = null;
         
         /**
          * Parsing star time
@@ -441,24 +454,35 @@ namespace Cx\Core\Core\Controller {
         /**
          * This creates instances of this class
          * 
-         * Normally the first instance is returned. This method is necessary
-         * because of special cases like license update in installer, which has
-         * to initialize Cx in order to perform a user login and then including
-         * versioncheck.php, which load Cx for standalone operation.
+         * Normally the first instance is returned. You may set another instance
+         * to be the preferred one using the $setAsPreferred argument.
          * @param string $mode (optional) One of the modes listed in constants above
          * @param boolean $forceNew (optional) Wheter to force a new instance or not, default false
          * @param string $configFilePath (optional) The absolute path to a Contrexx configuration
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
+         * @param boolean $setAsPreferred (optional) Sets this instance as the preferred one for later
          * @return \Cx\Core\Core\Controller\Cx Instance of this class 
          */
-        public static function instanciate($mode = null, $forceNew = false, $configFilePath = null) {
-            if (count(self::$instances) && !$forceNew) {
-                reset(self::$instances);
-                return current(self::$instances);
+        public static function instanciate($mode = null, $forceNew = false, $configFilePath = null, $setAsPreferred = false) {
+            // at least one instance exists (for given config file path) AND not forced to create a new one
+            if (count(self::$instances) && !$forceNew && count(self::$instances[$configFilePath])) {
+                // If no config file path is supplied, return the preferred instance
+                if (!$configFilePath) {
+                    return self::$preferredInstance;
+                }
+                // Else return the first instance for given config file path
+                reset(self::$instances[$configFilePath]);
+                $instance = current(self::$instances[$configFilePath]);
+                // Set this instance as the preferred one
+                if ($setAsPreferred) {
+                    self::$preferredInstance = $instance;
+                }
+                return $instance;
             }
             $instance = new static($mode, $configFilePath);
-            self::$instances[] = $instance;
+            self::$instances[$configFilePath] = array($instance);
+            self::$preferredInstance = $instance;
             return $instance;
         }
         
