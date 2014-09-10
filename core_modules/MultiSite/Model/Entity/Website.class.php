@@ -1316,7 +1316,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
                 //create FTP-Account
                 $password = \User::make_password(8, true);
-                $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath'), \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
+                $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
 
                 if ($accountId) {
                     return $password;
