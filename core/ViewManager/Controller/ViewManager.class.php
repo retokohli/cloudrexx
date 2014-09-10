@@ -694,6 +694,9 @@ class ViewManager
         $this->websiteThemesFilePath  = $this->websiteThemesPath.$theme;
         if (is_dir($this->codeBaseThemesFilePath) || is_dir($this->websiteThemesFilePath)) {
             $selectedThemeFiles = $this->getThemesFiles();
+            if (!defined('PCLZIP_TEMPORARY_DIR')) {
+                define('PCLZIP_TEMPORARY_DIR', \cmsSession::getInstance()->getTempPath() . '/');
+            }
             $archive = new \PclZip($this->_archiveTempPath.$theme.'.zip');
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
             $this->createZipFolder($selectedThemeFiles, '', $archive);
