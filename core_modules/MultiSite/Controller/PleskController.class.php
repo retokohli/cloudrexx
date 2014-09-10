@@ -630,22 +630,33 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);       
+
         $ftpUser = $xmldoc->createElement('ftp-user');
         $packet->appendChild($ftpUser);
+
         $addTag = $xmldoc->createElement('add');
         $ftpUser->appendChild($addTag);
+
         $ftpLogin = $xmldoc->createElement('name', $userName);
         $addTag->appendChild($ftpLogin);
-        $ftpPassword = $xmldoc->createElement('password', $password);
+
+        $ftpPasswordValue = $xmldoc->createTextNode($password);
+        $ftpPassword = $xmldoc->createElement('password');
+        $ftpPassword->appendChild($ftpPasswordValue);
         $addTag->appendChild($ftpPassword);
+
         $home = $xmldoc->createElement('home', $homePath);
         $addTag->appendChild($home);
+
         $permissions = $xmldoc->createElement('permissions');
         $addTag->appendChild($permissions);
+
         $permissionReadAccess = $xmldoc->createElement('read', true);
         $permissions->appendChild($permissionReadAccess);
+
         $permissionWriteAccess = $xmldoc->createElement('write', true);
         $permissions->appendChild($permissionWriteAccess);
+
         $webspaceId = $xmldoc->createElement('webspace-id', $subscriptionId);
         $addTag->appendChild($webspaceId);
         
@@ -711,17 +722,25 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);       
+
         $ftpUser = $xmldoc->createElement('ftp-user');
         $packet->appendChild($ftpUser);
+
         $setTag = $xmldoc->createElement('set');
         $ftpUser->appendChild($setTag);
+
         $filterTag = $xmldoc->createElement('filter');
         $setTag->appendChild($filterTag);
+
         $ftpLogin = $xmldoc->createElement('name', $userName);
         $filterTag->appendChild($ftpLogin);
+
         $valuesTag = $xmldoc->createElement('values');
         $setTag->appendChild($valuesTag);
-        $ftpPassword = $xmldoc->createElement('password', $password);
+
+        $ftpPasswordValue = $xmldoc->createTextNode($password);
+        $ftpPassword = $xmldoc->createElement('password');
+        $ftpPassword->appendChild($ftpPasswordValue);
         $valuesTag->appendChild($ftpPassword);
         
         $response = $this->executeCurl($xmldoc);
