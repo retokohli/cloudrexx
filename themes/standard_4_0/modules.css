@@ -222,8 +222,8 @@ table th a {
 table tr.row1,
 table tr.marketRow2 {
     background-color: #FFFFFF;
-    float: left;
-    width: 100%;
+/*    float: left;
+    width: 100%;*/
 }
 .voting td {
     float: left;
@@ -232,9 +232,7 @@ table tr.marketRow2 {
 table tr.row2,
 table tr.marketRow3 {
     background-color: #F6F6F6;
-    float: left;
     padding: 0;    
-    width: 100%;
 }
 #tagelement td {
     float: left;
@@ -1228,10 +1226,6 @@ div.row2 {
 #shop table tr.row2 {
     background: #FFFFFF;
 }
-#shop table tr.row3 {
-    border-bottom: 1px solid #FFFFFF;
-    background: #F6F6F6;
-}
 #shop div.menu,
 #shop div.cart_info,
 #shop div.informations,
@@ -1289,13 +1283,9 @@ div.row2 {
 #shop .a_center {
     text-align: center;
 }
-#shop .shop_cart_input {
-    width: 143px !important;
-    float: right;
-}
-.a_right select {
-    float: right;
+#shop .shop_cart_input, .a_right select {
     width: 150px !important;
+    float: right;
 }
 #shop .delete-icon {
     position: relative;
@@ -1309,10 +1299,6 @@ div.row2 {
 }
 #shop div.message_error {
     color:#FF0000;
-}
-#shop div.categories {
-    float: left;
-    width: 100%;
 }
 #shop div.category {
     padding: 0px 0px 0px 0px;
@@ -1346,18 +1332,6 @@ div.row2 {
     padding: 0;
     margin: 0;
     border: 0;
-}
-#shop div.images {
-    float: left;
-    width: 25%;
-}
-#shop div.images a img {
-    max-width: 90%;
-    max-height: 150px;
-}
-#shop div.info {
-    float: left;
-    width: 75%;
 }
 #shop div.short-description {
     float: left;
@@ -1446,7 +1420,7 @@ div.row2 {
 }
 #shop div.functions {
     float: right;
-    padding: 20px 0 0 0;
+    padding: 20px 15px 0 0;
 }
 #shop div.functions input[type=submit] {
     margin: 0;
@@ -1507,7 +1481,7 @@ div.row2 {
 }
 #shop figure a {
     float: left;
-    width: 30%;
+    width: 100%;
     margin: 0 3% 20px 0;
     border: 1px solid #DDDDDD;
     box-shadow: 3px 3px 8px #DDDDDD;
@@ -1524,16 +1498,16 @@ div.row2 {
 }
 #shop figure a .categorie-image-wrapper {
     float: left;
-    width: 90%;
-    height: 150px;
+    width: 100%;
+    height: 225px;
     padding: 5%;
     text-align: center;
 }
-#shop figure a .categorie-image-wrapper img {
+/*#shop figure a .categorie-image-wrapper img {
     max-width: 80%;
     max-height: 80%;
     padding: 10%;
-}
+}*/
 #shop figure a h3 {
     float: left;
     width: 100%;
@@ -1570,7 +1544,10 @@ div.row2 {
     padding-right: 25px;
     color: #FFFFFF;
     font-weight: bold;
-    background: #0A85C8 url('images/arrow-right-white.png') no-repeat 62px 13px;
+    background-repeat: no-repeat;
+    background-image: url('images/arrow-right-white.png');
+    background-position: 62px 12px;
+    border-color: transparent;
 }
 #shop button.add-to-cart {
     float: right;
@@ -1586,8 +1563,11 @@ div.row2 {
     -webkit-border-bottom-left-radius: 0;
     -o-border-top-left-radius: 0;
     -o-border-bottom-left-radius: 0;
-    background: #0A85C8 url('images/cart-white.png') no-repeat 10px 7px;
+    background-image: url('images/cart-white.png');
+    background-position: 10px 7px;
+    background-repeat: no-repeat;
     margin-top: 10px;
+    border-color: transparent;
 }
 #shop button.details-button:hover,
 #shop button.add-to-cart:hover {
@@ -2793,14 +2773,13 @@ select[name="catId"] {
     float: left;
     width: 50%;
 }
-#shop .row3 {
+/*#shop .row3 {
     display: table-row;
-    float: left;
-    width: 100%;
+    
     background: #F6F6F6;
     padding : 6px 5px;
     border-bottom: 1px solid #ffffff;
-}
+}*/
 #shop .row3 .shoprow:first-child {
     width: 25%;
     text-align: left;
