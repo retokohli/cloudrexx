@@ -13,6 +13,17 @@
         margin-bottom: 0;
         padding-bottom: 0;
     }
+    #page #shop button.add-to-cart {
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        o-border-radius: 4px;
+    }
+    #page #shop div.price {
+         -webkit-border-radius: 5px;
+        border-radius: 5px;
+        o-border-radius: 5px;
+    }
+    #page #shop div.functions {padding-right: 0;}
     #home-boxes {
         padding: 0;
         float: left;
@@ -197,7 +208,7 @@
     }
     .login-bottom {padding-left: 15px;}
     #login a.lostpw, #login a.register {margin-left: 0}
-    #sidebar.col-md-3, #page.col-md-9, #page-left, #shop div.details, #shop div.short-description {
+    #sidebar.col-md-3, #page.col-md-9, #page-left, #page #shop div.details, #page #shop div.short-description {
         width: 100%;
         margin-right: 0px;
     }
@@ -208,10 +219,6 @@
     #page #shop figure a, #checkout .right, #checkout .left {width: 100%;}
     #page #shop figure a .categorie-image-wrapper {
         width: 100%;
-        height: auto;
-    }
-    #shop figure a .categorie-image-wrapper img {
-        width: 70%;
         height: auto;
     }
     #page #downloads div.overview div.row div.category {
@@ -257,12 +264,8 @@
         font-weight: 700;
         padding-right: 0;
     }
-    #shop input.shop_quantity {
-        float: right;
-    }
-    #shop .delete-icon {
-        float: right;
-        right: 46px;
+    #page #shop input.shop_quantity {
+        width: 28px;
     }
     #cartlist .row1 div {
         width: 50%;
@@ -510,6 +513,7 @@
     #profile-left-button {
         padding-left: 0;
     }
+    #page #shop div.description{width: 100%;}
     /**/
 }
 @media (min-width: 768px) and (max-width: 979px) {
@@ -518,6 +522,7 @@
     #content-wrapper {
         padding-bottom: 168px;
     }
+    #page #shop div.description{width: 100%;}
     .news-image {
         margin-right: 0;
         width: 100%;

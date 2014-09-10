@@ -514,7 +514,7 @@ body a:hover {text-decoration: none;}
 #subnavigation li a.no-border {
     border: 0;
 }
-#subnavigation li.level-2:last-child a {
+#sidebar #subnavigation li.level-2:last-child > ul {
     border-bottom: 0;
 }
 #subnavigation li.level-3 a {
@@ -995,9 +995,6 @@ span.disconnected {
 #contactFrame .row {
     margin: 0;
 }
-form .row {
-    margin: 0;
-}
 /*Mobile navigation START here*/
 .mobile-nav .navigation {
     width: 100%;
@@ -1336,8 +1333,6 @@ row2 .eachrow:first-child, .homerow2 .eachrow:first-child {
 }
 .row2 {
     background: #F6F6F6;
-    float: left;
-    width: 100%;
     padding: 6px 0 6px 0;
 }
 .listrow {
@@ -1535,7 +1530,7 @@ input[type="file"]{height: auto;float: left;}
 .radio label, .checkbox label {
     height: 20px;
 }
-.btn.btn-default {
+.btn.btn-default, .btn.btn-primary {
     font-size: 13px;
 }
 fieldset .checkbox, fieldset .radio {
