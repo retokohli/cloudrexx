@@ -1455,7 +1455,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup', 'FileSystem');
             $setupValues = $params['post']['setupArray'];
             foreach($setupValues as $valuesName => $value) {
-                \Cx\Core\Setting\Controller\Setting::set($valuesName, $value);
+                \Cx\Core\Setting\Controller\Setting::set($valuesName, $value['value']);
                 \Cx\Core\Setting\Controller\Setting::update($valuesName);
             }
         } catch (\Exception $e) {
