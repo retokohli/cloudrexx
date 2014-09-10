@@ -97,7 +97,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getDefaultWebsiteIp'   => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setDefaultLanguage'    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'resetFtpPassword'      => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkResetFtpPasswordAccess')),
-            'updateServiceServerSetup' => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
+            'updateServiceServerSetup' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -1446,20 +1446,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function updateServiceServerSetup($params) {
-            
-        if (empty($params['post'])) {
+
+        if (empty($params['post']['setupArray'])) {
             throw new MultiSiteJsonException('JsonMultiSite::updateServiceServerSetup(): Updating setup data in server failed due to empty params in post method.');
         }
         
         try {
-            $_POST = $params['post'];
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', null, 'FileSystem');  
-            //check form post
-            if (isset($_POST)   && !empty($_POST['bsubmit'])) {
-                if (isset($_POST['websitePath']))  {
-                    $_POST['websitePath']=rtrim($_POST['websitePath'],"/");
-                }
-                \Cx\Core\Setting\Controller\Setting::storeFromPost();
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup', 'FileSystem');
+            $setupValues = $params['post']['setupArray'];
+            foreach($setupValues as $valuesName => $value) {
+                \Cx\Core\Setting\Controller\Setting::set($valuesName, $value);
+                \Cx\Core\Setting\Controller\Setting::update($valuesName);
             }
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::updateServiceServerSetup() failed: Updating setup data in server .' . $e->getMessage());

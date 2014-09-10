@@ -106,6 +106,20 @@ class YamlEngine extends Engine{
         return $settingArray;
     }
 
+    public static function getArray($section, $group = null)
+    { 
+        $groupArray = array();
+        if ($group !== null && self::$section == $section) {
+            foreach (self::$arrSettings as $value) {
+                if ($value['group'] == $group) {
+                    $groupArray[$value['name']] = $value;
+                }
+            }
+        } else {
+            $groupArray = self::$arrSettings;
+        }
+        return $groupArray;
+    }
     /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
