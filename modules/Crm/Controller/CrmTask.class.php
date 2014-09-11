@@ -280,7 +280,7 @@ class CrmTask extends CrmLibrary
         global $_ARRAYLANG,$objDatabase,$objJs,$objFWUser;
         
         \JS::registerCSS("modules/Crm/View/Style/contact.css");
-        if (gettype($objFWUser)) {
+        if ( gettype($objFWUser) === 'NULL') {
             $objFWUser = \FWUser::getFWUserObject();
         }
         $objtpl = $this->_objTpl;
@@ -411,7 +411,6 @@ class CrmTask extends CrmLibrary
             $description= $objValue->fields['description'];
             $taskAutoId = $objValue->fields['task_id'];
         }
-
         $this->_getResourceDropDown('Members', $assignedto, $settings['emp_default_user_group']);
         $this->taskTypeDropDown($objtpl, $type);
 

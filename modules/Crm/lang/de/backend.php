@@ -545,8 +545,10 @@ $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR']       = "Währung kann nicht gelö
 $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR']       = "Währungsstatus kann nicht geändert werden.";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPE_STATUS_ERROR']  = "Customer type status cannot be changed.";
 $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE']  = "Mitarbeiter";
-$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP']  = "Wählen Sie die Benutzergruppe aus, aus welcher die Mitglieder einer Aufgabe oder Verkaufschance zugewiesen werden können.";
-$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_ACCESS_ERROR']  = "Die ausgewählte Benutzergruppe verfügt nicht über die benötigten Zugriffsrechte um aufs CRM zu zugreifen. Benutzer, welchen eine Aufgabe oder Verkaufschance zugewiesen wird, werden nicht in der Lage sein, diese zu betreuen wegen den fehlenden Zugriffsberechtigungen.";
+//$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP']  = "Wählen Sie die Benutzergruppe aus, aus welcher die Mitglieder einer Aufgabe oder Verkaufschance zugewiesen werden können.";
+$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP']  = "Nur Mitglieder dieser Benutzergruppe können einer Aufgabe oder Verkaufschance zugewiesen werden.";
+//$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_ACCESS_ERROR']  = "Die ausgewählte Benutzergruppe verfügt nicht über die benötigten Zugriffsrechte um aufs CRM zu zugreifen. Benutzer, welchen eine Aufgabe oder Verkaufschance zugewiesen wird, werden nicht in der Lage sein, diese zu betreuen wegen den fehlenden Zugriffsberechtigungen.";
+$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_ACCESS_ERROR']  = "Der ausgewählten Benutzergruppe fehlen Zugriffsrechte auf das CRM. Wählen Sie eine andere Gruppe, oder weisen Sie der gewählten die nötigen Berechtigungen zu.";
 
 /*placeholder Descriptions*/
 $_ARRAYLANG['TXT_CRM_ASSIGNED_USER_EMAIL'] = 'Die ID der Benutzermailadresse .';
