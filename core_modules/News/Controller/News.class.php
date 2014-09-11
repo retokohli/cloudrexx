@@ -711,12 +711,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         // load source code if cmd value is integer
         if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
-            //find the news overview page
-            $pageRepo = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
-            $page = $pageRepo->findOneBy(array('module' => 'News', 'lang' => $_LANGID));
-            if (!$page) {
-                throw new \Cx\Core\ContentManager\Model\Entity\PageException('News Overview Page Not Found!.');
-            }
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('News');
             // load source code
             $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page));
         }
