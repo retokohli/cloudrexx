@@ -4352,13 +4352,16 @@ END;
                        c.contact_familyname,
                        d.quote_number,
                        d.assigned_to,
-                       d.due_date
+                       d.due_date,
+                       stages.stage AS percent
             FROM ".DBPREFIX."module_{$this->moduleNameLC}_deals AS d
                 LEFT JOIN ".DBPREFIX."module_{$this->moduleNameLC}_contacts AS c
             ON d.customer = c.id
                 LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_websites` AS web
             ON d.website = web.id
                 $filter
+                LEFT JOIN `".DBPREFIX."module_{$this->moduleNameLC}_stages` AS stages
+            ON d.stage = stages.id
             ORDER BY $sortf $sorto";
         $objResult = $objDatabase->Execute($query);
 
@@ -4385,11 +4388,11 @@ END;
 
             $row = "row2";
             while (!$objResult->EOF) {
-
+                
                 $objTpl->setVariable(array(
                         'ENTRY_ID'              => (int) $objResult->fields['id'],
                         'CRM_DEALS_TITLE'       => contrexx_raw2xhtml($objResult->fields['title']),
-                        'CRM_DEALS_PERCENTAGE'  => 10,
+                        'CRM_DEALS_PERCENTAGE'  => $objResult->fields['percent'],
                         'CRM_CONTACT_NAME'      => "<a href='./index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objResult->fields['customer']}' title='details'>".contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']).'</a>',
                         'CRM_DEALS_CONTACT_NAME'=> contrexx_raw2xhtml($this->getUserName($objResult->fields['assigned_to'])),
                         'CRM_DEALS_DUE_DATE'    => contrexx_raw2xhtml($objResult->fields['due_date']),
