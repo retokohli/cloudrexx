@@ -140,6 +140,11 @@ class ViewManager
         
         $this->themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
         //\Cx\Lib\FileSystem\FileSystem::makeWritable($this->webPath);
+        
+        //define the Pclzip Temporary Directory
+        if (!defined('PCLZIP_TEMPORARY_DIR')) {
+            define('PCLZIP_TEMPORARY_DIR', \cmsSession::getInstance()->getTempPath() . '/');
+        }
     }
     
 
@@ -577,7 +582,6 @@ class ViewManager
     private function importFile()
     {
         global $_ARRAYLANG;
-        require_once(\Env::get('cx')->getCodeBaseLibraryPath().'/pclzip/pclzip.lib.php');
 
         $this->_cleantmp();
         switch($_GET['import']) {
@@ -671,7 +675,6 @@ class ViewManager
      */
     function _exportFile()
     {
-        require_once(\Env::get('cx')->getCodeBaseLibraryPath() . '/pclzip/pclzip.lib.php');
         global $_ARRAYLANG;
         //clean up tmp folder
         $this->_cleantmp();
@@ -694,9 +697,6 @@ class ViewManager
         $this->websiteThemesFilePath  = $this->websiteThemesPath.$theme;
         if (is_dir($this->codeBaseThemesFilePath) || is_dir($this->websiteThemesFilePath)) {
             $selectedThemeFiles = $this->getThemesFiles();
-            if (!defined('PCLZIP_TEMPORARY_DIR')) {
-                define('PCLZIP_TEMPORARY_DIR', \cmsSession::getInstance()->getTempPath() . '/');
-            }
             $archive = new \PclZip($this->_archiveTempPath.$theme.'.zip');
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
             $this->createZipFolder($selectedThemeFiles, '', $archive);
