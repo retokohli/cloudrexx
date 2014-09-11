@@ -62,7 +62,7 @@ class Config
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '') .
             '<a href="index.php?cmd=Config&amp;act=Domain" class="'.($this->act == 'Domain' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_DOMAINS'].'</a>'
-            . (!empty(\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser')) ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
+            . (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser') ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
         );
     }
 
