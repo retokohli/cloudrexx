@@ -1426,10 +1426,10 @@ div.row2 {
     margin: 0;
 }
 #shop div.message p {
-    padding-left: 362px;
+    margin-top: 10px;
 }
 #shop div.message p label {
-    width: 370px;
+    width: auto;
 }
 #shop div.vat {
     float: left;
@@ -1461,7 +1461,6 @@ div.row2 {
     float: left;
     width: 100%;
     padding: 0 0 10px 0;
-    color: red;
 }
 #shop input.error[type=radio] {
     background-color: red;
