@@ -35,6 +35,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'] = 'Log in';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Ihre Website %s ist bereit! Überprüfen Sie Ihre Inbox (im Spam gelandet?). Wir haben Ihnen ein E-Mail mit Ihren Zugangsdaten und ersten Tipps gesendet. Viel Erfolg.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATION_ERROR'] = 'Die Erstellung Ihrer Website hat nicht geklapt. Ein Techniker wird sich umgehend um das Problem kümmern und Sie anschliessend über die E-Mail Adresse %s kontaktieren, sobald Ihre Website einsatzbereit ist.';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'] = 'Ihre Website wird erstellt..';
-$_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'] = 'Herzlichen Gl&uuml;wunsch!';
+$_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'] = 'Herzlichen Gl&uuml;ckwunsch!';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'] = 'Hopla..';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'] = 'Bitte haben Sie etwas Geduld. Der Website Erstellungsprozess kann bis zu 2 Minuten dauern. Sobald Ihre Website einsatzbereit ist, werden Sie an die hinterlegte E-Mail Adresse mit den n&auml;chsten Schritten informiert.';
