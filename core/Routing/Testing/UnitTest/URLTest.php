@@ -11,7 +11,7 @@
  * @subpackage  core_resolver
  */
 
-namespace Cx\Core\Testing\Routing;
+namespace Cx\Core\Routing\Testing\UnitTest;
 use Cx\Core\Routing\Url as Url;
 
 /**
