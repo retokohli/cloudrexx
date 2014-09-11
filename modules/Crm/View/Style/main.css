@@ -321,3 +321,14 @@ table#general-info tr td:first-child {
 .document-pdf{background: url('../../../../modules/Crm/View/Media/Pdf.png') no-repeat;}
 .document-xls{background: url('../../../../modules/Crm/View/Media/Spreadsheet.png') no-repeat;}
 .nowrap {white-space: nowrap;}
+progress {
+  color: #0063a6;
+  font-size: .6em;
+  line-height: 1.5em;
+  text-indent: .5em;
+  width: 15em;
+  height: 1.8em;
+  border: 1px solid #0063a6;
+  background: #fff;
+}
+progress::-moz-progress-bar { background: #0063a6; }

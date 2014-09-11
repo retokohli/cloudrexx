@@ -357,6 +357,7 @@ $_ARRAYLANG['TXT_CRM_SUCCESS_RATE']    = "Success probability";
 $_ARRAYLANG['TXT_CRM_SUCCESS_RATES']    = "Success probability";
 $_ARRAYLANG['TXT_CRM_ADD_RATE']    = "Add Success probability";
 $_ARRAYLANG['TXT_CRM_DEALS_OVERVIEW'] = "Opportunities";
+$_ARRAYLANG['TXT_CRM_DEALS_PERCENTAGE'] = "Percentage";
 $_ARRAYLANG['TXT_CRM_ADDITIONAL_INFO'] = "Additional info";
 $_ARRAYLANG['TXT_CRM_INVOICE_TYPE'] = 'Invoice type';
 $_ARRAYLANG['TXT_CRM_PROJECT_INVOICETYPE_COLLECTIVE'] = 'Collective Invoice';

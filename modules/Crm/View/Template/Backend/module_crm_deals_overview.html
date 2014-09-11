@@ -116,11 +116,12 @@
         <table class="adminlist" id="entryList" width="100%" cellspacing="0" cellpadding="3" >
             <thead>
                 <tr>
-                    <th colspan="7">{TXT_CRM_DEALS_OVERVIEW}</th>
+                    <th colspan="8">{TXT_CRM_DEALS_OVERVIEW}</th>
                 </tr>
                 <tr class="row3">
                     <td width="3%">&nbsp;&nbsp;<strong>#</strong></td>
                     <td width="20%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_NAME_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_TITLE}</a></strong></td>
+                    <td width="20%"><strong>{TXT_CRM_DEALS_PERCENTAGE}</strong></td>
                     <td width="10%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_PRICE_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_QUOTED_PRICE}</a></strong></td>
                     <td width="20%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_CUSTOMER_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_CUSTOMER_NAME}</a></strong></td>
                     <td width="10%"><strong><a title="sort" href="./index.php?cmd={MODULE_NAME}&act=deals{CRM_RESPONSIBLE_SORT}{CRM_SEARCH_LINK}">{TXT_CRM_DEALS_RESPONSIBLE}</a></strong></td>
@@ -131,13 +132,14 @@
             <tbody>
                 <!-- BEGIN dealsNoRecords -->
                 <tr>
-                    <td colspan="7">{TXT_NO_RECORDS_FOUND}</td>
+                    <td colspan="8">{TXT_NO_RECORDS_FOUND}</td>
                 </tr>
                 <!-- END dealsNoRecords -->
                 <!-- BEGIN dealsEntries -->
                 <tr class="{ROW_CLASS}" id="entry_{ENTRY_ID}">
                     <td><input type="checkbox" name="dealsEntry[]" class="entrySelection" value="{ENTRY_ID}" /></td>
                     <td>{CRM_DEALS_TITLE}</td>
+                    <td><progress max='100' value='{CRM_DEALS_PERCENTAGE}' title="{CRM_DEALS_PERCENTAGE} %"><span>{CRM_DEALS_PERCENTAGE}</span></progress></td>
                     <td>{CRM_DEALS_QUOTED_PRICE}</td>
                     <td>{CRM_CONTACT_NAME}</td>
                     <td>{CRM_DEALS_CONTACT_NAME}</td>                    
