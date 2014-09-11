@@ -449,7 +449,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'index.php?cmd=MultiSite&act=settings',
 // TODO: The configuration options multiSiteDomain, unavailablePrefixes, websiteNameMaxLength and  websiteNameMinLength must be set remotely by the Website Manager
 //       Once implemented, those options must be read-only or not getting listed at all
-                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] .($mode == ComponentController::MODE_SERVICE ? ' - TODO: The configuration options below must be set remotely by the Website Manager! (except for option "Subscription controller")' : ''),
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] .($mode == ComponentController::MODE_SERVICE ? ' - Those options are set by the Website Manager' : ''),
                     'Setup',
                     'TXT_CORE_MODULE_MULTISITE_', $mode == ComponentController::MODE_SERVICE ? true : ''
                 );
