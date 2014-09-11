@@ -1580,3 +1580,6 @@ fieldset .checkbox, fieldset .radio {
 }
 .modal-content .modal-footer {border-top: 0;}
 .sidebar .navbar-nav{margin: 0;}
+#shop .product.detail .functions {
+    padding-right: 0;
+}

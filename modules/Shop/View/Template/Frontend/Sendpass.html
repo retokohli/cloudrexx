@@ -2,10 +2,11 @@
 <div style="font-weight:bold; color:#ff0000;">{SHOP_PASSWORD_STATUS}</div><br />
 <!-- END shop_sendpass_status -->
 <!-- BEGIN shop_sendpass -->
-<form name="shop" action="index.php?section=Shop&amp;cmd=sendpass" method="post">
+<form role="form" name="shop" action="index.php?section=Shop&amp;cmd=sendpass" method="post">
 {SHOP_PASSWORD_ENTER_EMAIL}<br />
 <br />
-<input type="text" style="width:200px;" name="shopEmail"> <input type="submit" value="{TXT_NEXT}">
+<input class="btn btn-default" type="text" style="width:200px;" name="shopEmail"> 
+<input class="btn btn-default" type="submit" value="{TXT_NEXT}">
 </form>
 <!-- END shop_sendpass -->
 

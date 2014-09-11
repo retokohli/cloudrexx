@@ -2,25 +2,27 @@
 <div style="font-weight:bold; color:#ff0000;">{SHOP_PASSWORD_STATUS}</div><br />
 <!-- END shop_change_password_status -->
 <!-- BEGIN shop_change_password -->
-<form action="index.php?section=Shop&amp;cmd=changepass" method="post">
-<table border="0" cellspacing="2" cellpadding="0">
-<tbody>
-<tr>
-<td style="width:150px;">{SHOP_PASSWORD_CURRENT}</td>
-<td><input style="width:200px;" type="password" name="shopCurrentPassword" /></td>
-</tr>
-<tr>
-<td>{SHOP_PASSWORD_NEW}</td>
-<td><input style="width:200px;" type="password" name="shopNewPassword" /></td>
-</tr>
-<tr>
-<td>{SHOP_PASSWORD_CONFIRM}</td>
-<td><input style="width:200px;" type="password" name="shopConfirmPassword" /></td>
-</tr>
-</tbody>
-</table>
-<br />
-<input type="submit" value="{SHOP_PASSWORD_CHANGE}" />
+<form  role="form" action="index.php?section=Shop&amp;cmd=changepass" method="post">
+    <div class="table-responsive">
+        <table class="table" border="0" cellspacing="2" cellpadding="0">
+            <tbody>
+                <tr>
+                    <td style="width:150px;">{SHOP_PASSWORD_CURRENT}</td>
+                    <td><input style="width:200px;" type="password" name="shopCurrentPassword" /></td>
+                </tr>
+                <tr>
+                    <td>{SHOP_PASSWORD_NEW}</td>
+                    <td><input style="width:200px;" type="password" name="shopNewPassword" /></td>
+                </tr>
+                <tr>
+                    <td>{SHOP_PASSWORD_CONFIRM}</td>
+                    <td><input style="width:200px;" type="password" name="shopConfirmPassword" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <input class="btn btn-default" type="submit" value="{SHOP_PASSWORD_CHANGE}" />
 </form>
 <!-- END shop_change_password -->
 

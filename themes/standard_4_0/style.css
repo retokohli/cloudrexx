@@ -16,14 +16,12 @@
     #page #shop button.add-to-cart {
         -webkit-border-radius: 4px;
         border-radius: 4px;
-        o-border-radius: 4px;
     }
     #page #shop div.price {
-         -webkit-border-radius: 5px;
+        -webkit-border-radius: 5px;
         border-radius: 5px;
-        o-border-radius: 5px;
+        clear: both;
     }
-    #page #shop div.functions {padding-right: 0;}
     #home-boxes {
         padding: 0;
         float: left;
@@ -216,7 +214,7 @@
         width: 100%;
         padding: 0;
     }
-    #page #shop figure a, #checkout .right, #checkout .left {width: 100%;}
+    #page #shop figure a,#page #checkout .right,#page #checkout .left {width: 100%;}
     #page #shop figure a .categorie-image-wrapper {
         width: 100%;
         height: auto;
@@ -478,15 +476,6 @@
     }
     /**/
     /**/
-    #shop_payment .row3 td {
-        float: left;
-        width: 100%;
-        text-align: left !important;
-    }
-    #shop_payment .row1 td {
-        width: 50%;
-        float: left;
-    }
     #shop_payment .row1:first-child td {
         width: 100%;
         float: left;
@@ -494,6 +483,7 @@
     }
     #shop div.message p {
         padding-left: 0;
+        min-height: 45px;
     }
     #shop #head td {
         float: left;
@@ -550,10 +540,7 @@
         margin-top: 3px;
     }
     #shop div.message p {
-        padding-left: 222px;
-    }
-    #shop div.message p label {
-        width: 274px;
+        min-height: 50px;
     }
     #footer-bottom .footer-left {
         float: none;
@@ -647,6 +634,9 @@
     #content-wrapper {
         padding-bottom: 168px;
     }
+    #shop div.message p label {
+        min-height: 40px;
+    }
     #page {
         width: 75.9%;
     }
@@ -659,7 +649,7 @@
         margin-top: 3px;
     }
     #shop div.message p {
-        padding-left: 292px;
+        min-height: 40px;
     }
     #footer-bottom .footer-left {
         float: none;

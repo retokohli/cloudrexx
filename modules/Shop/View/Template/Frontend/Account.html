@@ -1,8 +1,9 @@
 <div id="shop">
     <!-- BEGIN core_message -->
-    <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span><!-- END core_message -->
+    <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span>
+    <!-- END core_message -->
     <div id="shop_acc_data">
-        <form name="account" action="{SHOP_ACCOUNT_ACTION}" method="post" onsubmit="copy_address()" onreset="return shopReset()">
+        <form role="form" name="account" action="{SHOP_ACCOUNT_ACTION}" method="post" onsubmit="copy_address()" onreset="return shopReset()">
             <div class="customer_address">
                 <h2>{TXT_CUSTOMER_ADDRESS}</h2>
                 <div class="shop_text">
@@ -10,7 +11,7 @@
                         <input type="text" tabindex="1" name="company" value="{SHOP_ACCOUNT_COMPANY}" />
                     </p>
                     <p><label>{TXT_GREETING}<font color="#ff0000">&nbsp;*</font></label>
-                        <select tabindex="2" name="gender">{SHOP_ACCOUNT_PREFIX}</select>
+                        <select class="form-control" tabindex="2" name="gender">{SHOP_ACCOUNT_PREFIX}</select>
                     </p>
                     <p><label>{TXT_SURNAME}<font color="#ff0000">&nbsp;*</font></label>
                         <input type="text" tabindex="3" name="lastname" value="{SHOP_ACCOUNT_LASTNAME}" />
@@ -28,8 +29,8 @@
                         <input type="text" tabindex="7" name="city" value="{SHOP_ACCOUNT_CITY}" />
                     </p>
                     <p><label>{TXT_COUNTRY}</label>
-                        <select name="countryId" id="countryId" tabindex="8">
-                        {SHOP_ACCOUNT_COUNTRY_MENUOPTIONS}
+                        <select class="form-control" name="countryId" id="countryId" tabindex="8">
+                            {SHOP_ACCOUNT_COUNTRY_MENUOPTIONS}
                         </select>
                     </p>
                     <p><label>{TXT_PHONE_NUMBER}<font color="#ff0000">&nbsp;*</font></label>
@@ -43,9 +44,12 @@
             <!-- BEGIN shipping_address -->
             <div class="shipping_address">
                 <h2>{TXT_SHIPPING_ADDRESS}</h2>
-                <p><input type="checkbox" tabindex="21" value="1" onclick="copy_address();"
-                    id="equal_address" name="equal_address" {SHOP_EQUAL_ADDRESS_CHECKED} />
-                    <label class="description" for="equal_address">{TXT_SAME_BILLING_ADDRESS}</label>
+                <p class="checkbox">
+                    <label class="description" for="equal_address">
+                        <input type="checkbox" tabindex="21" value="1" onclick="copy_address();"
+                               id="equal_address" name="equal_address" {SHOP_EQUAL_ADDRESS_CHECKED} />
+                        {TXT_SAME_BILLING_ADDRESS}
+                    </label>
                 </p>
             </div>
             <div id="shipping_address" style="display: {SHOP_EQUAL_ADDRESS_DISPLAY};">
@@ -72,7 +76,8 @@
                         <input type="text" tabindex="37" name="city2" value="{SHOP_ACCOUNT_CITY2}" />
                     </p>
                     <p><label>{TXT_COUNTRY}</label>
-                        <input type="hidden" name="countryId2" id="countryId2" value="{SHOP_ACCOUNT_COUNTRY2_ID}" />{SHOP_ACCOUNT_COUNTRY2}
+                        <input type="hidden" name="countryId2" id="countryId2" value="{SHOP_ACCOUNT_COUNTRY2_ID}" />
+                        {SHOP_ACCOUNT_COUNTRY2}
                     </p>
                     <p><label>{TXT_PHONE_NUMBER}<font color="#ff0000">&nbsp;*</font></label>
                         <input type="text" tabindex="38" name="phone2" value="{SHOP_ACCOUNT_PHONE2}" />
@@ -83,9 +88,11 @@
             <div class="account_details">
                 <h2>{TXT_YOUR_ACCOUNT_DETAILS}</h2>
                 <!-- BEGIN dont_register -->
-                <p>
-                    <input type="checkbox" tabindex="61" value="1" id="dont_register" name="dont_register" {SHOP_DONT_REGISTER_CHECKED} onClick="document.getElementById('account_password').style.display = (this.checked ? 'none' : 'block');" />
-                    <label class="description" for="dont_register">{TXT_SHOP_ACCOUNT_DONT_REGISTER}</label>
+                <p class="checkbox">
+                    <label class="description" for="dont_register">
+                        <input type="checkbox" tabindex="61" value="1" id="dont_register" name="dont_register" {SHOP_DONT_REGISTER_CHECKED} onClick="document.getElementById('account_password').style.display = (this.checked ? 'none' : 'block');" />
+                        {TXT_SHOP_ACCOUNT_DONT_REGISTER}
+                    </label>
                     <br />
                     {TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE}
                 </p>
@@ -106,59 +113,63 @@
             </div>
             <!-- END account_details -->
             <p>
-                <input type="reset" value="{TXT_RESET}" name="reset" tabindex="71" />
-                <input type="submit" value="{TXT_SHOP_CONTINUE_ARROW}" name="bsubmit" tabindex="72" />
+                <input class="btn btn-default" type="reset" value="{TXT_RESET}" name="reset" tabindex="71" />
+                <input class="btn btn-default" type="submit" value="{TXT_SHOP_CONTINUE_ARROW}" name="bsubmit" tabindex="72" />
             </p>
         </form>
     </div>
 </div>
 <script type="text/javascript">//<![CDATA[
-    function copy_address() {
-      with (document.account) {
-        var disp = "block";
-        if (equal_address && equal_address.checked) {
-          gender2.value = gender.value;
-          company2.value = company.value;
-          lastname2.value = lastname.value;
-          firstname2.value = firstname.value;
-          address2.value = address.value;
-          zip2.value = zip.value;
-          city2.value = city.value;
-          phone2.value = phone.value;
-          countryId2.value = countryId.value;
-          disp = "none";
-    /* Optionally clear the shipment address
-        } else {
-          gender2.value = "";
-          company2.value = "";
-          lastname2.value = "";
-          firstname2.value = "";
-          address2.value = "";
-          zip2.value = "";
-          city2.value = "";
-          phone2.value = "";
-    */
-        }
-        if (document.getElementById('shipping_address')) {
-          document.getElementById('shipping_address').style.display = disp;
-        }
-      }
-    }
-    // Redisplay the shipping address after the reset button has been clicked
-    function shopReset()
-    {
-      if (!confirm("{TXT_SHOP_FORM_RESET_CONFIRM}")) {
-        return false;
-      }
-      document.getElementById('shipping_address').style.display = "block";
-      return true;
-    }
-    for (var element in document.getElementsByTagName("input")) {
-      element.onchange = function() { copy_address(); };
-    }
-    for (var element in document.getElementsByTagName("select")) {
-      element.onchange = function() { copy_address(); };
-    }
-    copy_address();
-    //}>
+            function copy_address() {
+                with (document.account) {
+                    var disp = "block";
+                    if (equal_address && equal_address.checked) {
+                        gender2.value = gender.value;
+                        company2.value = company.value;
+                        lastname2.value = lastname.value;
+                        firstname2.value = firstname.value;
+                        address2.value = address.value;
+                        zip2.value = zip.value;
+                        city2.value = city.value;
+                        phone2.value = phone.value;
+                        countryId2.value = countryId.value;
+                        disp = "none";
+                        /* Optionally clear the shipment address
+                         } else {
+                         gender2.value = "";
+                         company2.value = "";
+                         lastname2.value = "";
+                         firstname2.value = "";
+                         address2.value = "";
+                         zip2.value = "";
+                         city2.value = "";
+                         phone2.value = "";
+                         */
+                    }
+                    if (document.getElementById('shipping_address')) {
+                        document.getElementById('shipping_address').style.display = disp;
+                    }
+                }
+            }
+            // Redisplay the shipping address after the reset button has been clicked
+            function shopReset()
+            {
+                if (!confirm("{TXT_SHOP_FORM_RESET_CONFIRM}")) {
+                    return false;
+                }
+                document.getElementById('shipping_address').style.display = "block";
+                return true;
+            }
+            for (var element in document.getElementsByTagName("input")) {
+                element.onchange = function() {
+                    copy_address();
+                };
+            }
+            for (var element in document.getElementsByTagName("select")) {
+                element.onchange = function() {
+                    copy_address();
+                };
+            }
+            copy_address();
+            //}>
 </script>

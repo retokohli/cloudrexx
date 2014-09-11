@@ -1,11 +1,11 @@
 <div id="shop">
     <!-- BEGIN core_message -->
-    <div class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</div>
+    <div class="{MESSAGE_CLASS} text-danger">{MESSAGE_TEXT}</div>
     <!-- END core_message -->
     <div id="shop_payment">
-        <form action="index.php?section=Shop&amp;cmd=payment" name="shopForm" method="post">
-            <div class="payment">
-                <table summary="" cellspacing="0" width="100%">
+        <form role="form" action="index.php?section=Shop&amp;cmd=payment" name="shopForm" method="post">
+            <div class="payment table-responsive">
+                <table class="table" summary="" cellspacing="0" width="100%">
                     <tr>
                         <th colspan="3" align="left" style="font: bold 16px/24px 'Open Sans',Arial,Helvetica,sans-serif;">{TXT_PRODUCTS}</th>
                     </tr>
@@ -32,7 +32,7 @@
                     </tr>
                     <!-- END shopCouponTotal -->
                     <!-- BEGIN shopShipment -->
-                    <tr class="row3">
+                    <tr class="row3 active">
                         <td>
                             {TXT_SHIPPING_METHODS}
                             <!-- BEGIN shopWeight -->
@@ -51,7 +51,7 @@
                     </tr>
                     <!-- END shopShipment -->
                     <!-- BEGIN shopPayment -->
-                    <tr class="row3">
+                    <tr class="row3 active">
                         <td>
                             {TXT_PAYMENT_TYPES}
                         </td>
@@ -64,7 +64,7 @@
                     </tr>
                     <!-- END shopPayment -->
                     <!-- BEGIN shopCoupon -->
-                    <tr class="row3">
+                    <tr class="row3 active">
                         <td>
                             {TXT_SHOP_DISCOUNT_COUPON_CODE}
                         </td>
@@ -95,7 +95,7 @@
                     </tr>
                     <!-- END shopTax -->
                     <!-- BEGIN lsv -->
-                    <tr class="row3">
+                    <tr class="row3 active">
                         <td>{TXT_PAYMENT_LSV}</td>
                         <td colspan="2">
                             <p>
@@ -113,7 +113,7 @@
                         </td>
                     </tr>
                     <!-- END lsv -->
-                    <tr class="row3">
+                    <tr class="row3 active">
                         <td colspan="2">
                             <strong>{TXT_TOTAL_PRICE}</strong>
                         </td>
@@ -124,7 +124,7 @@
                     <tr class="row1">
                         <td colspan="3">&nbsp;</td>
                     </tr>
-                    <tr class="row3">
+                    <tr class="row3 active">
                         <td valign="top">{TXT_COMMENTS}</td>
                         <td colspan="2">
                             <textarea name="customer_note" rows="4" cols="52">{SHOP_CUSTOMERNOTE}</textarea>
@@ -134,17 +134,17 @@
             </div>
             <br />
             <div class="message">
-                <p>
-                    <input type="checkbox" value="checked" name="agb" id="agb" {SHOP_AGB} />
-                    <label for="agb" class="description">{TXT_ACCEPT_TAC}</label>
+                <p class="checkbox col-sm-7 col-md-7 col-md-push-5 col-sm-push-5">
+                    <label for="agb" class="description"><input type="checkbox" value="checked" name="agb" id="agb" {SHOP_AGB} />{TXT_ACCEPT_TAC}</label>
                 </p>
-                <p>
-                    <input type="checkbox" value="checked" name="cancellation_terms" id="cancellation_terms" {SHOP_CANCELLATION_TERMS_CHECKED} />
-                    <label for="cancellation_terms" class="description">{TXT_SHOP_CANCELLATION_TERMS_ACCEPTED}</label>
+                <p class="checkbox col-sm-7 col-md-7 col-md-push-5 col-sm-push-5">
+                    <label for="cancellation_terms" class="description"><input type="checkbox" value="checked" name="cancellation_terms" id="cancellation_terms" {SHOP_CANCELLATION_TERMS_CHECKED} />
+                        {TXT_SHOP_CANCELLATION_TERMS_ACCEPTED}
+                    </label>
                 </p>
-                <p>
-                    <input type="submit" value="{TXT_UPDATE}" name="refresh" />
-                    &nbsp;<input type="submit" value="{TXT_NEXT}" name="check" />
+                <p class="checkbox col-sm-7 col-md-7 col-md-push-5 col-sm-push-5">
+                    <input class="btn btn-default" type="submit" value="{TXT_UPDATE}" name="refresh" />
+                    &nbsp;<input class="btn btn-default" type="submit" value="{TXT_NEXT}" name="check" />
                 </p>
             </div>
         </form>
