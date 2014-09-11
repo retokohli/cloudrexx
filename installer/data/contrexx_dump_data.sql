@@ -567,6 +567,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (93,'Order','modu
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (94,'Pim','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (95,'LinkManager','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (98,'Test','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (99,'Routing','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
@@ -5880,6 +5881,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (96,'CacheManager','DEV','','n',0,1,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (97,'LicenseManager','Comvation AG','TXT_LICENSE','n',1,1,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (98,'Test','Comvation AG','TXT_TEST_MODULE_DESCRIPTION','n',0,1,1,1);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (99,'Routing','Comvation AG','TXT_ROUTING_MODULE_DESCRIPTION','n',0,1,1,1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
