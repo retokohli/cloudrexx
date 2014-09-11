@@ -188,7 +188,7 @@ class UploaderController {
 
                 $im = new \ImageManager();
                 if ($im->_isImage($rootPathFull)) {
-                    foreach (UploaderConfiguration::get()->thumbnails as $thumbnail) {
+                    foreach (UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail) {
                         $im->_createThumb($rootPath, $conf['target_dir'], $fileName, $thumbnail['size'], $thumbnail['quality'], $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension);
                     }
                 }

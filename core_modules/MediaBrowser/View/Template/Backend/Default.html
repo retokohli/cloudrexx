@@ -7,7 +7,7 @@
 
 <h3>MediaBrowser mit allen Inhalten</h3>
 
-<button data-cx-mb="">MediaBrowser ALL</button>
+<button data-cx-mb="" data-cx-Mb-Cb-Js-Modalclosed="callback">MediaBrowser ALL</button>
 <p><code>&lt;button data-cx-mb=""&gt;MediaBrowser ALL&lt;/button&gt;</code></p>
 <p>"mb" zu beliebigen Element hinzufügen. Der MediaBrowser öffnet sich bei Klick auf das entsprechende Element. </p>
 <hr />
@@ -45,7 +45,7 @@
 <hr />
 
 <h3>Attribute data-cx-mb-multipleselect | default: false</h3>
-<button data-cx-mb="" data-cx-mb-multipleselect="true" data-cx-mb-views="filebrowser">MediaBrowser</button>
+<button data-cx-mb="" data-cx-mb-multipleselect="true" data-cx-mb-views="filebrowser" data-cx-Mb-Cb-Js-Modalclosed="callback">MediaBrowser</button>
 <p><code>&lt;button data-cx-mb="" data-cx-mb-multipleselect=&quot;true&quot; data-cx-mb-views=&quot;filebrowser&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
 <p>
     "mb-multipleselect": können mehrere Dateien ausgewählt werden oder nur eine?
@@ -58,7 +58,31 @@
 
 <script>
     function testFunction(data) {
-        alert('data: ' + data);
+        alert(data);
+    }
+
+    function callback(files) {
+        console.log(files);
+        if (files[0].hasOwnProperty('level')){
+            var win = window.open(files[0].url, '_blank');
+            win.focus();
+            return;
+        }
+
+
+        var images = "Pictures:";
+        for (var i in files) {
+            if (files.hasOwnProperty(i)){
+                if (files[i].datainfo.extension == 'Jpg' || files[i].datainfo.extension == 'Png' || files[i].datainfo.extension == 'Gif'){
+                    images += "<img class='img-responsive' src='"+files[i].datainfo.filepath+"' />";
+                }
+            }
+        }
+
+        bootbox.alert({
+            message: images,
+            title: "Chosen Pictures"
+        });
     }
 </script>
 
@@ -102,18 +126,18 @@
 
 <!-- Der neue Fileuploader setzt die Verwendung von angularjs voraus. Nachfolgend einige Beispiele, wie er verwendet werden kann !-->
 <h3>Single File Upload</h3>
-<button pl-upload pl-auto-upload="true">Upload Files</button>
+<button data-pl-upload data-pl-auto-upload="true">Upload Files</button>
 
 
 <h3>Multiple Files Upload</h3>
-<a pl-upload pl-auto-upload="false" pl-files-model="multiFiles" pl-progress-model="multiPercent" pl-instance="uploader">Pick Files</a>
+<a data-pl-upload data-pl-auto-upload="false" data-pl-files-model="multiFiles" data-pl-progress-model="multiPercent" data-pl-instance="uploader">Pick Files</a>
 <a class="input-block-level" data-ng-click="uploader.start()">Upload Files</a>
 
 
 <h3>Passing Parameter to upload script</h3>
-<a pl-upload pl-multi-params-model="multiParams" pl-progress-model="paramsPercent">Upload Files</a>
+<a data-pl-upload data-pl-multi-params-model="multiParams" data-pl-progress-model="paramsPercent">Upload Files</a>
 
 <h3>Events on upload</h3>
-<a  pl-upload on-file-added="loading=true" on-file-uploaded="loading=false">Upload</a>
+<a  data-pl-upload data-on-file-added="loading=true" data-on-file-uploaded="loading=false">Upload</a>
 
 

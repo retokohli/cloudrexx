@@ -7,11 +7,14 @@
         </ul>
     </div>
     <div class="fileOptions">
-        <input type="search"  id="fileSearch" placeholder="Search.. " ng-model="searchFile">
+        <input type="search" id="fileSearch" placeholder="Search.. " ng-model="searchFile">
+
         <div class="fileActions">
-            <ul> 
-                <li><a ng-click="createFolder()"><i class="icon-addfolder"></i></a></li>
-                
+            <ul>
+                <li><a ng-click="createFolder()"><i class="icon-addfolder"></i> <span class="fileActions-text"> {{ 'TXT_FILEBROWSER_CREATE_DIRECTORY' | translate }} </span></a>
+                </li>
+                <li><a ng-click="updateSource()"><i class="icon-refresh"></i> <span class="fileActions-text"> {{ 'TXT_FILEBROWSER_RELOAD' | translate }} </span>
+                </a></li>
             </ul>
         </div>
     </div>
@@ -20,30 +23,60 @@
         <div class="mediaBrowserListCtrl">
             <div class="loadingPlatform">
                 <i class="icon-loading"></i>
+
                 <div class="loadingText1">Loading</div>
             </div>
 
             <table class="adminlist filelist">
+
                 <tbody>
-                    <tr data-ng-repeat="file in files | filter:searchFile" data-ng-class="{active: true === file.datainfo.active}" data-ng-if="file.datainfo.cleansize > 0"
-                        class="files">
-                        <td width="3%" class="col_1"><i class="icon-fileType icon-fileType{{file.datainfo.extension}}"></i></td>
-                        <td width="77%" class="col_2">
-                            <a data-ng-click="clickFile(file, $index)"
-                               preview-image="{{file.datainfo.preview}}" 
-                               >{{file.datainfo.name}}</a>
-                        </td>
-                        <td  class="fileSize" width="20%" class="col_3">{{file.datainfo.size}}</td>
-                    </tr>
+                <tr>
+                    <th colspan="2" ><a href="" ng-click="reverse=!reverse;order('datainfo.name',reverse)">{{ 'TXT_FILEBROWSER_FILE_NAME' | translate }}</a></th>
+                    <th class="text-right"><a href="" ng-click="reverse=!reverse; order('datainfo.cleansize',reverse)">{{ 'TXT_FILEBROWSER_FILE_SIZE' | translate }}</a></th>
+                    <th class="text-right">{{ 'TXT_FILEBROWSER_FILE_ACTIONS' | translate }}</th>
+                </tr>
+                <tr data-ng-hide="inRootDirectory">
+                    <td colspan="2">
+                        <a data-ng-click="shrinkPath(1)">..</a>
+                    </td>
+                    <td class="text-right"></td>
+                    <td class="text-right"></td>
+                </tr>
+                <tr data-ng-repeat="file in files | orderBy:predicate:reverse" data-ng-class="{active: true === file.datainfo.active}"
+                    data-ng-if="file.datainfo.cleansize > 0"
+                    class="files">
+                    <td width="2%" class="col_1"><i class="icon-fileType icon-fileType{{file.datainfo.extension}}"></i>
+                    </td>
+                    <td width="50%" class="col_2">
+                        <a data-sglclick="clickFile(file, $index, false)" ng-dblclick="clickFile(file, $index, true)"
+                           data-preview-image="{{file.datainfo.preview}}"
+                                >{{file.datainfo.name}}</a>
+                    </td>
+
+                    <td class="fileSize" width="18%" class="col_4">{{file.datainfo.size}}</td>
+                    <td class="actions" width="30%" class="col_3">
+
+                        <a data-ng-click="renameFile(file, $index)" class="renameFile">
+                            {{ 'TXT_FILEBROWSER_FILE_RENAME' | translate }}
+                        </a>
+                        <a data-ng-click="removeFile(file, $index)" class="removeFile">
+                            {{ 'TXT_FILEBROWSER_FILE_REMOVE' | translate }}
+                        </a>
+                    </td>
+                </tr>
                 </tbody>
             </table>
-        </div> 
+        </div>
     </div>
     <div class="tabMediaBrowserFooter">
 
 
         <button type="submit" class="btn btn-primary" data-ng-click="go('#/uploader')">Hochladen</button>
-        <button type="submit" class="btn btn-primary" disabled="disabled">Bild auswählen</button>
-        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal">Abbrechen</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="noFileSelected" data-ng-click="choosePictures()">Bild
+            auswählen
+        </button>
+        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal">
+            Abbrechen
+        </button>
     </div>
 </div>

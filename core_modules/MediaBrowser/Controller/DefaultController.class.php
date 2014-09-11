@@ -38,7 +38,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     }
 
     public function showDefault() {
-        $mediaBrowser = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserController::initialize();
+        $mediaBrowser = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserController::getInstance();
 
         // mithilfe des Objekts sollen die Attribute generiert werden können
         
