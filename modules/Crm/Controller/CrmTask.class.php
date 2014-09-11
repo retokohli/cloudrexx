@@ -280,7 +280,9 @@ class CrmTask extends CrmLibrary
         global $_ARRAYLANG,$objDatabase,$objJs,$objFWUser;
         
         \JS::registerCSS("modules/Crm/View/Style/contact.css");
-
+        if (gettype($objFWUser)) {
+            $objFWUser = \FWUser::getFWUserObject();
+        }
         $objtpl = $this->_objTpl;
         $_SESSION['pageTitle'] = empty($_GET['id']) ? $_ARRAYLANG['TXT_CRM_ADDTASK'] : $_ARRAYLANG['TXT_CRM_EDITTASK'];
 
@@ -418,7 +420,6 @@ class CrmTask extends CrmLibrary
             $objCustomer = $objDatabase->Execute("SELECT customer_name, contact_familyname  FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$customer}");
             $customerName = $objCustomer->fields['customer_name']." ".$objCustomer->fields['contact_familyname'];
         }
-
         $objtpl->setVariable(array(
                 'CRM_LOGGED_USER_ID'    => $objFWUser->objUser->getId(),
                 'CRM_TASK_AUTOID'       => contrexx_raw2xhtml($taskAutoId),
