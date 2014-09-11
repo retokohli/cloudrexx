@@ -27,8 +27,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     public function preFinalize(\Cx\Core\Html\Sigma $template) {
         if (is_object(\Env::get('MediaBrowser'))) {
-
-
             //$modalTemplate = new \Cx\Core\Html\Sigma((ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Template/MediaBrowserModel.html'));
 
             try {
@@ -37,7 +35,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $data = $objFile->getData();
 
                 $template->_blocks['__global__'] = str_replace('</body>', $data.'</body>', $template->_blocks['__global__']);
-                
+
                 // add ng-app="contrexxApp" as Attribute to <html>
                 $template->_blocks['__global__'] = str_replace('<html', '<html ng-app="contrexxApp"', $template->_blocks['__global__']);
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
@@ -50,8 +48,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \JS::registerJS('lib/javascript/jquery/1.9.1/js/jquery.min.js');
             \JS::registerJS('lib/plupload/js/moxie.min.js');
             \JS::registerJS('lib/plupload/js/plupload.dev.js'); /* todo change to min */
-            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/angular.min.js', 1));
-            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/angular-route.min.js', 1));
+            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/Angular/angular.js', 1));
+            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/Angular/angular-route.js', 1));
+            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/Angular/angular-animate.js', 1));
             \JS::registerJS('lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js');
             \JS::registerJS('lib/javascript/bootbox.min.js');
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/mediabrowser.js', 1));

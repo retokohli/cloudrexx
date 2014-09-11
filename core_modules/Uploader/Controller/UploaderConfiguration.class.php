@@ -11,25 +11,84 @@
 
 namespace Cx\Core_Modules\Uploader\Controller;
 
-class UploaderConfiguration {
 
-// implemented for expansion purposes
-    public static function get() {
-        return new self();
+class UploaderConfiguration
+{
+
+    protected static $thumbnails;
+
+    /**
+     * @var self reference to singleton instance
+     */
+    protected static $instance;
+
+    /**
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+
+    /**
+     * gets the instance via lazy initialization (created on first usage)
+     *
+     * @return self
+     */
+    public static function getInstance()
+    {
+        if (null === static::$instance) {
+            static::$instance = new static;
+        }
+        return static::$instance;
     }
-    
-    public $thumbnails = array(
-        array( // the first one is used for hover effects. 
-            'name' => 'small',
-            'value' => '_s',
-            'size' => 150, // width
-            'quality' => 100
-        ),
-        array(
-            'name' => 'medium',
-            'value' => '_m',
-            'size' => 600,  // width
-            'quality' => 100
-        ),
-    );
+
+    /**
+     * is not allowed to call from outside: private!
+     *
+     */
+    protected function __construct()
+    {
+        $this->cx = \Env::get('cx');
+        $this->loadThumbnails();
+    }
+
+    public function loadThumbnails()
+    {
+        /**
+         * @var $cx \Cx\Core\Core\Controller\Cx
+         */
+        $pdo              = $this->cx->getDb()->getPdoConnection();
+        $sth              = $pdo->query(
+                'SELECT name, size, type, 100 as quality, CONCAT(".thumb_",name) as value FROM  `' . DBPREFIX
+                . 'settings_thumbnail`'
+        );
+        \DBG::log($sth->errorCode());
+        self::$thumbnails = $sth->fetchAll();
+    }
+
+
+    /**
+     * @return array
+     */
+    public static function getThumbnails()
+    {
+        return self::$thumbnails;
+    }
+
+    /**
+     * prevent the instance from being cloned
+     *
+     * @return void
+     */
+    protected function __clone()
+    {
+    }
+
+    /**
+     * prevent from being unserialized
+     *
+     * @return void
+     */
+    protected function __wakeup()
+    {
+    }
+
 }

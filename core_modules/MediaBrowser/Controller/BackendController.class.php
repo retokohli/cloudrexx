@@ -100,14 +100,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             //  instantiate the view specific controller
             new $controllerName($this->getSystemComponentController(), $this->cx, $this->template, $this->submenuName);
         }else{
-            // instantiate the defautl View Controller
+            // instantiate the default View Controller
             new \Cx\Core_Modules\MediaBrowser\Controller\DefaultController($this->getSystemComponentController(), $this->cx, $this->template);
         }
         
     }
     
     /**
-     * Returns the submenu page if the url contains any
+     * Returns the sub menu page if the url contains any
      * 
      * @param   array   $cmd
      * @return  string

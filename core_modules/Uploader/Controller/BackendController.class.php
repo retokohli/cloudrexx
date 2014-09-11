@@ -8,7 +8,7 @@
  * @subpackage  modules_skeleton
  */
 
-namespace Cx\Modules\Skeleton\Controller;
+namespace Cx\Core_Modules\Uploader\Controller;
 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view

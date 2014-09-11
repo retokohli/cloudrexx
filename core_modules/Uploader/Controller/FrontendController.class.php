@@ -8,7 +8,7 @@
  * @subpackage  modules_skeleton
  */
 
-namespace Cx\Modules\Skeleton\Controller;
+namespace Cx\Core_Modules\Uploader\Controller;
 
 /**
  * Specific FrontendController for this Component. Use this to easily create a frontent view
@@ -19,16 +19,18 @@ namespace Cx\Modules\Skeleton\Controller;
  * @subpackage  modules_skeleton
  */
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController {
-    
+
     /**
      * Use this to parse your frontend page
-     * 
+     *
      * You will get a template based on the content of the resolved page
      * You can access Cx class using $this->cx
      * To show messages, use \Message class
+     *
      * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
+     * @param                     $cmd
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, $cmd) {
         // this class inherits from Controller, therefore you can get access to
         // Cx like this:
         $this->cx;
