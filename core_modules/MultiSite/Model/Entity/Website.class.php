@@ -991,7 +991,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                         \Env::get('em')->remove($domain);
                     }
 
-                    //\Env::get('em')->remove($this);
+                    \Env::get('em')->remove($this);
                     \Env::get('em')->flush();
                     break;
             }
