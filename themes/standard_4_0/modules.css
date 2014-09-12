@@ -12,11 +12,6 @@ form p {
     width: 100%;
     margin-bottom: 0;
 }
-.login-error-msg {
-    color: #ff0000;
-    padding: 0;
-    margin: 0;
-}
 form p label {
     float: left;
     width: auto;
@@ -185,22 +180,40 @@ form fieldset .ui-tabs .row .cke{
 }
 #login form input.remember_me {
     margin-left: 0;
-    margin-top: 7px;
     padding: 0 0 21px 0;
     border: 0 none;
 }
 #login form label.remember_me {
     margin-left: 0;
-    margin-top: 7px;
     padding: 0;
-    margin-left: 5px;
     border: 0 none;
     display: block;
 }
+span.checkbox {
+    margin-top: 7px;
+    float: left;
+}
+.login-bottom a {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    float: left;
+    white-space: normal;
+    text-align: left;
+}
+.login-bottom > div {padding-left: 40px;}
+.login-bottom a:hover {
+    text-decoration: none;
+}
+#PASSWORD {
+    font-size: 13px;
+    color: #414141;
+}
 #login form input.remember_me {
-    margin-top: 9px;
+    margin-top: 4px;
     height: auto;
     width: auto;
+    position: static;
 }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABLES IN MODULES    */
@@ -222,8 +235,8 @@ table th a {
 table tr.row1,
 table tr.marketRow2 {
     background-color: #FFFFFF;
-/*    float: left;
-    width: 100%;*/
+    /*    float: left;
+        width: 100%;*/
 }
 .voting td {
     float: left;
@@ -1175,13 +1188,22 @@ div.row2 {
     float: left;
 }
 #sitemap ul li {
-    padding: 0 0 5px;
+    padding: 0 0 4px;
     margin: 0 0 5px 0;
     border-bottom: 1px solid #F1F1F1;
     background: none;
 }
 #sitemap ul li.sitemap_level_1 {
     font-weight: bold;
+}
+#sitemap ul li.sitemap_level_1 a {
+    font-weight: bold;
+}
+#sitemap a:hover {
+    text-decoration: none;
+}
+#sitemap a {
+    padding: 0;
 }
 #sitemap ul li.sitemap_level_2 {
     padding-left: 25px;

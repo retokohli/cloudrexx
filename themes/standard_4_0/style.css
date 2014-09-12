@@ -198,7 +198,7 @@
         width: 100%;
         margin-left: 0;
     }
-    #login {
+    .login-content #login {
         width: 100%;
         padding: 0px;
         border-bottom: 0;
@@ -503,6 +503,9 @@
     #profile-left-button {
         padding-left: 0;
     }
+    .login-content .login-bottom > div {
+        padding-left: 0;
+    }
     #page #shop div.description{width: 100%;}
     /**/
 }
@@ -557,12 +560,12 @@
     input[name="downloads_search_keyword"] {
         width: 82%;
     }
-    #login {
+    .login-content #login {
         width: 100%;
         padding: 0px;
         border-right: 0;
     }
-    .login-bottom {
+    .login-content .login-bottom > div {
         padding-left: 15px;
     }
     .login-content .login-social {
