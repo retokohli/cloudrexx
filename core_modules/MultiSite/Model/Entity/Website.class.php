@@ -510,14 +510,14 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: setupMultiSiteConfig..');
             $this->setupMultiSiteConfig($websiteName);
 
+            \DBG::msg('Website: setupLicense..');
+            $this->setupLicense($options);
+            
             \DBG::msg('Website: initializeConfig..');
             $this->initializeConfig($websiteName);
 
             \DBG::msg('Website: initializeLanguage..');
             $this->initializeLanguage();
-
-            \DBG::msg('Website: setupLicense..');
-            $this->setupLicense($options);
 
             // \DBG::msg('Website: setupRobotsFile..');
             // $this->setupRobotsFile($websiteName);
