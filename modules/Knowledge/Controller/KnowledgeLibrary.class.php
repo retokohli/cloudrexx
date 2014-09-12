@@ -70,21 +70,11 @@ class KnowledgeLibrary {
 	 */
 	protected function updateGlobalSetting($value)
 	{
-	    global $objDatabase;
-
-	    // seems a bit dirty i know
-	    
-	    $query = " UPDATE ".DBPREFIX."settings
-	               SET setvalue = '".$value."'
-	               WHERE setname = 'useKnowledgePlaceholders'";
-	    $objDatabase->Execute($query);
-	    if ($objDatabase->Execute($query) === false) {
-	        throw new DatabaseError("error setting the global value");
-	    }
-	    
-	    
-	    $objSettings = new \Cx\Core\Config\Controller\Config();
-	    $objSettings->writeSettingsFile();
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+            if (isset($value)) {
+                \Cx\Core\Setting\Controller\Setting::set('useKnowledgePlaceholders', $value);
+                \Cx\Core\Setting\Controller\Setting::update('useKnowledgePlaceholders');
+            }
 	}
 	
 	/**
@@ -97,19 +87,9 @@ class KnowledgeLibrary {
 	 */
 	protected function getGlobalSetting()
 	{
-	    global $objDatabase;
-	    
-	    $query = " SELECT setvalue FROM ".DBPREFIX."settings
-	               WHERE setname = 'useKnowledgePlaceholders'";
-	    $result = $objDatabase->Execute($query);
-	    
-	    if ($result === false) {
-	       throw new DatabaseError('error getting the global value');
-	    } else {
-	        if ($result->RecordCount()) {
-	            return $result->fields['setvalue'];
-	        }
-	    }
+            //return the global setting('useKnowledgePlaceholders') value
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+            return \Cx\Core\Setting\Controller\Setting::getValue('useKnowledgePlaceholders');
 	}
 	
 	/**
