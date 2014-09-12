@@ -1,7 +1,7 @@
 <!-- START themes_content.html -->
 <script language="JavaScript" type="text/javascript">
     <!-- // confirm delete page
-    function reloadThemesPage(){
+    function reloadThemesPage() {
         document.themesForm.submit();
     }
 
@@ -111,7 +111,7 @@
                             <div id="jstree">
 
                                 <ul>
-                                   
+
                                     <!-- BEGIN themeFolders -->    
                                     {THEMES_FOLDERS}
                                     <!-- END themeFolders -->
@@ -119,7 +119,7 @@
                                     <!-- BEGIN themeFiles -->
                                     {THEMES_FILES}
                                     <!-- END themeFiles -->
-                                   
+
                                 </ul>
                             </div>
 
@@ -140,7 +140,12 @@
                             <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" />
                         </td>
                     </tr>
-                    
+                </table>
+                <input type="hidden" name="themesPage" id="themesPage"/>
+            </form>
+            <form name="themeLibrary" action="index.php?cmd=ViewManager&amp;act=templates"  method="post">
+                <table summary="" width="253" border="0" cellspacing="0" cellpadding="3" class="adminlist">
+                <input type="hidden" name="themes" value="{THEMES_SELECTED_THEME}" />
                     <!-- BEGIN theme_libraries -->
                     <tr>
                         <th colspan="2" nowrap="nowrap">{TXT_TEMPLATE_USED_LIBRARIES}</th>
@@ -158,9 +163,8 @@
                             <input type="submit" value="{TXT_SAVE}" />
                         </td>
                     </tr>
-                    <!-- END theme_libraries -->
+                    <!-- END theme_libraries --> 
                 </table>
-                <input type="hidden" name="themesPage" id="themesPage"/>
             </form>
         </td>
         <td width="100%" valign="top" >
@@ -170,11 +174,11 @@
                     <tr>
                         <th width="100%"><!--{TXT_FILE_EDITOR}--><b>{THEMES_FULL_PATH}</b>
                             <span class="themesContentHeading">
-                            <!-- BEGIN file_actions_top -->
+                                <!-- BEGIN file_actions_top -->
                             <input onClick="javascript:this.form.content.focus(); this.form.content.select();" type=button value='{TXT_SELECT_ALL}' />
-                            <input type="reset" value='{TXT_RESET}' name="Reset" />
-                            <input type="submit" value='{TXT_STORE}' name="Submit" />	
-                            <!-- END file_actions_top -->
+                                <input type="reset" value='{TXT_RESET}' name="Reset" />
+                                <input type="submit" value='{TXT_STORE}' name="Submit" />	
+                                <!-- END file_actions_top -->
                             </span>
                         </th>
                     </tr>
@@ -201,7 +205,7 @@
                 </div>
             </form>
         </td>
-        
+
     </tr>
 </table>
 <!-- END themes_content.html -->
