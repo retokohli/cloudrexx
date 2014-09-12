@@ -526,15 +526,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             ));
         }
 
+        // NOTE: This command is used in frontend,
+        //       Therefore, all users that are logged-in
+        //       are allowed to update their profile.
+        //       The following permission check has been
+        //       deactivated therefore.
+        //
         // Only administrators or users with sufficient permissions
         // may update their own account.
-        if (!\Permission::hasAllAccess() && !\Permission::checkAccess(31, 'static', true)) {
+        /*if (!\Permission::hasAllAccess() && !\Permission::checkAccess(31, 'static', true)) {
             throw new MultiSiteJsonException(array(
                 'object'    => 'form',
                 'type'      => 'danger',
                 'message'   => 'Operation denied',
             ));
-        }
+        }*/
 
         $params['post']['userId'] = $objUser->getId();
         return $this->updateUser($params);
