@@ -1027,13 +1027,15 @@ class ForumAdmin extends ForumLibrary {
         //update settings table and write new settings file for /config
         if (isset($_POST['set_homecontent_submit'])){
             //update settings
-            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setHomeContent'])."' WHERE setname='forumHomeContent'");
-            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setTagContent'])."' WHERE setname='forumTagContent'");
-
-            $objSettings = new \Cx\Core\Config\Controller\Config();
-            $objSettings->writeSettingsFile();
-            $_CONFIG['forumHomeContent'] = intval($_POST['setHomeContent']);
-            $_CONFIG['forumTagContent'] = intval($_POST['setTagContent']);
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+            if (isset($_POST['setHomeContent'])) {
+                \Cx\Core\Setting\Controller\Setting::set('forumHomeContent', intval($_POST['setHomeContent']));
+                \Cx\Core\Setting\Controller\Setting::update('forumHomeContent');
+            }
+            if (isset($_POST['setTagContent'])) {
+                \Cx\Core\Setting\Controller\Setting::set('forumTagContent', intval($_POST['setTagContent']));
+                \Cx\Core\Setting\Controller\Setting::update('forumTagContent');
+            }
         }
 
         foreach($_POST['setvalue'] as $intSetId => $strSetValue) {
