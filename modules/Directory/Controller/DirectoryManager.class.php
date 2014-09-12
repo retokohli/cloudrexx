@@ -2970,11 +2970,11 @@ EOF;
 
         if (isset($_POST['set_homecontent_submit'])) {
             //update settings
-            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".contrexx_addslashes($_POST['setHomeContent'])."' WHERE setid='49'");
-
-
-            $objSettings = new \Cx\Core\Config\Controller\Config();
-            $objSettings->writeSettingsFile();
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+            if (isset($_POST['setHomeContent'])) {
+                \Cx\Core\Setting\Controller\Setting::set('directoryHomeContent', contrexx_addslashes($_POST['setHomeContent']));
+                \Cx\Core\Setting\Controller\Setting::update('directoryHomeContent');
+            }
 
             \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Directory&act=settings&tpl=homecontent');
             exit;
