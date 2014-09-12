@@ -136,7 +136,7 @@ class FeedManager extends FeedLibrary
     }
 
     function _saveSettings() {
-        global $_CONFIG, $objDatabase, $_CORELANG;
+        global $_CORELANG;
 
         $feedNewsMLStatus = isset($_POST['feedSettingsUseNewsML']) ? intval($_POST['feedSettingsUseNewsML']) : 0;
 

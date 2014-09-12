@@ -2936,7 +2936,7 @@ EOF;
     */
     function updateSettings()
     {
-        global $_CONFIG, $objDatabase, $_CORELANG, $_ARRAYLANG;
+        global $objDatabase, $_CORELANG, $_ARRAYLANG;
 
         if (isset($_POST['set_sys_submit'])) {
             //get post data
