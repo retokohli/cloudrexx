@@ -229,21 +229,6 @@ class GallerySql
     }
 
     /**
-     * Update the value of the last access id
-     *
-     * @param int $lastid
-     */
-    public function updateAccessId($lastId)
-    {
-        global $_CONFIG, $objDatabase;
-
-        $query = "UPDATE ".DBPREFIX."settings SET setvalue=".$lastId." WHERE setname='lastAccessId'";
-        if ($objDatabase->Execute($query) === false) {
-            throw new DatabaseError("Error updating the last access id value");
-        }
-    }
-
-    /**
      * Get an array with the categories
      *
      * @param int $langId

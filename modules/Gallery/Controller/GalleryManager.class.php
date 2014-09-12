@@ -3907,10 +3907,11 @@ $strFileNew = '';
      */
     private function updateAccessId($id)
     {
-        $this->sql->updateAccessId($id);
-
-            $objSettings = new \Cx\Core\Config\Controller\Config();
-            $objSettings->writeSettingsFile();
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        if (isset($id)) {
+            \Cx\Core\Setting\Controller\Setting::set('lastAccessId', $id);
+            \Cx\Core\Setting\Controller\Setting::update('lastAccessId');
+        }
     }
 }
 
