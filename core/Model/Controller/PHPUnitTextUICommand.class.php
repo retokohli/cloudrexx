@@ -73,7 +73,13 @@ class PHPUnitTextUICommand extends \PHPUnit_TextUI_Command {
               $this->arguments['syntaxCheck']
             );
         }
-
+        
+        $testCollector = new \PHPUnit_Runner_IncludePathTestCollector(
+            array($this->arguments['test']),
+            array('Test.class.php')
+        );
+        $suite->addTestFiles($testCollector->collectTests());
+        
         if (count($suite) == 0) {
             $skeleton = new \PHPUnit_Util_Skeleton_Test(
               $suite->getName(),
@@ -103,12 +109,6 @@ class PHPUnitTextUICommand extends \PHPUnit_TextUI_Command {
 
             exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
         }
-        
-        $testCollector = new \PHPUnit_Runner_IncludePathTestCollector(
-            array($this->arguments['test']),
-            array('Test.class.php')
-        );
-        $suite->addTestFiles($testCollector->collectTests());
         
         unset($this->arguments['test']);
         unset($this->arguments['testFile']);
