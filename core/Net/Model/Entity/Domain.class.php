@@ -37,13 +37,13 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
      * Primary identifier of the domain
      * @var integer
      */
-    public $id;
+    protected $id;
 
     /**
      * Domain name of the domain
      * @var string
      */
-    public $name;
+    protected $name;
 
     /**
      * Constructor to initialize a new domain.
