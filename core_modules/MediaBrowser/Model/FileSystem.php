@@ -30,11 +30,9 @@ class FileSystem
     /**
      * Creates a directory in the specified path.
      *
-     * <code>
-     * <?php
+     * ``` php
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::createDirectory('files/Movies','PulpFiction');
-     * ?>
-     * </code>
+     * ```
      *
      * @param $path      String Path to the directory
      * @param $directory String Name of the directory
@@ -51,11 +49,9 @@ class FileSystem
     /**
      * Removes the directory in the specified path.
      *
-     * <code>
-     * <?php
+     * ``` php
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::removeDirectory('files/Movies','StarWarsVII');
-     * ?>
-     * </code>
+     * ```
      *
      * @param String $path      Path to the directory
      * @param String $directory Name of the directory
@@ -73,11 +69,9 @@ class FileSystem
     /**
      * Moves the directory in the specified path.
      *
-     * <code>
-     * <?php
+     * ``` php
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveDirectory('files/Movies','files/Movies/Tarantino','PulpFiction');
-     * ?>
-     * </code>
+     * ```
      *
      * @param $sourcePath      String
      * @param $destinationPath String
@@ -99,11 +93,9 @@ class FileSystem
     /**
      * Moves file from source path to destination path
      *
-     * <code>
-     * <?php
+     * ``` php
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveFile('files/Movies','files/Movies/Tarantino','ReservoirDogs.jpg');
-     * ?>
-     * </code>
+     * ```
      *
      * @param $sourcePath      String
      * @param $destinationPath String
@@ -125,11 +117,10 @@ class FileSystem
     /**
      * Removes file from directory
      *
-     * <code>
-     * <?php
+     *
+     * ``` php
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveFile('files/Movies','ReservoirDogs.jpg');
-     * ?>
-     * </code>
+     * ```
      *
      * @param $path String
      * @param $file String
@@ -146,11 +137,9 @@ class FileSystem
     /**
      * Check if a path is virtual or real.
      *
-     * <code>
-     * <?php
+     * ``` php
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::isVirtualPath('files/Movies'); // Returns true
-     * ?>
-     * </code>
+     * ```
      *
      * @param $path
      *
@@ -180,6 +169,14 @@ class FileSystem
         return $virtualPath;
     }
 
+    /**
+     * Checks if a file exists either in the actual filesystem or in the virtual filesystem.
+     *
+     * @param $path
+     * @param $file
+     *
+     * @return bool
+     */
     public static function fileExists($path, $file){
         return \Cx\Lib\FileSystem\FileSystem::exists(self::getAbsolutePath($path) . '/' . $file);
     }
@@ -188,26 +185,56 @@ class FileSystem
 
 }
 
+/**
+ * Class RemoveFileException
+ *
+ * @package     contrexx
+ * @subpackage  coremodule_mediabrowser
+ */
 class RemoveFileException extends \Exception
 {
 
 }
 
+/**
+ * Class MoveFileException
+ *
+ * @package     contrexx
+ * @subpackage  coremodule_mediabrowser
+ */
 class MoveFileException extends \Exception
 {
 
 }
 
+/**
+ * Class MoveDirectoryException
+ *
+ * @package     contrexx
+ * @subpackage  coremodule_mediabrowser
+ */
 class MoveDirectoryException extends \Exception
 {
 
 }
 
+/**
+ * Class RemoveDirectoryException
+ *
+ * @package     contrexx
+ * @subpackage  coremodule_mediabrowser
+ */
 class RemoveDirectoryException extends \Exception
 {
 
 }
 
+/**
+ * Class CreateDirectoryException
+ *
+ * @package     contrexx
+ * @subpackage  coremodule_mediabrowser
+ */
 class CreateDirectoryException extends \Exception
 {
 
