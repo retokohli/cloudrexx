@@ -1023,7 +1023,7 @@ class ForumAdmin extends ForumLibrary {
      * @global     array
      */
     function updateSettings() {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
         //update settings table and write new settings file for /config
         if (isset($_POST['set_homecontent_submit'])){
             //update settings
