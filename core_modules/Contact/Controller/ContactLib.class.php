@@ -1301,7 +1301,8 @@ class ContactLib
 
         $code = "<script type=\"text/javascript\">\n";
         $code .= "/* <![CDATA[ */\n";
-        $code .= 'cx.ready(function() { cx.jQuery(\'.date\').datetimepicker(); });';
+        $code .= 'cx.ready(function() { cx.jQuery(\'.datetime\').datetimepicker(); });';
+        $code .= 'cx.ready(function() { cx.jQuery(\'.date\').datepicker(); });'; // New Field-Type: only Display Datepicker (without time)
 
         $code .= "fields = new Array();\n";
 
@@ -1543,6 +1544,11 @@ JS_misc;
                                     ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
                                     .$required.'</label>';
                     break;
+                case 'datetime':
+                    $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label>';
+                    break;
                 default:
                     $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
                                     ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
@@ -1595,7 +1601,10 @@ JS_misc;
                     break;
 
                 case 'date':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" />';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" value="{'.$fieldId.'_VALUE}" />';
+                    break;
+                case 'datetime':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' datetime" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" value="{'.$fieldId.'_VALUE}" />';
                     break;
                 case 'access_birthday':
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '{'.$fieldId.'_VALUE}').'" />';
