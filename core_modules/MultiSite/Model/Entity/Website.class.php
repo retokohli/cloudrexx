@@ -970,16 +970,16 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     }
 
                     //remove the database and its user
+                    //remove the database user
+                    $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
+                    $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') . $this->id);
+                    $hostingController->removeDbUser($objDbUser);
+
                     //remove the database
                     $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
                     $objDb->setHost(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost'));
                     $objDb->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix') . $this->id);
                     $hostingController->removeDb($objDb);
-
-                    //remove the database user
-                    $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
-                    $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') . $this->id);
-                    $hostingController->removeDbUser($objDbUser);
 
                     //remove the website's data repository
                     if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name, true)) {
@@ -989,10 +989,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     //unmap all the domains
                     foreach ($this->domains as $domain) {
                         \Env::get('em')->remove($domain);
-                    }
-
-                    \Env::get('em')->remove($this);
-                    \Env::get('em')->flush();
+                        \Env::get('em')->getUnitOfWork()->computeChangeSet(\Env::get('em')->getClassMetadata('Cx\Core_Modules\Multisite\Model\Entity\Domain'), $domain);
+                    }                    
                     break;
             }
         } catch (\Exception $e) {

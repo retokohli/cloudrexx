@@ -1486,7 +1486,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (!$website) {
                 throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website (website does not exists)');
             }
-            $website->destroy(); 
+            $website->destroy();
+            return array(
+                'status' => 'success'
+            );
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website.' . $e->getMessage());
         }
