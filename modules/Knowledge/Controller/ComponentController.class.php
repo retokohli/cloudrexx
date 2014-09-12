@@ -66,11 +66,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CONFIG, $knowledgeInterface, $page_template, $themesPages;
+        global $knowledgeInterface, $page_template, $themesPages;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // get knowledge content
-                if (MODULE_INDEX < 2 && !empty($_CONFIG['useKnowledgePlaceholders'])) {
+                \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+                if (MODULE_INDEX < 2 && \Cx\Core\Setting\Controller\Setting::getValue('useKnowledgePlaceholders')) {
                     $knowledgeInterface = new KnowledgeInterface();
                     if (preg_match('/{KNOWLEDGE_[A-Za-z0-9_]+}/i', \Env::get('cx')->getPage()->getContent())) {
                         $knowledgeInterface->parse(\Env::get('cx')->getPage()->getContent());
