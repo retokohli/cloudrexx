@@ -874,8 +874,16 @@ class JsonPage implements JsonAdapter {
         $tableRowId = 1;
         $i = 0;
         $first = true;
-
-        foreach ($logs as $log){
+        session_write_close();
+        foreach ($logs as $key => $log){
+            // check whether the current index is between the range which should be displayed
+            if ( $i >= ($numberOfEntries + $offset)){
+                break;
+            }
+            if ($i < $offset) {
+                $i++;
+                continue;
+            }
             $version = $log->getVersion();
             $this->logRepo->revert($page, $version);
 
@@ -895,12 +903,6 @@ class JsonPage implements JsonAdapter {
             // set flag to false
             $first = false;
 
-            // check whether the current index is between the range which should be displayed
-            if ($i < $offset || $i >= ($numberOfEntries + $offset)) {
-                $i++;
-                continue;
-            }
-            
             try {
                 $page->setUpdatedAt($log->getLoggedAt());
                 $user = json_decode($log->getUsername());
@@ -913,7 +915,7 @@ class JsonPage implements JsonAdapter {
             $i++;
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging($i, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging(count($logs), $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
