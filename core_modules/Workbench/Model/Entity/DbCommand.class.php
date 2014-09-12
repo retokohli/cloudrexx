@@ -44,29 +44,75 @@ class DbCommand extends Command {
         $arguments = array_slice($arguments, 1);
         
         switch ($arguments[1]) {
-            // empty /model/entities and /model/repositories folders
+            // empty /tmp/workbench
             case 'cleanup':
                 $this->cleanup();
                 break;
             // update database for component
             case 'update':
-                // empty /model/entities and /model/repositories folders
-                $this->cleanup();
                 // doctrine orm:validate-schema
-                $this->executeDoctrine(array('', 'doctrine', 'orm:validate-schema'));
+                if ($this->executeDoctrine(array('', 'doctrine', 'orm:validate-schema')) != 0) {
+                    return;
+                }
+                
+                // empty /tmp/workbench
+                $this->cleanup();
+                
+                // prepare component filter
+                $componentFilter = '';
+                if (isset($arguments[2])) {
+                    switch (strtolower($arguments[2])) {
+                        case 'core':
+                            $componentFilter .= 'Cx\\Core\\';
+                            break;
+                        case 'core_module':
+                        case 'core_modules':
+                            $componentFilter .= 'Cx\\Core_Modules\\';
+                            break;
+                        case 'module':
+                        case 'modules':
+                            $componentFilter .= 'Cx\\Modules\\';
+                            break;
+                    }
+                    if (isset($arguments[3])) {
+                        $componentFilter .= $arguments[3] . '\\';
+                    }
+                }
+                if (!empty($componentFilter)) {
+                    $componentFilter = '--filter=' . $componentFilter;
+                }
+                
                 // doctrine orm:generate-entities --filter="{component filter}" entities
-                $this->executeDoctrine(array('', 'doctrine', 'orm:generate-entities', '--filter="{component filter}"', 'entities'));
+                $doctrineArgs = array('', 'doctrine', 'orm:generate-entities');
+                if (!empty($componentFilter)) {
+                    $doctrineArgs[] = $componentFilter;
+                }
+                $doctrineArgs[] = $this->cx->getWebsiteTempPath().'/workbench';
+                if ($this->executeDoctrine($doctrineArgs) != 0) {
+                    return;
+                }
+                
                 // move entities to component directory and add .class extension
-                // todo
+                $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
+                
                 // doctrine orm:generate-repositories --filter="{component filter}" repositories
-                $this->executeDoctrine(array('', 'doctrine', 'orm:generate-repositories', '--filter="{component filter}"', 'repositories'));
+                $doctrineArgs = array('', 'doctrine', 'orm:generate-repositories');
+                if (!empty($componentFilter)) {
+                    $doctrineArgs[] = $componentFilter;
+                }
+                $doctrineArgs[] = $this->cx->getWebsiteTempPath().'/workbench';
+                if ($this->executeDoctrine($doctrineArgs) != 0) {
+                    return;
+                }
+                
                 // move repositories to component directory and add .class extension
-                // todo
+                $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
+                
                 // doctrine orm:schema-tool:create --dump-sql
                 // remove component tables
                 // execute sql statements from db dump
                 // empty /model/entities and /model/repositories folders
-                $this->cleanup();
+                //$this->cleanup();
                 break;
             case 'doctrine':
                 $this->executeDoctrine($arguments);
@@ -79,6 +125,7 @@ class DbCommand extends Command {
                         $this->getHelp() . "\r\n";
                 break;
         }
+        echo "Done\r\n";
     }
     
     public function executeDoctrine(array $arguments) {
@@ -115,10 +162,38 @@ class DbCommand extends Command {
             new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
 
         ));
-        $cli->run();
+        $cli->setAutoExit(false);
+        return $cli->run();
     }
     
     protected function cleanup() {
-        // leave /model/entities/Cx/Model/Base/EntityBase.class.php where it is!
+        \Cx\Lib\FileSystem\FileSystem::delete_folder($this->cx->getWebsiteTempPath().'/workbench', true);
+        \Cx\Lib\FileSystem\FileSystem::make_folder($this->cx->getWebsiteTempPath().'/workbench');
+    }
+    
+    protected function moveModel($sourceFolder, $destinationFolder) {
+        $sourceDirectory = new \RecursiveDirectoryIterator($sourceFolder);
+        $sourceDirectoryIterator = new \RecursiveIteratorIterator($sourceDirectory);
+        $sourceDirectoryRegexIterator = new \RegexIterator($sourceDirectoryIterator, '/^.+\.php$/i', \RegexIterator::GET_MATCH);
+        
+        // foreach model class
+        foreach ($sourceDirectoryRegexIterator as $sourceFile) {
+            // move to correct location and add .class ending if necessary
+            $sourceFile = current($sourceFile);
+            $parts = explode('/Cx/', $sourceFile);
+            $destinationFile = $destinationFolder . '/' . end($parts);
+            $destinationFile = preg_replace_callback('#(' . $destinationFolder . '/)(Core(?:_Modules)?|Modules)#', function($matches) {
+                return $matches[1] . strtolower($matches[2]);
+            },
+            $destinationFile);
+            $destinationFile = preg_replace('/(?!\.class)\.php$/', '.class.php', $destinationFile);
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($sourceFile);
+                $objFile->move($destinationFile);
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                throw $e;
+            }
+        }
     }
 }
+
