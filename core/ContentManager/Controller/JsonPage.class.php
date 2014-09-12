@@ -498,6 +498,26 @@ class JsonPage implements JsonAdapter {
         
         $this->em->flush();
         
+        // bug fix #2279
+        // could not save alias after running $this->em->clear()
+        // Aliases are only updated in the editing mode.
+        if (!empty($pageArray)) {
+            // Only users with publish rights can create aliases.
+            if (\Permission::checkAccess(115, 'static', true) && \Permission::checkAccess(78, 'static', true)) {
+                // Aliases are updated after persist.
+                $data = array();
+                $data['alias'] = $pageArray['alias'];
+                $aliases = $page->getAliases();
+                $page->updateFromArray($data);
+                if ($aliases != $page->getAliases()) {
+                    $reload = true;
+                }
+            } else {
+                // Users without permission shouldn't see the aliasses anyway
+                //$this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
+            }
+        }
+        
         // this fixes log version number skipping
         $this->em->clear();
         $logs = $this->logRepo->getLogEntries($page);
@@ -577,24 +597,6 @@ class JsonPage implements JsonAdapter {
             $this->em->persist($logs[0]);
             $this->em->persist($logs[1]);
             $this->em->flush();
-        }
-        
-        // Aliases are only updated in the editing mode.
-        if (!empty($pageArray)) {
-            // Only users with publish rights can create aliases.
-            if (\Permission::checkAccess(115, 'static', true) && \Permission::checkAccess(78, 'static', true)) {
-                // Aliases are updated after persist.
-                $data = array();
-                $data['alias'] = $pageArray['alias'];
-                $aliases = $page->getAliases();
-                $page->updateFromArray($data);
-                if ($aliases != $page->getAliases()) {
-                    $reload = true;
-                }
-            } else {
-                // Users without permission shouldn't see the aliasses anyway
-                //$this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
-            }
         }
 
         // get version
