@@ -846,13 +846,12 @@ class PodcastManager extends PodcastLib
 
     function _updateHomeContentSettings()
     {
-        global $objDatabase, $_CONFIG;
-        $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setHomeContent'])."' WHERE setname='podcastHomeContent'");
-        if($objResult !== false){
-            $objSettings = new \Cx\Core\Config\Controller\Config();
-            $objSettings->writeSettingsFile();
-            $_CONFIG['podcastHomeContent'] = intval($_POST['setHomeContent']);
-            return true;
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        if (isset($_POST['setHomeContent'])) {
+            \Cx\Core\Setting\Controller\Setting::set('podcastHomeContent', intval($_POST['setHomeContent']));
+            if (\Cx\Core\Setting\Controller\Setting::update('podcastHomeContent')) {
+                return true;
+            }
         }
         return false;
     }
