@@ -33,8 +33,8 @@ class LegacyClassLoader {
     public function __construct($classLoader, $cx) {
         self::$instance = $this;
         $this->cx = $cx;
-        $this->extraClassRepositoryFile = $this->cx->getCodeBaseCorePath(). '/ClassLoader/Data/ExtraClassRepository.dat';
-        $this->userClassCacheFile  = $this->cx->getWebsiteTempPath().'/UserClassCache.dat';
+        $this->extraClassRepositoryFile = $this->cx->getCodeBaseCorePath(). '/ClassLoader/Data/LegacyClassCache.dat';
+        $this->userClassCacheFile  = $this->cx->getWebsiteTempPath().'/LegacyClassCache.dat';
         if (file_exists($classLoader->getFilePath($this->extraClassRepositoryFile))) {
             $extraClassArr = unserialize(file_get_contents($classLoader->getFilePath($this->extraClassRepositoryFile)));
         }
