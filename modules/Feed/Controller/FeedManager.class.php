@@ -140,11 +140,12 @@ class FeedManager extends FeedLibrary
 
         $feedNewsMLStatus = isset($_POST['feedSettingsUseNewsML']) ? intval($_POST['feedSettingsUseNewsML']) : 0;
 
-        $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$feedNewsMLStatus."' WHERE setname='feedNewsMLStatus'");
-        $_CONFIG['feedNewsMLStatus'] = (string) $feedNewsMLStatus;
-        $objSettings = new \Cx\Core\Config\Controller\Config();
-        $objSettings->writeSettingsFile();
-
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        if (isset($feedNewsMLStatus)) {
+            \Cx\Core\Setting\Controller\Setting::set('feedNewsMLStatus', $feedNewsMLStatus);
+            \Cx\Core\Setting\Controller\Setting::update('feedNewsMLStatus');
+        }
+        
         $_SESSION['strOkMessage'] = $_CORELANG['TXT_SETTINGS_UPDATED'];
     }
 
