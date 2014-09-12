@@ -251,7 +251,8 @@ namespace Cx\Core\Model {
             $config->setAutoGenerateProxyClasses(file_exists(ASCMS_DOCUMENT_ROOT.'/workbench.config'));
             
             $connectionOptions = array(
-                'pdo' => $this->getPdoConnection(),
+                'pdo'       => $this->getPdoConnection(),
+                'dbname'    => $this->db->getName(),
             );
 
             $evm = new \Doctrine\Common\EventManager();
