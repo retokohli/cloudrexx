@@ -734,6 +734,9 @@ throw new MultiSiteException('Refactor this method!');
         // Other requests will be forwarded to the Marketing Website of MultiSite.
         if (   $cx->getMode() == $cx::MODE_BACKEND
             && $requestedDomainName != $managerDomain->getName()
+// TODO: This is a workaround as all JsonData-requests sent from the
+//       Customer Panel are also being sent to the Manager Domain.
+            && $requestedDomainName != $customerPanelDomainName
         ) {
             header('Location: '.$this->getApiProtocol().$marketingWebsiteDomainName, true, 301);
             exit;
