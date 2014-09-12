@@ -22,11 +22,16 @@ namespace Cx\Core\Test\Model\Entity;
  * @subpackage  core_test
  */
 class ContrexxTestCase extends \PHPUnit_Framework_TestCase {
+    protected static $cx;
+    
     public function __construct() {
         //this is a workaround for the error
         //"PDOException: You cannot serialize or unserialize PDO instances"
         //which appears since changing the charset to utf8 on doctrine config.
         parent::__construct();
+        
+        self::$cx = \Env::get('cx');
+        
         $this->backupGlobals = false;
         $this->backupStaticAttributes = false;
     }
