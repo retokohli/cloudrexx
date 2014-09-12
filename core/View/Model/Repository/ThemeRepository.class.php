@@ -177,8 +177,14 @@ class ThemeRepository
      * Writes the component.yml file with the data defined in component data array
      * @param \Cx\Core\View\Model\Entity\Theme $theme the theme object
      */
-    public function saveComponentData($theme) {        
-        $file = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $theme->getFoldername() . '/component.yml');
+    public function saveComponentData($theme) {
+        global $_ARRAYLANG;
+        if (!file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername())) {
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder(\Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername())) {
+                $this->strErrMessage = \Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath . ":" . $_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
+            }
+        }
+        $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername() . '/component.yml');
         $file->touch();
         $yaml = new \Symfony\Component\Yaml\Yaml();
         $file->write(
@@ -229,7 +235,8 @@ class ThemeRepository
             }
         }
         
-        $themePath = ASCMS_THEMES_PATH . '/' . $foldername;
+        $themePath = file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername) ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $foldername;        
+        
         if (!file_exists($themePath)) {
             return $theme;
         }
@@ -269,7 +276,7 @@ class ThemeRepository
             $theme = $theme->getFoldername();
         }
         
-        $themePath = ASCMS_THEMES_PATH . '/' . $theme;
+        $themePath = \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme;
         try {
             // check for old info file
             $infoFile = new \Cx\Lib\FileSystem\File($theme . '/info.xml');
