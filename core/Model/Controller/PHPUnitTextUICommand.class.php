@@ -64,7 +64,7 @@ class PHPUnitTextUICommand extends \PHPUnit_TextUI_Command {
         $this->runner->resetPrinter();
 
         if (is_object($this->arguments['test']) &&
-            $this->arguments['test'] instanceof PHPUnit_Framework_Test) {
+            $this->arguments['test'] instanceof \PHPUnit_Framework_Test) {
             $suite = $this->arguments['test'];
         } else {
             $suite = $this->runner->getTest(
@@ -103,7 +103,13 @@ class PHPUnitTextUICommand extends \PHPUnit_TextUI_Command {
 
             exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
         }
-
+        
+        $testCollector = new \PHPUnit_Runner_IncludePathTestCollector(
+            array($this->arguments['test']),
+            array('Test.class.php')
+        );
+        $suite->addTestFiles($testCollector->collectTests());
+        
         unset($this->arguments['test']);
         unset($this->arguments['testFile']);
 

@@ -2,7 +2,7 @@
 
 
 
-namespace Cx\Core_Modules\MediaBrowser\Testing;
+namespace Cx\Core_Modules\MediaBrowser\Testing\UnitTest;
 
 use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
 
