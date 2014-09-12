@@ -10,52 +10,52 @@ class WebsiteServiceServer extends \Cx\Model\Base\EntityBase
     /**
      * @var integer $id
      */
-    public $id;
+    protected $id;
 
     /**
      * @var string $hostname
      */
-    public $hostname;
+    protected $hostname;
 
     /**
      * @var string $label
      */
-    public $label;
+    protected $label;
 
     /**
      * @var string $secretKey
      */
-    public $secretKey;
+    protected $secretKey;
 
     /**
      * @var string $installationId
      */
-    public $installationId;
+    protected $installationId;
 
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Website
      */
-    private $websites;
+    protected $websites;
     
     /**
      * @var integer $isDefault
      */
-    public $isDefault;
+    protected $isDefault;
     
     /**
      * @var string $httpAuthMethod
      */
-    public $httpAuthMethod;
+    protected $httpAuthMethod;
 
     /**
      * @var string $httpAuthUsername
      */
-    public $httpAuthUsername;
+    protected $httpAuthUsername;
 
     /**
      * @var string $httpAuthPassword
      */
-    public $httpAuthPassword;
+    protected $httpAuthPassword;
     
     public function __construct()
     {

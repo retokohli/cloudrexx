@@ -30,33 +30,33 @@ class Website extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $name
      */
-    public $name;
+    protected $name;
 
     /**
      * @var string $codeBase
      */
-    public $codeBase;
+    protected $codeBase;
 
     /**
      * @var string $language
      */
 // TODO: do we still need this??
-    public $language;
+    protected $language;
 
     /**
      * @var string $status
      */
-    public $status;
+    protected $status;
     
     /**
      * @var integer $websiteServiceServerId
      */
-    public $websiteServiceServerId;
+    protected $websiteServiceServerId;
     
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
@@ -65,51 +65,51 @@ class Website extends \Cx\Model\Base\EntityBase {
     
     protected $owner;
     
-    private $websiteController;
+    protected $websiteController;
    
     /**
      * @var string $ipAddress
      */
-    private $ipAddress;
+    protected $ipAddress;
 
     /**
      * @var integer $ownerId
      */
-    private $ownerId;
+    protected $ownerId;
     
     /**
      * @var string $secretKey
      */
-    public $secretKey;
+    protected $secretKey;
     
     /**
      * @var string $installationId
      */
-    private $installationId;
+    protected $installationId;
 
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
      */
-    private $fqdn;
+    protected $fqdn;
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
      */
-    private $baseDn;
+    protected $baseDn;
 
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
      */
-    private $domainAliases;
+    protected $domainAliases;
     
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
      */
-    private $domains;
+    protected $domains;
     
     /**
      * @var string $ftpUser
      */
-    private $ftpUser;
+    protected $ftpUser;
     
     /*
      * Constructor

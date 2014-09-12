@@ -26,34 +26,44 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     const TYPE_EXTERNAL_DOMAIN = 'alias';
 
     /**
-     * @var integer $id
+     * @var integer
      */
-    private $componentId;
+    protected $id;
 
     /**
-     * @var string $componentType
+     * @var string
      */
-    private $componentType;
+    protected $name;
+
+    /**
+     * @var integer
+     */
+    protected $componentId;
+
+    /**
+     * @var string
+     */
+    protected $componentType;
 
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Website $website
      */
-    private $website;
+    protected $website;
 
     /**
-     * @var integer $id
+     * @var string
      */
-    public $type;
+    protected $type;
 
     /**
-     * @var integer $id
+     * @var integer
      */
-    public $pleskId;
+    protected $pleskId;
     
     /**
-     * @var integer $coreNetDomainId
+     * @var integer
      */
-    public $coreNetDomainId;
+    protected $coreNetDomainId;
 
     /*
      * Constructor
