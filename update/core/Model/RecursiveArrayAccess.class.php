@@ -215,8 +215,8 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      *
      * @return null
      */
-    public function offsetUnset($offset) {
-        if ($this->callableOnSet)
+    public function offsetUnset($offset) {        
+        if ($this->callableOnUnset)
             call_user_func($this->callableOnUnset, $offset, $this->id);
         
         unset($this->data[$offset]);
