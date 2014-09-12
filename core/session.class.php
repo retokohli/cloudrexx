@@ -212,6 +212,26 @@ class cmsSession extends RecursiveArrayAccess {
         // release all locks
         if (!empty($this->locks)) {
             foreach (array_keys($this->locks) as $lockKey) {
+                if ($this->data[$lockKey]) {
+                    $sessionValue = $this->data[$lockKey];
+                    if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
+                        self::updateToDb($sessionValue);
+                    } else {
+                        $serializedValue = contrexx_input2db(serialize($sessionValue));
+                        $query = 'INSERT INTO 
+                                        '. DBPREFIX .'session_variable
+                                    SET
+                                    `parent_id` = "0",
+                                    `sessionid` = "'. $_SESSION->sessionid .'",
+                                    `key` = "'. contrexx_input2db($lockKey) .'",
+                                    `value` = "'. $serializedValue .'"
+                                  ON DUPLICATE KEY UPDATE 
+                                     `value` = "'. $serializedValue .'"';
+
+                        \Env::get('db')->Execute($query);
+                    }
+                }
+                
                 $this->releaseLock($lockKey);
             }
         }
@@ -239,8 +259,6 @@ class cmsSession extends RecursiveArrayAccess {
      */
     function readData() {
         $this->data = self::getDataFromKey(0);
-        $this->callableOnSet   = array('\cmsSession', 'updateToDb');                    
-        $this->callableOnGet   = array('\cmsSession', 'getFromDb');
         $this->callableOnUnset = array('\cmsSession', 'removeFromSession');
     }
     
@@ -275,9 +293,8 @@ class cmsSession extends RecursiveArrayAccess {
                     $data[$dataKey]       = new RecursiveArrayAccess(null, $dataKey, $varId);
                     $data[$dataKey]->id   = $objResult->fields['id'];
                     $data[$dataKey]->data = self::getDataFromKey($objResult->fields['id']);
-                    $data[$dataKey]->callableOnSet   = array('\cmsSession', 'updateToDb');
-                    $data[$dataKey]->callableOnGet   = array('\cmsSession', 'getFromDb');
                     $data[$dataKey]->callableOnUnset = array('\cmsSession', 'removeFromSession');
+                    $data[$dataKey]->callableOnSanitizeKey = array('\cmsSession', 'validateSessionKeyLength');
                 } else {
                     $data[$dataKey] = unserialize($objResult->fields['value']);
                 }
@@ -677,16 +694,17 @@ class cmsSession extends RecursiveArrayAccess {
     public function offsetSet($offset, $data) {
         self::validateSessionKeyLength($offset);
         
-        if (empty($this->id)) {
-            self::updateToDb($this);
+        if (!isset($_SESSION->locks[$offset])) {
+            $_SESSION->locks[$offset] = 1;
+            self::getLock(self::getLockName($offset), self::$sessionLockTime);
         }
-        parent::offsetSet($offset, $data, array('\cmsSession', 'updateToDb'), array('\cmsSession', 'getFromDb'), array('\cmsSession', 'removeFromSession'), array('\cmsSession', 'validateSessionKeyLength'));
+        parent::offsetSet($offset, $data, null, null, array('\cmsSession', 'removeFromSession'), array('\cmsSession', 'validateSessionKeyLength'));
     }
-    
+        
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset) {        
+    public function offsetGet($offset) {
         return self::getFromDb($offset, $this);
     }
     
@@ -727,39 +745,38 @@ class cmsSession extends RecursiveArrayAccess {
      */
     public static function getFromDb($offset, $arrObj) {
         if (isset($arrObj->data[$offset])) {
-            $lockKey = $arrObj->id .'-'. $offset;
-            if (!isset($_SESSION->locks[$lockKey])) {
-                $_SESSION->locks[$lockKey] = 1;
-                self::getLock(self::getLockName($lockKey), self::$sessionLockTime);
-            }
-            
-            $query = 'SELECT 
-                        `id`,
-                        `value`
-                      FROM 
-                        `'. DBPREFIX .'session_variable` 
-                      WHERE 
-                        `sessionid` = "'. $_SESSION->sessionid .'"
-                      AND
-                        `parent_id` = "'. intval($arrObj->id).'" 
-                      AND 
-                        `key` = "'. contrexx_input2db($offset) .'" 
-                      LIMIT 0, 1';            
-            $objResult = \Env::get('db')->Execute($query);
+            if (!isset($_SESSION->locks[$offset])) {
+                $_SESSION->locks[$offset] = 1;
+                self::getLock(self::getLockName($offset), self::$sessionLockTime);
+                
+                $query = 'SELECT 
+                            `id`,
+                            `value`
+                          FROM 
+                            `'. DBPREFIX .'session_variable` 
+                          WHERE 
+                            `sessionid` = "'. $_SESSION->sessionid .'"
+                          AND
+                            `parent_id` = "'. intval($arrObj->id).'" 
+                          AND 
+                            `key` = "'. contrexx_input2db($offset) .'" 
+                          LIMIT 0, 1';            
+                $objResult = \Env::get('db')->Execute($query);
+                
+                if ($objResult && $objResult->RecordCount()) {
+                    if ($objResult->fields['value'] === '') {
+                        $data       = new RecursiveArrayAccess(null, $offset, $arrObj->id);
+                        $data->id   = $objResult->fields['id'];
+                        $data->data = self::getDataFromKey($objResult->fields['id']);
+                        $data->callableOnUnset = array('\cmsSession', 'removeFromSession');
+                        $data->callableOnSanitizeKey = array('\cmsSession', 'validateSessionKeyLength');
 
-            if ($objResult->fields['value'] === '') {
-                $data       = new RecursiveArrayAccess(null, $offset, $arrObj->id);
-                $data->id   = $objResult->fields['id'];
-                $data->data = self::getDataFromKey($objResult->fields['id']);
-                $data->callableOnSet   = array('\cmsSession', 'updateToDb');
-                $data->callableOnGet   = array('\cmsSession', 'getFromDb');
-                $data->callableOnUnset = array('\cmsSession', 'removeFromSession');
-                $data->callableOnSanitizeKey = array('\cmsSession', 'validateSessionKeyLength');
-
-                $arrObj->data[$offset] = $data;
-            } else {
-                $dataValue = unserialize($objResult->fields['value']);
-                $arrObj->data[$offset] = $dataValue;
+                        $arrObj->data[$offset] = $data;
+                    } else {
+                        $dataValue = unserialize($objResult->fields['value']);
+                        $arrObj->data[$offset] = $dataValue;
+                    }
+                } 
             }
 
             return $arrObj->data[$offset];
@@ -782,7 +799,7 @@ class cmsSession extends RecursiveArrayAccess {
                         `parent_id` = "'. intval($arrObj->parentId) .'",
                         `sessionid` = "'. $_SESSION->sessionid .'",
                         `key` = "'. contrexx_input2db($arrObj->offset) .'",
-                        `value` = "'. contrexx_input2db(serialize(null)) .'"';
+                        `value` = ""';
             \Env::get('db')->Execute($query);
 
             $arrObj->id = \Env::get('db')->Insert_ID();
@@ -806,11 +823,16 @@ class cmsSession extends RecursiveArrayAccess {
                       ON DUPLICATE KEY UPDATE 
                          `value` = "'. $serializedValue .'"';
 
-            \Env::get('db')->Execute($query);
-        }
+            \Env::get('db')->Execute($query);            
+            
+            if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
+                $value->parentId = intval($arrObj->id);
+                self::updateToDb($value);
+            }
+        }        
     }
     
-    /**
+        /**
      * Remove the session key and sub keys by given offset and parent id
      * Callable from RecursiveArrayAccess class on offsetUnset
      * 
