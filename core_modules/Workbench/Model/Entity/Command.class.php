@@ -48,11 +48,18 @@ abstract class Command {
     protected $help;
     
     /**
+     * Reference to Cx instance
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+    
+    /**
      * Loads a command
      * @param UserInterface $owner 
      */
     public function __construct(UserInterface $owner) {
         $this->interface = $owner;
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
     }
     
     /**
