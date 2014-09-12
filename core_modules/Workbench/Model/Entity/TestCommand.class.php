@@ -240,6 +240,10 @@ class TestCommand extends Command {
      */
     private static function hasTestingFiles($foldername)
     {
+        if (glob($foldername.'/*Test.class.php')) {
+            // phpunit test cases should end with Test.php
+            return true;
+        }
         if (glob($foldername.'/*Test.php')) {
             // phpunit test cases should end with Test.php
             return true;
