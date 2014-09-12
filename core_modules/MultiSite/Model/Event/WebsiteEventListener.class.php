@@ -91,6 +91,18 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 break;
         }
     }
+    
+    public function preRemove($eventArgs) {
+        
+        \DBG::msg('MultiSite (WebsiteEventListener): preRemove');
+        $website = $eventArgs->getEntity();
+        
+        try {
+             $website->destroy();
+        } catch (\Exception $e) {
+            throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Unable to delete the website'.  $e->getMessage());
+        } 
+    }
 
     public function payComplete($eventArgs) {
         \DBG::msg('MultiSite (WebsiteEventListener): payComplete');

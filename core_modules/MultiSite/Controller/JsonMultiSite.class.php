@@ -97,7 +97,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getDefaultWebsiteIp'   => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setDefaultLanguage'    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'resetFtpPassword'      => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkResetFtpPasswordAccess')),
-            'updateServiceServerSetup' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
+            'updateServiceServerSetup' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'destroyWebsite'        => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -1466,6 +1467,28 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::updateServiceServerSetup() failed: Updating setup data in server .' . $e->getMessage());
+        }
+    }
+    
+    /*
+     * Completely removes an website
+     * 
+     */
+    public function destroyWebsite($params) {
+        
+        if (empty($params['post']['websiteId'])) {
+            throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website due to the empty param $websiteId');
+        }
+
+        try {
+            $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $website  = $webRepo->findOneById($params['post']['websiteId']);
+            if (!$website) {
+                throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website (website does not exists)');
+            }
+            $website->destroy(); 
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website.' . $e->getMessage());
         }
     }
 }

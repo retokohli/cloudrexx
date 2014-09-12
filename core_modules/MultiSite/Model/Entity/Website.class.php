@@ -939,39 +939,65 @@ throw new WebsiteException('implement secret-key algorithm first!');
     
     /**
      * Completely removes an website
-     * @param type $websiteName 
      */
-    public function removeWebsite($websiteName, $silent = false) {
-        if (is_array($websiteName)) {
-            if (isset($websiteName['post']) && isset($websiteName['post']['websiteName'])) {
-                $websiteName = $websiteName['post']['websiteName'];
-            } else {
-                $websiteName = '';
-            }
-        }
-        if (empty($websiteName)) {
-            $websiteName = current(explode('.', substr($_SERVER['HTTP_ORIGIN'], 8)));
-        }
+    public function destroy() {
+        global $_DBCONFIG;
         
-        // check if installation exists
-        if (!file_exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName)) {
-            if ($silent) {
-                return false;
-            }
-            throw new MultiSiteException('No website with that name');
-        }
+        \DBG::msg('MultiSite (Website): destroy');
         
-// TODO: remove database user
-        // remove database
-        $dbName = \Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix').$this->id;
-        $dbObj = new \Cx\Core\Model\Model\Entity\Db();
-        $dbObj->setName($dbName);
-        $this->websiteController->removeDb($dbObj);
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                    $websiteServiceServer = $websiteServiceServerRepo->findOneBy(array('id' => $this->websiteServiceServerId));
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('destroyWebsite', array('websiteId' => $this->id), $websiteServiceServer);
+                    if (!$resp || $resp->status == 'error') {
+                        $errMsg = isset($resp->message) ? $resp->message : '';
+                        if (isset($resp->log)) {
+                            \DBG::appendLogsToMemory($resp->log);
+                        }
+                        throw new WebsiteException('Unable to delete the website: ' . $errMsg);
+                    }
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                    //remove the FTP Account if there
+                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                    if ($this->ftpUser) {
+                        if (!$hostingController->removeFtpAccount($this->ftpUser)) {
+                            throw new WebsiteException('Unable to delete the FTP Account');
+                        }
+                    }
 
-        // remove files
-        \Cx\Lib\FileSystem\FileSystem::delete_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName, true);
+                    //remove the database and its user
+                    //remove the database
+                    $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
+                    $objDb->setHost(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost'));
+                    $objDb->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix') . $this->id);
+                    $hostingController->removeDb($objDb);
 
-        return 'success';
+                    //remove the database user
+                    $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
+                    $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') . $this->id);
+                    $hostingController->removeDbUser($objDbUser);
+
+                    //remove the website's data repository
+                    if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name, true)) {
+                        throw new WebsiteException('Unable to delete the website data repository');
+                    }
+
+                    //unmap all the domains
+                    foreach ($this->domains as $domain) {
+                        \Env::get('em')->remove($domain);
+                    }
+
+                    //\Env::get('em')->remove($this);
+                    \Env::get('em')->flush();
+                    break;
+            }
+        } catch (\Exception $e) {
+            throw new WebsiteException('Website (destroy): Unable to delete the website' . $e->getMessage());
+        }
     }
     
     protected function initDatabase($objDb, $objDbUser)
