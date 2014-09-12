@@ -28,7 +28,11 @@ class DbCommand extends Command {
      * Command synopsis
      * @var string
      */
-    protected $synopsis = 'workbench(.bat) db [doctrine {doctrine syntax}|{command}]';
+    protected $synopsis = 'workbench(.bat) db [
+    update({component type} ({component name}))|
+    cleanup|
+    doctrine {doctrine syntax}
+]';
     
     /**
      * Command help text
@@ -49,12 +53,8 @@ class DbCommand extends Command {
                 $this->cleanup();
                 break;
             // update database for component
+            case 'up':
             case 'update':
-                // doctrine orm:validate-schema
-                if ($this->executeDoctrine(array('', 'doctrine', 'orm:validate-schema')) != 0) {
-                    return;
-                }
-                
                 // empty /tmp/workbench
                 $this->cleanup();
                 
@@ -93,7 +93,17 @@ class DbCommand extends Command {
                 }
                 
                 // move entities to component directory and add .class extension
-                $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
+                $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
+                
+                // if all files could be moved, cleanup
+                // if not: ask if moving should be forced (CAUTION!)
+                if (!$modelMovedCompletely) {
+                    echo "\r\n".'Not all entity files could be moved to their correct location. This is probably because there\'s an existing file there. ';
+                    echo 'I can overwrite these files for you, but it is recommended, that you diff the changes manually. ';
+                    if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
+                        $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
+                    }
+                }
                 
                 // doctrine orm:generate-repositories --filter="{component filter}" repositories
                 $doctrineArgs = array('', 'doctrine', 'orm:generate-repositories');
@@ -106,13 +116,54 @@ class DbCommand extends Command {
                 }
                 
                 // move repositories to component directory and add .class extension
-                $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
+                $modelMovedCompletely = $modelMovedCompletely && $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
+                
+                // if all files could be moved, cleanup
+                // if not: ask if moving should be forced (CAUTION!)
+                if (!$modelMovedCompletely) {
+                    echo "\r\n".'Not all model files could be moved to their correct location. This is probably because there\'s an existing file there. ';
+                    echo 'I can overwrite these files for you, but it is recommended, that you diff the changes manually. ';
+                    if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
+                        $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
+                    }
+                    if (!$modelMovedCompletely) {
+                        if ($this->interface->yesNo('There are remaining files in tmp/workbench. Should I remove them?')) {
+                            $this->cleanup();
+                        }
+                    }
+                } else {
+                    $this->cleanup();
+                }
                 
                 // doctrine orm:schema-tool:create --dump-sql
-                // remove component tables
-                // execute sql statements from db dump
-                // empty /model/entities and /model/repositories folders
-                //$this->cleanup();
+                // print queries and ask if those should be executed (CAUTION!)
+                $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->cx->getDb()->getEntityManager());
+                $metadatas = $this->cx->getDb()->getEntityManager()->getMetadataFactory()->getAllMetadata();
+                $queries = $schemaTool->getUpdateSchemaSql($metadatas);
+                foreach ($queries as $query) {
+                    echo $query . "\r\n";
+                }
+                echo 'The above queries were generated for updating the database. Should I execute them on the database? ';
+                if ($this->interface->yesNo('WARNING: Please check the SQL statements carefully and create a database backup before saying yes!')) {
+                    $connection = $this->cx->getDb()->getEntityManager()->getConnection();
+                    $i = 0;
+                    foreach ($queries as $query) {
+                        $query = trim($query);
+                        if (empty($query)) {
+                            continue;
+                        }
+                        $connection->executeQuery($query);
+                        $i++;
+                    }
+                    echo 'Wrote ' . $i . ' queries to DB'."\r\n";
+                }
+                
+                // doctrine orm:validate-schema
+                $this->validateSchema();
+                if ($this->validateSchema() != 0) {
+                    echo 'Your schema is not valid. Please correct this in before you proceed';
+                    return;
+                }
                 break;
             case 'doctrine':
                 $this->executeDoctrine($arguments);
@@ -135,7 +186,7 @@ class DbCommand extends Command {
         $cli->setCatchExceptions(true);
         $helperSet = $cli->getHelperSet();
         $helpers = array(
-            'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(\Env::get('cx')->getDb()->getEntityManager()),
+            'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($this->cx->getDb()->getEntityManager()),
         );
         foreach ($helpers as $name => $helper) {
             $helperSet->set($helper, $name);
@@ -171,10 +222,11 @@ class DbCommand extends Command {
         \Cx\Lib\FileSystem\FileSystem::make_folder($this->cx->getWebsiteTempPath().'/workbench');
     }
     
-    protected function moveModel($sourceFolder, $destinationFolder) {
+    protected function moveModel($sourceFolder, $destinationFolder, $force = false) {
         $sourceDirectory = new \RecursiveDirectoryIterator($sourceFolder);
         $sourceDirectoryIterator = new \RecursiveIteratorIterator($sourceDirectory);
         $sourceDirectoryRegexIterator = new \RegexIterator($sourceDirectoryIterator, '/^.+\.php$/i', \RegexIterator::GET_MATCH);
+        $retVal = true;
         
         // foreach model class
         foreach ($sourceDirectoryRegexIterator as $sourceFile) {
@@ -187,13 +239,47 @@ class DbCommand extends Command {
             },
             $destinationFile);
             $destinationFile = preg_replace('/(?!\.class)\.php$/', '.class.php', $destinationFile);
+            if (!$force && file_exists($destinationFile)) {
+                $retVal = false;
+                continue;
+            }
             try {
                 $objFile = new \Cx\Lib\FileSystem\File($sourceFile);
-                $objFile->move($destinationFile);
+                $objFile->move($destinationFile, $force);
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 throw $e;
             }
         }
+        return $retVal;
+    }
+    
+    protected function validateSchema() {
+        $em = $this->cx->getDb()->getEntityManager();
+
+        $validator = new \Doctrine\ORM\Tools\SchemaValidator($em);
+        $errors = $validator->validateMapping();
+
+        $exit = 0;
+        if ($errors) {
+            foreach ($errors AS $className => $errorMessages) {
+                echo "[Mapping]  FAIL - The entity-class '" . $className . "' mapping is invalid:\n";
+                foreach ($errorMessages AS $errorMessage) {
+                    echo '* ' . $errorMessage . "\n";
+                }
+                echo "\n";
+            }
+            $exit += 1;
+        } else {
+            echo '[Mapping]  OK - The mapping files are correct.' . "\n";
+        }
+
+        if (!$validator->schemaInSyncWithMetadata()) {
+            echo '[Database] FAIL - The database schema is not in sync with the current mapping file.' . "\n";
+            $exit += 2;
+        } else {
+            echo '[Database] OK - The database schema is in sync with the mapping files.' . "\n";
+        }
+        return $exit;
     }
 }
 

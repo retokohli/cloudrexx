@@ -59,7 +59,7 @@ abstract class Command {
      */
     public function __construct(UserInterface $owner) {
         $this->interface = $owner;
-        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->cx = \Env::get('cx');//\Cx\Core\Core\Controller\Cx::instanciate();
     }
     
     /**
