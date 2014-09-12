@@ -46,7 +46,6 @@ class Config
     {
         $this->strSettingsFile = \Env::get('cx')->getWebsiteConfigPath() . '/settings.php';
         $this->configFile = \Env::get('cx')->getWebsiteConfigPath() . '/Config.yml';
-        self::init();
         $this->checkWritePermissions(); 
     }
 
@@ -170,6 +169,7 @@ class Config
                 break;
 
             default:
+                self::init();
                 $this->showSettings();
         }
 
