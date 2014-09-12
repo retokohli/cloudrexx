@@ -4,12 +4,14 @@
         <input type="hidden" name="username" value="{LOGIN_USERNAME}" />
         <!-- BEGIN login_reset_password -->
         <p><label>{TXT_USERNAME}</label>{LOGIN_USERNAME}</p>
-        <p><label for="password">{TXT_PASSWORD}&nbsp;{TXT_PASSWORD_MINIMAL_CHARACTERS}</label><input type="password" maxlength="50"  name="password" /></p>
+        <p><label for="password">{TXT_PASSWORD}&nbsp;{TXT_PASSWORD_MINIMAL_CHARACTERS}</label>
+            <input class="form-control" type="password" maxlength="50"  name="password" /></p>
         <p>{TXT_SET_PASSWORD_TEXT}</p>
-        <p><label for="password2">{TXT_VERIFY_PASSWORD}</label><input type="password" maxlength="50" name="password2" /></p>
-        <p><input type="submit" value="{TXT_SET_NEW_PASSWORD}" name="reset_password" /></p>
+        <p><label for="password2">{TXT_VERIFY_PASSWORD}</label>
+            <input class="form-control" type="password" maxlength="50" name="password2" /></p>
+        <p><input class="btn btn-default" type="submit" value="{TXT_SET_NEW_PASSWORD}" name="reset_password" /></p>
         <!-- END login_reset_password -->
         <br />
-        <p style="color: #ff0000;">{LOGIN_STATUS_MESSAGE}</p>   
+        <p class="text-danger" >{LOGIN_STATUS_MESSAGE}</p>   
     </form>
 </div>
