@@ -31,7 +31,7 @@ class SystemComponentException extends \Exception {}
  * @subpackage  core
  * @version     3.1.0
  */
-class SystemComponent
+class SystemComponent extends \Cx\Model\Base\EntityBase
 {
     const TYPE_CORE = 'core';
     const TYPE_CORE_MODULE = 'core_module';
@@ -141,7 +141,7 @@ class SystemComponent
      * @return string Path for this component
      */
     public function getDirectory($allowCustomizing = true, $relative = false) {
-        $basepath = \Env::get('cx')->getCodeBaseDocumentRootPath();
+        $basepath = $this->cx->getCodeBaseDocumentRootPath();
         if ($relative) {
             $basepath = '';
         }
@@ -150,7 +150,7 @@ class SystemComponent
         if (!$allowCustomizing) {
             return $componentPath;
         }
-        return \Env::get('ClassLoader')->getFilePath($componentPath);
+        return $this->cx->getClassLoader()->getFilePath($componentPath);
     }
     
     /**
@@ -210,5 +210,31 @@ class SystemComponent
                 throw new SystemComponentException('No such component type "' . $type . '"');
                 break;
         }
+    }
+    
+    /**
+     * Returns a list of entity classes for this component
+     * @return array List of class names
+     */
+    public function getEntityClasses() {
+        $entities = array();
+        $em = $this->cx->getDb()->getEntityManager();
+$ms = microtime(true);
+        $meta = $em->getMetadataFactory()->getAllMetadata();
+$msMeta = microtime(true) - $ms;
+        foreach ($meta as $m) {
+            reset($m->reflFields);
+            $className = current($m->reflFields);
+            $className = $className->class;
+            if (!is_subclass_of($className, 'Cx\Model\Base\EntityBase')) {
+                continue;
+            }
+            if (strpos($className, $this->getNamespace()) !== 0) {
+                continue;
+            }
+            $entities[] = $className;
+        }
+//echo 'Needed ' . (microtime(true) - $ms) . 'us (' . $msMeta . 'us for gathering metadata) to gather entity data<br />';
+        return $entities;
     }
 }

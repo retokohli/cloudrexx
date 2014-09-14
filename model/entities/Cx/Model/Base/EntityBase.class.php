@@ -63,13 +63,24 @@ class EntityBase {
      */
     protected $validators = null;
 
-     /**
+    /**
      * Defines if an entity is virtual and therefore not persistable.
      * Defaults to FALSE - not virtual.
      * @var boolean
      */
-     protected $virtual = false;
-
+    protected $virtual = false;
+    
+    /**
+     * This is an ugly solution to allow $this->cx to be available in all entity classes
+     * Since the entity's constructor is not called when an entity is loaded from DB this
+     * cannot be assigned there.
+     */
+    public function __get($name) {
+        if ($name == 'cx') {
+            return \Env::get('cx');
+        }
+    }
+    
     /**
      * Set the virtuality of the entity
      * @param   boolean $virtual    TRUE to set the entity as virtual or otherwise to FALSE 
