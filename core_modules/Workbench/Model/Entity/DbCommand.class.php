@@ -234,10 +234,13 @@ class DbCommand extends Command {
             $sourceFile = current($sourceFile);
             $parts = explode('/Cx/', $sourceFile);
             $destinationFile = $destinationFolder . '/' . end($parts);
-            $destinationFile = preg_replace_callback('#(' . $destinationFolder . '/)(Core(?:_Modules)?|Modules)#', function($matches) {
-                return $matches[1] . strtolower($matches[2]);
-            },
-            $destinationFile);
+            $destinationFile = preg_replace_callback(
+                '#(' . $destinationFolder . '/)(Core(?:_Modules)?|Modules)#',
+                function($matches) {
+                    return $matches[1] . strtolower($matches[2]);
+                },
+                $destinationFile
+            );
             $destinationFile = preg_replace('/(?!\.class)\.php$/', '.class.php', $destinationFile);
             if (!$force && file_exists($destinationFile)) {
                 $retVal = false;
@@ -248,6 +251,18 @@ class DbCommand extends Command {
                 $objFile->move($destinationFile, $force);
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 throw $e;
+            }
+            // if the moved file is an entity class
+            if (strpos($destinationFile, '/Model/Entity/')) {
+                $contents = file_get_contents($destinationFile);
+                // and there is no extends statement yet
+                $regex = '/(class\s*(:?[a-zA-Z0-9_]*))\s*\{/m';
+                if (!preg_match($regex, $contents)) {
+                    return $retVal;
+                }
+                // add extends statement for base entity
+                $contents = preg_replace($regex, '$1 extends \\Cx\\Model\\Base\\EntityBase {', $contents);
+                file_put_contents($destinationFile, $contents);
             }
         }
         return $retVal;
