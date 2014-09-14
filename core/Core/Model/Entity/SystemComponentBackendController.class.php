@@ -24,14 +24,20 @@ namespace Cx\Core\Core\Model\Entity;
  * @subpackage  core_core
  * @version     3.1.0
  */
-abstract class SystemComponentBackendController extends Controller {
+class SystemComponentBackendController extends Controller {
     
     /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
-    public abstract function getCommands();
-    
+    public function getCommands() {
+        $cmds = array();
+        foreach ($this->getEntityClasses() as $class) {
+            $cmds[] = preg_replace('#' . preg_quote($this->getNamespace() . '\\Model\\Entity\\') . '#', '', $class);
+        }
+        return $cmds;
+    }
+
     /**
      * This is called by the default ComponentController and does all the repeating work
      * 
@@ -170,5 +176,35 @@ abstract class SystemComponentBackendController extends Controller {
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array $cmd CMD separated by slashes
      */
-    public abstract function parsePage(\Cx\Core\Html\Sigma $template, array $cmd);
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+        global $_ARRAYLANG;
+        
+        $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
+        if (!in_array($entityClassName, $this->getEntityClasses())) {
+            if ($template->blockExists('overview')) {
+                $template->touchBlock('overview');
+            }
+            return;
+        }
+        if (!$template->blockExists('entity_view')) {
+            return;
+        }
+        $entityRepository = $this->cx->getDb()->getEntityManager()->getRepository($entityClassName);
+        $entities = $entityRepository->findAll();
+        if (empty($entities)) {
+            $entities = new $entityClassName();
+        }
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($entities, array(
+            'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_' . current($cmd)],
+            'functions' => array(
+                'add'       => true,
+                'edit'      => true,
+                'delete'    => true,
+                'sorting'   => true,
+                'paging'    => true,
+                'filtering' => false,
+                )
+            ));
+        $template->setVariable('ENTITY_VIEW', $view->render());
+    }
 }

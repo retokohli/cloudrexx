@@ -236,7 +236,11 @@ class SystemComponentController extends Controller {
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $controllerClass = $baseNs . 'FrontendController';
         } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            $controllerClass = $baseNs . 'BackendController';
+            if (file_exists($this->getDirectory() . '/Controller/BackendController.class.php')) {
+                $controllerClass = $baseNs . 'BackendController';
+            } else {
+                $controllerClass = '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponentBackendController';
+            }
         } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_COMMAND) {
             $controllerClass = $baseNs . 'CommandController';
         }
