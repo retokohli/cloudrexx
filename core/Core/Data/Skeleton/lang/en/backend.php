@@ -13,13 +13,14 @@
 global $_ARRAYLANG;
 
 // Let's start with module info:
-$_ARRAYLANG['TXT_MODULE_SKELETON'] = '{COMPONENT_NAME}';
-$_ARRAYLANG['TXT_MODULE_SKELETON_DESCRIPTION'] = 'This is a new module with some sample content to show how to start.';
+$_ARRAYLANG['TXT_MODULE_APPRENTICES'] = 'Apprentices';
+$_ARRAYLANG['TXT_MODULE_APPRENTICES_DESCRIPTION'] = 'This is a new module with some sample content to show how to start.';
 
 // Here come the ACTs:
-$_ARRAYLANG['TXT_MODULE_SKELETON_ACT_DEFAULT'] = 'Congratulations';
+$_ARRAYLANG['TXT_MODULE_APPRENTICES_ACT_DEFAULT'] = 'Overview';
 
 // Now our content specific values:
-$_ARRAYLANG['TXT_MODULE_SKELETON_CONGRATULATIONS'] = 'Congratulations';
-$_ARRAYLANG['TXT_MODULE_SKELETON_SUCCESSFUL_CREATION'] = 'You successfully created a new module!';
-$_ARRAYLANG['TXT_MODULE_SKELETON_EXAMPLE_TEMPLATE'] = 'This is the default template for this component. It is used for all ACTs that do not have their own template.';
+$_ARRAYLANG['TXT_MODULE_APPRENTICES_CONGRATULATIONS'] = 'Overview';
+$_ARRAYLANG['TXT_MODULE_APPRENTICES_SUCCESSFUL_CREATION'] = 'This is the Overview/Dashboard of your new Component. More tabs will be generated if you add entities to this component.';
+$_ARRAYLANG['TXT_MODULE_APPRENTICES_EXAMPLE_TEMPLATE'] = 'This is the default template for this component, located in View/Template/Backend/Default.html. In order to add entities, place your YAML files in Model/Yaml folder and execute ./workbench.bat db update. Then add a language file entry for your entity.';
+
