@@ -982,8 +982,10 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     $hostingController->removeDb($objDb);
 
                     //remove the website's data repository
-                    if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name, true)) {
-                        throw new WebsiteException('Unable to delete the website data repository');
+                    if(file_exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name)) {
+                        if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name, true)) {
+                            throw new WebsiteException('Unable to delete the website data repository');
+                        }
                     }
 
                     //unmap all the domains

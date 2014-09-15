@@ -1484,7 +1484,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $website  = $webRepo->findOneById($params['post']['websiteId']);
             if (!$website) {
-                throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website (website does not exists)');
+                return array(
+                    'status' => 'success'
+                );            
             }
             $website->destroy();
             return array(

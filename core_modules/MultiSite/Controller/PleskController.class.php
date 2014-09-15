@@ -134,7 +134,9 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @throws MultiSiteDbException On error
      */
     public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser){
-        return $dbUser;
+        if ($dbUser->getName()) {
+            return $dbUser;
+        }
     }
 
     /**
@@ -143,27 +145,29 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @throws MultiSiteDbException On error
      */
     public function removeDb(\Cx\Core\Model\Model\Entity\Db $db){
-        $dbName = $db->getName();
-        $databaseId = $this->getDbId($dbName);//get database id byname
-        $xmldoc = $this->getXmlDocument();
-        $packet = $this->getRpcPacket($xmldoc);
-        $database = $xmldoc->createElement('database');  
-        $packet->appendChild($database);            
-        $delDb = $xmldoc->createElement('del-db');
-        $database->appendChild($delDb);	
-        $filter = $xmldoc->createElement('filter');	
-        $delDb->appendChild($filter);
-        $dbId = $xmldoc->createElement('id',$databaseId);	
-        $filter->appendChild($dbId);
-        $response = $this->executeCurl($xmldoc);
-        $systemError = $response->system->errtext;
-        $responseJson = json_encode($response->database->{'del-db'}->result);
-        $respArr = json_decode($responseJson,true); 
-        if ('error' == (string)$resultNode->status || $systemError) {
-             $error = (isset($systemError)?$systemError:$resultNode->errtext);
-             throw new ApiRequestException("Error in removing database:{$error} ");
+        if ($db->getName()) {
+            $dbName = $db->getName();
+            $databaseId = $this->getDbId($dbName); //get database id byname
+            $xmldoc = $this->getXmlDocument();
+            $packet = $this->getRpcPacket($xmldoc);
+            $database = $xmldoc->createElement('database');
+            $packet->appendChild($database);
+            $delDb = $xmldoc->createElement('del-db');
+            $database->appendChild($delDb);
+            $filter = $xmldoc->createElement('filter');
+            $delDb->appendChild($filter);
+            $dbId = $xmldoc->createElement('id', $databaseId);
+            $filter->appendChild($dbId);
+            $response = $this->executeCurl($xmldoc);
+            $systemError = $response->system->errtext;
+            $responseJson = json_encode($response->database->{'del-db'}->result);
+            $respArr = json_decode($responseJson, true);
+            if ('error' == (string) $resultNode->status || $systemError) {
+                $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+                throw new ApiRequestException("Error in removing database:{$error} ");
+            }
+            return $respArr;
         }
-        return $respArr;
     }
 
     /**

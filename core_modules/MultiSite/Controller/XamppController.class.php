@@ -101,10 +101,12 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @throws MultiSiteDbException On error
      */
     public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser){
-        $isUserDeleted = $this->db->execute("DROP USER '".$dbUser->getName()."'@'localhost'");
-        if (!$isUserDeleted) {
-            throw new \Exception("Query failed: \ DROP USER '".$dbUser->getName()."'@'localhost'" . $this->db->ErrorMsg());
-        }    
+        if ($dbUser->getName()) {
+            $isUserDeleted = $this->db->execute("DROP USER '".$dbUser->getName()."'@'localhost'");
+            if (!$isUserDeleted) {
+                throw new \Exception("Query failed: \ DROP USER '".$dbUser->getName()."'@'localhost'" . $this->db->ErrorMsg());
+            }    
+        } 
     }
     
     /**
@@ -113,10 +115,12 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @throws MultiSiteDbException On error
      */
     public function removeDb(\Cx\Core\Model\Model\Entity\Db $db){
-        $isDbCreated = $this->db->execute("DROP DATABASE `".$db->getName()."`");
-        if (!$isDbCreated) {
-            throw new \Exception('Query failed: \'DROP DATABASE `'.$db->getName().'`\', ' . $this->db->ErrorMsg());
-        }    
+        if ($db->getName()) {
+            $isDbCreated = $this->db->execute("DROP DATABASE `".$db->getName()."`");
+            if (!$isDbCreated) {
+                throw new \Exception('Query failed: \'DROP DATABASE `'.$db->getName().'`\', ' . $this->db->ErrorMsg());
+            }  
+        }
     }
     
      /**
