@@ -920,7 +920,7 @@ class JsonPage implements JsonAdapter {
             $i++;
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging(count($logs), $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging(count($logs), $offset, '?cmd=ContentManager&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
