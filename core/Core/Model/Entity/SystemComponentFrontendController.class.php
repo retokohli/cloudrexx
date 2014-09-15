@@ -46,7 +46,7 @@ abstract class SystemComponentFrontendController extends Controller {
         
         // parse page
         
-        $componentTemplate->setVariable($_ARRAYLANG);
+        $componentTemplate->setGlobalVariable($_ARRAYLANG);
         $this->parsePage($componentTemplate, $page->getCmd());
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($componentTemplate);
         $page->setContent($componentTemplate->get());
