@@ -19,28 +19,29 @@
         </div>
     </div>
     <!-- END login_social_networks -->
-
-    <div id="login">
-        <p class="login-error-msg text-danger">{LOGIN_STATUS_MESSAGE}</p>
-        <form role="form" method="post" action="index.php?section=login" name="loginForm">
-            <input type="hidden" value="{LOGIN_REDIRECT}" name="redirect" />
-            <p><label for="USERNAME">Benutzername</label><input id="USERNAME" name="USERNAME" value="" placeholder="E-Mail-Adresse oder Benutzername" type="text"></p>
-            <p><label for="PASSWORD">{TXT_PASSWORD}</label><input id="PASSWORD" name="PASSWORD" value="" placeholder="Passwort" type="password"></p>
-            <!-- BEGIN captcha -->
-            <p><label for="coreCaptchaCode">{TXT_CORE_CAPTCHA}</label>{CAPTCHA_CODE}</p>
-            <!-- END captcha -->
-            <p>
-                <input class="btn btn-default" type="submit" name="login" value="{TXT_LOGIN}" />
-                <span class="checkbox">
-                    <label for="remember_me" class="remember_me">
-                        <input type="checkbox" value="1" name="remember_me" class="remember_me" id="remember_me" />
-                        {TXT_LOGIN_REMEMBER_ME}
-                    </label>
-                </span>
-            </p>
-            <br />
-            <br />
-        </form>
+    <div id="right-login">
+        <div id="login">
+            <p class="login-error-msg text-danger">{LOGIN_STATUS_MESSAGE}</p>
+            <form role="form" method="post" action="index.php?section=login" name="loginForm">
+                <input type="hidden" value="{LOGIN_REDIRECT}" name="redirect" />
+                <p><label for="USERNAME">Benutzername</label><input id="USERNAME" name="USERNAME" value="" placeholder="E-Mail-Adresse oder Benutzername" type="text"></p>
+                <p><label for="PASSWORD">{TXT_PASSWORD}</label><input id="PASSWORD" name="PASSWORD" value="" placeholder="Passwort" type="password"></p>
+                <!-- BEGIN captcha -->
+                <p><label for="coreCaptchaCode">{TXT_CORE_CAPTCHA}</label>{CAPTCHA_CODE}</p>
+                <!-- END captcha -->
+                <p>
+                    <input class="btn btn-default" type="submit" name="login" value="{TXT_LOGIN}" />
+                    <span class="checkbox">
+                        <label for="remember_me" class="remember_me">
+                            <input type="checkbox" value="1" name="remember_me" class="remember_me" id="remember_me" />
+                            {TXT_LOGIN_REMEMBER_ME}
+                        </label>
+                    </span>
+                </p>
+                <br />
+                <br />
+            </form>
+        </div>
     </div>
     <div class="login-bottom">
         <div class="col-md-6 col-md-offset-6">

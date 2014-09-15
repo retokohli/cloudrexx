@@ -1,7 +1,7 @@
 <div id="gallery">
     <!-- BEGIN galleryCategories -->
     <div class="category_tree">Sie sind hier: {GALLERY_CATEGORY_TREE}</div>
-    
+
     <!-- BEGIN galleryCategoryList -->
     <div class="category row_{GALLERY_STYLE}">
         <div class="category_image">{GALLERY_CATEGORY_IMAGE}</div>
@@ -13,7 +13,7 @@
         </div>
     </div>
     <!-- END galleryCategoryList --> 	
-    
+
     <!-- BEGIN galleryImageBlock -->  	
     {GALLERY_JAVASCRIPT}
     <div class="category_comment">{GALLERY_CATEGORY_COMMENT}</div>
@@ -27,9 +27,9 @@
 
     <div class="category_paging">{GALLERY_PAGING}</div>
     <!-- END galleryImageBlock --> 
-     	
+
     <!-- END galleryCategories -->   	
-    
+
     <!-- BEGIN galleryImage -->
     <div class="category_tree">Sie sind hier: {GALLERY_CATEGORY_TREE}</div>
     <div class="show_image" style="overflow-y:auto;">
@@ -39,7 +39,7 @@
     <div class="image_navigation">
         <a title="{TXT_GALLERY__PREVIOUS_IMAGE}" href="{GALLERY_IMAGE_PREVIOUS}"><img alt="{TXT_GALLERY__PREVIOUS_IMAGE}" style="border: 0px none ; margin-left: 10px; margin-right: 5px; width: 18px; height: 18px;" src="modules/Gallery/View/Media/previous.gif" /></a>&nbsp; 		<a title="{TXT_GALLERY__NEXT_IMAGE}" href="{GALLERY_IMAGE_NEXT}"><img alt="{TXT_GALLERY__NEXT_IMAGE}" style="border: 0px none ; margin-left: 5px; margin-right: 10px; width: 18px; height: 18px;" src="modules/Gallery/View/Media/next.gif" /></a>
     </div>
-    
+
     <!-- BEGIN votingTab -->
     <div class="image_voting">
         <table>
@@ -50,22 +50,22 @@
             </tbody>
         </table>
         <div id="votingDiv" style="width: 100%; display: none; text-align: center;">
-        <table>
-            <tbody>
-                <tr>
-                    <td>
-                        <!-- BEGIN showVotingBar --> 						
-                        <a href="index.php?section=Gallery&amp;cid={VOTING_BAR_CID}&amp;pId={VOTING_BAR_PICID}&amp;mark={VOTING_BAR_MARK}" title="{VOTING_BAR_ALT}"><img align="bottom" src="{VOTING_BAR_SRC}" alt="{VOTING_BAR_ALT}" style="border: 0px none ; margin-left: 1px; margin-top: 3px;" /></a> 												
-                        <!-- END showVotingBar -->
-                        {TXT_VOTING_ALREADY_VOTED}&nbsp;{TXT_VOTING_STATS_ACTUAL}:&nbsp;&Oslash;&nbsp;<strong>{VOTING_STATS_MARK}</strong>&nbsp;{TXT_VOTING_STATS_WITH}&nbsp;<strong>{VOTING_STATS_VOTES}</strong>&nbsp;{TXT_VOTING_STATS_VOTES} 					
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <!-- BEGIN showVotingBar --> 						
+                            <a href="index.php?section=Gallery&amp;cid={VOTING_BAR_CID}&amp;pId={VOTING_BAR_PICID}&amp;mark={VOTING_BAR_MARK}" title="{VOTING_BAR_ALT}"><img align="bottom" src="{VOTING_BAR_SRC}" alt="{VOTING_BAR_ALT}" style="border: 0px none ; margin-left: 1px; margin-top: 3px;" /></a> 												
+                            <!-- END showVotingBar -->
+                            {TXT_VOTING_ALREADY_VOTED}&nbsp;{TXT_VOTING_STATS_ACTUAL}:&nbsp;&Oslash;&nbsp;<strong>{VOTING_STATS_MARK}</strong>&nbsp;{TXT_VOTING_STATS_WITH}&nbsp;<strong>{VOTING_STATS_VOTES}</strong>&nbsp;{TXT_VOTING_STATS_VOTES} 					
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <!-- END votingTab -->
-    
+
     <!-- BEGIN commentTab -->
     <div class="image_comment">
         <table>
@@ -77,50 +77,50 @@
         </table>
         <div id="commentDiv" style="width: 100%; display: none; text-align: left;">
             <form method="post" name="frmGalComAdd" action="index.php?section=Gallery&amp;pId={GALLERY_PICTURE_ID}">
-            <input type="hidden" name="frmGalComAdd_PicId" value="{GALLERY_PICTURE_ID}" />
-            <input type="hidden" value="{GALLERY_CATEGORY_ID}" name="frmGalComAdd_GalId" />
-            <table>
-                <tbody>
-                    <!-- BEGIN showComments -->
-                    <tr class="row{COMMENTS_ROWCLASS}">
+                <input type="hidden" name="frmGalComAdd_PicId" value="{GALLERY_PICTURE_ID}" />
+                <input type="hidden" value="{GALLERY_CATEGORY_ID}" name="frmGalComAdd_GalId" />
+                <table>
+                    <tbody>
+                        <!-- BEGIN showComments -->
+                        <tr class="row{COMMENTS_ROWCLASS}">
                             <td width="20%" valign="top" nowrap="nowrap">
-                            <strong>{COMMENTS_NAME}</strong><br />
-                            <em>{COMMENTS_DATE}</em><br />
-                            {COMMENTS_EMAIL}&nbsp;{COMMENTS_WWW}		
-                        </td>
-                        <td width="80%" valign="top" class="row_{COMMENTS_ROWCLASS}">{COMMENTS_TEXT}</td>
-                    </tr>
-                    <!-- END showComments -->
-                </tbody>
-            </table>
-            <h2>{TXT_COMMENTS_ADD_TITLE}</h2>
-            <p><label for="frmGalComAdd_Name">{TXT_COMMENTS_ADD_NAME}</label><input id="frmGalComAdd_Name" name="frmGalComAdd_Name" value="" type="text"></p>
-            <p><label for="frmGalComAdd_Email">{TXT_COMMENTS_ADD_EMAIL}</label><input id="frmGalComAdd_Email" name="frmGalComAdd_Email" value="" type="text"></p>
-            <p><label for="frmGalComAdd_Homepage">{TXT_COMMENTS_ADD_HOMEPAGE}</label><input id="frmGalComAdd_Homepage" name="frmGalComAdd_Homepage" value="" type="text"></p>
-            <p><label for="frmGalComAdd_Text">{TXT_COMMENTS_ADD_TEXT}</label><input id="frmGalComAdd_Name" name="frmGalComAdd_Text" value="" type="text"></p>
-            <p><input type="submit" name="frmGalComAdd_Submit" value="{TXT_COMMENTS_ADD_SUBMIT}" /></p>
+                                <strong>{COMMENTS_NAME}</strong><br />
+                                <em>{COMMENTS_DATE}</em><br />
+                                {COMMENTS_EMAIL}&nbsp;{COMMENTS_WWW}		
+                            </td>
+                            <td width="80%" valign="top" class="row_{COMMENTS_ROWCLASS}">{COMMENTS_TEXT}</td>
+                        </tr>
+                        <!-- END showComments -->
+                    </tbody>
+                </table>
+                <h2>{TXT_COMMENTS_ADD_TITLE}</h2>
+                <p><label for="frmGalComAdd_Name">{TXT_COMMENTS_ADD_NAME}</label><input id="frmGalComAdd_Name" name="frmGalComAdd_Name" value="" type="text"></p>
+                <p><label for="frmGalComAdd_Email">{TXT_COMMENTS_ADD_EMAIL}</label><input id="frmGalComAdd_Email" name="frmGalComAdd_Email" value="" type="text"></p>
+                <p><label for="frmGalComAdd_Homepage">{TXT_COMMENTS_ADD_HOMEPAGE}</label><input id="frmGalComAdd_Homepage" name="frmGalComAdd_Homepage" value="" type="text"></p>
+                <p><label for="frmGalComAdd_Text">{TXT_COMMENTS_ADD_TEXT}</label><input id="frmGalComAdd_Name" name="frmGalComAdd_Text" value="" type="text"></p>
+                <p><input type="submit" name="frmGalComAdd_Submit" value="{TXT_COMMENTS_ADD_SUBMIT}" /></p>
             </form>
         </div>
     </div>
     <!-- END commentTab -->
-    
-    <script language="javascript" type="text/javascript">
-	<!-- 
-	// show and hide blocks
-	function showOrHide(strElement)
-	{
-		if (document.getElementById(strElement).style.display == 'block'){
-			document.getElementById(strElement).style.display = 'none';
-		} else {
-			document.getElementById(strElement).style.display = 'block';
-		}
-	}
-	//-->
-	</script>  
 
-	<!-- END galleryImage -->
-	
-	<center>{GALLERY_CATEGORY_PAGING}</center>
+    <script language="javascript" type="text/javascript">
+        <!-- 
+        // show and hide blocks
+        function showOrHide(strElement)
+        {
+            if (document.getElementById(strElement).style.display == 'block') {
+                document.getElementById(strElement).style.display = 'none';
+            } else {
+                document.getElementById(strElement).style.display = 'block';
+            }
+        }
+        //-->
+    </script>  
+
+    <!-- END galleryImage -->
+
+    <center>{GALLERY_CATEGORY_PAGING}</center>
     <center>{GALLERY_PAGING}</center>
 </div>
 

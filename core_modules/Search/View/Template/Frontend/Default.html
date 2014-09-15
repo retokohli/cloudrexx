@@ -1,14 +1,20 @@
-<form action="index.php" method="get">
-	<input type="hidden" name="section" value="Search" />
-	<input type="text" name="term" value="{SEARCH_TERM}" />
-	<input type="submit" name="submit" value="{TXT_SEARCH}" />
-</form><br />
-
-{SEARCH_TITLE}<br /><br />
-
-<!-- BEGIN search_result -->
-	{LINK} {COUNT_MATCH}<br />
-	{SHORT_CONTENT}<br /><br />
-<!-- END search_result -->
-
-{SEARCH_PAGING}
+<div class="container-fluid">
+    <div class="row">
+        <form class="search-form" role="form" action="index.php" method="get">
+            <input type="hidden" name="section" value="Search" />
+            <input id="searchbox" type="text" name="term" value="{SEARCH_TERM}" />
+            <input class="btn btn-default" type="submit" name="submit" value="{TXT_SEARCH}" />
+        </form>
+        <br />
+        {SEARCH_TITLE}
+        <br />
+        <br />
+        <!-- BEGIN search_result -->
+        {LINK} {COUNT_MATCH}
+        <br />
+        {SHORT_CONTENT}<br />
+        <br />
+        <!-- END search_result -->
+        {SEARCH_PAGING}
+    </div>
+</div>
