@@ -14,7 +14,7 @@ form p {
 }
 form p label {
     float: left;
-    width: auto;
+    /*width: auto;*/
     font-weight: normal;
 }
 .label {
@@ -297,6 +297,7 @@ div.row2 {
 #captcha .row {
     clear: both;
     display: block;
+    margin: 0;
 }
 #captcha #coreCaptchaCode {
     float: left;
@@ -759,7 +760,7 @@ div.row2 {
 /***************************************************/
 /* CSS DEFINITIONS FOR LOGIN MODULE                */
 /***************************************************/
-#login {
+#right-login {
     width: 50%;
     padding: 0px 0 0px 40px;
     margin: 8px 0px 0px 0px;
@@ -2741,7 +2742,7 @@ form#search {
     margin-bottom: 10px;
 }
 #searchbox {
-    width: 70%;
+    width: 68%;
     float: left;
     margin-right: 10px;
 }
@@ -3025,4 +3026,9 @@ input[type="checkbox"] {
 }
 .modal-content {
     width: 100%;
+}
+.search-form {
+    float: left;
+    width: 100%;
+    padding-bottom: 10px;
 }
