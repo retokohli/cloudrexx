@@ -34,7 +34,6 @@ class Config
 {
     var $_objTpl;
     var $strPageTitle;
-    var $strSettingsFile;
     protected $configFile;
     var $strErrMessage = array();
     var $strOkMessage;
@@ -44,8 +43,8 @@ class Config
      
     function __construct()
     {
-        $this->strSettingsFile = \Env::get('cx')->getWebsiteConfigPath() . '/settings.php';
         $this->configFile = \Env::get('cx')->getWebsiteConfigPath() . '/Config.yml';
+        self::init();
         $this->checkWritePermissions(); 
     }
 
@@ -90,9 +89,9 @@ class Config
         global $_ARRAYLANG;
 
         $this->writable = true;
-        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($this->strSettingsFile)) {
+        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable(self::getSettingsFile())) {
             $this->writable = false;
-            \Message::warning(sprintf($_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], $this->strSettingsFile));
+            \Message::warning(sprintf($_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], self::getSettingsFile()));
         }
         if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($this->configFile)) {
             $this->writable = false;
@@ -169,7 +168,6 @@ class Config
                 break;
 
             default:
-                self::init();
                 $this->showSettings();
         }
 
@@ -524,8 +522,8 @@ class Config
     public function updatePhpCache() {
         global $_ARRAYLANG, $_CONFIG;
 
-        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($this->strSettingsFile)) {
-            \Message::add($this->strSettingsFile.' '.$_ARRAYLANG['TXT_SETTINGS_ERROR_WRITABLE'], \Message::CLASS_ERROR);
+        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable(self::getSettingsFile())) {
+            \Message::add(self::getSettingsFile().' '.$_ARRAYLANG['TXT_SETTINGS_ERROR_WRITABLE'], \Message::CLASS_ERROR);
             return false;
         }
 
@@ -578,7 +576,7 @@ class Config
             foreach($sectionValues as $sectionName => $sectionNameValue) {
                 $strBody .= sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$sectionName.'\']');
                 $strBody .= "= ";
-                $strBody .= ($this->isANumber($sectionNameValue) ? $sectionNameValue : '"'.str_replace('"', '\"', $sectionNameValue).'"').";\n";
+                $strBody .= (self::isANumber($sectionNameValue) ? $sectionNameValue : '"'.str_replace('"', '\"', $sectionNameValue).'"').";\n";
             }
             $strBody .= "\n";
         }
@@ -587,7 +585,7 @@ class Config
         $data .= $strFooter;
 
         try {
-            $objFile = new \Cx\Lib\FileSystem\File($this->strSettingsFile);
+            $objFile = new \Cx\Lib\FileSystem\File(self::getSettingsFile());
             $objFile->write($data);
             return true;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
@@ -603,7 +601,7 @@ class Config
      * @param string $value The value to check
      * @return bool true if the string is a number, false if not
      */
-    protected function isANumber($value) {
+    static function isANumber($value) {
         // check whether the integer value has the same length like the entered string
         return is_numeric($value) && strlen(intval($value)) == strlen($value);
     }
@@ -1496,4 +1494,14 @@ class Config
             'TXT_SETTINGS_RESET_PASSWORD' => $_ARRAYLANG['TXT_SETTINGS_RESET_PASSWORD'],
         ));
     }
+    
+    /**
+     * get the settings file path
+     * 
+     * @return  string
+     */
+    static function getSettingsFile() {
+        return \Env::get('cx')->getWebsiteConfigPath() . '/settings.php';
+    }
+
 }

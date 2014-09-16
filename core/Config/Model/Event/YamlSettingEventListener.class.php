@@ -91,8 +91,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
 
     public function postFlush($eventArgs) {
         try {
-            $config = new \Cx\Core\Config\Controller\Config();
-            $config->updatePhpCache();
+            \Cx\Core\Config\Controller\Config::updatePhpCache();
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
