@@ -1,28 +1,30 @@
 <div id="gallery">
     <!-- BEGIN galleryCategories -->
-    <div class="category_tree">Sie sind hier: {GALLERY_CATEGORY_TREE}</div>
+    <div class="breadcrumb">Sie sind hier: <li>{GALLERY_CATEGORY_TREE}<li></div>
 
     <!-- BEGIN galleryCategoryList -->
-    <div class="category row_{GALLERY_STYLE}">
-        <div class="category_image">{GALLERY_CATEGORY_IMAGE}</div>
-        <div class="category_informations">
-            <h2>{GALLERY_CATEGORY_NAME}</h2>
-            {GALLERY_CATEGORY_DESCRIPTION}<br />
-            <!-- <br />
-            {GALLERY_CATEGORY_INFO} -->
+    <div class="category row_{GALLERY_STYLE} container-fluid">
+        <div class="row">
+            <div class="category_image col-md-4">{GALLERY_CATEGORY_IMAGE}</div>
+            <div class="category_informations col-md-8">
+                <h2>{GALLERY_CATEGORY_NAME}</h2>
+                {GALLERY_CATEGORY_DESCRIPTION}<br />
+                <!-- <br />
+                {GALLERY_CATEGORY_INFO} -->
+            </div>
         </div>
     </div>
     <!-- END galleryCategoryList --> 	
 
     <!-- BEGIN galleryImageBlock -->  	
     {GALLERY_JAVASCRIPT}
-    <div class="category_comment">{GALLERY_CATEGORY_COMMENT}</div>
+    <div class="category_comment text-muted">{GALLERY_CATEGORY_COMMENT}</div>
     <!-- BEGIN galleryShowImages -->
-    <div class="category_images">
-        <div class="image">{GALLERY_IMAGE1}<br />{GALLERY_IMAGE_LINK1}</div>
-        <div class="image">{GALLERY_IMAGE2}<br />{GALLERY_IMAGE_LINK2}</div>
-        <div class="image">{GALLERY_IMAGE3}<br />{GALLERY_IMAGE_LINK3}</div>
-    </div>
+    <div class="category_images container-fluid"><div class="row">
+            <div class="image col-md-4">{GALLERY_IMAGE1}<br />{GALLERY_IMAGE_LINK1}</div>
+            <div class="image col-md-4">{GALLERY_IMAGE2}<br />{GALLERY_IMAGE_LINK2}</div>
+            <div class="image col-md-4">{GALLERY_IMAGE3}<br />{GALLERY_IMAGE_LINK3}</div>
+        </div></div>
     <!-- END galleryShowImages -->
 
     <div class="category_paging">{GALLERY_PAGING}</div>
@@ -31,7 +33,7 @@
     <!-- END galleryCategories -->   	
 
     <!-- BEGIN galleryImage -->
-    <div class="category_tree">Sie sind hier: {GALLERY_CATEGORY_TREE}</div>
+    <div class="breadcrumb">Sie sind hier: <li>{GALLERY_CATEGORY_TREE}</li></div>
     <div class="show_image" style="overflow-y:auto;">
         <img border="0" style="margin-top: 2px;" src="{GALLERY_IMAGE_PATH}" id="image" alt="" /><br />
         {GALLERY_IMAGE_TITLE} {GALLERY_IMAGE_FILESIZE}<br />{GALLERY_IMAGE_DESCRIPTION}

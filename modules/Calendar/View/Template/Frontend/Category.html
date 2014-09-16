@@ -1,37 +1,40 @@
 {CALENDAR_JAVASCRIPT}
 <form name="calendarSearch" method="get" action="index.php">
     <input type="hidden" value="{CALENDAR_MODULE_NAME}" name="section" /> <input type="hidden" value="category" name="cmd" />
-    <p><label>{TXT_CALENDAR_CATEGORY}</label><select onchange="document.calendarSearch.submit();" name="catid">{CALENDAR_SEARCH_CATEGORIES}</select></p>
+    <p>
+        <label>{TXT_CALENDAR_CATEGORY}</label>
+        <select class="form-control" onchange="document.calendarSearch.submit();" name="catid">{CALENDAR_SEARCH_CATEGORIES}</select>
+    </p>
 </form>
 <br />
 <!-- BEGIN categoryList -->
 <div style="width: 100%; float: left; height: auto !important;">
-<h2>{CALENDAR_CATEGORY_NAME}</h2>
-<table cellspacing="0" style="width: 100& !important;">
-    <tbody>
-        <tr>
-            <th>Wann</th>
-            <th>Anlass</th>
-            <th>Wo</th>
-        </tr>
-        <!-- BEGIN eventList -->
-        <tr class="{CALENDAR_EVENT_ROW}">
-            <td width="20%" valign="top" nowrap="nowrap" align="left">
-            <!-- BEGIN calendarDateList -->
-            {CALENDAR_DATE_LIST}{CALENDAR_SEP_DATE_TIME_LIST}{CALENDAR_TIME_LIST}{TXT_CALENDAR_CLOCK_LIST}
-            <!-- END calendarDateList -->
-            </td>
-            <td width="40%" valign="top"><a target="{CALENDAR_EVENT_DETAIL_TARGET}" href="{CALENDAR_EVENT_DETAIL_LINK}">{CALENDAR_EVENT_TITLE}</a></td>
-            <td width="40%" valign="top">{CALENDAR_EVENT_PLACE}</td>
-        </tr>
-        <!-- END eventList -->           
-        <!-- BEGIN emptyEventList -->
-        <tr class="{CALENDAR_EVENT_ROW}">
-            <td colspan="3"><i>{TXT_CALENDAR_NO_EVENTS}</i></td>
-        </tr>
-        <!-- END emptyEventList -->
-    </tbody>
-</table>
-<br />
+    <h2>{CALENDAR_CATEGORY_NAME}</h2>
+    <table cellspacing="0">
+        <tbody>
+            <tr>
+                <th>Wann</th>
+                <th>Anlass</th>
+                <th>Wo</th>
+            </tr>
+            <!-- BEGIN eventList -->
+            <tr class="{CALENDAR_EVENT_ROW}">
+                <td width="20%" valign="top" nowrap="nowrap" align="left">
+                    <!-- BEGIN calendarDateList -->
+                    {CALENDAR_DATE_LIST}{CALENDAR_SEP_DATE_TIME_LIST}{CALENDAR_TIME_LIST}{TXT_CALENDAR_CLOCK_LIST}
+                    <!-- END calendarDateList -->
+                </td>
+                <td width="40%" valign="top"><a target="{CALENDAR_EVENT_DETAIL_TARGET}" href="{CALENDAR_EVENT_DETAIL_LINK}">{CALENDAR_EVENT_TITLE}</a></td>
+                <td width="40%" valign="top">{CALENDAR_EVENT_PLACE}</td>
+            </tr>
+            <!-- END eventList -->           
+            <!-- BEGIN emptyEventList -->
+            <tr class="{CALENDAR_EVENT_ROW}">
+                <td colspan="3"><i>{TXT_CALENDAR_NO_EVENTS}</i></td>
+            </tr>
+            <!-- END emptyEventList -->
+        </tbody>
+    </table>
+    <br />
 </div>
 <!-- END categoryList -->

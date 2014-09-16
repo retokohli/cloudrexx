@@ -370,7 +370,6 @@ div.row2 {
 }
 #gallery div.category_tree,
 #gallery div.category_comment,
-#gallery div.category_images,
 #gallery div.show_image,
 #gallery div.image_navigation,
 #gallery div.category_paging {
@@ -380,12 +379,8 @@ div.row2 {
     float:left;
     height:auto !important;
 }
-#gallery div.category_image,
-#gallery div.category_informations {
-    float: left;
-    height:auto !important;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
+.breadcrumb>li+li:before {
+    content: none;
 }
 #gallery div.category_informations h2 {
     padding: 0px 0px 0px 0px;
@@ -399,22 +394,13 @@ div.row2 {
     margin: 0px 0px 0px 0px;
     width: 100%;
 }
-#gallery div.category {
-    width: 100%;
-    padding: 10px 0px 10px 0px;
-    margin: 0px 0px 0px 0px;
-    float:left;
-    height:auto !important;
-}
-#gallery div.category_images div.image {
-    width: 33%;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    text-align:left;
-    float: left;
-}
-#gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img{
+#gallery div.show_image img, #gallery div.category_image img {
     margin: 0px 15px 0px 0px;
+    width: 100%;
+    height: auto;
+}
+.category.row_2.container-fluid {
+    border-bottom: 0;
 }
 #gallery div.show_image, #gallery div.image_navigation {
     text-align: center;
@@ -496,6 +482,10 @@ div.row2 {
     float: left;
     width: 100%;
     border-top: 1px solid #DDDDDD;
+    margin-left: 0;
+}
+form[name="registrationForm"] .row {
+    margin: 0;
 }
 #calendar div.note {
     float: left;
@@ -528,9 +518,7 @@ div.row2 {
     font-style: normal;
 }
 #calendar-boxes {
-    float: left;
-    width: 250px;
-    padding: 0 0 0 40px;
+    width: 232px;
 }
 #calendar-details {
     float: left;
@@ -2095,7 +2083,9 @@ dl.data_module img {
     width: 100%;
 }
 #downloads div.breadcrumb {
-    margin: 20px 0 0 0;
+    margin: 0;
+    float: left;
+    width: 100%;
 }
 #downloads div.category {
 }
@@ -2777,7 +2767,6 @@ input[name="downloads_category_name"] {
 input[name="search"] {
     float: left;
     margin-right: 10px;
-    width: 70% !important;
 }
 select[name="catId"] {
     float: left;

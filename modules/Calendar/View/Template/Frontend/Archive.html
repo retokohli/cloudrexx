@@ -1,7 +1,7 @@
 {CALENDAR_JAVASCRIPT}
 <form name="calendarSearch" method="get" action="index.php">
     <input type="hidden" value="{CALENDAR_MODULE_NAME}" name="section" /> <input type="hidden" value="archive" name="cmd" />
-    <p><label>{TXT_CALENDAR_CATEGORY}</label><select onchange="document.calendarSearch.submit();" name="catid">{CALENDAR_SEARCH_CATEGORIES}</select></p>
+    <p><label>{TXT_CALENDAR_CATEGORY}</label><select class="form-control" onchange="document.calendarSearch.submit();" name="catid">{CALENDAR_SEARCH_CATEGORIES}</select></p>
 </form>
 <br />
 <table cellspacing="0">

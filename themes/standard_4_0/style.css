@@ -112,6 +112,7 @@
     }
     #page h1, .h1 {
         font-size: 26px;
+        word-wrap: break-word;
     }
     #home-page-wrapper {
         padding: 20px 0;
@@ -506,6 +507,7 @@
     .login-content .login-bottom > div {
         padding-left: 0;
     }
+    #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
     /**/
 }
@@ -515,6 +517,7 @@
     #content-wrapper {
         padding-bottom: 168px;
     }
+    #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
     .news-image {
         margin-right: 0;

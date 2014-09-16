@@ -1,65 +1,66 @@
 <!-- START calendar_show_note.html -->
-<div id="calendar">
-<div class="note">
-<div class="logo">{CALENDAR_EVENT_THUMBNAIL}</div>
+<div id="calendar" class="container-fluid">
+    <div class="row">
+        <div class="note">
+            <div class="logo">{CALENDAR_EVENT_THUMBNAIL}</div>
 
-<div class="description">{CALENDAR_EVENT_DESCRIPTION}</div>
+            <div class="description">{CALENDAR_EVENT_DESCRIPTION}</div>
 
-<div class="details">
-<table cellspacing="0">
-	<tbody>
-		<tr>
-			<th colspan="2">Veranstaltungs Informationen</th>
-		</tr>
-		<tr class="row1">
-			<td align="left" valign="top" width="25%"><b>{TXT_CALENDAR_DATE}</b></td>
-			<td valign="top" width="75%"><!-- BEGIN calendarDateDetail -->{CALENDAR_DATE_DETAIL}{CALENDAR_SEP_DATE_TIME_DETAIL}{CALENDAR_TIME_DETAIL}{TXT_CALENDAR_CLOCK_DETAIL} <!-- END calendarDateDetail --></td>
-		</tr>
-		<tr class="row2">
-			<td align="left" valign="top" width="25%"><b>{TXT_CALENDAR_CATEGORY}</b></td>
-			<td valign="top" width="75%">{CALENDAR_EVENT_CATEGORY}&nbsp;</td>
-		</tr>
-		<tr class="row1">
-			<td align="left" valign="top" width="25%"><b>{TXT_CALENDAR_ATTACHMENT}</b></td>
-			<td valign="top" width="75%">{CALENDAR_EVENT_ATTACHMENT}&nbsp;</td>
-		</tr>
-		<tr class="row2">
-			<td align="left" valign="top" width="25%"><b>{TXT_CALENDAR_EXPORT}</b></td>
-			<td valign="top" width="75%">{CALENDAR_EVENT_EXPORT_ICON}&nbsp;</td>
-		</tr>
-	</tbody>
-</table>
-</div>
-</div>
+            <div class="details">
+                <table cellspacing="0">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">Veranstaltungs Informationen</th>
+                        </tr>
+                        <tr class="row1">
+                            <td align="left" valign="top" width="25%"><b>{TXT_CALENDAR_DATE}</b></td>
+                            <td valign="top" width="75%"><!-- BEGIN calendarDateDetail -->{CALENDAR_DATE_DETAIL}{CALENDAR_SEP_DATE_TIME_DETAIL}{CALENDAR_TIME_DETAIL}{TXT_CALENDAR_CLOCK_DETAIL} <!-- END calendarDateDetail --></td>
+                        </tr>
+                        <tr class="row2">
+                            <td align="left" valign="top" width="25%"><b>{TXT_CALENDAR_CATEGORY}</b></td>
+                            <td valign="top" width="75%">{CALENDAR_EVENT_CATEGORY}&nbsp;</td>
+                        </tr>
+                        <tr class="row1">
+                            <td align="left" valign="top" width="25%"><b>{TXT_CALENDAR_ATTACHMENT}</b></td>
+                            <td valign="top" width="75%">{CALENDAR_EVENT_ATTACHMENT}&nbsp;</td>
+                        </tr>
+                        <tr class="row2">
+                            <td align="left" valign="top" width="25%"><b>{TXT_CALENDAR_EXPORT}</b></td>
+                            <td valign="top" width="75%">{CALENDAR_EVENT_EXPORT_ICON}&nbsp;</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
 
-<!-- BEGIN calendarEventRegistration -->
-<div class="registration">{CALENDAR_EVENT_REGISTRATION_LINK}</div>
-<!-- END calendarEventRegistration -->
+        <!-- BEGIN calendarEventRegistration -->
+        <div class="registration">{CALENDAR_EVENT_REGISTRATION_LINK}</div>
+        <!-- END calendarEventRegistration -->
 
-<!-- BEGIN calendarEventAddress -->
-<div class="adress">
-<h2>{TXT_CALENDAR_PLACE}</h2>
+        <!-- BEGIN calendarEventAddress -->
+        <div class="adress">
+            <h2>{TXT_CALENDAR_PLACE}</h2>
 
-<address>{CALENDAR_EVENT_PLACE}<br />
-{CALENDAR_EVENT_LOCATION_ADDRESS}<br />
-{CALENDAR_EVENT_LOCATION_ZIP} {CALENDAR_EVENT_LOCATION_CITY}<br />
-{CALENDAR_EVENT_LOCATION_COUNTRY}<br />
-<br />
-{CALENDAR_EVENT_LOCATION_MAP_LINK}</address>
-</div>
-<!-- END calendarEventAddress --><!-- BEGIN calendarEventHost -->
+            <address>{CALENDAR_EVENT_PLACE}<br />
+                {CALENDAR_EVENT_LOCATION_ADDRESS}<br />
+                {CALENDAR_EVENT_LOCATION_ZIP} {CALENDAR_EVENT_LOCATION_CITY}<br />
+                {CALENDAR_EVENT_LOCATION_COUNTRY}<br />
+                <br />
+                {CALENDAR_EVENT_LOCATION_MAP_LINK}</address>
+        </div>
+        <!-- END calendarEventAddress --><!-- BEGIN calendarEventHost -->
 
-<div class="adress">
-<h2>{TXT_CALENDAR_EVENT_HOST}</h2>
+        <div class="adress">
+            <h2>{TXT_CALENDAR_EVENT_HOST}</h2>
 
-<address>{CALENDAR_EVENT_HOST}<br />
-{CALENDAR_EVENT_HOST_ADDRESS}<br />
-{CALENDAR_EVENT_HOST_ZIP} {CALENDAR_EVENT_HOST_CITY}<br />
-{CALENDAR_EVENT_HOST_COUNTRY}<br />
-</address>
-</div>
-<!-- END calendarEventHost --></div>
+            <address>{CALENDAR_EVENT_HOST}<br />
+                {CALENDAR_EVENT_HOST_ADDRESS}<br />
+                {CALENDAR_EVENT_HOST_ZIP} {CALENDAR_EVENT_HOST_CITY}<br />
+                {CALENDAR_EVENT_HOST_COUNTRY}<br />
+            </address>
+        </div>
+        <!-- END calendarEventHost --></div></div>
 
 <div class="back"><a href="javascript:history.back()">{TXT_CALENDAR_BACK}</a></div>
 <!-- END calendar_show_note.html -->

@@ -1,9 +1,10 @@
 {CALENDAR_JAVASCRIPT}
 
-<form action="index.php" method="get" name="calendarSearch" >
-<input name="section" value="{CALENDAR_MODULE_NAME}" type="hidden"/>
-<input name="cmd" value="list" type="hidden"/>
-<p><label>{TXT_CALENDAR_CATEGORY}</label><select name="catid" onchange="document.calendarSearch.submit();">{CALENDAR_SEARCH_CATEGORIES}</select></p>
+<form role="form" action="index.php" method="get" name="calendarSearch" >
+    <input name="section" value="{CALENDAR_MODULE_NAME}" type="hidden"/>
+    <input name="cmd" value="list" type="hidden"/>
+    <p><label>{TXT_CALENDAR_CATEGORY}</label>
+        <select class="form-control" name="catid" onchange="document.calendarSearch.submit();">{CALENDAR_SEARCH_CATEGORIES}</select></p>
 </form>
 <br />
 <table cellspacing="0">
@@ -16,9 +17,9 @@
         <!-- BEGIN eventList -->
         <tr>
             <td width="20%" align="left" valign="top" nowrap="nowrap">
-            <!-- BEGIN calendarDateList -->
-            {CALENDAR_DATE_LIST}{CALENDAR_SEP_DATE_TIME_LIST}{CALENDAR_TIME_LIST}{TXT_CALENDAR_CLOCK_LIST}
-            <!-- END calendarDateList -->
+                <!-- BEGIN calendarDateList -->
+                {CALENDAR_DATE_LIST}{CALENDAR_SEP_DATE_TIME_LIST}{CALENDAR_TIME_LIST}{TXT_CALENDAR_CLOCK_LIST}
+                <!-- END calendarDateList -->
             </td>
             <td width="40%" valign="top"><a href="{CALENDAR_EVENT_DETAIL_LINK}" target="{CALENDAR_EVENT_DETAIL_TARGET}">{CALENDAR_EVENT_TITLE}</a></td>
             <td width="40%" valign="top">{CALENDAR_EVENT_PLACE}</td>
