@@ -13,11 +13,11 @@
 <div id="calendar">
     <!-- BEGIN boxes -->
     <div class="categories">
-        <select name="catid" id="selectcat" onchange="changecat();">
+        <select class="form-control" name="catid" id="selectcat" onchange="changecat();">
             {CALENDAR_CATEGORIES}
         </select>
     </div>
-    <div id="calendar-boxes">{CALENDAR_BOX}</div>
+    <div id="calendar-boxes" class="center-block">{CALENDAR_BOX}</div>
     <!-- END boxes -->  
     <!-- BEGIN list -->
     <ul class="event-list">
@@ -35,7 +35,7 @@
         <li>
             <i>{TXT_CALENDAR_NO_EVENTS}</i>
         <li>    
-        <!-- END emptyEventList -->
+            <!-- END emptyEventList -->
     </ul>
     <!-- END list -->
 

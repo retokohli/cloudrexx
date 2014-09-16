@@ -2,7 +2,7 @@
 
 <div id="calendar">
     <!-- BEGIN calendarRegistrationForm -->
-    <form name="registrationForm" id="registrationForm" method="post" action="index.php?section={CALENDAR_MODULE_NAME}&amp;cmd=register">
+    <form role="form" name="registrationForm" id="registrationForm" method="post" action="index.php?section={CALENDAR_MODULE_NAME}&amp;cmd=register">
         <fieldset>
             <legend>An- \ Abmeldeformular</legend>        
             <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
@@ -18,13 +18,14 @@
                 {CALENDAR_CAPTCHA_CODE}
             </p>
             <!-- END calendarRegistrationCaptcha -->
-            <p><input type="submit" name="submitRegistration" value="{TXT_CALENDAR_REGISTRATION_SUBMIT}" /><br />{TXT_CALENDAR_ERROR}</p>    
+            <p><input type="submit" class="btn btn-default" name="submitRegistration" value="{TXT_CALENDAR_REGISTRATION_SUBMIT}" /><br />{TXT_CALENDAR_ERROR}</p>    
         </fieldset>
     </form>
     <!-- END calendarRegistrationForm -->
 
     <!-- BEGIN calendarRegistrationStatus -->
-    {CALENDAR_REGISTRATION_STATUS}<br />
+    {CALENDAR_REGISTRATION_STATUS}
+    <br />
     <br />
     {CALENDAR_LINK_BACK}
     <!-- END calendarRegistrationStatus -->
