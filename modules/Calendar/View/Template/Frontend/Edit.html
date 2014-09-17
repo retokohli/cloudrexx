@@ -18,24 +18,28 @@
         <fieldset class="show_in" style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
             <legend>{TXT_CALENDAR_LANGUAGE}</legend>
             <!-- BEGIN eventShowIn -->
-            <label><input data-id="{CALENDAR_EVENT_LANG_ID}" class="lang_check" name="showIn[]" id="showIn_{CALENDAR_EVENT_LANG_ID}" value="{CALENDAR_EVENT_LANG_ID}" type="checkbox" {CALENDAR_EVENT_LANG_CHECKED} />&nbsp;{TXT_CALENDAR_EVENT_LANG_NAME}&nbsp;&nbsp;&nbsp;</label>
+            <div class="checkbox"><label><input data-id="{CALENDAR_EVENT_LANG_ID}" class="lang_check" name="showIn[]" id="showIn_{CALENDAR_EVENT_LANG_ID}" value="{CALENDAR_EVENT_LANG_ID}" type="checkbox" {CALENDAR_EVENT_LANG_CHECKED} />
+                    {TXT_CALENDAR_EVENT_LANG_NAME}&nbsp;&nbsp;&nbsp;
+                </label></div>
             <!-- END eventShowIn -->
         </fieldset>
         <br />
         <fieldset>
             <legend>{TXT_CALENDAR_EVENT}</legend>
-            <div class="row">
+            <div>
                 <label>{TXT_CALENDAR_EVENT_START} <font color="#ff0000">*</font></label>
                 <input type="text"  name="startDate" class="startDate validate[required]" id="startDate" value="{CALENDAR_EVENT_START_DATE}" />
-                &nbsp;<label style="float: none;"><input style="float: none;" type="checkbox" class="all_day" name="all_day" {CALENDAR_EVENT_ALL_DAY} value="1" /> {TXT_CALENDAR_EVENT_ALL_DAY} </label>
+                <div class="checkbox"><label style="float: none;">
+                        <input style="float: none;" type="checkbox" class="all_day" name="all_day" {CALENDAR_EVENT_ALL_DAY} value="1" /> {TXT_CALENDAR_EVENT_ALL_DAY} </label>
+                </div>
             </div>
-            <div class="row">
+            <div>
                 <label>{TXT_CALENDAR_EVENT_END} <font color="#ff0000">*</font></label>
                 <input type="text" name="endDate" class="endDate validate[required]" id="endDate" value="{CALENDAR_EVENT_END_DATE}" />
             </div>
-            <div class="row">
+            <div>
                 <label>{TXT_CALENDAR_EVENT_TYPE}</label>
-                <select id="event-type" name="type">
+                <select class="form-control" id="event-type" name="type">
                     <option value="0" {CALENDAR_EVENT_TYPE_EVENT}>{TXT_CALENDAR_EVENT_TYPE_EVENT}</option>
                     <option value="1" {CALENDAR_EVENT_TYPE_REDIRECT}>{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</option>                                                                            
                 </select>
@@ -48,14 +52,14 @@
                 </ul>
                 <!-- BEGIN eventDescTab -->
                 <div class="event-tabs-des-box" id="event-tab-{CALENDAR_EVENT_LANG_ID}">
-                    <div class="row">
+                    <div>
                         <label>{TXT_CALENDAR_EVENT_TITLE} <font color="#ff0000">*</font></label><input data-id="{CALENDAR_EVENT_LANG_ID}" name="title{[CALENDAR_EVENT_LANG_ID}]" class="validate[event_title]" type="text" value="{CALENDAR_EVENT_TITLE}" />
                     </div>
-                    <div class="row event-description" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};">
+                    <div class="event-description" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};">
                         <div>{TXT_CALENDAR_EVENT_DESCRIPTION}</div>
                         {CALENDAR_EVENT_DESCRIPTION}
                     </div>
-                    <div class="row event-redirect" style="display: {CALENDAR_EVENT_TYPE_REDIRECT_DISPLAY};">
+                    <div class="event-redirect" style="display: {CALENDAR_EVENT_TYPE_REDIRECT_DISPLAY};">
                         <label>{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</label>
                         <input type="text" name="redirect{[CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" />
                     </div>
@@ -67,99 +71,118 @@
         <fieldset id="place">
             <legend>{TXT_CALENDAR_EVENT_PLACE}</legend>
             <!-- BEGIN eventPlaceTypeRadio -->
-            <div class="row">
+            <div>
                 <label>&nbsp;</label>
                 <div>
-                    <input type="radio" name="eventLocationType" class="eventLocationType" id ="eventLocationTypeManual" value="1" {CALENDAR_EVENT_LOCATION_TYPE_MANUAL} /> <label for="eventLocationTypeManual">{TXT_CALENDAR_PLACE_DATA_DEFAULT}</label>
-                    <input type="radio" name="eventLocationType" class="eventLocationType" id ="eventLocationTypeMediadir" value="2" {CALENDAR_EVENT_LOCATION_TYPE_MEDIADIR} /> <label for="eventLocationTypeMediadir">{TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR}</label>
+                    <div class="radio">
+                        <label for="eventLocationTypeManual">
+                            <input type="radio" name="eventLocationType" class="eventLocationType" id ="eventLocationTypeManual" value="1" {CALENDAR_EVENT_LOCATION_TYPE_MANUAL} /> 
+                            {TXT_CALENDAR_PLACE_DATA_DEFAULT}
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label for="eventLocationTypeMediadir">
+                            <input type="radio" name="eventLocationType" class="eventLocationType" id ="eventLocationTypeMediadir" value="2" {CALENDAR_EVENT_LOCATION_TYPE_MEDIADIR} />
+                            {TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR}
+                        </label>
+                    </div>
                 </div>
-            </div>
-            <!-- END eventPlaceTypeRadio -->
-            <!-- BEGIN eventPlaceSelect -->
-            <div class="row event_place_mediadir">
-                <label>{TXT_CALENDAR_EVENT_PLACE}</label>
-                <select name="placeMediadir">{CALENDAR_EVENT_PLACE_OPTIONS}</select>
-            </div>
-            <!-- END eventPlaceSelect -->
-            <!-- BEGIN eventPlaceInput -->
-            <div class="row event_place_manual">
-                <label>{TXT_CALENDAR_EVENT_PLACE}</label>
-                <input name="place" type="text" value="{CALENDAR_EVENT_PLACE}" />
-            </div>
-            <div class="row event_place_manual">
-                <label>{TXT_CALENDAR_EVENT_STREET}</label>
-                <input name="street" type="text" value="{CALENDAR_EVENT_STREET}" />
-            </div>
-            <div class="row event_place_manual">
-                <label>{TXT_CALENDAR_EVENT_ZIP}</label>
-                <input name="zip" type="text" value="{CALENDAR_EVENT_ZIP}" />
-            </div>
-            <div class="row event_place_manual">
-                <label>{TXT_CALENDAR_EVENT_CITY}</label>
-                <input name="city" type="text" value="{CALENDAR_EVENT_CITY}" />
-            </div>
-            <div class="row event_place_manual">
-                <label>{TXT_CALENDAR_EVENT_COUNTRY}</label>
-                <input name="country" type="text" value="{CALENDAR_EVENT_COUNTRY}" />
-            </div>
-            <div class="row event_place_manual">
-                <label>{TXT_CALENDAR_EVENT_LINK}</label>
-                <input name="placeLink" type="text" value="{CALENDAR_EVENT_PLACE_LINK}" />                 
-            </div>
-            <div class="row event_place_manual">
-                <label>{TXT_CALENDAR_EVENT_MAP}</label>
-                <div class="formUploadedFiles">
-                    <div id="mapUpload_uploadWidget"></div>
-                    <input type="file" name="mapUpload" id="mapUpload" />
-                    <input type="hidden" name="placeMap" value="{CALENDAR_EVENT_PLACE_MAP}" />
+                <!-- END eventPlaceTypeRadio -->
+                <!-- BEGIN eventPlaceSelect -->
+                <div class="event_place_mediadir">
+                    <label>{TXT_CALENDAR_EVENT_PLACE}</label>
+                    <select class="form-control" name="placeMediadir">{CALENDAR_EVENT_PLACE_OPTIONS}</select>
                 </div>
-            </div>
-            <!-- END eventPlaceInput -->            
+                <!-- END eventPlaceSelect -->
+                <!-- BEGIN eventPlaceInput -->
+                <div class="event_place_manual">
+                    <label>{TXT_CALENDAR_EVENT_PLACE}</label>
+                    <input name="place" type="text" value="{CALENDAR_EVENT_PLACE}" />
+                </div>
+                <div class="event_place_manual">
+                    <label>{TXT_CALENDAR_EVENT_STREET}</label>
+                    <input name="street" type="text" value="{CALENDAR_EVENT_STREET}" />
+                </div>
+                <div class="event_place_manual">
+                    <label>{TXT_CALENDAR_EVENT_ZIP}</label>
+                    <input name="zip" type="text" value="{CALENDAR_EVENT_ZIP}" />
+                </div>
+                <div class="event_place_manual">
+                    <label>{TXT_CALENDAR_EVENT_CITY}</label>
+                    <input name="city" type="text" value="{CALENDAR_EVENT_CITY}" />
+                </div>
+                <div class="event_place_manual">
+                    <label>{TXT_CALENDAR_EVENT_COUNTRY}</label>
+                    <input name="country" type="text" value="{CALENDAR_EVENT_COUNTRY}" />
+                </div>
+                <div class="event_place_manual">
+                    <label>{TXT_CALENDAR_EVENT_LINK}</label>
+                    <input name="placeLink" type="text" value="{CALENDAR_EVENT_PLACE_LINK}" />                 
+                </div>
+                <div class="event_place_manual">
+                    <label>{TXT_CALENDAR_EVENT_MAP}</label>
+                    <div class="formUploadedFiles">
+                        <div id="mapUpload_uploadWidget"></div>
+                        <input type="file" name="mapUpload" id="mapUpload" />
+                        <input type="hidden" name="placeMap" value="{CALENDAR_EVENT_PLACE_MAP}" />
+                    </div>
+                </div>
+                <!-- END eventPlaceInput -->            
         </fieldset>
         <br/>
         <fieldset id="host">
             <legend>{TXT_CALENDAR_EVENT_HOST}</legend>
             <!-- BEGIN eventHostTypeRadio -->
-            <div class="row">
+            <div>
                 <label>&nbsp;</label>
-                <div>
-                    <input type="radio" name="eventHostType" class="eventHostType" id ="eventHostTypeManual" value="1" {CALENDAR_EVENT_HOST_TYPE_MANUAL} /> <label for="eventHostTypeManual">{TXT_CALENDAR_PLACE_DATA_DEFAULT}</label>
-                    <input type="radio" name="eventHostType" class="eventHostType" id ="eventHostTypeMediadir" value="2" {CALENDAR_EVENT_HOST_TYPE_MEDIADIR} /> <label for="eventHostTypeMediadir">{TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR}</label>
+                <div>                        
+                    <div class="radio">
+                        <label for="eventHostTypeManual">
+                            <input type="radio" name="eventHostType" class="eventHostType" id ="eventHostTypeManual" value="1" {CALENDAR_EVENT_HOST_TYPE_MANUAL} /> 
+                            {TXT_CALENDAR_PLACE_DATA_DEFAULT}
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label for="eventHostTypeMediadir">
+                            <input type="radio" name="eventHostType" class="eventHostType" id ="eventHostTypeMediadir" value="2" {CALENDAR_EVENT_HOST_TYPE_MEDIADIR} />
+                            {TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR}
+                        </label>
+                    </div>
                 </div>
             </div>
             <!-- END eventHostTypeRadio -->
             <!-- BEGIN eventHostSelect -->
-            <div class="row event_host_mediadir">
+            <div class="event_host_mediadir">
                 <label>{TXT_CALENDAR_EVENT_PLACE}</label>
-                <select name="hostMediadir">{CALENDAR_EVENT_PLACE_OPTIONS}</select>
+                <select class="form-control" name="hostMediadir">{CALENDAR_EVENT_PLACE_OPTIONS}</select>
             </div>
             <!-- END eventHostSelect -->
             <!-- BEGIN eventHostInput -->
-            <div class="row event_host_manual">
+            <div class="event_host_manual">
                 <label>{TXT_CALENDAR_EVENT_NAME}</label>
                 <input name="organizerName" type="text" value="{CALENDAR_EVENT_HOST}" />
             </div>
-            <div class="row event_host_manual">
+            <div class="event_host_manual">
                 <label>{TXT_CALENDAR_EVENT_STREET}</label>
                 <input name="organizerStreet" type="text" value="{CALENDAR_EVENT_HOST_ADDRESS}" />
             </div>
-            <div class="row event_host_manual">
+            <div class="event_host_manual">
                 <label>{TXT_CALENDAR_EVENT_ZIP}</label>
                 <input name="organizerZip" type="text" value="{CALENDAR_EVENT_HOST_ZIP}" />
             </div>
-            <div class="row event_host_manual">
+            <div class="event_host_manual">
                 <label>{TXT_CALENDAR_EVENT_CITY}</label>
                 <input name="organizerCity" type="text" value="{CALENDAR_EVENT_HOST_CITY}" />
             </div>
-            <div class="row event_host_manual">
+            <div class="event_host_manual">
                 <label>{TXT_CALENDAR_EVENT_COUNTRY}</label>
                 <input name="organizerCountry" type="text" value="{CALENDAR_EVENT_HOST_COUNTRY}" />
             </div>
-            <div class="row event_host_manual">
+            <div class="event_host_manual">
                 <label>{TXT_CALENDAR_EVENT_LINK}</label>
                 <input name="organizerLink" type="text" value="{CALENDAR_EVENT_HOST_LINK}" />
             </div>
-            <div class="row event_host_manual">
+            <div class="event_host_manual">
                 <label>{TXT_CALENDAR_EVENT_EMAIL}</label>
                 <input name="organizerEmail" type="text" value="{CALENDAR_EVENT_HOST_EMAIL}" />                 
             </div>
@@ -168,7 +191,7 @@
         <br/>
         <fieldset id="additionalinfos">
             <legend>{TXT_CALENDAR_EVENT_DETAILS}</legend>
-            <div class="row">
+            <div>
                 <label>{TXT_CALENDAR_EVENT_LINK}</label>
                 <input name="link" type="text" value="{CALENDAR_EVENT_LINK}" />
             </div>
@@ -180,16 +203,16 @@
                     <input type="hidden" name="picture" value="{CALENDAR_EVENT_PICTURE}" />
                 </div>
             </div>
-            <div class="row">
+            <div>
                 <label>{TXT_CALENDAR_EVENT_CATEGORY} <font color="#ff0000">*</font></label>
-                <select id="category" name="category" class="validate[required]">
+                <select id="category" name="category" class="form-control validate[required]">
                     {CALENDAR_EVENT_CATEGORIES}
                 </select>
             </div>            
         </fieldset>
         <br />
-        <div class="row"><input type="submit" value="{TXT_CALENDAR_SAVE}" name="submitFormModifyEvent" /></div>
-        <div style="display: none; color: rgb(255, 0, 0);" id="calendarErrorMessage"><div class="row">{TXT_CALENDAR_PLEASE_CHECK_INPUT}</div></div>
+        <div><input class="btn btn-default" type="submit" value="{TXT_CALENDAR_SAVE}" name="submitFormModifyEvent" /></div>
+        <div style="display: none;" class="text-danger" id="calendarErrorMessage"><div>{TXT_CALENDAR_PLEASE_CHECK_INPUT}</div></div>
     </form>
     <!-- END calendarEventModifyForm -->
 </div>

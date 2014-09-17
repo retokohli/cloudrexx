@@ -3021,3 +3021,12 @@ input[type="checkbox"] {
     width: 100%;
     padding-bottom: 10px;
 }
+/*Calendar_add*/
+.show_in .checkbox {
+    margin-bottom: 0;
+}
+#calendarErrorMessage {
+    float: left;
+    width: 100%;
+    margin-top: 5px;
+}
