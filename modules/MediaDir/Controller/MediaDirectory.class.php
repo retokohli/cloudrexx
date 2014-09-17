@@ -428,7 +428,18 @@ class MediaDirectory extends MediaDirectoryLibrary
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
         $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : 0;
         $intEntryId = isset($_GET['eid']) ? intval($_GET['eid']) : 0;
-
+        
+        // load source code if cmd value is integer
+        if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('MediaDir');
+            $page->setCmd('detail');
+            // load source code
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page));
+        }
+        
         //get navtree
         if($this->_objTpl->blockExists($this->moduleNameLC.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
             $this->getNavtree($intCategoryId, $intLevelId);
