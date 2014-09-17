@@ -290,8 +290,8 @@ class Orders
             if ($customer_type == 1) {
                 $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
             }
-            global $objFWUser;
-            $objGroup = $objFWUser->objGroup->getGroup($usergroup_id);
+            $objFWUser = \FWUser::getFWUserObject();
+            $objGroup  = $objFWUser->objGroup->getGroup($usergroup_id);
             if ($objGroup) {
                 $filter['customer_id'] = $objGroup->getAssociatedUserIds();
                 // No customers of that type, so suppress all results
