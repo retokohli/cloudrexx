@@ -1677,9 +1677,9 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 if ($intInputfieldType != 16 && $intInputfieldType != 17) {
                     if(!empty($arrInputfield['type'])) {
                         $strType = $arrInputfield['type_name'];
-                        $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
+                        $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield".ucfirst($strType);
                         try {
-                            $objInputfield = safeNew($strInputfieldClass);
+                            $objInputfield = \Cx\Modules\MediaDir\Controller\safeNew($strInputfieldClass,'MediaDir');
 
                             if(intval($arrInputfield['type_multi_lang']) == 1) {
                                 $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, $objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
