@@ -1,92 +1,91 @@
 <script language="javascript" type="text/javascript">
-Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
-Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
-Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+    Shadowbox.loadSkin('classic', 'lib/javascript/shadowbox/src/skin/');
+    Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
+    Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
 </script>
 <div id="mediadir">
-{MEDIADIR_JAVASCRIPT}
+    {MEDIADIR_JAVASCRIPT}
 
-<!-- BEGIN mediadirNavtree -->
-<ul>
-<!-- BEGIN mediadirNavtreeElement -->
-<li {MEDIADIR_NAVTREE_LINK_CLASS}>{MEDIADIR_NAVTREE_LINK}</li>
-<!-- END mediadirNavtreeElement -->
-</ul>
-<br />
-<!-- END mediadirNavtree -->
+    <!-- BEGIN mediadirNavtree -->
+    <ul>
+        <!-- BEGIN mediadirNavtreeElement -->
+        <li {MEDIADIR_NAVTREE_LINK_CLASS}>{MEDIADIR_NAVTREE_LINK}</li>
+        <!-- END mediadirNavtreeElement -->
+    </ul>
+    <br />
+    <!-- END mediadirNavtree -->
+    <div class="table-responsive">
+        <!-- BEGIN mediadirEntryList -->
+        <table class="table" border="0" cellpadding="2">
 
-<!-- BEGIN mediadirEntryList -->
-<table border="0" cellpadding="2">
+            <!-- BEGIN mediadir_inputfields -->
+            <tr>
+                <td valign="top" width="30%">
+                    <b>{TXT_MEDIADIR_INPUTFIELD_NAME}</b>
+                </td>
+                <td width="70%">
+                    {MEDIADIR_INPUTFIELD_VALUE} 
+                </td>
+            </tr>
+            <!-- END mediadir_inputfields -->
+            <tr>
+                <td><b>{TXT_MEDIADIR_ENTRY_CATEGORIES}</b></td>
+                <td>{MEDIADIR_ENTRY_CATEGORIES}</td>
+            </tr>
+            <tr>
+                <td><b>{TXT_MEDIADIR_ENTRY_LEVELS}</b></td>
+                <td>{MEDIADIR_ENTRY_LEVELS}</td>
+            </tr>
 
-<!-- BEGIN mediadir_inputfields -->
-<tr>
-<td valign="top" width="30%">
-<b>{TXT_MEDIADIR_INPUTFIELD_NAME}</b>
-</td>
-<td width="70%">
-{MEDIADIR_INPUTFIELD_VALUE} 
-</td>
-</tr>
-<!-- END mediadir_inputfields -->
-<tr>
-<td><b>{TXT_MEDIADIR_ENTRY_CATEGORIES}</b></td>
-<td>{MEDIADIR_ENTRY_CATEGORIES}</td>
-</tr>
-<tr>
-<td><b>{TXT_MEDIADIR_ENTRY_LEVELS}</b></td>
-<td>{MEDIADIR_ENTRY_LEVELS}</td>
-</tr>
+            <!-- BEGIN mediadirEntryVoteForm -->
+            <tr>
+                <td valign="top">
+                    <b>{TXT_MEDIADIR_VOTING}</b>
+                </td>
+                <td>
+                    <!-- BEGIN mediadirEntryVotes -->
+                    {MEDIADIR_ENTRY_VOTES}
+                    <br />
+                    <!-- END mediadirEntryVotes -->
+                    {MEDIADIR_ENTRY_VOTE_FORM}
+                </td>
+            </tr>
+            <!-- END mediadirEntryVoteForm -->
 
-<!-- BEGIN mediadirEntryVoteForm -->
-<tr>
-<td valign="top">
-<b>{TXT_MEDIADIR_VOTING}</b>
-</td>
-<td>
-<!-- BEGIN mediadirEntryVotes -->
-{MEDIADIR_ENTRY_VOTES}
-<br />
-<!-- END mediadirEntryVotes -->
-{MEDIADIR_ENTRY_VOTE_FORM}
-</td>
-</tr>
-<!-- END mediadirEntryVoteForm -->
+            <!-- BEGIN mediadirEntryCommentForm -->
+            <tr>
+                <td valign="top">
+                    <b>{TXT_MEDIADIR_COMMENTS}</b>
+                </td>
+                <td>
+                    {MEDIADIR_ENTRY_COMMENTS}<br />
+                    <!-- BEGIN mediadirEntryComments -->
+                    <div class="mediadirComments">
+                        <b>{MEDIADIR_ENTRY_COMMENT_NAME}</b><br />
+                        <i>{MEDIADIR_ENTRY_COMMENT_DATE}</i><br /><br />
+                        {MEDIADIR_ENTRY_COMMENT_COMMENT}<br /><br />
+                        <br />
+                    </div>
+                    <!-- END mediadirEntryComments -->
+                    {MEDIADIR_ENTRY_NEW_ADDED_COMMENT}
+                    <br />
+                    {MEDIADIR_ENTRY_COMMENT_FORM}
+                </td>
+            </tr>
+            <!-- END mediadirEntryCommentForm -->
 
-<!-- BEGIN mediadirEntryCommentForm -->
-<tr>
-<td valign="top">
-<b>{TXT_MEDIADIR_COMMENTS}</b>
-</td>
-<td>
-{MEDIADIR_ENTRY_COMMENTS}<br /><br />
-<!-- BEGIN mediadirEntryComments -->
-<div class="mediadirComments">
-<b>{MEDIADIR_ENTRY_COMMENT_NAME}</b><br />
-<i>{MEDIADIR_ENTRY_COMMENT_DATE}</i><br /><br />
-{MEDIADIR_ENTRY_COMMENT_COMMENT}<br /><br />
-<br />
-</div>
-<!-- END mediadirEntryComments -->
-{MEDIADIR_ENTRY_NEW_ADDED_COMMENT}
-<br />
-{MEDIADIR_ENTRY_COMMENT_FORM}
-</td>
-</tr>
-<!-- END mediadirEntryCommentForm -->
+           
+            <tr>
+                <td><br /></td>
+                <td>
+                    <!-- BEGIN mediadirEntryEditLink -->
+                    <a href="{MEDIADIR_ENTRY_EDIT_URL}">{TXT_MEDIADIR_ENTRY_EDIT}</a>
+                    <!-- END mediadirEntryEditLink -->
 
-<tr>
-<td colspan="2"><br /></td>
-</tr>
-<tr>
-<td><br /></td>
-<td>
-<!-- BEGIN mediadirEntryEditLink -->
-<a href="{MEDIADIR_ENTRY_EDIT_URL}">{TXT_MEDIADIR_ENTRY_EDIT}</a>
-<!-- END mediadirEntryEditLink -->
-
-<!-- BEGIN mediadirEntryDeleteLink -->
- | <a href="{MEDIADIR_ENTRY_DELETE_URL}">{TXT_MEDIADIR_ENTRY_DELETE}</a>
-<!-- END mediadirEntryDeleteLink --></td></tr>
-</table>
-<!-- END mediadirEntryList -->
+                    <!-- BEGIN mediadirEntryDeleteLink -->
+                    | <a href="{MEDIADIR_ENTRY_DELETE_URL}">{TXT_MEDIADIR_ENTRY_DELETE}</a>
+                    <!-- END mediadirEntryDeleteLink --></td></tr>
+        </table>
+        <!-- END mediadirEntryList -->
+    </div>
 </div>
