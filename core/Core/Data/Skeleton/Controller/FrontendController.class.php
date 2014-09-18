@@ -8,7 +8,7 @@
  * @subpackage  modules_skeleton
  */
 
-namespace Cx\Core_Modules\MediaBrowser\Controller;
+namespace Cx\Modules\Skeleton\Controller;
 
 /**
  * Specific FrontendController for this Component. Use this to easily create a frontent view

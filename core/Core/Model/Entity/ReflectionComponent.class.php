@@ -979,6 +979,7 @@ class ReflectionComponent {
         
         $this->fixNamespaces('Cx\Modules\Skeleton', $this->getDirectory());
         $this->fixLanguagePlaceholders('MODULE_SKELETON', $this->getDirectory());
+        $this->fixDocBlocks('modules_skeleton', $this->getDirectory());
         $this->setComponentName($this->getDirectory());
         
         // activate component
@@ -1639,6 +1640,41 @@ class ReflectionComponent {
             $objFile->write($content);
         }
     }
+    
+    /**
+     * Fix the component names in doc blocks of all files of this component
+     * @param string $oldComponentIdentifier Old lowercase, underscore separated type and nameBase
+     * @param string $baseDir Directory in which the recursive replace should be done
+     */
+    public function fixDocBlocks($oldComponentIdentifier, $baseDir) {
+        $baseIndex = strtolower($this->componentType . '_' . $this->componentName);
+        
+        $directoryIterator = new \RecursiveDirectoryIterator($baseDir);
+        $iterator = new \RecursiveIteratorIterator($directoryIterator);
+        $files = new \RegexIterator($iterator, '/^.+\.(php|html|js)$/i', \RegexIterator::GET_MATCH);
+        
+        // recursive foreach .php, .html and .js file
+        foreach($files as $file) {
+            // prepare data
+            $file = current($file);
+            $bi = $baseIndex;
+            $oldBi = $oldComponentIdentifier;
+            
+            
+            // file_get_contents()
+            $objFile = new \Cx\Lib\FileSystem\File($file);
+            $content = $objFile->getData();
+            
+            $content = preg_replace(
+                '/' . $oldBi . '/',
+                preg_quote($bi),
+                $content
+            );
+            echo 'Replace ' . $oldBi . ' by ' . $bi . ' in ' . $file . "\n";
+            
+            $objFile->write($content);
+        }
+    }
 
     /**
      * Set the component's name in frontend and backend language files
@@ -1735,6 +1771,7 @@ class ReflectionComponent {
         }
         $newComponent->fixNamespaces(SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName, $baseDir);
         $newComponent->fixLanguagePlaceholders(strtoupper($this->componentType . '_' . $this->componentName), $baseDir);
+        $newComponent->fixDocBlocks(strtolower($this->componentType . '_' . $this->componentName), $baseDir);
         // renaming the component in backend navigation does not yet work
         //$newComponent->setComponentName($baseDir);
         
@@ -1769,3 +1806,4 @@ class ReflectionComponent {
         }
     }
 }
+
