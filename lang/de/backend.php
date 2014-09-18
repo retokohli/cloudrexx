@@ -1390,3 +1390,4 @@ $_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL'] ='Der Eintrag wurde erfolgreic
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Bitte bestätigen Sie den Löschvorgang des ausgewählten Eintrages.';
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Eintrag bearbeiten';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Eintrag löschen';
+$_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Die Einstellungen wurden gespeichert.';
