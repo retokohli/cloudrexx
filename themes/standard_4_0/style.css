@@ -51,12 +51,7 @@
     .voting td:first-of-type {
         width: 63%;
     }
-    #mediadir .employee-more {
-        float: left;
-        word-wrap: break-word;
-        width: 100%;
-        padding-left: 10px;
-    }
+    #mediadir .reference {margin-bottom: 20px;}
     #shop div.images a img {
         height: auto;
     }
@@ -507,6 +502,7 @@
     .login-content .login-bottom > div {
         padding-left: 0;
     }
+    .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
     #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
     /**/
@@ -517,6 +513,8 @@
     #content-wrapper {
         padding-bottom: 168px;
     }
+    #mediadir .reference {margin-bottom: 20px;}
+    .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
     #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
     .news-image {
