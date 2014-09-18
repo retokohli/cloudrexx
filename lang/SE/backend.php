@@ -1211,3 +1211,4 @@ $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Some file(s) couldn't be uploaded:
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allowed.";
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS'] = 'Available Groups';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS'] = 'Assigned Groups';
+$_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Settings have been updated.';

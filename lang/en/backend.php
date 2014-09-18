@@ -1317,3 +1317,4 @@ $_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL'] ='The entry has been removed s
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Please confirm to remove the selected entry.';
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Edit entry';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Delete entry';
+$_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Settings have been updated.';

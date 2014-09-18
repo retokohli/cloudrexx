@@ -1166,3 +1166,4 @@ $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = "You don't have enough rights 
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = "You don't have enough rights to publish pages.";
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS'] = 'Available Groups';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS'] = 'Assigned Groups';
+$_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Paramètres mis à jour.';

@@ -849,3 +849,4 @@ $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_FALLBACK'] = "fallback";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_MOVE_INFO'] = "Move the page by use of drag and drop.";
 $_ARRAYLANG['TXT_CORE_CM_TRANSLATION_INFO'] = "Click here to edit the page in this language.";
 $_ARRAYLANG['TXT_CORE_CM_PREVIEW_INFO'] = "Click here to see a preview of this page in the frontend.";
+$_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Ayarlar kaydedildi.';
