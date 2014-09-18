@@ -104,7 +104,7 @@ class LicenseManager {
             
             $message = $this->license->getMessage(false, \FWLanguage::getLanguageCodeById(BACKEND_LANG_ID), $this->lang);
             if (!$sm->isWritable()) {
-                $remoteTemplate->setVariable('MESSAGE_TITLE', preg_replace('/<br \/>/', ' ', sprintf($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], $sm->getSettingsFile())));
+                $remoteTemplate->setVariable('MESSAGE_TITLE', preg_replace('/<br \/>/', ' ', sprintf($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], \Cx\Core\Config\Controller\Config::getSettingsFile())));
                 $remoteTemplate->setVariable('MESSAGE_LINK', '#');
                 $remoteTemplate->setVariable('MESSAGE_LINK_TARGET', '_self');
                 $remoteTemplate->setVariable('MESSAGE_TYPE', 'alertbox');
