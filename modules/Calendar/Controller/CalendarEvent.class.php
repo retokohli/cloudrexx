@@ -1221,7 +1221,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 if ($convertBBCode) {
                     $description = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($data['description'][$langId], true);
                 }
-                $redirect = contrexx_addslashes($data['redirect'][$langId]);
+                $redirect = contrexx_addslashes($data['calendar-redirect'][$langId]);
 
                 if($type == 0) {
                     $redirect = '';
