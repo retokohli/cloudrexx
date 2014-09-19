@@ -269,7 +269,7 @@ namespace Cx\Core\Model {
             );
             $chainDriverImpl->addDriver($loggableDriverImpl, 'Gedmo\Loggable');
 
-            $this->loggableListener = new \Gedmo\Loggable\LoggableListener();
+            $this->loggableListener = new \Cx\Core\Model\Model\Event\LoggableListener();
             $this->loggableListener->setUsername('currently_loggedin_user');
             // in real world app the username should be loaded from session, example:
             // Session::getInstance()->read('user')->getUsername();
