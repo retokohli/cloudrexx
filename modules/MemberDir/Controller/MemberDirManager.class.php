@@ -477,7 +477,7 @@ class MemberDirManager extends MemberDirLibrary
 
         $arrLanguage = \FWLanguage::getLanguageArray();
         if (!in_array($langId, array_keys($arrLanguage))) {
-            $langId = \FWLanguage::defaultLanguageId;
+            $langId = \FWLanguage::getDefaultLangId();
         }
 
         /*
