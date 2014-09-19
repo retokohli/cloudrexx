@@ -68,7 +68,7 @@
 
 rating = new Rating('{ARTICLEID}', '{AVERAGE}', { 
 	stars :'{MAX_RATING}', 
-	starPath : 'modules/Knowledge/View/Media/',
+	starPath : '../modules/Knowledge/View/Media/',
 	elemPrefix : 'rating_elem_',
 	onRate : function(data, rating) {
 		var foo = new Ajax.Request('index.php?section=Knowledge&act=rate', {
