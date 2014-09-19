@@ -102,7 +102,7 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      */
     public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser){
         $isUserExist = $this->db->execute("SELECT User FROM mysql.user WHERE user = '".$dbUser->getName()."'");
-        if (count($isUserExist) > 0) {
+        if ($isUserExist->RecordCount() == 1) {
            $isUserDeleted = $this->db->execute("DROP USER '".$dbUser->getName()."'@'localhost'");
             if (!$isUserDeleted) {
                 throw new \Exception("Query failed: \ DROP USER '".$dbUser->getName()."'@'localhost'" . $this->db->ErrorMsg());
@@ -116,8 +116,8 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @throws MultiSiteDbException On error
      */
     public function removeDb(\Cx\Core\Model\Model\Entity\Db $db){
-        $isDbExist = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '".$db->getName()."'";
-        if ($isDbExist) {
+        $isDbExist = $this->db->execute("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '".$db->getName()."'");
+        if ($isDbExist->RecordCount() == 1) {
             $isDbCreated = $this->db->execute("DROP DATABASE `".$db->getName()."`");
             if (!$isDbCreated) {
                 throw new \Exception('Query failed: \'DROP DATABASE `'.$db->getName().'`\', ' . $this->db->ErrorMsg());

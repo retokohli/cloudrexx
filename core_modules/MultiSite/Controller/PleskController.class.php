@@ -134,9 +134,33 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @throws MultiSiteDbException On error
      */
     public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser){
-        if ($dbUser->getName()) {
-            return $dbUser;
+        \DBG::msg("MultiSite (PleskController): Removing Database User.");
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+        
+        $database = $xmldoc->createElement('database');
+        $packet->appendChild($database);
+        
+        $getDbUsers = $xmldoc->createElement('get-db-users');
+        $database->appendChild($getDbUsers);
+        
+        $filter = $xmldoc->createElement('filter');
+        $getDbUsers->appendChild($filter);
+        
+        $id = $xmldoc->createElement('id', $dbUser->getId());
+        $filter->appendChild($id);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'database'}->{'get-db-users'}->result;
+        $systemError = $response->system->errtext;
+        
+        //If Db User doesn't exists, return false
+        if ('error' == (string)$resultNode->status || $systemError) {
+            return false;
         }
+        
+        return $dbUser;
     }
 
     /**
@@ -145,9 +169,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @throws MultiSiteDbException On error
      */
     public function removeDb(\Cx\Core\Model\Model\Entity\Db $db){
-        if ($db->getName()) {
-            $dbName = $db->getName();
-            $databaseId = $this->getDbId($dbName); //get database id byname
+        \DBG::msg("MultiSite (PleskController): Removing Database.");
+        
+        $dbName = $db->getName();
+        $databaseId = $this->getDbId($dbName); //get database id byname
+        if ($databaseId) {
             $xmldoc = $this->getXmlDocument();
             $packet = $this->getRpcPacket($xmldoc);
             $database = $xmldoc->createElement('database');
@@ -160,7 +186,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $filter->appendChild($dbId);
             $response = $this->executeCurl($xmldoc);
             $systemError = $response->system->errtext;
-            $responseJson = json_encode($response->database->{'del-db'}->result);
+            $resultNode = $response->database->{'del-db'}->result;
+            $responseJson = json_encode($resultNode);
             $respArr = json_decode($responseJson, true);
             if ('error' == (string) $resultNode->status || $systemError) {
                 $error = (isset($systemError) ? $systemError : $resultNode->errtext);
@@ -168,6 +195,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             }
             return $respArr;
         }
+        
+        return false;
     }
 
     /**
