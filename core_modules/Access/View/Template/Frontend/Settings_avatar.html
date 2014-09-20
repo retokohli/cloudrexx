@@ -1,22 +1,45 @@
 <div id="access">
-	<!-- BEGIN access_settings -->
-		<div class="message_error">{ACCESS_SETTINGS_MESSAGE}</div>
-		<div class="profile">
-			<form method="post" action="index.php?section=Access&amp;cmd=settings_avatar" enctype="multipart/form-data">
-				<!-- BEGIN access_profile_attribute_picture -->
-					<input type="hidden" value="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_VALUE}" id="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}" name="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_NAME}" />
-					<fieldset> 
-					   <legend>Aktuelles Profilbild</legend>
-					   <p><label>
-					   <img border="0" alt="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_VALUE}" id="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}_image" src="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_SRC}" /></label><input type="file" onchange="this.nextSibling.style.display = this.value.length ? '' : 'none';" style="width: 300px;" name="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_UPLOAD_NAME}" /><a title="Bild l&ouml;schen" onclick="this.previousSibling.value='';this.style.display='none'" style="display: none;" href="javascript:void(0)"><img width="17" height="17" border="0" style="vertical-align: bottom;" alt="Bild l&ouml;schen" src="core_modules/Access/View/Media/delete.gif" /></a><br /><br /><em>Maximal erlaubte Dateigr&ouml;sse: {ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_FILE_SIZE}<br />Maximale Gr&ouml;&szlig;e {ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_WIDTH}&times;{ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_HEIGHT} Pixel, gr&ouml;&szlig;ere Bilder werden verkleinert.</em><br /><br /><a title="Bild l&ouml;schen" onclick="document.getElementById('{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}_image').src='images/Access/profile/0_noavatar.gif';document.getElementById('{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}_image').style.width='121px';document.getElementById('{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}_image').style.height='160px';document.getElementById('{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}').value = '';this.style.display='none'" href="javascript:void(0)"><img width="17" height="17" border="0" alt="Bild l&ouml;schen" src="core_modules/Access/View/Media/delete.gif" /></a></p>
-				    </fieldset> 
-			    <!-- END access_profile_attribute_picture -->
-				<p>{ACCESS_STORE_BUTTON}</p>
-			</form>
-		</div>
-	<!-- END access_settings --> 
-	<!-- BEGIN access_settings_done --> 
-		<div class="message_ok">{ACCESS_SETTINGS_MESSAGE}</div>
-	<!-- END access_settings_done --> 
-	{ACCESS_JAVASCRIPT_FUNCTIONS}
+    <!-- BEGIN access_settings -->
+    <div class="text-danger">{ACCESS_SETTINGS_MESSAGE}</div>
+    <div class="profile">
+        <form role="form" method="post" action="index.php?section=Access&amp;cmd=settings_avatar" enctype="multipart/form-data">
+            <!-- BEGIN access_profile_attribute_picture -->
+            <input type="hidden" value="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_VALUE}" id="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}" name="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_NAME}" />
+            <fieldset> 
+                <legend>Aktuelles Profilbild</legend>
+                <p>
+                    <label class="prof-img">
+                        <img class="" border="0" alt="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_VALUE}" id="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}_image" src="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_SRC}" />
+                    </label>
+                    <span class="prof-details">
+                        <input type="file" onchange="this.nextSibling.style.display = this.value.length ? '' : 'none';" name="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_UPLOAD_NAME}" />
+                        <a title="Bild l&ouml;schen" onclick="this.previousSibling.value = '';
+                                this.style.display = 'none'" style="display: none;" href="javascript:void(0)">
+                            <img width="17" height="17" border="0" style="vertical-align: bottom;" alt="Bild l&ouml;schen" src="core_modules/Access/View/Media/delete.gif" />
+                        </a>
+                        <br />
+                        <br />
+                        <em>Maximal erlaubte Dateigr&ouml;sse: {ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_FILE_SIZE}<br />Maximale Gr&ouml;&szlig;e {ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_WIDTH}&times;{ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_HEIGHT} Pixel, gr&ouml;&szlig;ere Bilder werden verkleinert.
+                        </em>
+                        <br />
+                        <br />
+                        <a title="Bild l&ouml;schen" onclick="document.getElementById('{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}_image').src = 'images/Access/profile/0_noavatar.gif';
+                                document.getElementById('{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}_image').style.width = '121px';
+                                document.getElementById('{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}_image').style.height = '160px';
+                                document.getElementById('{ACCESS_PROFILE_ATTRIBUTE_PICTURE_ID}').value = '';
+                                this.style.display = 'none'" href="javascript:void(0)">
+                            <img width="17" height="17" border="0" alt="Bild l&ouml;schen" src="core_modules/Access/View/Media/delete.gif" />
+                        </a>
+                    </span>
+                </p>
+            </fieldset> 
+            <!-- END access_profile_attribute_picture -->
+            <p>{ACCESS_STORE_BUTTON}</p>
+        </form>
+    </div>
+    <!-- END access_settings --> 
+    <!-- BEGIN access_settings_done --> 
+    <div class="message_ok">{ACCESS_SETTINGS_MESSAGE}</div>
+    <!-- END access_settings_done --> 
+    {ACCESS_JAVASCRIPT_FUNCTIONS}
 </div>

@@ -1,52 +1,54 @@
 <div id="mediadir">
-{MEDIADIR_JAVASCRIPT}
+    {MEDIADIR_JAVASCRIPT}
 
-<!-- BEGIN mediadirSearchform -->
-{MEDIADIR_NORMAL_SEARCH_FORM}<br />
-<!-- END mediadirSearchform -->
+    <!-- BEGIN mediadirSearchform -->
+    {MEDIADIR_NORMAL_SEARCH_FORM}<br />
+    <!-- END mediadirSearchform -->
 
-<!-- BEGIN mediadirAlphaIndex -->
-<ul style="padding: 0px; margin: 0px;">
-<!-- BEGIN mediadirAlphaIndexElement -->
-<li style="float: left; padding: 0px 5px 0px 0px; margin: 0px; list-style: none;">{MEDIADIR_ALPHA_INDEX_LINK}</li>
-<!-- END mediadirAlphaIndexElement -->
-</ul>
-<br /><br />
-<!-- END mediadirAlphaIndex -->
+    <!-- BEGIN mediadirAlphaIndex -->
+    <ul style="padding: 0px; margin: 0px;">
+        <!-- BEGIN mediadirAlphaIndexElement -->
+        <li style="float: left; padding: 0px 5px 0px 0px; margin: 0px; list-style: none;">{MEDIADIR_ALPHA_INDEX_LINK}</li>
+        <!-- END mediadirAlphaIndexElement -->
+    </ul>
+    <br /><br />
+    <!-- END mediadirAlphaIndex -->
 
+    <div class="table-responsive">
+        <!-- BEGIN mediadirEntryList -->
 
-<!-- BEGIN mediadirEntryList -->
+        <!-- BEGIN mediadirAlphabeticalTitle -->
+        <h2><a name="{MEDIADIR_ALPHABETICAL_ANCHOR}">{TXT_MEDIADIR_ALPHABETICAL_TITLE}</a></h2>
+        <!-- END mediadirAlphabeticalTitle -->
 
-<!-- BEGIN mediadirAlphabeticalTitle -->
-<h2><a name="{MEDIADIR_ALPHABETICAL_ANCHOR}">{TXT_MEDIADIR_ALPHABETICAL_TITLE}</a></h2>
-<!-- END mediadirAlphabeticalTitle -->
+        <table class="table" border="1" width="100%">
+            <tr>
+                <td colspan="3">
+                    <h3>{MEDIADIR_ENTRY_FIELD_1_POS}</h3>
+                </td>
+            </tr>
+            <tr>
+                <td width="33%">
+                    <!-- BEGIN mediadirEntryVotes -->
+                    {MEDIADIR_ENTRY_VOTES}
+                    <!-- END mediadirEntryVotes -->
+                </td>
+                <td width="33%">
+                    <!-- BEGIN mediadirEntryComments -->
+                    {MEDIADIR_ENTRY_COMMENTS}
+                    <!-- END mediadirEntryComments -->
+                </td>
+                <td width="33%">
+                    <a href="{MEDIADIR_ENTRY_DETAIL_URL}">{TXT_MEDIADIR_ENTRY_DETAIL}</a>
+                </td>
+            </tr>
+        </table>
 
-<table border="1" width="100%">
-<tr>
-<td colspan="3">
-<h3>{MEDIADIR_ENTRY_FIELD_1_POS}</h3>
-</td>
-</tr>
-<tr>
-<td width="33%">
-<!-- BEGIN mediadirEntryVotes -->
-{MEDIADIR_ENTRY_VOTES}
-<!-- END mediadirEntryVotes -->
-</td>
-<td width="33%">
-<!-- BEGIN mediadirEntryComments -->
-{MEDIADIR_ENTRY_COMMENTS}
-<!-- END mediadirEntryComments -->
-</td>
-<td width="33%">
-<a href="{MEDIADIR_ENTRY_DETAIL_URL}">{TXT_MEDIADIR_ENTRY_DETAIL}</a>
-</td>
-</tr>
-</table>
-<br />
-<!-- END mediadirEntryList -->
-{MEDIADIR_PAGING}
-<!-- BEGIN mediadirNoEntriesFound -->
-{TXT_MEDIADIR_SEARCH_MESSAGE}
-<!-- END mediadirNoEntriesFound -->
+        <br />
+        <!-- END mediadirEntryList -->
+    </div>
+    {MEDIADIR_PAGING}
+    <!-- BEGIN mediadirNoEntriesFound -->
+    {TXT_MEDIADIR_SEARCH_MESSAGE}
+    <!-- END mediadirNoEntriesFound -->
 </div>

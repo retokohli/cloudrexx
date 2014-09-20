@@ -30,7 +30,10 @@ form p label {
     margin-left: 0;
     margin-right: 5px;
 }
-#access_user_newsletters-1 {
+.prof-img {width: 20%;}
+.prof-details {float: left;}
+.prof-details em{float: left;}
+/*#access_user_newsletters-1 {
     float: left;
     margin: 0;
     padding: 0;
@@ -38,7 +41,7 @@ form p label {
     height: auto;
     margin-top: 3px;
     margin-left: 10px;
-}
+}*/
 form p label.description {
     margin: 0;
     margin-left: 5px;
@@ -2410,7 +2413,7 @@ dl.data_module img {
 #mediadir .mapLarge{
     margin-top: 10px;
     border: 0px solid #CFCFCF;
-    width: 620px;
+    width: 70%;
     height: 600px;
 }
 #mediadir input[type="button"].active {
@@ -2749,7 +2752,7 @@ form#search {
     width: 100%;
     margin-bottom: 10px;
 }
-#searchbox {
+.searchbox {
     width: 68%;
     float: left;
     margin-right: 10px;
@@ -2769,8 +2772,11 @@ input[name="downloads_category_name"] {
     float: left;
     width: 100%;
 }
+.member_list .img-thumbnail {
+    max-width: 80px;
+}
 .file_info a {word-wrap: break-word;}
-.profile th {
+/*.profile th {
     width: 100%;
     float: left;
 }
@@ -2781,7 +2787,7 @@ input[name="downloads_category_name"] {
 .profile td {
     width: 40%;
     float: left;
-}
+}*/
 input[name="search"] {
     float: left;
     margin-right: 10px;

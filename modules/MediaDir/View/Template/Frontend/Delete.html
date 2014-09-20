@@ -1,24 +1,25 @@
 <div id="mediadir">
     <!-- BEGIN mediadirEntryOkMessage -->
-    OK: {TXT_MEDIADIR_OK_MESSAGE}
+    <span class="text-success">OK: {TXT_MEDIADIR_OK_MESSAGE}</span>
     <!-- END mediadirEntryOkMessage -->
-    
+
     <!-- BEGIN mediadirEntryErrMessage -->
-    ERR: {TXT_MEDIADIR_ERR_MESSAGE}
+    <span class="text-danger">ERR: {TXT_MEDIADIR_ERR_MESSAGE}</span>
     <!-- END mediadirEntryErrMessage -->
-    
+
     <!-- BEGIN mediadirEntryModifyForm -->
-    <form method="post" action="index.php?section=MediaDir&amp;cmd=delete" name="entryModfyForm">
+    <form role="form" method="post" action="index.php?section=MediaDir&amp;cmd=delete" name="entryModfyForm">
         <input type="hidden" value="{MEDIADIR_ENTRY_ID}" name="entryId" /> 
         Wollen Sie folgenden Eintrag wirklich löschen? Die Daten werden unwiderruflich gelöscht.
         <br/><br/>
         <!-- BEGIN mediadirEntryList -->
-                <!-- BEGIN mediadir_inputfields -->
-                <b>{TXT_MEDIADIR_INPUTFIELD_NAME}:</b>&nbsp;{MEDIADIR_INPUTFIELD_VALUE}<br/>
-                <!-- END mediadir_inputfields -->
+        <!-- BEGIN mediadir_inputfields -->
+        <b>{TXT_MEDIADIR_INPUTFIELD_NAME}:</b>&nbsp;{MEDIADIR_INPUTFIELD_VALUE}<br/>
+        <!-- END mediadir_inputfields -->
         <!-- END mediadirEntryList -->
         <br/>
-        <input type="button" value="{TXT_MEDIADIR_ABORT}" name="abort" onclick="javascript:history.go(-1);" />&nbsp;<input type="submit" value="{TXT_MEDIADIR_DELETE}" name="submitEntryModfyForm" /><br />
+        <input class="btn btn-default" type="button" value="{TXT_MEDIADIR_ABORT}" name="abort" onclick="javascript:history.go(-1);" />&nbsp;
+        <input class="btn btn-default" type="submit" value="{TXT_MEDIADIR_DELETE}" name="submitEntryModfyForm" /><br />
     </form>
     <!-- END mediadirEntryModifyForm -->
 </div>
