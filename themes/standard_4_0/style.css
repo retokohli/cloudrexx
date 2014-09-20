@@ -8,6 +8,9 @@
         bottom: 27%;
         font-size: 18px;
     }
+    #page #mediadir .mapLarge{
+        width: 100%;
+    }
     .carousel-indicators {
         bottom: 0px;
         margin-bottom: 0;
@@ -225,6 +228,7 @@
     .member_list td {
         float: left;
         clear: both;
+        width: 100%;
     } /*cart*/
     #cartlist #th_bg2 .cartrow:first-child {
         width: 100%;
@@ -506,6 +510,16 @@
     #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
     /**/
+    /*MediaDir Edit Start*/
+    .mediadirSelector .mediadirSelectorCenter {
+        padding: 5px 65px 0 !important;
+    }
+    #page #mediadir .mediadirSelector, #page #mediadir .mediadirGoogleMap {padding-left: 0; margin-top: 0;}
+    .mediadirSelector div {
+        float: left;
+        clear: both;
+    }
+    /*MediaDir Edit End*/
 }
 @media (min-width: 768px) and (max-width: 979px) {
     #home-page {padding: 0 15px;}
@@ -513,6 +527,16 @@
     #content-wrapper {
         padding-bottom: 168px;
     }
+    /*MediaDir Edit Start*/
+    .mediadirSelector .mediadirSelectorCenter {
+        padding: 5px 65px 0 !important;
+    }
+    #page #mediadir .mediadirSelector, #page #mediadir .mediadirGoogleMap {padding-left: 0; margin-top: 0;}
+    .mediadirSelector div {
+        float: left;
+        clear: both;
+    }
+    /*MediaDir Edit End*/
     #mediadir .reference {margin-bottom: 20px;}
     .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
     #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
