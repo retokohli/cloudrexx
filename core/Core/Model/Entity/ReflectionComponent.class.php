@@ -1259,12 +1259,23 @@ class ReflectionComponent {
         // we will not use modulemanager here in order to be able to replace
         // modulemanager by this in a later release
         
+        $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
+        
+        $pages = $pageRepo->findBy(array(
+            'module' => $this->componentName,
+            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+        ));
+        
+        //Pages already exists so no need of adding pages again
+        if (!empty($pages)) {
+            return;
+        }
+        
         // does the module repository have something for us?
         if (!$this->loadPagesFromModuleRepository($id)) {
         
-            $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
-            $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
-        
+            $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');            
+                        
             // if not: create an empty page
             $parcat = $nodeRepo->getRoot();
             $newnode = new \Cx\Core\ContentManager\Model\Entity\Node();
@@ -1291,7 +1302,7 @@ class ReflectionComponent {
                 $em->persist($page);
             }
             $em->flush();
-        }
+        }            
     }
 
     /**
