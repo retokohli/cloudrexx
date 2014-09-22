@@ -1,27 +1,35 @@
 <div id="access"><!-- BEGIN access_settings -->
-<div class="message_error">{ACCESS_SETTINGS_MESSAGE}</div>
+    <div class="text-danger">{ACCESS_SETTINGS_MESSAGE}</div>
+    <div class="profile networks">
+        <table cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>{TXT_ACCESS_SOCIALLOGIN_PROVIDER}</th>
+                    <th>{TXT_ACCESS_SOCIALLOGIN_STATE}</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody><!-- BEGIN access_sociallogin_provider -->
+                <tr>
+                    <td>{ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER}</td>
+                    <td>{ACCESS_SOCIALLOGIN_PROVIDER_STATE}</td>
+                    <td>
+                        <!-- BEGIN access_sociallogin_provider_disconnected -->
+                        <a class="{ACCESS_SOCIALLOGIN_PROVIDER_NAME} loginbutton btn-social btn-{ACCESS_SOCIALLOGIN_PROVIDER_NAME}" href="{ACCESS_SOCIALLOGIN_URL}">
+                            <i class="fa fa-{ACCESS_SOCIALLOGIN_PROVIDER_NAME}"></i> {ACCESS_SOCIALLOGIN_URL_ACTION}
+                        </a> 
+                        <!-- END access_sociallogin_provider_disconnected -->
+                        <!-- BEGIN access_sociallogin_provider_connected -->
+                        <a href="{ACCESS_SOCIALLOGIN_URL}">{ACCESS_SOCIALLOGIN_URL_ACTION}</a> 
+                        <!-- END access_sociallogin_provider_connected --></td>
+                </tr>
+                <!-- END access_sociallogin_provider -->
+            </tbody>
+        </table>
+    </div>
+    <!-- END access_settings --><!-- BEGIN access_settings_done -->
 
-<div class="profile">
-<table cellpadding="0" cellspacing="0">
-	<thead>
-		<tr>
-			<th>{TXT_ACCESS_SOCIALLOGIN_PROVIDER}</th>
-			<th>{TXT_ACCESS_SOCIALLOGIN_STATE}</th>
-			<th>&nbsp;</th>
-		</tr>
-	</thead>
-	<tbody><!-- BEGIN access_sociallogin_provider -->
-		<tr>
-			<td>{ACCESS_SOCIALLOGIN_PROVIDER_NAME_UPPER}</td>
-			<td>{ACCESS_SOCIALLOGIN_PROVIDER_STATE}</td>
-			<td><!-- BEGIN access_sociallogin_provider_disconnected --><a class="{ACCESS_SOCIALLOGIN_PROVIDER_NAME} loginbutton" href="{ACCESS_SOCIALLOGIN_URL}">{ACCESS_SOCIALLOGIN_URL_ACTION}</a> <!-- END access_sociallogin_provider_disconnected --><!-- BEGIN access_sociallogin_provider_connected --><a href="{ACCESS_SOCIALLOGIN_URL}">{ACCESS_SOCIALLOGIN_URL_ACTION}</a> <!-- END access_sociallogin_provider_connected --></td>
-		</tr>
-		<!-- END access_sociallogin_provider -->
-	</tbody>
-</table>
+    <div class="text-success">{ACCESS_SETTINGS_MESSAGE}</div>
+    <!-- END access_settings_done -->
+    {ACCESS_JAVASCRIPT_FUNCTIONS}
 </div>
-<!-- END access_settings --><!-- BEGIN access_settings_done -->
-
-<div class="message_ok">{ACCESS_SETTINGS_MESSAGE}</div>
-<!-- END access_settings_done -->{ACCESS_JAVASCRIPT_FUNCTIONS}</div>
-
