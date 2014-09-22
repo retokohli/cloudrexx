@@ -1,21 +1,21 @@
 <div id="access">
-	<!-- BEGIN access_settings -->
-		<div class="message_error">{ACCESS_SETTINGS_MESSAGE}</div>
-		<div class="profile">
-			<form method="post" action="index.php?section=Access&amp;cmd=settings_delete">
-				Um Dein Konto zu l&ouml;schen, musst Du Dein Kennwort eingeben<br /><br />
-				<p><label>Passwort</label>{ACCESS_USER_PASSWORD_INPUT}<br /><br /></p>
-				Deine Forum und Verzeichnis Eintr&auml;ge bleiben nach der L&ouml;schung des Kontos erhalten.<br />
-				Wenn Du Deine Eintr&auml;ge l&ouml;schen willst, musst Du dies vor der L&ouml;schung des Kontos erledigen.<br />
-				<br />
-				<b>ACHTUNG: Das L&ouml;schen des Kontos kann nicht r&uuml;ckg&auml;ngig gemacht werden!</b><br />
-				<br />
-				<p><label>Konto löschen</label>{ACCESS_DELETE_ACCOUNT_BUTTON}</p>
-			</form>
-		</div>
-	<!-- END access_settings --> 
-	<!-- BEGIN access_settings_done --> 
-		<div class="message_ok">{ACCESS_SETTINGS_MESSAGE}</div>
-	<!-- END access_settings_done --> 
-	{ACCESS_JAVASCRIPT_FUNCTIONS}
+    <!-- BEGIN access_settings -->
+    <div class="text-danger">{ACCESS_SETTINGS_MESSAGE}</div>
+    <div class="profile">
+        <form role="form" method="post" action="index.php?section=Access&amp;cmd=settings_delete">
+            Um Dein Konto zu l&ouml;schen, musst Du Dein Kennwort eingeben<br /><br />
+            <p><label>Passwort</label>{ACCESS_USER_PASSWORD_INPUT}<br /><br /></p>
+            Deine Forum und Verzeichnis Eintr&auml;ge bleiben nach der L&ouml;schung des Kontos erhalten.<br />
+            Wenn Du Deine Eintr&auml;ge l&ouml;schen willst, musst Du dies vor der L&ouml;schung des Kontos erledigen.<br />
+            <br />
+            <b>ACHTUNG: Das L&ouml;schen des Kontos kann nicht r&uuml;ckg&auml;ngig gemacht werden!</b><br />
+            <br />
+            <p><label>Konto löschen</label>{ACCESS_DELETE_ACCOUNT_BUTTON}</p>
+        </form>
+    </div>
+    <!-- END access_settings --> 
+    <!-- BEGIN access_settings_done --> 
+    <div class="text-success">{ACCESS_SETTINGS_MESSAGE}</div>
+    <!-- END access_settings_done --> 
+    {ACCESS_JAVASCRIPT_FUNCTIONS}
 </div>

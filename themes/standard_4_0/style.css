@@ -3,6 +3,10 @@
     .hidden-xs {
         display: none !important;
     }
+    #right-login {
+        width: 100%;
+        padding-left: 0;
+    }
     .item h1 {
         left: 7%;
         bottom: 27%;

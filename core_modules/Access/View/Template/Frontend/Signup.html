@@ -1,87 +1,85 @@
 <div id="access">
-    <!-- BEGIN access_signup_form -->
-    Hier haben Sie die M&ouml;glichkeit sich f&uuml;r dieses Portal zu registrieren und ein Benutzerkonto zu er&ouml;ffnen.
-    <br /><br />
     <!-- BEGIN access_social_networks -->
-    <fieldset>
-        <legend>oder Login mit Social Media</legend>
-        <!-- BEGIN access_social_networks_facebook -->
-        <a class="facebook loginbutton" href="{ACCESS_SOCIALLOGIN_FACEBOOK}">Facebook</a>
-        <!-- END access_social_networks_facebook -->
-        <!-- BEGIN access_social_networks_google -->
-        <a class="google loginbutton" href="{ACCESS_SOCIALLOGIN_GOOGLE}">Google</a>
-        <!-- END access_social_networks_google -->
-        <!-- BEGIN access_social_networks_twitter -->
-        <a class="twitter loginbutton" href="{ACCESS_SOCIALLOGIN_TWITTER}">Twitter</a>
-        <!-- END access_social_networks_twitter -->
-    </fieldset>
+    <div class="login-social">
+        <div id="sociallogin"><!-- BEGIN access_social_networks_facebook --><a class="facebook loginbutton btn-social btn-facebook" href="{ACCESS_SOCIALLOGIN_FACEBOOK}"><i class="fa fa-facebook-square">&nbsp;</i>Mit Facebook Registrieren</a> <!-- END access_social_networks_facebook --> <!-- BEGIN access_social_networks_google --> <a class="google loginbutton btn-social btn-google-plus" href="{ACCESS_SOCIALLOGIN_GOOGLE}"><i class="fa fa-google-plus">&nbsp;</i>Mit Google Registrieren</a> <!-- END access_social_networks_google --> <!-- BEGIN access_social_networks_twitter --> <a class="twitter loginbutton btn-social btn-twitter" href="{ACCESS_SOCIALLOGIN_TWITTER}"><i class="fa fa-twitter">&nbsp;</i>Mit Twitter Registrieren</a> <!-- END access_social_networks_twitter --></div>
+    </div>
     <!-- END access_social_networks -->
-    <div class="message_error">{ACCESS_SIGNUP_MESSAGE}</div><br />
-    <form action="index.php?section=Access&amp;cmd=signup" method="post" enctype="multipart/form-data">
-        <fieldset><legend>Persönliche Angaben</legend>
-            <!-- BEGIN access_profile_attribute_gender -->
-    		<p><label>{ACCESS_PROFILE_ATTRIBUTE_GENDER_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_GENDER}</p>
-    		<!-- END access_profile_attribute_gender --> 				
-    		<!-- BEGIN access_profile_attribute_firstname -->
-    		<p><label>{ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME}</p>
-    		<!-- END access_profile_attribute_firstname --> 			
-    		<!-- BEGIN access_profile_attribute_lastname -->
-    		<p><label>{ACCESS_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_LASTNAME}</p>
-    		<!-- END access_profile_attribute_lastname --> 	
-        </fieldset>
-        <fieldset><legend>Kontoangaben</legend>
-            <!-- BEGIN access_user_email -->
-            <p><label>{ACCESS_USER_EMAIL_DESC}</label>{ACCESS_USER_EMAIL}<br />
-            Sie m&uuml;ssen eine g&uuml;ltige E-Mail Adresse angeben, um Ihren Account zu nutzen</p>
-            <!-- END access_user_email -->
-            <!-- BEGIN access_logindata -->
+    <div class="regdivider"><span>OR</span></div>
+    <div class="regForm">   
+        <!-- BEGIN access_signup_form -->
+        <p>Hier haben Sie die M&ouml;glichkeit sich f&uuml;r dieses Portal zu registrieren und ein Benutzerkonto zu er&ouml;ffnen.</p>
+        <div class="text-danger">{ACCESS_SIGNUP_MESSAGE}</div>
+        <form role="form" action="index.php?section=access&amp;cmd=signup" method="post" enctype="multipart/form-data">
+            <fieldset><legend>Persönliche Angaben</legend>
+                <!-- BEGIN access_profile_attribute_gender -->
+                <p><label>{ACCESS_PROFILE_ATTRIBUTE_GENDER_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_GENDER}</p>
+                <!-- END access_profile_attribute_gender --> 				
+                <!-- BEGIN access_profile_attribute_firstname -->
+                <p><label>{ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME}</p>
+                <!-- END access_profile_attribute_firstname --> 			
+                <!-- BEGIN access_profile_attribute_lastname -->
+                <p><label>{ACCESS_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_LASTNAME}</p>
+                <!-- END access_profile_attribute_lastname --> 	
+            </fieldset>
+            <fieldset><legend>Kontoangaben</legend>
+                <!-- BEGIN access_user_email -->
+                <p><label>{ACCESS_USER_EMAIL_DESC}</label>{ACCESS_USER_EMAIL}
+                    <span>Sie m&uuml;ssen eine g&uuml;ltige E-Mail Adresse angeben, um Ihren Account zu nutzen</span></p>
+                <!-- END access_user_email -->
+                <!-- BEGIN access_logindata -->
                 <!-- BEGIN access_user_username -->
-                <p><label>{ACCESS_USER_USERNAME_DESC}</label>{ACCESS_USER_USERNAME}<br />Bitte w&auml;hlen Sie einen Benutzername</p>
+                <p><label>{ACCESS_USER_USERNAME_DESC}</label>{ACCESS_USER_USERNAME}<span>Bitte w&auml;hlen Sie einen Benutzername</span></p>
                 <!-- END access_user_username --><!-- BEGIN access_user_password -->
-                <p><label>{ACCESS_USER_PASSWORD_DESC}</label>{ACCESS_USER_PASSWORD}<br />Bitte gew&uuml;nschtes Passwort eingeben</p>
+                <p><label>{ACCESS_USER_PASSWORD_DESC}</label>{ACCESS_USER_PASSWORD}<span>Bitte gew&uuml;nschtes Passwort eingeben</span></p>
                 <!-- END access_user_password --><!-- BEGIN access_user_password_confirmed -->
-                <p><label>{ACCESS_USER_PASSWORD_CONFIRMED_DESC}</label>{ACCESS_USER_PASSWORD_CONFIRMED}<br />Zur Ihrer Sicherheit wiederholen Sie bitte Ihr Passwort</p>
+                <p><label>{ACCESS_USER_PASSWORD_CONFIRMED_DESC}</label>{ACCESS_USER_PASSWORD_CONFIRMED}<span>Zur Ihrer Sicherheit wiederholen Sie bitte Ihr Passwort</span></p>
                 <!-- END access_user_password_confirmed --> 
-            <!-- END access_logindata -->
-        </fieldset>
-        <fieldset><legend>Zusätzliche Angaben</legend>
-            <p><label>{ACCESS_USER_FRONTEND_LANGUAGE_DESC}</label>{ACCESS_USER_FRONTEND_LANGUAGE}</p>
-            <p><b>Hinweis:</b><br />Weitere Daten k&ouml;nnen nach erfolgreicher Registrierung im Benutzerprofil hinzugef&uuml;gt werden.</p>
-            <!-- BEGIN access_captcha -->
-            <p><label>{TXT_ACCESS_CAPTCHA}</label>{ACCESS_CAPTCHA_CODE}</p>
-            <!-- END access_captcha -->
-        </fieldset>
-        <!-- BEGIN access_newsletter -->
-        <fieldset><legend>Newsletter abonnieren</legend>
-            <!-- BEGIN access_newsletter_list -->
-            <p>
-                <label for="access_user_newsletters-{ACCESS_NEWSLETTER_ID}">&nbsp;{ACCESS_NEWSLETTER_NAME}</label>
-                <input type="checkbox" name="access_user_newsletters[]" id="access_user_newsletters-{ACCESS_NEWSLETTER_ID}" value="{ACCESS_NEWSLETTER_ID}"{ACCESS_NEWSLETTER_SELECTED} />
-            </p>
-            <!-- END access_newsletter_list -->
-        </fieldset>
-        <!-- END access_newsletter -->
-        <!-- BEGIN access_tos -->
-        <fieldset>
-            <legend>AGBs</legend>
-            <div class="contact row">
-                <label>{TXT_ACCESS_TOS}</label>{ACCESS_TOS}</div>
-        </fieldset>
-        <!-- END access_tos -->
-        <p>{ACCESS_SIGNUP_BUTTON}</p> 
-    </form>
-    <!-- END access_signup_form --> 	
-    <!-- BEGIN access_signup_store_success -->
-    <div class="message_ok">{ACCESS_SIGNUP_MESSAGE}</div>
-    <!-- END access_signup_store_success -->   	
-    <!-- BEGIN access_signup_store_error -->
-    <div class="message_error">{ACCESS_SIGNUP_MESSAGE}</div>
-    <!-- END access_signup_store_error -->   	
-    <!-- BEGIN access_signup_confirm_success -->
-    <div class="message_ok">{ACCESS_SIGNUP_MESSAGE}</div>
-    <!-- END access_signup_confirm_success -->   	
-    <!-- BEGIN access_signup_confirm_error -->
-    <div class="message_error">{ACCESS_SIGNUP_MESSAGE}</div>
-    <!-- END access_signup_confirm_error -->    	
-    {ACCESS_JAVASCRIPT_FUNCTIONS}
+                <!-- END access_logindata -->
+            </fieldset>
+            <fieldset><legend>Zusätzliche Angaben</legend>
+                <p><label>{ACCESS_USER_FRONTEND_LANGUAGE_DESC}</label>{ACCESS_USER_FRONTEND_LANGUAGE}</p>
+                <p><b>Hinweis:</b><br />Weitere Daten k&ouml;nnen nach erfolgreicher Registrierung im Benutzerprofil hinzugef&uuml;gt werden.</p>
+                <!-- BEGIN access_captcha -->
+                <p><label>{TXT_ACCESS_CAPTCHA}</label>{ACCESS_CAPTCHA_CODE}</p>
+                <!-- END access_captcha -->
+            </fieldset>
+            <!-- BEGIN access_newsletter -->
+            <fieldset><legend>Newsletter abonnieren</legend>
+                <!-- BEGIN access_newsletter_list -->
+                <p>
+                    <span class="checkbox">
+                        <label for="access_user_newsletters-{ACCESS_NEWSLETTER_ID}">
+                            <input type="checkbox" name="access_user_newsletters[]" id="access_user_newsletters-{ACCESS_NEWSLETTER_ID}" value="{ACCESS_NEWSLETTER_ID}"{ACCESS_NEWSLETTER_SELECTED} />
+                            {ACCESS_NEWSLETTER_NAME}
+                        </label>
+                    </span>
+                </p>
+                <!-- END access_newsletter_list -->
+            </fieldset>
+            <!-- END access_newsletter -->
+            <!-- BEGIN access_tos -->
+            <fieldset>
+                <legend>AGBs</legend>
+                <div>
+                    <label>{TXT_ACCESS_TOS}</label>{ACCESS_TOS}</div>
+            </fieldset>
+            <!-- END access_tos -->
+            <p>{ACCESS_SIGNUP_BUTTON}</p> 
+        </form>
+        <!-- END access_signup_form --> 	
+        <!-- BEGIN access_signup_store_success -->
+        <div class="text-success">{ACCESS_SIGNUP_MESSAGE}</div>
+        <!-- END access_signup_store_success -->   	
+        <!-- BEGIN access_signup_store_error -->
+        <div class="text-danger">{ACCESS_SIGNUP_MESSAGE}</div>
+        <!-- END access_signup_store_error -->   	
+        <!-- BEGIN access_signup_confirm_success -->
+        <div class="text-success">{ACCESS_SIGNUP_MESSAGE}</div>
+        <!-- END access_signup_confirm_success -->   	
+        <!-- BEGIN access_signup_confirm_error -->
+        <div class="text-danger">{ACCESS_SIGNUP_MESSAGE}</div>
+        <!-- END access_signup_confirm_error -->    	
+        {ACCESS_JAVASCRIPT_FUNCTIONS}
+
+    </div>
 </div>
