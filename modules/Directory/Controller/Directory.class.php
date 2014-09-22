@@ -846,7 +846,7 @@ $this->arrRows[2] = '';
         $country = $objResult->fields['country'];
 
         if ($this->_isGoogleMapEnabled('frontend')) {
-            $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript','modules/Directory/Template/View/Backend/module_directory_googlemap_include.html');
+            $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript','modules/Directory/View/Template/Backend/module_directory_googlemap_include.html');
             $this->_objTpl->setVariable(array(
                 'DIRECTORY_GOOGLE_API_KEY' => $_CONFIG["googleMapsAPIKey"],
                 'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY' => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],
@@ -1486,7 +1486,7 @@ $this->arrRows[2] = '';
             }
 
             if ($this->_isGoogleMapEnabled('frontend')) {
-                $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/Directory/Template/View/Backend/module_directory_googlemap_include.html');
+                $this->_objTpl->addBlockFile('DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK', 'direcoryGoogleMapJavascript', 'modules/Directory/View/Template/Backend/module_directory_googlemap_include.html');
                 $this->_objTpl->setVariable(array(
                     'DIRECTORY_GOOGLE_API_KEY' => $_CONFIG["googleMapsAPIKey"],
                     'TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY' => $_ARRAYLANG['TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY'],

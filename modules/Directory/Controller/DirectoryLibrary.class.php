@@ -492,7 +492,7 @@ class DirectoryLibrary
             $fileType = $_FILES[$name]['type'];
             $this->fileSize = $_FILES[$name]['size'];
 
-            if ($fileName != "" && FWValidator::is_file_ending_harmless($fileName)) {
+            if ($fileName != "" && \FWValidator::is_file_ending_harmless($fileName)) {
 
                 //check extension
                 $info = pathinfo($fileName);
@@ -534,7 +534,7 @@ class DirectoryLibrary
 
                 //upload file
                 if (@move_uploaded_file($tmpFile, $this->mediaPath.$path.$fileName)) {
-                    $obj_file = new File();
+                    $obj_file = new \File();
                     $obj_file->setChmod($this->mediaPath, $this->mediaWebPath, $path.$fileName);
                     $status = $fileName;
                 } else {
@@ -674,7 +674,7 @@ class DirectoryLibrary
             return "error";
         } else {
             //rss class
-            $rss = new XML_RSS($this->mediaPath."ext_feeds/".$filename);
+            $rss = new \XML_RSS($this->mediaPath."ext_feeds/".$filename);
             $rss->parse();
             $content = '';
 
@@ -684,7 +684,7 @@ class DirectoryLibrary
             }
 
             //set chmod
-            $obj_file = new File();
+            $obj_file = new \File();
             $obj_file->setChmod($this->mediaPath, $this->mediaWebPath, "ext_feeds/".$filename);
 
             if ($content == '') {
@@ -738,7 +738,7 @@ class DirectoryLibrary
         }
 
         //rss class
-        $rss = new XML_RSS($this->mediaPath."ext_feeds/".$filename);
+        $rss = new \XML_RSS($this->mediaPath."ext_feeds/".$filename);
         $rss->parse();
         $content = '';
         foreach($rss->getStructure() as $array)
@@ -853,7 +853,7 @@ class DirectoryLibrary
 
                 //get author id
                 if ($inputName == "addedby") {
-                    $objFWUser = FWUser::getFWUserObject();
+                    $objFWUser = \FWUser::getFWUserObject();
                     if ($objFWUser->objUser->login()) {
                         $inputValue = $objFWUser->objUser->getId();
                     } else {
@@ -1022,7 +1022,7 @@ class DirectoryLibrary
         }
         // Get user data
         if (is_numeric($userId)) {
-            $objFWUser = new FWUser();
+            $objFWUser = new \FWUser();
             if ($objFWUser->objUser->getUser($userId)) {
                 $userMail = $objFWUser->objUser->getEmail();
                 $userFirstname = $objFWUser->objUser->getProfileAttribute('firstname');
@@ -1062,7 +1062,7 @@ class DirectoryLibrary
         } else {
             $link =
                 "http://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.
-                    FWLanguage::getLanguageParameter($languageId, 'lang').'/'.
+                    \FWLanguage::getLanguageParameter($languageId, 'lang').'/'.
                     CONTREXX_DIRECTORY_INDEX."?section=Directory&cmd=detail&id=".$feedId;
         }
 
@@ -1089,7 +1089,7 @@ class DirectoryLibrary
         $message = str_replace($array_1, $array_2, $message);
         $sendTo = explode(';', $sendTo);
         if (@\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') ) {
-            $objMail = new phpmailer();
+            $objMail = new \phpmailer();
             if ($_CONFIG['coreSmtpServer'] > 0 && @\Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php') ) {
                 $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
                 if ($arrSmtp !== false) {
@@ -1181,7 +1181,7 @@ class DirectoryLibrary
         global $_CONFIG, $objDatabase;
 
         //check file
-        $obj_file = new File();
+        $obj_file = new \File();
         if (file_exists($this->mediaPath."feeds/directory_latest.xml")) {
             $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "media/feeds/directory_latest.xml");
         }
@@ -2033,7 +2033,7 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
 
                     if ($inputValue != $oldRssLink) {
 
-                        $obj_file = new File();
+                        $obj_file = new \File();
                         $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "ext_feeds/".$oldRssFile);
 
                         //create rss
@@ -2079,7 +2079,7 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                     $inputName == "spez_field_20") {
 
                     if (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1) {
-                        $obj_file = new File();
+                        $obj_file = new \File();
 
                         //thumb
                         if (file_exists($this->mediaPath."thumbs/".$_POST["inputValue"][$inputName])) {
@@ -2110,7 +2110,7 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 if (in_array($inputName, $arrSpezialUploadFields)) {
 
                     if (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1) {
-                        $obj_file = new File();
+                        $obj_file = new \File();
 
                         //upload
                         if (file_exists($this->mediaPath."uploads/".$_POST["inputValue"][$inputName])) {
