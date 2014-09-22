@@ -262,7 +262,6 @@ class aliasLib
         $this->em->remove($alias->getNode());
         $this->em->remove($alias);
         $this->em->flush();
-        $this->em->clear();
         return true;
     }
 }
