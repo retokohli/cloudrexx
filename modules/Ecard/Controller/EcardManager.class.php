@@ -123,9 +123,9 @@ class EcardManager
                 $objResult = $objDatabase->Execute($query);
 
                 /* Create optimized picture for e-card dispatch */
-                if ($filepath != '' && file_exists(ASCMS_PATH.$filepath)) {
-                    $this->resizeMotive(2, ASCMS_PATH.$filepath, ASCMS_ECARD_OPTIMIZED_PATH.'/');
-                    $this->resizeMotive(1, ASCMS_PATH.$filepath, ASCMS_ECARD_THUMBNAIL_PATH.'/');
+                if ($filepath != '' && file_exists(ASCMS_INSTANCE_PATH.$filepath)) {
+                    $this->resizeMotive(2, ASCMS_INSTANCE_PATH.$filepath, ASCMS_ECARD_OPTIMIZED_PATH.'/');
+                    $this->resizeMotive(1, ASCMS_INSTANCE_PATH.$filepath, ASCMS_ECARD_THUMBNAIL_PATH.'/');
                 }
                 ++$i;
             }
