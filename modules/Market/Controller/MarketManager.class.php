@@ -391,7 +391,10 @@ class MarketManager extends MarketLibrary
             'TXT_STATUS'            =>    $_CORELANG['TXT_STATUS'],
             'TXT_STATUS_ON'            =>    $_CORELANG['TXT_ACTIVATED'],
             'TXT_STATUS_OFF'        =>    $_CORELANG['TXT_DEACTIVATED'],
-            'TXT_FIELDS_REQUIRED'    =>    $_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS']
+            'TXT_FIELDS_REQUIRED'    =>    $_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'],
+            'TXT_STATUS_ON'         =>    $_ARRAYLANG['TXT_MARKET_ACTIVATE'],
+            'TXT_STATUS_OFF'        =>    $_ARRAYLANG['TXT_MARKET_DEACTIVATE'],
+
         ));
 
         $this->_objTpl->setVariable(array(
@@ -786,7 +789,8 @@ class MarketManager extends MarketLibrary
             'TXT_TITLE_ENTRY'                =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
             'TXT_NAME'                        =>    $_CORELANG['TXT_NAME'],
             'TXT_E-MAIL'                    =>    $_CORELANG['TXT_EMAIL'],
-			'TXT_MARKET_COLOR'				 =>		$_ARRAYLANG['TXT_MARKET_COLOR'],
+            'TXT_MARKET_EMAIL'              => $_ARRAYLANG['TXT_MARKET_EMAIL'],
+            'TXT_MARKET_COLOR'              =>		$_ARRAYLANG['TXT_MARKET_COLOR'],
             'TXT_DESCRIPTION'                =>    $_CORELANG['TXT_DESCRIPTION'],
             'TXT_SAVE'                        =>    $_ARRAYLANG['TXT_SAVE'],
             'TXT_FIELDS_REQUIRED'            =>    $_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'],
