@@ -1,19 +1,20 @@
 <script>
-function check() {
-    if(document.fwd_or_rep.check1.checked){
-        return true;
-    } else {
-        return false;
-    } 
-}
+    function check() {
+        if (document.fwd_or_rep.check1.checked) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 </script>
 <div id="u2u">
-    <form method="post" name="fwd_or_rep" action="index.php?section=U2u&amp;act=forwardandreply&amp;msg_id={PRIVATE_MESSAGE_ID}">
+    <form role="form" method="post" name="fwd_or_rep" action="index.php?section=U2u&amp;act=forwardandreply&amp;msg_id={PRIVATE_MESSAGE_ID}">
         <div class="details">
             <p><label>{TXT_U2U_MESSAGE_SENT_DATE}</label>{MESSAGE_SENT_DATE}</p>
             <p><label>{TXT_U2U_AUTHOR}</label>{MESSAGE_AUTHOR_NAME}</p>
             <p><label>{TXT_U2U_USER_JOINED_DATE}</label>{U2U_USER_JOINED}</p>
-            <p><!-- BEGIN showForwardandReply --><input type="submit" name="forward" id="forward" value="{TXT_U2U_FORWARD}" />&nbsp;<input type="submit" name="reply" id="reply" value="{TXT_U2U_REPLY}" /><!-- END showForwardandReply --><!-- BEGIN sendMessageOutbox --><input type="submit" value="{TXT_U2U_OUTBOX_SEND_MESSAGE}" id="outboxSend" name="send" /><!-- END sendMessageOutbox --></p>
+            <p><!-- BEGIN showForwardandReply -->
+                <input class="btn btn-default" type="submit" name="forward" id="forward" value="{TXT_U2U_FORWARD}" />&nbsp;<input class="btn btn-default" type="submit" name="reply" id="reply" value="{TXT_U2U_REPLY}" /><!-- END showForwardandReply --><!-- BEGIN sendMessageOutbox --><input type="submit" value="{TXT_U2U_OUTBOX_SEND_MESSAGE}" id="outboxSend" name="send" /><!-- END sendMessageOutbox --></p>
         </div>
         <div class="message">
             <h2>{PRIVATE_MESSAGE_TITLE}</h2>
@@ -23,9 +24,9 @@ function check() {
             <br style="clear: both;" /><br style="clear: both;" />
             <fieldset>
                 <legend>{TXT_U2U_DELETE_MESSAGE}</legend>
-                <input type="checkbox" name="check1" />{TXT_U2U_DELETE_THIS_MESSAGE}<br />
+                <span class="checkbox"><label><input type="checkbox" name="check1" />{TXT_U2U_DELETE_THIS_MESSAGE}</label></span><br />
                 <br style="clear: both;" />
-                <input type="submit" onclick="return check();" name="delmes" value="{TXT_U2U_DELETE_THIS_MESSAGE}" id="delmes" />
+                <input class="btn btn-default" type="submit" onclick="return check();" name="delmes" value="{TXT_U2U_DELETE_THIS_MESSAGE}" id="delmes" />
             </fieldset>
         </div>
     </form>
