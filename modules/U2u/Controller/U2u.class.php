@@ -678,7 +678,7 @@ class U2u extends U2uLibrary
         global $_CONFIG;
 
         if (@\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) {
-            $objMail = new phpmailer();
+            $objMail = new \phpmailer();
             if ($_CONFIG['coreSmtpServer'] > 0) {
                  $objSmtpSettings = new SmtpSettings();
                  if (($arrSmtp = $objSmtpSettings->getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
