@@ -1,18 +1,75 @@
 <script language="JavaScript" src="lib/javascript/set_checkboxes.js" type="text/javascript"></script> <script language="Javascript" type="text/javascript">
-function selectMultiAction() {
-	with (document.frmShowNotificationEntries) {
-		switch (frmShowEntries_MultiAction.value) {
-			case 'delete':
-				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
-					action='index.php?section=U2u&cmd=inbox';
-					submit();
-				}
-				else{
-                frmShowEntries_MultiAction.value=0;
-                }
-			break;
-			default: //do nothing
-		}
-	}
-}
-</script> <div id="u2u"><form method="post" action="index.php?section=U2u&amp;cmd=inbox" name="frmShowNotificationEntries"><div class="outbox"><div class="message">{PRIVATE_MESSAGE_DELETE_SUCCESS}</div>                          <!-- BEGIN headSection --><!-- END headSection -->                 <table cellspacing="0" cellpadding="0">                 <tbody>                     <tr>                         <th width="1%">#</th>                         <th width="50%">Betreff</th>                         <th width="30%">Empf&auml;nger</th>                         <th width="19%">Verschickt</th>                     </tr>                     <!-- BEGIN noEntries -->                     <tr>                         <td colspan="4">{PRIVATE_MESSAGE_NO_ENTRIES}</td>                     </tr>                     <!-- END noEntries -->                             <!-- BEGIN privatemessage -->                     <tr class="{ROW_CLASS}">                         <td><input type="checkbox" value="{PRIVATE_MESSAGE_ID}" name="selectedEntriesId[]" /></td>                         <td><a href="index.php?section=U2u&amp;cmd=show&amp;msgID={PRIVATE_MESSAGE_ID}">{PRIVATE_MESSAGE_TITLE}</a></td>                         <td>{MESSAGE_AUTHOR_NAME}</td>                         <td>{MESSAGE_SENT_DATE}</td>                     </tr>                     <!-- END privatemessage -->                 </tbody>             </table></div>         <div class="functions"><!-- BEGIN DeleteSection -->             <table cellspacing="0" cellpadding="2" border="0">                 <tbody>                     <tr>                         <td class="none"><img height="22" border="0" width="38" src="modules/U2u/View/Media/arrow.gif" alt="{TXT_ENTRIES_MARKED}:" />                             <a href="#" onclick="changeCheckboxes('frmShowNotificationEntries','selectedEntriesId[]',true); return false;">{TXT_ENTRIES_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('frmShowNotificationEntries','selectedEntriesId[]',false); return false;">{TXT_ENTRIES_DESELECT_ALL}</a>&nbsp;                             <select name="frmShowEntries_MultiAction" onchange="selectMultiAction();">                                 <option value="0">{TXT_ENTRIES_SUBMIT_SELECT}</option>                                 <option value="delete">{TXT_ENTRIES_SUBMIT_DELETE}</option>                             </select></td>                     </tr>                 </tbody>             </table>             <!-- END DeleteSection --></div></form>     <div class="paging">{OUTBOX_PAGING}</div></div>
+    function selectMultiAction() {
+        with (document.frmShowNotificationEntries) {
+            switch (frmShowEntries_MultiAction.value) {
+                case 'delete':
+                    if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
+                        action = 'index.php?section=U2u&cmd=inbox';
+                        submit();
+                    }
+                    else {
+                        frmShowEntries_MultiAction.value = 0;
+                    }
+                    break;
+                default: //do nothing
+            }
+        }
+    }
+</script> 
+<div id="u2u">
+    <form role="form" method="post" action="index.php?section=U2u&amp;cmd=inbox" name="frmShowNotificationEntries">
+        <div class="outbox">
+            <div class="message">{PRIVATE_MESSAGE_DELETE_SUCCESS}</div>
+            <!-- BEGIN headSection -->
+            <!-- END headSection -->
+            <div class="table-responsive">
+                <table class="table" cellspacing="0" cellpadding="0">
+                    <tbody>
+                        <tr>
+                            <th width="1%">#</th>
+                            <th width="50%">Betreff</th>
+                            <th width="30%">Empf&auml;nger</th>
+                            <th width="19%">Verschickt</th>
+                        </tr>
+                        <!-- BEGIN noEntries -->
+                        <tr>
+                            <td colspan="4">{PRIVATE_MESSAGE_NO_ENTRIES}</td>
+                        </tr>
+                        <!-- END noEntries -->
+                        <!-- BEGIN privatemessage -->
+                        <tr class="{ROW_CLASS}">
+                            <td>
+                                <input type="checkbox" value="{PRIVATE_MESSAGE_ID}" name="selectedEntriesId[]" />
+                            </td>
+                            <td><a href="index.php?section=U2u&amp;cmd=show&amp;msgID={PRIVATE_MESSAGE_ID}">{PRIVATE_MESSAGE_TITLE}</a>
+                            </td>
+                            <td>{MESSAGE_AUTHOR_NAME}</td>
+                            <td>{MESSAGE_SENT_DATE}</td>
+                        </tr>
+                        <!-- END privatemessage -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="functions">
+            <!-- BEGIN DeleteSection -->
+            <table cellspacing="0" cellpadding="2" border="0">
+                <tbody>
+                    <tr>
+                        <td class="none">
+                            <img height="22" border="0" width="38" src="modules/U2u/View/Media/arrow.gif" alt="{TXT_ENTRIES_MARKED}:" /> <a href="#" onclick="changeCheckboxes('frmShowNotificationEntries', 'selectedEntriesId[]', true);
+        return false;">{TXT_ENTRIES_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('frmShowNotificationEntries', 'selectedEntriesId[]', false);
+        return false;">{TXT_ENTRIES_DESELECT_ALL}</a>&nbsp;
+                            <select class="form-control" name="frmShowEntries_MultiAction" onchange="selectMultiAction();">
+                                <option value="0">{TXT_ENTRIES_SUBMIT_SELECT}</option>
+                                <option value="delete">{TXT_ENTRIES_SUBMIT_DELETE}</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- END DeleteSection -->
+        </div>
+    </form>
+    <div class="paging">{OUTBOX_PAGING}</div>
+</div>

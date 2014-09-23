@@ -3055,3 +3055,10 @@ input[type="checkbox"] {
 #mediadir .form_search .mediadirButtonSearch {
     margin-left: 0;
 }
+/*U2u*/
+.buttons input {
+    margin-bottom: 10px;
+}
+.radio .description {
+    height: auto;
+}

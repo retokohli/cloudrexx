@@ -1,68 +1,85 @@
 <script language="javascript">
-function showBcc() {
- document.getElementById("bcc").style.display="block";
-document.getElementById("show").style.display="none";
-}
-function validate()  {
+    function showBcc() {
+        document.getElementById("bcc").style.display = "block";
+        document.getElementById("show").style.display = "none";
+    }
+    function validate() {
 
-var textarea = document.getElementsByTagName("textarea")[0];
-       
-	if(textarea.value=="") {
-              alert("please enter the recepients name");
-              return false;
- 
+        var textarea = document.getElementsByTagName("textarea")[0];
+
+        if (textarea.value == "") {
+            alert("please enter the recepients name");
+            return false;
+
         }
 
-}
-function drop_down_block() {
-      document.getElementById("radio_send").style.display="none";
-      document.getElementById("multi_send").style.display="block";
-      document.send_message.rcpt_name.value=""; 
-}
-function multi_send_block() {
-      document.getElementById("radio_send").style.display="block";
-      document.getElementById("multi_send").style.display="none";
-}
+    }
+    function drop_down_block() {
+        document.getElementById("radio_send").style.display = "none";
+        document.getElementById("multi_send").style.display = "block";
+        document.send_message.rcpt_name.value = "";
+    }
+    function multi_send_block() {
+        document.getElementById("radio_send").style.display = "block";
+        document.getElementById("multi_send").style.display = "none";
+    }
 
 </script>
 
 <div id="u2u">
     <!-- BEGIN u2u_private_notification_message_link --> 
-    <div class="message"><a href="index.php?section=U2u&amp;cmd=notification">{TXT_PRIVATE_NOTIFICATION_LINK}</a><b>{TXT_NOTIFICATION_TOTAL_COUNT}</b></div>
+    <div class="message">
+        <a href="index.php?section=U2u&amp;cmd=notification">{TXT_PRIVATE_NOTIFICATION_LINK}</a><b>{TXT_NOTIFICATION_TOTAL_COUNT}</b></div>
     <!-- END u2u_private_notification_message_link --> 
-    
+
     <!-- BEGIN u2u_send_confirm_error --> 
-    <div class="message_error">{U2U_SEND_MESSAGE}</div>
+    <div class="text-danger">{U2U_SEND_MESSAGE}</div>
     <!-- END u2u_send_confirm_error -->   
-                                  
+
     <!-- BEGIN u2u_send_confirm_success --> 
-    <div class="message_ok">{U2U_SEND_MESSAGE}</div>
+    <div class="text-success">{U2U_SEND_MESSAGE}</div>
     <!-- END u2u_send_confirm_success -->  
-    
+
     <br style="clear: both;" />
-    
-    <form action="index.php?section=U2u&amp;act=message" method="post" name="send_message">
+
+    <form role="form" action="index.php?section=U2u&amp;act=message" method="post" name="send_message">
         <fieldset>
             <legend>{TXT_RECEPIENTS}</legend>
-            <p><label>Empfänger auswählen</label><input type="radio" id="rcpt" name="rcpt" checked="checked" onclick="drop_down_block();" /><label class="description">{TXT_U2U_SEND_MESSAGE_USERS}</label></p>
-            <p><input type="radio" name="rcpt" id="rcpt" value="1" onclick="multi_send_block();" /><label class="description">{TXT_U2U_SELECT_BUDDY}</label></p>
-            
+            <p><label>Empfänger auswählen</label>
+                <span class="radio">
+                    <label class="description"><input type="radio" id="rcpt" name="rcpt" checked="checked" onclick="drop_down_block();" />{TXT_U2U_SEND_MESSAGE_USERS}
+                    </label>
+                </span>
+            </p>
+            <p>
+                <span class="radio">
+                    <label class="description">
+                        <input type="radio" name="rcpt" id="rcpt" value="1" onclick="multi_send_block();" />
+                        {TXT_U2U_SELECT_BUDDY}
+                    </label>
+                </span>
+            </p>
+
             <div style="display: none;" id="radio_send">
-                <p><label>Freund auswählen</label><select name="rcpt_name"><option value="">Bitte auswählen</option><!-- BEGIN u2u_user_drop_down --><option value="{TXT_U2U_OPTION_VALUE}">{TXT_U2U_OPTION_VALUE}</option><!-- END u2u_user_drop_down --></select></p>
+                <p><label>Freund auswählen</label>
+                    <select class="form-control" name="rcpt_name"><option value="">Bitte auswählen</option><!-- BEGIN u2u_user_drop_down --><option value="{TXT_U2U_OPTION_VALUE}">{TXT_U2U_OPTION_VALUE}</option><!-- END u2u_user_drop_down --></select></p>
             </div>
-            
+
             <div id="multi_send">
                 <p><label>{TXT_RECEPIENTS_USERNAME}</label><input type="text" maxlength="60"  value="{TXT_RECEPIENT}" name="recipients" /></p>
                 <p><label>{TXT_BCC_RECEPIENTS_USERNAME}</label><input type="text" maxlength="60" value="{TXT_BCC}" name="bcc" /></p>
-                <p>{TXT_MESSAGE_CONTENT}</p>
+                <span>{TXT_MESSAGE_CONTENT}</span>
             </div>
         </fieldset>
-        
+
         <fieldset>
             <legend>Nachricht</legend>
             <p><label>{TXT_MESSAGE_TITLE}</label><input type="text" maxlength="60" value="{TXT_PRIVATE_MESSAGE_TITLE}" name="title" /></p>
             {MESSAGE_INPUT}
-            <div class="buttons"><input type="submit" name="submit" value="{TXT_U2U_SUBMIT_MESSAGE}" /><input type="submit" name="preview" value="{TXT_U2U_PREVIEW_MESSAGE}" /></div>
+            <div class="buttons">
+                <input class="btn btn-default" type="submit" name="submit" value="{TXT_U2U_SUBMIT_MESSAGE}" />
+                <input class="btn btn-default" type="submit" name="preview" value="{TXT_U2U_PREVIEW_MESSAGE}" />
+            </div>
         </fieldset>
     </form>   
 
