@@ -82,6 +82,27 @@ class EntityBase {
     }
     
     /**
+     * Returns the component controller for this component
+     * @return \Cx\Core\Core\Model\Entity\SystemComponent
+     */
+    public function getComponentController() {
+        $matches = array();
+        preg_match('/Cx\\\\(?:Core|Core_Modules|Modules)\\\\([^\\\\]*)\\\\/', get_class($this), $matches);
+        if (empty($matches[1])) {
+            throw new \Exception('Could not find component name');
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $myComponent = $componentRepo->findOneBy(array(
+            'name' => $matches[1],
+        ));
+        if (!$myComponent) {
+            throw new \Cx\Core\Core\Model\Entity\SystemComponentException('Component not found: "' . $matches[1] . '"');
+        }
+        return $myComponent;
+    }
+    
+    /**
      * Set the virtuality of the entity
      * @param   boolean $virtual    TRUE to set the entity as virtual or otherwise to FALSE 
      */
@@ -123,3 +144,4 @@ class EntityBase {
         return strval($this->getId());
     }
 }
+
