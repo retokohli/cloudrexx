@@ -452,6 +452,14 @@ namespace Cx\Core\Core\Controller {
         protected $websiteThemesWebPath = null;
         
         /**
+         * The absolute path to the feed storage location (/feed)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_FEED_PATH.
+         * @var string
+         */
+        protected $websiteFeedPath = null;
+
+        /**
          * This creates instances of this class
          * 
          * Normally the first instance is returned. You may set another instance
@@ -2285,6 +2293,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteTempWebPath           = $this->websiteOffsetPath . self::FOLDER_NAME_TEMP;
             $this->websiteThemesPath            = $this->websiteDocumentRootPath . '/themes';
             $this->websiteThemesWebPath         = $this->websiteOffsetPath . '/themes';
+            $this->websiteFeedPath              = $this->websiteDocumentRootPath . '/feed';
         }
 
         /**
@@ -2388,6 +2397,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteThemesWebPath() {
             return $this->websiteThemesWebPath;
+        }
+        
+         /**
+         * Return the absolute path to the feed storage location (/feed)
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_FEED_PATH
+         * @return string
+         */
+        public function getWebsiteFeedPath() {
+            return $this->websiteFeedPath;
         }
     }
 }

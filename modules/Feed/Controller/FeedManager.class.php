@@ -53,7 +53,7 @@ class FeedManager extends FeedLibrary
         }       
 
         //feed path
-        $this->feedpath = ASCMS_FEED_PATH . '/';
+        $this->feedpath = \Env::get('cx')->getWebsiteFeedPath() . '/';
     }
     private function setNavigation()
     {
