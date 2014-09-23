@@ -137,7 +137,7 @@ class Feed extends FeedLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //feed path
-        $this->feedpath = ASCMS_FEED_PATH . '/';
+        $this->feedpath = \Env::get('cx')->getWebsiteFeedPath() . '/';
 
         //active (with $_LANGID) categories
         $query = "SELECT id,
