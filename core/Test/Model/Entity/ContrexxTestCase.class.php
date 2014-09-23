@@ -21,7 +21,7 @@ namespace Cx\Core\Test\Model\Entity;
  * @package     contrexx
  * @subpackage  core_test
  */
-class ContrexxTestCase extends \PHPUnit_Framework_TestCase {
+abstract class ContrexxTestCase extends \PHPUnit_Framework_TestCase {
     protected static $cx;
     
     public function __construct() {

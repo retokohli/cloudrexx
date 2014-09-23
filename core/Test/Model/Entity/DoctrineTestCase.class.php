@@ -21,7 +21,7 @@ namespace Cx\Core\Test\Model\Entity;
  * @package     contrexx
  * @subpackage  core_test
  */
-class DoctrineTestCase extends ContrexxTestCase {
+abstract class DoctrineTestCase extends ContrexxTestCase {
     protected static $em;
 
     public static function setUpBeforeClass() {        
