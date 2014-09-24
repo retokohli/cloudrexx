@@ -1884,6 +1884,13 @@ namespace Cx\Core\Core\Controller {
                     // The Shop module for one heavily uses custom JS code that is properly
                     // handled by that class -- finally
                     'JAVASCRIPT' => \JS::getCode(),
+                    //CX Placeholders
+                    'CX_EDITION'       => $_CONFIG['coreCmsEdition'],
+                    'CX_VERSION'       => $_CONFIG['coreCmsVersion'],
+                    'CX_CODE_NAME'     => $_CONFIG['coreCmsCodeName'],
+                    'CX_STATUS'        => $_CONFIG['coreCmsStatus'],
+                    'CX_RELEASE_DATE'  => date(ASCMS_DATE_FORMAT_DATE, $_CONFIG['coreCmsReleaseDate']),
+                    'CX_NAME'          => $_CONFIG['coreCmsName'],
                 ));
 
 
