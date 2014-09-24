@@ -53,7 +53,7 @@ class RssFeed
         //$db->query("SELECT lang FROM ".DBPREFIX."languages WHERE id='$this->langId'");
         //$db->next_record();
 /*
-define('ASCMS_FEED_PATH',                   ASCMS_DOCUMENT_ROOT.'/feed');
+define('\Env::get('cx')->getWebsiteFeedPath()',                   ASCMS_DOCUMENT_ROOT.'/feed');
 define('ASCMS_FEED_WEB_PATH',               ASCMS_PATH_OFFSET.'/feed');
 ASCMS_DIRECTORY_FEED_PATH
 */
