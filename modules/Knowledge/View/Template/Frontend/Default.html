@@ -1,7 +1,7 @@
 <div id="knowledge">
     <script type="text/javascript" src="modules/Knowledge/View/Script/search.js"></script>
     <form action="index.php?section=Knowledge&amp;cmd=search" method="get" id="form" onsubmit="return submitSearch(this)">
-        <input type="text" maxlength="100" value="" onfocus="this.value=''" id="searchinput" name="{SEARCH_HASH}" />
+        <input class="searchbox" type="text" maxlength="100" value="" onfocus="this.value = ''" id="searchinput" name="{SEARCH_HASH}" />
         <input type="hidden" name="section" value="Knowledge" />
         <input type="hidden" name="cmd" value="search" />
         <input type="hidden" name="term" value="" id="searchHidden" />
@@ -9,9 +9,9 @@
     </form>
     <div id="resultbox" style="display: none;">&nbsp;</div>
     <script type="text/javascript">
-        /* <![CDATA[ */
-            Search.assign('searchinput', 'resultbox'); 
-        /* ]]> */
+                /* <![CDATA[ */
+                Search.assign('searchinput', 'resultbox');
+                /* ]]> */
     </script>
     <!-- BEGIN category_title -->
     <h2 class="category_title">{CATEGORY_TITLE}</h2>
@@ -24,14 +24,15 @@
     </div>
     <!-- END crumbtrail -->
     <!-- BEGIN overview -->
-    <div id="overview">
+    <div id="overview" class="container-fluid">
         <h2>Kategorien</h2>
         <!-- BEGIN row -->
         <div class="row">
             <!-- BEGIN category -->
-            <div class="category">
+            <div class="category col-md-6 col-sm-12">
                 <div class="title">
-                    <a href="index.php?section=Knowledge{MODULE_INDEX}&amp;id={CATEGORY_ID}"><img src="modules/Knowledge/View/Media/folder_front.gif" style="position: relative; top: 4px;" alt="" />{CATEGORY_TITLE}</a>
+                    <a href="index.php?section=Knowledge{MODULE_INDEX}&amp;id={CATEGORY_ID}">
+                        <img src="modules/Knowledge/View/Media/folder_front.gif" style="position: relative; top: 4px;" alt="" />{CATEGORY_TITLE}</a>
                 </div>
                 <div class="content">
                     <!-- BEGIN subcat -->
@@ -48,22 +49,23 @@
     <!-- BEGIN categories -->
     <h2 class="category_list_title">Kategorien</h2>
     <!-- BEGIN subcategory -->
-    <a href="index.php?section=Knowledge{MODULE_INDEX}&amp;id={SUBCATEGORY_ID}"><img src="modules/Knowledge/View/Media/folder_front.gif" style="position: relative; top: 4px;" alt="" />{SUBCATEGORY_TITLE}</a><br />
+    <a href="index.php?section=Knowledge{MODULE_INDEX}&amp;id={SUBCATEGORY_ID}">
+        <img src="modules/Knowledge/View/Media/folder_front.gif" style="position: relative; top: 4px;" alt="" />{SUBCATEGORY_TITLE}</a><br />
     <!-- END subcategory -->
     <!-- END categories -->
     <!-- BEGIN articlesection -->
     <script type="text/javascript">
-        /* <![CDATA[ */
-        var baseOptions = {
-            titleRowPrefix : 'title_row_', 
-            className : 'question_active', 
-            openedIcon : '../../../modules/Knowledge/View/Media/close.png', 
-            closedIcon : '../../../modules/Knowledge/View/Media/open.png',
-            divPrefix : 'answer_',
-            slideAll : true,
-            imgPrefix : 'img_'
+                /* <![CDATA[ */
+                var baseOptions = {
+        titleRowPrefix : 'title_row_',
+                className : 'question_active',
+                openedIcon : '../../../modules/Knowledge/View/Media/close.png',
+                closedIcon : '../../../modules/Knowledge/View/Media/open.png',
+                divPrefix : 'answer_',
+                slideAll : true,
+                imgPrefix : 'img_'
         };
-        /* ]]> */
+                /* ]]> */
     </script>
     <!-- BEGIN articles -->
     <h2 class="article_list_title">{TXT_ARTICLELIST}</h2>
@@ -72,7 +74,9 @@
         <li class="clearfix">
             <div class="title_row clearfix" id="title_row_{ARTICLE_ID}{COUNTER}">
                 <div class="opener">
-                    <a href="javascript: void(0);" onclick="slider_{ARTICLE_ID}{COUNTER}.toggle();"><img src="modules/Knowledge/View/Media/open.png" style="border: medium none ;" id="img_{ARTICLE_ID}{COUNTER}" alt="open/close question" /></a>
+                    <a href="javascript: void(0);" onclick="slider_{ARTICLE_ID}{COUNTER}.toggle();">
+                        <img src="modules/Knowledge/View/Media/open.png" style="border: medium none ;" id="img_{ARTICLE_ID}{COUNTER}" alt="open/close question" />
+                    </a>
                 </div>
                 <div class="question">
                     <div><a href="index.php?section=Knowledge{MODULE_INDEX}&amp;cmd=article&amp;id={ARTICLE_ID}">#{ARTICLE_ID}: {QUESTION}</a></div>
@@ -81,24 +85,24 @@
             <div class="answer" id="answer_{ARTICLE_ID}{COUNTER}" style="display: none;">
                 <div>
                     {ANSWER}<br />
-                    <table>
+                    <table class="table">
                         <tbody>
                             <tr>
                                 <th colspan="2">Weitere Informationen</th>
                             </tr>
-                            <tr class="row1">
+                            <tr>
                                 <td>{TXT_RATING}:</td>
                                 <td><span id="rating_elem_{ARTICLE_ID}{COUNTER}" style="display: block;">&nbsp;</span></td>
                             </tr>
-                            <tr class="row2">
+                            <tr class="active">
                                 <td>{TXT_AMOUNT_OF_RATING}:</td>
                                 <td>{AMOUNT_OF_RATING} (Ø {AVERAGE})</td>
                             </tr>
-                            <tr class="row1">
+                            <tr>
                                 <td>{TXT_HITS}:</td>
                                 <td>{HITS}</td>
                             </tr>
-                            <tr class="row2">
+                            <tr class="active">
                                 <td>{TXT_TAGS}:</td>
                                 <td>
                                     <div>
@@ -117,11 +121,11 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr class="row1">
+                            <tr>
                                 <td>{TXT_CREATED}:</td>
                                 <td>{DATE_CREATED}</td>
                             </tr>
-                            <tr class="row2">
+                            <tr class="active">
                                 <td>{TXT_LAST_CHANGE}:</td>
                                 <td>{DATE_UPDATED}</td>
                             </tr>
@@ -130,28 +134,27 @@
                 </div>
             </div>
             <script type="text/javascript">
-                /* <![CDATA[ */
-                var sliderOp = baseOptions;
-                baseOptions.counter = '{COUNTER}';
-                slider_{ARTICLE_ID}{COUNTER} = new Slider('{ARTICLE_ID}', sliderOp);
-                delete sliderOp;
-                
-                rating_{ARTICLE_ID}{COUNTER} = new Rating({ARTICLE_ID}{COUNTER}, {AVERAGE}, { 
-                    stars : {MAX_RATING}, 
-                    starPath : 'modules/Knowledge/View/Media/',
-                    elemPrefix : 'rating_elem_',
-                    onRate : function(data, rating) {
-                        var foo = new Ajax.Request('index.php?section=Knowledge&act=rate', {
-                            method: "post",
-                            parameters : {
-                                id : data.nr,
-                                rated : rating
-                            }
-                        });
-                    },
-                    callbackData : {nr : {ARTICLE_ID}}
-                    });
-                /* ]]> */
+                        /* <![CDATA[ */
+                        var sliderOp = baseOptions;
+                        baseOptions.counter = '{COUNTER}';
+                        slider_{ARTICLE_ID}{COUNTER} = new Slider('{ARTICLE_ID}', sliderOp);
+                        delete sliderOp;
+                        rating_{ARTICLE_ID}{COUNTER} = new Rating({ARTICLE_ID}{COUNTER}, {AVERAGE}, {
+                stars : {MAX_RATING},
+                        starPath : 'modules/Knowledge/View/Media/',
+                        elemPrefix : 'rating_elem_',
+                        onRate : function(data, rating) {
+                var foo = new Ajax.Request('index.php?section=Knowledge&act=rate', {
+                method: "post",
+                        parameters : {
+                id : data.nr,
+                        rated : rating
+                }
+                });
+                },
+                        callbackData : {nr : {ARTICLE_ID}}
+                });
+                        /* ]]> */
             </script>
         </li>
         <!-- END article -->
