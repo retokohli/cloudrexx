@@ -681,7 +681,7 @@ $yellowpayForm
         // Old: $ReturnValue .= "history.go(-2);\n";
         return
             $ReturnValue.
-            'document.location.href="'.$_SERVER['PHP_SELF']."?section=Egov\";\n";
+            'document.location.href=".'.$_SERVER['PHP_SELF']."?section=Egov\";\n";
     }
 
 }
