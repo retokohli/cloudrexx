@@ -1752,18 +1752,22 @@ class ReflectionComponent {
         ));
         foreach ($pages as $page) {
             if ($copy) {
-                // copy page
-                $node = $page->getNode()->copy();
-                $em->persist($node);
-                $node->getPage()->setModule($newName);
-                $em->persist($node->getPage());
+                // copy the node and persist changes
+                $newNode = $page->getNode()->copy();
+                $em->flush();
+                
+                // update module name of the page
+                foreach ($newNode->getPages() as $newPage) {
+                    $newPage->setModule($newName);
+                    $em->persist($newPage);
+                }
             } else {
                 $page->setModule($newName);
                 $em->persist($page);
             }
         }
         $em->flush();
-        
+                
         // remove old component from db (component, modules, backend_areas)
         if (!$copy) {
             $this->removeFromDb();
