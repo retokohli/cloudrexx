@@ -118,7 +118,7 @@ class HtmlElement {
         foreach ($this->getAttributes() as $name=>$value) {
             $template->setVariable(array(
                 'ATTRIBUTE_NAME' => $name,
-                'ATTRIBUTE_VALUE' => $value,
+                'ATTRIBUTE_VALUE' => contrexx_raw2xhtml($value),
             ));
             $template->parse('attribute');
         }
