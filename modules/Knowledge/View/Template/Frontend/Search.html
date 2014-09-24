@@ -1,142 +1,138 @@
 <div id="knowledge">
-<script type='text/javascript'>
-/* <![CDATA[ */
+    <script type='text/javascript'>
+        /* <![CDATA[ */
 
-var baseOptions = {
-	titleRowPrefix : 'title_row_', 
-	className : 'question_active', 
-	openedIcon : '../modules/Knowledge/View/Media/close.png', 
-	closedIcon : '../modules/Knowledge/View/Media/open.png',
-	divPrefix : 'answer_',
-	slideAll : true,
-	imgPrefix : 'img_'
-};
-
-function submitSearch(obj)
-{
-	var searchinput = $('searchinput');
-	var val = searchinput.value;
-	$('searchHidden').value = val;
-	searchinput.value = "";
-	searchinput.name = "";
-	return true;
-}
-
+        var baseOptions = {
+        titleRowPrefix : 'title_row_',
+                className : 'question_active',
+                openedIcon : '../modules/Knowledge/View/Media/close.png',
+                closedIcon : '../modules/Knowledge/View/Media/open.png',
+                divPrefix : 'answer_',
+                slideAll : true,
+                imgPrefix : 'img_'
+        };
+                function submitSearch(obj)
+                {
+                var searchinput = $('searchinput');
+                        var val = searchinput.value;
+                        $('searchHidden').value = val;
+                        searchinput.value = "";
+                        searchinput.name = "";
+                        return true;
+                }
 
 
-/* ]]> */
-</script>
 
-<div id="content_search">
-	<div id="search_bg">
-		<script type="text/javascript" src="modules/Knowledge/View/Script/search.js"></script>
-		<form action="index.php?section=Knowledge&amp;cmd=search" method="get" id="form" onsubmit="return submitSearch(this)">
-			<div>
-				<input type="text" class="searchinput_search" maxlength="100" value=" {TXT_SEARCH_INPUT}" 
-					 onfocus="this.value=''" id="searchinput" name="{SEARCH_HASH}"/>
-				<input type="hidden" name="section" value="Knowledge" />
-				<input type="hidden" name="cmd" value="search" />
-				<input type="hidden" name="term" value="" id="searchHidden" />
-				<input type="submit" value="{TXT_SEARCH}" class="search_button" />
-			</div>
-		</form>
-	</div>    
-	<div id="resultbox" style="display: none;">
-	</div>
-	<script type="text/javascript">
-	/* <![CDATA[ */
-	Search.assign('searchinput', 'resultbox'); 
-	/* ]]> */
-	</script>
-</div>
+        /* ]]> */
+    </script>
 
-<h2 class="article_list_title">{TXT_ARTICLELIST}</h2>
-<ul class="articlelist">
-	<!-- BEGIN article -->
-		<li class="clearfix">
-			<div class="title_row clearfix" id="title_row_{ARTICLE_ID}{COUNTER}">
-				<div class="opener">
-					<a href="javascript: void(0);" onclick="slider_{ARTICLE_ID}{COUNTER}.toggle();">
-						<img src="modules/Knowledge/View/Media/open.png" style="border: none;" id="img_{ARTICLE_ID}{COUNTER}" />
-					</a>
-				</div>
-				<div class="question"><div><a href="index.php?section=Knowledge{MODULE_INDEX}&cmd=article&id={ARTICLE_ID}">#{ARTICLE_ID}: {QUESTION}</a></div></div>
-			</div>
-			<div class="answer" id="answer_{ARTICLE_ID}{COUNTER}" style="display: none;">
-			{ANSWER}<br />
-			<br />
-    <table style="width: 100%; margin-bottom: 1em;">
-        <tbody>
-            <tr>
-                <th colspan="2">Weitere Informationen</th>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_RATING}:</td>
-                <td><span id="rating_elem_{ARTICLE_ID}{COUNTER}" style="display: block;">&nbsp;</span></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_AMOUNT_OF_RATING}:</td>
-                <td>{AMOUNT_OF_RATING} (Ø {AVERAGE})</td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_HITS}:</td>
-                <td>{HITS}</td>
-            </tr>
-            <tr class="row2">
-                <td>Stichworte:</td>
-                <td>
-                <div><!-- BEGIN tags -->
+    <div id="content_search">
+        <div id="search_bg">
+            <script type="text/javascript" src="modules/Knowledge/View/Script/search.js"></script>
+            <form action="index.php?section=Knowledge&amp;cmd=search" method="get" id="form" onsubmit="return submitSearch(this)">
                 <div>
-                <ul class="tags"> 	 								<!-- BEGIN tag -->
-                    <li><a href="index.php?section=Knowledge{MODULE_INDEX}&amp;tid={TAGID}">{TAG}</a>,</li>
-                    <!-- END tag --> 	 								<!-- BEGIN lasttag -->
-                    <li><a href="index.php?section=Knowledge{MODULE_IDNEX}&amp;tid={TAGID}">{TAG}</a></li>
-                    <!-- END lasttag --> 								</ul>
-                    </div>
-                    <!-- END tags --></div>
-                    </td>
-                </tr>
-                <tr class="row1">
-                    <td>{TXT_CREATED}:</td>
-                    <td>{DATE_CREATED}</td>
-                </tr>
-                <tr class="row2">
-                    <td>{TXT_LAST_CHANGE}:</td>
-                    <td>{DATE_UPDATED}</td>
-                </tr>
-            </tbody>
-        </table>
-			</div>
-			<script type="text/javascript">
-			/* <![CDATA[ */
-			
-			var sliderOp = baseOptions;
-			baseOptions.counter = '{COUNTER}';
-			slider_{ARTICLE_ID}{COUNTER} = new Slider("{ARTICLE_ID}", sliderOp);
-			delete sliderOp;
-			
-			
-			rating_{ARTICLE_ID}{COUNTER} = new Rating({ARTICLE_ID}{COUNTER}, {AVERAGE}, { 
-			stars : {MAX_RATING}, 
-			starPath : 'modules/Knowledge/View/Media/',
-			elemPrefix : 'rating_elem_',
-			onRate : function(data, rating) {
-				var foo = new Ajax.Request('index.php?section=Knowledge&act=rate', {
-					method: "post",
-					parameters : {
-						id : data.nr,
-						rated : rating
-					}
-				});
-			},
-			callbackData : {nr : {ARTICLE_ID}}
-				});
-			
-			/* ]]> */
-			</script>
-		</li>
-	<!-- END article -->	
-</ul>
+                    <input type="text" class="searchbox searchinput_search" maxlength="100" value=" {TXT_SEARCH_INPUT}" 
+                           onfocus="this.value = ''" id="searchinput" name="{SEARCH_HASH}"/>
+                    <input type="hidden" name="section" value="Knowledge" />
+                    <input type="hidden" name="cmd" value="search" />
+                    <input type="hidden" name="term" value="" id="searchHidden" />
+                    <input type="submit" value="{TXT_SEARCH}" class="search_button" />
+                </div>
+            </form>
+        </div>    
+        <div id="resultbox" style="display: none;">
+        </div>
+        <script type="text/javascript">
+                /* <![CDATA[ */
+                Search.assign('searchinput', 'resultbox');
+                /* ]]> */
+        </script>
+    </div>
+
+    <h2 class="article_list_title">{TXT_ARTICLELIST}</h2>
+    <ul class="articlelist">
+        <!-- BEGIN article -->
+        <li class="clearfix">
+            <div class="title_row clearfix" id="title_row_{ARTICLE_ID}{COUNTER}">
+                <div class="opener">
+                    <a href="javascript: void(0);" onclick="slider_{ARTICLE_ID}{COUNTER}.toggle();">
+                        <img src="modules/Knowledge/View/Media/open.png" style="border: none;" id="img_{ARTICLE_ID}{COUNTER}" />
+                    </a>
+                </div>
+                <div class="question"><div><a href="index.php?section=Knowledge{MODULE_INDEX}&cmd=article&id={ARTICLE_ID}">#{ARTICLE_ID}: {QUESTION}</a></div></div>
+            </div>
+            <div class="answer" id="answer_{ARTICLE_ID}{COUNTER}" style="display: none;">
+                {ANSWER}<br />
+                <br />
+                <table class="table" style="width: 100%; margin-bottom: 1em;">
+                    <tbody>
+                        <tr>
+                            <th colspan="2">Weitere Informationen</th>
+                        </tr>
+                        <tr>
+                            <td>{TXT_RATING}:</td>
+                            <td><span id="rating_elem_{ARTICLE_ID}{COUNTER}" style="display: block;">&nbsp;</span></td>
+                        </tr>
+                        <tr class="active">
+                            <td>{TXT_AMOUNT_OF_RATING}:</td>
+                            <td>{AMOUNT_OF_RATING} (Ø {AVERAGE})</td>
+                        </tr>
+                        <tr>
+                            <td>{TXT_HITS}:</td>
+                            <td>{HITS}</td>
+                        </tr>
+                        <tr class="active">
+                            <td>Stichworte:</td>
+                            <td>
+                                <div><!-- BEGIN tags -->
+                                    <div>
+                                        <ul class="tags"> 	 								<!-- BEGIN tag -->
+                                            <li><a href="index.php?section=Knowledge{MODULE_INDEX}&amp;tid={TAGID}">{TAG}</a>,</li>
+                                            <!-- END tag --> 	 								<!-- BEGIN lasttag -->
+                                            <li><a href="index.php?section=Knowledge{MODULE_IDNEX}&amp;tid={TAGID}">{TAG}</a></li>
+                                            <!-- END lasttag --> 								</ul>
+                                    </div>
+                                    <!-- END tags --></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{TXT_CREATED}:</td>
+                            <td>{DATE_CREATED}</td>
+                        </tr>
+                        <tr class="active">
+                            <td>{TXT_LAST_CHANGE}:</td>
+                            <td>{DATE_UPDATED}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <script type="text/javascript">
+                        /* <![CDATA[ */
+
+                        var sliderOp = baseOptions;
+                        baseOptions.counter = '{COUNTER}';
+                        slider_{ARTICLE_ID}{COUNTER} = new Slider("{ARTICLE_ID}", sliderOp);
+                        delete sliderOp;
+                        rating_{ARTICLE_ID}{COUNTER} = new Rating({ARTICLE_ID}{COUNTER}, {AVERAGE}, {
+                stars : {MAX_RATING},
+                        starPath : 'modules/Knowledge/View/Media/',
+                        elemPrefix : 'rating_elem_',
+                        onRate : function(data, rating) {
+                var foo = new Ajax.Request('index.php?section=Knowledge&act=rate', {
+                method: "post",
+                        parameters : {
+                id : data.nr,
+                        rated : rating
+                }
+                });
+                },
+                        callbackData : {nr : {ARTICLE_ID}}
+                });
+                        /* ]]> */
+            </script>
+        </li>
+        <!-- END article -->	
+    </ul>
 </div>
 
 

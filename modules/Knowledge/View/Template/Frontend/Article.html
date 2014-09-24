@@ -1,87 +1,87 @@
 <div id="knowledge_new">
     <!-- BEGIN crumbtrail -->
     <div class="crumbtrail">
-    	<a href="index.php?section=Knowledge{MODULE_INDEX}">{TXT_START}</a>
-    	<!-- BEGIN crumb --> 	
-    	&raquo; <a href="index.php?section=Knowledge{MODULE_INDEX}&amp;id={ID}">{CRUMB}</a>  
-    	<!-- END crumb -->
+        <a href="index.php?section=Knowledge{MODULE_INDEX}">{TXT_START}</a>
+        <!-- BEGIN crumb --> 	
+        &raquo; <a href="index.php?section=Knowledge{MODULE_INDEX}&amp;id={ID}">{CRUMB}</a>  
+        <!-- END crumb -->
     </div>
     <!-- END crumbtrail -->
 
     <div class="answer">{ANSWER}</div>
-    
+
     <div class="informations">
-        <table cellpadding="0" cellspacing="0">
+        <table class="table" cellpadding="0" cellspacing="0">
             <tr>
                 <th colspan="2">Weitere Informationen</th>
             </tr>
-    		<tr class="row1">
-    			<td>{TXT_RATING}:</td>
-    			<td><span id="rating_elem_{ARTICLEID}" style="display: block">&nbsp;</span></td>
-    		</tr>
-    		<tr class="row2">
-    			<td>{TXT_AMOUNT_OF_RATING}:</td>
-    			<td>{AMOUNT_OF_RATING} (Ø {AVERAGE})</td>
-    		</tr>
-    		<tr class="row1">
-    			<td>{TXT_HITS}:</td>
-    			<td>{HITS}</td>
-    		</tr>
-    		<tr class="row2">
-    			<td>{TXT_TAGS}:</td>
-    			<td>
-    			<div>
-    				<!-- BEGIN tags -->
-    				<div>
-    					<ul class="tags"> 	
-    					<!-- BEGIN tag -->
-    						<li><a href="index.php?section=Knowledge{MODULE_INDEX}&amp;tid={TAGID}">{TAG}</a>,</li>
-    					<!-- END tag --> 	
-    					<!-- BEGIN lasttag -->
-    						<li><a href="index.php?section=Knowledge{MODULE_IDNEX}&amp;tid={TAGID}">{TAG}</a></li>
-    					<!-- END lasttag -->
-    					</ul>
-    				</div>
-    				<!-- END tags -->
-    			</div>
-    			</td>
-    		</tr>
-    		<tr class="row1">
-    			<td>{TXT_CREATED}:</td>
-    			<td>{DATE_CREATED}</td>
-    		</tr>
-    		<tr class="row2">
-    			<td>{TXT_LAST_CHANGE}:</td>
-    			<td>{DATE_UPDATED}</td>
-    		</tr>
-    		<tr class="row1">
-    			<td>Artikel-ID:</td>
-    			<td>{ARTICLEID}</td>
-    		</tr>
-    	</table>
+            <tr>
+                <td>{TXT_RATING}:</td>
+                <td><span id="rating_elem_{ARTICLEID}" style="display: block">&nbsp;</span></td>
+            </tr>
+            <tr class="active">
+                <td>{TXT_AMOUNT_OF_RATING}:</td>
+                <td>{AMOUNT_OF_RATING} (Ø {AVERAGE})</td>
+            </tr>
+            <tr>
+                <td>{TXT_HITS}:</td>
+                <td>{HITS}</td>
+            </tr>
+            <tr class="active">
+                <td>{TXT_TAGS}:</td>
+                <td>
+                    <div>
+                        <!-- BEGIN tags -->
+                        <div>
+                            <ul class="tags"> 	
+                                <!-- BEGIN tag -->
+                                <li><a href="index.php?section=Knowledge{MODULE_INDEX}&amp;tid={TAGID}">{TAG}</a>,</li>
+                                <!-- END tag --> 	
+                                <!-- BEGIN lasttag -->
+                                <li><a href="index.php?section=Knowledge{MODULE_IDNEX}&amp;tid={TAGID}">{TAG}</a></li>
+                                <!-- END lasttag -->
+                            </ul>
+                        </div>
+                        <!-- END tags -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>{TXT_CREATED}:</td>
+                <td>{DATE_CREATED}</td>
+            </tr>
+            <tr class="active">
+                <td>{TXT_LAST_CHANGE}:</td>
+                <td>{DATE_UPDATED}</td>
+            </tr>
+            <tr>
+                <td>Artikel-ID:</td>
+                <td>{ARTICLEID}</td>
+            </tr>
+        </table>
     </div>
 </div>
-	
+
 
 <script type="text/javascript">
-/* <![CDATA[ */
+    /* <![CDATA[ */
 
-rating = new Rating('{ARTICLEID}', '{AVERAGE}', { 
-	stars :'{MAX_RATING}', 
-	starPath : '../modules/Knowledge/View/Media/',
-	elemPrefix : 'rating_elem_',
-	onRate : function(data, rating) {
-		var foo = new Ajax.Request('index.php?section=Knowledge&act=rate', {
-			method: "post",
-			parameters : {
-				id : data.nr,
-				rated : rating
-			}
-		});
-	},
-	callbackData : {nr : '{ARTICLEID}'}
-	});
-/* ]]> */
+    rating = new Rating('{ARTICLEID}', '{AVERAGE}', {
+        stars: '{MAX_RATING}',
+        starPath: '../modules/Knowledge/View/Media/',
+        elemPrefix: 'rating_elem_',
+        onRate: function(data, rating) {
+            var foo = new Ajax.Request('index.php?section=Knowledge&act=rate', {
+                method: "post",
+                parameters: {
+                    id: data.nr,
+                    rated: rating
+                }
+            });
+        },
+        callbackData: {nr: '{ARTICLEID}'}
+    });
+    /* ]]> */
 </script>
 
 

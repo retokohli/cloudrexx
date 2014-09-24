@@ -353,10 +353,12 @@ div.row2 {
 }
 #voting input[type=radio],
 #voting  input.radio{
-    float: none;
+    float: left;
 }
 .voting label{
-    float: none
+    float: left;
+    width: auto;
+    cursor: pointer;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR GALLERY MODULE              */
@@ -1845,6 +1847,8 @@ form[name="registrationForm"] .row {
 }
 #knowledge form {
     padding: 10px 0 0 0;
+    float: left;
+    width: 100%;
 }
 #knowledge #content_search {
     position: relative;
@@ -1880,10 +1884,11 @@ form[name="registrationForm"] .row {
 }
 #knowledge #overview {
     padding: 5px 0 0 0;
+    float: left;
+    width: 100%;
 }
 #knowledge #overview div.category {
-    float: left;
-    width: 50%;
+   margin-bottom: 10px;
 }
 #knowledge #overview div.row {
 }

@@ -1,52 +1,52 @@
 <div id="voting">
-	<div class="form">
+    <div class="form">
         <h2>{VOTING_TITLE}</h2>
- 	    <em>gestartet am {VOTING_DATE}</em><br /><br />
+        <em>gestartet am {VOTING_DATE}</em><br /><br />
         <form name="VotingForm" action="index.php?section=Voting" method="post">
-		<div class="results">
-            <fieldset>
-                <legend>Ergebnis</legend>
-                {VOTING_RESULTS_TEXT}
-            </fieldset>
-    	</div>
-    	<div style="clear: both;"><br/></div>
-    	<fieldset>
-            <legend>Teilnehmen</legend>
-            <div class="voting">{VOTING_OPTIONS_TEXT}</div>
-            <div class="voting">
-                <div class="votes">{VOTING_RESULTS_TOTAL_VOTES}</div>
-                <!-- BEGIN voting_email_input --> 
-                Tragen Sie bitte Ihre E-Mail Adresse ein, damit Sie an der Umfrage teilnehmen k&ouml;nnen:<br /><br />
-                <p><label>E-Mail Adresse</label><input type="text" name="votingemail" value="{VOTING_EMAIL}"/></p>
-                <!-- END voting_email_input -->
-                <!-- BEGIN additional_fields -->
-                <p>Für diese Umfrage werden weitere Informationen von Ihnen benötigt:</p>
-                <!-- BEGIN additional_elements -->
-                <p><label>{VOTING_ADDITIONAL_INPUT_LABEL}</label>{VOTING_ADDITIONAL_INPUT}</p>
-                <!-- END additional_elements -->
-                <!-- END additional_fields -->
-                <p>{TXT_SUBMIT}</p>
-                <div class="message">{VOTING_MSG}</div>
+            <div class="results">
+                <fieldset>
+                    <legend>Ergebnis</legend>
+                    {VOTING_RESULTS_TEXT}
+                </fieldset>
             </div>
-        </fieldset>
-		</form>
-	</div>
-	<div style="clear: both;"><br/></div>
-	<div class="archive">
+            <div style="clear: both;"><br/></div>
+            <fieldset>
+                <legend>Teilnehmen</legend>
+                <div class="voting">{VOTING_OPTIONS_TEXT}</div>
+                <div class="voting">
+                    <div class="votes">{VOTING_RESULTS_TOTAL_VOTES}</div>
+                    <!-- BEGIN voting_email_input --> 
+                    Tragen Sie bitte Ihre E-Mail Adresse ein, damit Sie an der Umfrage teilnehmen k&ouml;nnen:<br /><br />
+                    <p><label>E-Mail Adresse</label><input type="text" name="votingemail" value="{VOTING_EMAIL}"/></p>
+                    <!-- END voting_email_input -->
+                    <!-- BEGIN additional_fields -->
+                    <p>Für diese Umfrage werden weitere Informationen von Ihnen benötigt:</p>
+                    <!-- BEGIN additional_elements -->
+                    <p><label>{VOTING_ADDITIONAL_INPUT_LABEL}</label>{VOTING_ADDITIONAL_INPUT}</p>
+                    <!-- END additional_elements -->
+                    <!-- END additional_fields -->
+                    <p>{TXT_SUBMIT}</p>
+                    <div class="message">{VOTING_MSG}</div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div style="clear: both;"><br/></div>
+    <div class="archive">
         <h2>{VOTING_OLDER_TITLE}</h2>
-        <table width="100%" border="0" cellspacing="0">
-            <tr>
-                <th width="30%">Datum&nbsp;</th>
-                <th width="70%" nowrap="nowrap">Umfrage&nbsp;</th>
-            </tr>
-            <!-- BEGIN votingRow -->
-            <tr class="{VOTING_LIST_CLASS}">
-                <td>{VOTING_OLDER_DATE}&nbsp;</td>
-                <td nowrap="nowrap">{VOTING_OLDER_TEXT}&nbsp;</td>
-            </tr>
-            <!-- END votingRow -->
-        </table>
+            <table class="table" width="100%" border="0" cellspacing="0">
+                <tr>
+                    <th width="30%">Datum&nbsp;</th>
+                    <th width="70%" nowrap="nowrap">Umfrage&nbsp;</th>
+                </tr>
+                <!-- BEGIN votingRow -->
+                <tr class="{VOTING_LIST_CLASS}">
+                    <td>{VOTING_OLDER_DATE}&nbsp;</td>
+                    <td nowrap="nowrap">{VOTING_OLDER_TEXT}&nbsp;</td>
+                </tr>
+                <!-- END votingRow -->
+            </table>
         <br />
         {VOTING_PAGING}
-	</div>
+    </div>
 </div>

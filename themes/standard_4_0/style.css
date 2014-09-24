@@ -3,6 +3,10 @@
     .hidden-xs {
         display: none !important;
     }
+    .answer img {
+        width: 100%;
+        height: auto;
+    }
     #right-login {
         width: 100%;
         padding-left: 0;
