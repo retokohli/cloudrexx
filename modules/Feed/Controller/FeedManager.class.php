@@ -14,7 +14,7 @@ namespace Cx\Modules\Feed\Controller;
 /**
  * Includes
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php');
+\Env::get('ClassLoader')->loadFile( \Env::get('cx')->getCodeBaseLibraryPath() . '/PEAR/XML/RSS.class.php');
 
 /**
  * Feed
@@ -44,7 +44,7 @@ class FeedManager extends FeedLibrary
     {
         global  $_ARRAYLANG, $objTemplate, $_CONFIG;
 
-        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Feed/View/Template/Backend');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseModulePath().'/Feed/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

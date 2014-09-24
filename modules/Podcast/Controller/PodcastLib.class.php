@@ -1432,7 +1432,7 @@ EOF;
         $categoryLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=Podcast&amp;cid=";
 
         // create podcast feed
-        $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/podcast.xml';
+        $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/podcast.xml';
         foreach ($arrMedia as $mediumId => $arrMedium) {
             $arrCategories = array();
             foreach ($arrMedium['categories'] as $categoryId => $categoryTitle) {

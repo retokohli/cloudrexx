@@ -2926,7 +2926,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $itemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=News&amp;cmd=';
                         
                         // create rss feed
-                        $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
+                        $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
                         foreach ($arrNews as $newsId => $arrNewsItem) {
 
                             $cmdDetail = $this->findCmdById('details', $arrNewsItem['categoryId']);
@@ -2950,7 +2950,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         
                         // create headlines rss feed
                         $objRSSWriter->removeItems();
-                        $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
+                        $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
                         foreach ($arrNews as $newsId => $arrNewsItem) {
 
                             $cmdDetail = $this->findCmdById('details', $arrNewsItem['categoryId']);
@@ -2972,7 +2972,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $statusHeadlines = $objRSSWriter->write();
 
                         $objRSSWriter->feedType = 'js';
-                        $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js';
+                        $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js';
                         $objRSSWriter->write();
 
                         if (count($objRSSWriter->arrErrorMsg) > 0) {
@@ -2988,9 +2988,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             if (count($arrLanguages>0)) {
                 foreach ($arrLanguages as $LangId => $arrLanguage) {
                     if ($arrLanguage['frontend'] == 1) {
-                        @unlink(ASCMS_FEED_PATH.'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                        @unlink(ASCMS_FEED_PATH.'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                        @unlink(ASCMS_FEED_PATH.'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js');                    
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_headlines_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.js');                    
                     }
                 }
             }
@@ -3574,7 +3574,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_news_ticker` WHERE `id` = ".$id) === false) {
                 $status = false;
             } else {
-                @unlink(ASCMS_FEED_PATH.'/'.$arrTicker['name']);
+                @unlink(\Env::get('cx')->getWebsiteFeedPath().'/'.$arrTicker['name']);
             }
         }
 
@@ -3627,19 +3627,19 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $prefix = isset($_POST['news_ticker_prefix']) ? contrexx_stripslashes($_POST['news_ticker_prefix']) : '';
 
             if (!empty($newName)) {
-                if ($name != $newName && file_exists(ASCMS_FEED_PATH.'/'.$newName)) {
-                    $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_FILE_DOES_ALREADY_EXIST'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH).'<br />';
+                if ($name != $newName && file_exists(\Env::get('cx')->getWebsiteFeedPath().'/'.$newName)) {
+                    $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_FILE_DOES_ALREADY_EXIST'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), \Env::get('cx')->getWebsiteFeedPath()).'<br />';
                     $this->strErrMessage .= $_ARRAYLANG['TXT_NEWS_SELECT_OTHER_FILENAME'];
-                } elseif ($name != $newName && !@touch(ASCMS_FEED_PATH.'/'.$newName)) {
-                    $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH.'/').'<br />';
-                    $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/');
+                } elseif ($name != $newName && !@touch(\Env::get('cx')->getWebsiteFeedPath().'/'.$newName)) {
+                    $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), \Env::get('cx')->getWebsiteFeedPath().'/').'<br />';
+                    $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], \Env::get('cx')->getWebsiteFeedPath().'/');
                 } else {
                     if ($objDatabase->Execute(($id > 0 ? "UPDATE" : "INSERT INTO")." `".DBPREFIX."module_news_ticker` SET `name` = '".addslashes($newName)."', `charset` = '".addslashes($charset)."', `urlencode` = ".$urlencode.", `prefix` = '".addslashes($prefix)."'".($id > 0 ?" WHERE `id` = ".$id : ''))) {
 
                         $objFile = new \File();
-                        $objFile->setChmod(ASCMS_FEED_PATH, ASCMS_FEED_WEB_PATH, $newName);
+                        $objFile->setChmod(\Env::get('cx')->getWebsiteFeedPath(), ASCMS_FEED_WEB_PATH, $newName);
 
-                        $fpTicker = @fopen(ASCMS_FEED_PATH.'/'.$newName, 'wb');
+                        $fpTicker = @fopen(\Env::get('cx')->getWebsiteFeedPath().'/'.$newName, 'wb');
                         if ($fpTicker) {
                             if ($defaultCharset != $charset) {
                                 $content = iconv($defaultCharset, $charset, $content);
@@ -3648,20 +3648,20 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                             $content2w = $prefix.($urlencode ? rawurlencode($content) : $content);
                             if (@fwrite($fpTicker, $content2w) !== false) {
                                 $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_NEWSTICKER_SUCCESSFULLY_UPDATED'];
-                                if ($name != $newName && file_exists(ASCMS_FEED_PATH.'/'.$name)) {
-                                    @unlink(ASCMS_FEED_PATH.'/'.$name);
+                                if ($name != $newName && file_exists(\Env::get('cx')->getWebsiteFeedPath().'/'.$name)) {
+                                    @unlink(\Env::get('cx')->getWebsiteFeedPath().'/'.$name);
                                 }
                                 return $this->_tickerOverview();
                             } else {
-                                $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_UNABLE_TO_UPDATE_FILE'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH.'/').'<br />';
-                                $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/'.$newName);
+                                $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_UNABLE_TO_UPDATE_FILE'], htmlentities($newName, ENT_QUOTES, CONTREXX_CHARSET), \Env::get('cx')->getWebsiteFeedPath().'/').'<br />';
+                                $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], \Env::get('cx')->getWebsiteFeedPath().'/'.$newName);
                             }
                         } else {
-                            $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_FILE_DOES_NOT_EXIST'], ASCMS_FEED_PATH.'/'.$newName);
+                            $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_FILE_DOES_NOT_EXIST'], \Env::get('cx')->getWebsiteFeedPath().'/'.$newName);
                         }
                     } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_UNABLE_TO_RENAME_NEWSTICKER'];
-                        @unlink(ASCMS_FEED_PATH.'/'.$newName);
+                        @unlink(\Env::get('cx')->getWebsiteFeedPath().'/'.$newName);
                     }
                 }
             } else {
@@ -3670,11 +3670,11 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             $name = $newName;
         } elseif ($id > 0) {
-            if (!file_exists(ASCMS_FEED_PATH.'/'.$name) && !@touch(ASCMS_FEED_PATH.'/'.$name)) {
-                $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH.'/').'<br />';
-                $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/');
+            if (!file_exists(\Env::get('cx')->getWebsiteFeedPath().'/'.$name) && !@touch(\Env::get('cx')->getWebsiteFeedPath().'/'.$name)) {
+                $this->strErrMessage = sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET), \Env::get('cx')->getWebsiteFeedPath().'/').'<br />';
+                $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], \Env::get('cx')->getWebsiteFeedPath().'/');
             } else {
-                $content = file_get_contents(ASCMS_FEED_PATH.'/'.$name);
+                $content = file_get_contents(\Env::get('cx')->getWebsiteFeedPath().'/'.$name);
                 if (!empty($prefix) && strpos($content, $prefix) === 0) {
                     $content = substr($content, strlen($prefix));
                 }
@@ -3770,11 +3770,11 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (count($arrTickers) > 0) {
             $nr = 0;
             foreach ($arrTickers as $tickerId => $arrTicker) {
-                if (!file_exists(ASCMS_FEED_PATH.'/'.$arrTicker['name']) && !@touch(ASCMS_FEED_PATH.'/'.$arrTicker['name'])) {
-                    $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($arrTicker['name'], ENT_QUOTES, CONTREXX_CHARSET), ASCMS_FEED_PATH.'/').'<br />';
-                    $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], ASCMS_FEED_PATH.'/');
+                if (!file_exists(\Env::get('cx')->getWebsiteFeedPath().'/'.$arrTicker['name']) && !@touch(\Env::get('cx')->getWebsiteFeedPath().'/'.$arrTicker['name'])) {
+                    $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_COULD_NOT_ATTACH_FILE'], htmlentities($arrTicker['name'], ENT_QUOTES, CONTREXX_CHARSET), \Env::get('cx')->getWebsiteFeedPath().'/').'<br />';
+                    $this->strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWS_SET_CHMOD'], \Env::get('cx')->getWebsiteFeedPath().'/');
                 } else {
-                    $content = file_get_contents(ASCMS_FEED_PATH.'/'.$arrTicker['name']);
+                    $content = file_get_contents(\Env::get('cx')->getWebsiteFeedPath().'/'.$arrTicker['name']);
                     if (!empty($arrTicker['prefix']) && strpos($content, $arrTicker['prefix']) === 0) {
                         $content = substr($content, strlen($arrTicker['prefix']));
                     }

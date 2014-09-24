@@ -80,7 +80,7 @@ class DirectoryManager extends DirectoryLibrary
         $this->imageWebPath = ASCMS_DIR_WEB_PATH . '/View/Media';
         $this->mediaPath = ASCMS_MODULE_MEDIA_PATH . '/';
         $this->mediaWebPath = ASCMS_MODULE_MEDIA_WEB_PATH . '/';
-        $this->rssPath = ASCMS_FEED_PATH . '/';
+        $this->rssPath = \Env::get('cx')->getWebsiteFeedPath() . '/';
         $this->rssWebPath = ASCMS_FEED_WEB_PATH . '/';
 
         //check chmod

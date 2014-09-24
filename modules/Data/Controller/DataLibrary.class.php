@@ -1144,10 +1144,10 @@ class DataLibrary
                         );
                     }
 
-                    $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/data_messages_'.$arrLanguageValues['short'].'.xml';
+                    $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/data_messages_'.$arrLanguageValues['short'].'.xml';
                     $objRSSWriter->write();
 
-                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/data_messages_'.$arrLanguageValues['short'].'.xml');
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(\Env::get('cx')->getWebsiteFeedPath().'/data_messages_'.$arrLanguageValues['short'].'.xml');
                 }
             }
         }
@@ -1213,10 +1213,10 @@ class DataLibrary
                         $objResult->MoveNext();
                     }
 
-                    $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/data_comments_'.$arrLanguageValues['short'].'.xml';
+                    $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/data_comments_'.$arrLanguageValues['short'].'.xml';
                     $objRSSWriter->write();
 
-                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/data_comments_'.$arrLanguageValues['short'].'.xml');
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(\Env::get('cx')->getWebsiteFeedPath().'/data_comments_'.$arrLanguageValues['short'].'.xml');
                 }
             }
         }
@@ -1287,10 +1287,10 @@ class DataLibrary
                                 }
                             }
 
-                            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/data_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml';
+                            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/data_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml';
                             $objRSSWriter->write();
 
-                            \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_FEED_PATH.'/data_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml');
+                            \Cx\Lib\FileSystem\FileSystem::makeWritable(\Env::get('cx')->getWebsiteFeedPath().'/data_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml');
                         }
 
                     }

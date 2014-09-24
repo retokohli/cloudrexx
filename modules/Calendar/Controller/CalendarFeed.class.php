@@ -109,7 +109,7 @@ class CalendarFeed extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
             }
             
             $objRSSWriter->feedType = 'xml';
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/calendar_all_'.$arrFrontendLanguage['lang'].'.'.$objRSSWriter->feedType;
+            $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/calendar_all_'.$arrFrontendLanguage['lang'].'.'.$objRSSWriter->feedType;
             $objRSSWriter->write();
         }
         

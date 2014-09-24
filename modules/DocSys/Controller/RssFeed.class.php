@@ -56,7 +56,7 @@ class RssFeed
         $objResult = $objDatabase->Execute($query);
 
         $this->xmlType = "headlines";
-        $this->filePath = ASCMS_FEED_PATH;
+        $this->filePath = \Env::get('cx')->getWebsiteFeedPath();
         $this->channelLink = ASCMS_PROTOCOL."://".$_SERVER['SERVER_NAME'];
         $this->channelCopyright = ASCMS_PROTOCOL."://".$_SERVER['SERVER_NAME'];
         $this->channelGenerator = $_CONFIG['coreCmsName'];

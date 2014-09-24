@@ -70,21 +70,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($_CONFIG['feedNewsMLStatus'] == '1') {
             if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
                 /** @ignore */
-                if ($cl->loadFile(ASCMS_MODULE_PATH . '/Feed/Controller/NewsML.class.php')) {
+                if ($cl->loadFile(\Env::get('cx')->getCodeBaseModulePath() . '/Feed/Controller/NewsML.class.php')) {
                     $objNewsML = new NewsML();
                     $objNewsML->setNews($arrMatches[1], \Env::get('cx')->getPage()->getContent());
                 }
             }
             if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
                 /** @ignore */
-                if ($cl->loadFile(ASCMS_MODULE_PATH . '/Feed/Controller/NewsML.class.php')) {
+                if ($cl->loadFile(\Env::get('cx')->getCodeBaseModulePath() . '/Feed/Controller/NewsML.class.php')) {
                     $objNewsML = new NewsML();
                     $objNewsML->setNews($arrMatches[1], $page_template);
                 }
             }
             if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
                 /** @ignore */
-                if ($cl->loadFile(ASCMS_MODULE_PATH . '/Feed/Controller/NewsML.class.php')) {
+                if ($cl->loadFile(\Env::get('cx')->getCodeBaseModulePath() . '/Feed/Controller/NewsML.class.php')) {
                     $objNewsML = new NewsML();
                     $objNewsML->setNews($arrMatches[1], $themesPages['index']);
                 }

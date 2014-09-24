@@ -15,7 +15,7 @@ namespace Cx\Modules\Feed\Controller;
 /**
  * Includes
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/PEAR/XML/RSS.class.php');
+\Env::get('ClassLoader')->loadFile( \Env::get('cx')->getCodeBaseLibraryPath() . '/PEAR/XML/RSS.class.php');
 
 /**
  * Feed
