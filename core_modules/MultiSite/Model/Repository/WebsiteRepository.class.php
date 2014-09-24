@@ -64,7 +64,8 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
             $websiteServiceServer = $defaultWebsiteServiceServer[0];
         }
         $objUser = $saleOptions['customer'];
-        $website = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
+        $websiteThemeId = isset($saleOptions['themeId']) ? $saleOptions['themeId'] : null;
+        $website = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false, $websiteThemeId);
         \Env::get('em')->persist($website);
         // flush $website to database -> subscription will need the ID of $website
         // to properly work

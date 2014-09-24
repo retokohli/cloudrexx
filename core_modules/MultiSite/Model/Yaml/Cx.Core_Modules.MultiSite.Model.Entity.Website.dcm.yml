@@ -32,6 +32,8 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       length: 45
     ownerId:
       type: integer
+    themeId:
+      type: integer
     installationId:
       type: string
       length: 40  

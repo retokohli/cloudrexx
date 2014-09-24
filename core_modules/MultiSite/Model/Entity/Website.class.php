@@ -111,10 +111,15 @@ class Website extends \Cx\Model\Base\EntityBase {
      */
     protected $ftpUser;
     
+    /**
+     * @var string $themeId
+     */
+    protected $themeId;
+    
     /*
      * Constructor
      * */
-    public function __construct($basepath, $name, $websiteServiceServer = null, \User $userObj=null, $lazyLoad = true) {
+    public function __construct($basepath, $name, $websiteServiceServer = null, \User $userObj=null, $lazyLoad = true, $themeId = null) {
         $this->basepath = $basepath;
         $this->name = $name;
 
@@ -129,6 +134,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         $this->owner = $userObj;
         $this->ownerId = $userObj->getId();
         $this->installationId = $this->generateInstalationId();
+        $this->themeId = $themeId;
 
         if ($websiteServiceServer) {
             $this->setWebsiteServiceServer($websiteServiceServer);
@@ -386,6 +392,27 @@ class Website extends \Cx\Model\Base\EntityBase {
     {
         return $this->ownerId;
     }
+    
+    /**
+     * Set themeId
+     *
+     * @param integer $themeId
+     */
+    public function setThemeId($themeId)
+    {
+        $this->themeId = $themeId;
+    }
+
+    /**
+     * Get themeId
+     *
+     * @return integer $themeId
+     */
+    public function getThemeId()
+    {
+        return $this->themeId;
+    }
+    
      /**
      * Set installationId
      *
@@ -439,6 +466,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         $websiteName = $this->getName();
         $websiteMail = $this->owner->getEmail(); 
+        $websiteThemeId = $this->getThemeId(); 
         $websiteIp = null;
 
         // language
@@ -471,7 +499,8 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'userId'      => $this->owner->getId(),
                 'websiteName' => $websiteName,
                 'websiteId'   => $this->getId(),
-                'options'     => $options  
+                'options'     => $options,
+                'themeId'     => $websiteThemeId
                 );
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createWebsite', $params, $this->websiteServiceServer);
             if(!$resp || $resp->status == 'error'){
@@ -519,6 +548,10 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: initializeLanguage..');
             $this->initializeLanguage();
 
+            if (!empty($websiteThemeId)) {
+                \DBG::msg('Website: setupTheme..');
+                $this->setupTheme();
+            }
             // \DBG::msg('Website: setupRobotsFile..');
             // $this->setupRobotsFile($websiteName);
 
@@ -1327,6 +1360,27 @@ throw new WebsiteException('implement secret-key algorithm first!');
             }
         } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
             throw new WebsiteException('Unable to initialize the language: '.$e->getMessage());
+        }        
+    }
+    
+    /**
+     * Initialize the language
+     */
+    public function setupTheme() {
+        //send the JSON Request 'setWebsiteTheme' command from service to website
+        try {
+            if (empty($this->themeId)) {
+                return;
+            }
+            
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setWebsiteTheme', array('themeId' => $this->themeId), $this);
+            if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                return true;
+            } else {
+                throw new WebsiteException('Unable to setup the theme: Error in setting theme in Website');
+            }
+        } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
+            throw new WebsiteException('Unable to setup the theme: '.$e->getMessage());
         }        
     }
     

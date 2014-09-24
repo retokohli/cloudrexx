@@ -203,8 +203,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             // load text-variables of module MultiSite
             $this->loadLanguageData();
 
-            // set website name
+            // set website name and website theme
             $websiteName = contrexx_input2raw($params['post']['multisite_address']);
+            $websiteThemeId = contrexx_input2raw($params['post']['themeId']);
 
             // create new user account
             $arrSettings = \User_Setting::getSettings();
@@ -254,6 +255,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'websiteName'       => $websiteName,
                 'customer'          => $objUser,
             );
+            
+            //pass the website's theme id to subscription option, if $themeId set
+            if (!empty($websiteThemeId)) {
+                $subscriptionOptions['themeId'] = $websiteThemeId;
+            }
+            
             $order->createSubscription($product, $subscriptionOptions);
 
             \Env::get('em')->persist($order);
@@ -341,6 +348,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $objUser     = $objFWUser->objUser->getUser(contrexx_input2raw($params['post']['userId']));
         $websiteId   = isset($params['post']['websiteId']) ? contrexx_input2raw($params['post']['websiteId']) : '';
         $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
+        $themeId     = isset($params['post']['themeId']) ? contrexx_input2raw($params['post']['themeId']) : '';
         
         $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
         $websiteServiceServer = null;
@@ -352,7 +360,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         try {
-            $objWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
+            $objWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false, $themeId);
             \Env::get('em')->persist($objWebsite);
             if ($websiteId) {
                 $objWebsite->setId($websiteId);
@@ -1494,6 +1502,41 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             );
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website.' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Set the Website Theme
+     * 
+     * @global \Cx\Core_Modules\MultiSite\Controller\ADOConnection $objDatabase
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function setWebsiteTheme($params) {
+        global $objDatabase;
+        
+        if (empty($params['post']['themeId'])) {
+            throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme due to the empty param $themeId');
+        }
+        
+        try {
+            $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+            if (!$themeRepo->findById($params['post']['themeId'])) {
+                throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme due to no one theme exists with param $themeId');
+            }
+
+            $langId = \FWLanguage::getDefaultLangId();
+            //set the theme $themeId as standard and mobile theme
+            $objResult = $objDatabase->Execute('UPDATE ' . DBPREFIX . 'languages '
+                                                . 'SET `themesid` = ' . intval($params['post']['themeId']) . ', `mobile_themes_id` = ' . intval($params['post']['themeId'])
+                                                . ' WHERE id = ' . intval($langId));
+            if ($objResult !== false) {
+                return array('status' => 'success');
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme.' . $e->getMessage());
         }
     }
 }
