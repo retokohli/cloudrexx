@@ -86,6 +86,12 @@ class ViewGenerator {
                             $fieldDefinition = $entityObject->getFieldMapping($field);
                             if ($fieldDefinition['type'] == 'datetime') {
                                 $newValue = new \DateTime($_POST[$field]);
+                            } elseif ($fieldDefinition['type'] == 'array') {
+                                $newValue = unserialize($_POST[$field]);
+                                // verify that the value is actually an array -> prevent to store other php data
+                                if (!is_array($newValue)) {
+                                    $newValue = array();
+                                }
                             } else {
                                 $newValue = contrexx_input2raw($_POST[$field]);
                             }
@@ -171,6 +177,12 @@ class ViewGenerator {
                             $fieldDefinition = $entityObj->getFieldMapping($name);
                             if ($fieldDefinition['type'] == 'datetime') {
                                 $newValue = new \DateTime($_POST[$name]);
+                            } elseif ($fieldDefinition['type'] == 'array') {
+                                $newValue = unserialize($_POST[$name]);
+                                // verify that the value is actually an array -> prevent to store other php data
+                                if (!is_array($newValue)) {
+                                    $newValue = array();
+                                }
                             } else {
                                 $newValue = contrexx_input2raw($_POST[$name]);
                             }

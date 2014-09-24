@@ -106,6 +106,8 @@ class DataSet implements \Iterator {
                 $value = $em->getClassMetadata(get_class($object))->getFieldValue($object, $field);
                 if ($value instanceof \DateTime) {
                     $value = $value->format('d.M.Y H:i:s');
+                } elseif (is_array($value)) {
+                    $value = serialize($value);
                 }
                 $data[$field] = $value;
             }
