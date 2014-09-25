@@ -1,27 +1,33 @@
 {TXT_TITLE_CSS}
 {ACTIVESYRVEY_JAVASCRIPT}
 <form name="frmShowSurveyEntries" method="post" action="">
-<table border="0" cellpadding="0" cellspacing="0" class="adminlist" width="100%">
-       <tr class="row3">
-            <th  style="text-align:center;padding:2px 0px;font-weight:bold;" width="5%">{TXT_STATUS}</th>
+    <div class="adminlist table-responsive">
+    <table border="0" cellpadding="0" cellspacing="0" class="table" width="100%">
+        <tr class="row3">
+            <th  style="text-align:center;font-weight:bold;" width="5%">{TXT_STATUS}</th>
             <th style="text-align:left;font-weight:bold;" width="20%">{TXT_SURVEY_TITLE}</th>
-            <th style="text-align:left;padding:2px 0px;font-weight:bold;" width="20%">{TXT_DESCRIPTION}</th>
+            <th style="text-align:left;font-weight:bold;" width="20%">{TXT_DESCRIPTION}</th>
             <th style="text-align:left;font-weight:bold;" width="20%">{TXT_CREATED_AT}</th>
             <th style="text-align:left;font-weight:bold;" width="20%">{TXT_MODIFIED_AT}</th>    
             <th style="text-align:left;font-weight:bold;" width="15%">{TXT_COUNTER}</th>           
-       </tr>
-       <!-- BEGIN showEntries -->
-       <tr class="{ENTRY_ROWCLASS}">
+        </tr>
+        <!-- BEGIN showEntries -->
+        <tr class="{ENTRY_ROWCLASS}">
             <td style="text-align:center">           
-               <img border="0" alt="{TXT_SURVEY_ACTIVE_TITLE}" title="{TXT_SURVEY_ACTIVE_TITLE}" src="{TXT_SURVEY_ACTIVE_IMAGE}"/>
+                <img border="0" alt="{TXT_SURVEY_ACTIVE_TITLE}" title="{TXT_SURVEY_ACTIVE_TITLE}" src="{TXT_SURVEY_ACTIVE_IMAGE}"/>
             </td>
-            <td class="stitle"><a href="index.php?section=Survey&cmd=surveybyId&id={TXT_SURVEY_ID}" title="Preview" rel="gb_page_fs[]">{TXT_SURVEY_TITLE_LABEL}..<a href="#" title="{TXT_SURVEY_NAME_TITLE}" class="tooltip"><img border="0" src="images/crm/comment.gif"><a></a></td>
-            <td>{TXT_SURVEY_DESCRIPTION}..<a href="#" title="{TXT_SURVEY_DESC_TITLE}" class="tooltip"><img border="0" src="images/crm/comment.gif"><a></td>
-            <td>{TXT_SURVEY_CREATED_AT}</td>
-            <td>{TXT_SURVEY_UPDATED_AT}</td>
-            <td style="text-align:left;padding-left:2px;">{TXT_SURVEY_COUNTER}</td>
-       </tr>
-       <!-- END showEntries -->       
-</table>
-</form>
-<div style="padding-top:10px;">{ENTRIES_PAGING}</div>
+            <td class="stitle">
+                <a href="index.php?section=Survey&cmd=surveybyId&id={TXT_SURVEY_ID}" title="Preview" rel="gb_page_fs[]">{TXT_SURVEY_TITLE_LABEL}..
+                    <a href="#" title="{TXT_SURVEY_NAME_TITLE}" class="tooltip"><img border="0" src="images/crm/comment.gif"><a></a>
+                        </td>
+                        <td>{TXT_SURVEY_DESCRIPTION}..<a href="#" title="{TXT_SURVEY_DESC_TITLE}" class="tooltip">
+                                <img border="0" src="images/crm/comment.gif"><a>
+                                    </td>
+                                    <td>{TXT_SURVEY_CREATED_AT}</td>
+                                    <td>{TXT_SURVEY_UPDATED_AT}</td>
+                                    <td style="text-align:left;padding-left:2px;">{TXT_SURVEY_COUNTER}</td>
+                                    </tr>
+                                    <!-- END showEntries -->       
+                                    </table>
+                                    </form></div>
+                                    <div style="padding-top:10px;">{ENTRIES_PAGING}</div>

@@ -1888,7 +1888,7 @@ form[name="registrationForm"] .row {
     width: 100%;
 }
 #knowledge #overview div.category {
-   margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 #knowledge #overview div.row {
 }
@@ -3066,4 +3066,14 @@ input[type="checkbox"] {
 }
 .radio .description {
     height: auto;
+}
+/*survey*/
+.questionBlock {
+    width: 100%;
+    float: left;
+    margin-bottom: 20px;
+}
+.questionBlock_button input {
+    float: left;
+    margin-right: 10px;
 }

@@ -3,35 +3,34 @@
     {SURVEY_SUCCESS}
     {TEXT1}
     <br />
-    <br />
     <form name="SurveyForm" action="index.php?section=Survey" method="post" onsubmit="return AdditionalValidate();">
         <!-- BEGIN Total_surveys -->
-            <div class="questionBlock">
-                <strong>{SURVEY_TITLE}</strong>{TXT_HIDDENFIELD}
-                {SURVEY_OPTIONS_TEXT}
-                {SURVEY_COMMENT_BOX}
-            </div>
+        <div class="questionBlock">
+            <strong>{SURVEY_TITLE}</strong>{TXT_HIDDENFIELD}
+            {SURVEY_OPTIONS_TEXT}
+            {SURVEY_COMMENT_BOX}
+        </div>
         <!-- END Total_surveys -->
         <br />
         {TEXT2}
         <br />
         <div class="questionBlock">
             <!-- BEGIN additional_fields -->
-                <table  width="100%" cellpadding="1" cellspacing="1" border="0">
-                    <!-- BEGIN additional_elements -->
-                        <tr>
-                            <td width="144px">
-                                {VOTING_ADDITIONAL_INPUT_LABEL}
-                            </td>
-                            <td>
-                                {VOTING_ADDITIONAL_INPUT}
-                            </td>
-                        </tr>
-                    <!-- END additional_elements -->
-                </table>
+            <table class="survey table" width="100%" cellpadding="1" cellspacing="1" border="0">
+                <!-- BEGIN additional_elements -->
+                <tr>
+                    <td width="144px">
+                        {VOTING_ADDITIONAL_INPUT_LABEL}
+                    </td>
+                    <td>
+                        {VOTING_ADDITIONAL_INPUT}
+                    </td>
+                </tr>
+                <!-- END additional_elements -->
+            </table>
             <!-- END additional_fields --> 
             <br />
-            {TXT_CANCEL}&nbsp;{TXT_SUBMIT}
+            <div class="questionBlock_button">{TXT_CANCEL}&nbsp;{TXT_SUBMIT}</div>
             <br />
             <br />
             {DB_TEXT_AFTER_BUTTON}
