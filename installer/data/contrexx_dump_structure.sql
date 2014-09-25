@@ -3575,6 +3575,11 @@ CREATE TABLE `contrexx_module_pim_product` (
   `expiration_unit` varchar(5) NOT NULL,
   `expiration_quantifier` int(11) NOT NULL,
   `price` decimal(10,0) NOT NULL,
+  `note_entity` text NOT NULL,
+  `note_renewal` text NOT NULL,
+  `note_upgrade` text NOT NULL,
+  `note_expiration` text NOT NULL,
+  `note_price` text NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
