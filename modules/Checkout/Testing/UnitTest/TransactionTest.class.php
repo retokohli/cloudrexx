@@ -12,6 +12,7 @@
  */
 
 namespace Cx\Modules\Checkout\Testing\UnitTest;
+use Cx\Modules\Checkout\Controller\Transaction;
 
 /**
  * TransactionTest
