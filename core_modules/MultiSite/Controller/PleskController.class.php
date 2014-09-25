@@ -139,12 +139,37 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $dbUserName = $dbUser->getName();
         $dbUserId   = $this->getDbUserId($dbUserName);
         if (!empty($dbUserId)) {
-            return $dbUser;
+            $xmldoc = $this->getXmlDocument();
+            $packet = $this->getRpcPacket($xmldoc);
+
+            $database = $xmldoc->createElement('database');
+            $packet->appendChild($database);
+
+            $getDbUsers = $xmldoc->createElement('del-db-user');
+            $database->appendChild($getDbUsers);
+
+            $filter = $xmldoc->createElement('filter');
+            $getDbUsers->appendChild($filter);
+
+            $id = $xmldoc->createElement('id', $dbUserId);
+            $filter->appendChild($id);
+
+            $response = $this->executeCurl($xmldoc);
+            $resultNode = $response->{'database'}->{'del-db-user'}->result;
+            $responseJson = json_encode($resultNode);
+            $respArr = json_decode($responseJson, true);
+            $systemError = $response->system->errtext;
+
+            if ('error' == (string) $resultNode->status || $systemError) {
+                $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+                throw new ApiRequestException("Error in removing database user:{$error} ");
+            }
+
+            return $respArr;
         }
         
         return false;
     }
-
     /**
      * Removes a db
      * @param \Cx\Core\Model\Model\Entity\Db $db Database to remove
