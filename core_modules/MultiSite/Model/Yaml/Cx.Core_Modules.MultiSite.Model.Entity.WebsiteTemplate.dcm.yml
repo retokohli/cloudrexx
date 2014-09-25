@@ -1,0 +1,30 @@
+Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\WebsiteTemplateRepository
+  table: core_module_multisite_website_template
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    codeBase:
+      type: string
+      column: code_base
+      length: 255
+    licensedComponents:
+      type: string
+      column: licensed_components
+    licenseMessage:
+      type: string
+      column: license_message
+
+  manyToOne: # owning side
+    websiteServiceServer:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
+      inversedBy: websiteTemplates
+      joinColumn:
+        name: website_service_server_id
+        referencedColumnName: id
+        cascade: [remove]
+

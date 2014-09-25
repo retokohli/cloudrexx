@@ -52,9 +52,16 @@ class WebsiteServiceServer extends \Cx\Model\Base\EntityBase
      */
     protected $httpAuthPassword;
     
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate
+     */
+    protected $websiteTemplates;
+
+
     public function __construct()
     {
         $this->websites = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->websiteTemplates = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -166,7 +173,27 @@ class WebsiteServiceServer extends \Cx\Model\Base\EntityBase
     {
         return $this->websites;
     }
-   
+    
+    /**
+     * Add website template
+     *
+     * @param Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate $websiteTemplate
+     */
+    public function addWebsiteTemplate(WebsiteTemplate $WebsiteTemplate)
+    {
+        $this->websiteTemplates[] = $WebsiteTemplate;
+    }
+    
+    /**
+     * Get websiteTemplate
+     * 
+     * @return Doctrine\Common\Collections\Collection $websiteTemplate
+     */
+    public function getWebsiteTemplates()
+    {
+        return $this->websiteTemplates;
+    }
+
     /**
      * Set httpAuthMethod
      *

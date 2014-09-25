@@ -31,7 +31,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
 
             case ComponentController::MODE_MANAGER:
-                return array('statistics','settings'=> array('email','website_service_servers'));
+                return array('statistics','settings'=> array('email','website_templates','website_service_servers',));
                 break;
 
             case ComponentController::MODE_HYBRID:
@@ -197,7 +197,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     $content = '<input type = "radio" class="defaultCodeBase" name = "defaultCodeBase" '.$checked.' value ="'.$value.'"/>';
                                     return $content;
                                 },
-                            ),
+                        ),
                         ),
                         'Code_Name' => array(
                             'header' => 'Code Name',
@@ -213,7 +213,39 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             );
             $template->setVariable('TABLE', $codeBase->render());
             
-        } else{
+        } else if (!empty($cmd[1]) && $cmd[1]=='website_templates') {
+            $websiteTemplates = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate')->findAll();
+           
+            if (empty($websiteTemplates)) {
+                $websiteTemplates = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate();
+            }
+            $websiteTemplatesDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteTemplates);
+            $websiteTemplatesView = new \Cx\Core\Html\Controller\ViewGenerator($websiteTemplatesDataSet, 
+                array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_WEBSITE_TEMPLATES'],
+                    'functions' => array(
+                        'edit' => true,
+                        'add' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,       
+                        'filtering' => false,   
+                    ),
+                    'fields' => array(
+                        'codeBase' => array(
+                            'header' => 'codeBase',
+                        ),
+                        'licensedComponents' => array(
+                            'header' => 'licensedComponents',
+                        ),
+                        'licenseMessage' => array(
+                            'header' => 'licenseMessage',
+                        )
+                    )
+                )
+            );
+            $template->setVariable('TABLE', $websiteTemplatesView->render());
+        }else{
             $this->settings($template);
         }
     }

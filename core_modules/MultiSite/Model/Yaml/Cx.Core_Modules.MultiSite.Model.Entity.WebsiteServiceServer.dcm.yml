@@ -34,3 +34,7 @@ Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer:
     websites:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
       mappedBy: websiteServiceServer
+    websiteTemplates:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate
+      mappedBy: websiteServiceServer
+        

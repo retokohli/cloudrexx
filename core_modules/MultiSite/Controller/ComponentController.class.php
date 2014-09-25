@@ -655,6 +655,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteServiceServerList()}', 'manager') ) {
                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Default Website Service Server");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteTemplate', '0', 2,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\Modules\Pim\Controller\BackendController::getWebsiteTemplateList()}', 'manager')) {
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default Website Template");
+            }
             if (!\Cx\Core\Setting\Controller\Setting::getValue('productId') 
                 && !\Cx\Core\Setting\Controller\Setting::add('productId', '0', 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
