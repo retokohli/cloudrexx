@@ -1,9 +1,29 @@
 <?php
 
-require_once(ASCMS_MODULE_PATH.'/checkout/lib/Transaction.class.php');
-require_once(ASCMS_DOCUMENT_ROOT.'/testing/testCases/MySQLTestCase.php');
+/**
+ * TransactionTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_checkout
+ */
 
-class TransactionTest extends MySQLTestCase {
+namespace Cx\Modules\Checkout\Testing\UnitTest;
+
+/**
+ * TransactionTest
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @author      SS4U <ss4u.comvation@gmail.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_checkout
+ */
+class TransactionTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
 
 	private function getTestData() {
 		return array(
@@ -26,7 +46,7 @@ class TransactionTest extends MySQLTestCase {
 	}
 
 	public function testAddAndGet() {
-		$objTransaction = new Transaction(self::$database);
+		$objTransaction = new Transaction(\Env::get('db'));
 
 		$arrInput = $this->getTestData();
 		$arrInput['id'] = $objTransaction->add(
@@ -52,7 +72,7 @@ class TransactionTest extends MySQLTestCase {
 	}
 
 	public function testUpdate() {
-		$objTransaction = new Transaction(self::$database);
+		$objTransaction = new Transaction(\Env::get('db'));
 
 		$arrInput = $this->getTestData();
 		$arrInput['id'] = $objTransaction->add(
@@ -81,7 +101,7 @@ class TransactionTest extends MySQLTestCase {
 	}
 
 	public function testDelete() {
-		$objTransaction = new Transaction(self::$database);
+		$objTransaction = new Transaction(\Env::get('db'));
 
 		$arrInput = $this->getTestData();
 		$arrInput['id'] = $objTransaction->add(

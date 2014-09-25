@@ -9,7 +9,7 @@
  * @author      SS4U <ss4u.comvation@gmail.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  core_contentmanager
+ * @subpackage  coremodule_multisite
  */
 
 namespace Cx\Core_Modules\MultiSite\Testing\UnitTest;
@@ -23,7 +23,7 @@ namespace Cx\Core_Modules\MultiSite\Testing\UnitTest;
  * @author      SS4U <ss4u.comvation@gmail.com>
  * @version     1.0.0
  * @package     contrexx
- * @subpackage  core_contentmanager
+ * @subpackage  coremodule_multisite
  */
 class WebsiteTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     
