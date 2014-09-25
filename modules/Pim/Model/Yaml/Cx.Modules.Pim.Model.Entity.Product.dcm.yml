@@ -35,7 +35,22 @@ Cx\Modules\Pim\Model\Entity\Product:
       column: expiration_quantifier
     price:
       type: decimal
-
+    noteEntity:
+      type: string
+      column: note_entity
+    noteRenewal:
+      type: string
+      column: note_renewal
+    noteUpgrade:
+      type: string
+      column: note_upgrade
+    noteExpiration:
+      type: string
+      column: note_expiration
+    notePrice:
+      type: string
+      column: note_price
+  
   oneToMany: # inverse side
     subscriptions:
       targetEntity: Cx\Modules\Order\Model\Entity\Subscription

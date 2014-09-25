@@ -64,7 +64,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    public function executeCommand($command, $arguments) {
+    public function executeCommand($command, $arguments, $productId = '') {
         global $objInit, $_ARRAYLANG;
 
         $subcommand = null;
@@ -147,6 +147,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 // TODO: add configuration option for contact details and replace the hard-coded e-mail address on the next line
                             'TXT_MULTISITE_EMAIL_INFO'      => sprintf($_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO'], 'info@cloudrexx.com'),
                         ));
+                        if (!empty($productId)) {
+                            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+                            $product = $productRepository->findOneBy(array('id' => $productId));
+
+                            $objTemplate->setVariable(array(
+                                'PRODUCT_NOTE_ENTITY'     => $product->getNoteEntity(),
+                                'PRODUCT_NOTE_RENEWAL'    => $product->getNoteRenewal(),
+                                'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
+                                'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
+                                'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
+                                'PRODUCT_ID'              => $product->getId()
+                            ));
+                        }
                         echo $objTemplate->get();
                         break;
 
@@ -642,6 +655,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteServiceServerList()}', 'manager') ) {
                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Default Website Service Server");
             }
+            if (!\Cx\Core\Setting\Controller\Setting::getValue('productId') 
+                && !\Cx\Core\Setting\Controller\Setting::add('productId', '0', 8,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
+                   throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Product List");
+            }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
@@ -843,5 +861,4 @@ throw new MultiSiteException('Refactor this method!');
         }
         return implode(',', $dropdownOptions);
     }
-
 }
