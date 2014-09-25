@@ -548,10 +548,9 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: initializeLanguage..');
             $this->initializeLanguage();
 
-            if (!empty($websiteThemeId)) {
-                \DBG::msg('Website: setupTheme..');
-                $this->setupTheme();
-            }
+            \DBG::msg('Website: setupTheme..');
+            $this->setupTheme($websiteThemeId);
+            
             // \DBG::msg('Website: setupRobotsFile..');
             // $this->setupRobotsFile($websiteName);
 
@@ -1366,14 +1365,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
     /**
      * Initialize the language
      */
-    public function setupTheme() {
+    public function setupTheme($websiteThemeId) {
         //send the JSON Request 'setWebsiteTheme' command from service to website
         try {
-            if (empty($this->themeId)) {
+            if (empty($websiteThemeId)) {
                 return;
             }
             
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setWebsiteTheme', array('themeId' => $this->themeId), $this);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setWebsiteTheme', array('themeId' => $websiteThemeId), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 return true;
             } else {
