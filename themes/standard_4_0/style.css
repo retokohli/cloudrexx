@@ -7,6 +7,20 @@
         width: 100%;
         height: auto;
     }
+    /*survey*/
+    .survey td {
+        float: left;
+        width: 100%;
+        padding-left: 0;
+    }
+    .questionBlock_button input {
+        margin-left: 0 !important;
+    }
+    .radioText {
+        word-wrap: break-word;
+        width: 260px;
+        float: left;
+    }
     #right-login {
         width: 100%;
         padding-left: 0;
@@ -534,6 +548,15 @@
     .home-box.col-md-4 {width: 100%;margin-bottom: 30px;}
     #content-wrapper {
         padding-bottom: 168px;
+    }
+    .adminlist.table-responsive {
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-y: hidden;
+        overflow-x: auto;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+        border: 1px solid #ddd;
+        -webkit-overflow-scrolling: touch;
     }
     /*MediaDir Edit Start*/
     .mediadirSelector .mediadirSelectorCenter {
