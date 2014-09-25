@@ -1,1 +1,0 @@
-<?phprequire_once(ASCMS_MODULE_PATH.'/checkout/lib/Countries.class.php');require_once(ASCMS_DOCUMENT_ROOT.'/testing/testCases/MySQLTestCase.php');class CountryTest extends MySQLTestCase {    public function testGetAll() {        $objCountries = new Countries(self::$database);        $this->assertNotEmpty($objCountries->getAll());    }}
