@@ -405,7 +405,6 @@ CREATE TABLE `contrexx_core_module_multisite_website_service_server` (
   `label` varchar(225) NOT NULL,
   `secretKey` varchar(32) NOT NULL,
   `installationId` varchar(40) NOT NULL,
-  `isDefault` int(1) NOT NULL,
   `httpAuthMethod` varchar(6) default NULL,
   `httpAuthUsername` varchar(255) NOT NULL,
   `httpAuthPassword` varchar(255) NOT NULL,
