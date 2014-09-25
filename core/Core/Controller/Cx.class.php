@@ -1370,16 +1370,27 @@ namespace Cx\Core\Core\Controller {
          * @global null $moduleStyleFile
          * @global type $plainCmd
          * @global type $plainSection 
+         * @global type $themesPages
+         * @global type $page_template
          */
         protected function preContentLoad() {
-            global $moduleStyleFile, $plainCmd, $plainSection;
+            global $moduleStyleFile, $plainCmd, $plainSection, $themesPages, $page_template;
             
             $this->ch->callPreContentLoadHooks();
             
             if ($this->mode == self::MODE_FRONTEND) {
-                $this->setPreContentLoadPlaceholders($this->template);        
-                //replace the {NODE_<ID>_<LANG>}- placeholders
+                // load content.html template (or customized version)
+                $this->template->setTemplate($themesPages['index']);
+                $this->template->addBlock('CONTENT_FILE', 'page_template', $page_template);
+
+                // load application content template
+                $this->loadContentTemplateOfPage();
+
+                // Set global content variables.
                 $pageContent = $this->resolvedPage->getContent();
+                $this->parseGlobalPlaceholders($pageContent);
+                $pageContent = str_replace('{TITLE}', $this->resolvedPage->getTitle(), $pageContent);
+                //replace the {NODE_<ID>_<LANG>}- placeholders
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
                 
@@ -1398,36 +1409,27 @@ namespace Cx\Core\Core\Controller {
          * Set main template placeholders required before parsing the content
          * @todo Does this even make any sense? Couldn't simply everything be set after content parsing?
          * @todo Remove usage of globals
-         * @global type $themesPages
-         * @global type $page_template
          * @global array $_CONFIG
-         * @param type $objTemplate 
+         * @param string $content
          */
-        protected function setPreContentLoadPlaceholders($objTemplate) {
-            global $themesPages, $page_template, $_CONFIG;
+        public function parseGlobalPlaceholders(&$content) {
+            global $_CONFIG;
 
-            $objTemplate->setTemplate($themesPages['index']);
-            $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
-
-            // Set global content variables.
-            $pageContent = $this->resolvedPage->getContent();
-            $pageContent = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $pageContent);
-            $pageContent = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $pageContent);
-            $pageContent = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $pageContent);
-            $pageContent = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $pageContent);
-            $pageContent = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),         $pageContent);
-            $pageContent = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),         $pageContent);
-            $pageContent = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'),  $pageContent);
-            $pageContent = str_replace('{TITLE}',           $this->resolvedPage->getTitle(), $pageContent);
-            $pageContent = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $pageContent);
-            $pageContent = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $pageContent);
-            $pageContent = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $pageContent);
-            $pageContent = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $pageContent);
-            $pageContent = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $pageContent);
-            $pageContent = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $pageContent);
-            $pageContent = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $pageContent);
-            $pageContent = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $pageContent);
-            $this->resolvedPage->setContent($pageContent);
+            $content = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $content);
+            $content = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $content);
+            $content = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $content);
+            $content = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $content);
+            $content = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),         $content);
+            $content = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),         $content);
+            $content = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'),  $content);
+            $content = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $content);
+            $content = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $content);
+            $content = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $content);
+            $content = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $content);
+            $content = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $content);
+            $content = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $content);
+            $content = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $content);
+            $content = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $content);
         }
 
         /**
@@ -1453,19 +1455,10 @@ namespace Cx\Core\Core\Controller {
             if (empty($plainSection) && $this->mode != self::MODE_BACKEND) {
                 return;
             }
-            
+
             $this->ch->callPreContentParseHooks();
-            
-            $this->loadContentTemplateOfPage();
-            
-            if ($this->mode == self::MODE_FRONTEND) {
-                //replace the {NODE_<ID>_<LANG>}- placeholders
-                $pageContent = $this->resolvedPage->getContent();
-                \LinkGenerator::parseTemplate($pageContent);
-                $this->resolvedPage->setContent($pageContent);
-            }
-            
             $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
+
             // This would be a postContentParseHook:
             \Message::show();
             
@@ -1731,20 +1724,7 @@ namespace Cx\Core\Core\Controller {
                 $time = $this->stopTimer();
                 $this->template->setVariable('PARSING_TIME', $time);
 
-                $themesPages['sidebar'] = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),    $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),    $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),      $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),        $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),        $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'), $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $themesPages['sidebar']);
+                $this->parseGlobalPlaceholders($themesPages['sidebar']);
 
                 $this->template->setVariable(array(
                     'SIDEBAR_FILE' => $themesPages['sidebar'],
