@@ -97,6 +97,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return null;
     }    
     
+    /**
+     * get the product list
+     * 
+     * @return string type
+     */
     public static function getProductList() {
         $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
         $productList = $productRepository->findAll();
