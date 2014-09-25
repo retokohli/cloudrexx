@@ -95,7 +95,23 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             return $submenu;
         }
         return null;
-    }    
+    }
+    
+    /**
+     * Shows the all website templates
+     * 
+     * @access  private
+     * @return  string
+     */
+    public static function getWebsiteTemplateList() {
+        $websiteTemplatesObj = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate');
+        $websiteTemplates = $websiteTemplatesObj->findAll();
+        $display = array();
+        foreach ($websiteTemplates As $websiteTemplate) {
+            $display[] = $websiteTemplate->getId() . ':' . $websiteTemplate->getCodeBase();
+        }
+        return implode(',', $display);
+    }
     
     /**
      * get the product list
