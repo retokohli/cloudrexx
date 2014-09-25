@@ -36,6 +36,11 @@ class Product extends \Cx\Model\Base\EntityBase {
     protected $upgradableProducts = array();
     protected $price = null;
     protected $subscriptions;
+    protected $noteEntity = null;
+    protected $noteRenewal = null;
+    protected $noteUpgrade = null;
+    protected $noteExpiration = null;
+    protected $notePrice = null;
 
     const UNIT_DAY = 'day';
     const UNIT_MONTH = 'month';
@@ -169,7 +174,47 @@ class Product extends \Cx\Model\Base\EntityBase {
     public function setSubscriptions($subscriptions) {
         $this->subscriptions = $subscriptions;
     }
+    
+    public function getNoteEntity() {
+        return $this->noteEntity;
+    }
 
+    public function setNoteEntity($noteEntity) {
+        $this->noteEntity = $noteEntity;
+    }
+    
+    public function getNoteRenewal() {
+        return $this->noteRenewal;
+    }
+
+    public function setNoteRenewal($noteRenewal) {
+        $this->noteRenewal = $noteRenewal;
+    }
+    
+    public function getNoteUpgrade() {
+        return $this->noteUpgrade;
+    }
+
+    public function setNoteUpgrade($noteUpgrade) {
+        $this->noteUpgrade = $noteUpgrade;
+    }
+    
+    public function getNoteExpiration() {
+        return $this->noteExpiration;
+    }
+
+    public function setNoteExpiration($noteExpiration) {
+        $this->noteExpiration = $noteExpiration;
+    }
+    
+    public function getNotePrice() {
+        return $this->notePrice;
+    }
+
+    public function setNotePrice($notePrice) {
+        $this->notePrice = $notePrice;
+    }
+    
     public function getNewEntityForSale($saleOptions) {
         return \Env::get('em')->getRepository($this->entityClass)->findOneForSale($this->entityAttributes, $saleOptions);
     }
