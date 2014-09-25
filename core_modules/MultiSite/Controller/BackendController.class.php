@@ -232,6 +232,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'filtering' => false,   
                     ),
                     'fields' => array(
+                        'id' => array(
+                            'showOverview' => false,
+                        ),
                         'codeBase' => array(
                             'header' => 'codeBase',
                         ),
