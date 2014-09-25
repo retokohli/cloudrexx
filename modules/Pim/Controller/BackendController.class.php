@@ -107,7 +107,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $websiteTemplatesObj = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate');
         $websiteTemplates = $websiteTemplatesObj->findAll();
         $display = array();
-        foreach ($websiteTemplates As $websiteTemplate) {
+        foreach ($websiteTemplates as $websiteTemplate) {
             $display[] = $websiteTemplate->getId() . ':' . $websiteTemplate->getCodeBase();
         }
         return implode(',', $display);
