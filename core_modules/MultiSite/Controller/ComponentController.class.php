@@ -637,8 +637,8 @@ throw new MultiSiteException('Refactor this method!');
             }
             //manager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager','FileSystem');
-            if (!\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer') 
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteServiceServer', '0', 7,
+            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteServiceServer', 0, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteServiceServerList()}', 'manager') ) {
                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Default Website Service Server");
             }
