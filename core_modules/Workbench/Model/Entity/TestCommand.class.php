@@ -148,9 +148,15 @@ class TestCommand extends Command {
      * @return array Testing folders by given component type
      */
     private function getTestingFoldersByType($componentType, $useCustomizing) {
-        
+               
         $cx = \Env::get('cx');
         $em = $cx->getDb()->getEntityManager();        
+        
+        // if component type is core then there are possible to have the test files under /core
+        // so add that folder too
+        if ($componentType == 'core') {
+            $this->addTestingFolderToArray('core', $cx->getCodeBaseCorePath());            
+        }
         
         $systemComponentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
         $systemComponents = $systemComponentRepo->findBy(array('type'=>$componentType));
