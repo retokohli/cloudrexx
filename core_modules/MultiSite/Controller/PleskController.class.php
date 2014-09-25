@@ -136,31 +136,13 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser){
         \DBG::msg("MultiSite (PleskController): Removing Database User.");
         
-        $xmldoc = $this->getXmlDocument();
-        $packet = $this->getRpcPacket($xmldoc);       
-        
-        $database = $xmldoc->createElement('database');
-        $packet->appendChild($database);
-        
-        $getDbUsers = $xmldoc->createElement('get-db-users');
-        $database->appendChild($getDbUsers);
-        
-        $filter = $xmldoc->createElement('filter');
-        $getDbUsers->appendChild($filter);
-        
-        $id = $xmldoc->createElement('id', $dbUser->getId());
-        $filter->appendChild($id);
-        
-        $response = $this->executeCurl($xmldoc);
-        $resultNode = $response->{'database'}->{'get-db-users'}->result;
-        $systemError = $response->system->errtext;
-        
-        //If Db User doesn't exists, return false
-        if ('error' == (string)$resultNode->status || $systemError) {
-            return false;
+        $dbUserName = $dbUser->getName();
+        $dbUserId   = $this->getDbUserId($dbUserName);
+        if (!empty($dbUserId)) {
+            return $dbUser;
         }
         
-        return $dbUser;
+        return false;
     }
 
     /**
@@ -229,6 +211,51 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             foreach($respArr as $res) {
                 if ($res['name'] == $name) {
                     return $res['id'];
+                }
+            }
+        }
+    }
+    
+    /**
+     * get id of a particular db user by its name
+     * 
+     * @param type $name name of the db user we need id
+     * 
+     * @return integer id of the db user
+     * @throws ApiRequestException
+     */
+    public function getDbUserId($name) {
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+        
+        $database = $xmldoc->createElement('database');
+        $packet->appendChild($database);
+        
+        $getDbUsers = $xmldoc->createElement('get-db-users');
+        $database->appendChild($getDbUsers);
+        
+        $filter = $xmldoc->createElement('filter');
+        $getDbUsers->appendChild($filter);
+        
+        $domainId = $this->webspaceId;
+        $domainIdTag = $xmldoc->createElement('webspace-id', $domainId);
+        $filter->appendChild($domainIdTag);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->database->{'get-db-users'}->result;
+        $responseJson = json_encode($response->database->{'get-db-users'});
+        $respArr = json_decode($responseJson, true); 
+        $systemError = $response->system->errtext;
+        
+        if ('error' == (string) $resultNode->status || $systemError) {
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in getting database User ID : {$error} ");
+        }      
+        
+        if (!empty($respArr)) {
+            foreach($respArr as $result) {
+                if ($result['login'] == $name) {
+                    return $result['id'];
                 }
             }
         }
