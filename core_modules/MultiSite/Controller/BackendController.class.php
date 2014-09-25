@@ -133,9 +133,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'label' => array(
                             'header' => 'Name',
                         ),
-                        'isDefault' => array(
-                            'header' => 'Default Server',
-                        ),
                         'secretKey' => array(
                             'showOverview' => false,
                         ),
@@ -431,6 +428,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
             
+            if ($mode == ComponentController::MODE_MANAGER) {
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager', 'FileSystem');    
+                \Cx\Core\Setting\Controller\Setting::show(
+                    $objTemplate,
+                    'index.php?cmd=MultiSite&act=settings',
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
+                    'Manager',
+                    'TXT_CORE_MODULE_MULTISITE_'
+                );
+            }
+          
             if (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'server', 'FileSystem');
                 \Cx\Core\Setting\Controller\Setting::show(

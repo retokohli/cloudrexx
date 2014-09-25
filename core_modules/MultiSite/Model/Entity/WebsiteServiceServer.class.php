@@ -38,11 +38,6 @@ class WebsiteServiceServer extends \Cx\Model\Base\EntityBase
     protected $websites;
     
     /**
-     * @var integer $isDefault
-     */
-    protected $isDefault;
-    
-    /**
      * @var string $httpAuthMethod
      */
     protected $httpAuthMethod;
@@ -172,37 +167,6 @@ class WebsiteServiceServer extends \Cx\Model\Base\EntityBase
         return $this->websites;
     }
    
-    /**
-     * Set isDefault
-     *
-     * @param integer $isDefault
-     */
-    public function setIsDefault($isDefault)
-    {
-        $this->isDefault = $isDefault;
-        if ($isDefault){
-            $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
-            foreach ($websiteServiceServers as $website){
-                echo $website->getId();
-                if ($website->getId() == $this->getId()){
-                    $this->isDefault = $isDefault;
-                }else{
-                    $website->isDefault=0;    
-                }
-            }
-        }
-    }
-
-    /**
-     * Get isDefault
-     *
-     * @return integer $isDefault
-     */
-    public function getIsDefault()
-    {
-        return $this->isDefault;
-    }
-
     /**
      * Set httpAuthMethod
      *

@@ -20,9 +20,6 @@ Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer:
     installationId:
       type: string
       length: 40
-    isDefault:
-      type: integer
-      length: 1
     httpAuthMethod:
       type: string
       length: 6

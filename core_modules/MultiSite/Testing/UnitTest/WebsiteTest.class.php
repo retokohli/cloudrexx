@@ -51,7 +51,7 @@ class WebsiteTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
             //get default service server
             $defaultWebsiteServiceServer = self::$em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-            ->findBy(array('isDefault' => 1));
+            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer')));
             $websiteServiceServer = $defaultWebsiteServiceServer[0];
         }
         

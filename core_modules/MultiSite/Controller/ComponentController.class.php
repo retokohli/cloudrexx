@@ -635,6 +635,13 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database ID of master subscription");
             }
+            //manager group
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager','FileSystem');
+            if (!\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer') 
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteServiceServer', '0', 7,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteServiceServerList()}', 'manager') ) {
+                   throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Default Website Service Server");
+            }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
@@ -821,6 +828,20 @@ throw new MultiSiteException('Refactor this method!');
                 break;
         }
         return $protocolUrl;
+    }
+    
+    /**
+     * Get the website service servers
+     * 
+     * @return string serviceServers list
+     */
+    public static function getWebsiteServiceServerList() {
+        $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
+        $dropdownOptions = array();
+        foreach ($websiteServiceServers As $serviceServer) {
+            $dropdownOptions[] = $serviceServer->getId() . ':' . $serviceServer->getHostname();
+        }
+        return implode(',', $dropdownOptions);
     }
 
 }
