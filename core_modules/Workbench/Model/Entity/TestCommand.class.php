@@ -108,6 +108,9 @@ class TestCommand extends Command {
             return;
         }
 
+        // Sort the folders
+        asort($this->testingFolders);
+        
         // Needs to change the dir because files might be loaded by its relative path inside PHPUnit
         chdir($phpUnitTestPath);
         require_once $phpUnitTestPath.'/PHP/CodeCoverage/Filter.php';
@@ -125,7 +128,7 @@ class TestCommand extends Command {
 
         define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
                     
-        $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();
+        $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();        
         foreach ($this->testingFolders as $testingFolder) {
             $_SERVER['argv'] = $argv = array(
                 $phpUnitTestPath,
