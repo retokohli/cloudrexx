@@ -662,7 +662,7 @@ throw new MultiSiteException('Refactor this method!');
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default Website Template");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('productId') === NULL 
-                && !\Cx\Core\Setting\Controller\Setting::add('productId', '0', 8,
+                && !\Cx\Core\Setting\Controller\Setting::add('productId', '0', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Product List");
             }
