@@ -691,12 +691,15 @@ form[name="registrationForm"] .row {
     margin: 0px 0px 15px 0px;
     float:left;
 }
-#directory div.feeds{
+.image, .infos {
+    margin: 10px 0;
+}
+.image img {
     width: 100%;
-    padding: 10px 0px 10px 0px;
-    margin: 0px 0px 0px 0px;
-    float:left;
-    height:auto !important;
+    height: auto;
+}
+.feed .image img {
+    width: auto;
 }
 #directory div.insert_feeds,
 #directory div.paging {
@@ -708,23 +711,6 @@ form[name="registrationForm"] .row {
     padding: 0px 0px 5px 0px;
     margin: 0px 0px 5px 0px;
     border-bottom: 1px solid #ECEDF3;
-}
-#directory div.image {
-    float:left;
-    height:auto !important;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    width: 20%;
-}
-#directory div.image img {
-    margin: 0px 15px 15px 0px;
-    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.1);
-    padding: 8px;
-}
-#directory div.infos {
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    height:auto !important;
 }
 #directory div.infos h3 {
     padding: 0px 0px 0px 0px;
@@ -2754,10 +2740,13 @@ form#search {
     width: 100%;
     margin-bottom: 10px;
 }
-.searchbox {
+.searchbox, .directorySearch input[name='term'] {
     width: 68%;
     float: left;
     margin-right: 10px;
+}
+.search .directorySearch form input[type="submit"] {
+    margin-right: 5px;
 }
 #login.pwdlost {
     width: 100%;
