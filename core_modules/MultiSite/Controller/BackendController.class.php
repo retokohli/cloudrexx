@@ -219,8 +219,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (empty($websiteTemplates)) {
                 $websiteTemplates = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate();
             }
-            $websiteTemplatesDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteTemplates);
-            $websiteTemplatesView = new \Cx\Core\Html\Controller\ViewGenerator($websiteTemplatesDataSet, 
+            $websiteTemplatesView = new \Cx\Core\Html\Controller\ViewGenerator($websiteTemplates, 
                 array(
                     'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_WEBSITE_TEMPLATES'],
                     'functions' => array(
