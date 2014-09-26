@@ -74,11 +74,10 @@ class PHPUnitTextUICommand extends \PHPUnit_TextUI_Command {
             );
         }
         
-        $testCollector = new \PHPUnit_Runner_IncludePathTestCollector(
-            array($this->arguments['test']),
-            array('Test.class.php')
-        );
-        $suite->addTestFiles($testCollector->collectTests());
+        $testFiles = self::collectTests($this->arguments['test']);
+        asort($testFiles);
+        
+        $suite->addTestFiles($testFiles);
         
         if (count($suite) == 0) {
             $skeleton = new \PHPUnit_Util_Skeleton_Test(
@@ -135,4 +134,24 @@ class PHPUnitTextUICommand extends \PHPUnit_TextUI_Command {
             }
         }
     }
+    
+    private static function collectTests($foldername)
+    {
+        $result = array();
+        
+        foreach (glob($foldername.'/*Test.class.php') as $file) {
+            $result[] = $file;
+        }
+        
+        foreach (glob($foldername.'/*Test.php') as $file) {
+            $result[] = $file;
+        }
+        
+        foreach (glob($foldername.'/*', GLOB_ONLYDIR) as $folder) {
+            $result = array_merge($result, self::collectTests($folder));
+        }
+        
+        return $result;
+    }
+
 }
