@@ -167,6 +167,16 @@ class Livecam extends LivecamLibrary
     {
         $this->_objTpl->setTemplate($this->pageContent);
 
+        // load source code if cmd value is integer
+        if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('Livecam');
+            // load source code
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page));
+        }
+        
         $this->_objTpl->setVariable(array(
             "CMD"                   => $this->cam
         ));
