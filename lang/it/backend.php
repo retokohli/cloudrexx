@@ -1161,3 +1161,5 @@ $_ARRAYLANG['TXT_CORE_CM_PAGE_MOVE_INFO'] = "Move the page by use of drag and dr
 $_ARRAYLANG['TXT_CORE_CM_TRANSLATION_INFO'] = "Click here to edit the page in this language.";
 $_ARRAYLANG['TXT_CORE_CM_PREVIEW_INFO'] = "Click here to see a preview of this page in the frontend.";
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Settings have been updated.';
+$_ARRAYLANG['TXT_ACTIVATED'] = "Attivato";
+$_ARRAYLANG['TXT_DEACTIVATED'] = "Deactivated";

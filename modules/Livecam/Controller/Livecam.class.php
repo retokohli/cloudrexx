@@ -342,7 +342,6 @@ class Livecam extends LivecamLibrary
 
         $path = ASCMS_DOCUMENT_ROOT."/".$this->camSettings['archivePath'].'/'.$this->date.'/';
         $objDirectory = @opendir($path);
-        $objFile = new \File();
         $chmoded = false;
 
         if ($objDirectory) {
@@ -351,9 +350,9 @@ class Livecam extends LivecamLibrary
                     //check and create thumbs
                     $thumb = ASCMS_DOCUMENT_ROOT.$this->camSettings['thumbnailPath'].'/tn_'.$this->date.'_'.$file;
 
-                    if(!file_exists($thumb)){
+                    if(!\Cx\Lib\FileSystem\FileSystem::exists($thumb)){
                         if (!$chmoded) {
-                            $objFile->setChmod(ASCMS_DOCUMENT_ROOT.$this->camSettings['archivePath'], ASCMS_PATH_OFFSET, $this->camSettings['thumbnailPath']);
+                            \Cx\Lib\FileSystem\FileSystem::chmod($this->camSettings['thumbnailPath'], '777');
                             $chmoded = true;
                         }
 
