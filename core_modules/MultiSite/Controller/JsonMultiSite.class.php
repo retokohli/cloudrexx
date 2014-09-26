@@ -240,7 +240,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
 // TODO: Product ID should be supplied by POST-data.
 //       If not set, then the ID should be taken from a MultiSite configuration option 'defaultProductId'
-            $id = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : \Cx\Core\Setting\Controller\Setting::getValue('defaultProductId');
+            $id = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
             $product = $productRepository->findOneBy(array('id' => $id));
 
