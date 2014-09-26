@@ -64,7 +64,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    public function executeCommand($command, $arguments, $productId = '') {
+    public function executeCommand($command, $arguments) {
         global $objInit, $_ARRAYLANG;
 
         $subcommand = null;
@@ -147,7 +147,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 // TODO: add configuration option for contact details and replace the hard-coded e-mail address on the next line
                             'TXT_MULTISITE_EMAIL_INFO'      => sprintf($_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO'], 'info@cloudrexx.com'),
                         ));
-                        if (!empty($productId)) {
+                        if (!empty($arguments['product-id'])) {
+                            $productId = $arguments['product-id'];
                             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
                             $product = $productRepository->findOneBy(array('id' => $productId));
 
@@ -660,7 +661,7 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\Modules\Pim\Controller\BackendController::getWebsiteTemplateList()}', 'manager')) {
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default Website Template");
             }
-            if (!\Cx\Core\Setting\Controller\Setting::getValue('productId') 
+            if (\Cx\Core\Setting\Controller\Setting::getValue('productId') === NULL 
                 && !\Cx\Core\Setting\Controller\Setting::add('productId', '0', 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Product List");
