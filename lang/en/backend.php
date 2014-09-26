@@ -1318,3 +1318,5 @@ $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Please confirm to remove the sel
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Edit entry';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Delete entry';
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Settings have been updated.';
+$_ARRAYLANG['TXT_ACTIVATED'] = "Activated";
+$_ARRAYLANG['TXT_DEACTIVATED'] = "Deactivated";

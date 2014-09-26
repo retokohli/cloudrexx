@@ -1391,3 +1391,5 @@ $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Bitte bestätigen Sie den Lösch
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Eintrag bearbeiten';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Eintrag löschen';
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Die Einstellungen wurden gespeichert.';
+$_ARRAYLANG['TXT_ACTIVATED'] = "Aktiviert";
+$_ARRAYLANG['TXT_DEACTIVATED'] = "Deaktiviert";

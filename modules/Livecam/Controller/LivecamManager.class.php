@@ -196,7 +196,7 @@ class LivecamManager extends LivecamLibrary
                 $this->_objTpl->parse("current_image");
             } else {
                 $filepath = ASCMS_PATH.$cams[$i]['currentImagePath'];
-                if (file_exists($filepath) && is_file($filepath)) {
+                if (\Cx\Lib\FileSystem\FileSystem::exists($filepath) && is_file($filepath)) {
                     $this->_objTpl->setVariable("PATH", $cams[$i]['currentImagePath']);
                     $this->_objTpl->parse("current_image");
                 } else {
