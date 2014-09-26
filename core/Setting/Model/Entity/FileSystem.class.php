@@ -260,7 +260,7 @@ class FileSystem extends Engine{
                             'group'=> addslashes($group),
                             'value'=> addslashes($value),
                             'type' => addslashes($type),
-                            'values'=> addslashes($values),
+                            'values'=> $values,
                             'ord'=> intval($ord)
                         );
         self::$arrSettings[addslashes($name)]=$addValue;

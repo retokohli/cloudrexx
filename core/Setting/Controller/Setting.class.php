@@ -480,9 +480,7 @@ class Setting{
               // Dropdown menu
               case self::TYPE_DROPDOWN:
                 if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
-                    //Replace two or more backslash(\) into single backslash(\)
-                    $src       = preg_replace('/\\\\+/', '\\', $matches[1]);
-                    $arrValues = self::splitValues(call_user_func($src));
+                    $arrValues = self::splitValues(call_user_func($matches[1]));
                 } else {
                     $arrValues = self::splitValues($arrSetting['values']);
                 } 
