@@ -609,6 +609,14 @@ namespace Cx\Core\Core\Controller {
              * 
              * Enable \DBG to see what happened
              */
+            } catch (\Cx\Core\Error\Model\Entity\ShinyException $e) {
+                if ($this->mode != self::MODE_BACKEND) {
+                    throw new \Exception($e->getMessage());
+                }
+                $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
+                $this->setPostContentLoadPlaceholders();
+                $this->finalize();
+                die;
             } catch (\Exception $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
                 if (file_exists($this->websiteDocumentRootPath . '/offline.html')) {
