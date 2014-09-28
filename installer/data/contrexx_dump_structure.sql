@@ -382,7 +382,7 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `secretKey` varchar(255) NOT NULL,
   `ipAddress` varchar(45) NOT NULL,
   `ownerId` int(11) NOT NULL,
-  `themeId` int(11) NOT NULL,
+  `themeId` int(11) default NULL,
   `installationId` varchar(40) NOT NULL,
   `ftpUser` varchar(200) default NULL,
   PRIMARY KEY  (`id`),
