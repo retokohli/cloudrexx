@@ -217,7 +217,15 @@ function cx_multisite_signup(options) {
                     return;
                 }
 
+                // fetch message
                 message = response.data.message;
+
+                // redirect to website, in case auto-login is active
+                if (message == 'auto-login') {
+                    window.location.href = response.data.loginUrl;
+                    return;
+                }
+
                 setMessage(message, 'success');
                 break;
 
@@ -294,6 +302,10 @@ function cx_multisite_signup(options) {
     }
 
     function showProgress() {
+        message = options.messageBuildTxt;
+        message = message.replace('%1$s', '<strong>' + objMail.val() + '</strong>');
+        message = message.replace('%2$s', '<strong>' + objAddress.val() + '.' + options.multisiteDomain + '</strong>');
+        objModal.find('.multisite-progress div').html(message);
         objModal.find('.multisite-progress').show();
     }
 

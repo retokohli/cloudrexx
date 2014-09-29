@@ -119,7 +119,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     /*
      * Constructor
      * */
-    public function __construct($basepath, $name, $websiteServiceServer = null, \User $userObj=null, $lazyLoad = true, $themeId = null) {
+    public function __construct($basepath, $name, $websiteServiceServer = null, \User $userObj=null, $lazyLoad = true, $themeId = 0) {
         $this->basepath = $basepath;
         $this->name = $name;
 
@@ -584,14 +584,29 @@ class Website extends \Cx\Model\Base\EntityBase {
             // set user account password
             $websitePassword = '';
             $websitePasswordUrl = '';
-            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') == 'auto') {
-                \DBG::msg('Website: generate password for Cloudrexx user..');
-                $passwordBlock = 'WEBSITE_PASSWORD_AUTO';
-                $websitePassword = $this->generateAccountPassword();
-            } else {
-                \DBG::msg('Website: generate reset password link for Cloudrexx user..');
-                $passwordBlock = 'WEBSITE_PASSWORD_INTERACTIVE';
-                $websitePasswordUrl = $this->generatePasswordRestoreUrl();
+            $websiteVerificationUrl = '';
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod')) {
+                case 'interactive':
+                    \DBG::msg('Website: generate reset password link for Cloudrexx user..');
+                    $passwordBlock = 'WEBSITE_PASSWORD_INTERACTIVE';
+                    $websitePasswordUrl = $this->generatePasswordRestoreUrl();
+                    break;
+
+                case 'auto-with-verification':
+                    \DBG::msg('Website: set verification state to pending on Cloudrexx user..');
+                    // set state of user account to unverified
+                    $this->owner->setVerification(false);
+                    $this->owner->store();
+                    $websiteVerificationUrl = $this->generateVerificationUrl();
+
+                    // important: intentionally no break for this case!
+
+                case 'auto':
+                default:
+                    \DBG::msg('Website: generate password for Cloudrexx user..');
+                    $passwordBlock = 'WEBSITE_PASSWORD_AUTO';
+                    $websitePassword = $this->generateAccountPassword();
+                    break;
             }
 
             \DBG::msg('Website: SETUP COMPLETED > OK');
@@ -640,6 +655,15 @@ class Website extends \Cx\Model\Base\EntityBase {
                     )
                 ),
             );
+            // If email verification is required,
+            // parse related block in notification email.
+            if ($websiteVerificationUrl) {
+                $info['substitution']['WEBSITE_EMAIL_VERIFICATION'] = array(
+                    '0' => array(
+                        'WEBSITE_VERIFICATION_URL' => $websiteVerificationUrl,
+                    )
+                );
+            }
             //If $ftpAccountPassword is set, then add related entry to substitution
             if (isset($ftpAccountPassword)) {
                 $info['substitution']['WEBSITE_FTP'] = array(
@@ -1420,6 +1444,26 @@ throw new WebsiteException('implement secret-key algorithm first!');
         $this->owner->store();
         $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
         return $websitePasswordUrl;
+    }
+
+    public function generateVerificationUrl() {
+        $this->owner->setRestoreKey();
+        $this->owner->store();
+        $websiteVerificationUrl = \FWUser::getVerificationLink(true, $this->owner, $this->baseDn->getName());
+        return $websiteVerificationUrl;
+    }
+
+    public function generateAuthToken() {
+        try {
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('generateAuthToken', array(), $this);
+            if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                return array($resp->data->userId, $resp->data->authToken);
+            } else {
+                throw new WebsiteException('Command generateAuthToken failed');
+            }
+        } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
+            throw new WebsiteException('Unable to generate auth token: '.$e->getMessage());
+        }  
     }
 
     /**

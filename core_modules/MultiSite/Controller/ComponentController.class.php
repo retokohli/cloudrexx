@@ -122,6 +122,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $termsUrl = '<a href="'.$termsUrlValue.'" target="_blank">'.$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'].'</a>';
                         $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
                         $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
+                        if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin')) {
+                            $buildWebsiteMsg = $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'];
+                        } else {
+                            $buildWebsiteMsg = $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'];
+                        }
                         $objTemplate->setVariable(array(
                             'TITLE'                         => $_ARRAYLANG['TXT_MULTISITE_TITLE'],
                             'TXT_MULTISITE_CLOSE'           => $_ARRAYLANG['TXT_MULTISITE_CLOSE'],
@@ -140,7 +145,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
                             'TXT_MULTISITE_ACCEPT_TERMS'    => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
                             'TXT_MULTISITE_BUILD_WEBSITE_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'],
-                            'TXT_MULTISITE_BUILD_WEBSITE_MSG' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'],
+                            'TXT_MULTISITE_BUILD_WEBSITE_MSG' => $buildWebsiteMsg,
                             'TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'],
                             'TXT_MULTISITE_BUILD_ERROR_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'],
                             'TXT_MULTISITE_BUILD_ERROR_MSG' => $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'],
@@ -527,8 +532,13 @@ throw new MultiSiteException('Refactor this method!');
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('passwordSetupMethod', 'auto', 12,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'auto:Automatically, interactive:Interactive', 'setup')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'auto:Automatically,auto-with-verification:Automatically (with email verification),interactive:Interactive', 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Password set method during website setup");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('autoLogin', '0', 13,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Auto Login during website setup");
             }
 
             // websiteSetup group

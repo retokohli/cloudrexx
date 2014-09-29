@@ -73,6 +73,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TERMSURL_TOOLTIP'] = "The absolute URL (i
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATEFTPACCOUNTONSETUP'] = "Create FTP account during website setup";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PASSWORDSETUPMETHOD'] = "Password set method";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTWEBSITETEMPLATE'] = 'Default Website Template for Sign-Up';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AUTOLOGIN'] = 'Auto Login after sign-up';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AUTOLOGIN_TOOLTIP'] = 'Automatically log user in after successfull sign-up process and redirect user to backend of newly created website.';
 
 // settings status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTCODEBASE_SUCCESSFUL_CREATION']      = "Default Code Base has been set successfully";
@@ -113,6 +115,8 @@ $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'] = 'Building your Website..';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'] = 'Congratulations!';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'] = 'Oops..';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'] = 'This might take a few minutes. You will be informed on the supplied email address once your website is online and ready to use.';
+// TODO add english translation
+$_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'] = 'Vielen Dank für Ihre Anmeldung bei Cloudrexx! Bitte haben Sie etwas Geduld. Es kann bis zu 2 Minuten dauern, bis Ihre Website einsatzbereit ist. Sobald Ihre Website einsatzbereit ist, werden Sie in den Administrationsbereich weitergeleitet. Sie sind automatisch eingeloggt. Das Kennwort wird an %1$s gesendet. Ihre Cloudrexx-Domain lautet %2$s.';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'] = 'Unfortunately, the build process of your website failed. If this did happen before, please contact our customer service under %s.';
 
 //Reset FTP password status message

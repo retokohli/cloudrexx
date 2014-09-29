@@ -10,11 +10,13 @@ jQuery(document).ready(function(){
         signUpUrl: '{MULTISITE_SIGNUP_URL}',
         emailUrl: '{MULTISITE_EMAIL_URL}',
         addressUrl: '{MULTISITE_ADDRESS_URL}',
+        multisiteDomain: '{MULTISITE_DOMAIN}',
         headerInitTxt: '{TITLE}',
         headerSetupTxt: '{TXT_MULTISITE_BUILD_WEBSITE_TITLE} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />',
         headerSuccessTxt: '{TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE}',
         headerErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_TITLE}',
-        messageErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_MSG}'
+        messageErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_MSG}',
+        messageBuildTxt: '{TXT_MULTISITE_BUILD_WEBSITE_MSG}'
     };
     for (var option in options) {
         if (!cx_multisite_options[option]) {
@@ -63,9 +65,7 @@ jQuery(document).ready(function(){
     </div>
 
     <div class="modal-body multisite-progress">
-        <div>
-            {TXT_MULTISITE_BUILD_WEBSITE_MSG}
-        </div>
+        <div></div>
     </div>
 
     <div class="modal-footer">

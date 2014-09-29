@@ -428,7 +428,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 if (isset($_POST['websitePath']))  {
                     $_POST['websitePath']=rtrim($_POST['websitePath'],"/");
                 }
-                if (isset($_GET['active_tab']) && $_GET['active_tab'] == 3 && ($mode == ComponentController::MODE_MANAGER || ComponentController::MODE_HYBRID)) {
+                // Tab #4 is tab 'Setup'
+                if (isset($_GET['active_tab']) && $_GET['active_tab'] == 4 && ($mode == ComponentController::MODE_MANAGER || ComponentController::MODE_HYBRID)) {
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                     $params = array('setupArray' => \Cx\Core\Setting\Controller\Setting::getArray('MultiSite', 'setup'));
                     $webServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();

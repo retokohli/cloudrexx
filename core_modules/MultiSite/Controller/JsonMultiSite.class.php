@@ -98,7 +98,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setDefaultLanguage'    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'resetFtpPassword'      => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkResetFtpPasswordAccess')),
             'updateServiceServerSetup' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'destroyWebsite'        => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
+            'destroyWebsite'        => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'executeOnWebsite'      => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'generateAuthToken'     => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -205,7 +207,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             // set website name and website theme
             $websiteName = contrexx_input2raw($params['post']['multisite_address']);
-            $websiteThemeId = contrexx_input2raw($params['post']['themeId']);
+            $websiteThemeId = !empty($params['post']['themeId']) ? contrexx_input2raw($params['post']['themeId']) : null;
 
             // create new user account
             $arrSettings = \User_Setting::getSettings();
@@ -296,11 +298,32 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     ),
                 ));
             }
-            $websiteLink = '<a href="'.ComponentController::getApiProtocol().$website->getBaseDn()->getName().'" target="_blank">'.$website->getBaseDn()->getName().'</a>';
-            return array(
-                'status'    => 'success',
-                'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'], $websiteLink),
-            );
+
+            $authToken = null;
+            $autoLoginUrl = null;
+            if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin')) {
+                \DBG::msg('Website: generate auth-token for Cloudrexx user..');
+                try {
+                    list($ownerUserId, $authToken) = $website->generateAuthToken();
+                    $autoLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $website->getBaseDn()->getName() . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$ownerUserId.'&auth-token='.$authToken);
+                } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
+                    \DBG::msg($e->getMessage());
+                }
+            }
+
+            if ($autoLoginUrl) {
+                return array(
+                    'status'    => 'success',
+                    'message'   => 'auto-login',
+                    'loginUrl'  => $autoLoginUrl->toString(),
+                );
+            } else {
+                $websiteLink = '<a href="'.ComponentController::getApiProtocol().$website->getBaseDn()->getName().'" target="_blank">'.$website->getBaseDn()->getName().'</a>';
+                return array(
+                    'status'    => 'success',
+                    'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'], $websiteLink),
+                );
+            }
         } catch (\Exception $e) {
             $config = \Env::get('config');
             if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
@@ -899,7 +922,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             || empty($params['post']['auth'])
             || empty($params['post']['componentType'])
             || !isset($params['post']['componentId'])
-            || !isset($params['post']['coreNetDomainId'])
+            //|| !isset($params['post']['coreNetDomainId'])
         ) {
             \DBG::dump($params);
             throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied: '.var_export($params, true));
@@ -1120,8 +1143,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return array
      */
-    public function ping() 
-    {
+    public function ping() {
         global $_CONFIG;
         
         //Check the system is in maintenance mode or not
@@ -1142,13 +1164,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return array
      */
-    public function pong()
-    {
+    public function pong() {
         return array('status' => 'success');
     }
     
     public static function executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth) {
-
         $params['auth'] = self::getAuthenticationObject($secretKey, $installationId);
         $objJsonData = new \Cx\Core\Json\JsonData();
         return $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $host . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=' . $command, $params, false, '', $httpAuth);
@@ -1158,11 +1178,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * This method will be used by the Website Service to execute commands on the Website Manager
      * Fetch connection data to Manager and pass it to the method executeCommand()
      */
-
     public static function executeCommandOnManager($command, $params = array()) {
-
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
-            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
         }
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
 \DBG::msg('JsonMultiSite: execut directly on manager');
@@ -1194,11 +1212,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * This method will be used by a Websites to execute commands on its Website Service
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
-
     public static function executeCommandOnMyServiceServer($command, $params) {
-
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_WEBSITE))) {
-            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode WEBSITE.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode WEBSITE.');
         }
         $host = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
         $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');
@@ -1215,11 +1231,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * This method will be used by the Website Manager to execute commands on the Website Service
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
-
     public static function executeCommandOnServiceServerOfWebsite($command, $params, $website) {
-
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER))) {
-            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode MANAGER.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER.');
         }
         $websiteServiceServer = $website->getWebsiteServiceServer();
         $host = $websiteServiceServer->getHostname();
@@ -1237,11 +1251,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * This method will be used by the Website Manager to execute commands on a Website Service
      * Fetch connection data to Service and pass it to the method executeCommand():
      */
-
     public static function executeCommandOnServiceServer($command, $params, $websiteServiceServer) {
-        
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER))) {
-            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode MANAGER.');
+            throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER.');
         }
         $host = $websiteServiceServer->getHostname();
         $installationId = $websiteServiceServer->getInstallationId();
@@ -1258,12 +1270,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * This method will be used by the Website Service to execute commands on a Website
      * Fetch connection data to Website and pass it to the method executeCommand():
      */
-
     public static function executeCommandOnWebsite($command, $params, $website) {
-
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
-            throw new MultiSiteJsonException('Command'.__METHOD__.'executeCommandOnWebsite is only available in MultiSite-mode HYBRID or SERVICE.');
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
+            throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode HYBRID or SERVICE.');
         }
+
+        // In case mode is Manager, the request shall be routed through the associated Service Server
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
+            return self::executeCommandOnServiceServerOfWebsite('executeOnWebsite', array('command' => $command, 'params' => $params, 'websiteId' => $website->getId()), $website);
+        }
+
         // JsonData requests shall be made to the FQDN of the Website,
         // as the BaseDn might not yet work as it depends on the DNS synchronization.
         $host = $website->getFqdn()->getName();
@@ -1275,6 +1291,54 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword'),
         );
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+    }
+
+    public function executeOnWebsite($params) {
+        if (empty($params['post']['command']) || empty($params['post']['websiteId'])) {
+            \DBG::dump($params);
+            throw new MultiSiteJsonException('JsonMultiSite::executeOnWebsite() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient arguments supplied: '.var_export($params, true));
+        }
+        
+        $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website  = $webRepo->findOneById($params['post']['websiteId']);
+        if (!$website) {
+            throw new MultiSiteJsonException('JsonMultiSite::executeOnWebsite() failed: Website by ID '.$params['post']['websiteId'].' not found.');
+        }
+
+        $passedParams = !empty($params['post']['params']) ? $params['post']['params'] : null;
+        
+        try {
+            $resp = self::executeCommandOnWebsite($params['post']['command'], $passedParams, $website);
+            if ($resp && $resp->data->status == 'success') {
+                return $resp->data;
+            } else {
+                throw new MultiSiteJsonException(var_export($resp, true));
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::executeOnWebsite() failed: ' . $e->getMessage());
+        }
+    }
+
+    public function generateAuthToken($params) {
+        try {
+            $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+            $objUser = \FWUser::getFWUserObject()->objUser->getUser(intval($websiteUserId));
+            if (!$objUser) {
+                throw new MultiSiteJsonException('Unable to load website Owner user account');
+            }
+            $authToken = $objUser->generateAuthToken();
+            if (!$objUser->store()) {
+                \DBG::msg('Updating user failed: '.$objUser->getErrorMsg());
+                throw new MultiSiteJsonException($objUser->getErrorMsg());
+            }
+            return array(
+                'status'    => 'success',
+                'userId'    => $websiteUserId,
+                'authToken' => $authToken,
+            );
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::generateAuthToken() failed: ' . $e->getMessage());
+        }
     }
     
      /**
