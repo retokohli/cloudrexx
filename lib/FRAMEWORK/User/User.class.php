@@ -62,6 +62,18 @@ class User extends User_Profile
     protected $password;
 
     /**
+     * Token used for auto login
+     * @var string
+     */
+    protected $auth_token;
+
+    /**
+     * Timeout used for auto login
+     * @var integer
+     */
+    protected $auth_token_timeout;
+
+    /**
      * Language ID of user
      * @var integer
      * @access private
@@ -88,6 +100,12 @@ class User extends User_Profile
      * @access private
      */
     private $is_active;
+
+    /**
+     * verification status of user
+     * @var boolean
+     */
+    protected $verified;
 
     /**
      * The ID of a user group that should be used as the primary one
@@ -236,6 +254,7 @@ class User extends User_Profile
         'frontend_lang_id'  => 'int',
         'backend_lang_id'   => 'int',
         'active'            => 'int',
+        'verified'          => 'int',
         'profile_access'    => 'string',
         'restore_key'       => 'string',
         'restore_key_time'  => 'int',
@@ -323,6 +342,17 @@ class User extends User_Profile
         return true;
     }
 
+    public function authByToken($userId, $authToken, $backend = false)
+    {
+        $userId = $this->checkAuthToken($userId, $authToken);
+
+        if (!$userId || !$this->load($userId) || !$this->hasModeAccess($backend) || !$this->updateLastAuthTime()) {
+            return false;
+        }
+
+        return true;
+    }
+
 
     /**
      * Checks username, password and captcha.
@@ -352,12 +382,15 @@ class User extends User_Profile
 
         $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status` = 1' : '';
 
+// TODO: add verificationTimeout as configuration option
+        $verificationExpired = time() - 30 * 86400;
         $objResult = $objDatabase->SelectLimit('
             SELECT `id`
               FROM `' . DBPREFIX . 'access_users`
              WHERE ' . $loginCheck . '
                AND `password` = "'.addslashes($password).'"
                AND `active` = 1
+               AND (`verified` = 1 OR `regdate` >= '.$verificationExpired.')
                ' . $loginStatusCondition . '
                AND (`expiration` = 0 OR `expiration` > ' . time() . ')
         ', 1);
@@ -369,6 +402,35 @@ class User extends User_Profile
         return $objResult->fields['id'];
     }
 
+    public function checkAuthToken($userId, $authToken) {
+        global $objDatabase;
+
+        if (empty($authToken) || empty($userId)) {
+            return false;
+        }
+
+// TODO: add verificationTimeout as configuration option
+        $verificationExpired = time() - 30 * 86400;
+        $objResult = $objDatabase->SelectLimit('
+            SELECT `id`
+              FROM `' . DBPREFIX . 'access_users`
+             WHERE `auth_token` = \''.contrexx_raw2db($authToken).'\'
+               AND `auth_token_timeout` >= '.time().'
+               AND `active` = 1
+               AND (`verified` = 1 OR `regdate` >= '.$verificationExpired.')
+               AND `id` = '.intval($userId).'
+               AND (`expiration` = 0 OR `expiration` > ' . time() . ')
+        ', 1);
+
+        if (!$objResult || $objResult->RecordCount() != 1) {
+            return false;
+        }
+
+        // destroy auth-token
+        $objDatabase->Execute('UPDATE `'.DBPREFIX.'access_users` SET `auth_token` = \'\', `auth_token_timeout` = 0');
+
+        return $objResult->fields['id'];
+    }
 
     /**
      * Returns TRUE if the given password matches the current user,
@@ -409,9 +471,12 @@ class User extends User_Profile
         $this->email = '';
         $this->email_access = $this->defaultEmailAccessType;
         $this->password = '';
+        $this->auth_token = '';
+        $this->auth_token_timeout = 0;
         $this->frontend_language = $_LANGID;
         $this->backend_language = $_LANGID;
         $this->is_active = false;
+        $this->verified = true;
         $this->primary_group = 0;
         $this->is_admin = false;
         $this->profile_access = $this->defaultProfileAccessTyp;
@@ -520,6 +585,12 @@ class User extends User_Profile
     public function getActiveStatus()
     {
         return $this->is_active;
+    }
+
+
+    public function isVerified()
+    {
+        return $this->verified;
     }
 
 
@@ -968,11 +1039,14 @@ class User extends User_Profile
             }
             $this->id = $id;
             $this->username = isset($this->arrCachedUsers[$id]['username']) ? $this->arrCachedUsers[$id]['username'] : '';
+            $this->auth_token = '';
+            $this->auth_token_timeout = 0;
             $this->email = isset($this->arrCachedUsers[$id]['email']) ? $this->arrCachedUsers[$id]['email'] : '';
             $this->email_access = isset($this->arrCachedUsers[$id]['email_access']) ? $this->arrCachedUsers[$id]['email_access'] : $this->defaultEmailAccessType;
             $this->frontend_language = isset($this->arrCachedUsers[$id]['frontend_lang_id']) ? $this->arrCachedUsers[$id]['frontend_lang_id'] : $_LANGID;
             $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
             $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
+            $this->verified = isset($this->arrCachedUsers[$id]['verified']) ? (bool)$this->arrCachedUsers[$id]['verified'] : false;
             $this->primary_group = isset($this->arrCachedUsers[$id]['primary_group']) ? $this->arrCachedUsers[$id]['primary_group'] : 0;            $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
             $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
             $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
@@ -1300,6 +1374,17 @@ class User extends User_Profile
         }*/
     }
 
+    public function generateAuthToken() {
+        $this->setAuthToken(bin2hex(openssl_random_pseudo_bytes(16)));
+        return $this->auth_token;
+    }
+
+    public function setAuthToken($authToken) {
+        global $_CONFIG;
+
+        $this->auth_token = $authToken;
+        $this->auth_token_timeout = time() + $_CONFIG['sessionLifeTime'];
+    }
 
     public function setRestoreKey()
     {
@@ -1588,6 +1673,7 @@ class User extends User_Profile
                 `username` = '".addslashes($this->username)."',
                 `is_admin` = ".intval($this->is_admin).",
                 ".(!empty($this->password) ? "`password` = '".$this->password."'," : '')."
+                ".(!empty($this->auth_token) ? "`auth_token` = '".$this->auth_token."', `auth_token_timeout` = ".$this->auth_token_timeout."," : '')."
                 `email` = '".addslashes($this->email)."',
                 `email_access` = '".$this->email_access."',
                 `frontend_lang_id` = ".intval($this->frontend_language).",
@@ -1595,6 +1681,7 @@ class User extends User_Profile
                 `expiration` = ".intval($this->expiration).",
                 `validity` = ".intval($this->validity).",
                 `active` = ".intval($this->is_active).",
+                `verified` = ".intval($this->verified).",
                 `primary_group` = ".intval($this->primary_group).",
                 `profile_access` = '".$this->profile_access."',
                 `restore_key` = '".$this->restore_key."',
@@ -1618,6 +1705,8 @@ class User extends User_Profile
                 `username`,
                 `is_admin`,
                 `password`,
+                `auth_token`,
+                `auth_token_timeout`,
                 `email`,
                 `email_access`,
                 `frontend_lang_id`,
@@ -1628,6 +1717,7 @@ class User extends User_Profile
                 `last_auth`,
                 `last_activity`,
                 `active`,
+                `verified`,
                 `primary_group`,
                 `profile_access`,
                 `restore_key`,
@@ -1636,6 +1726,8 @@ class User extends User_Profile
                 '".addslashes($this->username)."',
                 ".intval($this->is_admin).",
                 '".$this->password."',
+                '".$this->auth_token."',
+                '".$this->auth_token_timeout."',
                 '".addslashes($this->email)."',
                 '".$this->email_access."',
                 ".intval($this->frontend_language).",
@@ -1646,6 +1738,7 @@ class User extends User_Profile
                 ".$this->last_auth.",
                 ".$this->last_activity.",
                 ".intval($this->is_active).",
+                ".intval($this->verified).",
                 ".intval($this->primary_group).",
                 '".$this->profile_access."',
                 '".$this->restore_key."',
@@ -2003,6 +2096,14 @@ class User extends User_Profile
     {
         global $objDatabase;
 
+        // destroy expired auth token
+        $objDatabase->Execute('
+            UPDATE `'.DBPREFIX.'access_users`
+               SET `auth_token` = \'\', `auth_token_timeout` = 0
+            WHERE `id` = '.$this->id.'
+              AND `auth_token_timeout` < '.time());
+
+        // update authentication time
         return $objDatabase->Execute("
             UPDATE `".DBPREFIX."access_users`
                SET `last_auth`='".time()."'
@@ -2217,6 +2318,16 @@ class User extends User_Profile
         $this->is_active = (bool)$status;
     }
 
+    /**
+     * Set verification status of user
+     *
+     * This will set the attribute verified of this object either
+     * to TRUE or FALSE, depending of $verified.
+     * @param   boolean   $verified
+     */
+    public function setVerification($verified) {
+        $this->verified = $verified;
+    }
 
     /**
      * Set the Id of a user group that should be used as the user's primary group

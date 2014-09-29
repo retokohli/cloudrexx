@@ -48,6 +48,9 @@ class LoginManager {
             case 'resetpw':
                 $this->showPasswordReset();
                 break;
+            case 'verify':
+                $this->verifyUserAccount();
+                break;
             case 'captcha':
                 $this->getCaptcha();
                 break;
@@ -176,6 +179,22 @@ class LoginManager {
             ));
             $this->objTemplate->parse('login_reset_password');
         }
+    }
+
+    protected function verifyUserAccount() {
+        $email = !empty($_GET['u']) ? contrexx_input2raw($_GET['u']) : null;
+        $key = !empty($_GET['key']) ? contrexx_input2raw($_GET['key']) : null;
+
+        if (empty($email) || empty($key)) {
+// TODO: implement error message
+        }
+
+        if (!\FWUser::getFWUserObject()->verifyUserAccount($email, $key)) {
+// TODO: implement error message
+        }
+
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Home');
+        exit;
     }
 
     /**

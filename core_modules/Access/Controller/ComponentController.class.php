@@ -176,11 +176,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                 /* authentification */
                 $loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
-                if (!empty($_POST) && !$loggedIn &&
-                        (
-                        (!isset($_GET['cmd']) || $_GET['cmd'] !== 'Login') &&
-                        (!isset($_GET['act']) || $_GET['act'] !== 'resetpw')
-                        )) { //not logged in already - do captcha and password checks
+                if (   !$loggedIn
+                    && (   (!empty($_POST['USERNAME']) && !empty($_POST['PASSWORD']))
+                        || (!empty($_GET['auth-token']) && !empty($_GET['user-id'])))
+                    && (!isset($_GET['cmd']) || $_GET['cmd'] !== 'Login')
+                    && (!isset($_GET['act']) || $_GET['act'] !== 'resetpw')
+                ) {
+                    //not logged in already - do captcha and password checks
                     $objFWUser->checkAuth();
                 }
 
@@ -223,6 +225,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (isset($_POST['redirect'])) {
                     $redirect = \FWUser::getRedirectUrl(urlencode($_POST['redirect']));
                     \Cx\Core\Csrf\Controller\Csrf::header('location: ' . $redirect);
+                } elseif (!empty($_GET['auth-token'])) {
+                    \Cx\Core\Csrf\Controller\Csrf::header('location: ' . \Env::get('cx')->getWebsiteBackendPath() . '/');
                 }
                 break;
 
