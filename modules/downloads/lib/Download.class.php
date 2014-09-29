@@ -1001,6 +1001,9 @@ class Download {
 
             if (!isset($arrSort['order'])) {
                 $arrSortExpressions[] = ($joinCategoryTbl ? 'tblRC' : 'tblD').'.`order`';
+                if ($joinCategoryTbl) {
+                    $arrSortExpressions[] = 'tblD.`order`';
+                }
             }
             if (!in_array('id', $arrSort)) {
                 $arrSortExpressions[] = 'tblD.`id`';
