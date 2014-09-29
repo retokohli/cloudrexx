@@ -93,16 +93,16 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteServiceServerProxy extends \Cx\Co
         return parent::getWebsites();
     }
 
-    public function setIsDefault($isDefault)
+    public function addWebsiteTemplate(\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate $WebsiteTemplate)
     {
         $this->_load();
-        return parent::setIsDefault($isDefault);
+        return parent::addWebsiteTemplate($WebsiteTemplate);
     }
 
-    public function getIsDefault()
+    public function getWebsiteTemplates()
     {
         $this->_load();
-        return parent::getIsDefault();
+        return parent::getWebsiteTemplates();
     }
 
     public function setHttpAuthMethod($httpAuthMethod)
@@ -141,6 +141,18 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteServiceServerProxy extends \Cx\Co
         return parent::getHttpAuthPassword();
     }
 
+    public function __get($name)
+    {
+        $this->_load();
+        return parent::__get($name);
+    }
+
+    public function getComponentController()
+    {
+        $this->_load();
+        return parent::getComponentController();
+    }
+
     public function setVirtual($virtual)
     {
         $this->_load();
@@ -168,7 +180,7 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteServiceServerProxy extends \Cx\Co
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'hostname', 'label', 'secretKey', 'installationId', 'isDefault', 'httpAuthMethod', 'httpAuthUsername', 'httpAuthPassword', 'websites');
+        return array('__isInitialized__', 'id', 'hostname', 'label', 'secretKey', 'installationId', 'httpAuthMethod', 'httpAuthUsername', 'httpAuthPassword', 'websites', 'websiteTemplates');
     }
 
     public function __clone()
