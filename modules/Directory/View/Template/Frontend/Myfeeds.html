@@ -1,16 +1,18 @@
 <div id="directory">
-	<!-- BEGIN showFeeds --> 
-		<div class="feeds {DIRECTORY_FEED_ROW}">
-			<div class="image"><img src="http://open.thumbshots.org/image.aspx?url={DIRECTORY_FEED_LINK_URL}" border="1" /></div>
-			<div class="infos">
-				<a href="{DIRECTORY_FEED_DETAIL_LINK}"><h3>{DIRECTORY_FEED_TITLE}</h3></a><br /><br />
-				{DIRECTORY_FEED_DESCRIPTION}<br /><br />
-				<a href="{DIRECTORY_FEED_EDIT_LINK}">{DIRECTORY_FEED_EDIT}</a>&nbsp;&nbsp;|&nbsp;&nbsp;{DIRECTORY_FEED_AVERAGE_VOTE}&nbsp;<em>{DIRECTORY_FEED_COUNT_VOTES}</em><br />
-			</div>
-		</div>
-	<!-- END showFeeds -->  
-	<!-- BEGIN noFeeds --> 
-		<div class="no_feeds">{DIRECTORY_NO_FEEDS_FOUND}</div>
-	<!-- END noFeeds -->
-	<div class="paging">{SEARCH_PAGING}</div>
+    <!-- BEGIN showFeeds --> 
+    <div class="feeds {DIRECTORY_FEED_ROW} container-fluid">
+        <div class="row">
+            <div class="image col-md-2 col-sm-12"><img src="http://open.thumbshots.org/image.aspx?url={DIRECTORY_FEED_LINK_URL}" border="1" /></div>
+            <div class="infos col-md-10 col-sm-12">
+                <a href="{DIRECTORY_FEED_DETAIL_LINK}"><h3>{DIRECTORY_FEED_TITLE}</h3></a><br /><br />
+                {DIRECTORY_FEED_DESCRIPTION}<br /><br />
+                <a href="{DIRECTORY_FEED_EDIT_LINK}">{DIRECTORY_FEED_EDIT}</a>&nbsp;&nbsp;|&nbsp;&nbsp;{DIRECTORY_FEED_AVERAGE_VOTE}&nbsp;<em>{DIRECTORY_FEED_COUNT_VOTES}</em><br />
+            </div>
+        </div>
+    </div>
+    <!-- END showFeeds -->  
+    <!-- BEGIN noFeeds --> 
+    <div class="no_feeds">{DIRECTORY_NO_FEEDS_FOUND}</div>
+    <!-- END noFeeds -->
+    <div class="paging">{SEARCH_PAGING}</div>
 </div>

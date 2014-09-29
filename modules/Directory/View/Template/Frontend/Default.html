@@ -1,7 +1,11 @@
 <div id="directory">
     <div class="search">{DIRECTORY_SEARCH}</div>
-    <div class="navtree"><a href="index.php?section=Directory">{TXT_DIRECTORY_DIR}</a>{DIRECTORY_TREE}</div>
-    <!-- BEGIN showTitle --> 
+    <div class="container-fluid">
+        <div class="row">
+            <a href="index.php?section=Directory">{TXT_DIRECTORY_DIR}</a>{DIRECTORY_TREE}
+            <!-- BEGIN showTitle --> 
+        </div>
+    </div>
     <div class="title"><h2>{DIRECTORY_TITLE}</h2>{DIRECTORY_DESCRIPTION}</div>
     <!-- END showTitle --> 
     <!-- BEGIN showCategories --> 
@@ -18,7 +22,7 @@
     <!-- BEGIN showFeeds --> 
     <div class="feeds {DIRECTORY_FEED_ROW} container-fluid">
         <div class="row">
-            <div class="image col-md-2 col-sm-12">
+            <div class="image_default col-md-2 col-sm-12">
                 <a href="index.php?section=Directory&amp;cmd=detail&amp;id={DIRECTORY_FEED_ID}&amp;lid={DIRECTORY_LEVEL_ID}&amp;cid={DIRECTORY_CAT_ID}">{DIRECTORY_FEED_SPEZ_FIELD_11}</a>
             </div>
             <div class="infos col-md-10 col-sm-12">
