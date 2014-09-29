@@ -22,7 +22,7 @@
     <div id="right-login">
         <div id="login">
             <p class="login-error-msg text-danger">{LOGIN_STATUS_MESSAGE}</p>
-            <form role="form" method="post" action="index.php?section=login" name="loginForm">
+            <form role="form" method="post" action="{NODE_LOGIN}" name="loginForm">
                 <input type="hidden" value="{LOGIN_REDIRECT}" name="redirect" />
                 <p><label for="USERNAME">Benutzername</label><input id="USERNAME" name="USERNAME" value="" placeholder="E-Mail-Adresse oder Benutzername" type="text"></p>
                 <p><label for="PASSWORD">{TXT_PASSWORD}</label><input id="PASSWORD" name="PASSWORD" value="" placeholder="Passwort" type="password"></p>
@@ -45,8 +45,8 @@
     </div>
     <div class="login-bottom">
         <div class="col-md-6 col-md-offset-6">
-            <a title="Jetzt kostenlos registrieren" href="index.php?section=access&amp;cmd=signup" class="register btn btn-link">Haben Sie noch keinen Account? Jetzt registrieren</a><br />
-            <a title="{TXT_LOST_PASSWORD}" href="index.php?section=login&amp;cmd=lostpw" class="lostpw btn btn-link">{TXT_PASSWORD_LOST}</a>
+            <a title="Jetzt kostenlos registrieren" href="{NODE_ACCESS_SIGNUP}" class="register btn btn-link">Haben Sie noch keinen Account? Jetzt registrieren</a><br />
+            <a title="{TXT_LOST_PASSWORD}" href="{NODE_LOGIN_LOSTPW}" class="lostpw btn btn-link">{TXT_PASSWORD_LOST}</a>
         </div>
     </div>
 </div>
