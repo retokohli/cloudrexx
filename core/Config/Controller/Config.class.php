@@ -519,7 +519,7 @@ class Config
      * Write all settings to the config file
      *
      */
-    public function updatePhpCache() {
+    public static function updatePhpCache() {
         global $_ARRAYLANG, $_CONFIG;
 
         if (!\Cx\Lib\FileSystem\FileSystem::makeWritable(self::getSettingsFile())) {
