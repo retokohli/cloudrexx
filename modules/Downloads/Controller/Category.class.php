@@ -358,7 +358,7 @@ class Category
 
         if ($objResult) {
             while (!$objResult->EOF) {
-                $this->arrLoadedCategories[$objResult->fields['category_id']]['downloads_count'] = $objResult->fields['count'];
+                $this->arrLoadedCategories[$objResult->fields['category_id']]['downloads_count'] = intval($objResult->fields['count']);
                 $objResult->MoveNext();
             }
         }
@@ -1427,7 +1427,7 @@ class Category
         $objDownload = new Download();
 
         foreach ($arrDownloadOrder as $downloadId => $order) {
-            if ($objDatabase->Execute('UPDATE `'.DBPREFIX.'module_downloads_rel_download_category` SET `order` = '.intval($order).' WHERE `download_id` = '.$downloadId) === false) {
+            if ($objDatabase->Execute('UPDATE `'.DBPREFIX.'module_downloads_rel_download_category` SET `order` = '.intval($order).' WHERE `download_id` = '.$downloadId.' AND `category_id` = '.$this->getId()) === false) {
                 $objDownload->load($downloadId);
                 if (!$objDownload->EOF) {
                     $arrFailedDownloads[] = htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
