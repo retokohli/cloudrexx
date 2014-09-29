@@ -87,25 +87,38 @@ class FWUser extends User_Setting
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
+        $authToken = !empty($_GET['auth-token']) ? contrexx_input2raw($_GET['auth-token']) : null;
+        $userId = !empty($_GET['user-id']) ? contrexx_input2raw($_GET['user-id']) : null;
 
-        if (isset($username) && isset($password)) {
-            if (empty($sessionObj)) $sessionObj = cmsSession::getInstance();
+        if (   (!isset($username)  || !isset($password))
+            && (!isset($authToken) || !isset($userId))
+        ) {
+            return false;
+        }
+
+        if (empty($sessionObj)) $sessionObj = cmsSession::getInstance();
+
         if (!isset($_SESSION['auth'])) {
             $_SESSION['auth'] = array();
         }
-            if ($this->objUser->auth($username, $password, $this->isBackendMode(), \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check())) {
-                if ($this->isBackendMode()) {
-                    $this->log();
-                }
-                $this->loginUser($this->objUser);
-                return true;
+
+        if (   (  isset($username) && isset($password)
+               && $this->objUser->auth($username, $password, $this->isBackendMode(), \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()))
+            || (   isset($authToken) && isset($userId)
+                && $this->objUser->authByToken($userId, $authToken, $this->isBackendMode()))
+        ) {
+            if ($this->isBackendMode()) {
+                $this->log();
             }
-            $_SESSION['auth']['loginLastAuthFailed'] = 1;
-            User::registerFailedLogin($username);
-            $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
-            $_SESSION->cmsSessionUserUpdate();
-            $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
+            $this->loginUser($this->objUser);
+            return true;
         }
+
+        $_SESSION['auth']['loginLastAuthFailed'] = 1;
+        User::registerFailedLogin($username);
+        $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
+        $_SESSION->cmsSessionUserUpdate();
+        $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         return false;
     }
 
@@ -558,6 +571,56 @@ class FWUser extends User_Setting
         return $restoreLink;
     }
 
+    public static function getVerificationLink($isBackendMode, $objUser, $websitePath = null) {
+        global $_CONFIG;
+
+        if (!$websitePath) {
+            $websitePath = $_CONFIG['domainUrl'] . \Env::get('cx')->getWebsiteOffsetPath();
+        }
+
+        if ($isBackendMode) {
+            $verificationLink = strtolower(ASCMS_PROTOCOL)."://".$websitePath.\Env::get('cx')->getBackendFolderName()."/index.php?cmd=Login&act=verify&u=".urlencode($objUser->getEmail())."&key=".$objUser->getRestoreKey();
+        } else {
+            $verificationLink = strtolower(ASCMS_PROTOCOL)."://".$websitePath."/?section=Login&cmd=verify&u=".urlencode($objUser->getEmail())."&key=".$objUser->getRestoreKey();
+        }
+
+        return $verificationLink;
+    }
+
+    public function verifyUserAccount($email, $key) {
+// TODO: add verificationTimeout as configuration option
+        $verificationExpired = time() - 30 * 86400;
+        $userFilter = array(
+            'restore_key'      => $key,
+            'regdate' => array(
+                array (
+                    '>' => $verificationExpired,
+                ),
+                '=' => $verificationExpired,
+            ),
+            'active'           => 1,
+            'email' => $email,
+        );
+
+        $objUser = $this->objUser->getUsers($userFilter, null, null, null, 1);
+        if ($objUser) {
+            if ($objUser->setVerification(true) &&
+                $objUser->releaseRestoreKey() &&
+                $objUser->store()
+            ) {
+// TODO: destroy session and create new one
+                \FWUser::loginUser($objUser);
+// TODO: add language variable
+                \Message::add('Sie haben Ihr Konto erfolgreich best&auml;tigt.', \Message::CLASS_OK);
+                return true;
+            }
+            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
+        } else {
+            $this->arrStatusMsg['error'][] = $_CORELANG['TXT_INVALID_USER_ACCOUNT'];
+        }
+        return false;
+    }
+
     /**
      * Format the author and publisher title
      * @global array
@@ -663,6 +726,10 @@ class FWUser extends User_Setting
             if ($store) {
                 if ($objUser->setPassword($password, $confirmedPassword, true) &&
                     $objUser->releaseRestoreKey() &&
+                    // By successfully re-setting the password,
+                    // the user did verify his email address
+                    // and therefore his account.
+                    $objUser->setVerification(true) &&
                     $objUser->store()
                 ) {
                     return true;
