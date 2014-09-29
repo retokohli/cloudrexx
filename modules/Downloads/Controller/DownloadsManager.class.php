@@ -873,14 +873,14 @@ class DownloadsManager extends DownloadsLibrary
         $searchTerm = ($actualSearchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $actualSearchTerm;
         $pagingLink = !empty($_GET['search_term']) ? '&search_term='.$_GET['search_term'] : '';
         $pagingLink .= (!empty($_GET['act']) && $_GET['act'] == 'downloads') ? '&downloads_category_parent_id=0' : '';
-        if (isset($_GET['downloads_download_select_action'])) {
-            switch ($_GET['downloads_download_select_action']) {
+        if (isset($_POST['downloads_download_select_action'])) {
+            switch ($_POST['downloads_download_select_action']) {
                 case 'order':
-                    $this->updateDownloadOrder(isset($_GET['downloads_download_order']) && is_array($_GET['downloads_download_order']) ? $_GET['downloads_download_order'] : array());
+                    $this->updateDownloadOrder(isset($_POST['downloads_download_order']) && is_array($_POST['downloads_download_order']) ? $_POST['downloads_download_order'] : array());
                     break;
 
                 case 'delete':
-                    $this->deleteDownloads(isset($_GET['downloads_download_id']) && is_array($_GET['downloads_download_id']) ? $_GET['downloads_download_id'] : array());
+                    $this->deleteDownloads(isset($_POST['downloads_download_id']) && is_array($_POST['downloads_download_id']) ? $_POST['downloads_download_id'] : array());
                     break;
             }
         }
@@ -2308,10 +2308,13 @@ class DownloadsManager extends DownloadsLibrary
 
             // parse select checkbox & order box
             if (// managers are allowed to manage every download
-                \Permission::checkAccess(143, 'static', true)
-                || !$objCategory->getManageFilesAccessId()
-                || \Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
-                || $objCategory->getOwnerId() == $objFWUser->objUser->getId()
+                (
+                    \Permission::checkAccess(143, 'static', true)
+                    || !$objCategory->getManageFilesAccessId()
+                    || \Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
+                    || $objCategory->getOwnerId() == $objFWUser->objUser->getId()
+                )
+                && $objCategory->getId()
             ) {
                 // select checkbox
                 $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
@@ -2329,7 +2332,7 @@ class DownloadsManager extends DownloadsLibrary
                 $this->objTemplate->hideBlock('downloads_download_checkbox');
 
                 // order box
-                $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $arrDownloadOrder[$objDownload->getId()]);
+                $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $objCategory->getId() ? $arrDownloadOrder[$objDownload->getId()] : $objDownload->getOrder());
                 $this->objTemplate->parse('downloads_download_no_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_orderbox');
             }
