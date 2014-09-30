@@ -154,6 +154,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         ));
                         if (!empty($arguments['product-id'])) {
                             $productId = $arguments['product-id'];
+                        } else {
+                            $productId = \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
+                        }
+                        if (!empty($productId)) {
                             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
                             $product = $productRepository->findOneBy(array('id' => $productId));
 
