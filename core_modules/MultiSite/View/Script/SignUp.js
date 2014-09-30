@@ -116,7 +116,7 @@ function cx_multisite_signup(defaultOptions) {
 
     function submitForm() {
         try {
-            if (!verifyAddress() || !verifyEmail() || !verifyTerms() ||  !isFormValid()) {
+            if (!isFormValid()) {
                 return;
             }
 
@@ -126,7 +126,9 @@ function cx_multisite_signup(defaultOptions) {
             //signUpForm.find(':input').prop('disabled', true);
             submitRequested = true;
             callSignUp();
-        } catch (e) {}
+        } catch (e) {
+
+        }
 
         // always return false. We don't want to form to get actually submitted
         // as everything is done using AJAX
@@ -197,6 +199,7 @@ function cx_multisite_signup(defaultOptions) {
             // fetch verification state of form element
             if (response.status == 'success') {
                 jQuery(objCaller).data('valid', true);
+                return true;
             } else {
                 jQuery(objCaller).data('valid', false);
                 type = 'danger';
