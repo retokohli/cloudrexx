@@ -698,9 +698,6 @@ form[name="registrationForm"] .row {
     width: 100%;
     height: auto;
 }
-.feed .image img {
-    width: auto;
-}
 #directory div.insert_feeds,
 #directory div.paging {
     margin: 15px 0px 0px 0px;
@@ -723,10 +720,10 @@ form[name="registrationForm"] .row {
 }
 #directory div.link {
     width: 100%;
-    padding: 5px 0px 0px 0px;
     margin: 5px 0px 0px 0px;
     float: left;
     border-top: 1px solid #ECEDF3;
+    padding-top: 5px;
 }
 #directory .selector {
     clear: left;
@@ -3065,4 +3062,14 @@ input[type="checkbox"] {
 .questionBlock_button input {
     float: left;
     margin-right: 10px;
+}
+/*Directory_Add*/
+.selectorCenter {
+    padding: 60px 10px 0px;
+    float: left;
+    height: 100px;
+    text-align: center;
+}
+.selectorCenter input {
+    margin-bottom: 15px;
 }

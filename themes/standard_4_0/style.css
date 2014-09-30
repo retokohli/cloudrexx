@@ -546,12 +546,22 @@
         width: auto;
         height: auto;
     }
+    .fields .selectorCenter{
+        padding: 20px 10px 20px;
+        float: none;
+        height: auto;
+    }
 }
 @media (min-width: 768px) and (max-width: 979px) {
     #home-page {padding: 0 15px;}
     .home-box.col-md-4 {width: 100%;margin-bottom: 30px;}
     #content-wrapper {
         padding-bottom: 168px;
+    }
+    .fields .selectorCenter{
+        padding: 20px 10px 20px;
+        float: none;
+        height: auto;
     }
     .row .image img {
         width: auto;
