@@ -35,6 +35,7 @@ class SystemComponentBackendController extends Controller {
         foreach ($this->getEntityClasses() as $class) {
             $cmds[] = preg_replace('#' . preg_quote($this->getNamespace() . '\\Model\\Entity\\') . '#', '', $class);
         }
+        $cmds['Settings'] = array('Help');
         return $cmds;
     }
 
@@ -179,23 +180,62 @@ class SystemComponentBackendController extends Controller {
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
         
+        // Parse entity view generation pages
         $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
-        if (!in_array($entityClassName, $this->getEntityClasses())) {
-            if ($template->blockExists('overview')) {
-                $template->touchBlock('overview');
-            }
+        if (in_array($entityClassName, $this->getEntityClasses())) {
+            $this->parseEntityClassPage($template, $entityClassName, current($cmd));
             return;
         }
+        
+        // Not an entity, parse overview or settings
+        switch (current($cmd)) {
+            case 'Settings':
+                if (!isset($cmd[1])) {
+                    $cmd[1] = '';
+                }
+                switch ($cmd[1]) {
+                    case '':
+                    default:
+                        if (!$template->blockExists('mailing')) {
+                            return;
+                        }
+                        $template->setVariable(
+                            'MAILING',
+                            \Cx\Core\MailTemplate\Controller\MailTemplate::adminView(
+                                $this->getName(),
+                                'nonempty',
+                                $config['corePagingLimit'],
+                                'settings/email'
+                            )->get()
+                        );
+                        break;
+                }
+                break;
+            case '':
+            default:
+                if ($template->blockExists('overview')) {
+                    $template->touchBlock('overview');
+                }
+                break;
+        }
+    }
+    
+    protected function parseEntityClassPage($template, $entityClassName, $classIdentifier) {
         if (!$template->blockExists('entity_view')) {
             return;
         }
-        $entityRepository = $this->cx->getDb()->getEntityManager()->getRepository($entityClassName);
-        $entities = $entityRepository->findAll();
-        if (empty($entities)) {
-            $entities = new $entityClassName();
-        }
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($entities, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_' . current($cmd)],
+        $view = new \Cx\Core\Html\Controller\ViewGenerator(
+            $entityClassName,
+            $this->getViewGeneratorOptions($entityClassName, $classIdentifier)
+        );
+        $template->setVariable('ENTITY_VIEW', $view->render());
+    }
+    
+    protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
+        global $_ARRAYLANG;
+        
+        return array(
+            'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
             'functions' => array(
                 'add'       => true,
                 'edit'      => true,
@@ -203,8 +243,8 @@ class SystemComponentBackendController extends Controller {
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
-                )
-            ));
-        $template->setVariable('ENTITY_VIEW', $view->render());
+            ),
+        );
     }
 }
+
