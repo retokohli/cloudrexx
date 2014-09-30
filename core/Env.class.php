@@ -49,20 +49,20 @@ class Env {
     }
 
     public static function get($prop) {
-        if(isset(self::$props[$prop])) {
-            switch ($prop) {
-                case 'cx':
-                    return \Cx\Core\Core\Controller\Cx::instanciate();
-                    break;
+        switch ($prop) {
+            case 'cx':
+                return \Cx\Core\Core\Controller\Cx::instanciate();
+                break;
 
-                case 'em':
-                    return \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
-                    break;
+            case 'em':
+                return \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                break;
 
-                default:
+            default:
+		        if(isset(self::$props[$prop])) {
                     return self::$props[$prop];
-                    break;
-            }
+	            }
+                break;
         }
         return null;
     }
