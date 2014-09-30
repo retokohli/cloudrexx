@@ -111,7 +111,7 @@ function cx_multisite_signup(defaultOptions) {
     }
 
     function verifyForm() {
-        setFormButtonState('submit', true, isFormValid());
+        isFormValid();
     }
 
     function submitForm() {
