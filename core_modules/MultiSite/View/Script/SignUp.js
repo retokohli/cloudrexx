@@ -206,7 +206,7 @@ function cx_multisite_signup(defaultOptions) {
                     message = typeof(response.message.message) != null ? response.message.message : null;
                     type = typeof(response.message.type) != null ? response.message.type : null;
                 }
-                jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(jQuery(objCaller));
+                jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(jQuery(objCaller).parent());
             }
             verifyForm();
 
