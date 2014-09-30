@@ -87,7 +87,7 @@ function cx_multisite_signup(defaultOptions) {
     }
 
     function verifyInput(domElement, data) {
-        jQuery(domElement).next('.alert').remove();
+        jQuery(domElement).parent().next('.alert').remove();
 
         jQuery(domElement).data('valid', false);
         if (!domElement.checkValidity()) {
