@@ -302,6 +302,7 @@ function cx_multisite_signup(defaultOptions) {
 
     function showForm() {
         objModal.find('.multisite-form').show();
+        jQuery('#multiSiteSignUp').find('.modal-content').css({'min-height': jQuery('#multiSiteSignUp').find('.modal-content').height()});
     }
 
     function hideForm() {
