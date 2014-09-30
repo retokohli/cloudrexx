@@ -1393,3 +1393,4 @@ $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Eintrag löschen';
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Die Einstellungen wurden gespeichert.';
 $_ARRAYLANG['TXT_ACTIVATED'] = "Aktiviert";
 $_ARRAYLANG['TXT_DEACTIVATED'] = "Deaktiviert";
+$_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Ihre Sitzung ist abgelaufen.<br /><a href="./index.php" target="_blank">Klicken Sie hier um sich erneut anzumelden.</a>';

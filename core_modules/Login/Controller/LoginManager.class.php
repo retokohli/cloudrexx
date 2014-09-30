@@ -218,11 +218,6 @@ class LoginManager {
     {
         global $_CORELANG, $_ARRAYLANG;
         
-        if (isset($_GET['cmd']) && $_GET['cmd'] == 'JsonData') {
-            $jd = new \Cx\Core\Json\JsonData();
-            die($jd->json($jd->getErrorData($_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON']), true));
-        }
-        
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/Login/View/Template/Backend/login.html');
         $frontendLink = ASCMS_INSTANCE_OFFSET;
         if (empty($frontendLink)) {
