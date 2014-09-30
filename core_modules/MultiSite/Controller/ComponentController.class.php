@@ -727,8 +727,8 @@ throw new MultiSiteException('Refactor this method!');
     }
 
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
-        // Abort in case the request has not been made to the frontend nor the backend, nor the command mode
-        if (!in_array($cx->getMode(), array($cx::MODE_FRONTEND, $cx::MODE_BACKEND, $cx::MODE_COMMAND))) {
+        // Abort in case the request has been made to a unsupported cx-mode
+        if (!in_array($cx->getMode(), array($cx::MODE_FRONTEND, $cx::MODE_BACKEND, $cx::MODE_COMMAND, $cx::MODE_MINIMAL))) {
             return;
         }
 
@@ -741,7 +741,13 @@ throw new MultiSiteException('Refactor this method!');
 
             case self::MODE_HYBRID:
             case self::MODE_SERVICE:
-                $this->deployWebsite($cx);
+                // In case the deployment was successful,
+                // we need to exit this method and proceed
+                // with the regular bootstrap process.
+                // This case is required by the cx-mode MODE_MINIMAL.
+                if ($this->deployWebsite($cx)) {
+                    return;
+                }
                 $this->verifyRequest($cx);
                 break;
 
@@ -838,6 +844,15 @@ throw new MultiSiteException('Refactor this method!');
             // set SERVER_NAME to BaseDN of Website
             $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile);
+
+            // In cx-mode MODE_MINIMAL we need to proceed
+            // with the regular bootstrap process as the
+            // script that requested the minimal mode will
+            // most likely perform some additional operations
+            // after cx initialization.
+            if ($cx->getMode() == $cx::MODE_MINIMAL) {
+                return true;
+            }
             exit;
         }
 
