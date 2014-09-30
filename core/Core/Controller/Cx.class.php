@@ -488,14 +488,7 @@ namespace Cx\Core\Core\Controller {
                 }
                 return $instance;
             }
-            $instance = new static($mode, $configFilePath);
-            if (!count(self::$instances) || $setAsPreferred) {
-                self::$preferredInstance = $instance;
-            }
-            if (!isset(self::$instances[$configFilePath])) {
-                self::$instances[$configFilePath] = array();
-            }
-            self::$instances[$configFilePath][] = $instance;
+            $instance = new static($mode, $configFilePath, $setAsPreferred);
             return $instance;
         }
         
@@ -509,7 +502,14 @@ namespace Cx\Core\Core\Controller {
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
          */
-        protected function __construct($mode = null, $configFilePath = null) {
+        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false) {
+            if (!count(self::$instances) || $setAsPreferred) {
+                self::$preferredInstance = $this;
+            }
+            if (!isset(self::$instances[$configFilePath])) {
+                self::$instances[$configFilePath] = array();
+            }
+            self::$instances[$configFilePath][] = $this;
             try {
                 /**
                  * This starts time measurement
