@@ -30,5 +30,4 @@ $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "Eine E-Mail mit weiteren Anw
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Ihr Passwort wurde erfolgreich geändert.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Anmelden";
 $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Weiter zur Administrationsoberfläche";
-$_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Ihre Sitzung ist abgelaufen.<br /><a href="./index.php" target="_blank">Klicken Sie hier um sich erneut anzumelden.</a>';
 $_ARRAYLANG['TXT_FRONTEND_LINK'] = '« Zurück zur Webseite';

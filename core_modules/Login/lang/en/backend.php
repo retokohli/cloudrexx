@@ -30,5 +30,4 @@ $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "An email with further instru
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Your password has benn successfully changed.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Go to backend";
-$_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Your session has expired.<br /><a href="./index.php" target="_blank">Click here to log in again.</a>';
 $_ARRAYLANG['TXT_FRONTEND_LINK'] = '« Back to website';
