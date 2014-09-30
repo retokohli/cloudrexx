@@ -36,26 +36,51 @@ class Env {
     protected static $em;
 
     public static function set($prop, &$val) {
-        self::$props[$prop] = $val;
+        switch ($prop) {
+            case 'cx':
+            case 'em':
+                \DBG::msg(__METHOD__.": Setting '$prop' is deprecated. Env::get($prop) always returns the active/preferred instance of $prop.");
+                break;
+
+            default:
+                self::$props[$prop] = $val;
+                break;
+        }
     }
 
     public static function get($prop) {
         if(isset(self::$props[$prop])) {
-            return self::$props[$prop];
+            switch ($prop) {
+                case 'cx':
+                    return \Cx\Core\Core\Controller\Cx::instanciate();
+                    break;
+
+                case 'em':
+                    return \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                    break;
+
+                default:
+                    return self::$props[$prop];
+                    break;
+            }
         }
         return null;
     }
 
+    /**
+     * @deprecated \Env::em() always returns the instance of EntityManager of the active/preferred Cx\Core\Core\Controller\Cx instance
+     */
     public static function setEm($em) {
-        self::set('em', $em);
+        \DBG::msg(__METHOD__." is deprecated. Env::get('em') always returns the active/preferred instance of EntityManager");
+        //self::set('em', $em);
     }
+
     /**
      * Retrieves the Doctrine EntityManager
      * 
      * @return \Doctrine\ORM\EntityManager
      */
-    public static function em()
-    {
-        return self::get('em');
+    public static function em() {
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
     }
 }
