@@ -843,7 +843,7 @@ throw new MultiSiteException('Refactor this method!');
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...");
             // set SERVER_NAME to BaseDN of Website
             $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-            \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile);
+            \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile, true);
 
             // In cx-mode MODE_MINIMAL we need to proceed
             // with the regular bootstrap process as the
