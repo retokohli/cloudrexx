@@ -71,7 +71,7 @@ function cx_multisite_signup(defaultOptions) {
 
         setFormButtonState('close', false);
         setFormButtonState('cancel', true, true);
-        setFormButtonState('submit', true, false);
+        setFormButtonState('submit', true, true);
     }
 
     function verifyEmail() {
@@ -116,7 +116,7 @@ function cx_multisite_signup(defaultOptions) {
 
     function submitForm() {
         try {
-            if (!isFormValid()) {
+            if (!verifyAddress() || !verifyEmail() || !verifyTerms() ||  !isFormValid()) {
                 return;
             }
 
@@ -154,7 +154,6 @@ function cx_multisite_signup(defaultOptions) {
             ongoingRequest = true;
             setFormButtonState('close', true, true);
             setFormButtonState('cancel', false, false);
-            setFormButtonState('submit', false, false);
             setFormHeader(options.headerSetupTxt);
 
             hideForm();
@@ -264,7 +263,6 @@ function cx_multisite_signup(defaultOptions) {
                 setFormHeader(options.headerInitTxt);
                 setFormButtonState('close', false);
                 setFormButtonState('cancel', true, true);
-                setFormButtonState('submit', true, false);
                 hideProgress();
                 showForm();
                 jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(objElement);
@@ -276,7 +274,6 @@ function cx_multisite_signup(defaultOptions) {
                 setFormHeader(options.headerErrorTxt);
                 setFormButtonState('close', false);
                 setFormButtonState('cancel', true, true);
-                setFormButtonState('submit', false);
                 hideForm();
                 hideProgress();
                 setFormStatus(type, message);
@@ -287,7 +284,6 @@ function cx_multisite_signup(defaultOptions) {
                 setFormHeader(options.headerSuccessTxt);
                 setFormButtonState('close', true, true);
                 setFormButtonState('cancel', false);
-                setFormButtonState('submit', false);
                 hideForm();
                 hideProgress();
                 setFormStatus(type, message);
@@ -302,7 +298,7 @@ function cx_multisite_signup(defaultOptions) {
 
     function showForm() {
         objModal.find('.multisite-form').show();
-        jQuery('#multiSiteSignUp').find('.modal-content').css({'min-height': jQuery('#multiSiteSignUp').find('.modal-content').height()});
+        jQuery('#multiSiteSignUp').find('.modal-body').css({'min-height': jQuery('#multiSiteSignUp').find('.multisite-form').height()});
     }
 
     function hideForm() {
