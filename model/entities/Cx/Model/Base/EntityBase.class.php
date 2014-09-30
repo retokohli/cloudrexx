@@ -77,7 +77,7 @@ class EntityBase {
      */
     public function __get($name) {
         if ($name == 'cx') {
-            return \Env::get('cx');
+            return \Cx\Core\Core\Controller\Cx::instanciate();
         }
     }
     
