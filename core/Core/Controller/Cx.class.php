@@ -488,8 +488,16 @@ namespace Cx\Core\Core\Controller {
                 }
                 return $instance;
             }
-            $instance = new static($mode, $configFilePath, $setAsPreferred);
-            return $instance;
+            new static($mode, $configFilePath, $setAsPreferred);
+            // Important: We must return the preferred instance (self::$preferredInstance) here,
+            //            as it might be possible, that during the instanciation of the above object
+            //            an additional instance had been instanciated and had been set as the
+            //            preferred instance instead.
+            //            Therefore the retured object by 'new static()' from above might already be
+            //            outdated and shall be discarded therefore.
+            //            The preferred instance (self::$preferredInstance) gets set in this class's
+            //            constructor (__construct()).
+            return self::$preferredInstance;
         }
         
         /* STAGE 2: __construct(), early initializations */
