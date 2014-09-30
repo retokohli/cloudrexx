@@ -39,12 +39,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $subMenuTitle, $objTemplate, $_CORELANG, $act, $license;
+        global $subMenuTitle, $objTemplate, $_CORELANG, $act;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : '';
                 $objSearch = new \Cx\Core_Modules\Search\Controller\Search();
-                \Env::get('cx')->getPage()->setContent($objSearch->getPage($pos, \Env::get('cx')->getPage()->getContent(), $license));
+                \Env::get('cx')->getPage()->setContent($objSearch->getPage($pos, \Env::get('cx')->getPage()->getContent()));
                 break;
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
                 $subMenuTitle = $_CORELANG['TXT_SEARCH'];
@@ -52,7 +52,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $cachedRoot = $this->cx->getTemplate()->getRoot();
                 $this->cx->getTemplate()->setRoot($this->getDirectory() . '/View/Template/Backend');
                 
-                $objSearchManager = new \Cx\Core_Modules\Search\Controller\SearchManager($act, $objTemplate, $license);
+                $objSearchManager = new \Cx\Core_Modules\Search\Controller\SearchManager($act, $objTemplate, $this->cx->getLicense());
                 $objSearchManager->getPage();
                 
                 $this->cx->getTemplate()->setRoot($cachedRoot);        
