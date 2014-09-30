@@ -1,61 +1,79 @@
 {DIRECTORY_JAVASCRIPT}
 
 <div id="directory">
-	<!-- BEGIN directoryMessage -->
-		<div class="message">{DIRECTORY_FEED_UPDATED}<br /><br />{TXT_DIRECTORY_BACK}</div>
-	<!-- END directoryMessage -->
-	<!-- BEGIN directoryInputFields -->
-		<div class="fields">
-			<form name="addForm" enctype="multipart/form-data" method="post" action="index.php?section=Directory&amp;cmd=edit" onSubmit="{DIRECTORY_FORM_ONSUBMIT}">
-                <input type="hidden" name="edit_id" size="10" value="{DIRECTORY_ID}" /> 
-                
-                <p><label>{TXT_DIRECTORY_CATEGORY}&nbsp;<font color="red">*</font></label></p>
-                <div class="selector" style="float: left; height: auto ! important;">
-    				<div class="selectorLeft" style="float: left; height: auto ! important;">
-        				<select name="notSelectedCat[]" size="12" style="width:170px;" multiple="multiple">
-            			{DIRECTORY_CATEGORY_DESELECTED}
-            			</select>
-    				</div>
-    				<div class="selectorCenter" style="padding: 60px 10px 0px; float: left; height: 100px;">
-    				    <input type="button" value="&gt;&gt;" name="addCat" onclick="move(document.addForm.elements['notSelectedCat[]'],document.addForm.elements['selectedCat[]'],addCat,removeCat);" />
-                        <br />
-                        <input type="button" value="&lt;&lt;" name="removeCat" onclick="move(document.addForm.elements['selectedCat[]'],document.addForm.elements['notSelectedCat[]'],removeCat,addCat);" />
+    <!-- BEGIN directoryMessage -->
+    <div class="message">{DIRECTORY_FEED_UPDATED}<br /><br />{TXT_DIRECTORY_BACK}</div>
+    <!-- END directoryMessage -->
+    <!-- BEGIN directoryInputFields -->
+    <div class="fields">
+        <form name="addForm" enctype="multipart/form-data" method="post" action="index.php?section=Directory&amp;cmd=edit" onSubmit="{
+                    DIRECTORY_FORM_ONSUBMIT
+                }">
+            <input type="hidden" name="edit_id" size="10" value="{DIRECTORY_ID}" /> 
+
+            <p><label>{TXT_DIRECTORY_CATEGORY}&nbsp;<font color="red">*</font></label></p>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-offset-3">
+                        <div class="col-md-4">
+                            <div class="row">
+                                <select name="notSelectedCat[]" size="12" class="form-control" multiple="multiple">
+                                    {DIRECTORY_CATEGORY_DESELECTED}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="selectorCenter col-md-2">
+                            <input class="btn btn-default" type="button" value="&gt;&gt;" name="addCat" onclick="move(document.addForm.elements['notSelectedCat[]'], document.addForm.elements['selectedCat[]'], addCat, removeCat);" />
+                            <br />
+                            <input class="btn btn-default" type="button" value="&lt;&lt;" name="removeCat" onclick="move(document.addForm.elements['selectedCat[]'], document.addForm.elements['notSelectedCat[]'], removeCat, addCat);" />
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <select name="selectedCat[]" size="12" class="from-control" multiple="multiple">
+                                    {DIRECTORY_CATEGORY_SELECTED}
+                                </select>
+                            </div>
+                        </div>
                     </div>
-    				<div class="selectorRight" style="float: left; height: auto ! important;">
-        				<select name="selectedCat[]" size="12" style="width:170px;" multiple="multiple">
-        				{DIRECTORY_CATEGORY_SELECTED}
-    			        </select>
-    				</div>
-				</div>
-				
-				<!-- BEGIN directoryLevels -->
-                <p><label>{TXT_DIRECTORY_LEVEL}:<font color="red">*</font></label></p>
-                <div class="selector" style="float: left; height: auto ! important;">
-    				<div class="selectorLeft" style="float: left; height: auto ! important;">
-        				<select name="notSelectedLevel[]" size="12" style="width:170px;" multiple="multiple">
-						{DIRECTORY_LEVELS_DESELECTED}
-						</select>
-    				</div>
-    				<div class="selectorCenter" style="padding: 60px 10px 0px; float: left; height: 100px;">
-    				    <input type="button" value=" &gt;&gt; " name="addLevel" onclick="move(document.addForm.elements['notSelectedLevel[]'],document.addForm.elements['selectedLevel[]'],addLevel,removeLevel);" />
-                        <br />
-                        <input type="button" value=" &lt;&lt; " name="removeLevel" onclick="move(document.addForm.elements['selectedLevel[]'],document.addForm.elements['notSelectedLevel[]'],removeLevel,addLevel);" />
+                </div>
+            </div>
+
+            <!-- BEGIN directoryLevels -->
+            <p><label>{TXT_DIRECTORY_LEVEL}:<font color="red">*</font></label></p>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-offset-3">
+                        <div class="col-md-4">
+                            <div class="row">
+                                <select name="notSelectedLevel[]" class="form-control" multiple="multiple">
+                                    {DIRECTORY_LEVELS_DESELECTED}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="selectorCenter col-md-2">
+                            <input class="btn btn-default" type="button" value=" &gt;&gt; " name="addLevel" onclick="move(document.addForm.elements['notSelectedLevel[]'], document.addForm.elements['selectedLevel[]'], addLevel, removeLevel);" />
+                            <br />
+                            <input class="btn btn-default" type="button" value=" &lt;&lt; " name="removeLevel" onclick="move(document.addForm.elements['selectedLevel[]'], document.addForm.elements['notSelectedLevel[]'], removeLevel, addLevel);" />
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <select name="selectedLevel[]" class="form-control" multiple="multiple">
+                                    {DIRECTORY_LEVELS_SELECTED}
+                                </select>
+                            </div>
+                        </div>
                     </div>
-    				<div class="selectorRight" style="float: left; height: auto ! important;">
-        				<select name="selectedLevel[]" size="12" style="width:170px;" multiple="multiple">
-						{DIRECTORY_LEVELS_SELECTED}
-						</select>
-    				</div>
-				</div>
-				<!-- END directoryLevels -->
-				
-				<!-- BEGIN inputfieldsOutput -->
-				<p><label>{FIELD_NAME}&nbsp;{FIELD_REQUIRED}</label>{FIELD_VALUE}</p>
-				<!-- END inputfieldsOutput -->
-				<p><input type="submit" name="edit_submit" value="{TXT_DIRECTORY_UPDATE}" /></p>
-			</form>
-		</div>
-	<!-- END directoryInputFields -->
+                </div>
+            </div>
+            <!-- END directoryLevels -->
+
+            <!-- BEGIN inputfieldsOutput -->
+            <p><label>{FIELD_NAME}&nbsp;{FIELD_REQUIRED}</label>{FIELD_VALUE}</p>
+            <!-- END inputfieldsOutput -->
+            <p><input class="btn btn-default" type="submit" name="edit_submit" value="{TXT_DIRECTORY_UPDATE}" /></p>
+        </form>
+    </div>
+    <!-- END directoryInputFields -->
 </div>
 {DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK}
 

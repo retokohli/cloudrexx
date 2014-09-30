@@ -3,13 +3,13 @@
     <div class="container-fluid">
         <div class="row">
             <a href="index.php?section=Directory">{TXT_DIRECTORY_DIR}</a>{DIRECTORY_TREE}
-            <!-- BEGIN showTitle --> 
         </div>
     </div>
+    <!-- BEGIN showTitle --> 
     <div class="title"><h2>{DIRECTORY_TITLE}</h2>{DIRECTORY_DESCRIPTION}</div>
     <!-- END showTitle --> 
     <!-- BEGIN showCategories --> 
-    <div class="categories container-fluid row" >
+    <div class="categories container-fluid row">
         <div class="row">
             <div class="col-md-6">{DIRECTORY_ROW1}</div>
             <div class="col-md-6">{DIRECTORY_ROW2}</div>
@@ -28,7 +28,12 @@
             <div class="infos col-md-10 col-sm-12">
                 <h3><a href="index.php?section=Directory&amp;cmd=detail&amp;id={DIRECTORY_FEED_ID}&amp;lid={DIRECTORY_LEVEL_ID}&amp;cid={DIRECTORY_CAT_ID}">{DIRECTORY_FEED_TITLE}</a></h3>
                 <div class="voting">{DIRECTORY_FEED_AVERAGE_VOTE}<br /><em><a href="{DIRECTORY_FEED_VOTE_LINK}">{DIRECTORY_FEED_COUNT_VOTES}</a></em>
-                    <div style="display: none;" id="voting_{DIRECTORY_FEED_ID}"><br />{DIRECTORY_FEED_VOTE_IMG}</div></div><br /><br />
+                    <div style="display: none;" id="voting_{DIRECTORY_FEED_ID}">
+                        <br />{DIRECTORY_FEED_VOTE_IMG}
+                    </div>
+                </div>
+                <br />
+                <br />
                 {DIRECTORY_FEED_SHORT_DESCRIPTION}<br />
                 <a href="{DIRECTORY_FEED_LINK}" target="_blank">{DIRECTORY_FEED_LINK}</a>
             </div>
