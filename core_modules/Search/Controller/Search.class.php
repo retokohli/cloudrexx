@@ -66,7 +66,7 @@ class Search
         }
     }
 
-    public function getPage($pos, $page_content, $license)
+    public function getPage($pos, $page_content)
     {
         global $_CONFIG, $_ARRAYLANG;
 
