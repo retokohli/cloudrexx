@@ -152,8 +152,8 @@ function cx_multisite_signup(options) {
     function callSignUp() {
         try {
             ongoingRequest = true;
-            setFormButtonState('close', false, false);
-            setFormButtonState('cancel', true, true);
+            setFormButtonState('close', true, true);
+            setFormButtonState('cancel', false, false);
             setFormButtonState('submit', false, false);
             setFormHeader(options.headerSetupTxt);
 

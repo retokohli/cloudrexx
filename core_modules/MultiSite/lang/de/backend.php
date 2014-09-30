@@ -29,7 +29,9 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'Eine Website 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_SHORT'] = 'Der Name muss aus mindestens %s Zeichen bestehen.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_LONG'] = 'Der Name kann maximal %s Zeichen lang sein.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_WRONG_CHARS'] = 'Der Name darf nur aus Kleinbuchstaben (a-z) und Zahlen bestehen.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'Zu dieser E-Mail Adresse besteht bereits ein Konto - %s.';
+// reactivate and remove entry below once login has been implemented
+//$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'Zu dieser E-Mail Adresse besteht bereits ein Konto - %s.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'Zu dieser E-Mail Adresse besteht bereits ein Konto. Bitte verwenden Sie eine andere E-Mail Adresse.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL'] = 'Die angegebene E-Mail Adresse ist ung&uuml;ltig.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'] = 'Log in';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Ihre Website %s ist bereit! Überprüfen Sie Ihre Inbox (im Spam gelandet?). Wir haben Ihnen ein E-Mail mit Ihren Zugangsdaten und ersten Tipps gesendet. Viel Erfolg.';
@@ -38,4 +40,4 @@ $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'] = 'Ihre Website wird erstellt..
 $_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'] = 'Herzlichen Gl&uuml;ckwunsch!';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'] = 'Hopla..';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'] = 'Bitte haben Sie etwas Geduld. Der Website Erstellungsprozess kann bis zu 2 Minuten dauern. Sobald Ihre Website einsatzbereit ist, werden Sie an die hinterlegte E-Mail Adresse mit den n&auml;chsten Schritten informiert.';
-$_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'] = 'Vielen Dank für Ihre Anmeldung bei Cloudrexx! Bitte haben Sie etwas Geduld. Es kann bis zu 2 Minuten dauern, bis Ihre Website einsatzbereit ist. Sobald Ihre Website einsatzbereit ist, werden Sie in den Administrationsbereich weitergeleitet. Sie sind automatisch eingeloggt. Das Kennwort wird an %1$s gesendet. Ihre Cloudrexx-Domain lautet %2$s.';
+$_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'] = 'Vielen Dank für Ihre Anmeldung bei Cloudrexx!<br /><br />Bitte haben Sie etwas Geduld. Es kann bis zu 2 Minuten dauern, bis Ihre Website bereit ist. Danach werden Sie in den Administrationsbereich weitergeleitet. Sie sind automatisch angemeldet.<br /><br />Das Kennwort wird an %1$s gesendet. Ihre Cloudrexx-Adresse lautet %2$s.';

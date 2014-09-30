@@ -152,7 +152,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $loginLink = '<a class="alert-link" href="'.$loginUrl.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'].'</a>';
             throw new MultiSiteJsonException(array(
                 'object'    => 'email',
-                'type'      => 'info',
+// TODO: change back to 'info' once login functionality has been implemented
+                //'type'      => 'info',
+                'type'      => 'danger',
                 'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'], $loginLink),
             ));
         }
