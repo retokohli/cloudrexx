@@ -120,6 +120,8 @@ function cx_multisite_signup(defaultOptions) {
                 return;
             }
 
+            setFormButtonState('submit', false);
+
             if (submitRequested) {
                 return;
             }
