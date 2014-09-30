@@ -1026,15 +1026,16 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     }
 
                     //remove the database and its user
-                    //remove the database user
-                    $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
-                    $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') . $this->id);
-                    $hostingController->removeDbUser($objDbUser);
-
-                    //remove the database
                     $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
                     $objDb->setHost(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost'));
                     $objDb->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix') . $this->id);
+                    
+                    //remove the database user
+                    $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
+                    $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') . $this->id);
+                    $hostingController->removeDbUser($objDbUser, $objDb);
+
+                    //remove the database
                     $hostingController->removeDb($objDb);
 
                     //remove the website's data repository

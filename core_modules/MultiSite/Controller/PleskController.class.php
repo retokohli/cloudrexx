@@ -133,11 +133,12 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @param \Cx\Core\Model\Model\Entity\DbUser $dbUser User to remove
      * @throws MultiSiteDbException On error
      */
-    public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser){
+    public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser, \Cx\Core\Model\Model\Entity\Db $db ){
         \DBG::msg("MultiSite (PleskController): Removing Database User.");
         
         $dbUserName = $dbUser->getName();
-        $dbUserId   = $this->getDbUserId($dbUserName);
+        $dbId = $this->getDbId($db->getName());
+        $dbUserId   = $this->getDbUserId($dbUserName, $dbId);
         if (!empty($dbUserId)) {
             $xmldoc = $this->getXmlDocument();
             $packet = $this->getRpcPacket($xmldoc);
@@ -165,7 +166,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
                 throw new ApiRequestException("Error in removing database user:{$error} ");
             }
 
-            return $respArr;
+            return $respArr['result'];
         }
         
         return false;
@@ -224,16 +225,17 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $domainIdTag = $xmldoc->createElement('webspace-id',$domainId);
         $filter->appendChild($domainIdTag);
         //echo $xmldoc->saveXML();die;
-        $resp = $this->executeCurl($xmldoc);
-        $responseJson = json_encode($resp->database->{'get-db'});
+        $response = $this->executeCurl($xmldoc);
+        $responseJson = json_encode($response->database->{'get-db'});
         $respArr = json_decode($responseJson,true); 
         $systemError = $response->system->errtext;
+        $resultNode = $response->database->{'get-db'}->result;
         if ('error' == (string)$resultNode->status || $systemError) {
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in getting database ID : {$error} ");
         }      
         if (!empty($respArr)) {
-            foreach($respArr as $res) {
+            foreach($respArr['result'] as $res) {
                 if ($res['name'] == $name) {
                     return $res['id'];
                 }
@@ -249,7 +251,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @return integer id of the db user
      * @throws ApiRequestException
      */
-    public function getDbUserId($name) {
+    public function getDbUserId($name, $dbId ) {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);       
         
@@ -262,8 +264,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $filter = $xmldoc->createElement('filter');
         $getDbUsers->appendChild($filter);
         
-        $domainId = $this->webspaceId;
-        $domainIdTag = $xmldoc->createElement('webspace-id', $domainId);
+        $domainIdTag = $xmldoc->createElement('db-id', $dbId);
         $filter->appendChild($domainIdTag);
         
         $response = $this->executeCurl($xmldoc);
@@ -278,7 +279,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }      
         
         if (!empty($respArr)) {
-            foreach($respArr as $result) {
+            foreach($respArr['result'] as $result) {
                 if ($result['login'] == $name) {
                     return $result['id'];
                 }
