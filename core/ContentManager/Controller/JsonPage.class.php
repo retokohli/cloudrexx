@@ -180,7 +180,7 @@ class JsonPage implements JsonAdapter {
         
         $pageId = !empty($pageArray['id'])    ? intval($pageArray['id'])   : (!empty($dataPost['pageId']) ? intval($dataPost['pageId']) : 0);
         $nodeId = !empty($pageArray['node'])  ? intval($pageArray['node']) : (!empty($dataPost['nodeId']) ? intval($dataPost['nodeId']) : 0);
-        $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : '');
+        $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId()));
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
         
         if (!empty($pageArray)) {
