@@ -1,5 +1,5 @@
-function cx_multisite_signup(options) {
-    var options = options;
+function cx_multisite_signup(defaultOptions) {
+    var options = defaultOptions;
     var ongoingRequest = false;
     var ongoingSetup = false;
     var submitRequested = false;
@@ -144,7 +144,7 @@ function cx_multisite_signup(options) {
     }
 
     function setFormButtonState(btnName, show, active) {
-        btn = objModal.find('.multisite_' + btnName);
+        var btn = objModal.find('.multisite_' + btnName);
         show ? btn.show() : btn.hide();
         btn.prop('disabled', !active);
     }
@@ -169,7 +169,7 @@ function cx_multisite_signup(options) {
                 },
                 type: "POST",
                 success: function(response){parseResponse(response, null);},
-                error: function(response, statusMessage, error) {
+                error: function() {
                     showSystemError();
                 }
             });
@@ -178,7 +178,12 @@ function cx_multisite_signup(options) {
         }
     }
 
+    /**
+     * @param {{data:{loginUrl}}} response The url to which the user gets redirected if auto-login is active.
+     * @param {jQuery} objCaller
+     */
     function parseResponse(response, objCaller) {
+        var type, message, errorObject,errorMessage,errorType;
         hideProgress();
 
         if (!response.status) {
@@ -245,12 +250,14 @@ function cx_multisite_signup(options) {
     }
 
     function setMessage(message, type, errorObject) {
+        var objElement;
         if (!type) type = 'info';
         objElement = null;
 
         switch (errorObject) {
             case 'email':
                 objElement = objMail;
+                /* FALLTHROUGH */
             case 'address':
                 if (!objElement) objElement = objAddress;
 
@@ -302,7 +309,7 @@ function cx_multisite_signup(options) {
     }
 
     function showProgress() {
-        message = options.messageBuildTxt;
+        var message = options.messageBuildTxt;
         message = message.replace('%1$s', '<strong>' + objMail.val() + '</strong>');
         message = message.replace('%2$s', '<strong>' + objAddress.val() + '.' + options.multisiteDomain + '</strong>');
         objModal.find('.multisite-progress div').html(message);
