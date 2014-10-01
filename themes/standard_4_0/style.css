@@ -21,10 +21,6 @@
         width: 260px;
         float: left;
     }
-    #right-login {
-        width: 100%;
-        padding-left: 0;
-    }
     .item h1 {
         left: 7%;
         bottom: 27%;
@@ -398,14 +394,11 @@
     .eachrow {
         width: 15%;
     }
-    .login-content .login-social {
-        width: 100%;
-        padding-left: 0;
-        border-bottom: 1px solid #D8DCE0;
-        margin-bottom: 30px;
+    #page .login-content .login-social {
+        margin-bottom: 10px;
         padding-bottom: 20px;
-        padding-right: 0;
         border-right: 0;
+        border-bottom: 0;
     }
     #access .login-social, .regForm {width: 100%}
     .regdivider span {
@@ -551,12 +544,27 @@
         float: none;
         height: auto;
     }
+    #sociallogin {
+        border-bottom: 1px solid #D8DCE0;
+        padding-bottom: 30px;
+    }
+    .reg #sociallogin {
+        border-bottom: 0;
+        padding-bottom: 10px;
+    }
+    /*Forum*/
+    #page #forum div.notification_center {
+        padding: 20px 0px 20px 0px;
+    }
 }
 @media (min-width: 768px) and (max-width: 979px) {
     #home-page {padding: 0 15px;}
     .home-box.col-md-4 {width: 100%;margin-bottom: 30px;}
     #content-wrapper {
         padding-bottom: 168px;
+    }
+    #page #forum div.notification_center {
+        padding: 20px 0px 20px 0px;
     }
     .fields .selectorCenter{
         padding: 20px 10px 20px;
@@ -642,14 +650,19 @@
     .login-content .login-bottom > div {
         padding-left: 15px;
     }
-    .login-content .login-social {
-        width: 100%;
-        padding-left: 0;
-        border-bottom: 1px solid #D8DCE0;
-        margin-bottom: 30px;
+    #page .login-content .login-social {
+        margin-bottom: 10px;
         padding-bottom: 20px;
         border-right: 0;
-        padding-right: 0%;
+        border-bottom: 0;
+    }
+    #sociallogin {
+        border-bottom: 1px solid #D8DCE0;
+        padding-bottom: 30px;
+    }
+    .reg #sociallogin {
+        border-bottom: 0;
+        padding-bottom: 10px;
     }
     #shop {
         font-size: 13px;

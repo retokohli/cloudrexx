@@ -1,36 +1,36 @@
 <div id="docsys">
-	<div class="categories">
-		<form method="post" action="index.php?section=DocSys" name="docSys">
-			<select name="category" onchange="javascript:this.form.submit()">
-			<option selected="selected" value="">{DOCSYS_NO_CATEGORY}</option>
-			{DOCSYS_CAT_MENU}
-			</select>
-		</form>
-	</div>
-	<div class="doc_list">
+    <div class="categories">
+        <form role="form" method="post" action="index.php?section=DocSys" name="docSys">
+            <select class="form-control" name="category" onchange="javascript:this.form.submit()">
+                <option selected="selected" value="">{DOCSYS_NO_CATEGORY}</option>
+                {DOCSYS_CAT_MENU}
+            </select>
+        </form>
+    </div>
+    <div class="doc_list">
         <!-- BEGIN table -->
-		<table cellspacing="0">
-			<tbody>
-				<tr>
-					<th width="5%" nowrap="nowrap">Datum</th>
-					<th width="100%">Titel</th>
-					<th nowrap="nowrap">Kategorie</th>
-				</tr>
-				<!-- BEGIN row -->
-				<tr>
-					<td nowrap="nowrap">{DOCSYS_DATE}</td>
-					<td width="100%">{DOCSYS_LINK}</td>
-					<td nowrap="nowrap">{DOCSYS_CATEGORY}</td>
-				</tr>
-				<!-- END row -->
-			</tbody>
-		</table>
+        <table class="table" cellspacing="0">
+            <tbody>
+                <tr>
+                    <th width="5%" nowrap="nowrap">Datum</th>
+                    <th width="100%">Titel</th>
+                    <th nowrap="nowrap">Kategorie</th>
+                </tr>
+                <!-- BEGIN row -->
+                <tr>
+                    <td nowrap="nowrap">{DOCSYS_DATE}</td>
+                    <td width="100%">{DOCSYS_LINK}</td>
+                    <td nowrap="nowrap">{DOCSYS_CATEGORY}</td>
+                </tr>
+                <!-- END row -->
+            </tbody>
+        </table>
         <!-- END table -->
         <!-- BEGIN nothing_found -->
         {TXT_NO_DOCUMENTS_FOUND}
         <!-- END nothing_found -->
-	</div>
-	<div calss="paging">{DOCSYS_PAGING}</div>
+    </div>
+    <div calss="paging">{DOCSYS_PAGING}</div>
 </div>
 
 

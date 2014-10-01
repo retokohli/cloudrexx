@@ -6,24 +6,24 @@
     <!-- BEGIN threadDisplay -->
     <!-- <div class="links">{FORUM_COMMUNITY_LINKS}</div> -->
     <!-- <div class="dropdown">{FORUM_DROPDOWN}</div> -->
-    <div class="navtree">
+    <div class="breadcrumb">
         {FORUM_TREE}{FORUM_NAME}
         <span style="color: rgb(255, 0, 0);">{TXT_FORUM_ERROR}&nbsp;</span>
         <span style="color: #006900;">{TXT_FORUM_SUCCESS}&nbsp;</span>
     </div>
     <!-- BEGIN addPostAnchor -->
     <div class="anchor" style="float: left; width: 45%; clear: left;">
-        <input onclick="location.href='#post';" value="{TXT_FORUM_CREATE_POST}" type="button" />
+        <input onclick="location.href = '#post';" value="{TXT_FORUM_CREATE_POST}" type="button" />
     </div>                
     <!-- END addPostAnchor -->
     <!-- BEGIN threadActionsSelect -->
     <div style="text-align:right; float: right; width: 45%; margin-bottom: 4px;">
         <select onchange="doAction(this.options[this.options.selectedIndex].value);" name="thread_actions">
-             <option value="">{TXT_FORUM_THREAD_ACTION_DESC}</option>
-             <option value="sticky" {FORUM_THREAD_ACTIONS_DISABLED_STICKY}>{TXT_FORUM_THREAD_ACTION_STICKY}</option>
-             <option value="move" {FORUM_THREAD_ACTIONS_DISABLED_MOVE}>{TXT_FORUM_THREAD_ACTION_MOVE}</option>
-             <option value="close" {FORUM_THREAD_ACTIONS_DISABLED_CLOSE}>{TXT_FORUM_THREAD_ACTION_CLOSE}</option>
-             <option value="delete" {FORUM_THREAD_ACTIONS_DISABLED_DELETE}>{TXT_FORUM_THREAD_ACTION_DELETE}</option>
+            <option value="">{TXT_FORUM_THREAD_ACTION_DESC}</option>
+            <option value="sticky" {FORUM_THREAD_ACTIONS_DISABLED_STICKY}>{TXT_FORUM_THREAD_ACTION_STICKY}</option>
+            <option value="move" {FORUM_THREAD_ACTIONS_DISABLED_MOVE}>{TXT_FORUM_THREAD_ACTION_MOVE}</option>
+            <option value="close" {FORUM_THREAD_ACTIONS_DISABLED_CLOSE}>{TXT_FORUM_THREAD_ACTION_CLOSE}</option>
+            <option value="delete" {FORUM_THREAD_ACTIONS_DISABLED_DELETE}>{TXT_FORUM_THREAD_ACTION_DELETE}</option>
         </select>
     </div>
     <!-- END threadActionsSelect -->
@@ -34,23 +34,23 @@
                 <tr class="row{FORUM_POST_ROWCLASS}">
                     <th width="99%"><span style="padding-right: 60px;">{FORUM_USER_NAME}, {FORUM_POST_DATE} </span>
                         <span class="rating"> {TXT_FORUM_RATING}:     {FORUM_POST_RATING}   </span>
-                            <!-- BEGIN rating -->
-                            <span id="forum_rating_{FORUM_RATING_POST_ID}">
-                                <a title="+1" href="javascript:void(0);" onclick="ratePost({FORUM_RATING_POST_ID}, 1);" >
+                        <!-- BEGIN rating -->
+                        <span id="forum_rating_{FORUM_RATING_POST_ID}">
+                            <a title="+1" href="javascript:void(0);" onclick="ratePost({FORUM_RATING_POST_ID}, 1);" >
                                 [
                                 <span class="rate">
                                     +
                                 </span>
                                 ]
-                                </a>
-                                <a title="-1" href="javascript:void(0);" onclick="ratePost({FORUM_RATING_POST_ID}, -1);">
+                            </a>
+                            <a title="-1" href="javascript:void(0);" onclick="ratePost({FORUM_RATING_POST_ID}, - 1);">
                                 [
                                 <span class="rate">
                                     -
                                 </span>
                                 ]
-                                </a>
-                            </span>
+                            </a>
+                        </span>
                         <!-- END rating -->
                     </th>
                     <th width="1%">{FORUM_POST_NUMBER}</th>
@@ -68,12 +68,15 @@
                         </a>
                     </td>
                 </tr>
-                    <!-- END attachment -->
+                <!-- END attachment -->
                 <tr class="row{FORUM_POST_ROWCLASS}">
                     <td colspan="2" align="right">
-                         <!-- BEGIN postEdit --><input onclick="location.href='?section=Forum&amp;cmd=thread&amp;id={FORUM_THREAD_ID}&amp;act=edit&amp;postid={FORUM_POST_ID}';" value="{TXT_FORUM_EDIT}" type="button" />&nbsp;<!-- END postEdit -->
-                          <!-- BEGIN postQuote --><input onclick="{FORUM_QUOTE_ONCLICK}" value="{TXT_FORUM_QUOTE}" type="button" />&nbsp;<!-- END postQuote -->               
-                          <!-- BEGIN postDelete --><input onclick="deletePost('{FORUM_THREAD_ID}', '{FORUM_POST_ID}'); return false;" value="{TXT_FORUM_DELETE}" type="button" />&nbsp;<!-- END postDelete --> 
+                        <!-- BEGIN postEdit --><input onclick="location.href = '?section=Forum&amp;cmd=thread&amp;id={FORUM_THREAD_ID}&amp;act=edit&amp;postid={FORUM_POST_ID}';" value="{TXT_FORUM_EDIT}" type="button" />&nbsp;<!-- END postEdit -->
+                        <!-- BEGIN postQuote --><input onclick="{
+                    FORUM_QUOTE_ONCLICK
+                }" value="{TXT_FORUM_QUOTE}" type="button" />&nbsp;<!-- END postQuote -->               
+                        <!-- BEGIN postDelete --><input onclick="deletePost('{FORUM_THREAD_ID}', '{FORUM_POST_ID}');
+                return false;" value="{TXT_FORUM_DELETE}" type="button" />&nbsp;<!-- END postDelete --> 
                     </td>
                 </tr>
                 <!-- END forumPosts -->
@@ -84,12 +87,12 @@
         {FORUM_POSTS_PAGING}
     </div>
     <!-- BEGIN addThread --><!-- END addThread -->
-        {FORUM_POST_REPLY_REDIRECT}
+    {FORUM_POST_REPLY_REDIRECT}
     <!-- BEGIN addPost -->
     <div class="addpost">
         <a name="post"></a>
         <fieldset> 
-        <legend>{TXT_FORUM_ADD_POST}</legend>
+            <legend>{TXT_FORUM_ADD_POST}</legend>
             <form enctype="multipart/form-data" name="frm_thread" action="./index.php?section=Forum&amp;cmd=thread&amp;id={FORUM_THREAD_ID}" method="post" onsubmit="setScrollPos();">
                 <input type="hidden" name="post_edit_user_id" value="{FORUM_POST_EDIT_USERID}" />     
                 <input type="hidden" name="post_id" value="{FORUM_EDIT_POST_ID}" />   
@@ -98,21 +101,21 @@
                 <input type="hidden" name="pos" value="{FORUM_PAGING_POS}" />
                 <!-- <p>
                     <label>{TXT_FORUM_ICON}</label> -->
-                    <!-- BEGIN icons -->
-                    <!-- <input type="radio" id="icons_{FORUM_ICON_VALUE}" name="icons" value="{FORUM_ICON_VALUE}" /><label class="description" for="icons_{FORUM_ICON_VALUE}"><img src="{FORUM_ICON_SRC}" alt="{FORUM_ICON_ALT}" title="{FORUM_ICON_TITLE}" /></label><br /> -->
-                    <!-- END icons -->
+                <!-- BEGIN icons -->
+                <!-- <input type="radio" id="icons_{FORUM_ICON_VALUE}" name="icons" value="{FORUM_ICON_VALUE}" /><label class="description" for="icons_{FORUM_ICON_VALUE}"><img src="{FORUM_ICON_SRC}" alt="{FORUM_ICON_ALT}" title="{FORUM_ICON_TITLE}" /></label><br /> -->
+                <!-- END icons -->
                 <!-- </p> -->
                 <p><label for="thread_subject">{TXT_FORUM_SUBJECT}</label><input type="text" name="subject" id="thread_subject" value="{FORUM_SUBJECT}" /></p>
                 <p><label for="keywords">{TXT_FORUM_KEYWORDS}</label><input onfocus="showToolTip('{TXT_FORUM_COMMA_SEPARATED_KEYWORDS}', this, 'forumKeywordsHelp')" onblur="hideToolTip('forumKeywordsHelp')" title="{TXT_FORUM_COMMA_SEPARATED_KEYWORDS}"  type="text" name="keywords" id="keywords" value="{FORUM_KEYWORDS}" /></p>
                 <p><label for="forum_attachment">{TXT_FORUM_FILE_ATTACHMENT}</label><input class="inputtext" type="file" value="{FORUM_ATTACHMENT_VALUE}" name="forum_attachment" id="forum_attachment" /></p>
-                    <!-- BEGIN delAttachment -->
-                            <br /><input type="checkbox" id="delAttachment" name="forum_delete_attachment" value="1" />
-                            <label for="delAttachment">{TXT_FORUM_DELETE_ATTACHMENT}</label>
-                            <input type="hidden" name="forum_attachment_oldname" value="{FORUM_ATTACHMENT_OLDNAME}" />
-                    <!-- END delAttachment -->
+                <!-- BEGIN delAttachment -->
+                <br /><input type="checkbox" id="delAttachment" name="forum_delete_attachment" value="1" />
+                <label for="delAttachment">{TXT_FORUM_DELETE_ATTACHMENT}</label>
+                <input type="hidden" name="forum_attachment_oldname" value="{FORUM_ATTACHMENT_OLDNAME}" />
+                <!-- END delAttachment -->
                 <p><a href="javascript:void(0);" onclick="showAllowedExtensions();">erlaubte Dateiendungen</a></p>
                 <p><label for="message">{TXT_FORUM_MESSAGE}<br />
-                                    <a style="font-size:0.9em;" href="http://de.wikipedia.org/wiki/BBCode" title="BBCode">Über BB-Code</a></label>{FORUM_MESSAGE_INPUT}</p>
+                        <a style="font-size:0.9em;" href="http://de.wikipedia.org/wiki/BBCode" title="BBCode">Über BB-Code</a></label>{FORUM_MESSAGE_INPUT}</p>
                 <!-- BEGIN captcha -->
                 <p>
                     <label for="captcha">{TXT_FORUM_CAPTCHA}</label>
@@ -120,7 +123,7 @@
                 </p>
                 <!-- END captcha -->
                 <!-- BEGIN notificationRow -->
-                    <p><input id="forum_notify" type="checkbox" name="notification" value="notify" {FORUM_NOTIFICATION_CHECKBOX_CHECKED} /><label class="description" for="forum_notify">{TXT_FORUM_NOTIFY_NEW_POSTS}</label></p>
+                <p><input id="forum_notify" type="checkbox" name="notification" value="notify" {FORUM_NOTIFICATION_CHECKBOX_CHECKED} /><label class="description" for="forum_notify">{TXT_FORUM_NOTIFY_NEW_POSTS}</label></p>
                 <!-- END notificationRow -->
                 <p>
                     <input type="reset" value="{TXT_FORUM_RESET}" />&nbsp;
@@ -135,16 +138,16 @@
     <!-- END addPost -->
     <!-- END threadDisplay -->
     <!-- BEGIN threadActions -->
-      <br /><span style="color: rgb(255, 0, 0);">{TXT_THREAD_ACTION_ERROR}&nbsp;</span>
-      <br /><span style="color: #006900;">{TXT_THREAD_ACTION_SUCCESS}&nbsp;</span>
-      <!-- BEGIN moveForm -->
-      <form action="index.php?section=Forum&amp;cmd=thread&amp;action=move&amp;id={FORUM_THREAD_ID}" method="POST" name="frmThreadMove">
-      <select name="moveToThread" size="32" style="width:225px;">
-        {FORUM_THREADS}
-      </select>
-      <br />
-      <input type="submit" value="{TXT_FORUM_THREAD_ACTION_MOVE}" />
-      </form>
-      <!-- END moveForm -->
+    <br /><span style="color: rgb(255, 0, 0);">{TXT_THREAD_ACTION_ERROR}&nbsp;</span>
+    <br /><span style="color: #006900;">{TXT_THREAD_ACTION_SUCCESS}&nbsp;</span>
+    <!-- BEGIN moveForm -->
+    <form action="index.php?section=Forum&amp;cmd=thread&amp;action=move&amp;id={FORUM_THREAD_ID}" method="POST" name="frmThreadMove">
+        <select name="moveToThread" size="32" style="width:225px;">
+            {FORUM_THREADS}
+        </select>
+        <br />
+        <input type="submit" value="{TXT_FORUM_THREAD_ACTION_MOVE}" />
+    </form>
+    <!-- END moveForm -->
     <!-- END threadActions -->
 </div>
