@@ -574,6 +574,9 @@ form[name="registrationForm"] .row {
     float:left;
     height:auto !important;
 }
+.reg {
+    padding: 0 15px;
+}
 #access div.message,
 #access div.message_ok,
 #access div.message_error,
@@ -733,12 +736,19 @@ form[name="registrationForm"] .row {
 /***************************************************/
 /* CSS DEFINITIONS FOR LOGIN MODULE                */
 /***************************************************/
-#right-login {
+/*#right-login {
     width: 50%;
     padding: 0px 0 0px 40px;
     margin: 8px 0px 0px 0px;
     float: left;
     height: auto !important;
+}*/
+.login-content .login-social {
+    border-right: 1px solid #D8DCE0;
+/*    float: left;
+    width: 50%;
+    padding-right: 4.9%;
+    margin-top: 8px;*/
 }
 #login a.register{
     padding-left:18px;
@@ -775,7 +785,6 @@ form[name="registrationForm"] .row {
 #forum div.addpost,
 #forum div.forums,
 #forum div.searchform,
-#forum div.notification,
 #forum div.message_error,
 #forum div.message_ok,
 #forum div.text,
@@ -828,11 +837,7 @@ form[name="registrationForm"] .row {
 }
 #forum div.notification_center {
     padding: 250px 0px 0px 0px;
-    margin: 0px 0px 15px 0px;
-    float:left;
-    width: 9%;
     text-align:center;
-    height: 281px;
 }
 .forumTagCloud {
     padding: 0px;
@@ -3070,6 +3075,9 @@ input[type="checkbox"] {
     height: 100px;
     text-align: center;
 }
-.selectorCenter input {
+.selectorCenter input, .notification_center input {
+    margin-bottom: 15px;
+}
+.notification {
     margin-bottom: 15px;
 }

@@ -1,35 +1,39 @@
-<div id="feed">
-	{FEED_NO_NEWSFEED}
-	<!-- BEGIN feed_table -->
-	<!-- BEGIN feed_cat -->
-	<div class="categories">
-		<table cellspacing="0">
-			<tr>
-				<th>{FEED_CAT_NAME}</th>
-			</tr>
-			<!-- BEGIN feed_news -->
-			<tr>
-				<td><a href="{FEED_NEWS_LINK}">{FEED_NEWS_NAME}</a></td>
-			</tr>
-			 <!-- END feed_news -->
-		</table>
-	</div>
-	<!-- END feed_cat -->
-	<br />
-	<!-- BEGIN feed_show_news -->
-	<div class="news">
-    	<fieldset>
-            <legend>{FEED_TITLE}</legend>
-            {FEED_IMAGE}
-    		<ul>  
-    			<!-- BEGIN feed_output_news -->      
-    			<li><a href="{FEED_LINK}" target="_blank">{FEED_NAME}</a> ({FEED_DATE})</li>     
-    			<!-- END feed_output_news --> 
-    		</ul>
-    		<br />
-    		{TXT_FEED_LAST_UPTDATE}: {FEED_TIME}
-    	</fieldset>
-		<!-- END feed_show_news -->
-	</div>
-	<!-- END feed_table -->
+<div class="container-fluid">
+    <div class="row">
+        <div id="feed">
+            {FEED_NO_NEWSFEED}
+            <!-- BEGIN feed_table -->
+            <!-- BEGIN feed_cat -->
+            <div class="categories">
+                <table class="table" cellspacing="0">
+                    <tr>
+                        <th>{FEED_CAT_NAME}</th>
+                    </tr>
+                    <!-- BEGIN feed_news -->
+                    <tr>
+                        <td><a href="{FEED_NEWS_LINK}">{FEED_NEWS_NAME}</a></td>
+                    </tr>
+                    <!-- END feed_news -->
+                </table>
+            </div>
+            <!-- END feed_cat -->
+            <br />
+            <!-- BEGIN feed_show_news -->
+            <div class="news">
+                <fieldset>
+                    <legend>{FEED_TITLE}</legend>
+                    {FEED_IMAGE}
+                    <ul>  
+                        <!-- BEGIN feed_output_news -->      
+                        <li><a href="{FEED_LINK}" target="_blank">{FEED_NAME}</a> ({FEED_DATE})</li>     
+                        <!-- END feed_output_news --> 
+                    </ul>
+                    <br />
+                    {TXT_FEED_LAST_UPTDATE}: {FEED_TIME}
+                </fieldset>
+                <!-- END feed_show_news -->
+            </div>
+            <!-- END feed_table -->
+        </div>
+    </div>
 </div>

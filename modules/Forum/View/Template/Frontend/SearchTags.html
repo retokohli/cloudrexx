@@ -1,27 +1,31 @@
 <div id="forum">
-	<div class="text">
-		Hier kann in allen Beiträgen nach Stichworten gesucht werden. <br />
-		Wenn Sie auch den Inhalt der Diskussionen anstatt nur deren Stichworte durchsuchen wollen,
-		aktivieren Sie die das Kästchen neben dem Suchfeld. <br /> <br />
-	</div>
-	<!-- BEGIN forumError -->
-		<div class="message_error">{FORUM_ERROR}</div>
-	<!-- END forumError -->
-	<div class="searchform">
-		<form action="index.php" method="get">
-			<input type="hidden" value="Forum" name="section">
-			<input type="hidden" value="searchTags" name="cmd">
-			<input style="width: 250px;" type="text" name="term" value="{FORUM_SEARCH_TERM}">  <input type="submit" name="search" value="Suchen" /><br /><br />
-			<input type="checkbox" value="1" id="srchContent" name="searchContent" {FORUM_SEARCH_CONTENT_CHECKED} /><label for="srchContent">Inhalt auch durchsuchen</label>
-		</form>
-	</div>
-	<div class="threads">
-		<ul>
-			<!-- BEGIN threadList -->
-				<li style="list-item: none;"><a title="{FORUM_THREAD_SUBJECT}" href="{FORUM_THREAD_LINK}"> {FORUM_THREAD_SUBJECT} </a><br />
-				Stichworte: {FORUM_THREAD_KEYWORDS} <br /> 
-				Inhalt: {FORUM_THREAD_CONTENT}<br /><br /></li>
-			<!-- END threadList -->
-		</ul>
-	</div>
+    <div class="text-muted">
+        Hier kann in allen Beiträgen nach Stichworten gesucht werden. <br />
+        Wenn Sie auch den Inhalt der Diskussionen anstatt nur deren Stichworte durchsuchen wollen,
+        aktivieren Sie die das Kästchen neben dem Suchfeld. <br /> <br />
+    </div>
+    <!-- BEGIN forumError -->
+    <div class="text-danger">{FORUM_ERROR}</div>
+    <!-- END forumError -->
+    <div class="searchform">
+        <form role="form" action="index.php" method="get">
+            <input type="hidden" value="Forum" name="section">
+            <input type="hidden" value="searchTags" name="cmd">
+            <input class="searchbox" type="text" name="term" value="{FORUM_SEARCH_TERM}">  
+            <input class="btn btn-default" type="submit" name="search" value="Suchen" /><br /><br />
+            <div class="checkbox">
+               
+                <label for="srchContent"><input type="checkbox" value="1" id="srchContent" name="searchContent" {FORUM_SEARCH_CONTENT_CHECKED} />Inhalt auch durchsuchen</label>
+            </div>
+        </form>
+    </div>
+    <div class="threads">
+        <ul>
+            <!-- BEGIN threadList -->
+            <li style="list-item: none;"><a title="{FORUM_THREAD_SUBJECT}" href="{FORUM_THREAD_LINK}"> {FORUM_THREAD_SUBJECT} </a><br />
+                Stichworte: {FORUM_THREAD_KEYWORDS} <br /> 
+                Inhalt: {FORUM_THREAD_CONTENT}<br /><br /></li>
+            <!-- END threadList -->
+        </ul>
+    </div>
 </div>
