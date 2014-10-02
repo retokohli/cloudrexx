@@ -79,8 +79,6 @@ class JsonMediaBrowser implements JsonAdapter
 
 
         \Env::get('init')->loadLanguageData('FileBrowser');
-
-
         foreach (MediaBrowserConfiguration::getInstance()->mediaTypes as $type => $name) {
             if (!$this->_checkForModule($type)) {
                 continue;
@@ -97,9 +95,17 @@ class JsonMediaBrowser implements JsonAdapter
                 )
             );
         }
+        \DBG::time();
         return $return;
     }
 
+    /**
+     *
+     *
+     * @param $params
+     *
+     * @return array
+     */
     public function getFiles($params)
     {
         $startTime        = microtime(true);
@@ -178,17 +184,17 @@ class JsonMediaBrowser implements JsonAdapter
             }
 
 
-            if (!FileSystem::exists($preview)) {
-
-                if ($imageManager->_isImage($file->getRealPath())
-                    && $this->usedTooMuchTime($startTime)
-                ) {
-                    ThumbnailGenerator::createThumbnail(
-                        $file->getPath() . '/', $fileNamePlain, $fileExtension, $imageManager
-                    );
-
-                }
-            }
+//            if (!FileSystem::exists($preview)) {
+//
+//                if ($imageManager->_isImage($file->getRealPath())
+//                    && $this->usedTooMuchTime($startTime)
+//                ) {
+//                    ThumbnailGenerator::createThumbnail(
+//                        $file->getPath() . '/', $fileNamePlain, $fileExtension, $imageManager
+//                    );
+//
+//                }
+//            }
 
 
             // filter thumbnail images
@@ -265,7 +271,7 @@ class JsonMediaBrowser implements JsonAdapter
                 }
             }
 
-            $url = "'" . '[[' . NodePlaceholder::PLACEHOLDER_PREFIX;
+            $url = '[[' . NodePlaceholder::PLACEHOLDER_PREFIX;
 
 // TODO: This only works for regular application pages. Pages of type fallback that are linked to an application
 //       will be parsed using their node-id ({NODE_<ID>})
@@ -280,18 +286,12 @@ class JsonMediaBrowser implements JsonAdapter
                 $url .= $arrPage['node_id'];
             }
 
-            // if language != current language or $alwaysReturnLanguage
-            if ($this->_frontendLanguageId != FRONTEND_LANG_ID
-                || (isset($_GET['alwaysReturnLanguage'])
-                    && $_GET['alwaysReturnLanguage'] == 'true')
-            ) {
-                $url .= '_' . $this->_frontendLanguageId;
-            }
-            $url .= "]]'";
+
+            $url .= "]]";
 
             $return[] = array(
                 'click'     =>
-                    "javascript:{setUrl($url,null,null,'" . \FWLanguage::getLanguageCodeById($this->_frontendLanguageId)
+                    "javascript:{setUrl('$url',null,null,'" . \FWLanguage::getLanguageCodeById($this->_frontendLanguageId)
                     . $path . "','page')}",
                 'name'      => $arrPage['catname'],
                 'extension' => 'Html',

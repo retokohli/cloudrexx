@@ -6,7 +6,7 @@
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  modules_skeleton
+ * @subpackage  modules_uploader
  */
 
 namespace Cx\Core_Modules\Uploader\Controller;
@@ -57,7 +57,7 @@ class UploaderConfiguration
          */
         $pdo              = $this->cx->getDb()->getPdoConnection();
         $sth              = $pdo->query(
-                'SELECT name, size, type, 100 as quality, CONCAT(".thumb_",name) as value FROM  `' . DBPREFIX
+                'SELECT name, size,  100 as quality, CONCAT(".thumb_",name) as value FROM  `' . DBPREFIX
                 . 'settings_thumbnail`'
         );
         \DBG::log($sth->errorCode());

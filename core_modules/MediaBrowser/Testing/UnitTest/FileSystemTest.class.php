@@ -18,17 +18,24 @@ use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
  * FileSystemTest
  * 
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @author      SS4U <ss4u.comvation@gmail.com>
+ * @author      Robin Glauser <robin.glauser@comvation.com>
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  coremodule_mediabrowser
  */
-class FileSystemTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
+class FileSystemTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 {
 
     public function testPathchecker()
     {
         $this->assertTrue(FileSystem::isVirtualPath('files/Movies'));
+        $this->assertTrue(!FileSystem::isVirtualPath('/var/www/contrexx/images/content/Movies'));
     }
+
+    public function testCreateDirectory()
+    {
+
+    }
+
+
 }

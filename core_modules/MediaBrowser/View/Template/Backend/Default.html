@@ -1,4 +1,4 @@
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+
 <h1 style="float: none;">Beispielseite mit Uploadern</h1>
 
 
@@ -7,8 +7,8 @@
 
 <h3>MediaBrowser mit allen Inhalten</h3>
 
-<button data-cx-mb="" data-cx-Mb-Cb-Js-Modalclosed="callback">MediaBrowser ALL</button>
-<p><code>&lt;button data-cx-mb=""&gt;MediaBrowser ALL&lt;/button&gt;</code></p>
+{MEDIABROWSER_CODE1}
+<p><code>{MEDIABROWSER_CODE1_RAW}</code></p>
 <p>"mb" zu beliebigen Element hinzufügen. Der MediaBrowser öffnet sich bei Klick auf das entsprechende Element. </p>
 <hr />
 
@@ -61,28 +61,46 @@
         alert(data);
     }
 
-    function callback(files) {
-        console.log(files);
-        if (files[0].hasOwnProperty('level')){
-            var win = window.open(files[0].url, '_blank');
-            win.focus();
+    /**
+     *
+     * @param callback
+     */
+    function callback(callback) {
+        console.log(callback);
+
+        if (callback.type == 'close'){
+            bootbox.alert({
+                message: 'Close Event',
+                title: "Close"
+            });
+            return;
+        }
+
+        if (callback.data[0].hasOwnProperty('level')){
+           console.table(callback.data);
             return;
         }
 
 
-        var images = "Pictures:";
-        for (var i in files) {
-            if (files.hasOwnProperty(i)){
-                if (files[i].datainfo.extension == 'Jpg' || files[i].datainfo.extension == 'Png' || files[i].datainfo.extension == 'Gif'){
-                    images += "<img class='img-responsive' src='"+files[i].datainfo.filepath+"' />";
+        if (callback.data[0].hasOwnProperty('datainfo')){
+            var images = "Pictures:";
+            for (var i in callback.data) {
+                if (callback.data.hasOwnProperty(i)){
+                    if (callback.data[i].datainfo.extension == 'Jpg' || callback.data[i].datainfo.extension == 'Png' || callback.data[i].datainfo.extension == 'Gif'){
+                        images += "<img class='img-responsive' src='"+callback.data[i].datainfo.filepath+"' />";
+                    }
+                    else {
+                        images += callback.data[i].datainfo.filepath;
+                    }
                 }
             }
+
+            bootbox.alert({
+                message: images,
+                title: "Chosen Files"
+            });
         }
 
-        bootbox.alert({
-            message: images,
-            title: "Chosen Pictures"
-        });
     }
 </script>
 
@@ -122,22 +140,40 @@
     <li>Anstelle des "data-cx-mb" kann auch direkt "cx-mb" verwendet werden, ist jedoch in einigen älteren Browsern invalid.</li>
 </ul>
 <hr />
+<style>
+    .imageList img, .imageList2 img {
+        width: 300px;
+        height: auto;
+        vertical-align: top;
+    }
 
+</style>
+<h3>Uploader Demo</h3>
 
-<!-- Der neue Fileuploader setzt die Verwendung von angularjs voraus. Nachfolgend einige Beispiele, wie er verwendet werden kann !-->
-<h3>Single File Upload</h3>
-<button data-pl-upload data-pl-auto-upload="true">Upload Files</button>
+{UPLOADER_CODE}<br/>
+<h2>Imagelist 1</h2>
+<div class="imageList">
+</div>
+<br/>
+{UPLOADER_CODE2}
+<br/>
+<h2>Imagelist 2</h2>
+<div class="imageList2">
+</div>
+<script>
+    function callback3(response) {
+        console.log(response);
+        for (var i in response) {
+            var image = cx.jQuery(new Image()).appendTo('.imageList');
+            image.attr('src', response[i]);
+        }
+    }
 
-
-<h3>Multiple Files Upload</h3>
-<a data-pl-upload data-pl-auto-upload="false" data-pl-files-model="multiFiles" data-pl-progress-model="multiPercent" data-pl-instance="uploader">Pick Files</a>
-<a class="input-block-level" data-ng-click="uploader.start()">Upload Files</a>
-
-
-<h3>Passing Parameter to upload script</h3>
-<a data-pl-upload data-pl-multi-params-model="multiParams" data-pl-progress-model="paramsPercent">Upload Files</a>
-
-<h3>Events on upload</h3>
-<a  data-pl-upload data-on-file-added="loading=true" data-on-file-uploaded="loading=false">Upload</a>
-
-
+    function callback2(response) {
+        console.log(response);
+        for (var i in response) {
+            var image = cx.jQuery(new Image()).appendTo('.imageList2');
+            image.attr('src', response[i]);
+        }
+    }
+</script>
