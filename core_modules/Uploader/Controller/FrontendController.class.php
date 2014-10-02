@@ -16,7 +16,7 @@ namespace Cx\Core_Modules\Uploader\Controller;
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  modules_skeleton
+ * @subpackage  modules_uploader
  */
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController {
 

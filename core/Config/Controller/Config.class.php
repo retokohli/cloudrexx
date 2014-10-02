@@ -16,6 +16,13 @@ namespace Cx\Core\Config\Controller;
 /**
  * @ignore
  */
+use Cx\Core\Csrf\Controller\Csrf;
+use Cx\Core\Html\Sigma;
+use Cx\Core\Setting\Controller\Setting;
+use Cx\Core_Modules\MediaBrowser\Model\ThumbnailGenerator;
+use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
+use Cx\Lib\FileSystem\FileSystem;
+
 isset($objInit) && $objInit->mode == 'backend' ? \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Cache/Controller/CacheManager.class.php') : null;
 
 /**
@@ -166,6 +173,14 @@ class Config
                     \DBG::msg('Image settings: '.$e->getMessage);
                 }
                 break;
+            case 'thumbnail':
+                $this->editThumbnails($_POST);
+                break;
+
+            case 'generateThumbnail':
+                $this->generateThumbnail($_POST);
+                break;
+
 
             default:
                 $this->showSettings();
@@ -816,20 +831,30 @@ class Config
         $objTemplate->parse('settings_smtp_modify');
         return true;
     }
-    
+
     /**
      * Shows the image settings page
-     * 
+     *
      * @access  public
+     *
+     * @param $arrData
+     *
+     * @throws \Exception
      * @return  boolean  true on success, false otherwise
      */
     public function image($arrData)
     {
+
+        \JS::registerJS('lib/javascript/jquery/1.9.1/js/jquery.min.js');
+        \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Style/mediabrowser.css', 1));
+        \JS::registerJS('lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js');
+        \JS::registerJS('lib/javascript/bootbox.min.js');
+
         global $objDatabase, $objTemplate, $_ARRAYLANG;
-        
+
         $this->strPageTitle = $_ARRAYLANG['TXT_SETTINGS_IMAGE'];
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_image', 'settings_image.html');
-        
+
         // Saves the settings
         if (isset($arrData['submit'])) {
             $arrSettings['image_cut_width']    = contrexx_input2db(intval($arrData['image_cut_width']));
@@ -837,7 +862,7 @@ class Config
             //$arrSettings['image_scale_width']  = contrexx_input2db(intval($arrData['image_scale_width']));
             //$arrSettings['image_scale_height'] = contrexx_input2db(intval($arrData['image_scale_height']));
             $arrSettings['image_compression']  = contrexx_input2db(intval($arrData['image_compression']));
-            
+
             foreach ($arrSettings as $name => $value) {
                 $query = '
                     UPDATE `'.DBPREFIX.'settings_image`
@@ -849,10 +874,70 @@ class Config
                     throw new \Exception('Could not update the settings');
                 }
             }
-            
+
             $this->strOkMessage = $_ARRAYLANG['TXT_SETTINGS_UPDATED'];
         }
-        
+
+        /**
+         * @var $cx \Cx\Core\Core\Controller\Cx
+         */
+        $cx         = \Env::get('cx');
+        $pdo        = $cx->getDb()->getPdoConnection();
+        $sth        = $pdo->query('SELECT id, name, size FROM  `' . DBPREFIX . 'settings_thumbnail`');
+        $thumbnails = $sth->fetchAll();
+
+        $newThumbnailTemplate
+            = new \Cx\Core\Html\Sigma(ASCMS_PATH);
+        $newThumbnailTemplate->loadTemplateFile(ASCMS_CORE_FOLDER.'/Config/View/Template/Backend/settings_image_edit.html');
+        $newThumbnailTemplate->removeUnknownVariables = false;
+        $newThumbnailTemplate->setVariable(
+            array(
+                'TXT_IMAGE_TITLE'           => $_ARRAYLANG['TXT_SETTINGS_IMAGE_TITLE'],
+                'TXT_IMAGE_CSRF'           => \Cx\Core\Csrf\Controller\Csrf::param(),
+                'TXT_IMAGE_THUMBNAILS_DELETE'           => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_DELETE'],
+                'TXT_IMAGE_CUT_WIDTH'       => $_ARRAYLANG['TXT_SETTINGS_IMAGE_CUT_WIDTH'],
+                'TXT_IMAGE_CUT_HEIGHT'      => $_ARRAYLANG['TXT_SETTINGS_IMAGE_CUT_HEIGHT'],
+                'TXT_IMAGE_THUMBNAILS'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS'],
+                //'TXT_IMAGE_SCALE_WIDTH'          => $_ARRAYLANG['TXT_SETTINGS_IMAGE_SCALE_WIDTH'],
+                //'TXT_IMAGE_SCALE_HEIGHT'         => $_ARRAYLANG['TXT_SETTINGS_IMAGE_SCALE_HEIGHT'],
+                'TXT_IMAGE_COMPRESSION'     => $_ARRAYLANG['TXT_SETTINGS_IMAGE_COMPRESSION'],
+                'TXT_SAVE'                  => $_ARRAYLANG['TXT_SAVE'],
+                'TXT_IMAGE_THUMBNAILS_ID'        => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_ID'],
+                'TXT_IMAGE_THUMBNAILS_NAME'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_NAME'],
+                'TXT_IMAGE_THUMBNAILS_SIZE'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_SIZE'],
+                'TXT_SETTINGS_FUNCTIONS'      => $_ARRAYLANG['TXT_SETTINGS_FUNCTIONS'],
+                'TXT_IMAGE_THUMBNAILS_RELOAD'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_RELOAD'],
+                'TXT_IMAGE_THUMBNAILS_NEW'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_NEW'],
+
+                'TXT_IMAGE_THUMBNAILS_MAX_SIZE' => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_MAX_SIZE'],
+                'SETTINGS_IMAGE_CUT_WIDTH'  => !empty($arrSettings['image_cut_width']) ? $arrSettings['image_cut_width']
+                    : 0,
+                'SETTINGS_IMAGE_CUT_HEIGHT' => !empty($arrSettings['image_cut_height'])
+                    ? $arrSettings['image_cut_height'] : 0,
+                //'SETTINGS_IMAGE_SCALE_WIDTH'     => !empty($arrSettings['image_scale_width'])  ? $arrSettings['image_scale_width']  : 0,
+                //'SETTINGS_IMAGE_SCALE_HEIGHT'    => !empty($arrSettings['image_scale_height']) ? $arrSettings['image_scale_height'] : 0,
+            )
+        );
+
+        $objTemplate->setVariable(
+            'CONFIG_THUMBNAIL_NEW_TEMPLATE',
+            implode(' ', explode("\n", str_replace("'", "\"", $newThumbnailTemplate->get())))
+        );
+
+        foreach ($thumbnails as $thumbnail) {
+            $objTemplate->setVariable(
+                array(
+                    'IMAGE_THUMBNAIL_ID' => $thumbnail['id'],
+                    'IMAGE_THUMBNAIL_NAME' => $thumbnail['name'],
+                    'IMAGE_THUMBNAIL_SIZE' => $thumbnail['size'],
+                    'TXT_IMAGE_THUMBNAILS_MAXIMUM' => sprintf($_ARRAYLANG['TXT_IMAGE_THUMBNAILS_MAXIMUM'], $thumbnail['size'].'px'),
+                )
+            );
+
+            $objTemplate->parse('settings_image_thumbnails_list');
+        }
+
+
         // Gets the settings
         $query = '
             SELECT `name`, `value`
@@ -869,13 +954,14 @@ class Config
         } else {
             throw new \Exception('Could not query the settings.');
         }
-        
+
         // Defines the compression values
         $arrCompressionOptions = array();
+
         for ($i = 1; $i <= 20 ; $i++) {
             $arrCompressionOptions[] = $i * 5;
         }
-        
+
         // Parses the compression options
         $imageCompression = !empty($arrSettings['image_compression']) ? intval($arrSettings['image_compression']) : 95;
         foreach ($arrCompressionOptions as $compression) {
@@ -886,25 +972,71 @@ class Config
             ));
             $objTemplate->parse('settings_image_compression_options');
         }
-        
+
         // Parses the settings
-        $objTemplate->setVariable(array(
-            'TXT_IMAGE_TITLE'                => $_ARRAYLANG['TXT_SETTINGS_IMAGE_TITLE'],
-            'TXT_IMAGE_CUT_WIDTH'            => $_ARRAYLANG['TXT_SETTINGS_IMAGE_CUT_WIDTH'],
-            'TXT_IMAGE_CUT_HEIGHT'           => $_ARRAYLANG['TXT_SETTINGS_IMAGE_CUT_HEIGHT'],
-            //'TXT_IMAGE_SCALE_WIDTH'          => $_ARRAYLANG['TXT_SETTINGS_IMAGE_SCALE_WIDTH'],
-            //'TXT_IMAGE_SCALE_HEIGHT'         => $_ARRAYLANG['TXT_SETTINGS_IMAGE_SCALE_HEIGHT'],
-            'TXT_IMAGE_COMPRESSION'          => $_ARRAYLANG['TXT_SETTINGS_IMAGE_COMPRESSION'],
-            'TXT_SAVE'                       => $_ARRAYLANG['TXT_SAVE'],
-            
-            'SETTINGS_IMAGE_CUT_WIDTH'       => !empty($arrSettings['image_cut_width'])    ? $arrSettings['image_cut_width']    : 0,
-            'SETTINGS_IMAGE_CUT_HEIGHT'      => !empty($arrSettings['image_cut_height'])   ? $arrSettings['image_cut_height']   : 0,
-            //'SETTINGS_IMAGE_SCALE_WIDTH'     => !empty($arrSettings['image_scale_width'])  ? $arrSettings['image_scale_width']  : 0,
-            //'SETTINGS_IMAGE_SCALE_HEIGHT'    => !empty($arrSettings['image_scale_height']) ? $arrSettings['image_scale_height'] : 0,
-        ));
+        $objTemplate->setVariable(
+            array(
+                'TXT_IMAGE_TITLE'           => $_ARRAYLANG['TXT_SETTINGS_IMAGE_TITLE'],
+                'TXT_IMAGE_CSRF'           => \Cx\Core\Csrf\Controller\Csrf::param(),
+                'TXT_IMAGE_THUMBNAILS_DELETE'           => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_DELETE'],
+                'TXT_IMAGE_CUT_WIDTH'       => $_ARRAYLANG['TXT_SETTINGS_IMAGE_CUT_WIDTH'],
+                'TXT_IMAGE_CUT_HEIGHT'      => $_ARRAYLANG['TXT_SETTINGS_IMAGE_CUT_HEIGHT'],
+                'TXT_IMAGE_THUMBNAILS'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS'],
+                //'TXT_IMAGE_SCALE_WIDTH'          => $_ARRAYLANG['TXT_SETTINGS_IMAGE_SCALE_WIDTH'],
+                //'TXT_IMAGE_SCALE_HEIGHT'         => $_ARRAYLANG['TXT_SETTINGS_IMAGE_SCALE_HEIGHT'],
+                'TXT_IMAGE_COMPRESSION'     => $_ARRAYLANG['TXT_SETTINGS_IMAGE_COMPRESSION'],
+                'TXT_SAVE'                  => $_ARRAYLANG['TXT_SAVE'],
+                'TXT_IMAGE_THUMBNAILS_ID'        => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_ID'],
+                'TXT_IMAGE_THUMBNAILS_NAME'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_NAME'],
+                'TXT_IMAGE_THUMBNAILS_SIZE'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_SIZE'],
+                'TXT_SETTINGS_FUNCTIONS'      => $_ARRAYLANG['TXT_SETTINGS_FUNCTIONS'],
+                'TXT_IMAGE_THUMBNAILS_RELOAD'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_RELOAD'],
+                'TXT_IMAGE_THUMBNAILS_NEW'      => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_NEW'],
+
+                'TXT_IMAGE_THUMBNAILS_MAX_SIZE' => $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_MAX_SIZE'],
+                'SETTINGS_IMAGE_CUT_WIDTH'  => !empty($arrSettings['image_cut_width']) ? $arrSettings['image_cut_width']
+                    : 0,
+                'SETTINGS_IMAGE_CUT_HEIGHT' => !empty($arrSettings['image_cut_height'])
+                    ? $arrSettings['image_cut_height'] : 0,
+                //'SETTINGS_IMAGE_SCALE_WIDTH'     => !empty($arrSettings['image_scale_width'])  ? $arrSettings['image_scale_width']  : 0,
+                //'SETTINGS_IMAGE_SCALE_HEIGHT'    => !empty($arrSettings['image_scale_height']) ? $arrSettings['image_scale_height'] : 0,
+            )
+        );
         $objTemplate->parse('settings_image');
-        
+
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTemplate);
+
         return true;
+    }
+
+
+    public function editThumbnails($post){
+        /**
+         * @var $cx \Cx\Core\Core\Controller\Cx
+         */
+        $cx  = \Env::get('cx');
+        $pdo = $cx->getDb()->getPdoConnection();
+
+        if (isset($_GET['deleteid'])) {
+            $sth = $pdo->prepare(
+                'DELETE FROM  `' . DBPREFIX . 'settings_thumbnail` WHERE id = :id'
+            );
+            $sth->bindParam(':id', $_GET['deleteid']);
+            $sth->execute();
+        }
+
+        if (isset($_POST['name']) && isset($_POST['size'])) {
+            $stmt = $pdo->prepare(
+                'REPLACE INTO `' . DBPREFIX
+                . 'settings_thumbnail`(id, name, size) VALUES (:id, :name, :size)'
+            );
+            $stmt->bindParam(':id', $_POST['id']);
+            $stmt->bindParam(':name', $_POST['name']);
+            $stmt->bindParam(':size', intval($_POST['size']));
+            $stmt->execute();
+        }
+        Csrf::header('Location: index.php?cmd=Config&act=image');
+        die;
     }
     
     public function showDomains() {
@@ -1502,6 +1634,140 @@ class Config
      */
     static function getSettingsFile() {
         return \Env::get('cx')->getWebsiteConfigPath() . '/settings.php';
+    }
+
+    protected  function generateThumbnail($post)
+    {
+        global $objDatabase, $objTemplate, $_ARRAYLANG;
+
+        $recursiveIteratorIterator
+            = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(ASCMS_CONTENT_IMAGE_PATH.'/'), \RecursiveIteratorIterator::SELF_FIRST);
+        $jsonFileArray = array();
+
+        $thumbnailList = UploaderConfiguration::getInstance()->getThumbnails();
+
+        $imageManager = new \ImageManager();
+
+        $fileCounter = 0;
+        $generalSuccess = true;
+
+
+        $imageFiles = array();
+
+        foreach ($recursiveIteratorIterator as $file) {
+            /**
+             * @var $file \SplFileInfo
+             */
+            $extension = 'Dir';
+            if (!$file->isDir()) {
+                $extension = ucfirst(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
+            }
+            $filePathinfo  = pathinfo($file->getRealPath());
+            $fileNamePlain = $filePathinfo['filename'];
+            // set preview if image
+            $preview = 'none';
+
+            $fileInfos = array(
+                'filepath'  => mb_strcut($file->getPath() . '/' . $file->getFilename(), mb_strlen(ASCMS_PATH)),
+                // preselect in mediabrowser or mark a folder
+                'name'      => $file->getFilename(),
+                'cleansize' => $file->getSize(),
+                'extension' => ucfirst(mb_strtolower($extension)),
+                'type'      => $file->getType()
+            );
+
+
+            // filters
+            if (
+                $fileInfos['name'] == '.' || preg_match('/\.thumb/', $fileInfos['name'])
+                || $fileInfos['name'] == 'index.php'
+                || (0 === strpos($fileInfos['name'], '.'))
+            ) {
+                continue;
+            }
+
+
+            if (!preg_match("/(jpg|jpeg|gif|png)/i", ucfirst($extension))) {
+                continue;
+            }
+
+            $imageFiles[] = $file;
+
+        }
+
+
+        $processFile = ASCMS_TEMP_PATH . '/public/progress' . $_GET['key'] . '.txt';
+        if (FileSystem::exists($processFile)) {
+            die;
+        }
+
+
+        file_put_contents($processFile, '');
+
+        $imageFilesCount = count($imageFiles);
+
+        if ($imageFilesCount == 0) {
+            file_put_contents($processFile, 100);
+            die;
+        }
+
+
+        foreach ($imageFiles as $file) {
+
+            /**
+             * @var $file \SplFileInfo
+             */
+            $extension = 'Dir';
+            if (!$file->isDir()) {
+                $extension = ucfirst(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
+            }
+            $filePathinfo  = pathinfo($file->getRealPath());
+            $fileNamePlain = $filePathinfo['filename'];
+
+            $fileInfos = array(
+                'filepath'  => mb_strcut($file->getPath() . '/' . $file->getFilename(), mb_strlen(ASCMS_PATH)),
+                // preselect in mediabrowser or mark a folder
+                'name'      => $file->getFilename(),
+                'cleansize' => $file->getSize(),
+                'extension' => ucfirst(mb_strtolower($extension)),
+                'type'      => $file->getType()
+            );
+
+            $filePathinfo  = pathinfo($file->getRealPath());
+            $fileExtension = isset($filePathinfo['extension']) ? $filePathinfo['extension'] : '';
+
+            $preview = ASCMS_PATH_OFFSET . str_replace(ASCMS_DOCUMENT_ROOT, '', $file->getRealPath());
+
+            $previewList = array();
+            foreach ($thumbnailList as $thumbnail) {
+                $previewList[] = str_replace(
+                    '.' . lcfirst($extension), $thumbnail['value'] . '.' . lcfirst($extension), $preview
+                );
+            }
+
+            $allThumbnailsExists = true;
+            foreach ($previewList as $previewImage) {
+                if (!FileSystem::exists($previewImage)) {
+                    $allThumbnailsExists = false;
+                }
+            }
+
+            if (!$allThumbnailsExists) {
+                if ($imageManager->_isImage($file->getRealPath())) {
+                    ThumbnailGenerator::createThumbnail(
+                        $file->getPath() . '/', $fileNamePlain, $fileExtension, $imageManager
+                    );
+                }
+            }
+
+            $fileCounter++;
+            file_put_contents($processFile, $fileCounter / $imageFilesCount * 100);
+
+        }
+        file_put_contents($processFile, 100);
+        sleep(3);
+        FileSystem::delete_file($processFile);
+        die;
     }
 
 }

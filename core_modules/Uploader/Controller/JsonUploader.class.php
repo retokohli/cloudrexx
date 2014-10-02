@@ -2,6 +2,7 @@
 
 /**
  * JSON Adapter for Uploader
+ *
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
@@ -10,23 +11,29 @@
 
 namespace Cx\Core_Modules\Uploader\Controller;
 
+use Cx\Core\Core\Model\Entity\SystemComponentController;
 use \Cx\Core\Json\JsonAdapter;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
+use Cx\Core_Modules\MediaBrowser\Model\MoveFileException;
+use Cx\Core_Modules\MediaBrowser\Model\RemoveDirectoryException;
+use Cx\Core_Modules\MediaBrowser\Model\RemoveFileException;
 use Cx\Lib\FileSystem\FileSystem;
 
 /**
  * JSON Adapter for Uploader
+ *
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
  * @subpackage  core_json
  */
-class JsonUploader implements JsonAdapter
+class JsonUploader extends SystemComponentController implements JsonAdapter
 {
     protected $message = '';
 
     /**
      * Returns the internal name used as identifier for this adapter
+     *
      * @return String Name of this adapter
      */
     public function getName()
@@ -36,6 +43,7 @@ class JsonUploader implements JsonAdapter
 
     /**
      * Returns an array of method names accessable from a JSON request
+     *
      * @return array List of method names
      */
     public function getAccessableMethods()
@@ -45,6 +53,7 @@ class JsonUploader implements JsonAdapter
 
     /**
      * Returns all messages as string
+     *
      * @return String HTML encoded error messages
      */
     public function getMessagesAsString()
@@ -54,27 +63,84 @@ class JsonUploader implements JsonAdapter
 
     public function upload($params)
     {
-        $path_part                 = explode("/", $params['post']['path'], 2);
-        $mediaBrowserConfiguration = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::getInstance();
-        $path                      = $mediaBrowserConfiguration->mediaTypePaths[$path_part[0]][1] . '/' . $path_part[1];
-
-        $uploader = UploaderController::handleRequest(array(
-            'allow_extensions' => 'jpg,jpeg,png',
-            'target_dir'       => str_replace(ASCMS_INSTANCE_OFFSET, '', $path) // without offset
-        ));
-
-        if (!$uploader) {
-            $ret = array(
+        if (isset($params['get']['id']) && is_int(intval($params['get']['id']))) {
+            $id   = intval($params['get']['id']);
+            $path = $_SESSION->getTempPath() . '/';
+        } elseif (isset($params['post']['path'])) {
+            $path_part = explode("/", $params['post']['path'], 2);
+            $mediaBrowserConfiguration
+                       = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::getInstance();
+            $path
+                       = $mediaBrowserConfiguration->mediaTypePaths[$path_part[0]][1] . '/' . $path_part[1];
+        } else {
+            return array(
                 'OK'    => 0,
                 'error' => array(
-                    'code'    => UploaderController::getErrorCode(),
-                    'message' => UploaderController::getErrorMessage()
+                    'message' => 'No id specified'
                 )
             );
-        } else {
-            $ret = array('OK' => 1);
         }
-        return $ret;
+
+
+        $uploader = UploaderController::handleRequest(
+            array(
+                'allow_extensions' => 'jpg,jpeg,png,pdf,gif,mkv,zip,',
+                'target_dir'       => $path
+            )
+        );
+
+        $fileLocation = array(
+            $uploader['path'],
+            str_replace(ASCMS_PATH, '', $uploader['path'])
+        );
+
+
+        if (isset($_SESSION['uploader']['handlers'][$id]['callback'])) {
+
+            $callback = $_SESSION['uploader']['handlers'][$id]['callback'];
+            if (!is_array($callback)) {
+                $class = new \ReflectionClass($callback);
+                if ($class->implementsInterface('\Cx\Core_Modules\Uploader\Model\UploadCallbackInterface')) {
+                    /**
+                     * @var \Cx\Core_Modules\Uploader\Model\UploadCallbackInterface $callbackInstance
+                     */
+                    $callbackInstance = $class->newInstance($this->cx);
+                    $fileLocation     = $callbackInstance->uploadFinished(
+                        $uploader['path'], str_replace(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, $uploader['path']), "",
+                        $id,
+                        $uploader, null
+                    );
+                }
+            } else {
+                $fileLocation = call_user_func(
+                    array($callback[1], $callback[2]), $uploader['path'],
+                    str_replace(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, $uploader['path']), "", $id, $uploader, null
+                );
+            }
+            \Cx\Lib\FileSystem\FileSystem::move(
+                $uploader['path'], $fileLocation[0] . '/' . $uploader['name'], true
+            );
+            $fileLocation = array(
+                $fileLocation[0] . '/' . $uploader['name'],
+                $fileLocation[1] . '/' . $uploader['name']
+            );
+        }
+
+        if (isset($uploader['error'])) {
+            throw new UploaderException(UploaderController::getErrorCode());
+//            return array(
+//                'OK'    => 0,
+//                'error' => array(
+//                    'code'    => UploaderController::getErrorCode(),
+//                    'message' => UploaderController::getErrorMessage()
+//                )
+//            );
+        } else {
+            return array(
+                'OK'   => 1,
+                'file' => $fileLocation
+            );
+        }
     }
 
     // testcase: ?cmd=jsondata&object=Uploader&act=createDir&path=/trunk/media/archive1&dir=test5
@@ -86,11 +152,11 @@ class JsonUploader implements JsonAdapter
         $mediaBrowserConfiguration = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::getInstance();
         $mediaBrowserConfiguration->mediaTypes;
         $pathArray = explode('/', $params['get']['path']);
-        $strPath = MediaBrowserConfiguration::getInstance()->mediaTypePaths[array_shift($pathArray)][0];
+        $strPath   = MediaBrowserConfiguration::getInstance()->mediaTypePaths[array_shift($pathArray)][0];
 
 
-        $strPath.= '/'.join('/', $pathArray);
-        $dir     = $params['post']['dir'] . '/';
+        $strPath .= '/' . join('/', $pathArray);
+        $dir = $params['post']['dir'] . '/';
 
         if (preg_match('#^[0-9a-zA-Z_\-\/]+$#', $dir)) {
             if (!FileSystem::make_folder($strPath . '/' . $dir)) {
@@ -100,10 +166,12 @@ class JsonUploader implements JsonAdapter
                 $this->setMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'], $dir));
                 return;
             }
-        } else if (!empty($dir)) {
-            // error: TXT_FILEBROWSER_INVALID_CHARACTERS
-            $this->setMessage($_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS']);
-            return;
+        } else {
+            if (!empty($dir)) {
+                // error: TXT_FILEBROWSER_INVALID_CHARACTERS
+                $this->setMessage($_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS']);
+                return;
+            }
         }
 
         $this->setMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $dir));
@@ -119,21 +187,31 @@ class JsonUploader implements JsonAdapter
     public function renameFile($params)
     {
         global $_ARRAYLANG;
-        $fileArray = explode('.', $params['post']['oldName']);
+        $fileArray     = explode('.', $params['post']['oldName']);
         $fileExtension = '';
-        if (count($fileArray ) != 1){
-            $fileExtension =  end($fileArray);
+        if (count($fileArray) != 1) {
+            $fileExtension = end($fileArray);
         }
         \Env::get('init')->loadLanguageData('MediaBrowser');
         $strPath = MediaBrowserConfiguration::getInstance()->mediaTypePaths[rtrim($params['get']['path'], "/")][0];
 
         $fileDot = '.';
-        if (is_dir($strPath . '/' . $params['post']['oldName'])){
+        if (is_dir($strPath . '/' . $params['post']['oldName'])) {
             $fileDot = '';
         }
 
-        if (!FileSystem::move($strPath . '/' . $params['post']['oldName'], $strPath . '/' . $params['post']['newName'].$fileDot.$fileExtension, false)){
-            $this->setMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULY_RENAMED'], $params['post']['oldName']));
+        try {
+            \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveFile(
+                $strPath . '/',
+                $strPath . '/',
+                $params['post']['oldName'],
+                $params['post']['newName'],
+                false
+            );
+        } catch (MoveFileException $e) {
+            $this->setMessage(
+                sprintf($_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULY_RENAMED'], $params['post']['oldName'])
+            );
             return;
         }
         $this->setMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULY_RENAMED'], $params['post']['oldName']));
@@ -147,29 +225,62 @@ class JsonUploader implements JsonAdapter
         global $_ARRAYLANG;
 
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $strPath = MediaBrowserConfiguration::getInstance()->mediaTypePaths[rtrim($params['get']['path'], "/")][0];
-        if (!empty($params['post']['file']['datainfo']['name']) && !empty($strPath) ){
-            if (is_dir($strPath . '/' . $params['post']['file']['datainfo']['name'])){
-                if (!FileSystem::delete_folder($strPath . '/' . $params['post']['file']['datainfo']['name'])){
-                    $this->setMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_UNSUCCESSFULY_REMOVED'], $params['post']['file']['datainfo']['name']));
-                    return;
+        $strPath = $params['get']['path'];
+
+        if (!empty($params['post']['file']['datainfo']['name']) && !empty($strPath)) {
+            if (is_dir($strPath . '/' . $params['post']['file']['datainfo']['name'])) {
+                try {
+                    \Cx\Core_Modules\MediaBrowser\Model\FileSystem::removeDirectory($strPath, $params['post']['file']['datainfo']['name']);
+                    $this->setMessage(
+                        sprintf(
+                            $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULY_REMOVED'],
+                            $params['post']['file']['datainfo']['name']
+                        )
+                    );
                 }
-                $this->setMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULY_REMOVED'], $params['post']['file']['datainfo']['name']));
+                catch (RemoveDirectoryException $e){
+                    $this->setMessage(
+                        sprintf(
+                            $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_UNSUCCESSFULY_REMOVED'],
+                            $params['post']['file']['datainfo']['name']
+                        )
+                    );
+                }
+                return;
+            } else {
+                try {
+                    \Cx\Core_Modules\MediaBrowser\Model\FileSystem::removeFile(
+                        $strPath , $params['post']['file']['datainfo']['name']
+                    );
+                    $this->setMessage(
+                        sprintf(
+                            $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULY_REMOVED'],
+                            $params['post']['file']['datainfo']['name']
+                        )
+                    );
+                } catch (RemoveFileException $e) {
+                    $this->setMessage(
+                        sprintf(
+                            $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULY_REMOVED'],
+                            $params['post']['file']['datainfo']['name']
+                        )
+                    );
+                }
                 return;
             }
-            else {
-                if (!FileSystem::delete_file($strPath . '/' . $params['post']['file']['datainfo']['name'])){
-                    $this->setMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULY_REMOVED'], $params['post']['file']['datainfo']['name']));
-                    return;
-                }
-                $this->setMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULY_REMOVED'], $params['post']['file']['datainfo']['name']));
-            }
         }
+        $this->setMessage(
+            sprintf(
+                $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULY_REMOVED'],
+                $params['post']['file']['datainfo']['name']
+            )
+        );
     }
 
 
     /**
      * Returns default permission as object
+     *
      * @return Object
      */
     public function getDefaultPermissions()

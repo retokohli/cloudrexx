@@ -33,18 +33,6 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         parent::__construct($systemComponentController, $cx);
         $this->template = $template;
         $this->cx = $cx;
-
-        $this->showDefault();  
-    }
-
-    public function showDefault() {
-        $mediaBrowser = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserController::getInstance();
-
-        // mithilfe des Objekts sollen die Attribute generiert werden können
-        
-        
-        //$mediaBrowser->setAttr('startview', 'sitestructure');
-        //$this->template->setVariable("MB_EXAMPLE_BUTTON", $mediaBrowser->getButton('Test'));        
     }
 
 }

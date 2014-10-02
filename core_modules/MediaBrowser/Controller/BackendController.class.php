@@ -10,6 +10,8 @@
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
+use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
+use Cx\Core_Modules\Uploader\Model\Uploader;
 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
@@ -64,10 +66,25 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $this->cx;
         $this->template = $template;
 
-        // default css and js
+        $uploader = new Uploader();
+        $uploader->setFinishedCallback('\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback');
+        $uploader->setOptions(array('data-on-file-uploaded' => 'callback3'));
+        $template->setVariable('UPLOADER_CODE', $uploader->getXHtml('Open Uploader 1'));
 
-        
-        
+        $uploader2 = new Uploader();
+        $uploader2->setFinishedCallback('\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback');
+        $uploader2->setOptions(array('data-on-file-uploaded' => 'callback2'));
+        $template->setVariable('UPLOADER_CODE2', $uploader2->getXHtml('Open Uploader 2'));
+
+
+        $mediaBrowser = new MediaBrowser();
+        $mediaBrowser->setCallback('callback');
+        $template->setVariable('MEDIABROWSER_CODE1', $mediaBrowser->getXHtml('MediaBrowser'));
+        $template->setVariable('MEDIABROWSER_CODE1_RAW',  htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser')));
+
+
+
+
         // get the act
         $act = $cmd[0];
         // get the submenu of act

@@ -7,8 +7,12 @@
         </ul>
     </div>
     <div class="fileOptions">
-        <input type="search" id="fileSearch" placeholder="Search.. " ng-model="searchFile">
-
+        <input type="search" id="fileSearch" placeholder="Search.. " data-ng-model="searchFile" >
+        <label for="FileSearchIsRegex" id="FileSearchIsRegexLabel" >
+        <input type="checkbox" data-ng-model="isRegex" id="FileSearchIsRegex" />
+            {{
+            'TXT_FILEBROWSER_EXTENDED_FILE_SEARCH' | translate }}
+        </label>
         <div class="fileActions">
             <ul>
                 <li><a ng-click="createFolder()"><i class="icon-addfolder"></i> <span class="fileActions-text"> {{ 'TXT_FILEBROWSER_CREATE_DIRECTORY' | translate }} </span></a>
@@ -28,11 +32,12 @@
             </div>
 
             <table class="adminlist filelist">
-
                 <tbody>
                 <tr>
-                    <th colspan="2" ><a href="" ng-click="reverse=!reverse;order('datainfo.name',reverse)">{{ 'TXT_FILEBROWSER_FILE_NAME' | translate }}</a></th>
-                    <th class="text-right"><a href="" ng-click="reverse=!reverse; order('datainfo.cleansize',reverse)">{{ 'TXT_FILEBROWSER_FILE_SIZE' | translate }}</a></th>
+                    <th colspan="2"><a href="" ng-click="changeSorting('name')">
+                        {{ 'TXT_FILEBROWSER_FILE_NAME' | translate }}</a></th>
+                    <th class="text-right"><a href="" ng-click="changeSorting('cleansize')">
+                        {{ 'TXT_FILEBROWSER_FILE_SIZE' | translate }}</a></th>
                     <th class="text-right">{{ 'TXT_FILEBROWSER_FILE_ACTIONS' | translate }}</th>
                 </tr>
                 <tr data-ng-hide="inRootDirectory">
@@ -42,9 +47,10 @@
                     <td class="text-right"></td>
                     <td class="text-right"></td>
                 </tr>
-                <tr data-ng-repeat="file in files | orderBy:predicate:reverse" data-ng-class="{active: true === file.datainfo.active}"
+                <tr data-ng-repeat="file in files | orderAndSearchFiles: sorting: reverse: searchFile: isRegex"
+                    data-ng-class="{active: true === file.datainfo.active}"
                     data-ng-if="file.datainfo.cleansize > 0"
-                    class="files">
+                    class="data-row files">
                     <td width="2%" class="col_1"><i class="icon-fileType icon-fileType{{file.datainfo.extension}}"></i>
                     </td>
                     <td width="50%" class="col_2">
@@ -53,7 +59,11 @@
                                 >{{file.datainfo.name}}</a>
                     </td>
 
-                    <td class="fileSize" width="18%" class="col_4">{{file.datainfo.size}}</td>
+                    <td class="fileSize" width="18%" class="col_4">
+                        <span data-ng-hide="file.datainfo.extension == 'Dir'">
+                        {{file.datainfo.size}}
+                        </span>
+                    </td>
                     <td class="actions" width="30%" class="col_3">
 
                         <a data-ng-click="renameFile(file, $index)" class="renameFile">
@@ -71,11 +81,11 @@
     <div class="tabMediaBrowserFooter">
 
 
-        <button type="submit" class="btn btn-primary" data-ng-click="go('#/uploader')">Hochladen</button>
-        <button type="submit" class="btn btn-primary" ng-disabled="noFileSelected" data-ng-click="choosePictures()">Bild
-            auswählen
+        <button type="submit" class="btn btn-primary" data-ng-click="go('#uploader')">Hochladen</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="noFileSelected" data-ng-click="choosePictures()">
+            Bild auswählen
         </button>
-        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal">
+        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal" data-ng-click="closeModal()">
             Abbrechen
         </button>
     </div>
