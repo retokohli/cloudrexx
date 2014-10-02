@@ -4288,6 +4288,15 @@ CREATE TABLE `contrexx_settings_smtp` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_settings_thumbnail` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `size` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_skins` (
   `id` int(2) unsigned NOT NULL auto_increment,
   `themesname` varchar(50) NOT NULL default '',
