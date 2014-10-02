@@ -553,7 +553,6 @@ class Access extends AccessLib
                     }
                     $this->_objTpl->setVariable('ACCESS_SIGNUP_MESSAGE', implode('<br />', $this->arrStatusMsg['ok']));
                     $this->_objTpl->parse('access_signup_store_success');
-                    $this->_objTpl->touchBlock('access_signup_store_success');
                     $this->_objTpl->hideBlock('access_signup_store_error');
                 } else {
                     $this->_objTpl->setVariable('ACCESS_SIGNUP_MESSAGE', implode('<br />', $this->arrStatusMsg['error']));
