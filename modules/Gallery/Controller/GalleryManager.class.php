@@ -438,7 +438,7 @@ class GalleryManager extends GalleryLibrary
                 $arrImageCount[$objResult->fields['id']] = '';
                 $objResult->MoveNext();
             }
-
+        
             foreach (array_keys($arrImageSize) as $intKey) {
                 $objResult = $objDatabase->Execute('SELECT     path
                                                    FROM     '.DBPREFIX.'module_gallery_pictures
@@ -451,6 +451,10 @@ class GalleryManager extends GalleryLibrary
                 $arrImageSize[$intKey] = round($arrImageSize[$intKey] / 1024,2);
             }
         }
+        
+        //get the gallery name by current activate lang id
+        $arrCategoryName = $this->getCategoryNameByLang();
+        
         $objResult = $objDatabase->Execute('SELECT         id
                                             FROM         '.DBPREFIX.'module_gallery_categories
                                             WHERE         pid=0
@@ -473,19 +477,6 @@ class GalleryManager extends GalleryLibrary
                                                     FROM     '.DBPREFIX.'module_gallery_categories
                                                             WHERE id='.$intMainKey);
 
-                $objSubResult = $objDatabase->Execute('    SELECT        name,
-                                                                    value
-                                                        FROM        '.DBPREFIX.'module_gallery_language
-                                                        WHERE        gallery_id='.$intMainKey.' AND
-                                                                    lang_id='.$_LANGID.'
-                                                        ORDER BY    name ASC
-                                                    ');
-                unset($arrCategoryLang);
-                while (!$objSubResult->EOF) {
-                    $arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
-                    $objSubResult->MoveNext();
-                }
-
                 $intRowColor = ($intRowCounter % 2 == 0) ? 0 : 1;
                 $strFolderIcon = ($objResult->fields['status'] == 0) ? 'led_red' : 'led_green';
 
@@ -507,8 +498,8 @@ class GalleryManager extends GalleryLibrary
                     'OVERVIEW_ID'               => $intMainKey,
                     'OVERVIEW_ICON'             => $strFolderIcon,
                     'OVERVIEW_SORTING'          => $objResult->fields['sorting'],
-                    'OVERVIEW_NAME'             => ($arrImageCount[$intMainKey]>0) ? '<a href="index.php?cmd=Gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
-                    'OVERVIEW_DESCRIPTION'      => $arrCategoryLang['desc'],
+                    'OVERVIEW_NAME'             => ($arrImageCount[$intMainKey]>0) ? '<a href="index.php?cmd=Gallery&amp;act=cat_details&amp;id='.$intMainKey.'" target="_self">'.$arrCategoryName[$intMainKey]['name'].'</a>' :  $arrCategoryName[$intMainKey]['name'],
+                    'OVERVIEW_DESCRIPTION'      => $arrCategoryName[$intMainKey]['desc'],
                     'OVERVIEW_COUNT_IMAGES'     => $arrImageCount[$intMainKey],
                     'OVERVIEW_IMAGE_SIZE'       => $arrImageSize[$intMainKey],
                     'OVERVIEW_ACTION_DISPLAY'   => (!$allowed) ? "style=\"display: none;\"" : ""
@@ -517,53 +508,94 @@ class GalleryManager extends GalleryLibrary
                 $this->_objTpl->parse('showCategories');
                 $intRowCounter++;
 
-                $objResult = $objDatabase->Execute('    SELECT         id,
-                                                                    sorting,
-                                                                    status
-                                                        FROM         '.DBPREFIX.'module_gallery_categories
-                                                        WHERE         pid='.$intMainKey.'
-                                                        ORDER BY     sorting ASC');
-                if ($objResult->RecordCount() != 0)
-                {
-                    // there are subcategories in the database
-                    while (!$objResult->EOF) {
-                         $objSubResult = $objDatabase->Execute('    SELECT        name,
-                                                                            value
-                                                                FROM        '.DBPREFIX.'module_gallery_language
-                                                                WHERE        gallery_id='.$objResult->fields['id'].' AND
-                                                                            lang_id='.$_LANGID.'
-                                                                ORDER BY    name ASC
-                                                            ');
-                        unset($arrCategoryLang);
-                        while (!$objSubResult->EOF) {
-                            $arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
-                            $objSubResult->MoveNext();
-                        }
-
-                        $intRowColor = ($intRowCounter % 2 == 0) ? 0 : 1;
-                        $strFolderIcon = ($objResult->fields['status'] == 0) ? 'led_red' : 'led_green';
-
-                        $this->_objTpl->setVariable(array(
-                            'OVERVIEW_ROWCLASS'        =>    $intRowColor,
-                            'OVERVIEW_SUBCATEGORY'    =>    '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                            'OVERVIEW_ID'            =>    $objResult->fields['id'],
-                            'OVERVIEW_ICON'            =>    $strFolderIcon,
-                            'OVERVIEW_SORTING'        =>    $objResult->fields['sorting'],
-                            'OVERVIEW_NAME'            =>    ($arrImageCount[$intMainKey]>0) ? '<a href="index.php?cmd=Gallery&amp;act=cat_details&amp;id='.$objResult->fields['id'].'" target="_self">'.$arrCategoryLang['name'].'</a>' :  $arrCategoryLang['name'],
-                            'OVERVIEW_DESCRIPTION'    =>    $arrCategoryLang['desc'],
-                            'OVERVIEW_COUNT_IMAGES'    =>    $arrImageCount[$objResult->fields['id']],
-                            'OVERVIEW_IMAGE_SIZE'    =>    $arrImageSize[$objResult->fields['id']]
-                        ));
-                        $this->_objTpl->parse('showCategories');
-                        $intRowCounter++;
-                        $objResult->MoveNext();
-                    }
-                }
+                //Showing Subcategories
+                $subCategorySpace = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                $this->showSubCategories($intMainKey, $arrCategoryName, $arrImageCount, $arrImageSize, $subCategorySpace, $subCategorySpace);
             }
         }
     }
 
+    /**
+     * Show the Sub Categories
+     * 
+     * @global ADONewConnection $objDatabase
+     * @param integer $parentId
+     * @param array $arrCategoryName
+     * @param array $arrImageCount
+     * @param array $arrImageSize
+     * @param string $subCategorySpace
+     * 
+     * @return boolean
+     */
+    function showSubCategories($parentId, $arrCategoryName, $arrImageCount, $arrImageSize, $subCategorySpace) {
+        global $objDatabase;
+        
+        if (empty($parentId)) {
+            return;
+        }
+        
+        $objSubCategory = $objDatabase->Execute('SELECT `id`,
+                                                        `sorting`,
+                                                        `status`
+                                                       FROM `'.DBPREFIX.'module_gallery_categories`
+                                                        WHERE `pid` = ' . $parentId . '
+                                                        ORDER BY `sorting` ASC');
+        if ($objSubCategory && $objSubCategory->RecordCount() != 0) {
+            // there are subcategories in the database
+            $intRowCounter = 0;
+            while (!$objSubCategory->EOF) {
+                $intRowColor = ($intRowCounter % 2 == 0) ? 0 : 1;
+                $strFolderIcon = ($objSubCategory->fields['status'] == 0) ? 'led_red' : 'led_green';
 
+                $this->_objTpl->setVariable(array(
+                    'OVERVIEW_ROWCLASS'     =>    $intRowColor,
+                    'OVERVIEW_SUBCATEGORY'  =>    $subCategorySpace,
+                    'OVERVIEW_ID'           =>    $objSubCategory->fields['id'],
+                    'OVERVIEW_ICON'         =>    $strFolderIcon,
+                    'OVERVIEW_SORTING'      =>    $objSubCategory->fields['sorting'],
+                    'OVERVIEW_NAME'         =>    ($arrImageCount[$parentId]>0) ? '<a href="index.php?cmd=Gallery&amp;act=cat_details&amp;id='.$objSubCategory->fields['id'].'" target="_self">'.$arrCategoryName[$objSubCategory->fields['id']]['name'].'</a>' :  $arrCategoryName[$objSubCategory->fields['id']]['name'],
+                    'OVERVIEW_DESCRIPTION'  =>    $arrCategoryName[$objSubCategory->fields['id']]['desc'],
+                    'OVERVIEW_COUNT_IMAGES' =>    $arrImageCount[$objSubCategory->fields['id']],
+                    'OVERVIEW_IMAGE_SIZE'   =>    $arrImageSize[$objSubCategory->fields['id']]
+                ));
+                $this->_objTpl->parse('showCategories');
+                $intRowCounter++;
+                
+                //Showing third level sub categories
+                $this->showSubCategories($objSubCategory->fields['id'], $arrCategoryName, $arrImageCount, $arrImageSize, $subCategorySpace . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+                
+                $objSubCategory->MoveNext();
+            }
+        }
+        return;
+    }
+    
+    /**
+     * Get the Category Name by Language
+     * 
+     * @global ADONewConnection $objDatabase
+     * @global Array            $_LANGID
+     * 
+     * @return boolean|array
+     */
+    function getCategoryNameByLang() {
+        global $objDatabase, $_LANGID;
+        
+        $objSubResult = $objDatabase->Execute('SELECT `name`, `value`, `gallery_id`
+                                                    FROM `' . DBPREFIX . 'module_gallery_language`
+                                                        WHERE `lang_id` = ' . $_LANGID . '
+                                                            ORDER BY `name` ASC');
+        if ($objSubResult && $objSubResult->RecordCount() > 0) {
+            $arrCategoryName = array();
+            while (!$objSubResult->EOF) {
+                $arrCategoryName[$objSubResult->fields['gallery_id']][$objSubResult->fields['name']] = $objSubResult->fields['value'];
+                $objSubResult->MoveNext();
+            }
+            return $arrCategoryName;
+        }
+        return false;
+    }
+    
     /**
      * Shows the 'Insert new category'-Form
      *
@@ -652,7 +684,7 @@ class GalleryManager extends GalleryLibrary
 
         // parse the category dropdown
         try {
-            $this->parseCategoryDropdown(-1, true,"showCategories",0,0, false);
+            $this->parseCategoryDropdown(-1, true, "showCategories", 0, 0, true);
         } catch (DatabaseError $e) {
             $this->_objTpl->hideBlock('showCategories');
             $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
@@ -1142,7 +1174,7 @@ class GalleryManager extends GalleryLibrary
         }
 
         try {
-            $this->parseCategoryDropdown($intCategoryPid, ($pid == 0) ? true : false,"showCategories",0,0, false);
+            $this->parseCategoryDropdown($intCategoryPid, ($pid == 0) ? true : false,"showCategories",0,0, true);
         } catch (DatabaseError $e) {
             $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_CATEGORY_STATUS_MESSAGE_DATABASE_ERROR'];
             $this->strErrMessage .= $e;
