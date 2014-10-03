@@ -124,7 +124,7 @@ class BackendTable extends HTML_Table {
                     if (!isset($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
                     }
-                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions'], $virtual), 'TD', 0);
+                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $rows, $options['functions'], $virtual), 'TD', 0);
     			}
     			$first = false;
     			$row++;
@@ -164,12 +164,15 @@ class BackendTable extends HTML_Table {
         }
     }
     
-    protected function getFunctionsCode($rowname, $functions, $virtual = false ) {
+    protected function getFunctionsCode($rowname, $rowData, $functions, $virtual = false ) {
         global $_ARRAYLANG;
         
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
         if(!$virtual){
+            if (isset($functions['actions']) && is_callable($functions['actions'])) {
+                $code .= call_user_func($functions['actions'], $rowData);
+            }
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl = clone $baseUrl;
                 $editUrl->setParam('editid', $rowname);
