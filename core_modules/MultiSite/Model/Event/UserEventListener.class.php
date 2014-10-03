@@ -62,6 +62,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                  case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+// TODO: add language variable
                         throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
                     }
                     break;
@@ -70,6 +71,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
+            throw new \Cx\Core\Error\Model\Entity\ShinyException($e->getMessage());
         }
     }
 
@@ -82,11 +84,13 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
-                        throw new \Exception('Website Owner can only be modified within the Customer Panel.');
+// TODO: add language variable
+                        throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+// TODO: add language variable
                         throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
                     }
                     break;
@@ -95,6 +99,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
+            throw new \Cx\Core\Error\Model\Entity\ShinyException($e->getMessage());
         }
     }
     
@@ -107,11 +112,13 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
-                        throw new \Exception('Website Owner can only be modified within the Customer Panel.');
+// TODO: add language variable
+                        throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+// TODO: add language variable
                         throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
                     }
                     break;  
@@ -120,6 +127,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
+            throw new \Cx\Core\Error\Model\Entity\ShinyException($e->getMessage());
         }
     }
     
