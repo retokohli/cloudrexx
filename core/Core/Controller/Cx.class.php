@@ -621,6 +621,8 @@ namespace Cx\Core\Core\Controller {
                 if ($this->mode != self::MODE_BACKEND) {
                     throw new \Exception($e->getMessage());
                 }
+                // reset root of Cx\Core\Html\Sigma to backend template path
+                $this->template->setRoot($this->codeBaseAdminTemplatePath);
                 $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
                 $this->setPostContentLoadPlaceholders();
                 $this->finalize();
