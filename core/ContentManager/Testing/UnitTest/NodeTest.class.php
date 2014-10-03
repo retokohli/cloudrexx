@@ -26,10 +26,15 @@ namespace Cx\Core\ContentManager\Testing\UnitTest;
 class NodeTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     public function testPagesByLang() {
-        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
-        $node = new \Cx\Core\ContentManager\Model\Entity\Node();
+        
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
 
-        $node->setParent($root);
+        $node = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $node->setParent($nodeRepo->getRoot());
+        $nodeRepo->getRoot()->addChildren($node);
+
+        self::$em->persist($node);
+        self::$em->flush();
 
         $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();
@@ -39,11 +44,20 @@ class NodeTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
         $p1->setLang(1);
         $p1->setTitle('testpage');
+        $p1->setNodeIdShadowed($node->getId());
+        $p1->setUseCustomContentForAllChannels('');
+        $p1->setUseCustomApplicationTemplateForAllChannels('');
+        $p1->setUseSkinForAllChannels('');
+        $p1->setCmd('');
 
         $p2->setLang(2);
         $p2->setTitle('testpage2');
+        $p2->setNodeIdShadowed($node->getId());
+        $p2->setUseCustomContentForAllChannels('');
+        $p2->setUseCustomApplicationTemplateForAllChannels('');
+        $p2->setUseSkinForAllChannels('');
+        $p2->setCmd('');
 
-        self::$em->persist($root);
         self::$em->persist($node);
         self::$em->persist($p1);
         self::$em->persist($p2);

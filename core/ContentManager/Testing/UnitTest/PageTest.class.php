@@ -26,14 +26,24 @@ namespace Cx\Core\ContentManager\Testing\UnitTest;
 class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
     public function testValidation() {
-        $rootNode = new \Cx\Core\ContentManager\Model\Entity\Node();
-        $node = new \Cx\Core\ContentManager\Model\Entity\Node();
-        $node->setParent($rootNode);
-        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
 
+        $node = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $node->setParent($nodeRepo->getRoot());
+        $nodeRepo->getRoot()->addChildren($node);
+
+        self::$em->persist($node);
+        self::$em->flush();
+
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
+        
         $p->setLang(1);
         $p->setTitle('testpage');
         $p->setNode($node);
+        $p->setNodeIdShadowed($node->getId());
+        $p->setUseCustomContentForAllChannels('');
+        $p->setUseCustomApplicationTemplateForAllChannels('');
+        $p->setUseSkinForAllChannels('');
         $p->setCmd('should_be_valid');
 
         //shouldn't raise a ValidationException
@@ -47,13 +57,13 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $n = new \Cx\Core\ContentManager\Model\Entity\Node();
 
         $n->setParent($root);
-
+        
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
 
         $p->setLang(1);
         $p->setTitle('testpage');
         $p->setNode($n);
-
+        
         self::$em->persist($root);
         self::$em->persist($n);
 
@@ -86,16 +96,16 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
     public function testSlugGeneration() {
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $p->setTitle('test');
+        $p->setTitle('test');        
         $this->assertEquals('test', $p->getSlug());
 
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $p->setTitle('test with space');
+        $p->setTitle('test with space');        
         $this->assertEquals('test-with-space', $p->getSlug());
 
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $p->setTitle('test ümläut');
-        $this->assertEquals('test-mlut', $p->getSlug());
+        $p->setTitle('test ümläut');        
+        $this->assertEquals('test-uemlaeut', $p->getSlug());
 
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('123');
