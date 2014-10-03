@@ -5882,11 +5882,11 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (92,'Shell','Comvation AG','TXT_CORE_SHELL_DESCRIPTION','y',0,1,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (93,'Order','Comvation AG','TXT_MODULE_ORDER_DESCRIPTION','y',0,0,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (94,'Pim','Comvation AG','TXT_MODULE_PIM_DESCRIPTION','y',0,0,1,1);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (95,'LinkManager','Comvation AG','TXT_MODULE_LINKMANAGER_DESCRIPTION','y',0,1,1,0);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (95,'LinkManager','Comvation AG','TXT_MODULE_LINKMANAGER_DESCRIPTION','y',0,1,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (96,'CacheManager','Comvation AG','','n',0,1,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (97,'LicenseManager','Comvation AG','TXT_LICENSE','n',1,1,1,1);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (98,'Test','Comvation AG','TXT_TEST_MODULE_DESCRIPTION','n',0,1,1,0);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (99,'Routing','Comvation AG','TXT_ROUTING_MODULE_DESCRIPTION','n',0,1,1,0);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (98,'Test','Comvation AG','TXT_TEST_MODULE_DESCRIPTION','n',0,1,1,1);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (99,'Routing','Comvation AG','TXT_ROUTING_MODULE_DESCRIPTION','n',0,1,1,1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
