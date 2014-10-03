@@ -734,7 +734,9 @@ class ViewManager
      * @return  array
      */
     function getThemesFiles() {
-
+        
+        $codeBaseFiles = array();
+        $websiteThemesFiles = array();
         if (file_exists($this->codeBaseThemesFilePath)) {
             $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
             $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
@@ -1003,18 +1005,26 @@ class ViewManager
                     $this->newdir();
                 }
             } elseif (!empty($copyFromTheme) && empty($createFromDatabase)) {
-                // Create new theme based on existing theme
-                if (\Cx\Lib\FileSystem\FileSystem::copy_folder($this->path.$copyFromTheme, $this->path.$dirName)) {
-                    $this->replaceThemeName($copyFromTheme, $dirName, $this->path.$dirName);
-                    $this->insertSkinIntoDb($themeName, $dirName);
-                    $this->strOkMessage  = $themeName." ". $_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-                    $_POST['themes'] = $dirName;
-                    $this->overview();
-                } else {
-// TODO: add proper error message
-                    $this->strErrMessage = $_ARRAYLANG['TXT_MSG_ERROR_NEW_DIR'];
-                    $this->newdir();
+                //check Whether the folder exists in both codebase
+                if (file_exists($this->codeBaseThemesPath.$copyFromTheme)) {
+                    if (!\Cx\Lib\FileSystem\FileSystem::copy_folder($this->codeBaseThemesPath.$copyFromTheme, $this->websiteThemesPath.$dirName, true)) {    
+                        $this->strErrMessage = $_ARRAYLANG['TXT_MSG_ERROR_NEW_DIR'];
+                        $this->newdir();
+                    } 
                 }
+                //check Whether the folder exists in website data repository
+                if (file_exists($this->websiteThemesPath.$copyFromTheme)) {
+                    if (!\Cx\Lib\FileSystem\FileSystem::copy_folder($this->websiteThemesPath.$copyFromTheme, $this->websiteThemesPath.$dirName, true)) {
+                        $this->strErrMessage = $_ARRAYLANG['TXT_MSG_ERROR_NEW_DIR'];
+                        $this->newdir();
+                    }
+                }
+                
+                $this->replaceThemeName($copyFromTheme, $dirName, $this->websiteThemesPath.$dirName);
+                $this->insertSkinIntoDb($themeName, $dirName);
+                $this->strOkMessage  = $themeName." ". $_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+                $_POST['themes'] = $dirName;
+                $this->overview();  
             } elseif (empty($copyFromTheme) && !empty($createFromDatabase)) {
 // TODO: remove this function -> migrate all pending themes in the update process
                 // Create new theme from database (migrate existing theme from database to filesystem)
@@ -1092,20 +1102,39 @@ class ViewManager
      */
     function getDropdownNotInDb()
     {
-        $dir = ($this->path);
-        $dh=opendir($dir);
-        $file = readdir($dh);
-        $nadm = '';
-        while ($file) {
-            if ($file!="." && $file!=".." && $file != "zip") {
-                if (!$this->themeRepository->findOneBy(array('foldername' => $file))) {
-                    $nadm .= "<option value='".$file."'>".$file."</option>\n";
-                }
-            }
-            $file = readdir($dh);
+        if (file_exists($this->codeBaseThemesPath)) {
+            $codeBaseDir = $this->readFiles($this->codeBaseThemesPath);
         }
-        closedir($dh);
-        return $nadm;
+        if (file_exists($this->websiteThemesPath)) {
+            $websiteDir = $this->readFiles($this->websiteThemesPath);
+        }
+        
+       $mergeFolders = array_unique(array_merge($codeBaseDir, $websiteDir));
+       
+       foreach($mergeFolders as $folder) {
+           if (!$this->themeRepository->findOneBy(array('foldername' => $folder))) {
+               $result .= "<option value='".$folder."'>".$folder."</option>\n";
+           }
+       }
+       
+       return $result;
+    }
+    /**
+     * reading the directories of the file sytem with the specified path
+     * 
+     * @param type $dir 
+     * @return array $directory
+     */
+    function readFiles($dir) {
+        
+        $dh=opendir($dir);
+        $directory = array();
+        while (($file = readdir($dh)) !== false) {
+            if ($file!="." && $file!=".." && $file != "zip") {
+                $directory [] = $file;
+            }
+        }
+        return $directory;
     }
 
     /**
