@@ -1429,7 +1429,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return boolean
      */
-    public function isWebsiteOwner() {
+    public static function isWebsiteOwner() {
         //check user logged in or not
         if (!\FWUser::getFWUserObject()->objUser->login()) {
             return false;
@@ -1507,7 +1507,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function checkResetFtpPasswordAccess($params) {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_WEBSITE:
-                if ($this->isWebsiteOwner()) {
+                if (self::isWebsiteOwner()) {
                     return true;
                 }
                 break;

@@ -41,3 +41,7 @@ $_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'] = 'Herzlichen Gl&uuml;ckwuns
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'] = 'Hopla..';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'] = 'Bitte haben Sie etwas Geduld. Der Website Erstellungsprozess kann bis zu 2 Minuten dauern. Sobald Ihre Website einsatzbereit ist, werden Sie an die hinterlegte E-Mail Adresse mit den n&auml;chsten Schritten informiert.';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'] = 'Vielen Dank für Ihre Anmeldung bei Cloudrexx!<br /><br />Bitte haben Sie etwas Geduld. Es kann bis zu 2 Minuten dauern, bis Ihre Website bereit ist. Danach werden Sie in den Administrationsbereich weitergeleitet. Sie sind automatisch angemeldet.<br /><br />Das Kennwort wird an %1$s gesendet. Ihre Cloudrexx-Adresse lautet %2$s.';
+
+//Reset FTP password status message
+$_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG'] = 'Die Rücksetzung Ihres FTP Kennworts schlug fehl. Bitte versuchen Sie es erneut.';
+$_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_MSG'] = 'Ihr FTP Kennwort wurde erfolgreich zurück gesetzt.';
