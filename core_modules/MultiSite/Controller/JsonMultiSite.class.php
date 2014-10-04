@@ -101,6 +101,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'destroyWebsite'        => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'executeOnWebsite'      => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'generateAuthToken'     => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'executeSql'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -1603,6 +1604,38 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme.' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * 
+     * @global $objDatabase
+     * @param type $params
+     * @return type
+     * @throws MultiSiteJsonException
+     */
+    public function executeSql($params)
+    {
+        global $objDatabase;
+        
+        if (empty($params['post']['query'])) {
+            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query, the sql query is empty');
+        }
+        
+        try {
+            $objResult = $objDatabase->Execute($params['post']['query']);
+            if ($objResult !== false) {
+                $arrResult = array();
+                while (!$objResult->EOF) {
+                    $arrResult[] = $objResult->fields;
+                    $objResult->MoveNext();
+                }
+                return array('sqlStatus' => true, 'sqlResult' => $arrResult);
+            } else {
+                return array('sqlStatus' => false, 'sqlError' => $objResult->ErrorMsg());
+            }
+        } catch(\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query'.$e->getMessage());
         }
     }
 }

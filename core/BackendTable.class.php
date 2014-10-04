@@ -170,7 +170,7 @@ class BackendTable extends HTML_Table {
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
         if(!$virtual){
-            if (isset($functions['actions']) && is_callable($functions['actions'])) {
+            if (isset($functions['actions']) && is_callable(array($this, $functions['actions']))) {
                 $code .= call_user_func($functions['actions'], $rowData);
             }
             if (isset($functions['edit']) && $functions['edit']) {
