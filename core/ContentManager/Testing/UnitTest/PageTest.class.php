@@ -53,22 +53,30 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     }
 
     public function testLoggable() {
-        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+        
         $n = new \Cx\Core\ContentManager\Model\Entity\Node();
 
-        $n->setParent($root);
+        $n->setParent($nodeRepo->getRoot());
+        $nodeRepo->getRoot()->addChildren($n);
+        
+        self::$em->persist($n);
+        self::$em->flush();
         
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
 
         $p->setLang(1);
         $p->setTitle('testpage');
         $p->setNode($n);
+        $p->setNodeIdShadowed($n->getId());
+        $p->setUseCustomContentForAllChannels('');
+        $p->setUseCustomApplicationTemplateForAllChannels('');
+        $p->setUseSkinForAllChannels('');
+        $p->setCmd('');
         
-        self::$em->persist($root);
+                
         self::$em->persist($n);
-
         self::$em->persist($p);
-
         self::$em->flush();
 
         //now, create a log
@@ -126,20 +134,20 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
     public function testTargetProperties() {
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $p->setTarget('12|querystring');
-        $this->assertEquals(true, $p->isTargetInternal());
+        $p->setTarget('[[NODE_12]]querystring');
+        $this->assertEquals(1, $p->isTargetInternal());
         $this->assertEquals(12, $p->getTargetNodeId());
         $this->assertEquals(0, $p->getTargetLangId());
         $this->assertEquals('querystring', $p->getTargetQueryString());
-
-        $p->setTarget('12-1|querystring');
-        $this->assertEquals(true, $p->isTargetInternal());
+                
+        $p->setTarget('[[NODE_12_1]]querystring');
+        $this->assertEquals(1, $p->isTargetInternal());
         $this->assertEquals(12, $p->getTargetNodeId());
         $this->assertEquals(1, $p->getTargetLangId());
         $this->assertEquals('querystring', $p->getTargetQueryString());
 
         $p->setTarget('http://www.example.com');
-        $this->assertEquals(false, $p->isTargetInternal());
+        $this->assertEquals(0, $p->isTargetInternal());
         $this->assertEquals(0, $p->getTargetNodeId());
         $this->assertEquals(0, $p->getTargetLangId());
         $this->assertEquals(null, $p->getTargetQueryString());
