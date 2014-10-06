@@ -569,7 +569,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (!$website) {
             throw new \Exception('JsonMultiSite::executeSql() failed: Website by ID '.$rowData['id'].' not found.');
         }
-        
+        $websiteName = $website->getName();
         $websiteId = $rowData['id'];
        
         $javascript = <<<END
@@ -579,7 +579,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             var activateDialog = cx.ui.dialog({
                 width: 820,
                 height: 400,
-                title: 'Execute SQL query on Website',
+                title: 'Execute SQL query on Website $websiteName',
                 content: \$J('.executeSqlQuery'),
                 autoOpen: false,
                 buttons: {
