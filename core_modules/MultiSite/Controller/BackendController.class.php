@@ -564,74 +564,69 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function executeSql($rowData) {
         global $_ARRAYLANG;
 
+        $websiteId = $rowData['id'];
         $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $website  = $webRepo->findOneById($rowData['id']);
+        $website  = $webRepo->findOneById($websiteId);
         if (!$website) {
             throw new \Exception('JsonMultiSite::executeSql() failed: Website by ID '.$rowData['id'].' not found.');
         }
         $websiteName = $website->getName();
-        $websiteId = $rowData['id'];
-       
         $javascript = <<<END
         cx.ready(function() {
                 
-            \$J(".dbEdit").html('<div class="executeSqlQuery"><form id="ExecuteSql"><div id="statusMsg"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>')
-            var activateDialog = cx.ui.dialog({
+            \$J(".executeQuery_$websiteId").html('<div id="executeSqlQuery_$websiteId"><form id="ExecuteSql"><div id="statusMsg"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>')
+            var activateDialog_$websiteId = cx.ui.dialog({
                 width: 820,
                 height: 400,
                 title: 'Execute SQL query on Website $websiteName',
-                content: \$J('.executeSqlQuery'),
+                content: \$J('#executeSqlQuery_$websiteId'),
                 autoOpen: false,
                 buttons: {
                     "Cancel": function() {
                         \$J(this).dialog("close");
                     },
                     "Excute": function() {
-                        var query = \$J('#queryContent').val();
+                        var query = \$J('#executeSqlQuery_$websiteId #queryContent').val();
                         if(query == '') {
-                            \$J('#statusMsg').text('Please insert a query..!');
+                            \$J('#executeSqlQuery_$websiteId #statusMsg').text('Please insert a query..!');
                             return false;
                         } else {
-                            executeQuery();
+                            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql";
+                            \$J.ajax({
+                                url     :  domainUrl,
+                                type    : "POST",
+                                data    : {
+                                           query: \$J("#executeSqlQuery_$websiteId #queryContent").val(),
+                                           websiteId: $websiteId,
+                                           command:'executeSql'
+                                          },
+                                dataType : "json",
+                                success: function(response) {
+                                    if (response.status == 'error') {
+                                        \$J('#executeSqlQuery_$websiteId #statusMsg').text(response.message);
+                                    }
+                                    if (response.data.sqlStatus) {
+                                        \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Executed Successfully!.');
+                                        \$J('#executeSqlQuery_$websiteId #queryContent').val(response.data.sqlResult);
+                                    } else {
+                                        \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Execution Failed!.');
+                                        \$J('#executeSqlQuery_$websiteId #queryContent').val(response.data.sqlError);
+                                    }
+                                }
+                            });
                         }
                     }
                 }
             });
-            executeQuery = function(){
-                domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql";
-                \$J.ajax({
-                    url     :  domainUrl,
-                    type    : "POST",
-                    data    : {
-                               query: \$J("#ExecuteSql").serialize(),
-                               websiteId: $websiteId,
-                               command:'executeSql'
-                              },
-                    dataType : "json",
-                    success: function(response) {
-                                if (response.status == 'error') {
-                                    \$J('#statusMsg').text(response.message);
-                                }
-                                if (response.data.sqlStatus) {
-                                    \$J('#statusMsg').text('SqlQuery Executed Successfully!.');
-                                    \$J('#queryContent').val(response.data.sqlResult);
-                                } else {
-                                    \$J('#statusMsg').text('SqlQuery Execution Failed!.');
-                                    \$J('#queryContent').val(response.data.sqlError);
-                        }
-                    }
-                });
-            };
                 
-            \$J(".dbEdit").click(function() {
-                activateDialog.open();
+            \$J(".executeQuery_$websiteId").click(function() {
+                activateDialog_$websiteId.open();
              });
-                
-                
         });
 END;
         \JS::registerCode($javascript);
-        $dbEdit = '<a href="javascript:void(0);" class="dbEdit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_DB_TITLE'].'"></a>';
+        $className = 'executeQuery_'.$websiteId;
+        $dbEdit = '<a href="javascript:void(0);" class="dbEdit '.$className.'" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_DB_TITLE'].'"></a>';
         
         return $dbEdit;
     }

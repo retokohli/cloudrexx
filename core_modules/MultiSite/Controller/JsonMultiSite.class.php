@@ -1649,6 +1649,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             case ComponentController::MODE_MANAGER:
             case ComponentController::MODE_HYBRID:
                 if (isset($params['post']['websiteId'])) {
+                    $params['post']['params'] = $params;
                     return self::executeOnWebsite($params);
                 }
                 break;
