@@ -170,4 +170,113 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $this->assertEquals(false, $p->isFrontendProtected());
         $this->assertEquals(true, $p->isBackendProtected());*/
     }
+    
+    public function testGetURL() {
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n1->setParent($nodeRepo->getRoot());
+        $nodeRepo->getRoot()->addChildren($n1);
+
+        self::$em->persist($n1);
+        self::$em->flush();
+
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();
+        
+        $p1->setLang(1);
+        $p1->setTitle('testpage');
+        $p1->setNode($n1);
+        $p1->setNodeIdShadowed($n1->getId());
+        $p1->setUseCustomContentForAllChannels('');
+        $p1->setUseCustomApplicationTemplateForAllChannels('');
+        $p1->setUseSkinForAllChannels('');
+        $p1->setCmd('');
+        $p1->setActive(1);
+
+        self::$em->persist($n1);
+        self::$em->persist($p1);
+        self::$em->flush();
+        
+        $urlWithDomain = $p1->getURL('http://example.com/cms', '?k=v');        
+        $this->assertEquals('http://example.com/cms/de/testpage?k=v', $urlWithDomain);
+
+        $urlWithoutDomain = $p1->getURL('', '?k=v');
+        $this->assertEquals('/de/testpage?k=v', $urlWithoutDomain);
+    }
+    
+    public function testTranslate() {
+        
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+        
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n1->setParent($nodeRepo->getRoot());
+        $nodeRepo->getRoot()->addChildren($n1);
+        
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n2->setParent($n1);
+        
+        self::$em->persist($n1);
+        self::$em->persist($n2);
+        self::$em->flush();        
+
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
+        $p1->setLang(1);
+        $p1->setTitle('root');
+        $p1->setNode($n1);
+        $p1->setNodeIdShadowed($n1->getId());
+        $p1->setUseCustomContentForAllChannels('');
+        $p1->setUseCustomApplicationTemplateForAllChannels('');
+        $p1->setUseSkinForAllChannels('');
+        $p1->setCmd('');
+        $p1->setActive(1);
+
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
+        $p2->setLang(1);
+        $p2->setTitle('child page');
+        $p2->setNode($n2);
+        $p2->setNodeIdShadowed($n1->getId());
+        $p2->setUseCustomContentForAllChannels('');
+        $p2->setUseCustomApplicationTemplateForAllChannels('');
+        $p2->setUseSkinForAllChannels('');
+        $p2->setCmd('');
+        $p2->setActive(1);
+        
+        self::$em->persist($n1);
+        self::$em->persist($n2);
+
+        self::$em->persist($p1);
+        self::$em->persist($p2);
+       
+        self::$em->flush();
+        
+        $t = $p2->copyToLang(
+            2,
+            true,   // includeContent
+            true,   // includeModuleAndCmd
+            true,   // includeName
+            true,   // includeMetaData
+            true,   // includeProtection
+            false,  // followRedirects
+            true    // followFallbacks
+        );
+        $t->setupPath(2);
+        
+        self::$em->persist($t);        
+        self::$em->flush();
+        
+        $idOft = $t->getId();
+        
+        self::$em->clear();
+        
+        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $page = $pageRepo->findOneById($idOft);
+        
+        $this->assertEquals('/root/child-page', $page->getPath());
+        $this->assertEquals(2, $page->getLang());
+
+        //see if the parent node is really, really there.
+        $parentPages = $page->getNode()->getParent()->getPagesByLang();
+        $this->assertArrayHasKey(2, $parentPages);
+        $this->assertEquals('root', $parentPages[2]->getTitle());
+    }    
 }
