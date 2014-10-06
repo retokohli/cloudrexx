@@ -1,16 +1,18 @@
 <div id="guestbook">
-	<div class="count_entries">{GUESTBOOK_TOTAL_ENTRIES} Eintr&auml;ge im G&auml;stebuch.</div>
-	<div class="add_entry"><input type="button" onclick="location.href='index.php?section=GuestBook&amp;cmd=post'" value="Eintragen" /></div>
-	<div class="entries">
-		 <!-- BEGIN guestbook_row -->
-		 	<div class="entry {GUESTBOOK_ROWCLASS}">
-				<div class="title"><h3>{GUESTBOOK_NAME} {GUESTBOOK_FORENAME}</h3></div>
-				<div class="location">{GUESTBOOK_GENDER} {GUESTBOOK_LOCATION}</div>
-				<div class="date">{GUESTBOOK_DATE}</div>
-				<div class="message">{GUESTBOOK_COMMENT}</div>
-				<div class="links">{GUESTBOOK_EMAIL} {GUESTBOOK_URL}</div>
-			</div>
-		 <!-- END guestbook_row -->
-	</div>
-	<div class="paging">{GUESTBOOK_PAGING}</div>
+    <div class="count_entries">{GUESTBOOK_TOTAL_ENTRIES} Eintr&auml;ge im G&auml;stebuch.</div>
+    <div class="add_entry"><input class="btn btn-default" type="button" onclick="location.href = 'index.php?section=GuestBook&amp;cmd=post'" value="Eintragen" /></div>
+    <div class="entries">
+        <!-- BEGIN guestbook_row -->
+        <div class="entry {GUESTBOOK_ROWCLASS}">
+            <div class="row">
+                <div class="title col-md-7 col-xs-12"><h3>{GUESTBOOK_NAME} {GUESTBOOK_FORENAME}</h3></div>
+                <div class="location col-md-2 col-xs-12">{GUESTBOOK_GENDER} {GUESTBOOK_LOCATION}</div>
+                <div class="date col-md-3 col-xs-12">{GUESTBOOK_DATE}</div>
+                <div class="message text-muted col-xs-12 col-md-12">{GUESTBOOK_COMMENT}</div>
+                <div class="links col-xs-12 col-md-12">{GUESTBOOK_EMAIL} {GUESTBOOK_URL}</div>
+            </div>
+        </div>
+        <!-- END guestbook_row -->
+    </div>
+    <div class="paging">{GUESTBOOK_PAGING}</div>
 </div>
