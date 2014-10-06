@@ -8,27 +8,33 @@
     <!-- <div class="dropdown">{FORUM_DROPDOWN}</div> -->
     <div class="breadcrumb">
         {FORUM_TREE}{FORUM_NAME}
-        <span style="color: rgb(255, 0, 0);">{TXT_FORUM_ERROR}&nbsp;</span>
-        <span style="color: #006900;">{TXT_FORUM_SUCCESS}&nbsp;</span>
     </div>
-    <!-- BEGIN addPostAnchor -->
-    <div class="anchor" style="float: left; width: 45%; clear: left;">
-        <input onclick="location.href = '#post';" value="{TXT_FORUM_CREATE_POST}" type="button" />
-    </div>                
-    <!-- END addPostAnchor -->
-    <!-- BEGIN threadActionsSelect -->
-    <div style="text-align:right; float: right; width: 45%; margin-bottom: 4px;">
-        <select onchange="doAction(this.options[this.options.selectedIndex].value);" name="thread_actions">
-            <option value="">{TXT_FORUM_THREAD_ACTION_DESC}</option>
-            <option value="sticky" {FORUM_THREAD_ACTIONS_DISABLED_STICKY}>{TXT_FORUM_THREAD_ACTION_STICKY}</option>
-            <option value="move" {FORUM_THREAD_ACTIONS_DISABLED_MOVE}>{TXT_FORUM_THREAD_ACTION_MOVE}</option>
-            <option value="close" {FORUM_THREAD_ACTIONS_DISABLED_CLOSE}>{TXT_FORUM_THREAD_ACTION_CLOSE}</option>
-            <option value="delete" {FORUM_THREAD_ACTIONS_DISABLED_DELETE}>{TXT_FORUM_THREAD_ACTION_DELETE}</option>
-        </select>
+    <span class="text-danger">{TXT_FORUM_ERROR}&nbsp;</span>
+    <span class="text-success">{TXT_FORUM_SUCCESS}&nbsp;</span>
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- BEGIN addPostAnchor -->
+                <div class="anchor col-xs-12 col-md-5 pull-left">
+                    <input class="btn btn-default" onclick="location.href = '#post';" value="{TXT_FORUM_CREATE_POST}" type="button" />
+                </div>                
+                <!-- END addPostAnchor -->
+                <!-- BEGIN threadActionsSelect -->
+                <div class="anchor-polo col-xs-12 col-md-5 pull-right">
+                    <select class="form-control" onchange="doAction(this.options[this.options.selectedIndex].value);" name="thread_actions">
+                        <option value="">{TXT_FORUM_THREAD_ACTION_DESC}</option>
+                        <option value="sticky" {FORUM_THREAD_ACTIONS_DISABLED_STICKY}>{TXT_FORUM_THREAD_ACTION_STICKY}</option>
+                        <option value="move" {FORUM_THREAD_ACTIONS_DISABLED_MOVE}>{TXT_FORUM_THREAD_ACTION_MOVE}</option>
+                        <option value="close" {FORUM_THREAD_ACTIONS_DISABLED_CLOSE}>{TXT_FORUM_THREAD_ACTION_CLOSE}</option>
+                        <option value="delete" {FORUM_THREAD_ACTIONS_DISABLED_DELETE}>{TXT_FORUM_THREAD_ACTION_DELETE}</option>
+                    </select>
+                </div>
+                <!-- END threadActionsSelect -->
+            </div>
+        </div>
     </div>
-    <!-- END threadActionsSelect -->
-    <div class="posts">
-        <table cellspacing="0" cellpadding="0" border="0">
+    <div class="posts table-responsive">
+        <table class="table" cellspacing="0" cellpadding="0" border="0">
             <tbody>
                 <!-- BEGIN forumPosts -->
                 <tr class="row{FORUM_POST_ROWCLASS}">
@@ -71,12 +77,16 @@
                 <!-- END attachment -->
                 <tr class="row{FORUM_POST_ROWCLASS}">
                     <td colspan="2" align="right">
-                        <!-- BEGIN postEdit --><input onclick="location.href = '?section=Forum&amp;cmd=thread&amp;id={FORUM_THREAD_ID}&amp;act=edit&amp;postid={FORUM_POST_ID}';" value="{TXT_FORUM_EDIT}" type="button" />&nbsp;<!-- END postEdit -->
-                        <!-- BEGIN postQuote --><input onclick="{
-                    FORUM_QUOTE_ONCLICK
-                }" value="{TXT_FORUM_QUOTE}" type="button" />&nbsp;<!-- END postQuote -->               
-                        <!-- BEGIN postDelete --><input onclick="deletePost('{FORUM_THREAD_ID}', '{FORUM_POST_ID}');
-                return false;" value="{TXT_FORUM_DELETE}" type="button" />&nbsp;<!-- END postDelete --> 
+                        <!-- BEGIN postEdit -->
+                        <input class="btn btn-default" onclick="location.href = '?section=Forum&amp;cmd=thread&amp;id={FORUM_THREAD_ID}&amp;act=edit&amp;postid={FORUM_POST_ID}';" value="{TXT_FORUM_EDIT}" type="button" />&nbsp;<!-- END postEdit -->
+                        <!-- BEGIN postQuote -->
+                        <input class="btn btn-default" onclick="{
+                                FORUM_QUOTE_ONCLICK
+                            }" value="{TXT_FORUM_QUOTE}" type="button" />&nbsp;<!-- END postQuote -->               
+                        <!-- BEGIN postDelete -->
+                        <input class="btn btn-default" onclick="deletePost('{FORUM_THREAD_ID}', '{FORUM_POST_ID}');
+                            return false;" value="{TXT_FORUM_DELETE}" type="button" />&nbsp;
+                        <!-- END postDelete --> 
                     </td>
                 </tr>
                 <!-- END forumPosts -->
@@ -109,8 +119,10 @@
                 <p><label for="keywords">{TXT_FORUM_KEYWORDS}</label><input onfocus="showToolTip('{TXT_FORUM_COMMA_SEPARATED_KEYWORDS}', this, 'forumKeywordsHelp')" onblur="hideToolTip('forumKeywordsHelp')" title="{TXT_FORUM_COMMA_SEPARATED_KEYWORDS}"  type="text" name="keywords" id="keywords" value="{FORUM_KEYWORDS}" /></p>
                 <p><label for="forum_attachment">{TXT_FORUM_FILE_ATTACHMENT}</label><input class="inputtext" type="file" value="{FORUM_ATTACHMENT_VALUE}" name="forum_attachment" id="forum_attachment" /></p>
                 <!-- BEGIN delAttachment -->
-                <br /><input type="checkbox" id="delAttachment" name="forum_delete_attachment" value="1" />
-                <label for="delAttachment">{TXT_FORUM_DELETE_ATTACHMENT}</label>
+                <br />
+                <span class="checkbox">
+                    <label for="delAttachment"><input type="checkbox" id="delAttachment" name="forum_delete_attachment" value="1" />{TXT_FORUM_DELETE_ATTACHMENT}</label>
+                </span>
                 <input type="hidden" name="forum_attachment_oldname" value="{FORUM_ATTACHMENT_OLDNAME}" />
                 <!-- END delAttachment -->
                 <p><a href="javascript:void(0);" onclick="showAllowedExtensions();">erlaubte Dateiendungen</a></p>
@@ -123,14 +135,17 @@
                 </p>
                 <!-- END captcha -->
                 <!-- BEGIN notificationRow -->
-                <p><input id="forum_notify" type="checkbox" name="notification" value="notify" {FORUM_NOTIFICATION_CHECKBOX_CHECKED} /><label class="description" for="forum_notify">{TXT_FORUM_NOTIFY_NEW_POSTS}</label></p>
-                <!-- END notificationRow -->
                 <p>
-                    <input type="reset" value="{TXT_FORUM_RESET}" />&nbsp;
-                    <!-- BEGIN createPost --><input type="submit" name="create" value="{TXT_FORUM_CREATE_POST}" />&nbsp;<!-- END createPost -->                
-                    <!-- BEGIN updatePost --><input type="submit" name="update" value="{TXT_FORUM_UPDATE_POST}" />&nbsp;<!-- END updatePost -->                  
-                    <!-- BEGIN previewNewPost --><input type="submit" name="preview_new" value="{TXT_FORUM_PREVIEW}" />&nbsp;<!-- END previewNewPost -->                 
-                    <!-- BEGIN previewEditPost --><input type="submit" name="preview_edit" value="{TXT_FORUM_PREVIEW}" />&nbsp;<!-- END previewEditPost -->   
+                    <span class="checkbox">                   
+                        <label class="description" for="forum_notify"> <input id="forum_notify" type="checkbox" name="notification" value="notify" {FORUM_NOTIFICATION_CHECKBOX_CHECKED} />{TXT_FORUM_NOTIFY_NEW_POSTS}</label>
+                </p>
+                <!-- END notificationRow -->
+                <p class="thread-button">
+                    <input class="btn btn-default" type="reset" value="{TXT_FORUM_RESET}" />&nbsp;
+                    <!-- BEGIN createPost --><input class="btn btn-default" type="submit" name="create" value="{TXT_FORUM_CREATE_POST}" />&nbsp;<!-- END createPost -->                
+                    <!-- BEGIN updatePost --><input class="btn btn-default" type="submit" name="update" value="{TXT_FORUM_UPDATE_POST}" />&nbsp;<!-- END updatePost -->                  
+                    <!-- BEGIN previewNewPost --><input type="submit"  class="btn btn-default" name="preview_new" value="{TXT_FORUM_PREVIEW}" />&nbsp;<!-- END previewNewPost -->                 
+                    <!-- BEGIN previewEditPost --><input type="submit" class="btn btn-default" name="preview_edit" value="{TXT_FORUM_PREVIEW}" />&nbsp;<!-- END previewEditPost -->   
                 </p>
             </form>
         </fieldset> 
@@ -142,11 +157,19 @@
     <br /><span style="color: #006900;">{TXT_THREAD_ACTION_SUCCESS}&nbsp;</span>
     <!-- BEGIN moveForm -->
     <form action="index.php?section=Forum&amp;cmd=thread&amp;action=move&amp;id={FORUM_THREAD_ID}" method="POST" name="frmThreadMove">
-        <select name="moveToThread" size="32" style="width:225px;">
-            {FORUM_THREADS}
-        </select>
+        <div class="row">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-4">
+                        <select class="form-control col-md-4" name="moveToThread" size="32">
+                            {FORUM_THREADS}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
         <br />
-        <input type="submit" value="{TXT_FORUM_THREAD_ACTION_MOVE}" />
+        <input type="submit" class="btn btn-default" value="{TXT_FORUM_THREAD_ACTION_MOVE}" />
     </form>
     <!-- END moveForm -->
     <!-- END threadActions -->

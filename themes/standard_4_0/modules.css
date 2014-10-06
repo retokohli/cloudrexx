@@ -745,10 +745,10 @@ form[name="registrationForm"] .row {
 }*/
 .login-content .login-social {
     border-right: 1px solid #D8DCE0;
-/*    float: left;
-    width: 50%;
-    padding-right: 4.9%;
-    margin-top: 8px;*/
+    /*    float: left;
+        width: 50%;
+        padding-right: 4.9%;
+        margin-top: 8px;*/
 }
 #login a.register{
     padding-left:18px;
@@ -778,7 +778,6 @@ form[name="registrationForm"] .row {
 #forum div.category,
 #forum div.navtree,
 #forum div.paging,
-#forum div.anchor,
 #forum div.threads,
 #forum div.addthread,
 #forum div.posts,
@@ -795,6 +794,9 @@ form[name="registrationForm"] .row {
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 15px 0px;
     float:left;
+}
+#forum div.anchor, #forum div.anchor-polo {
+    margin-bottom: 15px;
 }
 #forum div.links {
     text-align: right;
@@ -1102,14 +1104,17 @@ form[name="registrationForm"] .row {
 #guestbook div.error_message {
     color:#FF0000;
 }
-#guestbook div.title {
+#guestbook .radio, #guestbook .checkbox {
+    float :left;
+}
+/*#guestbook div.title {
     float:left;
     height: 27px;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     width: 60%;
-}
-#guestbook div.title h3{
+}*/
+/*#guestbook div.title h3{
     padding: 0px 0px 5px 0px;
     margin: 0px 0px 0px 0px;
 }
@@ -1128,15 +1133,15 @@ form[name="registrationForm"] .row {
     margin: 0px 0px 0px 0px;
     width: 20%;
     text-align:right;
-}
-#guestbook div.message,
+}*/
+/*#guestbook div.message,
 #guestbook div.links {
     padding: 0px 0px 0px 0px;
     margin: 7px 0px 0px 0px;
     height:auto !important;
     float:left;
     width:100%;
-}
+}*/
 /***************************************************/
 /* CSS DEFINITIONS FOR MEMBERDIR  MODULE           */
 /***************************************************/
@@ -3080,4 +3085,18 @@ input[type="checkbox"] {
 }
 .notification {
     margin-bottom: 15px;
+}
+.radio label, .checkbox label {
+    height: auto;
+}
+.thread-button input {
+    margin-bottom: 15px;
+}
+#forum .breadcrumb {
+    margin-bottom: 0;
+}
+#forum .text-danger, #forum .text-success {
+    float: left;
+    width: 90%;
+    margin-bottom: 10px;
 }
