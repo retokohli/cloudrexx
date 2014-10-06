@@ -73,7 +73,10 @@ Please type `help` to find available commands
 
         while (!$this->userWantsExit) {
             echo $this->prompt;
-            ob_flush();
+            flush();
+            if (ob_get_level() != 0) {
+                ob_flush();
+            }
             // read from command line
             $params = explode(' ', trim(fgets(STDIN)));
 
@@ -85,7 +88,11 @@ Please type `help` to find available commands
 ';
                 continue;
             }
-            $commands[$command]->executeCommand($command, $params);
+            try {
+                $commands[$command]->executeCommand($command, $params);
+            } catch (\Exception $e) {
+                echo 'Command died with an ' . get_class($e) . ' with message . ' . $e->getMessage();
+            }
         }
         echo "Bye!\r\n";
         $this->commandRunning = false;
