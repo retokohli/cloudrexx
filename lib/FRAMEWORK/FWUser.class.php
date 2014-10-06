@@ -442,7 +442,7 @@ class FWUser extends User_Setting
 //        );
 // workaround code:
         $objUser = $this->objUser->getUsers(
-            array('email' => array('REGEXP' => '^(shop_customer_[0-9]+_[0-9]+_[0-9]-)?'.str_replace('.', '\.', $email).'$'), 'is_active' => true), null, null, null
+            array('email' => array('REGEXP' => '^(shop_customer_[0-9]+_[0-9]+_[0-9]-)?'.preg_quote($email).'$'), 'is_active' => true), null, null, null
         );
 // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         if ($objUser) {
