@@ -32,12 +32,3 @@
     top: 0;
     left: 0;
 }
-a.dbEdit {
-    background-image: url(../Media/DbEdit.png);
-    display: inline-block;
-    height: 16px;
-    width: 16px;
-    margin-top: 4px;
-    margin-left: 4px;
-    cursor: pointer;
-}

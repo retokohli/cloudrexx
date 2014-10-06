@@ -122,7 +122,3 @@ $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'] = 'Unfortunately, the build process
 //Reset FTP password status message
 $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG'] = 'Resetting your FTP password failed! Try again.';
 $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_MSG'] = 'Your FTP password has been reset successfully.';
-
-$_ARRAYLANG['TXT_MULTISITE_CANCEL'] = 'Cancel';
-$_ARRAYLANG['TXT_MULTISITE_EXECUTE'] = 'Execute';
-$_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_DB'] = 'Excute query on website';

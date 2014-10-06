@@ -101,7 +101,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'destroyWebsite'        => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'executeOnWebsite'      => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'generateAuthToken'     => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'executeSql'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'executeSql'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkExecuteSqlAccess')),
         );  
     }
 
@@ -1522,6 +1522,29 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return false;
     }
         
+    /**
+     * Check the Authentication access for execute sql query in website
+     * 
+     * @return boolean
+     */
+    public function checkExecuteSqlAccess($params) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case ComponentController::MODE_MANAGER:
+            case ComponentController::MODE_HYBRID:
+                if ($this->checkPermission()) {
+                    return true;
+                }
+                break;
+            case ComponentController::MODE_SERVICE:
+            case ComponentController::MODE_WEBSITE:
+                if ($this->auth($params)) {
+                    return true;
+                }
+                break;
+        }
+        return false;
+    }
+        
     /*
      * Updating setup data in servers
      * 
@@ -1622,20 +1645,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query, the sql query is empty');
         }
         
-        try {
-            $objResult = $objDatabase->Execute($params['post']['query']);
-            if ($objResult !== false) {
-                $arrResult = array();
-                while (!$objResult->EOF) {
-                    $arrResult[] = $objResult->fields;
-                    $objResult->MoveNext();
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case ComponentController::MODE_MANAGER:
+            case ComponentController::MODE_HYBRID:
+                if (isset($params['post']['websiteId'])) {
+                    return self::executeOnWebsite($params);
                 }
-                return array('sqlStatus' => true, 'sqlResult' => $arrResult);
-            } else {
-                return array('sqlStatus' => false, 'sqlError' => $objResult->ErrorMsg());
-            }
-        } catch(\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query'.$e->getMessage());
+                break;
+            case ComponentController::MODE_WEBSITE:
+                try {
+                    $objResult = $objDatabase->Execute($params['post']['query']);
+                    if ($objResult !== false) {
+                        $arrResult = array();
+                        while (!$objResult->EOF) {
+                            $arrResult[] = $objResult->fields;
+                            $objResult->MoveNext();
+                        }
+                        return array('sqlStatus' => true, 'sqlResult' => $arrResult);
+                    } else {
+                        return array('sqlStatus' => false, 'sqlError' => $objResult->ErrorMsg());
+                    }
+                } catch(\Exception $e) {
+                    throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query'.$e->getMessage());
+                }
+                break;
         }
+        return false;
     }
 }

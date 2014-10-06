@@ -342,7 +342,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'sorting' => true,
                 'paging' => true,       // cannot be turned off yet
                 'filtering' => false,   // this does not exist yet
-                'actions' => array($this, 'executeSql')
+                'actions' => function($rowData) {
+                                return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData);
+                             }
             ),
             'fields' => array(
                 'id' => array('showOverview' => false),
@@ -568,44 +570,54 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             throw new \Exception('JsonMultiSite::executeSql() failed: Website by ID '.$rowData['id'].' not found.');
         }
         
-        $host = $website->getFqdn()->getName();
-        $installationId = $website->getInstallationId();
-        $secretKey = $website->getSecretKey();
-        $auth = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId);
-        $url = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $host . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=executeSql';
-        
+        $websiteId = $rowData['id'];
+       
         $javascript = <<<END
         cx.ready(function() {
                 
-                \$J(".dbEdit").html('<div class="executeSqlQuery"><form id="ExecuteSql"><div id="statusMsg"></div><textarea id="queryContent" name="executeQuery"></textarea></form></div>')
+            \$J(".dbEdit").html('<div class="executeSqlQuery"><form id="ExecuteSql"><div id="statusMsg"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>')
             var activateDialog = cx.ui.dialog({
-                width: 520,
+                width: 820,
+                height: 400,
                 title: 'Execute SQL query on Website',
                 content: \$J('.executeSqlQuery'),
                 autoOpen: false,
                 buttons: {
-                    "{TXT_MULTISITE_CANCEL}": function() {
+                    "Cancel": function() {
                         \$J(this).dialog("close");
                     },
-                    "{TXT_MULTISITE_EXECUTE}": function() {
-                        executeQuery();
-
+                    "Excute": function() {
+                        var query = \$J('#queryContent').val();
+                        if(query == '') {
+                            \$J('#statusMsg').text('Please insert a query..!');
+                            return false;
+                        } else {
+                            executeQuery();
+                        }
                     }
                 }
             });
             executeQuery = function(){
+                domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql";
                 \$J.ajax({
-                    url     :  $url,
+                    url     :  domainUrl,
                     type    : "POST",
-                    data    : \$J("#ExecuteSql").serialize() + '&auth=$auth',
+                    data    : {
+                               query: \$J("#ExecuteSql").serialize(),
+                               websiteId: $websiteId,
+                               command:'executeSql'
+                              },
                     dataType : "json",
                     success: function(response) {
-                        if (response.data.sqlStatus) {
-                            \$J('#statusMsg').text('SqlQuery Executed Successfully!.');
-                            \$J('#queryContent').val(response.data.sqlResult);
-                        } else {
-                            \$J('#statusMsg').text('SqlQuery Execution Failed!.');
-                            \$J('#queryContent').val(response.data.sqlError);
+                                if (response.status == 'error') {
+                                    \$J('#statusMsg').text(response.message);
+                                }
+                                if (response.data.sqlStatus) {
+                                    \$J('#statusMsg').text('SqlQuery Executed Successfully!.');
+                                    \$J('#queryContent').val(response.data.sqlResult);
+                                } else {
+                                    \$J('#statusMsg').text('SqlQuery Execution Failed!.');
+                                    \$J('#queryContent').val(response.data.sqlError);
                         }
                     }
                 });
@@ -618,8 +630,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 
         });
 END;
-         \JS::registerCode($javascript);
-         $_uri = 'javascript:void(0);';
-         return '<a href="'.$_uri.'" class="dbEdit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_DB'].'"></a>';
+        \JS::registerCode($javascript);
+        $dbEdit = '<a href="javascript:void(0);" class="dbEdit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_DB_TITLE'].'"></a>';
+        
+        return $dbEdit;
     }
 }
