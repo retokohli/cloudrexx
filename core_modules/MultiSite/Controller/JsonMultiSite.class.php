@@ -102,6 +102,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'executeOnWebsite'      => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'generateAuthToken'     => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'executeSql'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkExecuteSqlAccess')),
+            'removeUser'            => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -1673,4 +1674,35 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         return false;
     }
+    
+    /**
+     * Remove the user
+     * 
+     * @param  array $params
+     * @return boolean true or false
+     * @throws MultiSiteJsonException
+     */
+    public function removeUser($params) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                if (empty($params['post'])) {
+                    throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::removeUser.');
+                }
+                $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $website = $websiteRepository->findBy(array('ownerId' => $params['post']['userId']));
+                if (!$website) {
+                   $objFWUser = \FWUser::getFWUserObject();
+                   $objUser = $objFWUser->objUser->getUser($params['post']['userId']);
+                   if ($objUser->delete()) {
+                       return array('status' => 'success');
+                   }
+                }
+                return array('status' => 'error');
+                break;
+            default:
+                break;
+        }
+    }
+
 }

@@ -121,7 +121,25 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 // TODO: add language variable
                         throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
                     }
-                    break;  
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                    $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website = $websiteRepository->findBy(array('ownerId' => $objUser->getId()));
+                    if ($website) {
+                        throw new \Exception('This user is linked with Websites, cannot able to delete');
+                    }
+                    
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
+                        $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
+                        foreach ($websiteServiceServers as $serviceServer) {
+                            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('removeUser', array('userId' => $objUser->getId()), $serviceServer);
+                            if ($resp->status == 'error' || $resp->data->status == 'error') {
+                                throw new \Exception('Failed to delete this user');
+                            }
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
