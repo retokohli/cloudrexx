@@ -140,7 +140,7 @@ body a:hover {text-decoration: none;}
     transition: all .3s ease-in-out;
 }
 #search-form #search-icon {
-    background: url('images/search-glass.png') no-repeat 0/16px;
+    background-image: url('images/search-glass.png');
     float: left;
     width: 8px;
     height: 17px;
@@ -148,6 +148,12 @@ body a:hover {text-decoration: none;}
     position: absolute;
     top: 7px;
     border: none;
+    background-size: 16px;
+    background-position: 0;
+    background-repeat: no-repeat;
+}
+#search-form #search-icon:hover {
+    background-color: transparent;
 }
 #metanavigation {
     right: 54px;

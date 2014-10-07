@@ -1,85 +1,108 @@
 <script type="text/javascript">
     <!--
-    function toggle(target){
+    function toggle(target) {
         obj = document.getElementById(target);
-        obj.style.display = (obj.style.display=='none') ? 'inline' : 'none';  
-        if (obj.style.display=='none' && target == 'hiddenSearch'){
-             document.getElementById('searchCheck').value = 'norm';
-        }else if(obj.style.display=='inline' && target == 'hiddenSearch'){
-             document.getElementById('searchCheck').value = 'exp';
+        obj.style.display = (obj.style.display == 'none') ? 'inline' : 'none';
+        if (obj.style.display == 'none' && target == 'hiddenSearch') {
+            document.getElementById('searchCheck').value = 'norm';
+        } else if (obj.style.display == 'inline' && target == 'hiddenSearch') {
+            document.getElementById('searchCheck').value = 'exp';
         }
     }
-    
+
     function CheckForm() {
-      var errorMsg = "";
-      with( document.formEntry ) {
-      	if (type.value == "") {
-        	errorMsg = errorMsg + "- {TXT_MARKET_TYPE}\n";
+        var errorMsg = "";
+        with (document.formEntry) {
+            if (type.value == "") {
+                errorMsg = errorMsg + "- {TXT_MARKET_TYPE}\n";
+            }
+            if (title.value == "") {
+                errorMsg = errorMsg + "- {TXT_MARKET_TITLE_ENTRY}\n";
+            }
+            if (description.value == "") {
+                errorMsg = errorMsg + "- {TXT_MARKET_DESCRIPTION}\n";
+            }
+            if (cat.value == "") {
+                errorMsg = errorMsg + "- {TXT_MARKET_CATEGORIE}\n";
+            }
+            if (userdetails.value == "") {
+                errorMsg = errorMsg + "- {TXT_MARKET_USER_DETAIL}\n";
+            }
+            if (name.value == "") {
+                errorMsg = errorMsg + "- {TXT_MARKET_NAME}\n";
+            }
+            if (email.value == "") {
+                errorMsg = errorMsg + "- {TXT_MARKET_EMAIL}\n";
+            } else {
+                if (!matchType('^[_a-zA-Z0-9-]+(.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)*.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$', email.value)) {
+                    errorMsg = errorMsg + "- {TXT_MARKET_EMAIL}\n";
+                }
+            }
+
+            if (errorMsg != "")
+            {
+                alert("{TXT_MARKET_FIELDS_REQUIRED}n{TXT_MARKET_THOSE_FIELDS_ARE_EMPTY}\n" + errorMsg);
+                return false;
+            } else {
+                return true;
+            }
         }
-        if (title.value == "") {
-            errorMsg = errorMsg + "- {TXT_MARKET_TITLE_ENTRY}\n";
-        } 
-        if (description.value == "") {
-            errorMsg = errorMsg + "- {TXT_MARKET_DESCRIPTION}\n";
-        }   
-        if (cat.value == "") {
-            errorMsg = errorMsg + "- {TXT_MARKET_CATEGORIE}\n";
-        } 
-        if (userdetails.value == "") {
-            errorMsg = errorMsg + "- {TXT_MARKET_USER_DETAIL}\n";
-        }
-        if (name.value == "") {
-            errorMsg = errorMsg + "- {TXT_MARKET_NAME}\n";
-        }
-        if (email.value == "") {
-            errorMsg = errorMsg + "- {TXT_MARKET_EMAIL}\n";
-        }else{
-        	if (!matchType('^[_a-zA-Z0-9-]+(.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)*.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$', email.value)){
-        		errorMsg = errorMsg + "- {TXT_MARKET_EMAIL}\n";
-        	}
-        }
-        
-        if (errorMsg != "") 
-        {
-            alert ("{TXT_MARKET_FIELDS_REQUIRED}n{TXT_MARKET_THOSE_FIELDS_ARE_EMPTY}\n" + errorMsg);       
-            return false;
-        }else{
-        	return true;
-        }
-      }
     }
-    
+
     function matchType(pattern, value) {
-    	var reg = new RegExp(pattern);
-    	if (value.match(reg)) {
-    		return true;
-    	}
-    	return false;
-    } 
-    
-    -->
-</script>
+        var reg = new RegExp(pattern);
+        if (value.match(reg)) {
+            return true;
+        }
+        return false;
+    }
+
+    -- ></script>
 <div id="market">
-	<form name="formEntry" enctype="multipart/form-data" method="post" action="index.php?section=Market&cmd=edit" onsubmit="return CheckForm()">
-	<input type="hidden" name="id" value="{MARKET_ENTRY_ID}" >
-	<input type="hidden" name="picOld" value="{MARKET_ENTRY_PICTURE_OLD}" >
-	
-	   <p><label>{TXT_MARKET_TYPE}<font color="red"> *</font></label><input type="radio" name="type" value="offer" {MARKET_ENTRY_TYPE_OFFER} /><label class="description" for="offer">{TXT_MARKET_OFFER}</label></p>
-        <p><input type="radio" name="type" value="search" {MARKET_ENTRY_TYPE_SEARCH} /><label class="description" for="search">{TXT_MARKET_SEARCH}</label></p>
+    <form name="formEntry" enctype="multipart/form-data" method="post" action="index.php?section=Market&cmd=edit" onsubmit="return CheckForm()">
+        <input type="hidden" name="id" value="{MARKET_ENTRY_ID}" >
+        <input type="hidden" name="picOld" value="{MARKET_ENTRY_PICTURE_OLD}" >
+
+        <p><label>{TXT_MARKET_TYPE}<font color="red"> *</font></label>
+            <span class="radio">
+                <label class="description" for="offer"><input type="radio" name="type" value="offer" {MARKET_ENTRY_TYPE_OFFER} />{TXT_MARKET_OFFER}</label>
+            </span>
+        </p>
+        <p>
+            <span class="radio">
+                <label class="description" for="search"><input type="radio" name="type" value="search" {MARKET_ENTRY_TYPE_SEARCH} />{TXT_MARKET_SEARCH}</label>
+            </span>
+        </p>
         <p><label for="title">{TXT_MARKET_TITLE_ENTRY}<font color="red"> *</font></label><input id="title" name="title" value="{MARKET_ENTRY_TITLE}" type="text"></p>
         <p><label for="description">{TXT_MARKET_DESCRIPTION}<font color="red"> *</font></label><textarea id="description" name="description">{MARKET_ENTRY_DESCRIPTION}</textarea></p>
         <p><label for="pic">{TXT_MARKET_PICTURE}</label>{MARKET_ENTRY_PICTURE}<input type="file" id="pic" name="pic"></p>
         <p><label for="cat">{TXT_MARKET_CATEGORIE}<font color="red"> *</font></label><select id="cat" name="cat">{MARKET_CATEGORIES}</select></p>
         <p><label for="price">{TXT_MARKET_PRICE}<font color="red"> *</font></label><input type="text" id="price" name="price" maxlength="100" value="{MARKET_ENTRY_PRICE}"></p>
-        <p><input type="checkbox" name="forfree" value="1" {MARKET_ENTRY_FORFREE} /><label class="description" for="forfree">{TXT_MARKET_FOR_FREE}</label></p>
-        <p><input type="checkbox" name="agreement" value="1" {MARKET_ENTRY_AGREEMENT} /><label class="description" for="agreement">{TXT_MARKET_AGREEMENT}</label></p>
+        <p>
+<span class="checkbox">
+<label class="description" for="forfree"><input type="checkbox" name="forfree" value="1" {MARKET_ENTRY_FORFREE} />{TXT_MARKET_FOR_FREE}</label>
+</span>
+</p>
+        <p>
+<span class="checkbox">
+<label class="description" for="agreement"><input type="checkbox" name="agreement" value="1" {MARKET_ENTRY_AGREEMENT} />{TXT_MARKET_AGREEMENT}</label>
+</span>
+</p>
         <p><label for="name">{TXT_MARKET_NAME}<font color="red"> *</font></label><input id="name" name="name" value="{MARKET_ENTRY_NAME}" type="text"></p>
         <p><label for="email">{TXT_MARKET_EMAIL}<font color="red"> *</font></label><input id="email" name="email" value="{MARKET_ENTRY_EMAIL}" type="text"></p>
-        <p><label>{TXT_MARKET_USER_DETAIL}<font color="red"> *</font></label><input type="radio" id="userdetails_on" name="userdetails" value="1" {MARKET_ENTRY_USERDETAILS_ON} /><label class="description" for="userdetails_on">{TXT_MARKET_DETAIL_SHOW}</label></p>
-        <p><input type="radio" name="userdetails" id="userdetails_off" value="0" {MARKET_ENTRY_USERDETAILS_OFF} /><label class="description" for="userdetails_off">{TXT_MARKET_DETAIL_HIDE}</label></p>
+        <p><label>{TXT_MARKET_USER_DETAIL}<font color="red"> *</font></label>
+<span class="radio">
+<label class="description" for="userdetails_on"><input type="radio" id="userdetails_on" name="userdetails" value="1" {MARKET_ENTRY_USERDETAILS_ON} />{TXT_MARKET_DETAIL_SHOW}</label>
+</span>
+</p>
+        <p>
+<span class="radio">
+<label class="description" for="userdetails_off"><input type="radio" name="userdetails" id="userdetails_off" value="0" {MARKET_ENTRY_USERDETAILS_OFF} />{TXT_MARKET_DETAIL_HIDE}</label>
+</span>
+</p>
         <!-- BEGIN spez_fields -->
             <p><label>{TXT_MARKET_SPEZ_FIELD_NAME}</label>{MARKET_SPEZ_FIELD_INPUT}</p>
         <!-- END spez_fields -->
-        <p><input type="submit" name="submitEntry" value="{TXT_MARKET_SAVE}" /></p>
+        <p><input class="btn btn-default" type="submit" name="submitEntry" value="{TXT_MARKET_SAVE}" /></p>
 	</form>
 </div>
