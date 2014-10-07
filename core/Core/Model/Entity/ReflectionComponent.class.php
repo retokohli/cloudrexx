@@ -515,18 +515,23 @@ class ReflectionComponent {
         if (empty($path) || end($pathParts) != 'zip') {
             throw new ReflectionComponentException('Invalid file name passed. Provide a valid zip file name');
         }
-        
+                
+        $websitePath = \Env::get('cx')->getWebsiteDocumentRootPath();
         // Create temp working folder and copy ZIP contents
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         // clean up tmp dir
         $filesystem->delete_folder(ASCMS_APP_CACHE_FOLDER, true);
-        echo "Copying files ... ";
+        echo "Copying files ... ";        
+        $filesystem->make_folder(ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType), true);
+        
+        $cacheComponentFolderPath = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
+        $cacheComponentFolderWebPath = ASCMS_APP_CACHE_FOLDER_WEB_PATH . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName;
         $filesystem->copyDir(
             $this->getDirectory(false),
-            preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
+            preg_replace('#' . $websitePath . '#', '', $this->getDirectory(false)),
             '',
-            ASCMS_APP_CACHE_FOLDER,
-            ASCMS_APP_CACHE_FOLDER_WEB_PATH,
+            $cacheComponentFolderPath,
+            $cacheComponentFolderWebPath,
             '',
             true
         );
@@ -537,31 +542,52 @@ class ReflectionComponent {
             echo "Copying customizing files ... ";
             $filesystem->copyDir(
                 $this->getDirectory(true, true),
-                preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(true, true)),
+                preg_replace('#' . $websitePath . '#', '', $this->getDirectory(true, true)),
                 '',
-                ASCMS_APP_CACHE_FOLDER,
-                ASCMS_APP_CACHE_FOLDER_WEB_PATH,
+                $cacheComponentFolderPath,
+                $cacheComponentFolderWebPath,
                 '',
                 true
             );
             echo "Done \n";
         }
         
-        // Copy additional contents to folder:
-        // If this is still an AdoDb component:
-        // create $this->getDirectory(false)./data/structure.sql
-        // create $this->getDirectory(false)./data/fixtures.sql
-        // If this is a doctrine component:
-        // create $this->getDirectory(false)./data/fixtures.yml/sql 
-        // Write database structure and data into the files
         echo "Writing component data (structure & data) ... ";
         $this->writeDatabaseStructureAndData();                
         echo "Done \n";
         
-        echo "Creating meta file ... ";
-        // Create meta.yml        
-        $this->writeMetaDataToFile(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
-        echo "Done \n";
+        $componentFolder = $this->getDirectory($customized);
+        if (!file_exists($componentFolder . '/meta.yml')) {
+            echo "Meta file not exist. \n";
+            echo "Creating meta file ... ";
+            // Create meta.yml
+            $this->writeMetaDataToFile($cacheComponentFolderPath . '/meta.yml');
+            echo "Done \n";
+        } else {
+            echo "Copying additional files ...";
+            // Read meta file
+            $yaml = new \Symfony\Component\Yaml\Yaml();
+            $content = file_get_contents($componentFolder . '/meta.yml');
+            $meta = $yaml->load($content);
+            if (isset($meta['DlcInfo']['additionalFiles'])) {
+                foreach ($meta['DlcInfo']['additionalFiles'] as $additionalFile) {
+                    $srcPath = $websitePath. '/'. $additionalFile;
+                    if ($filesystem->exists($srcPath)) {
+                        if (is_dir($srcPath)) {
+                            //TO DO: not implemented
+                        } else {
+                            $folder = dirname($srcPath);
+                            $folderPath = preg_replace('#' . $websitePath . '#', '', $folder);
+                            $filesystem->make_folder(ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. $folderPath, true);
+                            $filesystem->copy_file($srcPath, ASCMS_APP_CACHE_FOLDER . '/DLC_FILES/'. $additionalFile);
+                        }
+                    } else {
+                        echo "WARNING: File missing - ". $additionalFile;
+                    }
+                }
+            }
+            echo "Done \n";
+        }
         
         echo "Exporting component ... ";
         // Compress
@@ -952,6 +978,7 @@ class ReflectionComponent {
                  'downloads' => 0,
                  'price' => 0.0,
                  'pricePer' => 0,
+                 'additionalFiles' => array()
             )
         );
         
