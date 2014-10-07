@@ -1,30 +1,35 @@
 <script type="text/javascript">
 <!--
-function CheckAGB() {
-   obj1 = document.getElementById('checkAGB');
-   obj2 = document.getElementById('submit');
+    function CheckAGB() {
+        obj1 = document.getElementById('checkAGB');
+        obj2 = document.getElementById('submit');
 
-   obj2.disabled = !obj1.checked;  
-}
--->
-</script>
+        obj2.disabled = !obj1.checked;
+    }
+    -- ></script>
 <div id="market">
-	<!-- BEGIN codeForm --> 
-	<div class="title">{TXT_MARKET_TITLE}</h2></div>
-	<div class="message">{TXT_MARKET_AGB}</div>
-	<div class="form"><input type="checkbox" id="checkAGB" onclick="CheckAGB();" name="checkAGB" value="1"/><label for="checkAGB">&nbsp;{TXT_MARKET_CONFIRM}</label></div>
-	<div class="form">{MARKET_FORM}</div>
-	<div class="message_error">{MARKET_ERROR_CONFIRM}</div>
-	
-	<script type="text/javascript">
-	<!--
-	CheckAGB();
-	-->
-	</script>
-	<!-- END codeForm --> 
+    <!-- BEGIN codeForm --> 
+    <div class="title">{TXT_MARKET_TITLE}</h2></div>
+    <div class="message">{TXT_MARKET_AGB}</div>
+    <div class="form">
+        <span class="checkbox">
+            <label for="checkAGB"><input type="checkbox" id="checkAGB" onclick="CheckAGB();" name="checkAGB" value="1"/>{TXT_MARKET_CONFIRM}</label>
+        </span>
+    </div>
+    <div class="form market-form">{MARKET_FORM}</div>
+    <div class="text-danger">{MARKET_ERROR_CONFIRM}</div>
 
-	<!-- BEGIN infoText --> 
-	<div id="title"><h2>Erfolgreich eingetragen</h2></div>
-	<div class="message">Ihr Inserat wurde erfolgreich eingetragen. Das Inserat wird nach erfolgreicher Pr&uuml;fung freigeschaltet. Sie werden pre E-Mail informiert.</div>
-	<!-- END infoText --> 
+    <script type="text/javascript">
+            <!--
+    CheckAGB();
+    -- >
+    </script>
+    <!-- END codeForm --> 
+
+    <!-- BEGIN infoText --> 
+    <div id="title"><h2>Erfolgreich eingetragen</h2></div>
+    <div class="message">
+        Ihr Inserat wurde erfolgreich eingetragen. Das Inserat wird nach erfolgreicher Pr&uuml;fung freigeschaltet. Sie werden pre E-Mail informiert.
+    </div>
+    <!-- END infoText --> 
 </div>

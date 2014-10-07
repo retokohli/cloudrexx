@@ -1467,6 +1467,7 @@ form[name="registrationForm"] .row {
     float: left;
     width: 100%;
     padding: 0 0 10px 0;
+    color: #a94442;
 }
 #shop input.error[type=radio] {
     background-color: red;
@@ -2605,10 +2606,10 @@ td ul {
     width: 100%;
 }
 #checkout #ok_message {
-    color: #008000;
+    color: #3c763d;
 }
 #checkout #error_message {
-    color: #ff0000;
+    color: #a94442;
 }
 #checkout #payment_methods img {
     float: left;
@@ -2747,7 +2748,7 @@ form#search {
     width: 100%;
     margin-bottom: 10px;
 }
-.searchbox, .directorySearch input[name='term'] {
+.searchbox, .directorySearch input[name='term'], #regkey {
     width: 68%;
     float: left;
     margin-right: 10px;
@@ -3099,4 +3100,23 @@ input[type="checkbox"] {
     float: left;
     width: 90%;
     margin-bottom: 10px;
+}
+#market .breadcrumb {
+    float: left;
+    width: 100%;
+}
+.adv-search {
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+}
+#hiddenSearch {
+    margin-top: 10px;
+    float: left;
+    width: 100%;
+}
+#regkey {margin-bottom: 10px;}
+#market div.type_selection input {
+    float: left;
+    /*clear: none;*/
 }
