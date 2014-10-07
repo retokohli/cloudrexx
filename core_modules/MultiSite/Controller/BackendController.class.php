@@ -342,9 +342,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'sorting' => true,
                 'paging' => true,       // cannot be turned off yet
                 'filtering' => false,   // this does not exist yet
-                'actions' => function($rowData) {
-                                return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData);
-                             }
+                'actions' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
+                                function($rowData) {
+                                    return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData);
+                                } : false,
             ),
             'fields' => array(
                 'id' => array('showOverview' => false),
@@ -563,7 +564,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function executeSql($rowData) {
         global $_ARRAYLANG;
-
+        
         $websiteId = $rowData['id'];
         $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
         $website  = $webRepo->findOneById($websiteId);
@@ -585,7 +586,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     "Cancel": function() {
                         \$J(this).dialog("close");
                     },
-                    "Excute": function() {
+                    "Execute": function() {
                         var query = \$J('#executeSqlQuery_$websiteId #queryContent').val();
                         if(query == '') {
                             \$J('#executeSqlQuery_$websiteId #statusMsg').text('Please insert a query..!');
@@ -605,7 +606,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     if (response.status == 'error') {
                                         \$J('#executeSqlQuery_$websiteId #statusMsg').text(response.message);
                                     }
-                                    if (response.data.sqlStatus) {
+                                    if (response.data.status) {
                                         \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Executed Successfully!.');
                                         \$J('#executeSqlQuery_$websiteId #queryContent').val(response.data.sqlResult);
                                     } else {
