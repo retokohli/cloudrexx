@@ -583,14 +583,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (!$website) {
                 throw new \Exception('JsonMultiSite::executeSql() failed: Website by ID '.$rowData['id'].' not found.');
             }
-            $websiteName = $website->getName();
+            $name = $website->getName();
         }
         
         if (!empty($websiteServiceId)) {
             $websites = $webRepo->findBy(array('websiteServiceServerId' => $websiteServiceId));
             if (!$websites) {
-                throw new \Exception('JsonMultiSite::executeSql() failed: Website  by ID '.$rowData['id'].' not found.');
+                throw new \Exception('JsonMultiSite::executeSql() failed: Sevice server  by ID '.$rowData['id'].' has no website.');
             }
+            $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findOneById($websiteServiceId);
+            $name = $websiteServiceServer->getHostname();
             $websiteId = $websiteServiceId;
         }
 
@@ -601,7 +603,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             var activateDialog_$websiteId = cx.ui.dialog({
                 width: 820,
                 height: 400,
-                title: 'Execute SQL query on Website $websiteName',
+                title: 'Execute SQL query on $name',
                 content: \$J('#executeSqlQuery_$websiteId'),
                 autoOpen: false,
                 buttons: {
