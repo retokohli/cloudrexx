@@ -112,8 +112,8 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $this->assertEquals('test-with-space', $p->getSlug());
 
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $p->setTitle('test ümläut');        
-        $this->assertEquals('test-uemlaeut', $p->getSlug());
+        $p->setTitle('test ümläut');
+        $this->assertEquals('test-mlut', $p->getSlug());
 
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('123');
@@ -184,7 +184,7 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();
         
         $p1->setLang(1);
-        $p1->setTitle('testpage');
+        $p1->setTitle('testgeturl');
         $p1->setNode($n1);
         $p1->setNodeIdShadowed($n1->getId());
         $p1->setUseCustomContentForAllChannels('');
@@ -197,11 +197,11 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         self::$em->persist($p1);
         self::$em->flush();
         
-        $urlWithDomain = $p1->getURL('http://example.com/cms', '?k=v');        
-        $this->assertEquals('http://example.com/cms/de/testpage?k=v', $urlWithDomain);
+        $urlWithDomain = $p1->getURL('http://example.com/cms', '?k=v');
+        $this->assertEquals('http://example.com/cms/de/testgeturl?k=v', $urlWithDomain);
 
         $urlWithoutDomain = $p1->getURL('', '?k=v');
-        $this->assertEquals('/de/testpage?k=v', $urlWithoutDomain);
+        $this->assertEquals('/de/testgeturl?k=v', $urlWithoutDomain);
     }
     
     public function testTranslate() {
@@ -222,7 +222,7 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
         $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
-        $p1->setTitle('root');
+        $p1->setTitle('test translate root');
         $p1->setNode($n1);
         $p1->setNodeIdShadowed($n1->getId());
         $p1->setUseCustomContentForAllChannels('');
@@ -252,7 +252,8 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         
         $pageId = $p2->getId();
         
-        self::$em->clear();
+        self::$em->refresh($n1);
+        self::$em->refresh($n2);
                 
         $pageToTranslate = $pageRepo->findOneById($pageId);
         
@@ -278,16 +279,17 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         
         $pageId = $page->getId(); // Translated page id
         
-        self::$em->clear();
+        self::$em->refresh($n1);
+        self::$em->refresh($n2);
         
         $page = $pageRepo->findOneById($pageId); // Translated page
         
-        $this->assertEquals('/root/child-page', $page->getPath());
+        $this->assertEquals('/test-translate-root/child-page', $page->getPath());
         $this->assertEquals(2, $page->getLang());
 
         //see if the parent node is really, really there.
-        $parentPages = $page->getNode()->getParent()->getPagesByLang();
-        $this->assertArrayHasKey(2, $parentPages);
-        $this->assertEquals('root', $parentPages[2]->getTitle());
+        $parentPages = $page->getNode()->getParent()->getPagesByLang();        
+        $this->assertArrayHasKey(2, $parentPages);        
+        $this->assertEquals('test translate root', $parentPages[2]->getTitle());
     }    
 }

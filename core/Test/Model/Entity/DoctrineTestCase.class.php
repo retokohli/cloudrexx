@@ -33,7 +33,6 @@ abstract class DoctrineTestCase extends ContrexxTestCase {
     }
 
     public function tearDown() {
-        self::$em->getConnection()->rollback();
-        self::$em->clear();
+        self::$em->getConnection()->rollback();        
     }
 }
