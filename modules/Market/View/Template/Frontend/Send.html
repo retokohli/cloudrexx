@@ -1,29 +1,34 @@
 <script type="text/javascript">
 <!--
-function toggle(target){
-    obj = document.getElementById(target);
-    obj.style.display = (obj.style.display=='none') ? 'inline' : 'none';  
-    if (obj.style.display=='none' && target == 'hiddenSearch'){
-         document.getElementById('searchCheck').value = 'norm';
-    }else if(obj.style.display=='inline' && target == 'hiddenSearch'){
-         document.getElementById('searchCheck').value = 'exp';
+    function toggle(target) {
+        obj = document.getElementById(target);
+        obj.style.display = (obj.style.display == 'none') ? 'inline' : 'none';
+        if (obj.style.display == 'none' && target == 'hiddenSearch') {
+            document.getElementById('searchCheck').value = 'norm';
+        } else if (obj.style.display == 'inline' && target == 'hiddenSearch') {
+            document.getElementById('searchCheck').value = 'exp';
+        }
     }
-}
--->
+    -->
 </script>
 <div id="market">
-	<div class="search">
-		<form action="index.php?" method="get" name="marketSearch" id="marketSearch">
-			<input name="term" value="{TXT_MARKET_SEARCHTERM}" size="25" maxlength="100" /><input type="hidden" id="searchCheck" name="check" value="norm" size="10" /><input type="hidden" name="section" value="Market" size="10" /><input type="hidden" name="cmd" value="search" size="10" />&nbsp;<input type="submit" value="{TXT_MARKET_SEARCH}" name="search" />                  &nbsp;&raquo;&nbsp;<a href="javascript:toggle('hiddenSearch')">{TXT_MARKET_SEARCH_EXP}</a><br />
-			<div style="display: none;" id="hiddenSearch"><br />
-			<table width="100%" cellspacing="0" cellpadding="0" border="0">
-				{MARKET_EXP_SEARCH_FIELD}
-			</table>
-			</div>
-		</form>
-	</div>
-	<div class="navtree"><a href="index.php?section=Market">{TXT_MARKET}</a> &raquo; <a href="#">{MARKET_TITLE}</a></div>
-	<div class="title"><h2>{MARKET_TITLE}</h2></div>
-	<div class="message">{MARKET_MSG_SEND}</div>
-	<div class="message"><a href="javascript:history.back()">{TXT_MARKET_BACK}</a></div>
+    <div class="search">
+        <form action="index.php?" method="get" name="marketSearch" id="marketSearch">
+            <input class="searchbox" name="term" value="{TXT_MARKET_SEARCHTERM}" size="25" maxlength="100" />
+            <input type="hidden" id="searchCheck" name="check" value="norm" size="10" />
+            <input type="hidden" name="section" value="Market" size="10" />
+            <input type="hidden" name="cmd" value="search" size="10" />
+            &nbsp;<input class="btn btn-default" type="submit" value="{TXT_MARKET_SEARCH}" name="search" />                  
+            <div class="adv-search">&nbsp;&raquo;&nbsp;<a href="javascript:toggle('hiddenSearch')">{TXT_MARKET_SEARCH_EXP}</a></div><br />
+            <div style="display: none;" id="hiddenSearch"><br />
+                <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                    {MARKET_EXP_SEARCH_FIELD}
+                </table>
+            </div>
+        </form>
+    </div>
+    <div class="breadcrumb"><a href="index.php?section=Market">{TXT_MARKET}</a> &raquo; <a href="#">{MARKET_TITLE}</a></div>
+    <div class="title"><h2>{MARKET_TITLE}</h2></div>
+    <div class="message">{MARKET_MSG_SEND}</div>
+    <div class="message"><a href="javascript:history.back()">{TXT_MARKET_BACK}</a></div>
 </div>

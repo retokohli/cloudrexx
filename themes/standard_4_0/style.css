@@ -7,6 +7,13 @@
         width: 100%;
         height: auto;
     }
+    #podcast .media div +div {
+        padding-left: 0;
+    }
+    #podcast_container embed {
+        width: 100% !important;
+        height: auto !important;
+    }
     /*survey*/
     .survey td {
         float: left;
