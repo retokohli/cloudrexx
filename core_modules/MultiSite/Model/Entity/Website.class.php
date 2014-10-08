@@ -1048,7 +1048,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     //unmap all the domains
                     foreach ($this->domains as $domain) {
                         \Env::get('em')->remove($domain);
-                        \Env::get('em')->getUnitOfWork()->computeChangeSet(\Env::get('em')->getClassMetadata('Cx\Core_Modules\Multisite\Model\Entity\Domain'), $domain);
+                        \Env::get('em')->getUnitOfWork()->computeChangeSet(\Env::get('em')->getClassMetadata('Cx\Core_Modules\MultiSite\Model\Entity\Domain'), $domain);
                     }                    
                     break;
             }
