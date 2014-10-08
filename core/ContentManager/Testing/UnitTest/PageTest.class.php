@@ -207,6 +207,7 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     public function testTranslate() {
         
         $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         
         $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n1->setParent($nodeRepo->getRoot());
@@ -249,27 +250,37 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
        
         self::$em->flush();
         
-        $t = $p2->copyToLang(
-            2,
-            true,   // includeContent
-            true,   // includeModuleAndCmd
-            true,   // includeName
-            true,   // includeMetaData
-            true,   // includeProtection
-            false,  // followRedirects
-            true    // followFallbacks
-        );
-        $t->setupPath(2);
+        $pageId = $p2->getId();
         
-        self::$em->persist($t);        
+        self::$em->clear();
+                
+        $pageToTranslate = $pageRepo->findOneById($pageId);
+        
+        // copy page following redirects
+        $page = $pageToTranslate->copyToLang(
+                2,
+                true,   // includeContent
+                true,   // includeModuleAndCmd
+                true,   // includeName
+                true,   // includeMetaData
+                true,   // includeProtection
+                false,  // followRedirects
+                true    // followFallbacks
+        );
+        $page->setActive(1);
+
+        $pageToTranslate->setupPath(2);
+
+        $page->setNodeIdShadowed($pageToTranslate->getId());    
+
+        self::$em->persist($page);
         self::$em->flush();
         
-        $idOft = $t->getId();
+        $pageId = $page->getId(); // Translated page id
         
         self::$em->clear();
         
-        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $page = $pageRepo->findOneById($idOft);
+        $page = $pageRepo->findOneById($pageId); // Translated page
         
         $this->assertEquals('/root/child-page', $page->getPath());
         $this->assertEquals(2, $page->getLang());
