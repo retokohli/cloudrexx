@@ -583,7 +583,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (!$website) {
                 throw new \Exception('JsonMultiSite::executeSql() failed: Website by ID '.$rowData['id'].' not found.');
             }
-            $name = $website->getName();
+            $name = 'website '.$website->getName();
         }
         
         if (!empty($websiteServiceId)) {
@@ -592,7 +592,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 throw new \Exception('JsonMultiSite::executeSql() failed: Sevice server  by ID '.$rowData['id'].' has no website.');
             }
             $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findOneById($websiteServiceId);
-            $name = $websiteServiceServer->getHostname();
+            $name = 'service server '.$websiteServiceServer->getHostname();
             $websiteId = $websiteServiceId;
         }
 
