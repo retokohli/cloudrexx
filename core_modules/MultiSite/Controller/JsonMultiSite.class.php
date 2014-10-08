@@ -1652,14 +1652,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
                 if (isset($params['post']['websiteId'])) {
                     $params['post']['params'] = $params['post'];
-                    return self::executeOnWebsite($params);
+                    $resp[] = self::executeOnWebsite($params);
+                    return $resp;
+                }
+                
+                if (isset($params['post']['serviceId'])) {
+                    $websiteServiceRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $websites = $websiteServiceRepo->findBy(array('websiteServiceServerId' => $params['post']['serviceId']));
+                    foreach($websites as $website) {
+                        $params['post']['websiteId'] = $website->getId();
+                        $params['post']['websiteName'] = $website->getFqdn()->getName();
+                        $params['post']['params'] = $params['post'];
+                        $resp = self::executeOnWebsite($params);
+                        if ($resp && $resp->status == 'success') {
+                            $result[] = $resp; 
+                        }
+                    }
+                    return $result;
+                    
                 }
                 break;
             case ComponentController::MODE_WEBSITE:
                 try {
                     $objResult = $objDatabase->GetAll($params['post']['query']);
                     if ($objResult !== false) {
-                        return array('status' => true, 'sqlResult' => json_encode($objResult));
+                        return array('status' => true, 'sqlResult' => json_encode($objResult), 'websiteName' => $params['post']['websiteName']);
                     } else {
                         return array('status' => false, 'sqlError' => $objResult->ErrorMsg());
                     }

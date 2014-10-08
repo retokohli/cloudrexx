@@ -106,6 +106,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sorting' => true,
                         'paging' => true,       // cannot be turned off yet
                         'filtering' => false,   // this does not exist yet
+                        'actions' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
+                                        function($rowData) {
+                                            return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, true);
+                                        } : false,
                     ),
                     'fields' => array(
                         'id' => array(
@@ -344,7 +348,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'filtering' => false,   // this does not exist yet
                 'actions' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
                                 function($rowData) {
-                                    return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData);
+                                    return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, false);
                                 } : false,
             ),
             'fields' => array(
@@ -562,19 +566,37 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return type
      * @throws \MultiSiteJsonException
      */
-    public function executeSql($rowData) {
+    public function executeSql($rowData, $service = false) {
         global $_ARRAYLANG;
         
-        $websiteId = $rowData['id'];
-        $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $website  = $webRepo->findOneById($websiteId);
-        if (!$website) {
-            throw new \Exception('JsonMultiSite::executeSql() failed: Website by ID '.$rowData['id'].' not found.');
+        if ($service) {
+            $websiteServiceId = $rowData['id'];
+            $data = "serviceId:".$rowData['id'];
+        } else {
+           $websiteId = $rowData['id']; 
+           $data = "websiteId:".$rowData['id'];
         }
-        $websiteName = $website->getName();
+        
+        $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        if (!empty($websiteId)) {
+            $website  = $webRepo->findOneById($websiteId);
+            if (!$website) {
+                throw new \Exception('JsonMultiSite::executeSql() failed: Website by ID '.$rowData['id'].' not found.');
+            }
+            $websiteName = $website->getName();
+        }
+        
+        if (!empty($websiteServiceId)) {
+            $websites = $webRepo->findBy(array('websiteServiceServerId' => $websiteServiceId));
+            if (!$websites) {
+                throw new \Exception('JsonMultiSite::executeSql() failed: Website  by ID '.$rowData['id'].' not found.');
+            }
+            $websiteId = $websiteServiceId;
+        }
+
         $javascript = <<<END
         cx.ready(function() {
-                
+             
             \$J(".executeQuery_$websiteId").html('<div id="executeSqlQuery_$websiteId"><form id="ExecuteSql"><div id="statusMsg"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>')
             var activateDialog_$websiteId = cx.ui.dialog({
                 width: 820,
@@ -596,30 +618,34 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             \$J.ajax({
                                 url     :  domainUrl,
                                 type    : "POST",
-                                data    : {
-                                           query: \$J("#executeSqlQuery_$websiteId #queryContent").val(),
-                                           websiteId: $websiteId,
-                                           command:'executeSql'
-                                          },
+                                data    : {query: \$J("#executeSqlQuery_$websiteId #queryContent").val(),
+                                           $data,
+                                           command:'executeSql'},
                                 dataType : "json",
                                 success: function(response) {
                                     if (response.status == 'error') {
                                         \$J('#executeSqlQuery_$websiteId #statusMsg').text(response.message);
                                     }
-                                    if (response.data.status) {
-                                        \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Executed Successfully!.');
-                                        \$J('#executeSqlQuery_$websiteId #queryContent').val(response.data.sqlResult);
-                                    } else {
-                                        \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Execution Failed!.');
-                                        \$J('#executeSqlQuery_$websiteId #queryContent').val(response.data.sqlError);
-                                    }
+                                    var textAreaContent = '';
+                                    \$J.each(response.data, function(key, value){
+                                        if (value.status) {
+                                           \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Executed Successfully!.');
+                                           textAreaContent = textAreaContent + value.websiteName + ' : ' + value.sqlResult;
+                                           \$J('#executeSqlQuery_$websiteId #queryContent').val(textAreaContent);
+                                          
+                                        } else {
+                                            \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Execution Failed!(website).');
+                                            \$J('#executeSqlQuery_$websiteId #queryContent').val(value.sqlError);
+                                        }
+                                    });
+                                    
                                 }
                             });
                         }
                     }
                 }
             });
-                
+               
             \$J(".executeQuery_$websiteId").click(function() {
                 activateDialog_$websiteId.open();
              });
