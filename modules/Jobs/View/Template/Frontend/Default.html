@@ -1,34 +1,35 @@
 <div id="jobs">
-<h1>{JOBS_OVERVIEW_TXT}</h1>
+    <h1>{JOBS_OVERVIEW_TXT}</h1>
 
-<form action="index.php" method="get" name="filterform"><input name="section" type="hidden" value="Jobs" />
-<div style="float: left;">{JOBS_CATEGORY_FORM}</div>
-
-<div>{JOBS_LOCATION_FORM}</div>
-</form>
-&nbsp;
-
-<table border="0" cellpadding="0" cellspacing="0" class="stellenliste_table" id="news" style="width: 100%;" summary="">
-	<tbody>
-		<tr class="tablehead">
-			<th class="stellenliste_cell" width="5">{JOBS_ID_TXT}</th>
-			<th class="stellenliste_cell" width="100%">{JOBS_LINK_TXT}</th>
-			<th class="stellenliste_cell" width="40">{JOBS_WORKLOAD_TXT}</th>
-		</tr>
-		<!-- BEGIN row -->
-		<tr class="{JOBS_STYLE}">
-			<td class="stellenliste_cell">{JOBS_ID}</td>
-			<td class="stellenliste_cell">{JOBS_LINK} - <small>{JOBS_DATE}</small></td>
-			<td class="stellenliste_cell">{JOBS_WORKLOAD}</td>
-		</tr>
-		<!-- END row --><!-- BEGIN alternate_row -->
-		<tr class="row2">
-			<td colspan="3">{TXT_NO_DOCUMENTS_FOUND}</td>
-		</tr>
-		<!-- END alternate_row -->
-	</tbody>
-</table>
-
-<div class="paging">{JOBS_PAGING}</div>
+    <form action="index.php" method="get" name="filterform">
+        <input name="section" type="hidden" value="Jobs" />
+        <div class="row jobs-category">
+            <div class="col-md-6">{JOBS_CATEGORY_FORM}</div>
+            <div class="col-md-6">{JOBS_LOCATION_FORM}</div>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table" border="0" cellpadding="0" cellspacing="0" class="stellenliste_table" id="news" style="width: 100%;" summary="">
+            <tbody>
+                <tr class="tablehead">
+                    <th class="stellenliste_cell" width="5">{JOBS_ID_TXT}</th>
+                    <th class="stellenliste_cell" width="100%">{JOBS_LINK_TXT}</th>
+                    <th class="stellenliste_cell" width="40">{JOBS_WORKLOAD_TXT}</th>
+                </tr>
+                <!-- BEGIN row -->
+                <tr class="{JOBS_STYLE}">
+                    <td class="stellenliste_cell">{JOBS_ID}</td>
+                    <td class="stellenliste_cell">{JOBS_LINK} - <small>{JOBS_DATE}</small></td>
+                    <td class="stellenliste_cell">{JOBS_WORKLOAD}</td>
+                </tr>
+                <!-- END row --><!-- BEGIN alternate_row -->
+                <tr class="row2">
+                    <td colspan="3">{TXT_NO_DOCUMENTS_FOUND}</td>
+                </tr>
+                <!-- END alternate_row -->
+            </tbody>
+        </table>
+    </div>
+    <div class="paging">{JOBS_PAGING}</div>
 </div>
 

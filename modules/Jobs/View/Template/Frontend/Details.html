@@ -1,44 +1,46 @@
 <div id='jobs'>
-{JOBS_TEXT}<br />
+    {JOBS_TEXT}<br />
+    <div class="table-responsive">
+        <table class="table">
+            <tr class='active'>
+                <td>
+                    {JOBS_FOOTNOTE}
+                </td>
+            </tr>
+            <tr class='row1'>
+                <td>
+                    {JOBS_FOOTNOTE_LINK}
+                    <br />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <br />
+    <div class="table-responsive">
+        <table class="table">
+            <!-- BEGIN jobs_work -->
+            <tr class='active'><td width='150'>{TXT_JOBS_WORKLOC}:</td><td>{JOBS_WORKLOC}</td></tr>
+            <!-- END jobs_worloc -->
 
-<table>
-<tr class='row2'>
-<td>
-{JOBS_FOOTNOTE}
-</td>
-</tr>
-<tr class='row1'>
-<td>
-{JOBS_FOOTNOTE_LINK}
-<br />
-</td>
-</tr>
-</table>
+            <!-- BEGIN jobs_workload -->
+            <tr class='row1'><td>{TXT_JOBS_WORKLOAD}:</td><td>{JOBS_WORKLOAD}</td></tr>
+            <!-- END jobs_workload -->
 
-<br />
-<br />
-<table>
-    <!-- BEGIN jobs_work -->
-    <tr class='row2'><td width='150'>{TXT_JOBS_WORKLOC}:</td><td>{JOBS_WORKLOC}</td></tr>
-    <!-- END jobs_worloc -->
-    
-    <!-- BEGIN jobs_workload -->
-    <tr class='row1'><td>{TXT_JOBS_WORKLOAD}:</td><td>{JOBS_WORKLOAD}</td></tr>
-    <!-- END jobs_workload -->
-    
-    <!-- BEGIN jobs_work_start -->
-    <tr class='row2'><td>{TXT_JOBS_WORK_START}:</td><td>{JOBS_WORK_START}</td></tr>
-    <!-- END jobs_work_start -->
-</table>
-<br />
-<br />
-
-
-<table> 
-<tr class='row2'><td width='150'>{TXT_JOBS_AUTOR}:</td><td>{JOBS_AUTHOR}</td></tr>
-<tr class='row1'><td >{TXT_JOBS_PUBLISHED_AT}:</td><td>{JOBS_DATE}</td></tr>
-<!-- BEGIN jobs_lastupdate -->
-<tr class='row2'><td>{TXT_JOBS_LASTUPDATE}:</td><td>{JOBS_LASTUPDATE}</td></tr>
-<!-- END jobs_lastupdate -->
-</table>
+            <!-- BEGIN jobs_work_start -->
+            <tr class='active'><td>{TXT_JOBS_WORK_START}:</td><td>{JOBS_WORK_START}</td></tr>
+            <!-- END jobs_work_start -->
+        </table>
+    </div>
+    <br />
+    <br />
+    <div class="table-responsive">
+        <table class="table"> 
+            <tr class='active'><td width='150'>{TXT_JOBS_AUTOR}:</td><td>{JOBS_AUTHOR}</td></tr>
+            <tr class='row1'><td >{TXT_JOBS_PUBLISHED_AT}:</td><td>{JOBS_DATE}</td></tr>
+            <!-- BEGIN jobs_lastupdate -->
+            <tr class='active'><td>{TXT_JOBS_LASTUPDATE}:</td><td>{JOBS_LASTUPDATE}</td></tr>
+            <!-- END jobs_lastupdate -->
+        </table>
+    </div>
 </div>

@@ -1,7 +1,10 @@
 <div id="market">
-	<form name="formEntry" enctype="multipart/form-data" method="post" action="index.php?section=Market&amp;cmd=del">
-		<input type="hidden" name="id" value="{MARKET_ENTRY_ID}" />
-		<div class="message">{TXT_MARKET_CONFIRM_DEL}</div>
-		<div class="form"><input type="submit" name="submitEntry" value="{TXT_MARKET_DEL}" />&nbsp;<input type="button" name="abort" onclick="history.back()" value="{TXT_MARKET_ABORT}" /></div>
-	</form>
+    <form role="form" name="formEntry" enctype="multipart/form-data" method="post" action="index.php?section=Market&amp;cmd=del">
+        <input type="hidden" name="id" value="{MARKET_ENTRY_ID}" />
+        <div class="text-muted message">{TXT_MARKET_CONFIRM_DEL}</div>
+        <div class="form">
+            <input class="btn btn-default" type="submit" name="submitEntry" value="{TXT_MARKET_DEL}" />
+            &nbsp;<input class="btn btn-default" type="button" name="abort" onclick="history.back()" value="{TXT_MARKET_ABORT}" />
+        </div>
+    </form>
 </div>

@@ -1,66 +1,69 @@
 {PODCAST_JAVASCRIPT}
 <div id="podcast">
-	<div class="categories">
-		{PODCAST_CATEGORY_MENU}
-	</div>
-	<!-- BEGIN podcast_no_medium --> 
-	<div class="noMedium">
-		W&auml;hlen Sie ein Medium aus, dass abgespielt werden soll.
-	</div>
-	<!-- END podcast_no_medium -->  
-	<!-- BEGIN podcast_medium -->
-	<div class="showMedium">
-		<h2>{PODCAST_MEDIUM_TITLE}</h2>
-		<div class="player">
-			<div id="podcast_container"><em>Podcast kann nicht angezeigt werden, bitte in externem Player starten</em></div>
-			{PODCAST_MEDIUM_CODE}
-                         <a title="Video in externem Player starten" href="{PODCAST_MEDIUM_URL}">Video in externem Player starten</a>
-		</div>
-		<div class="information">
-			<table cellspacing="0">
-				<tr>
-					<th colspan="2">Informationen</th>
-				</tr>
-				<tr class="row1">
-					<td>Datum</td>
-					<td>{PODCAST_MEDIUM_SHORT_DATE}</td>
-				</tr>
-				<tr class="row2">
-					<td>Spieldauer</td>
-					<td>{PODCAST_MEDIUM_PLAYLENGHT}</td>
-				</tr>
-				<tr class="row1">
-					<td>Autor</td>
-					<td>{PODCAST_MEDIUM_AUTHOR}</td>
-				</tr>
-				<tr class="row2">
-					<td>Beschreibung</td>
-					<td>{PODCAST_MEDIUM_DESCRIPTION}</td>
-				</tr>
-				<tr class="row1">
-					<td>Dateigr&ouml;sse</td>
-					<td>{PODCAST_MEDIUM_FILESIZE}</td>
-				</tr>
-				<tr class="row2">
-					<td>Aufrufe</td>
-					<td>{PODCAST_MEDIUM_VIEWS}</td>
-				</tr>
-			</table>
-		</div>
-	</div>
-        <h2>Weitere Podcasts</h2>
-	<!-- END podcast_medium -->  
-	<!-- BEGIN podcast_media -->
-	<div class="media {PODCAST_MEDIUM_ROW}">
-		<div class="image"><a title="{TXT_PODCAST_PLAY}" href="{NODE_PODCAST}?id={PODCAST_MEDIA_ID}&amp;cid={PODCAST_MEDIA_CATEGORY_ID}"><img border="0" alt="{PODCAST_MEDIA_TITLE}" title="{PODCAST_MEDIA_TITLE}" src="{PODCAST_MEDIA_THUMBNAIL}" name="podcast_thumbnails" /></a></div>
-		<div class="description">
-			<h2>{PODCAST_MEDIA_TITLE}</h2>
-			{PODCAST_MEDIA_DESCRIPTION}
-		</div>
-	</div>
-	<!-- END podcast_media -->
-	<div class="noMedium">
-		{PODCAST_PAGING}
-	</div>
+    <div class="categories">
+        {PODCAST_CATEGORY_MENU}
+    </div>
+    <!-- BEGIN podcast_no_medium --> 
+    <div class="noMedium">
+        W&auml;hlen Sie ein Medium aus, dass abgespielt werden soll.
+    </div>
+    <!-- END podcast_no_medium -->  
+    <!-- BEGIN podcast_medium -->
+    <div class="showMedium">
+        <h2>{PODCAST_MEDIUM_TITLE}</h2>
+        <div class="player">
+            <div id="podcast_container"><em>Podcast kann nicht angezeigt werden, bitte in externem Player starten</em></div>
+            {PODCAST_MEDIUM_CODE}
+            <a title="Video in externem Player starten" href="{PODCAST_MEDIUM_URL}">Video in externem Player starten</a>
+        </div>
+        <div class="information table-responsive">
+            <table class="table" cellspacing="0">
+                <tr>
+                    <th colspan="2">Informationen</th>
+                </tr>
+                <tr class="row1">
+                    <td>Datum</td>
+                    <td>{PODCAST_MEDIUM_SHORT_DATE}</td>
+                </tr>
+                <tr class="row2">
+                    <td>Spieldauer</td>
+                    <td>{PODCAST_MEDIUM_PLAYLENGHT}</td>
+                </tr>
+                <tr class="row1">
+                    <td>Autor</td>
+                    <td>{PODCAST_MEDIUM_AUTHOR}</td>
+                </tr>
+                <tr class="row2">
+                    <td>Beschreibung</td>
+                    <td>{PODCAST_MEDIUM_DESCRIPTION}</td>
+                </tr>
+                <tr class="row1">
+                    <td>Dateigr&ouml;sse</td>
+                    <td>{PODCAST_MEDIUM_FILESIZE}</td>
+                </tr>
+                <tr class="row2">
+                    <td>Aufrufe</td>
+                    <td>{PODCAST_MEDIUM_VIEWS}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <h2>Weitere Podcasts</h2>
+    <!-- END podcast_medium -->  
+    <!-- BEGIN podcast_media -->
+    <div class="container-fluid media {PODCAST_MEDIUM_ROW}">
+        <div class="col-xs-5 col-md-2 col-sm-2 image">
+            <a title="{TXT_PODCAST_PLAY}" href="{NODE_PODCAST}?id={PODCAST_MEDIA_ID}&amp;cid={PODCAST_MEDIA_CATEGORY_ID}">
+                <img border="0" alt="{PODCAST_MEDIA_TITLE}" title="{PODCAST_MEDIA_TITLE}" src="{PODCAST_MEDIA_THUMBNAIL}" name="podcast_thumbnails" />
+            </a></div>
+        <div class="col-xs-10 col-md-10 col-sm-10">
+            <h2>{PODCAST_MEDIA_TITLE}</h2>
+            {PODCAST_MEDIA_DESCRIPTION}
+        </div>
+    </div>
+    <!-- END podcast_media -->
+    <div class="noMedium">
+        {PODCAST_PAGING}
+    </div>
 </div>
 

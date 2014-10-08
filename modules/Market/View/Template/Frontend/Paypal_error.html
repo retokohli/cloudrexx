@@ -1,63 +1,72 @@
 <script type="text/javascript">
 <!--
-function toggle(target){
-    obj = document.getElementById(target);
-    obj.style.display = (obj.style.display=='none') ? 'inline' : 'none';  
-    if (obj.style.display=='none' && target == 'hiddenSearch'){
-         document.getElementById('searchCheck').value = 'norm';
-    }else if(obj.style.display=='inline' && target == 'hiddenSearch'){
-         document.getElementById('searchCheck').value = 'exp';
+    function toggle(target) {
+        obj = document.getElementById(target);
+        obj.style.display = (obj.style.display == 'none') ? 'inline' : 'none';
+        if (obj.style.display == 'none' && target == 'hiddenSearch') {
+            document.getElementById('searchCheck').value = 'norm';
+        } else if (obj.style.display == 'inline' && target == 'hiddenSearch') {
+            document.getElementById('searchCheck').value = 'exp';
+        }
     }
-}
 
-function CheckAGB() {
-   obj1 = document.getElementById('checkAGB');
-   obj2 = document.getElementById('submit');
+    function CheckAGB() {
+        obj1 = document.getElementById('checkAGB');
+        obj2 = document.getElementById('submit');
 
-   obj2.disabled = !obj1.checked;  
-}
--->
-</script>
+        obj2.disabled = !obj1.checked;
+    }
+    --></script>
 <div id="marketSearch">
-	<form action="index.php?" method="get" name="marketSearch" id="marketSearch">
-		<input name="term" value="{TXT_MARKET_SEARCHTERM}" size="25" maxlength="100" /><input type="hidden" id="searchCheck" name="check" value="norm" size="10" /><input type="hidden" name="section" value="Market" size="10" /><input type="hidden" name="cmd" value="search" size="10" />&nbsp;<input type="submit" value="{TXT_MARKET_SEARCH}" name="search" />                  &nbsp;&raquo;&nbsp;<a onclick="javascript:toggle('hiddenSearch')" href="javascript:{}">{TXT_MARKET_SEARCH_EXP}</a><br />
-		<div style="display: none;" id="hiddenSearch"><br />
-		<table width="100%" cellspacing="0" cellpadding="0" border="0">
-			{MARKET_EXP_SEARCH_FIELD}
-		</table>
-		</div>
-	</form>
+    <form role="form" action="index.php?" method="get" name="marketSearch" id="marketSearch">
+        <input class="searchbox" name="term" value="{TXT_MARKET_SEARCHTERM}" size="25" maxlength="100" />
+        <input type="hidden" id="searchCheck" name="check" value="norm" size="10" />
+        <input type="hidden" name="section" value="Market" size="10" />
+        <input type="hidden" name="cmd" value="search" size="10" />
+        &nbsp;<input class="btn btn-default" type="submit" value="{TXT_MARKET_SEARCH}" name="search" />                  
+        <div class="adv-search"> &nbsp;&raquo;&nbsp;<a onclick="javascript:toggle('hiddenSearch')" href="javascript:{}">{TXT_MARKET_SEARCH_EXP}</a></div><br />
+        <div style="display: none;" id="hiddenSearch"><br />
+            <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                {MARKET_EXP_SEARCH_FIELD}
+            </table>
+        </div>
+    </form>
 </div>
-<div id="marketNavtree">
-<a href="index.php?section=Market">{TXT_MARKET}</a> &raquo; <a href="#">PayPal fehlgeschlagen</a>
+<div id="breadcrumb">
+    <a href="index.php?section=Market">{TXT_MARKET}</a> &raquo; <a href="#">PayPal fehlgeschlagen</a>
 </div>
 
 <div id="directoryTitle">
-<h2>{TXT_MARKET_TITLE}</h2>
+    <h2>{TXT_MARKET_TITLE}</h2>
 </div>
 
 <div style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
-{TXT_MARKET_AGB}
+    {TXT_MARKET_AGB}
+</div>
+
+<div class="text-danger" style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
+    {TXT_PAYPAL_ERROR}
 </div>
 
 <div style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
-<font color="red">{TXT_PAYPAL_ERROR}</font>
-</div>
-
-<div style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
-<input type="checkbox" id="checkAGB" onclick="CheckAGB();" name="checkAGB" value="1"/><label for="checkAGB">&nbsp;{TXT_MARKET_CONFIRM}</label>
+    <span class="checkbox">
+        <label for="checkAGB"><input type="checkbox" id="checkAGB" onclick="CheckAGB();" name="checkAGB" value="1"/>{TXT_MARKET_CONFIRM}</label>
+    </span>
 </div>
 
 <!-- BEGIN paypal --> 
 <div style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
-<div style="float: left; width: 25%;"><a href="http://www.paypal.ch" target="_blank" ><img src="/modules/Shop/View/Media/payments/logo_paypal.gif" alt="" border="0" /></a></div>
-<div style="float: left; width: 5%;"><br /></div>
-<div style="float: left; width: 68%;">{MARKET_PAYPAL}</div>
+    <div class="row">
+    <div class="col-md-3"><a href="http://www.paypal.ch" target="_blank" >
+            <img src="/modules/Shop/View/Media/payments/logo_paypal.gif" alt="" border="0" /></a>
+    </div>
+    <div class="col-md-1"><br /></div>
+    <div class="col-md-8">{MARKET_PAYPAL}</div>
 </div>
 <!-- END paypal --> 
 
 <script type="text/javascript">
 <!--
-CheckAGB();
--->
+    CheckAGB();
+    -->
 </script>
