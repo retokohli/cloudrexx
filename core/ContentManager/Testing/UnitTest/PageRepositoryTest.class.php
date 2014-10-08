@@ -25,8 +25,8 @@ namespace Cx\Core\ContentManager\Testing\UnitTest;
  */
 class PageRepositoryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
-    public function testPagesAtPath() {
- 
+    public function testPagesAtPath() {        
+        
         $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
 
@@ -43,9 +43,9 @@ class PageRepositoryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         
         self::$em->persist($n1);
         self::$em->persist($n2);
-        self::$em->persist($n3);
+        self::$em->persist($n3);        
         self::$em->flush();
-
+        
         $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
         $p1->setTitle('rootTitle_1');        
@@ -115,11 +115,13 @@ class PageRepositoryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
         self::$em->flush();
 
-        //make sure we re-fetch a correct state
-        self::$em->clear();
+        //make sure we re-fetch a correct state        
+        self::$em->refresh($n1);
+        self::$em->refresh($n2);
+        self::$em->refresh($n3);
         
         //1 level
-        $match = $pageRepo->getPagesAtPath('/'. \FWLanguage::getLanguageCodeById(1) .'/rootTitle_1');          
+        $match = $pageRepo->getPagesAtPath('/'. \FWLanguage::getLanguageCodeById(1) .'/rootTitle_1');
         $this->assertEquals('rootTitle_1/',$match['matchedPath']);
         $this->assertInstanceOf('Cx\Core\ContentManager\Model\Entity\Page',$match['page'][1]);
         // $this->assertEquals(array(1,2),$match['lang']);
@@ -226,7 +228,7 @@ class PageRepositoryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         self::$em->flush();
         
         //make sure we re-fetch a correct state
-        self::$em->clear();
+        self::$em->refresh($n1);
         
         //test correct fetching
         $pages = $pageRepo->getFromModuleCmdByLang('myModule');
@@ -294,7 +296,7 @@ class PageRepositoryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         
         $pageId = $p2->getId();
         
-        \Env::em()->clear();
+        \Env::em()->refresh($n1);
 
         //make sure we re-fetch a correct state
         self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->verify();

@@ -49,6 +49,7 @@ class NodeTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $p1->setUseCustomApplicationTemplateForAllChannels('');
         $p1->setUseSkinForAllChannels('');
         $p1->setCmd('');
+        $p1->setActive(1);
 
         $p2->setLang(2);
         $p2->setTitle('testpage2');
@@ -57,16 +58,16 @@ class NodeTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $p2->setUseCustomApplicationTemplateForAllChannels('');
         $p2->setUseSkinForAllChannels('');
         $p2->setCmd('');
+        $p2->setActive(1);
 
         self::$em->persist($node);
         self::$em->persist($p1);
         self::$em->persist($p2);
 
         self::$em->flush();
+        self::$em->refresh($node); // Refreshes the state of the given entity from the database, overwriting local changes.
 
         $id = $p1->getId();
-
-        self::$em->clear();
 
         $r = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $p = $r->find($id);
