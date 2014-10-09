@@ -100,6 +100,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateServiceServerSetup' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'destroyWebsite'        => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'executeOnWebsite'      => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'executeOnManager'      => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'generateAuthToken'     => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'executeSql'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkExecuteSqlAccess')),
             'removeUser'            => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
@@ -1339,6 +1340,41 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword'),
         );
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+    }
+
+    public function executeOnManager($params) {
+        if (empty($params['post']['command'])) {
+            \DBG::dump($params);
+            throw new MultiSiteJsonException('JsonMultiSite::executeOnManager() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient arguments supplied: '.var_export($params, true));
+        }
+
+        $passedParams = !empty($params['post']['params']) ? $params['post']['params'] : null;
+        
+        try {
+            // special case for updateUser
+            if ($params['post']['command'] == 'updateUser') {
+                $authenticationValue = json_decode($params['post']['auth'], true);
+                if (empty($authenticationValue) || !is_array($authenticationValue)) {
+                    throw new MultiSiteJsonException(__METHOD__.': Insufficient mapping information supplied.');
+                }
+                $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+                $domain     = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
+                if (!$domain || !$domain->getWebsite()) {
+                    throw new MultiSiteJsonException(__METHOD__.': Unknown website sender');
+                }
+                $ownerId = $domain->getWebsite()->getOwner()->getId();
+                $passedParams['userId'] = $ownerId;
+            }
+
+            $resp = self::executeCommandOnManager($params['post']['command'], $passedParams);
+            if ($resp && $resp->status == 'success') {
+                return $resp->data;
+            } else {
+                throw new MultiSiteJsonException(var_export($resp, true));
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::executeOnManager() failed: ' . $e->getMessage());
+        }
     }
 
     public function executeOnWebsite($params) {
