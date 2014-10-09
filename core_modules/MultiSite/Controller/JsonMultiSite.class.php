@@ -1157,7 +1157,23 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $license->setIsUpgradable($params['post']['isUpgradable']);
                     }
                     try {
+                        //First to initialise all the config settings to update license settings
+                        \Cx\Core\Config\Controller\Config::init();
                         $license->save($objDatabase);
+                        //Remove the following config values from yml file only if the SystemInfo is not licensed.
+                        if (!in_array('SystemInfo', $license->getLicense()->getLegalComponentsList())) {
+                            \Cx\Core\Setting\Controller\Setting::delete('dnsServer', 'administrationArea');
+                            \Cx\Core\Setting\Controller\Setting::delete('useCustomizings', 'otherConfigurations');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheEnabled', 'cache');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheExpiration', 'cache');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheOpStatus', 'cache');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheDbStatus', 'cache');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheVarnishStatus', 'cache');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheUserCache', 'cache');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheOPCache', 'cache');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheProxyCacheVarnishConfig', 'cache');
+                            \Cx\Core\Setting\Controller\Setting::delete('cacheUserCacheMemcacheConfig', 'cache');
+                        }
                         return array(
                             'status' => 'success',
                             'log'    => \DBG::getMemoryLogs(),
@@ -1481,8 +1497,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'message'   => "Failed to add Setting entry for contactFormEmail",
             ));
         }
-        \Cx\Core\Config\Controller\Config::init();
-
+       
         // we must re-initialize the original MultiSite settings of the main installation
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
         return array(
