@@ -2153,9 +2153,9 @@ class GalleryManager extends GalleryLibrary
             // the value shouldn't be above 100 otherwise the image becomes larger
             $_POST['quality'] = 95;
         }
-        if (intval($_POST['standard_quality']) > 100 || intval($_POST['standard_quality']) <= 0) {
-            // the value shouldn't be above 95 otherwise the image becomes larger
-            $_POST['standard_quality'] = 95;
+        if (intval($_POST['standard_quality']) > 9 || intval($_POST['standard_quality']) <= 0) {
+            // the value shouldn't be above 0 otherwise the image is too bad
+            $_POST['standard_quality'] = 0;
         }
 // neu
         if ($_POST['show_ext'] != 'on') {
@@ -2510,7 +2510,7 @@ class GalleryManager extends GalleryLibrary
 
                 $this->_objTpl->setCurrentBlock('showThumbQuality');
                 $boolCheckerThumbFileQuality = false;
-                for ($i = 5; $i <= 100; $i=$i+5)
+                for ($i = 0; $i <= 9; $i++)
                 {
                     $this->_objTpl->setVariable('THUMB_QUALITY_VALUE',$i);
                     if ($i >= $objResult->fields['quality'] && !$boolCheckerThumbFileQuality) {
@@ -2658,7 +2658,7 @@ class GalleryManager extends GalleryLibrary
                 // here start the quality-dropdown
                 $this->_objTpl->setCurrentBlock('showThumbQuality');
 
-                for ($i = 5; $i <= 100; $i=$i+5)
+                for ($i = 0; $i <= 9; $i++)
                 {
                     $this->_objTpl->setVariable('THUMB_QUALITY_VALUE',$i);
                     if ($i >= $this->arrSettings['standard_quality'] && !$boolCheckerThumbFileQuality)
