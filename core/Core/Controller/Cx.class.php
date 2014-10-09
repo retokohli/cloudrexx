@@ -917,7 +917,6 @@ namespace Cx\Core\Core\Controller {
             if (!class_exists('Env', false)) {
                 require_once($this->cl->getFilePath($this->codeBaseCorePath . '/Env.class.php'));
             }
-            \Env::set('cx', $this);
             \Env::set('ClassLoader', $this->cl);            
             \Env::set('config', $_CONFIG);
             \Env::set('ftpConfig', $_FTPCONFIG);
@@ -1112,7 +1111,6 @@ namespace Cx\Core\Core\Controller {
             \Env::set('db', $objDatabase);
 
             $em = $this->db->getEntityManager();
-            \Env::set('em', $em);
             \Env::set('pageguard', new \PageGuard($this->db->getAdoDb()));
 
             \DBG::set_adodb_debug_mode();
