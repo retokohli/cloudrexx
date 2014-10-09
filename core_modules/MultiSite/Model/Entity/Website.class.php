@@ -150,12 +150,12 @@ class Website extends \Cx\Model\Base\EntityBase {
                 if(!$resp || $resp->status == 'error'){
                     $errMsg = isset($resp->message) ? $resp->message : '';
                     if (isset($resp->log)) {
-                        \DBG::appendLogsToMemory($resp->log);
+                        \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->log));
                     }
                     throw new WebsiteException('Unable to fetch defaultWebsiteIp from Service Server: '.$errMsg);    
                 }
-                if (isset($resp->log)) {
-                    \DBG::appendLogsToMemory($resp->log);
+                if (isset($resp->data->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->data->log));
                 }
                 $this->ipAddress = $resp->data->defaultWebsiteIp;
                 break;
@@ -487,12 +487,12 @@ class Website extends \Cx\Model\Base\EntityBase {
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 \DBG::dump($errMsg);
                 if (isset($resp->log)) {
-                    \DBG::appendLogsToMemory($resp->log);
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->log));
                 }
                 throw new WebsiteException('Problem in creating website owner '.$errMsg);    
             }
-            if (isset($resp->log)) {
-                \DBG::appendLogsToMemory($resp->log);
+            if (isset($resp->data->log)) {
+                \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->data->log));
             }
             //create website in website service server
             $params = array(
@@ -507,12 +507,12 @@ class Website extends \Cx\Model\Base\EntityBase {
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 \DBG::dump($errMsg);
                 if (isset($resp->log)) {
-                    \DBG::appendLogsToMemory($resp->log);
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->log));
                 }
                 throw new WebsiteException('Problem in creating website '.$errMsg);    
             }
-            if (isset($resp->log)) {
-                \DBG::appendLogsToMemory($resp->log);
+            if (isset($resp->data->log)) {
+                \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->data->log));
             }
             $this->ipAddress = $resp->data->websiteIp;
             $this->codeBase  = $resp->data->codeBase;
@@ -690,7 +690,8 @@ class Website extends \Cx\Model\Base\EntityBase {
             'websiteIp'   => $websiteIp,
             'codeBase'    => $this->codeBase,
             'state'       => $this->status,
-            'ftpPassword' => $ftpAccountPassword
+            'ftpPassword' => $ftpAccountPassword,
+            'log'         => \DBG::getMemoryLogs(),
         );
     }
     
@@ -844,18 +845,17 @@ class Website extends \Cx\Model\Base\EntityBase {
     }
 
     protected function initializeConfig($websiteName) {
-        
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', array(), $this);
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 if (isset($resp->log)) {
-                    \DBG::appendLogsToMemory($resp->log);
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->log));
                 }
                 throw new WebsiteException($errMsg);    
             }
-            if (isset($resp->log)) {
-                \DBG::appendLogsToMemory($resp->log);
+            if (isset($resp->data->log)) {
+                \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
             }
         } catch (\Exception $e) {
             throw new WebsiteException('Unable to setup config Config.yml on Website: '.$e->getMessage());    
@@ -974,7 +974,11 @@ class Website extends \Cx\Model\Base\EntityBase {
             $errMsg = isset($resp->message) ? $resp->message : '';
             \DBG::dump($resp);
             \DBG::msg($errMsg);
+            \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->log));
             throw new WebsiteException('Unable to create admin user account.');
+        }
+        if (isset($resp->data->log)) {
+            \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
         }
     }
 
@@ -1010,9 +1014,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     if (!$resp || $resp->status == 'error') {
                         $errMsg = isset($resp->message) ? $resp->message : '';
                         if (isset($resp->log)) {
-                            \DBG::appendLogsToMemory($resp->log);
+                            \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$websiteServiceServer->getLabel().') '.$logEntry;}, $resp->log));
                         }
                         throw new WebsiteException('Unable to delete the website: ' . $errMsg);
+                    }
+                    if (isset($resp->data->log)) {
+                        \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$websiteServiceServer->getName().') '.$logEntry;}, $resp->data->log));
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
@@ -1360,8 +1367,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
             try {
                 $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $params, $this);
                 if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                    if (isset($resp->data->log)) {
+                        \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
+                    }
                     return true;
                 } else {
+                    if (isset($resp->log)) {
+                        \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->log));
+                    }
                     throw new WebsiteException('Unable to setup license: Error in setup license in Website');
                 }
             } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
@@ -1378,8 +1391,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setDefaultLanguage', array('langId' => $this->language), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                if (isset($resp->data->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
+                }
                 return true;
             } else {
+                if (isset($resp->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->log));
+                }
                 throw new WebsiteException('Unable to initialize the language: Error in initializing language in Website');
             }
         } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
@@ -1399,8 +1418,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
             
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setWebsiteTheme', array('themeId' => $websiteThemeId), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                if (isset($resp->data->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
+                }
                 return true;
             } else {
+                if (isset($resp->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->log));
+                }
                 throw new WebsiteException('Unable to setup the theme: Error in setting theme in Website');
             }
         } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
@@ -1458,8 +1483,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('generateAuthToken', array(), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                if (isset($resp->data->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
+                }
                 return array($resp->data->userId, $resp->data->authToken);
             } else {
+                if (isset($resp->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->log));
+                }
                 throw new WebsiteException('Command generateAuthToken failed');
             }
         } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
@@ -1483,8 +1514,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('updateUser', $params);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                if (isset($resp->data->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Manager) '.$logEntry;}, $resp->data->log));
+                }
                 return $newPassword;
             } else {
+                if (isset($resp->log)) {
+                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Manager) '.$logEntry;}, $resp->log));
+                }
                 throw new WebsiteException('Unable to generate account password: Error in generate account password');
             }
         } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {

@@ -196,7 +196,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+            if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+                \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+            }
+            if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+                \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+            }
         }
 
         // Validate address and email before starting with the actual sign up process.
@@ -365,8 +370,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     */
     public function createWebsite($params) {
         if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+            if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+                \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+            }
+            if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+                \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+            }
         }
+
 
 // TODO: what do we actually need the language data for? We should load the language data at the certain place where it is actually being used
         $this->loadLanguageData('MultiSite');
@@ -398,7 +409,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return $objWebsite->setup($params['post']['options']);
         } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
             throw new MultiSiteJsonException(array(
-                'log'      => \DBG::getMemoryLogs(),
+                'log'       => \DBG::getMemoryLogs(),
                 'message'   => $e->getMessage(),
             ));
         }
@@ -406,6 +417,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
     public function createUser($params) {
         if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+            if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+                \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+            }
             if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
                 \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
             }
@@ -434,7 +448,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException($objUser->getErrorMsg());
             } else {
                 \DBG::msg('User successfully created');
-                return array('userId' => $objUser->getId());
+                return array(
+                    'userId'=> $objUser->getId(),
+                    'log'   => \DBG::getMemoryLogs(),
+                );
             }
         } catch (\Exception $e) {
             throw new MultiSiteJsonException(array(
@@ -471,6 +488,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         'object'    => 'form',
                         'type'      => 'danger',
                         'message'   => 'Unknown user account',
+                        'log'       => \DBG::getMemoryLogs(),
                     ));
                 }
                 break;
@@ -482,6 +500,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         'object'    => 'form',
                         'type'      => 'danger',
                         'message'   => 'Unknown user account',
+                        'log'       => \DBG::getMemoryLogs(),
                     ));
                 }
                 break;
@@ -529,6 +548,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     'object'    => 'password',
                     'type'      => 'danger',
                     'message'   => join("\n", $objUser->getErrorMsg()),
+                    'log'       => \DBG::getMemoryLogs(),
                 ));
             }
         }
@@ -539,12 +559,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'object'    => 'form',
                 'type'      => 'danger',
                 'message'   => join("\n", $objUser->getErrorMsg()),
+                'log'       => \DBG::getMemoryLogs(),
             ));
         }
                 
         \DBG::msg("JsonMultiSite (updateUser): User {$objUser->getId()} successfully updated.");
-        return array('status' => 'success');
-    } 
+        return array(
+            'status'    => 'success',
+            'log'       => \DBG::getMemoryLogs(),
+        );
+    }
 
     /**
      * Update the user account of the signed-in user
@@ -1083,6 +1107,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function setLicense($params) {
         global $objDatabase;
+
+        // activate memory-log for website mode by default
+        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+        }
+        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
         
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
@@ -1091,7 +1123,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $website = $webRepo->findOneById($params['post']['websiteId']);
                     $resp = self::executeCommandOnWebsite('setLicense', array('legalComponents' => $params['post']['legalComponents']), $website);                   
                     if ($resp && $resp->data->status == 'success') {
-                        return array('status' => 'success');
+                        return array(
+                            'status' => 'success',
+                            'log'    => \DBG::getMemoryLogs(),
+                        );
                     }
                     break;
                 case ComponentController::MODE_WEBSITE:
@@ -1121,15 +1156,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     try {
                         $license->save($objDatabase);
-                        return array('status' => 'success');
+                        return array(
+                            'status' => 'success',
+                            'log'    => \DBG::getMemoryLogs(),
+                        );
                     } catch (\Exception $e) {
                         throw new MultiSiteJsonException('Unable to save the setup license'.$e->getMessage());
                     }
                     break;
             }
-            return array('status' => 'error');
+            return array(
+                'status' => 'error',
+                'log'    => \DBG::getMemoryLogs(),
+            );
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('Unable to setup license: '.$e->getMessage());
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => 'Unable to setup license: '.$e->getMessage(),
+            ));
         }
     }
 
@@ -1324,6 +1368,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     public function generateAuthToken($params) {
+        // activate memory-log for website mode by default
+        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+        }
+        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
+
         try {
             $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
             $objUser = \FWUser::getFWUserObject()->objUser->getUser(intval($websiteUserId));
@@ -1339,9 +1391,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'status'    => 'success',
                 'userId'    => $websiteUserId,
                 'authToken' => $authToken,
+                'log'       => \DBG::getMemoryLogs(),
             );
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::generateAuthToken() failed: ' . $e->getMessage());
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => 'JsonMultiSite::generateAuthToken() failed: ' . $e->getMessage(),
+            ));
         }
     }
     
@@ -1350,29 +1406,52 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function setupConfig() {
         global $_CONFIG;
+
+        // activate memory-log for website mode by default
+        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+        }
+        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
         
         \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('installationId')
                 && !\Cx\Core\Setting\Controller\Setting::add('installationId', $_CONFIG['installationId'], 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')) {
-            throw new MultiSiteJsonException("Failed to add Setting entry for installationId");
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => "Failed to add Setting entry for installationId",
+            ));
         }
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc') 
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', $_CONFIG['dashboardNewsSrc'], 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')) {
-            throw new MultiSiteJsonException("Failed to add Setting entry for dashboardNewsSrc");
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => "Failed to add Setting entry for dashboardNewsSrc",
+            ));
         }
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreAdminEmail') 
                 && !\Cx\Core\Setting\Controller\Setting::add('coreAdminEmail', $_CONFIG['coreAdminEmail'], 3, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')) {
-            throw new MultiSiteJsonException("Failed to add Setting entry for coreAdminEmail");
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => "Failed to add Setting entry for coreAdminEmail",
+            ));
         }
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactFormEmail') 
                 && !\Cx\Core\Setting\Controller\Setting::add('contactFormEmail', $_CONFIG['contactFormEmail'], 4, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')) {
-            throw new MultiSiteJsonException("Failed to add Setting entry for contactFormEmail");
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => "Failed to add Setting entry for contactFormEmail",
+            ));
         }
         \Cx\Core\Config\Controller\Config::init();
 
         // we must re-initialize the original MultiSite settings of the main installation
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
-        return array('status' => 'success');
+        return array(
+            'status' => 'success',
+            'log'    => \DBG::getMemoryLogs(),
+        );
     }
 
     public function getDefaultWebsiteIp() {
@@ -1383,6 +1462,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return array(
             'status'            => 'success',
             'defaultWebsiteIp'  => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp'),
+            'log'               => \DBG::getMemoryLogs(),
         );
     }
     
@@ -1397,6 +1477,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function setDefaultLanguage($params) {
         global $objDatabase;
+
+        // activate memory-log for website mode by default
+        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+        }
+        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
         
         if (empty($params['post']['langId'])) {
             throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: No language specified.');
@@ -1418,11 +1506,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $activateQuery = \SQL::update('languages', array('backend' => 1, 'frontend' => 1, 'is_default' => 'true'), array('escape' => true)) . ' WHERE `id` = ' . $params['post']['langId'];
             
             if ($objDatabase->Execute($deactivateQuery) !== false && $objDatabase->Execute($activateQuery) !== false) {
-                return array('status' => 'success');
+                return array(
+                    'status' => 'success',
+                    'log'    => \DBG::getMemoryLogs(),
+                );
             }
             
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: Updating Language status.' . $e->getMessage());
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => 'JsonMultiSite::setDefaultLanguage() failed: Updating Language status.' . $e->getMessage(),
+            ));
         }
     }
     
@@ -1465,7 +1559,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_WEBSITE:
                     $response = self::executeCommandOnMyServiceServer('resetFtpPassword', array());
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_MSG'], 'password' => $response->data->password);
+                        return array(
+                            'status'    => 'success',
+                            'message'   => $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_MSG'],
+                            'password'  => $response->data->password,
+                            'log'       => \DBG::getMemoryLogs(),
+                        );
                     }
                     break;
                 case ComponentController::MODE_SERVICE:
@@ -1490,7 +1589,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                     $password = \User::make_password(8, true);
                     if ($hostingController->changeFtpAccountPassword($website->getName(), $password)) {
-                        return array('status' => 'success', 'password' => $password);
+                        return array(
+                            'status'    => 'success',
+                            'password'  => $password,
+                            'log'       => \DBG::getMemoryLogs(),
+                        );
                     }
                     break;
             }
@@ -1584,17 +1687,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $website  = $webRepo->findOneById($params['post']['websiteId']);
             if (!$website) {
                 return array(
-                    'status' => 'success'
+                    'status'    => 'success',
+                    'log'       => \DBG::getMemoryLogs(),
                 );            
             }
             $website->destroy();
             \Env::get('em')->remove($website);
             \Env::get('em')->flush();
             return array(
-                'status' => 'success'
+                'status'    => 'success',
+                'log'       => \DBG::getMemoryLogs(),
             );
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website.' . $e->getMessage());
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => 'JsonMultiSite (destroyWebsite): failed to destroy the website.' . $e->getMessage(),
+            ));
         }
     }
 
@@ -1609,6 +1717,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function setWebsiteTheme($params) {
         global $objDatabase;
+
+        // activate memory-log for website mode by default
+        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+        }
+        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
         
         if (empty($params['post']['themeId'])) {
             throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme due to the empty param $themeId');
@@ -1626,10 +1742,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                                 . 'SET `themesid` = ' . intval($params['post']['themeId']) . ', `mobile_themes_id` = ' . intval($params['post']['themeId'])
                                                 . ' WHERE id = ' . intval($langId));
             if ($objResult !== false) {
-                return array('status' => 'success');
+                return array(
+                    'status'    => 'success',
+                    'log'       => \DBG::getMemoryLogs(),
+                );
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme.' . $e->getMessage());
+            throw new MultiSiteJsonException(array(
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => 'JsonMultiSite (setWebsiteTheme): failed to set the website theme.' . $e->getMessage(),
+            ));
         }
     }
     
@@ -1705,13 +1827,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                 $website = $websiteRepository->findBy(array('ownerId' => $params['post']['userId']));
                 if (!$website) {
-                   $objFWUser = \FWUser::getFWUserObject();
-                   $objUser = $objFWUser->objUser->getUser($params['post']['userId']);
-                   if ($objUser->delete()) {
-                       return array('status' => 'success');
-                   }
+                    $objFWUser = \FWUser::getFWUserObject();
+                    $objUser = $objFWUser->objUser->getUser($params['post']['userId']);
+                    if ($objUser->delete()) {
+                        return array(
+                            'status'    => 'success',
+                            'log'       => \DBG::getMemoryLogs(),
+                        );
+                    }
                 }
-                return array('status' => 'error');
+                return array(
+                    'status'    => 'error',
+                    'log'       => \DBG::getMemoryLogs(),
+                );
                 break;
             default:
                 break;
