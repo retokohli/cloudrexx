@@ -1,20 +1,21 @@
 <div class="ecardContainer">
-  <fieldset>
-    <legend>{TXT_ECARD_LOOKS_LIKE}</legend>
-    <div class="ecardPreviewData">{ECARD_DATA}</div>
-    <div class="ecardPreviewMotive">{ECARD_MOTIVE}</div>
-    <div class="ecardPreviewMessage">{ECARD_MESSAGE}</div>
-    <form id="ecardSend" name="ecardSend" action="index.php?section=Ecard&amp;cmd=send" method="post">
-      <input type="hidden" name="ecardMessage" value="{ECARD_MESSAGE}" />
-      <input type="hidden" name="ecardSenderName" value="{ECARD_SENDER_NAME}" />
-      <input type="hidden" name="ecardSenderEmail" value="{ECARD_SENDER_EMAIL}" />
-      <input type="hidden" name="ecardRecipientName" value="{ECARD_RECIPIENT_NAME}" />
-      <input type="hidden" name="ecardRecipientEmail" value="{ECARD_RECIPIENT_EMAIL}" />
-      <input type="hidden" name="ecardRecipientSalutation" value="{ECARD_RECIPIENT_SALUTATION}" />
-      <input type="hidden" name="selectedEcard" value="{ECARD_MOTIVE_ID}" />
-      <input type="button" value="{TXT_ECARD_EDIT}" onclick="document.getElementById('ecardSend').action='index.php?section=Ecard'; document.ecardSend.submit()" />
-      <input type="submit" value="{TXT_ECARD_SEND}" />
-    </form>
-  </fieldset>
+    <fieldset>
+        <legend>{TXT_ECARD_LOOKS_LIKE}</legend>
+        <div class="ecardPreviewData">{ECARD_DATA}</div>
+        <div class="ecardPreviewMotive">{ECARD_MOTIVE}</div>
+        <div class="ecardPreviewMessage text-muted">{ECARD_MESSAGE}</div>
+        <form id="ecardSend" name="ecardSend" action="index.php?section=Ecard&amp;cmd=send" method="post">
+            <input type="hidden" name="ecardMessage" value="{ECARD_MESSAGE}" />
+            <input type="hidden" name="ecardSenderName" value="{ECARD_SENDER_NAME}" />
+            <input type="hidden" name="ecardSenderEmail" value="{ECARD_SENDER_EMAIL}" />
+            <input type="hidden" name="ecardRecipientName" value="{ECARD_RECIPIENT_NAME}" />
+            <input type="hidden" name="ecardRecipientEmail" value="{ECARD_RECIPIENT_EMAIL}" />
+            <input type="hidden" name="ecardRecipientSalutation" value="{ECARD_RECIPIENT_SALUTATION}" />
+            <input type="hidden" name="selectedEcard" value="{ECARD_MOTIVE_ID}" />
+            <input type="button" class="btn btn-default" value="{TXT_ECARD_EDIT}" onclick="document.getElementById('ecardSend').action = 'index.php?section=Ecard';
+              document.ecardSend.submit()" />
+          <input type="submit" class="btn btn-default" value="{TXT_ECARD_SEND}" />
+        </form>
+    </fieldset>
 </div>
 

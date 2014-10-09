@@ -639,8 +639,8 @@ form[name="registrationForm"] .row {
     margin: 0px 0px 0px 0px;
 }
 #podcast div.image img {
-   width: 100% !important;
-   height: auto !important;
+    width: 100% !important;
+    height: auto !important;
 }
 #podcast div.description {
     padding: 0px 0px 0px 0px;
@@ -1586,18 +1586,25 @@ form[name="registrationForm"] .row {
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
-.ecardColumn1 {
-    float:left;
-    width:33%;
+#charCounter {
+    width: 100% !important;
+    margin-bottom: 10px;
 }
-.ecardColumn2 {
-    float:left;
-    width:33%;
+.ecardColumn1, .ecardPreviewMessage, .ecardPreviewData, .livecamSearch input {
+    margin-bottom: 10px;
 }
-.ecardColumn3 {
-    float:left;
-    width:33%;
+/***************************************************/
+/* CSS DEFINITIONS FOR LIVECAM MODULE               */
+/***************************************************/
+.livecamSearch {
+    position: relative;
+    white-space: nowrap;
 }
+#livecam a img {
+    width: 90%;
+    height: auto;
+}
+.cam-error {float: left;width: 100%;}
 /***************************************************/
 /* CSS DEFINITIONS FOR NEWS MODULE                 */
 /***************************************************/
@@ -3066,6 +3073,10 @@ input[type="checkbox"] {
     height: auto;
 }
 /*survey*/
+.questionBlock_button input[type="reset"] {
+    float: left;
+    margin-left: 0 !important;
+}
 .questionBlock {
     width: 100%;
     float: left;
