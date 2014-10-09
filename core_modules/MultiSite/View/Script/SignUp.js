@@ -96,7 +96,7 @@
     }
 
     function verifyInput(domElement, data) {
-        jQuery(domElement).data('isvalid', '');
+        jQuery(domElement).data('server-msg', '');
         $("#multisite_signup_form").data('bootstrapValidator').validateField('multisite_address');
         jQuery(domElement).data('valid', false);
         jQuery(domElement).prop('disabled', true);
@@ -120,9 +120,10 @@
     function submitForm() {
         try {
             $("#multisite_signup_form").data('bootstrapValidator').validate();
-            if (!isFormValid()) {
+            if (!isFormValid() || !$("#multisite_signup_form").data('bootstrapValidator').isValid()) {
                 return;
             }
+
             setFormButtonState('submit', false);
 
             if (submitRequested) {
@@ -203,10 +204,7 @@
 
             // fetch verification state of form element
             if (response.status == 'success') {
-                console.log(jQuery(objCaller).data('isvalid'));
-                jQuery(objCaller).data('isvalid', true);
-
-                console.log(jQuery(objCaller).data('isvalid'));
+                jQuery(objCaller).data('server-msg', '');
                 jQuery(objCaller).data('valid', true);
 
                 $("#multisite_signup_form").data('bootstrapValidator').revalidateField(jQuery(objCaller).attr('name'));
@@ -218,9 +216,7 @@
                     message = typeof(response.message.message) != null ? response.message.message : null;
                     type = typeof(response.message.type) != null ? response.message.type : null;
                 }
-                console.log('Finished Loading');
-                console.log(message);
-                jQuery(objCaller).data('isvalid', message);
+                jQuery(objCaller).data('server-msg', message);
             }
 
             $("#multisite_signup_form").data('bootstrapValidator').revalidateField(jQuery(objCaller).attr('name'));

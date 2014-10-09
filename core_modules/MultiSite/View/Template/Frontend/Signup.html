@@ -31,8 +31,8 @@ var validateAdress = function (value, validator, $field) {
     if (!value.match(/^[a-z0-9]+$/)) {
         message +=  'Im Domainnamen dürfen nur Kleinbuchstaben und Zahlen vorkommen.';
     }
-    if (jQuery($field).data('isvalid') != true && jQuery($field).data('isvalid')){
-        message +=   jQuery($field).data('isvalid') ;
+    if (jQuery($field).data('server-msg') != true && jQuery($field).data('server-msg')){
+        message +=   jQuery($field).data('server-msg') ;
     }
     if (message != ''){
         return {
@@ -45,10 +45,9 @@ var validateAdress = function (value, validator, $field) {
 
 var validateEmail = function (value, validator, $field) {
     var message = '';
-    if (jQuery($field).data('isvalid') !== true && jQuery($field).data('isvalid')){
-        message +=  jQuery($field).data('isvalid') ;
+    if (jQuery($field).data('server-msg') !== true && jQuery($field).data('server-msg')){
+        message +=  jQuery($field).data('server-msg') ;
     }
-    console.log(message);
     if (message != ''){
         return {
             valid: false,
