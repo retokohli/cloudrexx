@@ -93,7 +93,6 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
     }
     
     public function preRemove($eventArgs) {
-        
         \DBG::msg('MultiSite (WebsiteEventListener): preRemove');
         $website = $eventArgs->getEntity();
         
