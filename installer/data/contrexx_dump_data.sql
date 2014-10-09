@@ -5981,9 +5981,9 @@ INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (2,'image_c
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (3,'image_scale_width','800');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (4,'image_scale_height','800');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (5,'image_compression','100');
-INSERT INTO `contrexx_settings_thumbnail` (`id`, `name`, `size`) VALUES (1,'small',100);
+INSERT INTO `contrexx_settings_thumbnail` (`id`, `name`, `size`) VALUES (1,'thumbnail',150);
 INSERT INTO `contrexx_settings_thumbnail` (`id`, `name`, `size`) VALUES (2,'medium',300);
-INSERT INTO `contrexx_settings_thumbnail` (`id`, `name`, `size`) VALUES (3,'big',600);
+INSERT INTO `contrexx_settings_thumbnail` (`id`, `name`, `size`) VALUES (3,'large',640);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (1,'standard','standard_4_0',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (2,'mobile','mobile_3_0',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (4,'print','print_3_0',1);
