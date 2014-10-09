@@ -79,7 +79,6 @@
         }
         else {
             jQuery(objAddress).trigger('change');
-            $("#multisite_signup_form").data('bootstrapValidator').validate('multisite_address');
         }
     }
 
