@@ -2324,9 +2324,11 @@ class User extends User_Profile
      * This will set the attribute verified of this object either
      * to TRUE or FALSE, depending of $verified.
      * @param   boolean   $verified
+     * @return  boolean   TRUE
      */
     public function setVerification($verified) {
         $this->verified = $verified;
+        return true;
     }
 
     /**
