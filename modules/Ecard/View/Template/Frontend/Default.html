@@ -1,60 +1,69 @@
 <div class="ecardContainer">
-  <form id="ecardForm" method="post" onsubmit="return checkInput();" action="index.php?section=Ecard&amp;cmd=preview">
-    <fieldset id="motiveFieldset">
-      <legend>{TXT_ECARD_CHOOSE_IMAGE}</legend>
-<!-- BEGIN motiveBlock -->
-<!-- BEGIN motiveRow -->
-      <div class="ecardColumn{ECARD_CSSNUMBER}">
-        <label>
-          <img src="{ECARD_THUMBNAIL_PATH}" alt="{ECARD_THUMBNAIL_PATH}" />
-          <a rel="shadowbox" href="{ECARD_MOTIVE_OPTIMIZED_PATH}">
-            <img style="border:0px;" src="modules/Ecard/View/Media/zoom.gif" alt="zoom" title="{ECARD_MOTIVE_OPTIMIZED_PATH}" />
-          </a>
-          <input type="radio" style="width: 20px; height: 13px;" name="selectedEcard" 
-              value="{ECARD_MOTIVE_ID}"{ECARD_IMAGE_SELECTED} />
-        </label>
-      </div>
-<!-- END motiveRow -->
-<!-- END motiveBlock -->
-    </fieldset>
-    <fieldset>
-      <legend>{TXT_ECARD_ENTER_RECIPIENT_INFO}</legend>
-      <p>
-      <label class="fieldDescription" id="fieldDescription_salutation">{TXT_ECARD_RECIPIENT_TITLE}</label>
-      <input type="radio" name="ecardRecipientSalutation" id="ecardRecipientSalutation" 
-          value="{TXT_ECARD_TITLE_MALE}"{ECARD_SALUTATION_SELECTED_MALE} />{TXT_ECARD_TITLE_MALE}</p>
-      <p>
-      <input type="radio" name="ecardRecipientSalutation" id="ecardRecipientSalutation" 
-          value="{TXT_ECARD_TITLE_FEMALE}"{ECARD_SALUTATION_SELECTED_FEMALE} />{TXT_ECARD_TITLE_FEMALE}</p>
-      <p>
-      <label class="fieldDescription">{TXT_ECARD_RECIPIENT_NAME}</label>
-      <input type="text" name="ecardRecipientName" id="ecardRecipientName" value="{ECARD_RECIPIENTNAME}" />
-      </p>
-      <p>
-      <label class="fieldDescription">{TXT_ECARD_RECIPIENT_EMAIL}</label>
-      <input type="text" name="ecardRecipientEmail" id="ecardRecipientEmail" value="{ECARD_RECIPIENTEMAIL}" />
-      </p>
-      <p>
-      <label class="fieldDescription">{TXT_ECARD_SENDER_NAME}</label>
-      <input type="text" name="ecardSenderName" id="ecardSenderName" value="{ECARD_SENDERNAME}" />
-      </p>
-      <p>
-      <label class="fieldDescription">{TXT_ECARD_SENDER_EMAIL}</label>
-      <input type="text" name="ecardSenderEmail" id="ecardSenderEmail" value="{ECARD_SENDEREMAIL}" />
-      </p>
-      <p>
-      <label>{TXT_ECARD_ENTER_MESSAGE}</label>
-      <textarea onkeypressed="checkAllFields();" onkeyup="checkAllFields();" name="ecardMessage" id="ecardMessage" cols="68" rows="6">{ECARD_MESSAGE}</textarea>
-      </p>
-      <p>
-      {TXT_ECARD_NUMBER_OF_CHARACTERS_LEFT}
-      </p>
-      <!--p>{TXT_ECARD_NUMBER_OF_LINES_LEFT}</p-->
-      <p>
-      <input type="submit" value="{TXT_ECARD_PREVIEW}" />
-      </p>
-    </fieldset>
-  </form>
+    <form id="ecardForm" method="post" onsubmit="return checkInput();" action="index.php?section=Ecard&amp;cmd=preview">
+        <fieldset id="motiveFieldset">
+            <legend>{TXT_ECARD_CHOOSE_IMAGE}</legend>
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- BEGIN motiveBlock -->
+                    <!-- BEGIN motiveRow -->
+                    <div class="ecardColumn{ECARD_CSSNUMBER} col-md-4">
+                        <div class="row">
+                            <label>
+                                <img src="{ECARD_THUMBNAIL_PATH}" alt="{ECARD_THUMBNAIL_PATH}" />
+                                <a rel="shadowbox" href="{ECARD_MOTIVE_OPTIMIZED_PATH}">
+                                    <img style="border:0px;" src="modules/Ecard/View/Media/zoom.gif" alt="zoom" title="{ECARD_MOTIVE_OPTIMIZED_PATH}" />
+                                </a>
+                                <input type="radio" name="selectedEcard" 
+                                       value="{ECARD_MOTIVE_ID}"{ECARD_IMAGE_SELECTED} />
+                            </label>
+                        </div>
+                    </div>
+                    <!-- END motiveRow -->
+                    <!-- END motiveBlock -->
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>{TXT_ECARD_ENTER_RECIPIENT_INFO}</legend>
+            <p>
+                <label class="fieldDescription" id="fieldDescription_salutation">{TXT_ECARD_RECIPIENT_TITLE}</label>
+                <span class="radio">
+                    <label><input type="radio" name="ecardRecipientSalutation" id="ecardRecipientSalutation" 
+                                  value="{TXT_ECARD_TITLE_MALE}"{ECARD_SALUTATION_SELECTED_MALE} />{TXT_ECARD_TITLE_MALE}</label>
+                </span></p>
+            <p>
+                <span class="radio"><label><input type="radio" name="ecardRecipientSalutation" id="ecardRecipientSalutation" 
+                       value="{TXT_ECARD_TITLE_FEMALE}"{ECARD_SALUTATION_SELECTED_FEMALE} />{TXT_ECARD_TITLE_FEMALE}</label></span>
+            </p>
+            <p>
+                <label class="fieldDescription">{TXT_ECARD_RECIPIENT_NAME}</label>
+                <input type="text" name="ecardRecipientName" id="ecardRecipientName" value="{ECARD_RECIPIENTNAME}" />
+            </p>
+            <p>
+                <label class="fieldDescription">{TXT_ECARD_RECIPIENT_EMAIL}</label>
+                <input type="text" name="ecardRecipientEmail" id="ecardRecipientEmail" value="{ECARD_RECIPIENTEMAIL}" />
+            </p>
+            <p>
+                <label class="fieldDescription">{TXT_ECARD_SENDER_NAME}</label>
+                <input type="text" name="ecardSenderName" id="ecardSenderName" value="{ECARD_SENDERNAME}" />
+            </p>
+            <p>
+                <label class="fieldDescription">{TXT_ECARD_SENDER_EMAIL}</label>
+                <input type="text" name="ecardSenderEmail" id="ecardSenderEmail" value="{ECARD_SENDEREMAIL}" />
+            </p>
+            <p>
+                <label>{TXT_ECARD_ENTER_MESSAGE}</label>
+                <textarea onkeypressed="checkAllFields();" onkeyup="checkAllFields();" name="ecardMessage" id="ecardMessage" cols="68" rows="6">{ECARD_MESSAGE}</textarea>
+            </p>
+            <p>
+                {TXT_ECARD_NUMBER_OF_CHARACTERS_LEFT}<br>
+            </p>
+            <!--p>{TXT_ECARD_NUMBER_OF_LINES_LEFT}</p-->
+            <p>
+                <input type="submit" class="btn btn-default" value="{TXT_ECARD_PREVIEW}" />
+            </p>
+        </fieldset>
+    </form>
 </div>
 {ECARD_JAVASCRIPT}
 

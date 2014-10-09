@@ -1,36 +1,51 @@
 <div id="livecam">
-<form action="{PAGE_URL}" method="post" name="form">
-<div style="position: relative; white-space: nowrap;"><input name="act[current]" type="submit" value="Aktuelles Bild" /> <input name="act[today]" type="submit" value="Heute" /> <input name="date" type="text" value="{LIVECAM_DATE}" /> <input name="act[archive]" type="submit" value="Archiv Anzeigen" /></div>
-</form>
-<br />
-{LIVECAM_STATUS_MESSAGE}<br />
-<!-- BEGIN livecamPicture --><a href="{LIVECAM_IMAGE_LINK}" rel="{LIVECAM_IMAGE_SHADOWBOX}" title="{LIVECAM_IMAGE_TEXT}"><img alt="{LIVECAM_IMAGE_TEXT}" src="{LIVECAM_CURRENT_IMAGE}" style="height:480px; width:640px" /></a><br />
-Die Seite wird jede Minute automatisch aktualisiert. <a href="{PAGE_URL}" onclick="javascript:document.location.reload();">Aktualisieren.</a> <!-- END livecamPicture --><!-- BEGIN livecamArchive -->
-
-<table border="0" cellpadding="0" cellspacing="0" style="width:100%">
-	<tbody>
-		<tr>
-			<td colspan="3">
-			<h2>Archiv {LIVECAM_DATE}</h2>
-			</td>
-		</tr>
-		<!-- BEGIN livecamArchiveRow -->
-		<tr>
-			<td>
-			<p><!-- BEGIN livecamArchivePicture1 --><a href="{LIVECAM_PICTURE_URL}" rel="{LIVECAM_IMAGE_SHADOWBOX}" title="{LIVECAM_PICTURE_TIME}"><img alt="{LIVECAM_PICTURE_TIME}" src="{LIVECAM_THUMBNAIL_URL}" /></a><br />
-			{LIVECAM_PICTURE_TIME}<!-- END livecamArchivePicture1 --></p>
-			</td>
-			<td>
-			<p><!-- BEGIN livecamArchivePicture2 --><a href="{LIVECAM_PICTURE_URL}" rel="{LIVECAM_IMAGE_SHADOWBOX}" title="{LIVECAM_PICTURE_TIME}"><img alt="{LIVECAM_PICTURE_TIME}" src="{LIVECAM_THUMBNAIL_URL}" /></a><br />
-			{LIVECAM_PICTURE_TIME}<!-- END livecamArchivePicture2 --></p>
-			</td>
-			<td>
-			<p><!-- BEGIN livecamArchivePicture3 --><a href="{LIVECAM_PICTURE_URL}" rel="{LIVECAM_IMAGE_SHADOWBOX}" title="{LIVECAM_PICTURE_TIME}"><img alt="{LIVECAM_PICTURE_TIME}" src="{LIVECAM_THUMBNAIL_URL}" /></a><br />
-			{LIVECAM_PICTURE_TIME}<!-- END livecamArchivePicture3 --></p>
-			</td>
-		</tr>
-		<!-- END livecamArchiveRow -->
-	</tbody>
-</table>
-<!-- END livecamArchive --></div>
+    <form action="{PAGE_URL}" method="post" name="form">
+        <div class="livecamSearch">
+            <input class="btn btn-default" name="act[current]" type="submit" value="Aktuelles Bild" /> 
+            <input class="btn btn-default" name="act[today]" type="submit" value="Heute" /> 
+            <input name="date" type="text" value="{LIVECAM_DATE}" /> 
+            <input class="btn btn-default" name="act[archive]" type="submit" value="Archiv Anzeigen" />
+        </div>
+    </form>
+    <br />
+    <div class="cam-error">{LIVECAM_STATUS_MESSAGE}<br /></div>
+    <!-- BEGIN livecamPicture -->
+    <a href="{LIVECAM_IMAGE_LINK}" rel="{LIVECAM_IMAGE_SHADOWBOX}" title="{LIVECAM_IMAGE_TEXT}">
+        <img alt="{LIVECAM_IMAGE_TEXT}" src="{LIVECAM_CURRENT_IMAGE}" />
+    </a>
+    <br />
+    <div>Die Seite wird jede Minute automatisch aktualisiert. 
+    <a href="{PAGE_URL}" onclick="javascript:document.location.reload();">Aktualisieren.</a> 
+    </div>
+    <!-- END livecamPicture -->
+    <!-- BEGIN livecamArchive -->
+    <div class="table-responsive">
+        <table class="table" border="0" cellpadding="0" cellspacing="0" style="width:100%">
+            <tbody>
+                <tr>
+                    <td colspan="3">
+                        <h2>Archiv {LIVECAM_DATE}</h2>
+                    </td>
+                </tr>
+                <!-- BEGIN livecamArchiveRow -->
+                <tr>
+                    <td>
+                        <p><!-- BEGIN livecamArchivePicture1 --><a href="{LIVECAM_PICTURE_URL}" rel="{LIVECAM_IMAGE_SHADOWBOX}" title="{LIVECAM_PICTURE_TIME}"><img alt="{LIVECAM_PICTURE_TIME}" src="{LIVECAM_THUMBNAIL_URL}" /></a><br />
+                            {LIVECAM_PICTURE_TIME}<!-- END livecamArchivePicture1 --></p>
+                    </td>
+                    <td>
+                        <p><!-- BEGIN livecamArchivePicture2 --><a href="{LIVECAM_PICTURE_URL}" rel="{LIVECAM_IMAGE_SHADOWBOX}" title="{LIVECAM_PICTURE_TIME}"><img alt="{LIVECAM_PICTURE_TIME}" src="{LIVECAM_THUMBNAIL_URL}" /></a><br />
+                            {LIVECAM_PICTURE_TIME}<!-- END livecamArchivePicture2 --></p>
+                    </td>
+                    <td>
+                        <p><!-- BEGIN livecamArchivePicture3 --><a href="{LIVECAM_PICTURE_URL}" rel="{LIVECAM_IMAGE_SHADOWBOX}" title="{LIVECAM_PICTURE_TIME}"><img alt="{LIVECAM_PICTURE_TIME}" src="{LIVECAM_THUMBNAIL_URL}" /></a><br />
+                            {LIVECAM_PICTURE_TIME}<!-- END livecamArchivePicture3 --></p>
+                    </td>
+                </tr>
+                <!-- END livecamArchiveRow -->
+            </tbody>
+        </table>
+    </div>
+    <!-- END livecamArchive -->
+</div>
 
