@@ -149,11 +149,16 @@ class LoginManager {
                 $this->objTemplate->touchBlock('back_to_login');
 
                 $userFilter = array(
-                    'username'         => $username,
                     'active'           => 1,
                 );
-
-                $objFWUser->checkAuth();
+                $arrSettings = \User_Setting::getSettings();
+                if ($arrSettings['use_usernames']['status']) {
+                    $userFilter['username'] = $username;
+                } else {
+                    $userFilter['email'] = $username;
+                }
+                $objUser = $objFWUser->objUser->getUsers($userFilter, null, null, null, 1);
+                $objFWUser->loginUser($objUser);
             } else {
                 $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
                 $this->objTemplate->touchBlock('error_message');
