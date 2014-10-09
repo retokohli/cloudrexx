@@ -581,29 +581,29 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (!empty($websiteId)) {
             $website  = $webRepo->findOneById($websiteId);
             if (!$website) {
-                throw new \Exception('JsonMultiSite::executeSql() failed: Website by ID '.$rowData['id'].' not found.');
+                return;
             }
-            $name = 'website '.$website->getName();
+            $title = $_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_QUERY_ON_WEBSITE'].$website->getFqdn()->getName();
         }
         
         if (!empty($websiteServiceId)) {
             $websites = $webRepo->findBy(array('websiteServiceServerId' => $websiteServiceId));
             if (!$websites) {
-                throw new \Exception('JsonMultiSite::executeSql() failed: Sevice server  by ID '.$rowData['id'].' has no website.');
+                return;
             }
             $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findOneById($websiteServiceId);
-            $name = 'service server '.$websiteServiceServer->getHostname();
+            $title = $_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_QUERY_ON_ALL_WEBSITES_OF_SERVICE_SERVER'].$websiteServiceServer->getHostname();
             $websiteId = $websiteServiceId;
         }
 
         $javascript = <<<END
         cx.ready(function() {
              
-            \$J(".executeQuery_$websiteId").html('<div id="executeSqlQuery_$websiteId"><form id="ExecuteSql"><div id="statusMsg"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>')
+            \$J(".executeQuery_$websiteId").html('<div id="executeSqlQuery_$websiteId"><form id="ExecuteSql"><div id="statusMsg"></div><div id="resultSet"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>')
             var activateDialog_$websiteId = cx.ui.dialog({
                 width: 820,
                 height: 400,
-                title: 'Execute SQL query on $name',
+                title: '$title',
                 content: \$J('#executeSqlQuery_$websiteId'),
                 autoOpen: false,
                 buttons: {
@@ -628,18 +628,44 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     if (response.status == 'error') {
                                         \$J('#executeSqlQuery_$websiteId #statusMsg').text(response.message);
                                     }
-                                    var textAreaContent = '';
+                                    var html = '';
                                     \$J.each(response.data, function(key, value){
-                                        if (value.status) {
+                                        if (value.status) { 
+                                            var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist"><thead></thead>';
+                                            var tbody = "";
+                                            var thead =""; 
+                                            var count = 0;
                                            \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Executed Successfully!.');
-                                           textAreaContent = textAreaContent + value.websiteName + ' : ' + value.sqlResult;
-                                           \$J('#executeSqlQuery_$websiteId #queryContent').val(textAreaContent);
-                                          
+                                           \$J('#executeSqlQuery_$websiteId #statusMsg').css('text-align', 'center');
+                                            var jsonResult = \$J.parseJSON(value.sqlResult);
+                                            var no_cols = Object.keys(jsonResult).length;
+                                                \$J.each(jsonResult, function (key, data) {
+                                                    tbody += "<tr>";
+                                                    for (jsonkey in data) {
+                                                        if (count == 0) {
+                                                            thead += "<td>";
+                                                            thead += jsonkey;
+                                                            thead += "</td>"
+                                                        }
+                                                        if (count < no_cols) {
+                                                            tbody += "<td>";
+                                                            tbody += data[jsonkey];
+                                                            tbody += "</td>"
+                                                        }
+                                                    }
+                                                    count++;
+                                                    tbody += "</tr>";
+                                               });
+                                               html += "<div><strong>" + value.websiteName + "</strong></div>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
+                                               
                                         } else {
                                             \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Execution Failed!(website).');
                                             \$J('#executeSqlQuery_$websiteId #queryContent').val(value.sqlError);
                                         }
                                     });
+                                    if (html != '') {
+                                        \$J('#executeSqlQuery_$websiteId #resultSet').html(html);
+                                    }
                                     
                                 }
                             });
@@ -655,7 +681,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 END;
         \JS::registerCode($javascript);
         $className = 'executeQuery_'.$websiteId;
-        $dbEdit = '<a href="javascript:void(0);" class="dbEdit '.$className.'" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_DB_TITLE'].'"></a>';
+        $dbEdit = '<a href="javascript:void(0);" class="dbEdit '.$className.'" title="'.$title.'"></a>';
         
         return $dbEdit;
     }
