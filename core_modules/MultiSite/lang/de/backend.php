@@ -20,6 +20,7 @@ $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS']='Website Adresse';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME']='Der Name darf nur aus Kleinbuchstaben (a-z) und Zahlen bestehen und muss eine Länge zwischen %1$s und %2$s Zeichen aufweisen.';
 $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON']='Seite erstellen';
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS']='Ja, ich habe die %s gelesen und akzeptiere diese.';
+$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_ERROR']= 'Akzeptieren sie die AGB um fortzufahren.';
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME']='AGB';
 $_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO']='Ihre pers&ouml;nlichen Zugangsdaten werden an diese E-Mail Adresse gesendet.';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'] = 'Leider ist der Erstellungsprozess Ihrer Website fehlgeschlagen. Bitte nehmen Sie den Kontakt mit unserem Kundendienst unter der Adresse %s auf, um Ihnen weiter zu helfen.';

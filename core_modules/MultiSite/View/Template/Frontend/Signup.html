@@ -25,6 +25,26 @@ jQuery(document).ready(function(){
     }
     jQuery.getScript('{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js');
 });
+
+var validateAdress = function (value, validator, $field) {
+    var message = '';
+    if (!value.match(/^[a-z0-9]+$/)) {
+        message +=  'Im Domainnamen dürfen nur Kleinbuchstaben und Zahlen vorkommen.';
+    }
+    if (value.length < {MULTISITE_ADDRESS_MIN_LENGTH} ) {
+        message +=  'Mindestens {MULTISITE_ADDRESS_MIN_LENGTH} Zeichen.';
+    }
+    if (value.length > {MULTISITE_ADDRESS_MAX_LENGTH} ) {
+        message +=   'Maximal {MULTISITE_ADDRESS_MAX_LENGTH} Zeichen';
+    }
+    if (message != ''){
+        return {
+            valid: false,
+            message: message
+        };
+    }
+    return true;
+};
 /* ]]> */
 </script>
 <style type="text/css">
@@ -42,27 +62,36 @@ jQuery(document).ready(function(){
     <div class="modal-body multisite-status"></div>
 
     <div class="modal-body multisite-form">
-<!-- TODO is form required ?? -->
+        <!-- TODO is form required ?? -->
         <form id="multisite_signup_form" role="form">
             <div class="alert alert-success" role="alert">
                 {PRODUCT_NOTE_ENTITY}
             </div>
             <input type="hidden" name="product_id" value="{PRODUCT_ID}">
             <div class="form-group">
-                <input id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" title="{TXT_MULTISITE_EMAIL_INFO}" placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
+                <input  data-bv-notempty="true"
+                        data-bv-notempty-message="{TXT_MULTISITE_EMAIL_INFO}"
+
+                        data-bv-emailaddress="true"
+                        data-bv-emailaddress-message="{TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL}"  id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" title="{TXT_MULTISITE_EMAIL_INFO}" placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
             </div>
 
             <div class="form-group">
                 <div class="input-group multisite-address">
-                    <input id="multisite_address" name="multisite_address" type="text" maxlength="{MULTISITE_ADDRESS_MAX_LENGTH}" pattern="[a-z0-9]{{MULTISITE_ADDRESS_MIN_LENGTH},{MULTISITE_ADDRESS_MAX_LENGTH}}" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" value="{MULTISITE_ADDRESS}" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
+                    <input  data-bv-notempty="true" data-bv-notempty-message=" " data-bv-callback="true" data-bv-callback-callback="validateAdress"  id="multisite_address" name="multisite_address" type="text" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" value="{MULTISITE_ADDRESS}" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
                     <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
                 </div>
             </div>
 
-            <div class="checkbox">
-                <label>
-                    <input id="multisite_terms" type="checkbox" required="">{TXT_MULTISITE_ACCEPT_TERMS}
-                </label>
+            <div class="form-group">
+                <label class="control-label"></label>
+
+                    <div class="checkbox">
+                        <label>
+                            <input data-bv-notempty="true"
+                                   data-bv-message="{TXT_MULTISITE_ACCEPT_TERMS_ERROR}" id="multisite_terms" name="agb" type="checkbox" required=""/> {TXT_MULTISITE_ACCEPT_TERMS}
+                        </label>
+                    </div>
             </div>
         </form>
     </div>
