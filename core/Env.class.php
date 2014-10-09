@@ -40,6 +40,7 @@ class Env {
             case 'cx':
             case 'em':
                 \DBG::msg(__METHOD__.": Setting '$prop' is deprecated. Env::get($prop) always returns the active/preferred instance of $prop.");
+                \DBG::stack();
                 break;
 
             default:
