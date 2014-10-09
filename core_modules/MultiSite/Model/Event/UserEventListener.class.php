@@ -84,8 +84,37 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                        //get user's profile details
+                        $objUser->objAttribute->first();
+                        while (!$objUser->objAttribute->EOF) {
+                            $arrUserDetails[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
+                            $objUser->objAttribute->next();
+                        }
+                        //get user's other details
+                        $params = array(
+                            'multisite_user_profile_attribute'          => $arrUserDetails,
+                            'multisite_user_account_username'           => $objUser->getUsername(),
+                            'multisite_user_account_email'              => $objUser->getEmail(),
+                            'multisite_user_account_frontend_language'  => $objUser->getFrontendLanguage(),
+                            'multisite_user_account_backend_language'   => $objUser->getBackendLanguage(),
+                            'multisite_user_account_email_access'       => $objUser->getEmailAccess(),
+                            'multisite_user_account_profile_access'     => $objUser->getProfileAccess(),
+                            'multisite_user_md5_password'               => $objUser->getHashedPassword(),
+                        );
+                        try {
+                            $objJsonData = new \Cx\Core\Json\JsonData();
+                            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'updateUser', 'params' => $params));
+                            if ($resp->status == 'error' || $resp->data->status == 'error') {
+                                if (isset($resp->log)) {
+                                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: './*$this->getName().*/') '.$logEntry;}, $resp->log));
+                                }
+                                throw new \Exception('Die Aktualisierung des Benutzerkontos hat leider nicht geklapt. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
+                            }
+                        } catch (\Exception $e) {
+                            \DBG::msg($e->getMessage());
+                        }
 // TODO: add language variable
-                        throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
+                        //throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
