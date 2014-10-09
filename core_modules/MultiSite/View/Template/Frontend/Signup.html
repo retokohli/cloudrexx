@@ -31,12 +31,24 @@ var validateAdress = function (value, validator, $field) {
     if (!value.match(/^[a-z0-9]+$/)) {
         message +=  'Im Domainnamen dürfen nur Kleinbuchstaben und Zahlen vorkommen.';
     }
-    if (value.length < {MULTISITE_ADDRESS_MIN_LENGTH} ) {
-        message +=  'Mindestens {MULTISITE_ADDRESS_MIN_LENGTH} Zeichen.';
+    if (jQuery($field).data('isvalid') != true && jQuery($field).data('isvalid')){
+        message +=   jQuery($field).data('isvalid') ;
     }
-    if (value.length > {MULTISITE_ADDRESS_MAX_LENGTH} ) {
-        message +=   'Maximal {MULTISITE_ADDRESS_MAX_LENGTH} Zeichen';
+    if (message != ''){
+        return {
+            valid: false,
+            message: message
+        };
     }
+    return true;
+};
+
+var validateEmail = function (value, validator, $field) {
+    var message = '';
+    if (jQuery($field).data('isvalid') !== true && jQuery($field).data('isvalid')){
+        message +=  jQuery($field).data('isvalid') ;
+    }
+    console.log(message);
     if (message != ''){
         return {
             valid: false,
@@ -63,17 +75,16 @@ var validateAdress = function (value, validator, $field) {
 
     <div class="modal-body multisite-form">
         <!-- TODO is form required ?? -->
-        <form id="multisite_signup_form" role="form">
+        <form id="multisite_signup_form" role="form" >
             <div class="alert alert-success" role="alert">
                 {PRODUCT_NOTE_ENTITY}
             </div>
             <input type="hidden" name="product_id" value="{PRODUCT_ID}">
             <div class="form-group">
-                <input  data-bv-notempty="true"
+                <input  data-bv-callback="true" data-bv-callback-callback="validateEmail"  data-bv-notempty="true"
                         data-bv-notempty-message="{TXT_MULTISITE_EMAIL_INFO}"
-
                         data-bv-emailaddress="true"
-                        data-bv-emailaddress-message="{TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL}"  id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" title="{TXT_MULTISITE_EMAIL_INFO}" placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
+                        data-bv-emailaddress-message=" "  id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" title="{TXT_MULTISITE_EMAIL_INFO}" placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
             </div>
 
             <div class="form-group">

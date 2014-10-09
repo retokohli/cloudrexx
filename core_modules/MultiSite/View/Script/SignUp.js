@@ -58,14 +58,12 @@
         }
         //objMail.data('valid', false);
         objMail.data('verifyUrl', options.emailUrl);
-        objMail.change();
 
         if (typeof(options.address) == 'string' && !objAddress.val()) {
             objAddress.val(options.address);
         }
         //objAddress.data('valid', false);
         objAddress.data('verifyUrl', options.addressUrl);
-        objAddress.change();
 
         //objTerms.data('valid', false);
         objTerms.change();
@@ -75,8 +73,13 @@
         setFormButtonState('submit', true, true);
 
         $("#multisite_signup_form").data('bootstrapValidator').updateStatus('agb', 'NOT_VALIDATED');
+        $("#multisite_signup_form").data('bootstrapValidator').updateStatus('multisite_email_address', 'NOT_VALIDATED');
         if (objAddress.val() == ''){
             $("#multisite_signup_form").data('bootstrapValidator').updateStatus('multisite_address', 'NOT_VALIDATED');
+        }
+        else {
+            jQuery(objAddress).trigger('change');
+            $("#multisite_signup_form").data('bootstrapValidator').validate('multisite_address');
         }
     }
 
@@ -93,13 +96,9 @@
     }
 
     function verifyInput(domElement, data) {
-        $("#multisite_signup_form").data('bootstrapValidator').updateStatus('multisite_address', 'NOT_VALIDATED').validateField('multisite_address');
-        jQuery(domElement).parent().find('.help-block.response').remove();
+        jQuery(domElement).data('isvalid', '');
+        $("#multisite_signup_form").data('bootstrapValidator').validateField('multisite_address');
         jQuery(domElement).data('valid', false);
-        if (!$("#multisite_signup_form").data('bootstrapValidator').isValidField($(domElement).attr('name'))) {
-            verifyForm();
-            return;
-        }
         jQuery(domElement).prop('disabled', true);
         if (jQuery(domElement).data('verifyUrl')) {
             jQuery.ajax({
@@ -142,7 +141,7 @@
     }
 
     function isFormValid() {
-        return (   objMail.data('valid')
+        return (objMail.data('valid')
                 && objAddress.data('valid')
                 && objTerms.data('valid'));
     }
@@ -204,21 +203,29 @@
 
             // fetch verification state of form element
             if (response.status == 'success') {
+                console.log(jQuery(objCaller).data('isvalid'));
+                jQuery(objCaller).data('isvalid', true);
+
+                console.log(jQuery(objCaller).data('isvalid'));
                 jQuery(objCaller).data('valid', true);
+
+                $("#multisite_signup_form").data('bootstrapValidator').revalidateField(jQuery(objCaller).attr('name'));
                 return true;
             } else {
-                jQuery(objCaller).data('valid', false);
                 type = 'danger';
                 message = response.message;
                 if (typeof(response.message) == 'object') {
                     message = typeof(response.message.message) != null ? response.message.message : null;
                     type = typeof(response.message.type) != null ? response.message.type : null;
                 }
-                jQuery('<small class="help-block response">' + message + '</small> ').insertAfter(jQuery(objCaller));
-                $("#multisite_signup_form").data('bootstrapValidator').revalidateField(jQuery(objCaller).attr('name'));
-                $("#multisite_signup_form").data('bootstrapValidator').updateMessage((jQuery(objCaller).attr('name')), 'callback', ' ');
-                $("#multisite_signup_form").data('bootstrapValidator').updateStatus(jQuery(objCaller).attr('name'), 'INVALID');
+                console.log('Finished Loading');
+                console.log(message);
+                jQuery(objCaller).data('isvalid', message);
             }
+
+            $("#multisite_signup_form").data('bootstrapValidator').revalidateField(jQuery(objCaller).attr('name'));
+
+
             verifyForm();
 
             return;
