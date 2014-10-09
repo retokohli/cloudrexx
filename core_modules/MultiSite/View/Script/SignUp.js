@@ -75,7 +75,9 @@
         setFormButtonState('submit', true, true);
 
         $("#multisite_signup_form").data('bootstrapValidator').updateStatus('agb', 'NOT_VALIDATED');
-        $("#multisite_signup_form").data('bootstrapValidator').updateStatus('multisite_address', 'NOT_VALIDATED');
+        if (objAddress.val() == ''){
+            $("#multisite_signup_form").data('bootstrapValidator').updateStatus('multisite_address', 'NOT_VALIDATED');
+        }
     }
 
     function verifyEmail() {
@@ -92,7 +94,7 @@
 
     function verifyInput(domElement, data) {
         $("#multisite_signup_form").data('bootstrapValidator').updateStatus('multisite_address', 'NOT_VALIDATED').validateField('multisite_address');
-        jQuery(domElement).parent().next('.help-block.response').remove();
+        jQuery(domElement).parent().find('.help-block.response').remove();
         jQuery(domElement).data('valid', false);
         if (!$("#multisite_signup_form").data('bootstrapValidator').isValidField($(domElement).attr('name'))) {
             verifyForm();
@@ -212,7 +214,7 @@
                     message = typeof(response.message.message) != null ? response.message.message : null;
                     type = typeof(response.message.type) != null ? response.message.type : null;
                 }
-                jQuery('<small class="help-block response">' + message + '</small> ').insertAfter(jQuery(objCaller).parent());
+                jQuery('<small class="help-block response">' + message + '</small> ').insertAfter(jQuery(objCaller));
                 $("#multisite_signup_form").data('bootstrapValidator').revalidateField(jQuery(objCaller).attr('name'));
                 $("#multisite_signup_form").data('bootstrapValidator').updateMessage((jQuery(objCaller).attr('name')), 'callback', ' ');
                 $("#multisite_signup_form").data('bootstrapValidator').updateStatus(jQuery(objCaller).attr('name'), 'INVALID');
