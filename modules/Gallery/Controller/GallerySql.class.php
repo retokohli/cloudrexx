@@ -293,7 +293,7 @@ class GallerySql
     }
 }
 
-if (!class_exists("DatabaseError")) {
+if (!class_exists("DatabaseError", false)) {
 
 /**
  * Database Error
