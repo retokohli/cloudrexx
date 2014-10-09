@@ -583,7 +583,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (!$website) {
                 return;
             }
-            $title = $_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_QUERY_ON_WEBSITE'].$website->getFqdn()->getName();
+            $title = $_ARRAYLANG['TXT_MULTISITE_EXECUTE_QUERY_ON_WEBSITE'].$website->getFqdn()->getName();
         }
         
         if (!empty($websiteServiceId)) {
@@ -592,7 +592,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return;
             }
             $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findOneById($websiteServiceId);
-            $title = $_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_QUERY_ON_ALL_WEBSITES_OF_SERVICE_SERVER'].$websiteServiceServer->getHostname();
+            $title = $_ARRAYLANG['TXT_MULTISITE_EXECUTE_QUERY_ON_ALL_WEBSITES_OF_SERVICE_SERVER'].$websiteServiceServer->getHostname();
             $websiteId = $websiteServiceId;
         }
 
