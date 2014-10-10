@@ -17,6 +17,15 @@ CREATE TABLE `contrexx_access_group_static_ids` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_access_id` (
+  `id` int(11) NOT NULL,
+  `entity_class_name` char(100) NOT NULL,
+  `entity_class_id` char(100) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_rel_user_group` (
   `user_id` int(10) unsigned NOT NULL default '0',
   `group_id` int(10) unsigned NOT NULL default '0',
@@ -36,7 +45,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_user_attribute` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `parent_id` int(10) unsigned NOT NULL default '0',
+  `parent_id` int(10) unsigned default NULL,
   `type` enum('text','textarea','mail','uri','date','image','checkbox','menu','menu_option','group','frame','history') NOT NULL default 'text',
   `mandatory` enum('0','1') NOT NULL default '0',
   `sort_type` enum('asc','desc','custom') NOT NULL default 'asc',
