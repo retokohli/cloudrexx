@@ -14,9 +14,24 @@ form p {
 }
 form p label {
     float: left;
-    /*width: auto;*/
     font-weight: normal;
 }
+.fields p input[type="text"], .fields p textarea, .fields p input[type="file"] {
+    width: 100% !important;
+}
+#memberForm input, #memberForm select {
+    margin-bottom: 10px;
+}
+#memberForm select {
+    margin-bottom: 10px;
+    float: left;
+    margin-right: 10px;
+}
+#memberdir .search_form form#memberForm, #memberdir .breadcrumb {
+    float: left;
+    width: 100%;
+}
+.char_list {word-wrap: break-word;}
 .label {
     display: inline;
     line-height: 1;
@@ -26,18 +41,6 @@ form p label {
     border-radius: .25em;
     text-align: left;
 }
-.prof-img {width: 20%;}
-.prof-details {float: left;}
-.prof-details em{float: left;}
-/*#access_user_newsletters-1 {
-    float: left;
-    margin: 0;
-    padding: 0;
-    height: 12px;
-    height: auto;
-    margin-top: 3px;
-    margin-left: 10px;
-}*/
 form p label.description {
     margin: 0;
     margin-left: 5px;
