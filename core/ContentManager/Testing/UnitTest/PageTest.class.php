@@ -113,7 +113,7 @@ class PageTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('test ümläut');
-        $this->assertEquals('test-mlut', $p->getSlug());
+        $this->assertEquals('test-uemlaeut', $p->getSlug());
 
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('123');
