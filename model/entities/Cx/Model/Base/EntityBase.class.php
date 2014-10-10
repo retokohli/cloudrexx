@@ -144,7 +144,7 @@ class EntityBase {
         $em = $this->cx->getDb()->getEntityManager();
         $cmf = $em->getMetadataFactory();
         $meta = $cmf->getMetadataFor(get_class($this));
-        return (string) $meta->discriminatorValue;
+        return (string) implode('/', $meta->getIdentifierValues($this));
     }
 }
 
