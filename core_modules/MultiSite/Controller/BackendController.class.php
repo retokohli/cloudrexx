@@ -652,7 +652,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                             cx.tools.StatusMessage.showMessage('SqlQuery Executed Successfully!.',  null, 3000);
                                             var no_cols = Object.keys(value.sqlResult).length;
                                                 \$J.each(value.sqlResult, function (key, data) {
-                                                    tbody += "<tr>";
+                                                    tbody += "<tr class =row1>";
                                                     for (jsonkey in data) {
                                                         if (count == 0) {
                                                             thead += "<th>";
