@@ -141,7 +141,10 @@ class EntityBase {
     }
 
     public function __toString() {
-        return strval($this->getId());
+        $em = $this->cx->getDb()->getEntityManager();
+        $cmf = $em->getMetadataFactory();
+        $meta = $cmf->getMetadataFor(get_class($this));
+        return (string) $meta->discriminatorValue;
     }
 }
 
