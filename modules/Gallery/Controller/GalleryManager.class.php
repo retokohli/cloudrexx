@@ -2153,9 +2153,9 @@ class GalleryManager extends GalleryLibrary
             // the value shouldn't be above 100 otherwise the image becomes larger
             $_POST['quality'] = 95;
         }
-        if (intval($_POST['standard_quality']) > 9 || intval($_POST['standard_quality']) <= 0) {
-            // the value shouldn't be above 0 otherwise the image is too bad
-            $_POST['standard_quality'] = 0;
+         if (intval($_POST['standard_quality']) > 100 || intval($_POST['standard_quality']) <= 0) {
+            // the value shouldn't be above 95 otherwise the image becomes larger
+            $_POST['standard_quality'] = 95;
         }
 // neu
         if ($_POST['show_ext'] != 'on') {
@@ -2510,7 +2510,7 @@ class GalleryManager extends GalleryLibrary
 
                 $this->_objTpl->setCurrentBlock('showThumbQuality');
                 $boolCheckerThumbFileQuality = false;
-                for ($i = 0; $i <= 9; $i++)
+                for ($i = 5; $i <= 100; $i=$i+5)
                 {
                     $this->_objTpl->setVariable('THUMB_QUALITY_VALUE',$i);
                     if ($i >= $objResult->fields['quality'] && !$boolCheckerThumbFileQuality) {
@@ -2658,7 +2658,7 @@ class GalleryManager extends GalleryLibrary
                 // here start the quality-dropdown
                 $this->_objTpl->setCurrentBlock('showThumbQuality');
 
-                for ($i = 0; $i <= 9; $i++)
+                for ($i = 5; $i <= 100; $i=$i+5)
                 {
                     $this->_objTpl->setVariable('THUMB_QUALITY_VALUE',$i);
                     if ($i >= $this->arrSettings['standard_quality'] && !$boolCheckerThumbFileQuality)
@@ -3193,15 +3193,12 @@ $strFileNew = '';
          srand ((double)microtime()*1000000);
         $strNewFilename = rand().$strOldFilename;
 
-        $strOrgPath     = $this->strImagePath.$strOldFilename;
-        $strNewBigPath     = $this->strImagePath.$strNewFilename;
-        $strThumbPath     = $this->strThumbnailPath.$strOldFilename;
-        $strNewPath     = $this->strThumbnailPath.$strNewFilename;
-        @touch($strNewPath);
-
-        $arrImageInfos_B = getimagesize($strOrgPath);
-        $intX_B = $arrImageInfos_B[0];
-        $intY_B = $arrImageInfos_B[1];
+        $strOrgPath     = $this->strImagePath;
+        $strWebpath     = $this->strImageWebPath;
+        $strThumbPath    = $this->strThumbnailPath;
+        $strThumbWebpath = $this->strThumbnailWebPath;
+                
+        $arrImageInfos_B = getimagesize($strOrgPath.$strOldFilename);
 
         if ($objResult->fields['size_type'] == 'abs') {
             $intX = $objResult->fields['size_abs_w'];
@@ -3215,104 +3212,22 @@ $strFileNew = '';
             $intY = round(($objResult->fields['size_proz']/100) * $arrImageInfos_B[1],0);
         }
 
-        $strType = $arrImageInfos_B[2];
-
-        switch ($strType)
-        {
-            case 1: //GIF
-                if ($this->boolGifEnabled==true) {
-                    $strSourceImage = @ImageCreateFromGif ($strOrgPath);
-                    $strDestImage = @ImageCreate($intX-1,$intY-1);
-                    if (!$strDestImage) { @ImageCreate($intX-1,$intY-1); }
-                    @ImageCopyResized($strDestImage,$strSourceImage,0,0,0,0,$intX,$intY,$intX_B,$intY_B);
-                    $strRotatedImage = @ImageRotate($strDestImage,180,0);
-                    $strRotatedImage = @ImageRotate($strRotatedImage,90,0);
-                    @ImageGif ($strRotatedImage,$strNewPath);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
-                }
-            break;
-            case 2: //JPG
-                if ($this->boolJpgEnabled==true) {
-                    $strSourceImage = ImageCreateFromJpeg($strOrgPath);
-                    $strDestImage = @ImageCreateTrueColor($intX-1,$intY-1);
-                    if (!$strDestImage) { @ImageCreate($intX-1,$intY-1); }
-                    @ImageCopyResized($strDestImage,$strSourceImage,0,0,0,0,$intX,$intY,$intX_B,$intY_B);
-                    $strRotatedImage = @ImageRotate($strDestImage,180,0);
-                    $strRotatedImage = @ImageRotate($strRotatedImage,90,0);
-                    @ImageJpeg($strRotatedImage,$strNewPath,$objResult->fields['quality']);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
-                }
-            break;
-            case 3: //PNG
-                if ($this->boolPngEnabled==true) {
-                    $strSourceImage = @ImageCreateFromPNG($strOrgPath);
-                    @imageAlphaBlending($strSourceImage, true);
-                    @imageSaveAlpha($strSourceImage, true);
-                    $strDestImage = @ImageCreate($intX-1,$intY-1);
-                    if (!$strDestImage) { ImageCreate($intX-1,$intY-1); }
-                    @ImageCopyResized($strDestImage,$strSourceImage,0,0,0,0,$intX,$intY,$intX_B,$intY_B);
-                    $strRotatedImage = @ImageRotate($strDestImage,180,0);
-                    $strRotatedImage = @ImageRotate($strRotatedImage,90,0);
-                    @ImagePNG($strRotatedImage,$strNewPath,$objResult->fields['quality']);
-                } else {
-                        $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
-                }
-            break;
-        }
-       @unlink($strThumbPath);
-        @rename($strNewPath,$strThumbPath);
-
-
+        $objImage = new \ImageManager();
+        $objImage->loadImage($strOrgPath.$strOldFilename);
+        //Rotate the clockwise
+        $objImage->rotateImage(270);
+        $objImage->newImageType = \ImageManager::IMG_TYPE_PNG;
+        $objImage->saveNewImage($strOrgPath.$strOldFilename, true);
+        $objImage->resizeImageSave($strOrgPath,$strWebpath,$strOldFilename,$intX,$intY,$objResult->fields['quality'],
+                            $strThumbPath,$strThumbWebpath,$strNewFilename);
+//        @unlink($strThumbPath.$strOldFilename);
+        @rename($strThumbPath.$strNewFilename,$strThumbPath.$strOldFilename);
         if ($objResult->fields['size_type'] == 'abs') {
             $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
                                     SET     size_abs_h='.$newInsertY.',
                                             size_abs_w='.$newInsertX.'
                                     WHERE     id='.$intImageId);
         }
-
-        $strType = $arrImageInfos_B[2];
-
-        switch ($strType) {
-            case 1: //GIF
-                if ($this->boolGifEnabled==true) {
-                    // NOW I ROTATE THE ORIGINAL IMAGE
-                    $strSourceImage = @imagecreatefromGif ($strOrgPath);
-                    $strRotatedImage = @imagerotate($strSourceImage, 180, 0);
-                    $strRotatedImage = @imagerotate($strRotatedImage, 90, 0);
-                    @ImageGif ($strRotatedImage,$strNewBigPath);
-                } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_GIF_SUPPORT'];
-                }
-            break;
-            case 2: //JPG
-                if ($this->boolJpgEnabled==true) {
-                    // NOW I ROTATE THE ORIGINAL IMAGE
-                    $strSourceImage = @imagecreatefromjpeg($strOrgPath);
-                    $strRotatedImage = @imagerotate($strSourceImage, 180, 0);
-                    $strRotatedImage = @imagerotate($strRotatedImage, 90, 0);
-                    @ImageJPEG($strRotatedImage,$strNewBigPath);
-                } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_JPG_SUPPORT'];
-                }
-            break;
-            case 3: //PNG
-                if ($this->boolPngEnabled==true) {
-                    // NOW I ROTATE THE ORIGINAL IMAGE
-                    $strSourceImage = @imagecreatefromPNG($strOrgPath);
-                    @imageAlphaBlending($strSourceImage, true);
-                    @imageSaveAlpha($strSourceImage, true);
-                    $strRotatedImage = imagerotate($strSourceImage, 180, 0);
-                    $strRotatedImage = imagerotate($strRotatedImage, 90, 0);
-                    @ImagePNG($strRotatedImage,$strNewBigPath);
-                } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_GALLERY_NO_PNG_SUPPORT'];
-                }
-            break;
-        }
-       unlink($strOrgPath);
-        rename($strNewBigPath,$strOrgPath);
      }
 
 
