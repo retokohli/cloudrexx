@@ -598,7 +598,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
         $javascript = <<<END
         cx.ready(function() {
-             
+            \$J('#instance_table').append('<div id ="load-lock"></div>');
+            cx.bind("loadingStart", cx.lock, "executeSql");
+            cx.bind("loadingEnd", cx.unlock, "executeSql");
+            cx.lock = function() {
+                \$J("#load-lock").show();
+            };
+            cx.unlock = function() {
+               \$J("#load-lock").hide();
+            };
+                
             \$J(".executeQuery_$websiteId").html('<div id="executeSqlQuery_$websiteId"><form id="ExecuteSql"><div id="statusMsg"></div><div id="resultSet"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>')
             var activateDialog_$websiteId = cx.ui.dialog({
                 width: 820,
@@ -611,9 +620,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         \$J(this).dialog("close");
                     },
                     "Execute": function() {
+                        cx.trigger("loadingStart", "executeSql", {});
+                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + \$J('#loading').html() + "</div>");
                         var query = \$J('#executeSqlQuery_$websiteId #queryContent').val();
                         if(query == '') {
-                            \$J('#executeSqlQuery_$websiteId #statusMsg').text('Please insert a query..!');
+                            cx.tools.StatusMessage.showMessage('Please insert a query..!', null, 3000);
                             return false;
                         } else {
                             domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql";
@@ -626,7 +637,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 dataType : "json",
                                 success: function(response) {
                                     if (response.status == 'error') {
-                                        \$J('#executeSqlQuery_$websiteId #statusMsg').text(response.message);
+                                        cx.trigger("loadingEnd", "executeSql", {});
+                                        cx.tools.StatusMessage.showMessage('SqlQuery Executed failed..!',  null, 3000);
+                                        \$J('#executeSqlQuery_$websiteId #resultSet').hide();
+                                        \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
                                     }
                                     var html = '';
                                     \$J.each(response.data, function(key, value){
@@ -635,16 +649,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                             var tbody = "";
                                             var thead =""; 
                                             var count = 0;
-                                           \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Executed Successfully!.');
-                                           \$J('#executeSqlQuery_$websiteId #statusMsg').css('text-align', 'center');
+                                            cx.tools.StatusMessage.showMessage('SqlQuery Executed Successfully!.',  null, 3000);
                                             var no_cols = Object.keys(value.sqlResult).length;
                                                 \$J.each(value.sqlResult, function (key, data) {
                                                     tbody += "<tr>";
                                                     for (jsonkey in data) {
                                                         if (count == 0) {
-                                                            thead += "<td>";
+                                                            thead += "<th>";
                                                             thead += jsonkey;
-                                                            thead += "</td>"
+                                                            thead += "</th>"
                                                         }
                                                         if (count < no_cols) {
                                                             tbody += "<td>";
@@ -655,17 +668,19 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                                     count++;
                                                     tbody += "</tr>";
                                                });
-                                               html += "<div><strong>" + value.websiteName + "</strong></div>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
-                                               
+                                               html += "<div><strong>"+"SqlQuery executed website name : " + value.websiteName + "</strong></div><br/>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
+                                               \$J('#executeSqlQuery_$websiteId #statusMsg').hide()
+                                               cx.trigger("loadingEnd", "executeSql", {});
                                         } else {
-                                            \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Execution Failed!(website).');
-                                            \$J('#executeSqlQuery_$websiteId #queryContent').val(value.sqlError);
+                                            cx.trigger("loadingEnd", "executeSql", {});
+                                            cx.tools.StatusMessage.showMessage('SqlQuery Execution Failed!.',  null, 3000);
+                                            \$J('#executeSqlQuery_$websiteId #resultSet').hide();
+                                            \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
                                         }
                                     });
                                     if (html != '') {
-                                        \$J('#executeSqlQuery_$websiteId #resultSet').html(html);
+                                        \$J('#executeSqlQuery_$websiteId #resultSet').show().html(html);
                                     }
-                                    
                                 }
                             });
                         }
@@ -674,6 +689,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             });
                
             \$J(".executeQuery_$websiteId").click(function() {
+                \$J('#executeSqlQuery_$websiteId #resultSet, #executeSqlQuery_$websiteId #statusMsg').hide();
+                \$J('#executeSqlQuery_$websiteId #queryContent').val('');
                 activateDialog_$websiteId.open();
              });
         });
