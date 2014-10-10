@@ -637,9 +637,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                             var count = 0;
                                            \$J('#executeSqlQuery_$websiteId #statusMsg').text('SqlQuery Executed Successfully!.');
                                            \$J('#executeSqlQuery_$websiteId #statusMsg').css('text-align', 'center');
-                                            var jsonResult = \$J.parseJSON(value.sqlResult);
-                                            var no_cols = Object.keys(jsonResult).length;
-                                                \$J.each(jsonResult, function (key, data) {
+                                            var no_cols = Object.keys(value.sqlResult).length;
+                                                \$J.each(value.sqlResult, function (key, data) {
                                                     tbody += "<tr>";
                                                     for (jsonkey in data) {
                                                         if (count == 0) {
