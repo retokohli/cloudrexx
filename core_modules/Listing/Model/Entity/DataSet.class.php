@@ -316,6 +316,16 @@ class DataSet implements \Iterator {
     }
     
     /**
+     * Tell if the supplied argument is iterable
+     * @todo Rethink this method, DataSet is always iterable, this is a general helper method
+     * @param mixed $var Variable to test iterability
+     * @return boolean True if $var is iterable, false otherwise
+     */
+    private function is_iterable($var) {
+        return (is_array($var) || $var instanceof Traversable || $var instanceof stdClass);
+    }
+    
+    /**
      * Flips an 2 dimensional array
      * @todo Rethink this method, may return a new DataSet instance and remove param
      * @todo Does not work with only one entry
@@ -324,8 +334,11 @@ class DataSet implements \Iterator {
      */
     private function flip($arr) {
         $out = array();
-
         foreach ($arr as $key => $subarr) {
+        if (!$this->is_iterable($subarr)) {
+            $out[0][$key] = $subarr;
+            continue;
+        }
             foreach ($subarr as $subkey => $subvalue) {
                  $out[$subkey][$key] = $subvalue;
             }
