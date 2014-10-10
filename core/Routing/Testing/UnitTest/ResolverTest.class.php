@@ -142,10 +142,10 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     }
 
     public function testTargetPathAndParams() {
-        $this->insertFixtures();
-        
         return false;
         
+        $this->insertFixtures();
+                        
         $lang = 1;
 
         $url = new Url('http://example.com/testpage1/testpage1_child/?foo=test');
@@ -159,8 +159,10 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     }
 
     public function testFoundPage() {
-        $this->insertFixtures();
         return false;
+        
+        $this->insertFixtures(); 
+        
         $lang = 1;
 
         $url = new Url('http://example.com/testpage1/testpage1_child/?foo=test');
@@ -175,9 +177,10 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
      * @expectedException Cx\Core\Routing\ResolverException
      */
     public function testInexistantPage() {
-        $this->insertFixtures();
         return false;
         
+        $this->insertFixtures();
+                
         $lang = 1;
 
         $url = new Url('http://example.com/inexistantPage/?foo=test');
@@ -188,9 +191,10 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
     }
 
     public function testRedirection() {
-        $this->insertFixtures();
         return false;
         
+        $this->insertFixtures();
+                
         $lang = 1;
 
         $url = new Url('http://example.com/redirection/');
@@ -201,16 +205,18 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $this->assertEquals('testpage1_child', $page->getTitle());
     }
 
-    protected function getResolvedFallbackPage() {
-        return false;
-        $repo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+    protected function getResolvedFallbackPage() {        
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
 
-        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $root = $nodeRepo->getRoot();
         
         $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
-        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
-
+        
         $n1->setParent($root);
+        $root->addChildren($n1);
+        
+        self::$em->persist($n1);
+        self::$em->flush();
 
         //test if requesting this page...
         $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
@@ -218,23 +224,35 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         $p2->setTitle('pageThatsFallingBack');
         $p2->setNode($n1);
         $p2->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK);
+        $p2->setNodeIdShadowed($n1->getId());
+        $p2->setUseCustomContentForAllChannels('');
+        $p2->setUseCustomApplicationTemplateForAllChannels('');
+        $p2->setUseSkinForAllChannels('');
+        $p2->setCmd('');
+        $p2->setActive(1);
 
         //... will yield contents of this page as result.
         $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(2);
         $p1->setTitle('pageThatHoldsTheContent');
         $p1->setNode($n1);
-        $p1->setType('content');
+        $p1->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT);
         $p1->setContent('fallbackContent');
-
-        self::$em->persist($root);
+        $p1->setNodeIdShadowed($n1->getId());
+        $p1->setUseCustomContentForAllChannels('');
+        $p1->setUseCustomApplicationTemplateForAllChannels('');
+        $p1->setUseSkinForAllChannels('');
+        $p1->setCmd('');
+        $p1->setActive(1);
+        
         self::$em->persist($n1);
-        self::$em->persist($n2);
         self::$em->persist($p1);
         self::$em->persist($p2);
         self::$em->flush();
-        self::$em->clear();
-
+        self::$em->refresh($n1);
+        
+        return false;
+        
         $url = new Url('http://example.com/pageThatsFallingBack/');
         $resolver = new Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, true);
         $resolver->resolve();
@@ -247,6 +265,7 @@ class ResolverTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         return false;
         
         $p = $this->getResolvedFallbackPage();
+        
 
         $this->assertEquals('fallbackContent', $p->getContent());
         $this->assertEquals(true, $p->hasFallbackContent());
