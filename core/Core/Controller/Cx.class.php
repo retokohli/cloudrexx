@@ -813,6 +813,12 @@ namespace Cx\Core\Core\Controller {
             if (preg_match("#(.*)". preg_quote($rootOffset) ."#", $scriptPath, $arrMatches) == 1) {
                 $documentRoot = $arrMatches[1];
             }
+            
+            // fix wrong variable assignment in CLI
+            if (empty($documentRoot) && !empty($rootOffset)) {
+                $documentRoot = $rootOffset;
+                $rootOffset = '';
+            }
         }
 
         /**
