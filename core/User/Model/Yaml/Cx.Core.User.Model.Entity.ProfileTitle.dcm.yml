@@ -1,0 +1,27 @@
+Cx\Core\User\Model\Entity\ProfileTitle:
+  type: entity
+  table: access_user_title
+  fields:
+    id:
+      id: true
+      type: integer
+      length: 11
+      unsigned: true
+      generator:
+        strategy: AUTO
+    title:
+      type: string
+      length: 255
+      nullable: false
+    order_id:
+      type: integer
+      length: 10
+      nullable: false
+      unsigned: true
+  uniqueConstraints:
+    title:
+      columns: [title]
+  oneToMany:
+    userProfile:
+      targetEntity: Cx\Core\User\Model\Entity\UserProfile
+      mappedBy: userTitle

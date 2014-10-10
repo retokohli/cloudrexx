@@ -1,0 +1,129 @@
+Cx\Core\User\Model\Entity\User:
+  type: entity
+  table: access_users
+  fields:
+    id:
+      id: true
+      type: integer
+      length: 11
+      unsigned: true
+      generator:
+        strategy: AUTO
+    is_admin:
+      type: integer
+      length: 1
+      nullable: false
+      unsigned: true
+    username:
+      type: string
+      length: 255
+      nullable: true
+    password:
+      type: string
+      length: 32
+      nullable: true
+    auth_token:
+      type: string
+      length: 32
+      nullable: false
+    auth_token_timeout:
+      type: integer
+      length: 14
+      nullable: false
+      unsigned: true
+    regdate:
+      type: integer
+      length: 14
+      nullable: false
+      unsigned: true
+    expiration:
+      type: integer
+      length: 14
+      nullable: false
+      unsigned: true
+    validity:
+      type: integer
+      length: 10
+      nullable: false
+      unsigned: true
+    last_auth:
+      type: integer
+      length: 14
+      nullable: false
+      unsigned: true
+    last_auth_status:
+      type: integer
+      length: 1
+      nullable: false
+    last_activity:
+      type: integer
+      length: 14
+      nullable: false
+      unsigned: true
+    email:
+      type: string
+      length: 255
+      nullable: true
+    email_access:
+      type: string
+      nullable: false
+    frontend_lang_id:
+      type: integer
+      length: 2
+      nullable: false
+      unsigned: true
+    backend_lang_id:
+      type: integer
+      length: 2
+      nullable: false
+      unsigned: true
+    active:
+      type: integer
+      length: 1
+      nullable: false
+    verified:
+      type: integer
+      length: 1
+      nullable: false
+      unsigned: true
+    primary_group:
+      type: integer
+      length: 6
+      nullable: false
+      unsigned: true
+    profile_access:
+      type: string
+      nullable: false
+    restore_key:
+      type: string
+      length: 32
+      nullable: false
+    restore_key_time:
+      type: integer
+      length: 14
+      nullable: false
+      unsigned: true
+    u2u_active:
+      type: string
+      nullable: false
+  indexes:
+    username:
+      columns: [username]
+  oneToOne:
+    userProfile:
+      targetEntity: Cx\Core\User\Model\Entity\UserProfile
+      mappedBy: users
+  manyToMany:
+    group:
+      targetEntity: Cx\Core\User\Model\Entity\Group
+      inversedBy: user
+      joinTable:
+        name: access_rel_user_group
+        joinColumns:
+          user_id:
+            referencedColumnName: id
+            nullable: false
+        inverseJoinColumns:
+          group_id:
+            referencedColumnName: group_id
+            nullable: false

@@ -1,0 +1,29 @@
+Cx\Core\User\Model\Entity\CoreAttribute:
+  type: entity
+  table: access_user_core_attribute
+  fields:
+    id:
+      id: true
+      type: string
+      length: 25
+    mandatory:
+      type: string
+      nullable: false
+    sort_type:
+      type: string
+      nullable: false
+    order_id:
+      type: integer
+      length: 10
+      nullable: false
+      unsigned: true
+    access_special:
+      type: string
+      nullable: false
+  manyToOne:
+    accessId:
+      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
+      inversedBy: coreAttribute
+      joinColumns:
+        access_id:
+          referencedColumnName: id

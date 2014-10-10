@@ -1,0 +1,446 @@
+<?xml version="1.0"?>
+<skipper version="3.0.1.1129" name="Yaml" mvc="Without MVC" orm="Doctrine2" uuid="0707e871-ea0d-4bfb-9d52-8402d0221185">
+  <module name="Cx\Core\User\Model\Entity" import-format="Doctrine2Yml" import-path="../Model/Yaml" uuid="10d5fb59-b99e-479b-82ac-7f60968449bd">
+    <entity name="UserAttribute" uuid="5d7999de-4a3f-11e4-a112-448a5bc913e4">
+      <field name="id" type="integer" size="10" required="true" primary="true" auto-increment="true" uuid="89a4fc74-807a-4e45-9c9d-34bb006e3c8d">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="parent_id" type="integer" size="10" default="'0'" uuid="52ff5586-91f0-4e5e-bb5e-755bfb7fb7c6">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="type" type="string" default="'text'" enum-values="'text','textarea','mail','uri','date','image','checkbox','menu','menu_option','group','frame','history'" required="true" uuid="620b7461-d8ab-431e-b97b-c9a3ad843452"/>
+      <field name="mandatory" type="string" default="'0'" enum-values="'0','1'" required="true" uuid="1613fade-1a01-4a1f-b42b-63ad08349375"/>
+      <field name="sort_type" type="string" default="'asc'" enum-values="'asc','desc','custom'" required="true" uuid="c0007cd0-ba98-47c6-925f-ca05a7304845"/>
+      <field name="order_id" type="integer" size="10" default="'0'" required="true" uuid="b792d3bf-0810-4601-988a-82eb32ef7d0a">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="access_special" type="string" default="''" enum-values="'','menu_select_higher','menu_select_lower'" required="true" uuid="70267cc1-eb74-44b1-9ecc-92a90b2103cd"/>
+      <field name="access_id" type="integer" default="'0'" uuid="0630fd28-1fa2-4357-89cc-8da5fa63241d">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <orm-attributes>
+        <attribute name="table">access_user_attribute</attribute>
+      </orm-attributes>
+    </entity>
+    <association from="UserAttribute" to="UserAttribute" caption="UserAttribute UserAttribute" owner-alias="parent" inverse-alias="children" uuid="14f6949a-82d3-4765-b700-8eb6c72e9f84">
+      <association-field from="parent_id" to="id"/>
+    </association>
+    <association from="UserAttribute" to="AccessId" caption="AccessId ContrexxAccessUserAttribute" owner-alias="contrexxAccessUserAttribute" inverse-alias="accessId" uuid="25d4189a-e145-46f8-9fbe-68c3048ce628">
+      <association-field from="access_id" to="id"/>
+    </association>
+    <entity name="UserAttributeName" uuid="5d79a4ec-4a3f-11e4-a112-448a5bc913e4">
+      <field name="attribute_id" type="integer" size="10" default="'0'" primary="true" uuid="bc3045ef-3f9c-41d1-aeed-f90a25ee3219">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="lang_id" type="integer" size="10" default="'0'" required="true" primary="true" uuid="a58ce323-b309-4db1-8fa5-35261323003b">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="name" type="string" size="255" default="''" required="true" uuid="5b921e0a-e8cd-4dbd-b116-2896c8fd834b"/>
+      <orm-attributes>
+        <attribute name="table">access_user_attribute_name</attribute>
+      </orm-attributes>
+    </entity>
+    <association from="UserAttributeName" to="UserAttribute" caption="UserAttribute UserAttributeName" owner-alias="userAttributeName" inverse-alias="userAttribute" uuid="74f3bb87-c751-4aaa-8dde-ea998faaadad">
+      <association-field from="attribute_id" to="id"/>
+    </association>
+    <entity name="UserAttributeValue" uuid="5d79acbc-4a3f-11e4-a112-448a5bc913e4">
+      <field name="attribute_id" type="integer" size="10" default="'0'" required="true" primary="true" uuid="08d08894-50e4-4dec-9550-66a6e9a8de1f"/>
+      <field name="user_id" type="integer" size="11" default="'0'" required="true" primary="true" uuid="7210d8a7-892c-4ada-b95d-58be714f130e"/>
+      <field name="history_id" type="integer" size="10" default="'0'" required="true" primary="true" uuid="18a2cc6b-f228-451f-be29-70d020c19394">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="value" type="string" required="true" uuid="745550db-a4be-43d6-90ca-3e048e08be70"/>
+      <index name="value">
+        <index-field name="value"/>
+        <orm-attributes>
+          <attribute name="type">FULLTEXT</attribute>
+        </orm-attributes>
+      </index>
+      <orm-attributes>
+        <attribute name="table">access_user_attribute_value</attribute>
+      </orm-attributes>
+    </entity>
+    <many-to-many mn-entity="UserAttributeValue" caption="UserProfile to UserAttributeValue" uuid="548aa017-bd2c-4c28-9eab-d7baa383f645">
+      <many-to-many-entity name="UserAttribute" owning-side="true" alias="userAttribute" uuid="4fd900d9-7b77-4ba3-bc62-8a2c322340e7">
+        <many-to-many-field from="attribute_id" to="id"/>
+      </many-to-many-entity>
+      <many-to-many-entity name="UserProfile" owning-side="false" alias="userProfile" uuid="18519a64-8657-41a2-bc08-215a9e78f7d7">
+        <many-to-many-field from="user_id" to="user_id"/>
+      </many-to-many-entity>
+    </many-to-many>
+    <entity name="CoreAttribute" uuid="5d79b716-4a3f-11e4-a112-448a5bc913e4">
+      <field name="id" type="string" size="25" required="true" primary="true" uuid="d55554f9-d1d0-40a8-995e-de4f6a0a0f7f"/>
+      <field name="mandatory" type="string" default="'0'" enum-values="'0','1'" required="true" uuid="fbd1d9bd-9f4e-43ff-8408-15412f6e258e"/>
+      <field name="sort_type" type="string" default="'asc'" enum-values="'asc','desc','custom'" required="true" uuid="a1eb5391-f449-49dd-b9e5-16cde884fda5"/>
+      <field name="order_id" type="integer" size="10" default="'0'" required="true" uuid="d6ae58a9-d460-4e2a-8252-a8b4852698a4">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="access_special" type="string" default="''" enum-values="'','menu_select_higher','menu_select_lower'" required="true" uuid="55be63bb-ed6a-422d-a29d-e1bc7985a48f"/>
+      <field name="access_id" type="integer" default="'0'" uuid="032d62e0-7d80-4426-852b-9b23d945aa42">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <orm-attributes>
+        <attribute name="table">access_user_core_attribute</attribute>
+      </orm-attributes>
+    </entity>
+    <association from="CoreAttribute" to="AccessId" caption="AccessId CoreAttribute" owner-alias="coreAttribute" inverse-alias="accessId" uuid="103c1bca-5dcd-4e66-a77c-5ae07842e895">
+      <association-field from="access_id" to="id"/>
+    </association>
+    <entity name="Group" uuid="5d79c1c0-4a3f-11e4-a112-448a5bc913e4">
+      <field name="group_id" type="integer" size="11" required="true" primary="true" auto-increment="true" uuid="78432aaf-27ed-43fc-b969-a3bd5377b7ad">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="group_name" type="string" size="100" default="''" required="true" uuid="2ac73f9f-23db-491b-8409-5e14c11ec299"/>
+      <field name="group_description" type="string" size="255" default="''" required="true" uuid="02b0a7fd-8a06-4ddf-a0fa-79bad60e79bf"/>
+      <field name="is_active" type="integer" size="1" default="'1'" required="true" uuid="3cf30092-a41f-46ad-9a31-181ce171fd82"/>
+      <field name="type" type="string" default="'frontend'" enum-values="'frontend','backend'" required="true" uuid="e215f09f-5efa-42ae-b2da-3737ca74ab47"/>
+      <field name="homepage" type="string" size="255" default="''" required="true" uuid="ecda93b8-527c-492b-adcd-2b7483aa248f"/>
+      <orm-attributes>
+        <attribute name="table">access_user_groups</attribute>
+      </orm-attributes>
+    </entity>
+    <entity name="UserProfile" uuid="5d79e8e4-4a3f-11e4-a112-448a5bc913e4">
+      <field name="user_id" type="integer" size="11" default="'0'" unique="true" primary="true" uuid="0f11437e-8f07-4ef4-8b3d-fd5ca5df7bd5">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="gender" type="string" default="'gender_undefined'" enum-values="'gender_undefined','gender_female','gender_male'" required="true" uuid="8db3d24c-f4a9-4025-9058-5ae7d03d3e43"/>
+      <field name="title" type="integer" size="11" default="'0'" uuid="c69c46bb-83a3-4215-bb5f-400b8066f029">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="firstname" type="string" size="255" default="''" required="true" uuid="cd7d7737-af2c-41b8-839a-0fc6b0b2d9b1"/>
+      <field name="lastname" type="string" size="255" default="''" required="true" uuid="588d0641-11a6-40cc-8aef-32de6f4fb3af"/>
+      <field name="company" type="string" size="255" default="''" required="true" uuid="a9479a69-65a2-415c-94fe-ffb20a311aca"/>
+      <field name="address" type="string" size="255" default="''" required="true" uuid="6475e544-f86f-4e20-8d95-e39ca7e3c9d6"/>
+      <field name="city" type="string" size="50" default="''" required="true" uuid="cdca12c4-9208-4ab0-bafe-46f39829d2df"/>
+      <field name="zip" type="string" size="10" default="''" required="true" uuid="c584a9b7-6cba-4af2-8224-014f4a7d3c77"/>
+      <field name="country" type="integer" size="2" default="'0'" required="true" uuid="363c0dc6-4a46-4239-bd71-c83f2b4d929c">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="phone_office" type="string" size="20" default="''" required="true" uuid="4ab59cd2-b023-4233-84bf-4e3fe642e08e"/>
+      <field name="phone_private" type="string" size="20" default="''" required="true" uuid="f6d83381-4f6d-415f-9f18-1b3c08b0d9e2"/>
+      <field name="phone_mobile" type="string" size="20" default="''" required="true" uuid="ad270ebc-0778-4754-9470-d5238787839c"/>
+      <field name="phone_fax" type="string" size="20" default="''" required="true" uuid="0eef6059-70c7-4ff3-bbc8-1f31084bf7b7"/>
+      <field name="birthday" type="string" size="11" default="NULL" uuid="1229b250-aa2b-46e0-ae1d-834b7ff70734"/>
+      <field name="website" type="string" size="255" default="''" required="true" uuid="7a544e71-b2aa-4678-8fa6-24eac5e4f071"/>
+      <field name="profession" type="string" size="150" default="''" required="true" uuid="95cf44bb-0b3d-4ab6-a478-72fcbaa17500"/>
+      <field name="interests" type="string" default="NULL" uuid="fd175d9c-c543-4888-b49b-a993358a0ee3"/>
+      <field name="signature" type="string" default="NULL" uuid="ebfa3ba6-3ef5-41a0-957d-805140d5794b"/>
+      <field name="picture" type="string" size="255" default="''" required="true" uuid="7f98f3f5-aa1e-4f96-bee9-2df26adc2115"/>
+      <index name="profile">
+        <index-field name="firstname"/>
+        <index-field name="lastname"/>
+        <index-field name="company"/>
+      </index>
+      <orm-attributes>
+        <attribute name="table">access_user_profile</attribute>
+      </orm-attributes>
+    </entity>
+    <association from="UserProfile" to="User" caption="User UserProfile" owner-alias="userProfile" inverse-alias="users" uuid="92c776d3-8545-40be-a2a7-a3ef78ae2605">
+      <association-field from="user_id" to="id"/>
+    </association>
+    <association from="UserProfile" to="ProfileTitle" caption="UserTitle UserProfile" owner-alias="userProfile" inverse-alias="userTitle" uuid="7df06cc8-af98-408f-afaf-58776bfb31ea">
+      <association-field from="title" to="id"/>
+    </association>
+    <entity name="ProfileTitle" uuid="5d79fe74-4a3f-11e4-a112-448a5bc913e4">
+      <field name="id" type="integer" size="11" required="true" primary="true" auto-increment="true" uuid="6335fd7e-b966-4949-9bdf-862eaec36785">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="title" type="string" size="255" default="''" required="true" uuid="cff47ff1-053f-4047-9c33-631339a8c941"/>
+      <field name="order_id" type="integer" size="10" default="'0'" required="true" uuid="c4d04d72-f639-41ba-8c3b-430f5a0e6956">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <index name="title" unique="true">
+        <index-field name="title"/>
+        <orm-attributes>
+          <attribute name="type">UNIQUE</attribute>
+        </orm-attributes>
+      </index>
+      <orm-attributes>
+        <attribute name="table">access_user_title</attribute>
+      </orm-attributes>
+    </entity>
+    <entity name="User" uuid="5d7a1256-4a3f-11e4-a112-448a5bc913e4">
+      <field name="id" type="integer" size="11" required="true" primary="true" auto-increment="true" uuid="62599c6e-95cb-483c-960e-81d1162e3ef8">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="is_admin" type="integer" size="1" default="'0'" required="true" uuid="27153748-846b-4785-a35a-8fc800c90c1d">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="username" type="string" size="255" default="NULL" uuid="d2795b5c-7f0b-4dd9-aeb1-d60278694b88"/>
+      <field name="password" type="string" size="32" default="NULL" uuid="89b8be9c-7ee0-4e7e-adc4-801ebd21a310"/>
+      <field name="auth_token" type="string" size="32" required="true" uuid="14a6aa4a-2325-46f0-97f0-8d66defa9629"/>
+      <field name="auth_token_timeout" type="integer" size="14" default="'0'" required="true" uuid="95a6d641-beb1-4882-8e79-13eb0443c41c">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="regdate" type="integer" size="14" default="'0'" required="true" uuid="ae9bb09a-e19b-4a75-a46a-c362431b6ece">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="expiration" type="integer" size="14" default="'0'" required="true" uuid="6fe569f1-965e-4e8a-8d1d-ce21517ad3fa">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="validity" type="integer" size="10" default="'0'" required="true" uuid="af209520-7813-46e0-9fb5-bdf76f136edd">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="last_auth" type="integer" size="14" default="'0'" required="true" uuid="0041fac8-8984-40ce-9de5-81686791dfa2">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="last_auth_status" type="integer" size="1" default="'1'" required="true" uuid="bc181f0f-c5f8-4681-b476-16ce6d86293e"/>
+      <field name="last_activity" type="integer" size="14" default="'0'" required="true" uuid="42d6ddab-37ca-4f18-8b22-ac88c9a12395">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="email" type="string" size="255" default="NULL" uuid="5c4486c1-dbad-4bd2-a34a-b864865a6d6e"/>
+      <field name="email_access" type="string" default="'nobody'" enum-values="'everyone','members_only','nobody'" required="true" uuid="d3d3c424-a98f-4528-8150-458b8807b811"/>
+      <field name="frontend_lang_id" type="integer" size="2" default="'0'" required="true" uuid="dd051104-5511-412d-a4c7-89587ea46f0a">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="backend_lang_id" type="integer" size="2" default="'0'" required="true" uuid="1fe37cc3-80b7-4e03-9544-e5eee4622a26">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="active" type="integer" size="1" default="'0'" required="true" uuid="62d2c95f-9950-4a51-bfbd-940973f4324b"/>
+      <field name="verified" type="integer" size="1" default="'1'" required="true" uuid="a1b8f063-e156-44e5-95d2-1f8d995107a1">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="primary_group" type="integer" size="6" default="'0'" required="true" uuid="539a5107-940f-41f1-bf83-719c29bc0d0f">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="profile_access" type="string" default="'members_only'" enum-values="'everyone','members_only','nobody'" required="true" uuid="1239b706-6bee-45b3-afdf-715880e398d0"/>
+      <field name="restore_key" type="string" size="32" default="''" required="true" uuid="94e1df62-704e-4c8a-bf27-7fd65851ff1f"/>
+      <field name="restore_key_time" type="integer" size="14" default="'0'" required="true" uuid="33ede14f-cc0d-438c-8f85-a3941a98c1cf">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="u2u_active" type="string" default="'1'" enum-values="'0','1'" required="true" uuid="3ef6acdf-23a3-4c22-9af0-b2ce7c552414"/>
+      <index name="username">
+        <index-field name="username"/>
+      </index>
+      <orm-attributes>
+        <attribute name="table">access_users</attribute>
+      </orm-attributes>
+    </entity>
+    <entity name="UserGroup" uuid="ea5ab254-a0c9-4ff2-a623-a503ae92c273">
+      <field name="group_id" type="integer" size="11" required="true" primary="true" uuid="14456e01-e99c-474f-bae4-a1e2137af251"/>
+      <field name="user_id" type="integer" size="11" required="true" primary="true" uuid="1f845537-24bb-4959-a806-fd5e086fd5d1"/>
+      <orm-attributes>
+        <attribute name="table">access_rel_user_group</attribute>
+      </orm-attributes>
+    </entity>
+    <many-to-many mn-entity="UserGroup" caption="Group to User" uuid="4a8f73c4-a132-4815-9bc1-a96df5d0295a">
+      <many-to-many-entity name="User" owning-side="true" alias="user" uuid="50bcf8f2-cc3e-417e-9de6-30156f1e64a5">
+        <many-to-many-field from="user_id" to="id"/>
+      </many-to-many-entity>
+      <many-to-many-entity name="Group" owning-side="false" alias="group" uuid="bf912838-965b-428b-a8ad-f5f35e22255c">
+        <many-to-many-field from="group_id" to="group_id"/>
+      </many-to-many-entity>
+    </many-to-many>
+    <orm-attributes>
+      <attribute name="namespace">Cx\Core\User\Model\Entity</attribute>
+    </orm-attributes>
+  </module>
+  <module name="Cx\Core_Modules\Access\Model\Entity" import-format="Doctrine2Yml" import-path="../../../core_modules/Access/Model/Yaml" uuid="9788f75c-3937-4c2e-ac58-abee0017e0e4">
+    <entity name="DynamicId" uuid="5d797832-4a3f-11e4-a112-448a5bc913e4">
+      <field name="group_id" type="integer" size="11" default="'0'" required="true" primary="true" uuid="10f0541f-87ab-4b88-82b4-53dd23c8c8fe"/>
+      <field name="access_id" type="integer" size="11" default="'0'" required="true" primary="true" uuid="2f136b3f-11eb-4772-9ef0-7e2846e2adf8"/>
+      <orm-attributes>
+        <attribute name="table">access_group_dynamic_ids</attribute>
+      </orm-attributes>
+    </entity>
+    <many-to-many mn-entity="DynamicId" caption="Group to AccessId" uuid="61d4351a-8ae3-4b33-9341-7043def36a17">
+      <many-to-many-entity name="AccessId" owning-side="true" alias="accessId2" uuid="850703cf-9a7c-4726-9d30-a240c17c85c6">
+        <many-to-many-field from="access_id" to="id"/>
+      </many-to-many-entity>
+      <many-to-many-entity name="Group" owning-side="false" alias="group2" uuid="b58bc8fe-500e-412d-88f9-4d2b398c0a59">
+        <many-to-many-field from="group_id" to="group_id"/>
+      </many-to-many-entity>
+    </many-to-many>
+    <entity name="StaticId" uuid="5d79816a-4a3f-11e4-a112-448a5bc913e4">
+      <field name="group_id" type="integer" size="11" default="'0'" required="true" primary="true" uuid="5772dddf-5392-413e-b0b9-3fd519016ad3"/>
+      <field name="access_id" type="integer" size="11" default="'0'" required="true" primary="true" uuid="bd0708ea-1b55-4e33-a332-0084a8f59477"/>
+      <orm-attributes>
+        <attribute name="table">access_group_static_ids</attribute>
+      </orm-attributes>
+    </entity>
+    <many-to-many mn-entity="StaticId" caption="Group to AccessId" uuid="df3e68f0-ecbe-4711-8997-957ea7b3caa6">
+      <many-to-many-entity name="AccessId" owning-side="true" alias="accessId" uuid="4bb29754-6590-4bc5-a8cd-2db9c5d8d2a0">
+        <many-to-many-field from="access_id" to="id"/>
+      </many-to-many-entity>
+      <many-to-many-entity name="Group" owning-side="false" alias="group" uuid="6c28bea5-ec8a-4053-9133-28525c654e1a">
+        <many-to-many-field from="group_id" to="group_id"/>
+      </many-to-many-entity>
+    </many-to-many>
+    <entity name="AccessId" uuid="c027dd02-5d7e-424c-91f9-75e3661285f6">
+      <field name="id" type="integer" required="true" unique="true" primary="true" auto-increment="true" uuid="8bdd533b-71f5-4f97-b6a9-c974d6d22bdd"/>
+      <field name="entity_class_name" type="string" uuid="9dd48f8a-57cb-47e9-91b6-a1da041f7854"/>
+      <field name="entity_class_id" type="string" uuid="23b7e9d8-701b-41c3-9fb8-176aad57fb22"/>
+      <orm-attributes>
+        <attribute name="table">access_id</attribute>
+      </orm-attributes>
+    </entity>
+    <orm-attributes>
+      <attribute name="namespace">Cx\Core_Modules\Access\Model\Entity</attribute>
+    </orm-attributes>
+  </module>
+  <module name="Non-Doctrine" import-format="Doctrine2Yml" import-path="../../../../../../tmp" uuid="50623017-2969-456c-9b24-7dddfb32d4f4">
+    <entity name="contrexx_access_settings" uuid="5d798f48-4a3f-11e4-a112-448a5bc913e4">
+      <field name="key" type="string" size="32" default="''" required="true" uuid="bd7fd256-f400-42ff-9af8-0feaa8764d74"/>
+      <field name="value" type="string" size="255" default="''" required="true" uuid="e68ef417-91e6-4fd4-9754-d0785a44bb74"/>
+      <field name="status" type="integer" size="1" default="'0'" required="true" uuid="58f6459b-bf52-4f4a-bdd0-ea3311ca35e4">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <index name="key" unique="true">
+        <index-field name="key"/>
+        <orm-attributes>
+          <attribute name="type">UNIQUE</attribute>
+        </orm-attributes>
+      </index>
+      <orm-attributes>
+        <attribute name="table">contrexx_access_settings</attribute>
+      </orm-attributes>
+    </entity>
+    <entity name="contrexx_access_user_mail" uuid="5d79cd0a-4a3f-11e4-a112-448a5bc913e4">
+      <field name="type" type="enum" default="'reg_confirm'" enum-values="'reg_confirm','reset_pw','user_activated','user_deactivated','new_user'" required="true" uuid="10995803-29c5-4d08-b0ad-7265becbe949"/>
+      <field name="lang_id" type="integer" size="1" default="'0'" required="true" uuid="e07eb1b3-f221-4838-8bd8-a0fb48cbeef2">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="sender_mail" type="string" size="255" default="''" required="true" uuid="fcee670f-9748-4707-b3e0-32abb4d6dda9"/>
+      <field name="sender_name" type="string" size="255" default="''" required="true" uuid="cf0ddcfe-1cb1-43e1-8762-f7560a03e088"/>
+      <field name="subject" type="string" size="255" default="''" required="true" uuid="df70506d-b078-4d00-9802-fac4e005ee5c"/>
+      <field name="format" type="enum" default="'text'" enum-values="'text','html','multipart'" required="true" uuid="c2bc1b34-5b2f-47b1-b873-35b1b77783a8"/>
+      <field name="body_text" type="string" required="true" uuid="3a47d045-d676-4eb6-a6cb-52e987baaa57"/>
+      <field name="body_html" type="string" required="true" uuid="2e7276d4-1db8-4a43-8532-ecce97981703"/>
+      <index name="mail" unique="true">
+        <index-field name="type"/>
+        <index-field name="lang_id"/>
+        <orm-attributes>
+          <attribute name="type">UNIQUE</attribute>
+        </orm-attributes>
+      </index>
+      <orm-attributes>
+        <attribute name="table">contrexx_access_user_mail</attribute>
+      </orm-attributes>
+    </entity>
+    <entity name="contrexx_access_user_network" uuid="5d79d96c-4a3f-11e4-a112-448a5bc913e4">
+      <field name="id" type="integer" size="10" required="true" primary="true" auto-increment="true" uuid="592fe1f8-2bfb-44a6-a5b2-49bcb0a59432">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <field name="oauth_provider" type="string" size="100" default="''" required="true" uuid="607431ef-2454-4432-b533-e88c8995d02a"/>
+      <field name="oauth_id" type="string" size="100" default="''" required="true" uuid="b046ca2c-1098-435a-8ffd-f538236a10c6"/>
+      <field name="user_id" type="integer" size="10" default="'0'" required="true" uuid="a696f558-0b39-4ac6-be7f-b9e37c303862">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <orm-attributes>
+        <attribute name="table">contrexx_access_user_network</attribute>
+      </orm-attributes>
+    </entity>
+    <entity name="contrexx_access_user_validity" uuid="5d7a0748-4a3f-11e4-a112-448a5bc913e4">
+      <field name="validity" type="integer" size="10" default="'0'" required="true" primary="true" uuid="2508f325-3968-4bcf-81ff-f3bf131df34f">
+        <orm-attributes>
+          <attribute name="unsigned">true</attribute>
+        </orm-attributes>
+      </field>
+      <orm-attributes>
+        <attribute name="table">contrexx_access_user_validity</attribute>
+      </orm-attributes>
+    </entity>
+  </module>
+  <visual-data>
+    <project uuid="0707e871-ea0d-4bfb-9d52-8402d0221185" size-x="135" size-x2="948" size-y="14" size-y2="665"/>
+    <association uuid="103c1bca-5dcd-4e66-a77c-5ae07842e895" caption1-position-x="0" caption1-position-y="0" center-position-x="0" center-position-y="0" color="4288059030"/>
+    <module uuid="10d5fb59-b99e-479b-82ac-7f60968449bd" bg-color="4294897635" position-x="301" position-y="0" size-x="83" size-x2="633" size-y="0" size-y2="636"/>
+    <association uuid="14f6949a-82d3-4765-b700-8eb6c72e9f84" caption1-position-x="-146" caption1-position-y="-17" center-position-x="0" center-position-y="-20" color="4288059030"/>
+    <many-to-many-association-entity uuid="18519a64-8657-41a2-bc08-215a9e78f7d7" caption1-position-x="-9" caption1-position-y="-93" center-position-x="0" center-position-y="13"/>
+    <association uuid="25d4189a-e145-46f8-9fbe-68c3048ce628" caption1-position-x="131" caption1-position-y="8" center-position-x="0" center-position-y="0" color="4288059030"/>
+    <many-to-many-association uuid="4a8f73c4-a132-4815-9bc1-a96df5d0295a" color="4288059030"/>
+    <many-to-many-association-entity uuid="4fd900d9-7b77-4ba3-bc62-8a2c322340e7" caption1-position-x="25" caption1-position-y="-13" center-position-x="0" center-position-y="0"/>
+    <module uuid="50623017-2969-456c-9b24-7dddfb32d4f4" bg-color="4293391869" position-x="-125" position-y="436" size-x="0" size-x2="330" size-y="0" size-y2="208"/>
+    <many-to-many-association-entity uuid="50bcf8f2-cc3e-417e-9de6-30156f1e64a5" caption1-position-x="0" caption1-position-y="0" center-position-x="11" center-position-y="2"/>
+    <many-to-many-association uuid="548aa017-bd2c-4c28-9eab-d7baa383f645" color="4288059030"/>
+    <entity uuid="5d797832-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="11" position-y="31" size-x="0" size-x2="115" size-y="0" size-y2="60"/>
+    <entity uuid="5d79816a-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="124" position-y="104" size-x="0" size-x2="115" size-y="0" size-y2="60"/>
+    <entity uuid="5d798f48-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="27" position-y="119" size-x="0" size-x2="120" size-y="0" size-y2="59"/>
+    <entity uuid="5d7999de-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="-5" position-y="328" size-x="0" size-x2="116" size-y="0" size-y2="129"/>
+    <entity uuid="5d79a4ec-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="57" position-y="532" size-x="0" size-x2="120" size-y="0" size-y2="59"/>
+    <entity uuid="5d79acbc-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="-22" position-y="157" size-x="0" size-x2="218" size-y="0" size-y2="88"/>
+    <entity uuid="5d79b716-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="-72" position-y="525" size-x="0" size-x2="116" size-y="0" size-y2="101"/>
+    <entity uuid="5d79c1c0-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="-56" position-y="30" size-x="0" size-x2="147" size-y="0" size-y2="101"/>
+    <entity uuid="5d79cd0a-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="178" position-y="6" size-x="0" size-x2="130" size-y="0" size-y2="129"/>
+    <entity uuid="5d79d96c-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="9" position-y="28" size-x="0" size-x2="144" size-y="0" size-y2="73"/>
+    <entity uuid="5d79e8e4-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="254" position-y="96" size-x="0" size-x2="127" size-y="0" size-y2="297"/>
+    <entity uuid="5d79fe74-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="264" position-y="450" size-x="0" size-x2="109" size-y="0" size-y2="59"/>
+    <entity uuid="5d7a0748-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="174" position-y="147" size-x="0" size-x2="140" size-y="0" size-y2="31"/>
+    <entity uuid="5d7a1256-4a3f-11e4-a112-448a5bc913e4" bg-color="4294967295" hdr-color="4292006610" position-x="463" position-y="92" size-x="0" size-x2="155" size-y="0" size-y2="339"/>
+    <many-to-many-association uuid="61d4351a-8ae3-4b33-9341-7043def36a17" color="4288059030"/>
+    <many-to-many-association-entity uuid="6c28bea5-ec8a-4053-9133-28525c654e1a" caption1-position-x="0" caption1-position-y="0" center-position-x="7" center-position-y="0"/>
+    <association uuid="74f3bb87-c751-4aaa-8dde-ea998faaadad" caption1-position-x="0" caption1-position-y="0" center-position-x="-3" center-position-y="1" color="4288059030"/>
+    <association uuid="7df06cc8-af98-408f-afaf-58776bfb31ea" caption1-position-x="0" caption1-position-y="0" center-position-x="0" center-position-y="0" color="4288059030"/>
+    <association uuid="92c776d3-8545-40be-a2a7-a3ef78ae2605" caption1-position-x="0" caption1-position-y="-45" center-position-x="0" center-position-y="19" color="4288059030"/>
+    <module uuid="9788f75c-3937-4c2e-ac58-abee0017e0e4" bg-color="4293584113" position-x="-104" position-y="0" size-x="0" size-x2="263" size-y="0" size-y2="376"/>
+    <many-to-many-association-entity uuid="b58bc8fe-500e-412d-88f9-4d2b398c0a59" caption1-position-x="0" caption1-position-y="0" center-position-x="-11" center-position-y="0"/>
+    <many-to-many-association-entity uuid="bf912838-965b-428b-a8ad-f5f35e22255c" caption1-position-x="0" caption1-position-y="0" center-position-x="0" center-position-y="6"/>
+    <entity uuid="c027dd02-5d7e-424c-91f9-75e3661285f6" bg-color="4294967295" hdr-color="4292006610" position-x="26" position-y="263" size-x="0" size-x2="129" size-y="0" size-y2="59"/>
+    <many-to-many-association uuid="df3e68f0-ecbe-4711-8997-957ea7b3caa6" color="4288059030"/>
+    <entity uuid="ea5ab254-a0c9-4ff2-a623-a503ae92c273" bg-color="4294967295" hdr-color="4292006610" position-x="191" position-y="24" size-x="0" size-x2="110" size-y="0" size-y2="60"/>
+  </visual-data>
+</skipper>
