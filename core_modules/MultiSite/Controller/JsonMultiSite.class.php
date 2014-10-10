@@ -1161,7 +1161,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         \Cx\Core\Config\Controller\Config::init();
                         $license->save($objDatabase);
                         //Remove the following config values from yml file only if the SystemInfo is not licensed.
-                        if (!in_array('SystemInfo', $license->getLicense()->getLegalComponentsList())) {
+                        if (!in_array('SystemInfo', $license->getLegalComponentsList())) {
                             \Cx\Core\Setting\Controller\Setting::delete('dnsServer', 'administrationArea');
                             \Cx\Core\Setting\Controller\Setting::delete('useCustomizings', 'otherConfigurations');
                             \Cx\Core\Setting\Controller\Setting::delete('cacheEnabled', 'cache');
