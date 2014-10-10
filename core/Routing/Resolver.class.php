@@ -366,7 +366,7 @@ class Resolver {
 
         //(I) see what the model has for us, aliases only.
         $result = $this->pageRepo->getPagesAtPath($path, null, null, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_ALIAS_ONLY);
-
+        
         //(II) sort out errors
         if(!$result) {
             // no alias
