@@ -1,96 +1,107 @@
 <!-- START memberdir -->
 <div id="memberdir">
     <div class="search_form">
-		<form action="index.php?section=MemberDir" method="get">
-			<input type="hidden" name="search" value="search" /> <input type="hidden" name="section" value="MemberDir" /> <input onclick="this.value=''" name="keyword" value="{MEMBERDIR_KEYWORD}" /> {MEMBERDIR_DROPDOWN} <input type="submit" value="{MEMBERDIR_SEARCH}" />
-		</form>
-	</div>
-	<div class="category_tree"><!-- BEGIN tree --><a title="{TXT_OVERVIEW}" href="index.php?section=MemberDir">{TXT_OVERVIEW}</a> <!-- BEGIN tree-element -->&gt; <a title="{MEMBERDIR_DIRNAME}" href="index.php?section=MemberDir&amp;id={MEMBERDIR_DIRID}">{MEMBERDIR_DIRNAME}</a><!-- END tree-element --><!-- END tree --></div>
-	<h2>{MEMBERDIR_DESCRIPTION}</h2>
-	
-	<!-- BEGIN category_list -->
-	<script type="text/javascript">
-	/* <![CDATA[ */
-		function openSubDir(obj) {
-			var id = obj.id.substr(10);
-			document.getElementById("block_" + id).style.display = "block";
-			obj.src = "modules/MemberDir/View/Media/minuslink.gif";
-			obj.onclick = function() {closeSubDir(this)};
-		}
-		
-		function closeSubDir(obj) {
-			var id = obj.id.substr(10);
-			document.getElementById("block_" + id).style.display = "none";
-			obj.src = "modules/MemberDir/View/Media/pluslink.gif";
-			obj.onclick = function() {openSubDir(this)};
-		}
-	/* ]]> */
-	</script>
-	
-	<div class="subcategories">
-		<h3>{TXT_CATEGORY_TREE_DESC}</h3>
-		<!-- BEGIN category -->
-		<!-- BEGIN div-block-beginning -->
-		<div id="block_{MEMBERDIR_PARENT_ID}" style="display: none; padding-left: {MEMBERDIR_PADDING_LEFT}px;">
-		<!-- END div-block-beginning -->
-			<div class="directory">
-				<img id="memberdir_{MEMBERDIR_DIR_ID}" style="border: none; width: 11px; height: 11px; vertical-align:" onclick="openSubDir(this);" alt="Open subdir" src="../core/Core/View/Media/icons/{MEMBERDIR_IMAGE_SRC}" /> 
-				<img src="modules/MemberDir/View/Media/folder.gif" style="position: relative; top: 4px;"/><a style="vertical-align: " title="{MEMBERDIR_DIR_NAME}" href="index.php?section=MemberDir&amp;id={MEMBERDIR_DIR_ID}">{MEMBERDIR_DIR_NAME}</a>
-			</div>
-			<!-- BEGIN div-block-ending -->
-		</div>
-		<!-- END div-block-ending -->
-		<!-- END category -->
-	</div>
-	<!-- END category_list -->
-	
-	<!-- BEGIN category_show -->
-	<div class="char_list">{MEMBERDIR_CHAR_LIST}</div>
-	<div class="adress_list">
-		<table cellspacing="0">
-			<tbody>
-				<tr>
-					<th>Name</th>
-					<th>Adresse</th>
-				</tr>
-				<!-- BEGIN memberdir_row -->
-				<tr class="row{MEMBERDIR_ROW}">
-					<td valign="top"><a title="{FIELD_NAME} {FIELD_VORNAME}" href="index.php?section=MemberDir&amp;mid={MEMBERDIR_ID}"><strong>{FIELD_NAME} {FIELD_VORNAME}</strong></a></td>
-					<td valign="top">{FIELD_ADRESSE}<br />{FIELD_PLZ} {FIELD_ORT}</td>
-				</tr>
-				<!-- END memberdir_row -->
-			</tbody>
-		</table>
-	</div>
-	<div class="paging">{MEMBERDIR_PAGING}</div>
-	<!-- END category_show -->
-	
-	<!-- BEGIN memberdir_detail_view -->
-	<div class="detail_list">
-		<table cellspacing="0">
-			<tbody>
-				<tr class="row1">
-					<td valign="top" width="50%">{MEMBERDIR_PIC1}<br /></td>
-					<td  valign="top" width="50%">{MEMBERDIR_PIC2}<br /></td>
-				</tr>
-			</tbody>
-		</table>
-		<table cellspacing="0">
-			<tbody>
-				<tr>
-					<th>Personalien</th>
-					<th><br /></th>
-				</tr>
-				<!-- BEGIN row -->
-				<tr class="row1">
-					<td valign="top" width="150"><strong>{MEMBERDIR_FIELD_NAME}:</strong></td>
-					<td  valign="top">{MEMBERDIR_FIELD_VALUE}</td>
-				</tr>
-				<!-- END row -->
-			</tbody>
-		</table>
-	</div>
-	<div class="back"><a title="Zur&uuml;ck" href="javascript:history.back();">Zur&uuml;ck</a> </div>
-	<!-- END memberdir_detail_view -->
+        <form id="memberForm" role="form" action="index.php?section=MemberDir" method="get">
+            <input type="hidden" name="search" value="search" /> 
+            <input type="hidden" name="section" value="MemberDir" /> 
+            <input onclick="this.value = ''" name="keyword" value="{MEMBERDIR_KEYWORD}" /> 
+            {MEMBERDIR_DROPDOWN} 
+            <input class="btn btn-default" type="submit" value="{MEMBERDIR_SEARCH}" />
+        </form>
+    </div>
+    <div class="breadcrumb">
+        <!-- BEGIN tree --><a title="{TXT_OVERVIEW}" href="index.php?section=MemberDir">{TXT_OVERVIEW}</a> <!-- BEGIN tree-element -->&gt; <a title="{MEMBERDIR_DIRNAME}" href="index.php?section=MemberDir&amp;id={MEMBERDIR_DIRID}">{MEMBERDIR_DIRNAME}</a><!-- END tree-element --><!-- END tree --></div>
+    <h2>{MEMBERDIR_DESCRIPTION}</h2>
+
+    <!-- BEGIN category_list -->
+    <script type="text/javascript">
+                /* <![CDATA[ */
+                function openSubDir(obj) {
+                    var id = obj.id.substr(10);
+                    document.getElementById("block_" + id).style.display = "block";
+                    obj.src = "modules/MemberDir/View/Media/minuslink.gif";
+                    obj.onclick = function() {
+                        closeSubDir(this)
+                    };
+                }
+
+                function closeSubDir(obj) {
+                    var id = obj.id.substr(10);
+                    document.getElementById("block_" + id).style.display = "none";
+                    obj.src = "modules/MemberDir/View/Media/pluslink.gif";
+                    obj.onclick = function() {
+                        openSubDir(this)
+                    };
+                }
+                /* ]]> */
+    </script>
+
+    <div class="subcategories">
+        <h3>{TXT_CATEGORY_TREE_DESC}</h3>
+        <div class="row">
+            <!-- BEGIN category -->
+            <!-- BEGIN div-block-beginning -->
+            <div id="block_{MEMBERDIR_PARENT_ID}" style="display: none; padding-left: {MEMBERDIR_PADDING_LEFT}px;">
+                <!-- END div-block-beginning -->
+                <div class="directory col-md-6">
+                    <img id="memberdir_{MEMBERDIR_DIR_ID}" style="border: none; width: 11px; height: 11px; vertical-align:" onclick="openSubDir(this);" alt="Open subdir" src="../core/Core/View/Media/icons/{MEMBERDIR_IMAGE_SRC}" /> 
+                    <img src="modules/MemberDir/View/Media/folder.gif" style="position: relative; top: 4px;"/><a style="vertical-align: " title="{MEMBERDIR_DIR_NAME}" href="index.php?section=MemberDir&amp;id={MEMBERDIR_DIR_ID}">{MEMBERDIR_DIR_NAME}</a>
+                </div>
+                <!-- BEGIN div-block-ending -->
+            </div>
+            <!-- END div-block-ending -->
+            <!-- END category -->
+        </div>
+    </div>
+    <!-- END category_list -->
+
+    <!-- BEGIN category_show -->
+    <div class="char_list">{MEMBERDIR_CHAR_LIST}</div>
+    <div class="adress_list">
+        <table cellspacing="0">
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>Adresse</th>
+                </tr>
+                <!-- BEGIN memberdir_row -->
+                <tr class="row{MEMBERDIR_ROW}">
+                    <td valign="top"><a title="{FIELD_NAME} {FIELD_VORNAME}" href="index.php?section=MemberDir&amp;mid={MEMBERDIR_ID}"><strong>{FIELD_NAME} {FIELD_VORNAME}</strong></a></td>
+                    <td valign="top">{FIELD_ADRESSE}<br />{FIELD_PLZ} {FIELD_ORT}</td>
+                </tr>
+                <!-- END memberdir_row -->
+            </tbody>
+        </table>
+    </div>
+    <div class="paging">{MEMBERDIR_PAGING}</div>
+    <!-- END category_show -->
+
+    <!-- BEGIN memberdir_detail_view -->
+    <div class="detail_list table-responsive">
+        <table cellspacing="0" class="table">
+            <tbody>
+                <tr class="row1">
+                    <td valign="top" width="50%">{MEMBERDIR_PIC1}<br /></td>
+                    <td  valign="top" width="50%">{MEMBERDIR_PIC2}<br /></td>
+                </tr>
+            </tbody>
+        </table>
+        <table cellspacing="0">
+            <tbody>
+                <tr>
+                    <th>Personalien</th>
+                    <th><br /></th>
+                </tr>
+                <!-- BEGIN row -->
+                <tr class="row1">
+                    <td valign="top" width="150"><strong>{MEMBERDIR_FIELD_NAME}:</strong></td>
+                    <td  valign="top">{MEMBERDIR_FIELD_VALUE}</td>
+                </tr>
+                <!-- END row -->
+            </tbody>
+        </table>
+    </div>
+    <div class="back"><a title="Zur&uuml;ck" href="javascript:history.back();">Zur&uuml;ck</a> </div>
+    <!-- END memberdir_detail_view -->
 </div>
 <!-- END memberdir -->
