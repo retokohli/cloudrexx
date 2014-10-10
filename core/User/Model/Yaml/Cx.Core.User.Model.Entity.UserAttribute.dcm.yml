@@ -1,0 +1,62 @@
+Cx\Core\User\Model\Entity\UserAttribute:
+  type: entity
+  table: access_user_attribute
+  fields:
+    id:
+      id: true
+      type: integer
+      length: 10
+      unsigned: true
+      generator:
+        strategy: AUTO
+    type:
+      type: string
+      nullable: false
+    mandatory:
+      type: string
+      nullable: false
+    sort_type:
+      type: string
+      nullable: false
+    order_id:
+      type: integer
+      length: 10
+      nullable: false
+      unsigned: true
+    access_special:
+      type: string
+      nullable: false
+  oneToMany:
+    parent:
+      targetEntity: Cx\Core\User\Model\Entity\UserAttribute
+      mappedBy: children
+    userAttributeName:
+      targetEntity: Cx\Core\User\Model\Entity\UserAttributeName
+      mappedBy: userAttribute
+  manyToOne:
+    children:
+      targetEntity: Cx\Core\User\Model\Entity\UserAttribute
+      inversedBy: parent
+      joinColumns:
+        parent_id:
+          referencedColumnName: id
+    accessId:
+      targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId
+      inversedBy: contrexxAccessUserAttribute
+      joinColumns:
+        access_id:
+          referencedColumnName: id
+  manyToMany:
+    userProfile:
+      targetEntity: Cx\Core\User\Model\Entity\UserProfile
+      inversedBy: userAttribute
+      joinTable:
+        name: access_user_attribute_value
+        joinColumns:
+          attribute_id:
+            referencedColumnName: id
+            nullable: false
+        inverseJoinColumns:
+          user_id:
+            referencedColumnName: user_id
+            nullable: false

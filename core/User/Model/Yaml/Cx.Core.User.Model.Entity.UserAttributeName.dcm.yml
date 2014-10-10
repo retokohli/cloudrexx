@@ -1,0 +1,26 @@
+Cx\Core\User\Model\Entity\UserAttributeName:
+  type: entity
+  table: access_user_attribute_name
+  fields:
+    attribute_id:
+      id: true
+      type: integer
+      length: 10
+      associationKey: true
+      unsigned: true
+    lang_id:
+      id: true
+      type: integer
+      length: 10
+      unsigned: true
+    name:
+      type: string
+      length: 255
+      nullable: false
+  manyToOne:
+    userAttribute:
+      targetEntity: Cx\Core\User\Model\Entity\UserAttribute
+      inversedBy: userAttributeName
+      joinColumns:
+        attribute_id:
+          referencedColumnName: id

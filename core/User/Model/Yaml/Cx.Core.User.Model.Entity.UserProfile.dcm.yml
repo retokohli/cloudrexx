@@ -1,0 +1,102 @@
+Cx\Core\User\Model\Entity\UserProfile:
+  type: entity
+  table: access_user_profile
+  fields:
+    user_id:
+      id: true
+      type: integer
+      length: 11
+      associationKey: true
+      unsigned: true
+    gender:
+      type: string
+      nullable: false
+    firstname:
+      type: string
+      length: 255
+      nullable: false
+    lastname:
+      type: string
+      length: 255
+      nullable: false
+    company:
+      type: string
+      length: 255
+      nullable: false
+    address:
+      type: string
+      length: 255
+      nullable: false
+    city:
+      type: string
+      length: 50
+      nullable: false
+    zip:
+      type: string
+      length: 10
+      nullable: false
+    country:
+      type: integer
+      length: 2
+      nullable: false
+      unsigned: true
+    phone_office:
+      type: string
+      length: 20
+      nullable: false
+    phone_private:
+      type: string
+      length: 20
+      nullable: false
+    phone_mobile:
+      type: string
+      length: 20
+      nullable: false
+    phone_fax:
+      type: string
+      length: 20
+      nullable: false
+    birthday:
+      type: string
+      length: 11
+      nullable: true
+    website:
+      type: string
+      length: 255
+      nullable: false
+    profession:
+      type: string
+      length: 150
+      nullable: false
+    interests:
+      type: string
+      nullable: true
+    signature:
+      type: string
+      nullable: true
+    picture:
+      type: string
+      length: 255
+      nullable: false
+  indexes:
+    profile:
+      columns: [firstname, lastname, company]
+  oneToOne:
+    users:
+      targetEntity: Cx\Core\User\Model\Entity\User
+      inversedBy: userProfile
+      joinColumns:
+        user_id:
+          referencedColumnName: id
+          unique: true
+  manyToOne:
+    userTitle:
+      targetEntity: Cx\Core\User\Model\Entity\ProfileTitle
+      inversedBy: userProfile
+      joinColumns:
+        title:
+          referencedColumnName: id
+  manyToMany:
+    userAttribute:
+      targetEntity: Cx\Core\User\Model\Entity\UserAttribute
+      mappedBy: userProfile
