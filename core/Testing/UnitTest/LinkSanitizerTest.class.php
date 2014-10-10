@@ -32,7 +32,7 @@ class LinkSanitizerTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
 
         //href, '
         $content = "<a href='index.php' />";      
-        $result = "<a href='/cms/de/index.php' />";
+        $result = "<a href='/var/www/html/trunk/index.php' />";
         $this->checkSanitizing($content, $result);
 
         //multiple matches
