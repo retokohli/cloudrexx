@@ -154,7 +154,7 @@ class Knowledge extends KnowledgeLibrary
         foreach ($this->categories->getCategoriesByParent(0) as $category) {
             if ($category['active']) {
                 $subcats = $this->categories->getCategoriesByParent($category['id']);
-                $i = 0;
+                $i = 1;
                 while ($i < count($subcats) && $i <= $this->settings->get('max_subcategories')) {
                     $curSubCat = $subcats[$i];
                     if ($curSubCat['active']) {
