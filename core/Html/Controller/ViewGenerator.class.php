@@ -39,13 +39,16 @@ class ViewGenerator {
                 $entityNS = $this->object->getDataType();
             } else {
                 if (!is_object($object)) {
-                    $entityRepository = \Env::get('em')->getRepository($object);
+                    $entityClassName = $object;
+                    $entityRepository = \Env::get('em')->getRepository($entityClassName);
                     $entities = $entityRepository->findAll();
                     if (empty($entities)) {
-                        $entities = new $entityClassName();
+                        $this->object = new $entityClassName();
+                        $entityNS = $entityClassName;
+                    } else {
+                        $this->object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
+                        $entityNS = $this->object->getDataType();
                     }
-                    $this->object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
-                    $entityNS = $this->object->getDataType();
                 } else {
                     // render form
                     $this->object = $object;
