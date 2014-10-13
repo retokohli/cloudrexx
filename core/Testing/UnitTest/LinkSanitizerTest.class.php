@@ -32,7 +32,7 @@ class LinkSanitizerTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
 
         //href, '
         $content = "<a href='index.php' />";      
-        $result = "<a href='/var/www/html/trunk/index.php' />";
+        $result = "<a href='/index.php' />";
         $this->checkSanitizing($content, $result);
 
         //multiple matches
@@ -61,7 +61,7 @@ class LinkSanitizerTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
         $offset = '/cms/';
         $langDir = 'de/';
        
-        $ls = new \LinkSanitizer($offset.$langDir, $in);
+        $ls = new \LinkSanitizer($offset.$langDir, $in);       
         $this->assertEquals($expectedOut, $ls->replace());      
     }
 }
