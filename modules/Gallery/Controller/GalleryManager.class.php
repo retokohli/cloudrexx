@@ -3191,7 +3191,6 @@ $strFileNew = '';
         // FIRST I CREATE A NEW ROTATED THUMBNAIL
         $strOldFilename = $objResult->fields['path'];
          srand ((double)microtime()*1000000);
-        $strNewFilename = rand().$strOldFilename;
 
         $strOrgPath     = $this->strImagePath;
         $strWebpath     = $this->strImageWebPath;
@@ -3217,11 +3216,14 @@ $strFileNew = '';
         //Rotate the clockwise
         $objImage->rotateImage(270);
         $objImage->newImageType = \ImageManager::IMG_TYPE_PNG;
-        $objImage->saveNewImage($strOrgPath.$strOldFilename, true);
+        //To save the Rotated image
+        if($objImage->saveNewImage($strOrgPath.$strOldFilename, true)){
+            \Cx\Lib\FileSystem\FileSystem::delete_file($strThumbPath.$strOldFilename);
+        }
+        //Resize the Rotated image 
         $objImage->resizeImageSave($strOrgPath,$strWebpath,$strOldFilename,$intX,$intY,$objResult->fields['quality'],
-                            $strThumbPath,$strThumbWebpath,$strNewFilename);
-//        @unlink($strThumbPath.$strOldFilename);
-        @rename($strThumbPath.$strNewFilename,$strThumbPath.$strOldFilename);
+                            $strThumbPath,$strThumbWebpath,$strOldFilename);
+        
         if ($objResult->fields['size_type'] == 'abs') {
             $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
                                     SET     size_abs_h='.$newInsertY.',
