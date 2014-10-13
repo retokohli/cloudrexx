@@ -1553,6 +1553,7 @@ class GalleryManager extends GalleryLibrary
                     'IMAGES_COMMENT_COUNT'          =>    contrexx_raw2xhtml($strOutputCommentCount),
                     'IMAGES_VOTING_COUNT'           =>    contrexx_raw2xhtml($strOutputVotingCount),
                     'IMAGES_VOTING_AVERAGE'         =>    contrexx_raw2xhtml($outputVotingAverage),
+                    'CLEAR_IMAGE_CATCH'             =>    time(),
                 ));
                 $this->_objTpl->parseCurrentBlock();
             }
