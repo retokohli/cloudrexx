@@ -39,7 +39,7 @@ a.edit {
 }
 
 a.dbEdit {
-    background-image: url(../Media/DbEdit.png);
+    background-image: url(/core_modules/MultiSite/View/Media/DbEdit.png);
     display: inline-block;
     height: 16px;
     width: 16px;

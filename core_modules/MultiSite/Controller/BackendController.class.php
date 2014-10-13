@@ -643,6 +643,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                         \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
                                     }
                                     var html = '';
+                                    var queryList = '';
                                     \$J.each(response.data, function(key, value){
                                         if (value.status) { 
                                             var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist"><thead></thead>';
@@ -651,6 +652,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                             var count = 0;
                                             cx.tools.StatusMessage.showMessage('SqlQuery Executed Successfully!.',  null, 3000);
                                             var no_cols = Object.keys(value.sqlResult).length;
+                                            if(no_cols == 0) {
+                                                \$J('#executeSqlQuery_$websiteId #statusMsg').empty();
+                                                var query= value.query;
+                                                query = query.replace(/;/g, "<br/>");
+                                                queryList = "<div><strong>"+"SqlQuery :<br/> " + query + "</strong></div><br/>"
+                                                \$J('#executeSqlQuery_$websiteId #statusMsg').show().html(queryList);
+                                            }                               
                                                 \$J.each(value.sqlResult, function (key, data) {
                                                     tbody += "<tr class =row1>";
                                                     for (jsonkey in data) {
