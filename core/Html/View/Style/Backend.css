@@ -38,16 +38,6 @@ a.edit {
     cursor: pointer;
 }
 
-a.dbEdit {
-    background-image: url(/core_modules/MultiSite/View/Media/DbEdit.png);
-    display: inline-block;
-    height: 16px;
-    width: 16px;
-    margin-top: 4px;
-    margin-left: 4px;
-    cursor: pointer;
-}
-
 form.cx-ui {
     float: none;
     clear: both;
