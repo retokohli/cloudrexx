@@ -399,47 +399,214 @@ class License {
     public function save($objDb) {
         \Cx\Core\Setting\Controller\Setting::init('Config', 'license','Yaml');
 
-        \Cx\Core\Setting\Controller\Setting::set('installationId', $this->getInstallationId());
-        \Cx\Core\Setting\Controller\Setting::set('licenseKey', $this->getLicenseKey());
-        \Cx\Core\Setting\Controller\Setting::set('licenseState', $this->getState());
-        \Cx\Core\Setting\Controller\Setting::set('licenseValidTo', $this->getValidToDate());
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsEdition', $this->getEditionName());
-        
+        // core
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('installationId')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('installationId', $this->getInstallationId(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('installationId', $this->getInstallationId());
+        }
+
+        // license    
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseKey')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseKey', $this->getLicenseKey(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseKey");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseKey', $this->getLicenseKey());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseState')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseState', $this->getState(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseState");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseState', $this->getState());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseValidTo')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseValidTo', $this->getValidToDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseValidTo");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseValidTo', $this->getValidToDate());
+        }
+
         // we must encode the serialized objects to prevent that non-ascii chars
         // get written into the config/settings.php file
-        \Cx\Core\Setting\Controller\Setting::set('licenseMessage', base64_encode(serialize($this->getMessages())));
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseMessage')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseMessage', base64_encode(serialize($this->getMessages())), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseMessage");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseMessage', base64_encode(serialize($this->getMessages())));
+        }
 
-        \Cx\Core\Setting\Controller\Setting::set('licenseCreatedAt', $this->getCreatedAtDate());
-        \Cx\Core\Setting\Controller\Setting::set('licenseDomains', base64_encode(serialize($this->getRegisteredDomains())));
-        \Cx\Core\Setting\Controller\Setting::set('licenseGrayzoneMessages', base64_encode(serialize($this->getGrayzoneMessages())));
-
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $this->getVersion()->getNumber());
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsCodeName', $this->getVersion()->getCodeName());
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsStatus', $this->getVersion()->getState());
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsReleaseDate', $this->getVersion()->getReleaseDate());
-        
         // see comment above why we encode the serialized data here
-        \Cx\Core\Setting\Controller\Setting::set('licensePartner', base64_encode(serialize($this->getPartner())));
-        \Cx\Core\Setting\Controller\Setting::set('licenseCustomer', base64_encode(serialize($this->getCustomer())));
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licensePartner')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licensePartner', base64_encode(serialize($this->getPartner())), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licensePartner");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licensePartner', base64_encode(serialize($this->getPartner())));
+        }
 
-        \Cx\Core\Setting\Controller\Setting::set('availableComponents', base64_encode(serialize($this->getAvailableComponents())));
-        
-        \Cx\Core\Setting\Controller\Setting::set('upgradeUrl', $this->getUpgradeUrl());
-        \Cx\Core\Setting\Controller\Setting::set('isUpgradable', ($this->isUpgradable() ? 'on' : 'off'));
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCustomer')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseCustomer', base64_encode(serialize($this->getCustomer())), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseCustomer");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseCustomer', base64_encode(serialize($this->getCustomer())));
+        }
 
-        \Cx\Core\Setting\Controller\Setting::set('dashboardMessages', base64_encode(serialize($this->getDashboardMessages())));
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('upgradeUrl')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('upgradeUrl', $this->getUpgradeUrl(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for upgradeUrl");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('upgradeUrl', $this->getUpgradeUrl());
+        }
 
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsName', $this->getVersion()->getName());
-                
-        \Cx\Core\Setting\Controller\Setting::set('licenseGrayzoneTime', $this->getGrayzoneTime());
-        \Cx\Core\Setting\Controller\Setting::set('licenseLockTime', $this->getFrontendLockTime());
-        \Cx\Core\Setting\Controller\Setting::set('licenseUpdateInterval', $this->getRequestInterval());
-                
-        \Cx\Core\Setting\Controller\Setting::set('licenseFailedUpdate', $this->getFirstFailedUpdateTime());
-        \Cx\Core\Setting\Controller\Setting::set('licenseSuccessfulUpdate', $this->getLastSuccessfulUpdateTime());
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCreatedAt')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt', $this->getCreatedAtDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseCreatedAt");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseCreatedAt', $this->getCreatedAtDate());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseDomains')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseDomains', base64_encode(serialize($this->getRegisteredDomains())), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseDomains");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseDomains', base64_encode(serialize($this->getRegisteredDomains())));
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('availableComponents')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('availableComponents', base64_encode(serialize($this->getAvailableComponents())), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for availableComponents");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('availableComponents', base64_encode(serialize($this->getAvailableComponents())));
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardMessages')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('dashboardMessages', base64_encode(serialize($this->getDashboardMessages())), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardMessages");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('dashboardMessages', base64_encode(serialize($this->getDashboardMessages())));
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('isUpgradable')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('isUpgradable', ($this->isUpgradable() ? 'on' : 'off'), 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for isUpgradable");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('isUpgradable', ($this->isUpgradable() ? 'on' : 'off'));
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseGrayzoneMessages')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseGrayzoneMessages', base64_encode(serialize($this->getGrayzoneMessages())), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseGrayzoneMessages");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseGrayzoneMessages', base64_encode(serialize($this->getGrayzoneMessages())));
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseGrayzoneTime')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseGrayzoneTime', $this->getGrayzoneTime(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseGrayzoneTime");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseGrayzoneTime', $this->getGrayzoneTime());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseLockTime')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseLockTime', $this->getFrontendLockTime(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseLockTime");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseLockTime', $this->getFrontendLockTime());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseUpdateInterval')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseUpdateInterval', $this->getRequestInterval(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseUpdateInterval");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseUpdateInterval', $this->getRequestInterval());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseFailedUpdate')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseFailedUpdate', $this->getFirstFailedUpdateTime(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseFailedUpdate");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseFailedUpdate', $this->getFirstFailedUpdateTime());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseSuccessfulUpdate')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('licenseSuccessfulUpdate', $this->getLastSuccessfulUpdateTime(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseSuccessfulUpdate");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('licenseSuccessfulUpdate', $this->getLastSuccessfulUpdateTime());
+        }
+
+        // release
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsEdition')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('coreCmsEdition', $this->getEditionName(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsEdition");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('coreCmsEdition', $this->getEditionName());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsVersion')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('coreCmsVersion', $this->getVersion()->getNumber(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsVersion");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $this->getVersion()->getNumber());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsCodeName')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('coreCmsCodeName', $this->getVersion()->getCodeName(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsCodeName");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('coreCmsCodeName', $this->getVersion()->getCodeName());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsStatus')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('coreCmsStatus', $this->getVersion()->getState(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsStatus");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('coreCmsStatus', $this->getVersion()->getState());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsReleaseDate')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('coreCmsReleaseDate', $this->getVersion()->getReleaseDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsReleaseDate");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('coreCmsReleaseDate', $this->getVersion()->getReleaseDate());
+        }
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsName')) {
+            if (!\Cx\Core\Setting\Controller\Setting::add('coreCmsName', $this->getVersion()->getName(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsName");
+            }
+        } else {
+            \Cx\Core\Setting\Controller\Setting::set('coreCmsName', $this->getVersion()->getName());
+        }
 
         \Cx\Core\Setting\Controller\Setting::updateAll();
-        
+
         $query = '
             UPDATE
                 '.DBPREFIX.'modules
