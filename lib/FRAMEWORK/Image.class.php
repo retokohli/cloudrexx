@@ -772,6 +772,7 @@ class ImageManager
                 
                 $this->newImageWidth = imagesx($this->newImage);
                 $this->newImageHeight = imagesy($this->newImage);
+                $this->newImageType  = $this->orgImageType;
                 
                 return true;
             }
