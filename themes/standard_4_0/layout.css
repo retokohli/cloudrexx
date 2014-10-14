@@ -648,16 +648,16 @@ body a:hover {text-decoration: none;}
     padding-left: 25px;
 }
 .contact-phone {
-    background: url('images/addr.jpg') no-repeat -3px -3px;
+    background: url('images/addr.png') no-repeat -3px -3px;
 }
 .contact-fax {
-    background: url('images/addr.jpg') no-repeat -3px -24px;
+    background: url('images/addr.png') no-repeat -3px -24px;
 }
 .contact-mail {
-    background: url('images/addr.jpg') no-repeat -3px -53px;
+    background: url('images/addr.png') no-repeat -3px -53px;
 }
 .contact-web {
-    background: url('images/addr.jpg') no-repeat -3px -74px;
+    background: url('images/addr.png') no-repeat -3px -74px;
 }
 .sidebar-block a {
     color: #fff;
