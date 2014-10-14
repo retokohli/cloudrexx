@@ -1852,7 +1852,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 try {
                     $objResult = $objDatabase->GetAll($params['post']['query']);
                     if ($objResult !== false) {
-                        return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($objResult), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']), contrexx_raw2xhtml($params['post']['query']));
+                        return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($objResult), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']), 'query' => contrexx_raw2xhtml($params['post']['query']));
                     } else {
                         return array('status' => false, 'sqlError' => contrexx_raw2xhtml($objResult->ErrorMsg()));
                     }

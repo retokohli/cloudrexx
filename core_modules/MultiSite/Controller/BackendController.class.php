@@ -677,7 +677,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                                     tbody += "</tr>";
                                                });
                                                html += "<div><strong>"+"SqlQuery executed website name : " + value.websiteName + "</strong></div><br/>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
-                                               \$J('#executeSqlQuery_$websiteId #statusMsg').hide()
                                                cx.trigger("loadingEnd", "executeSql", {});
                                         } else {
                                             cx.trigger("loadingEnd", "executeSql", {});
