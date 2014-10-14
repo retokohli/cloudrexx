@@ -595,7 +595,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $title = $_ARRAYLANG['TXT_MULTISITE_EXECUTE_QUERY_ON_ALL_WEBSITES_OF_SERVICE_SERVER'].$websiteServiceServer->getHostname();
             $websiteId = $websiteServiceId;
         }
-
+        
+        $cxjs = \ContrexxJavascript::getInstance();
+        $cxjs->setVariable(array('successMsg' => $_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_SUCCESSFULLY'], 
+                                 'errorMsg' => $_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_FAILED'],
+                                 'queryExecutedWebsitesName' => $_ARRAYLANG['TXT_MULTISITE_QUERY_EXECUTED_SUCCESSFULLY_ON_WEBSITES'],
+                                 'queryExecutedWebsite' => $_ARRAYLANG['TXT_MULTISITE_QUERY_EXECUTED_SUCCESSFULLY_ON_WEBSITE'],
+                                 'sqlQuery' => $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY'],
+                                 'plsInsertQuery' => $_ARRAYLANG['TXT_MULTISITE_PLEASE_INSERT_QUERY'],
+                        ), 'multisite/lang');
         $javascript = <<<END
         cx.ready(function() {
             \$J('#instance_table').append('<div id ="load-lock"></div>');
@@ -624,7 +632,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + \$J('#loading').html() + "</div>");
                         var query = \$J('#executeSqlQuery_$websiteId #queryContent').val();
                         if(query == '') {
-                            cx.tools.StatusMessage.showMessage('Please insert a query..!', null, 3000);
+                            cx.tools.StatusMessage.showMessage(cx.variables.get('plsInsertQuery', "multisite/lang"), null, 3000);
+                            cx.trigger("loadingEnd", "executeSql", {});
                             return false;
                         } else {
                             domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql";
@@ -638,7 +647,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 success: function(response) {
                                     if (response.status == 'error') {
                                         cx.trigger("loadingEnd", "executeSql", {});
-                                        cx.tools.StatusMessage.showMessage('SqlQuery Executed failed..!',  null, 3000);
+                                        cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', "multisite/lang"),  null, 3000);
                                         \$J('#executeSqlQuery_$websiteId #resultSet').hide();
                                         \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
                                     }
@@ -650,13 +659,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                             var tbody = "";
                                             var thead =""; 
                                             var count = 0;
-                                            cx.tools.StatusMessage.showMessage('SqlQuery Executed Successfully!.',  null, 3000);
+                                            cx.tools.StatusMessage.showMessage(cx.variables.get('successMsg', "multisite/lang"),  null, 3000);
                                             var no_cols = Object.keys(value.sqlResult).length;
                                             if(no_cols == 0) {
                                                 \$J('#executeSqlQuery_$websiteId #statusMsg').empty();
                                                 var query= value.query;
                                                 query = query.replace(/;/g, ";<br/>");
-                                                queryList = "<div><strong>"+"SqlQuery :<br/> " + query + "</strong></div><br/><strong>" + "SqlQuery executed successfully on website(s) :" + "</strong><br/>";
+                                                queryList = "<div><strong>"+ cx.variables.get('sqlQuery', "multisite/lang") + ":<br/> " + query + "</strong></div><br/><strong>" + cx.variables.get('queryExecutedWebsitesName', "multisite/lang") + ":</strong><br/>";
                                                 \$J('#executeSqlQuery_$websiteId #statusMsg').show().html(queryList);
                                                 html += "<strong>"+ value.websiteName + ".</strong><br/>";
                                             } else {                              
@@ -678,12 +687,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                                     tbody += "</tr>";
                                                });
                                                \$J('#executeSqlQuery_$websiteId #statusMsg').hide();
-                                               html += "<strong>"+"SqlQuery executed on website : " + value.websiteName + ".</strong><br/>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
+                                               html += "<strong>"+ cx.variables.get('queryExecutedWebsite', "multisite/lang") + value.websiteName + ".</strong><br/>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
                                             }
                                                cx.trigger("loadingEnd", "executeSql", {});
                                         } else {
                                             cx.trigger("loadingEnd", "executeSql", {});
-                                            cx.tools.StatusMessage.showMessage('SqlQuery Execution Failed!.',  null, 3000);
+                                            cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', "multisite/lang"),  null, 3000);
                                             \$J('#executeSqlQuery_$websiteId #resultSet').hide();
                                             \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
                                         }
