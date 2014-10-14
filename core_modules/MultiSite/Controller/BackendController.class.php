@@ -655,10 +655,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                             if(no_cols == 0) {
                                                 \$J('#executeSqlQuery_$websiteId #statusMsg').empty();
                                                 var query= value.query;
-                                                query = query.replace(/;/g, "<br/>");
-                                                queryList = "<div><strong>"+"SqlQuery :<br/> " + query + "</strong></div><br/>"
+                                                query = query.replace(/;/g, ";<br/>");
+                                                queryList = "<div><strong>"+"SqlQuery :<br/> " + query + "</strong></div><br/><strong>" + "SqlQuery executed successfully on website(s) :" + "</strong><br/>";
                                                 \$J('#executeSqlQuery_$websiteId #statusMsg').show().html(queryList);
-                                            }                               
+                                                html += "<strong>"+ value.websiteName + ".</strong><br/>";
+                                            } else {                              
                                                 \$J.each(value.sqlResult, function (key, data) {
                                                     tbody += "<tr class =row1>";
                                                     for (jsonkey in data) {
@@ -676,7 +677,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                                     count++;
                                                     tbody += "</tr>";
                                                });
-                                               html += "<div><strong>"+"SqlQuery executed website name : " + value.websiteName + "</strong></div><br/>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
+                                               \$J('#executeSqlQuery_$websiteId #statusMsg').hide();
+                                               html += "<strong>"+"SqlQuery executed on website : " + value.websiteName + ".</strong><br/>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
+                                            }
                                                cx.trigger("loadingEnd", "executeSql", {});
                                         } else {
                                             cx.trigger("loadingEnd", "executeSql", {});
