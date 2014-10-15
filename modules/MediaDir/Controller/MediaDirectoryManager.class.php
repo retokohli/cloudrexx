@@ -1017,6 +1017,21 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         die();
     }
+    
+    /**
+     * check the filter session
+     * if the filter session is not set, initially assign the null value
+     */
+    function initFilterSession() {
+        if (!isset($_SESSION[$this->moduleName]['searchFilter'])) {
+            $_SESSION[$this->moduleName]['searchFilter'] = array(
+                'cat_id'    => null,
+                'level_id'  => null,
+                'form_id'   => null,
+                'term'      => null
+            );
+        }
+    }
 
     function manageEntries()
     {
@@ -1025,30 +1040,29 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_manage_entries.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'];
 
+        $this->initFilterSession();
+        
         if(!empty($_REQUEST['cat_id'])) {
-            $intCategoryId = intval($_REQUEST['cat_id']);
-        } else {
-            $intCategoryId = null;
-        }
+            $_SESSION[$this->moduleName]['searchFilter']['cat_id'] = intval($_REQUEST['cat_id']);
+        } 
 
         if(!empty($_REQUEST['level_id'])) {
-            $intLevelId = intval($_REQUEST['level_id']);
-        } else {
-            $intLevelId = null;
-        }
+            $_SESSION[$this->moduleName]['searchFilter']['level_id'] = intval($_REQUEST['level_id']);
+        } 
 
         if(!empty($_REQUEST['form_id'])) {
-            $intFormId = intval($_REQUEST['form_id']);
-        } else {
-            $intFormId = null;
-        }
+            $_SESSION[$this->moduleName]['searchFilter']['form_id'] = intval($_REQUEST['form_id']);
+        } 
 
         if(!empty($_REQUEST['term']) && ($_REQUEST['term'] !== $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'])) {
-            $strTerm = $_REQUEST['term'];
-        } else {
-            $strTerm = null;
-        }
-
+            $_SESSION[$this->moduleName]['searchFilter']['term'] = $_REQUEST['term'];
+        } 
+        
+        //assign the searchFilter session values to corresponding variables
+        $intCategoryId = $_SESSION[$this->moduleName]['searchFilter']['cat_id'];
+        $intLevelId    = $_SESSION[$this->moduleName]['searchFilter']['level_id'];
+        $intFormId     = $_SESSION[$this->moduleName]['searchFilter']['form_id'];
+        $strTerm       = $_SESSION[$this->moduleName]['searchFilter']['term'];
 
         $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
         $catDropdown = $objCategories->listCategories(null, 3, $intCategoryId);
