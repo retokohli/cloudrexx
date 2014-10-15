@@ -686,6 +686,10 @@ form[name="registrationForm"] .row {
 .categorySelect {
     padding-bottom: 10px;
 }
+.survey.table input, .survey.table select {
+    float: left;
+    width: 100% !important;
+}
 #directory div.search,
 #directory div.navtree,
 #directory div.categories,
