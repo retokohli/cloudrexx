@@ -3218,9 +3218,9 @@ $strFileNew = '';
                     if ($intNewHeight == 0) {
                         $intNewHeight = 100;
                     }
-                    $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldWidth, 0);
+                    $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight, 0);
                 } else if ($intNewHeight == 0) {
-                    $intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldHeight, 0);
+                    $intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldWidth, 0);
                 }
             } else {
                 $intNewWidth  = round(($objResult->fields['size_proz'] / 100) * $intOldWidth, 0);
