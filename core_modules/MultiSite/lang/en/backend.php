@@ -115,6 +115,7 @@ $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'] = 'Building your Website..';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'] = 'Congratulations!';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'] = 'Oops..';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'] = 'This might take a few minutes. You will be informed on the supplied email address once your website is online and ready to use.';
+$_ARRAYLANG['TXT_MULTISITE_REDIRECT_MSG'] = 'Your website is ready. You are being redirected to the administration interface now...';
 // TODO add english translation
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'] = 'Vielen Dank für Ihre Anmeldung bei Cloudrexx! Bitte haben Sie etwas Geduld. Es kann bis zu 2 Minuten dauern, bis Ihre Website einsatzbereit ist. Sobald Ihre Website einsatzbereit ist, werden Sie in den Administrationsbereich weitergeleitet. Sie sind automatisch eingeloggt. Das Kennwort wird an %1$s gesendet. Ihre Cloudrexx-Domain lautet %2$s.';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'] = 'Unfortunately, the build process of your website failed. If this did happen before, please contact our customer service under %s.';

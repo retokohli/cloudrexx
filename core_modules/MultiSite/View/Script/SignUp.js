@@ -240,6 +240,11 @@
 
                 // redirect to website, in case auto-login is active
                 if (message == 'auto-login') {
+                    setFormButtonState('close', false);
+                    setFormButtonState('cancel', false);
+                    setFormButtonState('submit', false);
+                    setFormHeader(options.headerSuccessTxt);
+                    setFormStatus('success', options.messageRedirectTxt);
                     window.location.href = response.data.loginUrl;
                     return;
                 }
@@ -323,8 +328,8 @@
 
     function showProgress() {
         var message = options.messageBuildTxt;
-        message = message.replace('%1$s', '<strong>' + objMail.val() + '</strong>');
-        message = message.replace('%2$s', '<strong>' + objAddress.val() + '.' + options.multisiteDomain + '</strong>');
+        message = message.replace('%1$s', '<a href="mailto:' + objMail.val() + '">' + objMail.val() + '</a>');
+        message = message.replace('%2$s', '<a href="https://' + objAddress.val() + '.' + options.multisiteDomain + '" target="_blank">https://' + objAddress.val() + '.' + options.multisiteDomain + '</a>');
         objModal.find('.multisite-progress div').html(message);
         objModal.find('.multisite-progress').show();
     }
