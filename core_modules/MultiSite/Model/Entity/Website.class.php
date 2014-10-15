@@ -1345,7 +1345,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
                                             'Home', 'Ids', 'Imprint', 'JavaScript', 'JsonData', 'language', 'LanguageManager', 'License', 'Login', 'logout',
                                             'Media', 'Media1', 'Media2', 'Media3', 'Media4', 'Message', 'MultiSite', 'Net', 'News', 'Newsletter', 
                                             'Privacy', 'Search', 'Security', 'Session', 'Shell', 'Sitemap', 'Stats', 'U2u', 'Upload',
-                                            'ViewManager');
+                                            'ViewManager', 'Blog', 'Downloads', 'Shop', 'Crm', 'MemberDir', 'Market', 'Calendar', 'Directory', 'DocSys', 'Ecard',
+                                            'Forum', 'GuestBook', 'Jobs', 'Knowledge', 'LiveCam', 'MediaDir', 'Feed', 'Egov', 'Gallery', 'Podcast', 'Recommend',
+                                            'U2u', 'Voting', 'Data', 'Routing');
                 break;
         }
 
@@ -1356,12 +1358,10 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 'state'             => \Cx\Core_Modules\License\License::LICENSE_OK,
                 'validTo'           => 2733517333,
                 'updateInterval'    => 8760,
-                'isUpgradable'      => true,
+                'isUpgradable'      => false,
                 'dashboardMessages' => array(
                     \FWLanguage::getLanguageCodeById(1) => array(
-                        'text' => 'Testen Sie unsere gesamte Leistungsvielfalt bis zum 08.09.2014 völlig kostenlos!
-                          In der kostenlosen Testphase bis zum 08.09.2014 haben Sie uneingeschränkten Zugriff auf sämtliche Funktionen. Sie können unser Produkt also ausgiebig testen. Überzeugen Sie sich von unserer Leistungsvielfalt und wählen Sie dann einfach die für Ihre Anforderungen geeignete Mitgliedschaftsart aus. Für eine individuelle Beratung, auch im Zusammenhang mit der Anwendung unserer Software, stehen wir Ihnen gerne zur Verfügung!
-                          Nach dieser Testphase erhält ihr Account automatisch den Status FREE (kostenlos)!',
+                        'text' => '<h4>Cloudrexx BETA</h4>Sie können mit der Testversion bereits funktionstüchtige Websites aufschalten. Während der gesamten Testphase ist dies für Sie gratis. Die auf der Website aufgeschalteten Produkte sind während der Testphase noch nicht bestellbar. Nach der öffentlichen Lancierung werden Sie frühzeitig dazu aufgefordert, eines der regulären Produkte auszuwählen.',
                         'type'       => 'okbox',
                         'link'       => null,
                         'linkTarget' => null
