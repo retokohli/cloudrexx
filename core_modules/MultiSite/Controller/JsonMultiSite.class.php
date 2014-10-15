@@ -1844,9 +1844,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             if (!empty($objResult)) {
                                 $resultArray = $objResult;
                             }
-                            $queryResult[$key] = true;
+                            $queryResult[$key] = 'success';
                         } else {
-                            $queryResult[$key] = false;
+                            $queryResult[$key] = 'failed';
                         }
                     }
                     $finalResult = array_filter(array_combine($querys, $queryResult));
