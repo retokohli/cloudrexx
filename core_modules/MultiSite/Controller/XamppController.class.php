@@ -186,4 +186,9 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): update Ftp-Account Password: $userName / $password");
         return null;
     }
+    
+    public function getDnsRecords() {
+        \DBG::msg("MultiSite (XamppController): get Dns Records");
+        return null;
+    }
 }

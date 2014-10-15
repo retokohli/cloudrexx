@@ -27,15 +27,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_SERVICE:
-                return array('statistics','settings'=> array('codebases'));
+                return array('domains','statistics','settings'=> array('codebases'));
                 break;
 
             case ComponentController::MODE_MANAGER:
-                return array('statistics','settings'=> array('email','website_templates','website_service_servers',));
+                return array('domains','statistics','settings'=> array('email','website_templates','website_service_servers',));
                 break;
 
             case ComponentController::MODE_HYBRID:
-                return array('statistics','settings'=> array('email','codebases'));
+                return array('domains','statistics','settings'=> array('email','codebases'));
                 break;
 
             case ComponentController::MODE_NONE:
@@ -75,6 +75,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
             case 'statistics':
                 $this->parseSectionStatistics($template, $cmd);
+                break;
+
+            case 'domains':
+                $this->parseSectionDomains($template, $cmd);
                 break;
 
             default:
@@ -246,9 +250,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'licenseMessage' => array(
                             'header' => 'licenseMessage',
+                            )
                         )
                     )
-                )
             );
             $template->setVariable('TABLE', $websiteTemplatesView->render());
         }else{
@@ -418,6 +422,64 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             ),
         ));
         $template->setVariable('TABLE', $view->render());
+    }
+    
+    public function parseSectionDomains(\Cx\Core\Html\Sigma $template, array $cmd)
+    {
+        $domains = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findAll();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($domains, array(
+            'header' => 'Domains',
+            'functions' => array(
+                'edit' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                'delete' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                'sorting' => true,
+                'paging' => true,       // cannot be turned off yet
+                'filtering' => false,   // this does not exist yet
+                'actions' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
+                                function($rowData) {
+                                    return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, false);
+                                } : false,
+            ),
+            'fields' => array(
+                'id' => array('showOverview' => false),
+                'name' => array(
+                    'header' => 'Domain',
+                    'readonly' => true,
+                ),
+                'componentId' => array(
+                    'readonly'      => true,
+                    'showOverview'  => false,
+                ),
+                'componentType' => array(
+                    'readonly'      => true,
+                    'showOverview'  => false,
+                ),
+                'type' => array(
+                    'readonly'      => true,
+                    'showOverview'  => false,
+                ),
+                'coreNetDomainId' => array(
+                    'readonly'      => true,
+                    'showOverview'  => false,
+                ),
+                'pleskId' => array(
+                    'header' => 'DNS status',
+                    'showOverview'  => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                    'table' => array(
+                        'parse' => function($value) {
+                           $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                           $dnsRecords        = $hostingController->getDnsRecords();
+                           $status            = isset($dnsRecords[$value]) ? true : false;
+                           if ($status) {
+                               return '<img src="'. '../core/Core/View/Media/icons/led_green.gif"'. ' alt='."status_red".'/>';
+                           }
+                           return '<img src="'. '../core/Core/View/Media/icons/led_red.gif"'. ' alt='."status_red".'/>';
+                        },
+                    ),
+                ),
+            ),
+        ));
+        $template->setVariable('TABLE', $view->render()); 
     }
 
     /**

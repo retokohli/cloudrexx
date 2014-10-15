@@ -838,4 +838,49 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
         return $response;    
     }
+    
+    /**
+     * Get All the DNS records
+     * 
+     * @return array
+     * @throws ApiRequestException
+     */
+    public function getDnsRecords() {
+        \DBG::msg("MultiSite (PleskController): get DNS-record: $this->webspaceId");
+        if (empty($this->webspaceId)) {
+            return false;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        $dns = $xmldoc->createElement('dns');
+        $packet->appendChild($dns);       
+        $getRec = $xmldoc->createElement('get_rec');
+        $dns->appendChild($getRec);
+
+        $filter = $xmldoc->createElement('filter');
+        $getRec->appendChild($filter);       
+
+        $id = $xmldoc->createElement('site-id', $this->webspaceId);
+        $filter->appendChild($id);
+
+        \DBG::dump($xmldoc->saveXML());
+        $response     = $this->executeCurl($xmldoc);
+        $resultNode   = $response->dns->{'get_rec'}->result;
+        $responseJson = json_encode($response->dns->{'get_rec'});
+        $responseArr  = json_decode($responseJson,true); 
+        $systemError  = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            $error = (isset($systemError)?$systemError:$resultNode->errtext);
+            throw new ApiRequestException("Error in getting DNS records : {$error} ");
+        }      
+        
+        $resultArray = array();
+        if (!empty($responseArr)) {
+            foreach($responseArr['result'] as $result) {
+                $resultArray[$result['id']] = $result['data']['host'];
+            }
+            return $resultArray;
+        }
+    }
 }
