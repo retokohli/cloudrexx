@@ -683,6 +683,9 @@ form[name="registrationForm"] .row {
     float:left;
     height:auto !important;
 }
+.categorySelect {
+    padding-bottom: 10px;
+}
 #directory div.search,
 #directory div.navtree,
 #directory div.categories,
