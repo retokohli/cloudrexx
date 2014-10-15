@@ -116,6 +116,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $resultNode = $response->database->{'add-db'}->result;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in creating database:{$error} ");
         } else {
@@ -162,6 +164,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $systemError = $response->system->errtext;
 
             if ('error' == (string) $resultNode->status || $systemError) {
+                \DBG::dump($xmldoc->saveXML());
+                \DBG::dump($response);
                 $error = (isset($systemError) ? $systemError : $resultNode->errtext);
                 throw new ApiRequestException("Error in removing database user:{$error} ");
             }
@@ -198,6 +202,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $responseJson = json_encode($resultNode);
             $respArr = json_decode($responseJson, true);
             if ('error' == (string) $resultNode->status || $systemError) {
+                \DBG::dump($xmldoc->saveXML());
+                \DBG::dump($response);
                 $error = (isset($systemError) ? $systemError : $resultNode->errtext);
                 throw new ApiRequestException("Error in removing database:{$error} ");
             }
@@ -231,6 +237,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $systemError = $response->system->errtext;
         $resultNode = $response->database->{'get-db'}->result;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in getting database ID : {$error} ");
         }      
@@ -274,6 +282,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $systemError = $response->system->errtext;
         
         if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
             throw new ApiRequestException("Error in getting database User ID : {$error} ");
         }      
@@ -313,6 +323,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $resultNode = $response->database->{'add-db-user'}->result;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in granting database rights to user:{$error} ");
         }
@@ -342,6 +354,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $errcode = $resultNode->errcode;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in revoking database rights from user:{$error} ");
         }
@@ -481,6 +495,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $errcode = $resultNode->errcode;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError){
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in creating Customer: {$error}");
         }
@@ -518,6 +534,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $errcode = $resultNode->errcode;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in creating Subscription: {$error}");
         }
@@ -542,6 +560,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $errcode = $resultNode->errcode;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in deleting Subscription: {$error}");
         }
@@ -578,12 +598,13 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $value = $xmldoc->createElement('value', $value);
         $addRec->appendChild($value);
         
-        \DBG::dump($xmldoc->saveXML());
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->dns->{'add_rec'}->result;
         $errcode = $resultNode->errcode;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in adding DNS Record: {$error}");
         }
@@ -614,12 +635,13 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $id = $xmldoc->createElement('id', $recordId);
         $filter->appendChild($id);
 
-        \DBG::dump($xmldoc->saveXML());
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->dns->{'del_rec'}->result;
         $errcode = $resultNode->errcode;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in deleting DNS Record: {$error}");
         }
@@ -651,12 +673,13 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $id = $xmldoc->createElement('id', $recordId);
         $filter->appendChild($id);
         
-        \DBG::dump($xmldoc->saveXML());
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->dns->{'get_rec'}->result;
         $errcode = $resultNode->errcode;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in fetching DNS Record: {$error}");
         }
@@ -750,6 +773,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $resultNode = $response->{'ftp-user'}->{'add'}->result;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
             throw new ApiRequestException("Error in creating Ftp Account: {$error}");
         }
@@ -785,6 +810,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $resultNode = $response->{'ftp-user'}->{'del'}->result;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
             throw new ApiRequestException("Error in deleting Ftp Account: {$error}");
         }
@@ -833,6 +860,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $resultNode = $response->{'ftp-user'}->{'set'}->result;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
             throw new ApiRequestException("Error in changing the Ftp Account password: {$error}");
         }
