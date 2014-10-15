@@ -348,7 +348,7 @@ div.row2 {
     float:left;
 }
 #voting div.message{
-    color: #ff0000;
+    color: #a94442;
     width: 100%;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
@@ -594,7 +594,7 @@ form[name="registrationForm"] .row {
 }
 #access div.message_error {
     padding: 0;
-    color: #ff0000;
+    color: #a94442;
 }
 #access div.message_ok {
     color: #029202;
@@ -671,7 +671,7 @@ form[name="registrationForm"] .row {
     height:auto !important;
 }
 #recommend div.status {
-    color: #ff0000;
+    color: #a94442;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR DIRECTORY MODULE            */
@@ -685,6 +685,9 @@ form[name="registrationForm"] .row {
 }
 .categorySelect {
     padding-bottom: 10px;
+    margin-top: -10px;
+    float: left;
+    width: 100%;
 }
 .survey.table input, .survey.table select {
     float: left;
@@ -705,7 +708,7 @@ form[name="registrationForm"] .row {
     margin: 0px 0px 15px 0px;
     float:left;
 }
-.image, .infos {
+.image, .infos, .image_default {
     margin: 10px 0;
 }
 .image img {
@@ -816,7 +819,7 @@ form[name="registrationForm"] .row {
     text-align: left;
 }
 #forum div.message_error {
-    color: #ff0000;
+    color: #a94442;
 }
 #forum div.message_ok {
     color: #029202;
@@ -962,7 +965,7 @@ form[name="registrationForm"] .row {
     color: #505050;
 }
 #blog div.message_error {
-    color: #ff0000;
+    color: #a94442;
 }
 #blog div.message_ok {
     color: #029202;
@@ -1764,7 +1767,7 @@ form[name="registrationForm"] .row {
     height:auto !important;
 }
 #newsletter div.errorMessage {
-    color: #ff0000;
+    color: #a94442;
 }
 #newsletter_home input[type=radio],
 #newsletter_home input[type=checkbox]{
@@ -2261,7 +2264,7 @@ dl.data_module img {
     margin-right: 10px;
 }
 #downloads div.message_error {
-    color: #ff0000;
+    color: #a94442;
 }
 #downloads div.message_ok {
     color: #029202;
@@ -2592,7 +2595,7 @@ td ul {
     height:auto !important;
 }
 #media_div div.message_error {
-    color: #ff0000;
+    color: #a94442;
 }
 #media_div div.message_ok {
     color: #029202;
