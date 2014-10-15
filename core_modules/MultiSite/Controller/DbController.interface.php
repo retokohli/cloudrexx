@@ -51,7 +51,7 @@ interface DbController {
      * @param \Cx\Core\Model\Model\Entity\DbUser $dbUser User to remove
      * @throws MultiSiteDbException On error
      */
-    public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser);
+    public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser, \Cx\Core\Model\Model\Entity\Db $db);
     
     /**
      * Removes a db

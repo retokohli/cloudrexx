@@ -100,7 +100,7 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @param \Cx\Core\Model\Model\Entity\DbUser $dbUser User to remove
      * @throws MultiSiteDbException On error
      */
-    public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser){
+    public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser, \Cx\Core\Model\Model\Entity\Db $db ){
         $isUserExist = $this->db->execute("SELECT User FROM mysql.user WHERE user = '".$dbUser->getName()."'");
         if ($isUserExist->RecordCount() == 1) {
            $isUserDeleted = $this->db->execute("DROP USER '".$dbUser->getName()."'@'localhost'");
