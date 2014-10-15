@@ -585,9 +585,10 @@ class ReflectionComponent {
                         echo "WARNING: File missing - ". $additionalFile;
                     }
                 }
-            }
+            }            
             echo "Done \n";
         }
+        $filesystem->copy_file($cacheComponentFolderPath . '/meta.yml', ASCMS_APP_CACHE_FOLDER . '/meta.yml');
         
         echo "Exporting component ... ";
         // Compress
@@ -614,13 +615,15 @@ class ReflectionComponent {
             $objResult->MoveNext();
         }
         
+        $dataFolder = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data';
+        \Cx\Lib\FileSystem\FileSystem::make_folder($dataFolder);
+        
         // check whether its a doctrine component
         if (!file_exists($this->getDirectory(false)."/Model/Yaml")) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_APP_CACHE_FOLDER . '/Data');            
-            $this->writeTableStructureToFile($componentTables, ASCMS_APP_CACHE_FOLDER . '/Data/Structure.sql');
+            $this->writeTableStructureToFile($componentTables, $dataFolder . '/Structure.sql');
         }
         
-        $this->writeTableDataToFile($componentTables, ASCMS_APP_CACHE_FOLDER . '/Data/Data.sql');
+        $this->writeTableDataToFile($componentTables, $dataFolder . '/Data.sql');
     }
     
     /**
@@ -1848,4 +1851,3 @@ class ReflectionComponent {
         }
     }
 }
-
