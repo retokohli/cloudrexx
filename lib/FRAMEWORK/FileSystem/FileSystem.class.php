@@ -189,16 +189,16 @@ class FileSystem
         if (file_exists($newPath.$newDirName) && !$ignoreExists) {
             $newDirName = $newDirName.'_'.time();
         }
-        $status = $this->mkDir($newPath, $newWebPath, $newDirName);
+        $status = $this->mkDir($newPath, $newWebPath, $newDirName, $ignoreExists);
         if ($status!= 'error') {
             $directory = @opendir($orgPath.$orgDirName);
             $file = @readdir($directory);
             while ($file) {
                 if ($file!='.' && $file!='..') {
                     if (!is_dir($orgPath.$orgDirName.'/'.$file)) {
-                            $this->copyFile($orgPath, $orgDirName.'/'.$file, $newPath, $newDirName.'/'.$file);
+                            $this->copyFile($orgPath, $orgDirName.'/'.$file, $newPath, $newDirName.'/'.$file, $ignoreExists);
                     } else {
-                        $this->copyDir($orgPath, $orgWebPath, $orgDirName.'/'.$file, $newPath, $newWebPath, $newDirName.'/'.$file);
+                        $this->copyDir($orgPath, $orgWebPath, $orgDirName.'/'.$file, $newPath, $newWebPath, $newDirName.'/'.$file, $ignoreExists);
                     }
                 }
                 $file = @readdir($directory);
@@ -229,12 +229,15 @@ class FileSystem
     }
 
 
-    function mkDir($path, $webPath, $dirName)
+    function mkDir($path, $webPath, $dirName, $ignoreExists = false)
     {
         global $_FTPCONFIG;
 
         $webPath=$this->checkWebPath($webPath);
         if (file_exists($path.$dirName)) {
+            if ($ignoreExists) {
+                return $dirName;
+            }
             $dirName = $dirName.'_'.time();
         }
         $newDir = $_FTPCONFIG['path'].$webPath.$dirName;
