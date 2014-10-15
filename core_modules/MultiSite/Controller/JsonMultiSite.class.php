@@ -1835,12 +1835,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 break;
             case ComponentController::MODE_WEBSITE:
                 try {
-                    $objResult = $objDatabase->GetAll($params['post']['query']);
-                    if ($objResult !== false) {
-                        return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($objResult), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']), 'query' => contrexx_raw2xhtml($params['post']['query']));
-                    } else {
-                        return array('status' => false, 'sqlError' => contrexx_raw2xhtml($objResult->ErrorMsg()));
+                    $queryResult = array();
+                    $querys = array_filter(explode(";", $params['post']['query']));
+
+                    foreach ($querys as $key => $query) {
+                        $objResult = $objDatabase->GetAll($query);
+                        if ($objResult !== false) {
+                            if (!empty($objResult)) {
+                                $resultArray = $objResult;
+                            }
+                            $queryResult[$key] = true;
+                        } else {
+                            $queryResult[$key] = false;
+                        }
                     }
+                    $finalResult = array_filter(array_combine($querys, $queryResult));
+                   return array('status' => true, 'sqlResult' => $finalResult, 'selectQueryResult' => contrexx_raw2xhtml($resultArray),'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
                 } catch(\Exception $e) {
                     throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query'.$e->getMessage());
                 }

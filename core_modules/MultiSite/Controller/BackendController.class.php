@@ -659,11 +659,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
         
         $cxjs = \ContrexxJavascript::getInstance();
-        $cxjs->setVariable(array('successMsg' => $_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_SUCCESSFULLY'], 
+        $cxjs->setVariable(array('completedMsg' => $_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_COMPLETED'], 
                                  'errorMsg' => $_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_FAILED'],
-                                 'queryExecutedWebsitesName' => $_ARRAYLANG['TXT_MULTISITE_QUERY_EXECUTED_SUCCESSFULLY_ON_WEBSITES'],
-                                 'queryExecutedWebsite' => $_ARRAYLANG['TXT_MULTISITE_QUERY_EXECUTED_SUCCESSFULLY_ON_WEBSITE'],
+                                 'queryExecutedWebsite' => $_ARRAYLANG['TXT_MULTISITE_QUERY_EXECUTED_ON_WEBSITE'],
                                  'sqlQuery' => $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY'],
+                                 'sqlStatus' => $_ARRAYLANG['TXT_MULTISITE_SQL_STATUS'],
                                  'plsInsertQuery' => $_ARRAYLANG['TXT_MULTISITE_PLEASE_INSERT_QUERY'],
                         ), 'multisite/lang');
         $javascript = <<<END
@@ -714,51 +714,67 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                         \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
                                     }
                                     var html = '';
-                                    var queryList = '';
+                                    var resultHtml = '';
                                     \$J.each(response.data, function(key, value){
-                                        if (value.status) { 
-                                            var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist"><thead></thead>';
-                                            var tbody = "";
-                                            var thead =""; 
+                                        if (value.status) {
+                                            var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist">';
                                             var count = 0;
-                                            cx.tools.StatusMessage.showMessage(cx.variables.get('successMsg', "multisite/lang"),  null, 3000);
-                                            var no_cols = Object.keys(value.sqlResult).length;
-                                            if(no_cols == 0) {
-                                                \$J('#executeSqlQuery_$websiteId #statusMsg').empty();
-                                                var query= value.query;
-                                                query = query.replace(/;/g, ";<br/>");
-                                                queryList = "<div><strong>"+ cx.variables.get('sqlQuery', "multisite/lang") + ":<br/> " + query + "</strong></div><br/><strong>" + cx.variables.get('queryExecutedWebsitesName', "multisite/lang") + ":</strong><br/>";
-                                                \$J('#executeSqlQuery_$websiteId #statusMsg').show().html(queryList);
-                                                html += "<strong>"+ value.websiteName + ".</strong><br/>";
-                                            } else {                              
+                                            var col_count = 0;
+                                            var tbody = "";
+                                            var thead ="";
+                                            var tsbody = "";
+                                            var tshead ="";
+
+                                            if (value.sqlResult) {
+                                                var cols = Object.keys(value.sqlResult).length;
                                                 \$J.each(value.sqlResult, function (key, data) {
                                                     tbody += "<tr class =row1>";
+                                                    if (col_count == 0) {
+                                                        thead += "<th>"+ cx.variables.get('sqlQuery', "multisite/lang") +"</th>";
+                                                        thead += "<th>"+cx.variables.get('sqlStatus', "multisite/lang") +"</th>";
+                                                    }
+                                                    if (col_count < cols) {
+                                                        tbody += "<td>"+ key +"</td>";
+                                                        tbody += "<td>"+ data +"</td>";
+                                                    }
+                                                    col_count++;
+                                                    tbody += "</tr>";
+                                                });
+                                                html += "<strong>"+ cx.variables.get('queryExecutedWebsite', "multisite/lang") + value.websiteName + "</strong><br/>" + theader + thead + tbody + "</table></br>";
+                                            }
+                
+                
+                                            if (value.selectQueryResult) {
+                                                var no_cols = Object.keys(value.selectQueryResult).length;
+                                            
+                                                \$J.each(value.selectQueryResult, function (key, data) {
+                                                    tsbody += "<tr class =row1>";
                                                     for (jsonkey in data) {
                                                         if (count == 0) {
-                                                            thead += "<th>";
-                                                            thead += jsonkey;
-                                                            thead += "</th>"
+                                                            tshead += "<th>";
+                                                            tshead += jsonkey;
+                                                            tshead += "</th>"
                                                         }
                                                         if (count < no_cols) {
-                                                            tbody += "<td>";
-                                                            tbody += data[jsonkey];
-                                                            tbody += "</td>"
+                                                            tsbody += "<td>";
+                                                            tsbody += data[jsonkey];
+                                                            tsbody += "</td>"
                                                         }
                                                     }
                                                     count++;
-                                                    tbody += "</tr>";
+                                                    tsbody += "</tr>";
                                                });
-                                               \$J('#executeSqlQuery_$websiteId #statusMsg').hide();
-                                               html += "<strong>"+ cx.variables.get('queryExecutedWebsite', "multisite/lang") + value.websiteName + ".</strong><br/>" + theader + "<tr>" + thead + "</tr>" + tbody + "</table></br>";
+                                               html += theader + tshead + tsbody + "</table></br>";
                                             }
-                                               cx.trigger("loadingEnd", "executeSql", {});
+
+                                            cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', "multisite/lang"),  null, 3000);
                                         } else {
-                                            cx.trigger("loadingEnd", "executeSql", {});
                                             cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', "multisite/lang"),  null, 3000);
                                             \$J('#executeSqlQuery_$websiteId #resultSet').hide();
                                             \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
                                         }
                                     });
+                                    cx.trigger("loadingEnd", "executeSql", {});
                                     if (html != '') {
                                         \$J('#executeSqlQuery_$websiteId #resultSet').show().html(html);
                                     }

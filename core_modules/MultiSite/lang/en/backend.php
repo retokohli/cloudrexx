@@ -130,9 +130,9 @@ $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_MSG'] = 'Your FTP password has been re
 //To execute sql query
 $_ARRAYLANG['TXT_MULTISITE_EXECUTE_QUERY_ON_WEBSITE'] = 'Execute SQL query on Website ';
 $_ARRAYLANG['TXT_MULTISITE_EXECUTE_QUERY_ON_ALL_WEBSITES_OF_SERVICE_SERVER'] = 'Execute SQL query on all websites running on service server ';
-$_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_SUCCESSFULLY'] = 'SqlQuery Executed Successfully!.';
+$_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_COMPLETED'] = 'SqlQuery Execution Completed..!';
 $_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_FAILED'] = 'SqlQuery Executed failed..!';
-$_ARRAYLANG['TXT_MULTISITE_QUERY_EXECUTED_SUCCESSFULLY_ON_WEBSITES'] = 'SqlQuery executed successfully on website(s)';
-$_ARRAYLANG['TXT_MULTISITE_QUERY_EXECUTED_SUCCESSFULLY_ON_WEBSITE'] = 'SqlQuery executed successfully on website : ';
+$_ARRAYLANG['TXT_MULTISITE_QUERY_EXECUTED_ON_WEBSITE'] = 'SqlQuery executed on website : ';
 $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY'] = 'SqlQuery';
+$_ARRAYLANG['TXT_MULTISITE_SQL_STATUS'] = 'SqlStatus';
 $_ARRAYLANG['TXT_MULTISITE_PLEASE_INSERT_QUERY'] = 'Please insert a query..!';
