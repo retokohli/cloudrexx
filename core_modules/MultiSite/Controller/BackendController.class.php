@@ -19,6 +19,8 @@ namespace Cx\Core_Modules\MultiSite\Controller;
  * @subpackage  modules_skeleton
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
+    
+    static $dnsRecords = array();
      
     /**
      * Returns a list of available commands (?act=XY)
@@ -427,18 +429,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function parseSectionDomains(\Cx\Core\Html\Sigma $template, array $cmd)
     {
         $domains = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findAll();
+        self::$dnsRecords = self::getDnsRecords();
         $view = new \Cx\Core\Html\Controller\ViewGenerator($domains, array(
             'header' => 'Domains',
             'functions' => array(
                 'edit' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
                 'delete' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
                 'sorting' => true,
-                'paging' => true,       // cannot be turned off yet
-                'filtering' => false,   // this does not exist yet
-                'actions' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
-                                function($rowData) {
-                                    return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, false);
-                                } : false,
+                'paging' => true, 
+                'filtering' => false,
             ),
             'fields' => array(
                 'id' => array('showOverview' => false),
@@ -466,10 +465,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'header' => 'DNS status',
                     'showOverview'  => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
                     'table' => array(
-                        'parse' => function($value) {
-                           $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
-                           $dnsRecords        = $hostingController->getDnsRecords();
-                           $status            = isset($dnsRecords[$value]) ? true : false;
+                        'parse' => function($value) {                           
+                           $status  = isset(self::$dnsRecords[$value]) ? true : false;
                            if ($status) {
                                return '<img src="'. '../core/Core/View/Media/icons/led_green.gif"'. ' alt='."status_red".'/>';
                            }
@@ -797,5 +794,16 @@ END;
         $dbEdit = '<a href="javascript:void(0);" class="dbEdit '.$className.'" title="'.$title.'"></a>';
         
         return $dbEdit;
+    }
+    
+    /**
+     * get Dns Records
+     * 
+     * @return array 
+     */
+    public static function getDnsRecords()
+    {
+        $hostingController  = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+        return $hostingController->getDnsRecords();
     }
 }
