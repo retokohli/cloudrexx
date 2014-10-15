@@ -75,6 +75,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PASSWORDSETUPMETHOD'] = "Password set met
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTWEBSITETEMPLATE'] = 'Default Website Template for Sign-Up';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AUTOLOGIN'] = 'Auto Login after sign-up';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AUTOLOGIN_TOOLTIP'] = 'Automatically log user in after successfull sign-up process and redirect user to backend of newly created website.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FTPACCOUNTFIXPREFIX'] = 'FTP account name prefix';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FTPACCOUNTFIXPREFIX_TOOLTIP'] = 'Define a prefix that shall be used for the FTP account name in case the Website name is not a valid FTP account name. I.e.: cx';
 
 // settings status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTCODEBASE_SUCCESSFUL_CREATION']      = "Default Code Base has been set successfully";

@@ -547,6 +547,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Auto Login during website setup");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('ftpAccountFixPrefix', '', 14,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for ftp account fix prefix during website setup");
+            }
 
             // websiteSetup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');

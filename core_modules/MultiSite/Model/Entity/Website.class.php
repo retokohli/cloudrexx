@@ -518,6 +518,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->codeBase  = $resp->data->codeBase;
             $this->status    = $resp->data->state;
             $ftpAccountPassword  = $resp->data->ftpPassword;
+            $ftpUser         = $resp->data->ftpUser;
         } else {
             \DBG::msg('Website: setup process..');
 
@@ -530,8 +531,11 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: setupDataFolder..');
             $this->setupDataFolder($websiteName);
 
+            //validate FTP user name if website name doesn't starts with alphabetic letters, add the prefix to website name
+            $ftpUser = !preg_match('#^[a-z]#i', $websiteName) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') . $websiteName : $websiteName;
+            
             \DBG::msg('Website: setupFtpAccount..');
-            $ftpAccountPassword = $this->setupFtpAccount($websiteName);
+            $ftpAccountPassword = $this->setupFtpAccount($ftpUser, $websiteName);
 
             \DBG::msg('Website: setupConfiguration..');
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
@@ -566,7 +570,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         //set ftp user name if ftp not empty
         if (!empty($ftpAccountPassword)) {
-            $this->ftpUser = $websiteName;
+            $this->ftpUser = $ftpUser;
         }
         
         \Env::get('em')->persist($this);
@@ -669,7 +673,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 $info['substitution']['WEBSITE_FTP'] = array(
                     '0' => array(
                         'WEBSITE_DOMAIN'       => $websiteDomain,
-                        'WEBSITE_FTP_USER'     => $websiteName,
+                        'WEBSITE_FTP_USER'     => $ftpUser,
                         'WEBSITE_FTP_PASSWORD' => $ftpAccountPassword
                     )
                 );
@@ -691,6 +695,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             'codeBase'    => $this->codeBase,
             'state'       => $this->status,
             'ftpPassword' => $ftpAccountPassword,
+            'ftpUser'     => $ftpUser,
             'log'         => \DBG::getMemoryLogs(),
         );
     }
@@ -1440,12 +1445,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * 
      * @return boolean
      */
-    public function setupFtpAccount($websiteName) {
+    public function setupFtpAccount($ftpUser, $websiteName) {
         try {
             if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
                 //create FTP-Account
                 $password = \User::make_password(8, true);
-                $accountId = $this->websiteController->addFtpAccount($websiteName, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
+                $accountId = $this->websiteController->addFtpAccount($ftpUser, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
 
                 if ($accountId) {
                     return $password;
