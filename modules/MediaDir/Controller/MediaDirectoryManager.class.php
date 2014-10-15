@@ -1023,12 +1023,14 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
      * if the filter session is not set, initially assign the null value
      */
     function initFilterSession() {
-        if (!isset($_SESSION[$this->moduleName]['searchFilter'])) {
-            $_SESSION[$this->moduleName]['searchFilter'] = array(
-                'cat_id'    => null,
-                'level_id'  => null,
-                'form_id'   => null,
-                'term'      => null
+        if (!isset($_SESSION[$this->moduleName])) {
+            $_SESSION[$this->moduleName] = array(
+                'searchFilter' => array(
+                            'cat_id'    => null,
+                            'level_id'  => null,
+                            'form_id'   => null,
+                            'term'      => null
+                )
             );
         }
     }
