@@ -3189,44 +3189,50 @@ $strFileNew = '';
                                             FROM     '.DBPREFIX.'module_gallery_pictures
                                             WHERE     id='.$intImageId);
 
-        // FIRST I CREATE A NEW ROTATED THUMBNAIL
-        $strOldFilename = $objResult->fields['path'];
-         srand ((double)microtime()*1000000);
-
+        $strImagename   = $objResult->fields['path'];
         $strOrgPath     = $this->strImagePath;
         $strWebpath     = $this->strImageWebPath;
-        $strThumbPath    = $this->strThumbnailPath;
-        $strThumbWebpath = $this->strThumbnailWebPath;
+        $strThumbPath   = $this->strThumbnailPath;
+        $strThumbWebpath= $this->strThumbnailWebPath;
                 
-        $arrImageInfos_B = getimagesize($strOrgPath.$strOldFilename);
-
-        if ($objResult->fields['size_type'] == 'abs') {
-            $intX = $objResult->fields['size_abs_w'];
-            $intY = $objResult->fields['size_abs_h'];
-
-            $newInsertY = $intX;
-            $newInsertX = $intY;
-        }
-        else {
-            $intX = round(($objResult->fields['size_proz']/100) * $arrImageInfos_B[0],0);
-            $intY = round(($objResult->fields['size_proz']/100) * $arrImageInfos_B[1],0);
-        }
-
         $objImage = new \ImageManager();
-        $objImage->loadImage($strOrgPath.$strOldFilename);
+        $objImage->loadImage($strOrgPath.$strImagename);
+               
         //Rotate the clockwise
-        if ($objImage->rotateImage(270)) {
-            $objImage->newImageType = $objImage->orgImageType;
+        if($objImage->rotateImage(270)){
+
             //To save the Rotated image
-            if ($objImage->saveNewImage($strOrgPath . $strOldFilename, true)) {
-                \Cx\Lib\FileSystem\FileSystem::delete_file($strThumbPath . $strOldFilename);
+            if ($objImage->saveNewImage($strOrgPath . $strImagename, true)) {
+                \Cx\Lib\FileSystem\FileSystem::delete_file($strThumbPath . $strImagename);
             }
+
+            $imageSize      = $objImage->_getImageSize($strOrgPath . $strImagename);
+            $intOldWidth    = $imageSize[0];
+            $intOldHeight   = $imageSize[1];
+            if ($objResult->fields['size_type'] == 'abs') {
+                $intNewWidth    = intval($this->arrSettings['standard_width_abs']);
+                $intNewHeight   = intval($this->arrSettings['standard_height_abs']);
+
+                if ($intNewWidth == 0) {
+                    // exception if width and height or 0!
+                    if ($intNewHeight == 0) {
+                        $intNewHeight = 100;
+                    }
+                    $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldWidth, 0);
+                } else if ($intNewHeight == 0) {
+                    $intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldHeight, 0);
+                }
+            } else {
+                $intNewWidth  = round(($objResult->fields['size_proz'] / 100) * $intOldWidth, 0);
+                $intNewHeight = round(($objResult->fields['size_proz'] / 100) * $intOldHeight, 0);
+            }
+
             //Resize the Rotated image 
-            if ($objImage->resizeImageSave($strOrgPath, $strWebpath, $strOldFilename, $intX, $intY, $objResult->fields['quality'], $strThumbPath, $strThumbWebpath, $strOldFilename)) {
+            if ($objImage->resizeImageSave($strOrgPath, $strWebpath, $strImagename, $intNewWidth, $intNewHeight, $objResult->fields['quality'], $strThumbPath, $strThumbWebpath, $strImagename)) {
                 if ($objResult->fields['size_type'] == 'abs') {
                     $objDatabase->Execute('    UPDATE     ' . DBPREFIX . 'module_gallery_pictures
-                                    SET     size_abs_h=' . $newInsertY . ',
-                                            size_abs_w=' . $newInsertX . '
+                                    SET     size_abs_h=' . $intNewHeight . ',
+                                            size_abs_w=' . $intNewWidth . '
                                     WHERE     id=' . $intImageId);
                 }
             }
