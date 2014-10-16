@@ -169,12 +169,17 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         //get seting values
         parent::getSettings();
 
+        $intCatId    = $_SESSION[$this->moduleName]['searchFilter']['cat_id'];
+        $intLevelId  = $_SESSION[$this->moduleName]['searchFilter']['level_id'];
+        $intFormId   = $_SESSION[$this->moduleName]['searchFilter']['form_id'];
+        $strTerm     = $_SESSION[$this->moduleName]['searchFilter']['term'];
+        
         //get search dropdowns
         $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
-        $catDropdown = $objCategories->listCategories(null, 3);
+        $catDropdown = $objCategories->listCategories(null, 3, $intCatId);
 
         $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
-        $levelDropdown = $objLevels->listLevels(null, 3);
+        $levelDropdown = $objLevels->listLevels(null, 3, $intLevelId);
         
         $objForms = new MediaDirectoryForm(null, $this->moduleName);
         $formDropdown = $objForms->listForms(null, 4, $intFormId);
@@ -209,7 +214,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_MAKE_SELECTION' => $_ARRAYLANG['TXT_MEDIADIR_MAKE_SELECTION'],
             'TXT_'.$this->moduleLangVar.'_STATUS' => $_CORELANG['TXT_STATUS'],
             'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_SUBMIT'],
-            'TXT_'.$this->moduleLangVar.'_ID_OR_SEARCH_TERM' =>  $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'],
+            'TXT_'.$this->moduleLangVar.'_ID_OR_SEARCH_TERM' => $strTerm != null ? $strTerm : $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'],
             'TXT_'.$this->moduleLangVar.'_ALL_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_ALL_LEVELS'],
             'TXT_'.$this->moduleLangVar.'_ALL_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_ALL_CATEGORIES'],
             'TXT_'.$this->moduleLangVar.'_ALL_FORMS' => $_ARRAYLANG['TXT_MEDIADIR_ALL_FORMS'],
@@ -1023,14 +1028,17 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
      * if the filter session is not set, initially assign the null value
      */
     function initFilterSession() {
-        if (!isset($_SESSION[$this->moduleName])) {
-            $_SESSION[$this->moduleName] = array(
-                'searchFilter' => array(
+
+        if(!isset($_SESSION[$this->moduleName])){
+            $_SESSION[$this->moduleName] = array();
+        }
+        
+        if (!isset($_SESSION[$this->moduleName]['searchFilter'])) {
+            $_SESSION[$this->moduleName]['searchFilter'] = array(
                             'cat_id'    => null,
                             'level_id'  => null,
                             'form_id'   => null,
                             'term'      => null
-                )
             );
         }
     }
@@ -1044,21 +1052,20 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         $this->initFilterSession();
         
-        if(!empty($_REQUEST['cat_id'])) {
+        if(isset($_REQUEST['cat_id'])) {
             $_SESSION[$this->moduleName]['searchFilter']['cat_id'] = intval($_REQUEST['cat_id']);
         } 
-
-        if(!empty($_REQUEST['level_id'])) {
+        if(isset($_REQUEST['level_id'])) {
             $_SESSION[$this->moduleName]['searchFilter']['level_id'] = intval($_REQUEST['level_id']);
         } 
 
-        if(!empty($_REQUEST['form_id'])) {
+        if(isset($_REQUEST['form_id'])) {
             $_SESSION[$this->moduleName]['searchFilter']['form_id'] = intval($_REQUEST['form_id']);
         } 
-
-        if(!empty($_REQUEST['term']) && ($_REQUEST['term'] !== $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'])) {
-            $_SESSION[$this->moduleName]['searchFilter']['term'] = $_REQUEST['term'];
-        } 
+        
+        if(isset($_REQUEST['term'])){
+            $_SESSION[$this->moduleName]['searchFilter']['term'] = ($_REQUEST['term'] != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) ?  $_REQUEST['term'] : null;
+        }
         
         //assign the searchFilter session values to corresponding variables
         $intCategoryId = $_SESSION[$this->moduleName]['searchFilter']['cat_id'];
