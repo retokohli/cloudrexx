@@ -1847,8 +1847,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function executeSql($params)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
         
+        //load the multisite language
+        $this->loadLanguageData('MultiSite');
+                
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_MANAGER:
             case ComponentController::MODE_HYBRID:
@@ -1888,15 +1891,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $objResult = $objDatabase->GetAll($query);
                         if ($objResult !== false) {
                             if (!empty($objResult)) {
-                                $resultArray = $objResult;
+                                $resultArray[] = json_encode($objResult);
                             }
-                            $queryResult[$key] = 'success';
+                            $queryResult[$key] = $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_SUCCESSFULLY'];
                         } else {
-                            $queryResult[$key] = 'failed';
+                            $queryResult[$key] = $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_FAILED'];
                         }
                     }
-                    $finalResult = array_filter(array_combine($querys, $queryResult));
-                   return array('status' => true, 'sqlResult' => $finalResult, 'selectQueryResult' => contrexx_raw2xhtml($resultArray),'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
+                    $finalResult = array_combine($querys, $queryResult);
+                    return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($finalResult), 'selectQueryResult' => $resultArray, 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
                 } catch(\Exception $e) {
                     throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query'.$e->getMessage());
                 }

@@ -726,16 +726,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                         \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
                                     }
                                     var html = '';
-                                    var resultHtml = '';
                                     \$J.each(response.data, function(key, value){
                                         if (value.status) {
                                             var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist">';
-                                            var count = 0;
                                             var col_count = 0;
                                             var tbody = "";
                                             var thead ="";
-                                            var tsbody = "";
-                                            var tshead ="";
 
                                             if (value.sqlResult) {
                                                 var cols = Object.keys(value.sqlResult).length;
@@ -755,31 +751,34 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                                 html += "<strong>"+ cx.variables.get('queryExecutedWebsite', "multisite/lang") + value.websiteName + "</strong><br/>" + theader + thead + tbody + "</table></br>";
                                             }
                 
-                
                                             if (value.selectQueryResult) {
-                                                var no_cols = Object.keys(value.selectQueryResult).length;
-                                            
                                                 \$J.each(value.selectQueryResult, function (key, data) {
-                                                    tsbody += "<tr class =row1>";
-                                                    for (jsonkey in data) {
-                                                        if (count == 0) {
-                                                            tshead += "<th>";
-                                                            tshead += jsonkey;
-                                                            tshead += "</th>"
+                                                    var count = 0;
+                                                    var tsbody = "";
+                                                    var tshead ="";
+                                                    var objdata = JSON.parse(data);
+                                                    var no_cols = (objdata).length;
+                                                    \$J.each(objdata, function (key, data) {
+                                                        tsbody += "<tr class =row1>";    
+                                                        for (jsonkey in data) {
+                                                            if (count == 0) {
+                                                                tshead += "<th>";
+                                                                tshead += jsonkey;
+                                                                tshead += "</th>"
+                                                            }
+                                                            if (count < no_cols) {
+                                                                tsbody += "<td>";
+                                                                tsbody += data[jsonkey];
+                                                                tsbody += "</td>"
+                                                            }
                                                         }
-                                                        if (count < no_cols) {
-                                                            tsbody += "<td>";
-                                                            tsbody += data[jsonkey];
-                                                            tsbody += "</td>"
-                                                        }
-                                                    }
-                                                    count++;
-                                                    tsbody += "</tr>";
-                                               });
-                                               html += theader + tshead + tsbody + "</table></br>";
+                                                        count++;
+                                                        tsbody += "</tr>";
+                                                    });
+                                                    html += theader + tshead + tsbody + "</table></br>";
+                                                });
                                             }
-
-                                            cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', "multisite/lang"),  null, 3000);
+                                        cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', "multisite/lang"),  null, 3000);
                                         } else {
                                             cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', "multisite/lang"),  null, 3000);
                                             \$J('#executeSqlQuery_$websiteId #resultSet').hide();
@@ -801,7 +800,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 \$J('#executeSqlQuery_$websiteId #resultSet, #executeSqlQuery_$websiteId #statusMsg').hide();
                 \$J('#executeSqlQuery_$websiteId #queryContent').val('');
                 activateDialog_$websiteId.open();
-             });
+            });
         });
 END;
         \JS::registerCode($javascript);
