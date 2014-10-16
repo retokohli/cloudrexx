@@ -105,6 +105,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'executeSql'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkExecuteSqlAccess')),
             'removeUser'            => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'setWebsiteTheme'       => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'getFtpUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -1573,6 +1574,51 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Get the Ftp user
+     * 
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function getFtpUser($params) {
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:    
+                    $authenticationValue = json_decode($params['post']['auth'], true);
+                    if (empty($authenticationValue) || !is_array($authenticationValue)) {
+                        \DBG::dump($params);
+                        throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
+                    }
+
+                    $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+                    $domain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
+                    if (!$domain) {
+                        throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: Unkown Website: ' . $authenticationValue['sender']);
+                    }
+
+                    $website = $domain->getWebsite();
+                    if (!$website) {
+                        throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: Unkown Website: ' . $authenticationValue['sender']);
+                    }
+
+                    if ($website->getFtpUser()) {
+                        return array(
+                            'status'    => 'success',
+                            'ftpUser'   => $website->getFtpUser(),
+                            'log'       => \DBG::getMemoryLogs(),
+                        );
+                    }
+                    break;
+            }
+            throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: Website Ftp user field is empty.');
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: to get website FTP user: ' . $e->getMessage());
+        }
     }
     
     /**
