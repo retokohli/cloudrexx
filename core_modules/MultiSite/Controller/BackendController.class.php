@@ -428,7 +428,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     
     public function parseSectionDomains(\Cx\Core\Html\Sigma $template, array $cmd)
     {
-        $domains = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findAll();
+        $domains = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('componentType' => 'website'));
         self::$dnsRecords = self::getDnsRecords();
         $view = new \Cx\Core\Html\Controller\ViewGenerator($domains, array(
             'header' => 'Domains',
@@ -450,12 +450,27 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'showOverview'  => false,
                 ),
                 'componentType' => array(
-                    'readonly'      => true,
-                    'showOverview'  => false,
+                    'header'       => 'Type',
+                    'readonly'     => true,
+                    'table' => array(
+                        'parse' => function($value, $arrData) {
+                            return ($arrData['type'] == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN) ? 'A' :
+                                    ($arrData['type'] == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? 'CNAME' : false);
+                        },      
+                    ),
                 ),
                 'type' => array(
+                    'header'        => 'Value',
                     'readonly'      => true,
-                    'showOverview'  => false,
+                    'table' => array(
+                        'parse' => function($value, $arrData) {
+                            $domainRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('id' => $arrData['id']));
+                            $website    = $domainRepo->getWebsite();
+                            return ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN) ? $website->getFqdn() :
+                                    ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? $website->getIpAddress() : false);
+                        },
+                            
+                    ),
                 ),
                 'coreNetDomainId' => array(
                     'readonly'      => true,
@@ -468,7 +483,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'parse' => function($value) {                           
                            $status  = isset(self::$dnsRecords[$value]) ? true : false;
                            if ($status) {
-                               return '<img src="'. '../core/Core/View/Media/icons/led_green.gif"'. ' alt='."status_red".'/>';
+                               return '<img src="'. '../core/Core/View/Media/icons/led_green.gif"'. ' alt='."status_green".'/>';
                            }
                            return '<img src="'. '../core/Core/View/Media/icons/led_red.gif"'. ' alt='."status_red".'/>';
                         },
