@@ -912,4 +912,48 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             return $resultArray;
         }
     }
+    
+    /*
+     * Get All FtpAccounts
+     * 
+     * @return array
+     * @throws ApiRequestException
+     */
+    public function getFtpAccounts() {
+        \DBG::msg("MultiSite (PleskController): get all Ftp Accounts.");
+                
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+
+        $ftpUser = $xmldoc->createElement('ftp-user');
+        $packet->appendChild($ftpUser);
+
+        $getTag = $xmldoc->createElement('get');
+        $ftpUser->appendChild($getTag);
+
+        $filterTag = $xmldoc->createElement('filter');
+        $getTag->appendChild($filterTag);
+        
+        $response       = $this->executeCurl($xmldoc);
+        $resultNode     = $response->{'ftp-user'}->{'get'}->result;
+        $responseJson   = json_encode($response->{'ftp-user'}->{'get'});
+        $respArr        = json_decode($responseJson,true); 
+        $systemError    = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError)?$systemError:$resultNode->errtext);
+            throw new ApiRequestException("Error in getting database ID : {$error} ");
+        }      
+            
+        if (!empty($respArr)) {
+            $resultArr = array();
+            foreach ($respArr['result'] as $result) {
+                $resultArr[$result['id']] = $result['name'];
+            }
+        }
+        return $resultArr;
+        
+    }
+    
 }

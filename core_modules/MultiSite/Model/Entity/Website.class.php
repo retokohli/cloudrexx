@@ -1032,8 +1032,11 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     //remove the FTP Account if there
                     $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                     if ($this->ftpUser) {
-                        if (!$hostingController->removeFtpAccount($this->ftpUser)) {
-                            throw new WebsiteException('Unable to delete the FTP Account');
+                        $ftpAccounts = $hostingController->getFtpAccounts();
+                        if (in_array($this->ftpUser, $ftpAccounts)) {
+                            if (!$hostingController->removeFtpAccount($this->ftpUser)) {
+                                throw new WebsiteException('Unable to delete the FTP Account');
+                            }
                         }
                     }
 
