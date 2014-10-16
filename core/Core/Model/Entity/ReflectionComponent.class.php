@@ -291,6 +291,8 @@ class ReflectionComponent {
             throw new SystemComponentException('Component is already installed');
         }
         
+        $websitePath = \Env::get('cx')->getWebsiteDocumentRootPath();
+        
         // Read meta file
         $yaml = new \Symfony\Component\Yaml\Yaml();
         $content = file_get_contents(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
@@ -310,11 +312,11 @@ class ReflectionComponent {
         echo "Copying files to installation ... ";
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();        
         $filesystem->copyDir(
-            ASCMS_APP_CACHE_FOLDER,
-            ASCMS_APP_CACHE_FOLDER_WEB_PATH,
+            ASCMS_APP_CACHE_FOLDER . '/DLC_FILES',
+            ASCMS_APP_CACHE_FOLDER_WEB_PATH . '/DLC_FILES',
             '',
-            $this->getDirectory(false),
-            preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
+            $websitePath,
+            '',
             '',
             true
         );
@@ -373,7 +375,7 @@ class ReflectionComponent {
      */
     function importStructureFromSql()
     {
-        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Structure.sql';
+        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data/Structure.sql';
         
         $fp = @fopen ($sqlDump, "r");
         if ($fp !== false) {
@@ -401,7 +403,11 @@ class ReflectionComponent {
      */
     function importDataFromSql()
     {
-        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Data.sql';        
+        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data/Data.sql';        
+        
+        if (!file_exists($sqlDump)) {
+            return;
+        }
         
         $pattern = '/\s+INTO\s+`?([a-z\\d_]+)`?/i';
         
@@ -447,8 +453,6 @@ class ReflectionComponent {
                     }
                 }
             }
-        } else {
-            throw new SystemComponentException('File not found : '. $sqlDump);
         }
     }
     
@@ -574,7 +578,15 @@ class ReflectionComponent {
                     $srcPath = $websitePath. '/'. $additionalFile;
                     if ($filesystem->exists($srcPath)) {
                         if (is_dir($srcPath)) {
-                            //TO DO: not implemented
+                            $filesystem->copyDir(
+                                $srcPath,
+                                preg_replace('#' . $websitePath . '#', '', $srcPath),
+                                '',
+                                ASCMS_APP_CACHE_FOLDER . '/DLC_FILES/' . $additionalFile,
+                                ASCMS_APP_CACHE_FOLDER_WEB_PATH . '/DLC_FILES/' . $additionalFile,
+                                '',
+                                true
+                            );
                         } else {
                             $folder = dirname($srcPath);
                             $folderPath = preg_replace('#' . $websitePath . '#', '', $folder);
@@ -589,6 +601,7 @@ class ReflectionComponent {
             echo "Done \n";
         }
         $filesystem->copy_file($cacheComponentFolderPath . '/meta.yml', ASCMS_APP_CACHE_FOLDER . '/meta.yml');
+        $filesystem->copy_file($websitePath . '/core/Core/Data/README.txt', ASCMS_APP_CACHE_FOLDER . '/README.txt');
         
         echo "Exporting component ... ";
         // Compress
@@ -635,17 +648,13 @@ class ReflectionComponent {
      */
     private function writeTableDataToFile($arrayTables, $path)
     {
-        if (empty($arrayTables) || empty($path)) {
+        if (empty($path)) {
             return;
         }        
         
         try {
             $objFile = new \Cx\Lib\FileSystem\File($path);
             $objFile->touch();
-            foreach ($arrayTables as $table) {
-                $query = 'SELECT * FROM '.$table;
-                $this->writeTableDataToFileFromQuery($table, $query, $objFile);
-            }
             
             // Dump the core data's to the file            
             $objFile->append("-- modules".PHP_EOL);
@@ -716,6 +725,11 @@ class ReflectionComponent {
             $table = DBPREFIX .'settings';
             $query = 'SELECT * FROM `'. DBPREFIX .'settings` WHERE `setname` LIKE "'. $this->componentName .'%"';
             $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            
+            foreach ($arrayTables as $table) {
+                $query = 'SELECT * FROM '.$table;
+                $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            }
             
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
@@ -834,6 +848,8 @@ class ReflectionComponent {
             $structure .= '`'.$objResult->fields['Field'].'` '.$objResult->fields['Type'];
             if ( @strcmp($objResult->fields['Null'],'YES') != 0 ) {
                 $structure .= ' NOT NULL';
+            } else {
+                $structure .= ' NULL';
             }
 
             if ( !empty($objResult->fields['Default']) || @strcmp($objResult->fields['Null'],'YES') == 0) {
