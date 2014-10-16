@@ -943,7 +943,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             \DBG::dump($xmldoc->saveXML());
             \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
-            throw new ApiRequestException("Error in getting database ID : {$error} ");
+            throw new ApiRequestException("Error in getting Ftp Accounts : {$error} ");
         }      
             
         if (!empty($respArr)) {
