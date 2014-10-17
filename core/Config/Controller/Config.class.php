@@ -1606,11 +1606,8 @@ class Config
         $domainRepo  = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
         $objDomain   = $domainRepo->findOneBy(array('id' => 0));
         //get the ftp user name
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config', 'FileSystem');
-        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('getFtpUser', array());
-        if ($response && $response->status == 'success' && $response->data->status == 'success') {
-            $ftpUserName = $response->data->ftpUser;
-        }
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
+        $ftpUserName = \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser');
         
         if (empty($ftpUserName)) {
             throw new \Exception('FTP Failed to load: Website Ftp User is empty');
