@@ -133,7 +133,6 @@ class ClassLoader {
         $className = end($parts);
         unset($parts[count($parts)]);
         reset($parts);
-        
         // find matching path
         $path = '';
         foreach ($parts as $part) {
@@ -149,9 +148,8 @@ class ClassLoader {
             $className = preg_replace('/Exception/', '', $className);
             $resolvedPath = $path . '/' . $className . $suffix . '.php';
         }
-        
         if ($this->loadFile($resolvedPath)) {
-            return true;
+            return class_exists($name, false);
         } else if ($this->loadFile($path.'/'.$className.'.interface.php')) {
             return true;
         }
