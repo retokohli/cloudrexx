@@ -913,15 +913,19 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
     }
     
-    /*
+    /**
      * Get All FtpAccounts
      * 
      * @return array
      * @throws ApiRequestException
      */
     public function getFtpAccounts() {
-        \DBG::msg("MultiSite (PleskController): get all Ftp Accounts.");
-                
+        
+        \DBG::msg("MultiSite (PleskController): get all Ftp Accounts: $this->webspaceId");
+        if (empty($this->webspaceId)) {
+            return false;
+        }
+        
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);       
 
@@ -933,6 +937,9 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
 
         $filterTag = $xmldoc->createElement('filter');
         $getTag->appendChild($filterTag);
+        
+        $webspaceTag = $xmldoc->createElement('webspace-id', $this->webspaceId);
+        $filterTag->appendChild($webspaceTag);
         
         $response       = $this->executeCurl($xmldoc);
         $resultNode     = $response->{'ftp-user'}->{'get'}->result;

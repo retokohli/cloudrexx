@@ -191,4 +191,12 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): get Dns Records");
         return null;
     }
+    
+    /**
+     * Get Ftp Accounts
+     */
+    public function getFtpAccounts() {
+        \DBG::msg("MultiSite (XamppController): get Ftp Accounts");
+        return null;
+    }
 }
