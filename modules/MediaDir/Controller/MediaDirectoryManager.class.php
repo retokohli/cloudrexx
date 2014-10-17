@@ -169,20 +169,15 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         //get seting values
         parent::getSettings();
 
-        $intCatId    = $_SESSION[$this->moduleName]['searchFilter']['cat_id'];
-        $intLevelId  = $_SESSION[$this->moduleName]['searchFilter']['level_id'];
-        $intFormId   = $_SESSION[$this->moduleName]['searchFilter']['form_id'];
-        $strTerm     = $_SESSION[$this->moduleName]['searchFilter']['term'];
-        
         //get search dropdowns
         $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
-        $catDropdown = $objCategories->listCategories(null, 3, $intCatId);
+        $catDropdown = $objCategories->listCategories(null, 3);
 
         $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
-        $levelDropdown = $objLevels->listLevels(null, 3, $intLevelId);
+        $levelDropdown = $objLevels->listLevels(null, 3);
         
         $objForms = new MediaDirectoryForm(null, $this->moduleName);
-        $formDropdown = $objForms->listForms(null, 4, $intFormId);
+        $formDropdown = $objForms->listForms(null, 4);
 
         //parse global variables
         $this->_objTpl->setGlobalVariable(array(
@@ -214,7 +209,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_MAKE_SELECTION' => $_ARRAYLANG['TXT_MEDIADIR_MAKE_SELECTION'],
             'TXT_'.$this->moduleLangVar.'_STATUS' => $_CORELANG['TXT_STATUS'],
             'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_SUBMIT'],
-            'TXT_'.$this->moduleLangVar.'_ID_OR_SEARCH_TERM' => $strTerm != null ? $strTerm : $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'],
+            'TXT_'.$this->moduleLangVar.'_ID_OR_SEARCH_TERM' => $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'],
             'TXT_'.$this->moduleLangVar.'_ALL_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_ALL_LEVELS'],
             'TXT_'.$this->moduleLangVar.'_ALL_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_ALL_CATEGORIES'],
             'TXT_'.$this->moduleLangVar.'_ALL_FORMS' => $_ARRAYLANG['TXT_MEDIADIR_ALL_FORMS'],
