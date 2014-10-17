@@ -537,6 +537,11 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: setupFtpAccount..');
             $ftpAccountPassword = $this->setupFtpAccount($ftpUser, $websiteName);
 
+            //set ftp user name if ftp not empty
+            if (!empty($ftpAccountPassword)) {
+                $this->ftpUser = $ftpUser;
+            }
+        
             \DBG::msg('Website: setupConfiguration..');
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
 
@@ -568,11 +573,6 @@ class Website extends \Cx\Model\Base\EntityBase {
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
         }
 
-        //set ftp user name if ftp not empty
-        if (!empty($ftpAccountPassword)) {
-            $this->ftpUser = $ftpUser;
-        }
-        
         \Env::get('em')->persist($this);
         \Env::get('em')->flush();
 
@@ -934,7 +934,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                     throw new WebsiteException("Failed to add website entry for website name");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('websiteFtpUser', $this->name, 10,
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteFtpUser', $this->ftpUser, 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add website entry for website FTP user");
             }
