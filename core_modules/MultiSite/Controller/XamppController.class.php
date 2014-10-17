@@ -24,7 +24,10 @@ namespace Cx\Core_Modules\MultiSite\Controller;
  * @subpackage  coremodule_MultiSite
  * @version     1.0.0
  */
-class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbController, \Cx\Core_Modules\MultiSite\Controller\SubscriptionController {
+class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbController,
+                                 \Cx\Core_Modules\MultiSite\Controller\SubscriptionController,
+                                 \Cx\Core_Modules\MultiSite\Controller\FtpController,
+                                 \Cx\Core_Modules\MultiSite\Controller\DnsController {
     /*
      * Protected object for db queries
      * */

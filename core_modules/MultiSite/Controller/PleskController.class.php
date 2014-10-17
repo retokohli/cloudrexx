@@ -30,7 +30,10 @@ class ApiRequestException extends DbControllerException {}
  * @subpackage  coremodule_MultiSite
  * @version     1.0.0
  */
-class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbController, \Cx\Core_Modules\MultiSite\Controller\SubscriptionController {
+class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbController,
+                                 \Cx\Core_Modules\MultiSite\Controller\SubscriptionController,
+                                 \Cx\Core_Modules\MultiSite\Controller\FtpController,
+                                 \Cx\Core_Modules\MultiSite\Controller\DnsController {
     
     /**
      * hostname for the plesk panel 
