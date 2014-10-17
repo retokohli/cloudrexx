@@ -147,7 +147,6 @@ class LegacyClassLoader {
 
     private function loadFromCache($name) {
         global $objInit;
-
         if (isset($this->mapTable[$name])) {
             $file = $this->mapTable[$name];
             $ending = explode('/', $file);
@@ -166,7 +165,9 @@ class LegacyClassLoader {
     private function testLoad($path, $name) {
         if (file_exists($path)) {
             $path = substr($path, strlen($this->cx->getCodeBaseDocumentRootPath()));
-            $this->loadClass($path, $name);
+            if ( ! $this->loadClass($path, $name)) {
+                return false;
+            }
             try {
                 $objFile = new \Cx\Lib\FileSystem\File($this->userClassCacheFile);
                 if (!file_exists($this->userClassCacheFile)) $objFile->touch();
@@ -244,12 +245,14 @@ class LegacyClassLoader {
             // match namespace too
             $matches = array();
 
+            
             //if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)?[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
             if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:[ \n\r\t])(?:[a-zA-Z0-9\\\\_ \n\r\t])*\{/', $fcontent, $matches)) {
                 if (isset($matches[0]) && (!isset($matches[1]) || $matches[1] == $namespace)) {
                     return $file;
                 }
             }
+            
         }
         foreach (glob($path.'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
             $dirParts = explode('/', $dir);
@@ -273,6 +276,9 @@ class LegacyClassLoader {
             require_once $this->cx->getWebsiteCustomizingPath() . '/' . $path;
         } else {
             require_once $this->cx->getCodeBaseDocumentRootPath() . '/' . $path;
+        }
+        if ( ! class_exists($name) ) {
+            return false;
         }
         $bytes = memory_get_peak_usage()-$bytes;
         $this->tab--;
