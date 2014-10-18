@@ -9,11 +9,9 @@
             document.getElementById('searchCheck').value = 'exp';
         }
     }
-
     function CheckAGB() {
         obj1 = document.getElementById('checkAGB');
         obj2 = document.getElementById('submit');
-
         obj2.disabled = !obj1.checked;
     }
     --></script>
@@ -35,15 +33,12 @@
 <div id="breadcrumb">
     <a href="index.php?section=Market">{TXT_MARKET}</a> &raquo; <a href="#">Freischaltcode Eingeben</a>
 </div>
-
 <div id="directoryTitle">
     <h2>{TXT_MARKET_CODE}</h2>
 </div>
-
 <div style="width: 100%; float: left; padding: 0px 0px 15px 0px; text-align:center;">
     <b>{MARKET_CODE}</b>
 </div>
-
 <!-- BEGIN form --> 
 <div style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
     {MARKET_FORM}

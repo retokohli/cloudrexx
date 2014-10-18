@@ -210,7 +210,6 @@
         padding-left: 0;
     }
     form p label {
-        /*margin: 0;*/
         margin-right: 20px;
     }
     form p {
@@ -257,7 +256,8 @@
         float: left;
         clear: both;
         width: 100%;
-    } /*cart*/
+    } 
+    /*cart*/
     #cartlist #th_bg2 .cartrow:first-child {
         width: 100%;
         padding-left: 50%;
@@ -422,7 +422,7 @@
         width: 100%;
         margin: 30px 0;
     }
-    /**/
+    /*Shop*/
     #shop #bestelTable .row1, #shop_payment .row3, #shop_payment .row1 {
         float: left;
         width: 100%;
@@ -499,8 +499,7 @@
         position: absolute;
         left: 22px;
     }
-    /**/
-    /**/
+    /*shop*/
     #shop_payment .row1:first-child td {
         width: 100%;
         float: left;

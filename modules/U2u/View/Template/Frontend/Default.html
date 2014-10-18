@@ -4,15 +4,11 @@
         document.getElementById("show").style.display = "none";
     }
     function validate() {
-
         var textarea = document.getElementsByTagName("textarea")[0];
-
         if (textarea.value == "") {
             alert("please enter the recepients name");
             return false;
-
         }
-
     }
     function drop_down_block() {
         document.getElementById("radio_send").style.display = "none";
@@ -23,7 +19,6 @@
         document.getElementById("radio_send").style.display = "block";
         document.getElementById("multi_send").style.display = "none";
     }
-
 </script>
 <div id="u2u">
     <!-- BEGIN u2u_private_notification_message_link --> 
@@ -33,7 +28,6 @@
     <!-- BEGIN u2u_send_confirm_error --> 
     <div class="text-danger">{U2U_SEND_MESSAGE}</div>
     <!-- END u2u_send_confirm_error -->   
-
     <!-- BEGIN u2u_send_confirm_success --> 
     <div class="text-success">{U2U_SEND_MESSAGE}</div>
     <!-- END u2u_send_confirm_success -->  
@@ -54,19 +48,16 @@
                     </label>
                 </span>
             </p>
-
             <div style="display: none;" id="radio_send">
                 <p><label>Freund auswählen</label>
                     <select class="form-control" name="rcpt_name"><option value="">Bitte auswählen</option><!-- BEGIN u2u_user_drop_down --><option value="{TXT_U2U_OPTION_VALUE}">{TXT_U2U_OPTION_VALUE}</option><!-- END u2u_user_drop_down --></select></p>
             </div>
-
             <div id="multi_send">
                 <p><label>{TXT_RECEPIENTS_USERNAME}</label><input type="text" maxlength="60"  value="{TXT_RECEPIENT}" name="recipients" /></p>
                 <p><label>{TXT_BCC_RECEPIENTS_USERNAME}</label><input type="text" maxlength="60" value="{TXT_BCC}" name="bcc" /></p>
                 <span>{TXT_MESSAGE_CONTENT}</span>
             </div>
         </fieldset>
-
         <fieldset>
             <legend>Nachricht</legend>
             <p><label>{TXT_MESSAGE_TITLE}</label><input type="text" maxlength="60" value="{TXT_PRIVATE_MESSAGE_TITLE}" name="title" /></p>

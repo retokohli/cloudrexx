@@ -124,7 +124,7 @@ label[for="access_user_tos"] {
     margin: 0;
     margin-top: 3px;
     padding: 0;
-    height: autox;
+    height: auto;
 }
 form input[type="submit"] {
     margin-right: 10px;
@@ -750,19 +750,8 @@ form[name="registrationForm"] .row {
 /***************************************************/
 /* CSS DEFINITIONS FOR LOGIN MODULE                */
 /***************************************************/
-/*#right-login {
-    width: 50%;
-    padding: 0px 0 0px 40px;
-    margin: 8px 0px 0px 0px;
-    float: left;
-    height: auto !important;
-}*/
 .login-content .login-social {
     border-right: 1px solid #D8DCE0;
-    /*    float: left;
-        width: 50%;
-        padding-right: 4.9%;
-        margin-top: 8px;*/
 }
 #login a.register{
     padding-left:18px;
@@ -1121,41 +1110,6 @@ form[name="registrationForm"] .row {
 #guestbook .radio, #guestbook .checkbox {
     float :left;
 }
-/*#guestbook div.title {
-    float:left;
-    height: 27px;
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    width: 60%;
-}*/
-/*#guestbook div.title h3{
-    padding: 0px 0px 5px 0px;
-    margin: 0px 0px 0px 0px;
-}
-#guestbook div.location {
-    float:left;
-    height: 22px;
-    padding: 5px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    width: 20%;
-    font-style:italic;
-}
-#guestbook div.date {
-    float:left;
-    height: 22px;
-    padding: 5px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-    width: 20%;
-    text-align:right;
-}*/
-/*#guestbook div.message,
-#guestbook div.links {
-    padding: 0px 0px 0px 0px;
-    margin: 7px 0px 0px 0px;
-    height:auto !important;
-    float:left;
-    width:100%;
-}*/
 /***************************************************/
 /* CSS DEFINITIONS FOR MEMBERDIR  MODULE           */
 /***************************************************/
@@ -1523,11 +1477,6 @@ form[name="registrationForm"] .row {
     padding: 5%;
     text-align: center;
 }
-/*#shop figure a .categorie-image-wrapper img {
-    max-width: 80%;
-    max-height: 80%;
-    padding: 10%;
-}*/
 #shop figure a h3 {
     float: left;
     width: 100%;
@@ -1568,10 +1517,12 @@ form[name="registrationForm"] .row {
     background-image: url('images/arrow-right-white.png');
     background-position: 62px 12px;
     border-color: transparent;
+    background-color: #0A85C8;
 }
 #shop button.add-to-cart {
     float: right;
     height: 33px;
+    background-color: #0A85C8;
     padding: 5.5px 10px 7px 33px;
     color: #FFFFFF;
     font-weight: bold;
@@ -2473,33 +2424,13 @@ dl.data_module img {
     margin: 0 0 0 5px;
 }
 #mediadir .employee {
-    /*    float: left;
-        width: 100%;
-        padding: 0 0 20px 0;
-        margin: 0 0 20px 0;
-        border-bottom: 1px solid #DDDDDD;*/
     padding-bottom: 20px;
     padding-top: 20px;
     border-bottom: 1px solid #dddddd;
 }
 #mediadir .employee.last {
-    /*    padding: 0;
-        margin: 0;*/
-    border: 0;
+        border: 0;
 }
-/*#mediadir .employee-left {
-    float: left;
-    width: 25%;
-}*/
-/*#mediadir .employee-left img {
-    float: left;
-    max-width: 90%;
-    max-height: 200px;
-}*/
-/*#mediadir .employee-middle {
-    float: left;
-    width: 30%;
-}*/
 #mediadir .container-fluid:nth-child(2) .employee {
     padding-top: 0;
 }
@@ -2512,10 +2443,6 @@ dl.data_module img {
     float: left;
     clear: left;
 }
-/*#mediadir .employee-right {
-    float: left;
-    width: 45%;
-}*/
 #mediadir .employee-more {
     float: left;
 }
@@ -2523,7 +2450,6 @@ dl.data_module img {
     float: left;
     width: 100%;
     height: 120px;
-    /*margin: 0 3% 20px 0;*/
     padding: 0 30px;
     text-align: center;
     border: 1px solid #DDDDDD;
@@ -2539,10 +2465,6 @@ dl.data_module img {
     -webkit-box-shadow: 3px 3px 8px #AAAAAA;
     -o-box-shadow: 3px 3px 8px #AAAAAA;
 }
-/*#mediadir .reference img {
-    width: 100%;
-    height: auto;
-}*/
 .mediadirVoteForm input {
     float: left;
 }
@@ -2796,18 +2718,6 @@ input[name="downloads_category_name"] {
     max-width: 80px;
 }
 .file_info a {word-wrap: break-word;}
-/*.profile th {
-    width: 100%;
-    float: left;
-}
-.profile tr {
-    float: left;
-    width: 100%;
-}
-.profile td {
-    width: 40%;
-    float: left;
-}*/
 input[name="search"] {
     float: left;
     margin-right: 10px;
@@ -2828,13 +2738,6 @@ select[name="catId"] {
     float: left;
     width: 50%;
 }
-/*#shop .row3 {
-    display: table-row;
-    
-    background: #F6F6F6;
-    padding : 6px 5px;
-    border-bottom: 1px solid #ffffff;
-}*/
 #shop .row3 .shoprow:first-child {
     width: 25%;
     text-align: left;
@@ -3011,9 +2914,6 @@ input[name="recipient_save"] {
 #shop #bestelTable .row1 {
     float: none;
 }
-/*#contactForm .contactFormClass_button {
-    margin-top: 7px;
-}*/
 #mediadir .mediadirSearchForm .mediadirButtonSearch {
     float: left;
     width: auto !important;
@@ -3141,9 +3041,4 @@ input[type="checkbox"] {
     width: 100%;
 }
 #regkey {margin-bottom: 10px;}
-/*#market div.type_selection input {
-    float: left;
-    width: 15px;
-    clear: none;
-}*/
 .jobs-category > div {margin-bottom: 15px;}

@@ -9,11 +9,9 @@
             document.getElementById('searchCheck').value = 'exp';
         }
     }
-
     function CheckAGB() {
         obj1 = document.getElementById('checkAGB');
         obj2 = document.getElementById('submit');
-
         obj2.disabled = !obj1.checked;
     }
     --></script>
@@ -35,25 +33,20 @@
 <div id="breadcrumb">
     <a href="index.php?section=Market">{TXT_MARKET}</a> &raquo; <a href="#">PayPal fehlgeschlagen</a>
 </div>
-
 <div id="directoryTitle">
     <h2>{TXT_MARKET_TITLE}</h2>
 </div>
-
 <div style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
     {TXT_MARKET_AGB}
 </div>
-
 <div class="text-danger" style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
     {TXT_PAYPAL_ERROR}
 </div>
-
 <div style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
     <span class="checkbox">
         <label for="checkAGB"><input type="checkbox" id="checkAGB" onclick="CheckAGB();" name="checkAGB" value="1"/>{TXT_MARKET_CONFIRM}</label>
     </span>
 </div>
-
 <!-- BEGIN paypal --> 
 <div style="width: 100%; float: left; padding: 0px 0px 15px 0px;">
     <div class="row">
@@ -64,7 +57,6 @@
     <div class="col-md-8">{MARKET_PAYPAL}</div>
 </div>
 <!-- END paypal --> 
-
 <script type="text/javascript">
 <!--
     CheckAGB();

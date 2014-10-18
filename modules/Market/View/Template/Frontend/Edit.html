@@ -9,7 +9,6 @@
             document.getElementById('searchCheck').value = 'exp';
         }
     }
-
     function CheckForm() {
         var errorMsg = "";
         with (document.formEntry) {
@@ -38,7 +37,6 @@
                     errorMsg = errorMsg + "- {TXT_MARKET_EMAIL}\n";
                 }
             }
-
             if (errorMsg != "")
             {
                 alert("{TXT_MARKET_FIELDS_REQUIRED}n{TXT_MARKET_THOSE_FIELDS_ARE_EMPTY}\n" + errorMsg);
@@ -48,7 +46,6 @@
             }
         }
     }
-
     function matchType(pattern, value) {
         var reg = new RegExp(pattern);
         if (value.match(reg)) {
@@ -56,13 +53,11 @@
         }
         return false;
     }
-
     -- ></script>
 <div id="market">
     <form name="formEntry" enctype="multipart/form-data" method="post" action="index.php?section=Market&cmd=edit" onsubmit="return CheckForm()">
         <input type="hidden" name="id" value="{MARKET_ENTRY_ID}" >
         <input type="hidden" name="picOld" value="{MARKET_ENTRY_PICTURE_OLD}" >
-
         <p><label>{TXT_MARKET_TYPE}<font color="red"> *</font></label>
             <span class="radio">
                 <label class="description" for="offer"><input type="radio" name="type" value="offer" {MARKET_ENTRY_TYPE_OFFER} />{TXT_MARKET_OFFER}</label>
