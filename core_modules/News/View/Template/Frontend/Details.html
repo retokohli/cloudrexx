@@ -1,7 +1,6 @@
 <style type="text/css">
     #social-media { display: none; }
 </style>
-
 <script type="text/javascript">
     $J(document).ready(function () {
         $J("#news-toggle").click(function () {
@@ -9,22 +8,18 @@
         });
     });
 </script>
-
 <div id="news-date">
     {NEWS_DATE}&nbsp;{NEWS_TIME} | {NEWS_AUTHOR}<!-- BEGIN news_comments_count --> | {NEWS_COUNT_COMMENTS}<!-- END news_comments_count -->
 </div>
-
 <!-- BEGIN news_use_teaser_text -->
 <div id="news-teaser-text">
     {NEWS_TEASER_TEXT}
 </div>
 <!-- END news_use_teaser_text -->
-
 <div id="news-content">
     <!-- BEGIN news_text -->{NEWS_TEXT}<!-- END news_text -->
     <!-- BEGIN news_redirect -->{TXT_NEWS_REDIRECT_INSTRUCTION} <a href="{NEWS_REDIRECT_URL}" target="_blank">{NEWS_REDIRECT_URL}</a><!-- END news_redirect -->
 </div>
-
 <div id="news-links">
     <ul class="horizontal-list">
         <li><a href="{PRINT_URL}">Version zum Drucken</a></li>
@@ -32,7 +27,6 @@
         <li class="last"><a href="index.php?section=Newsletter">Newsletter abonnieren</a></li>
     </ul>
 </div>
-
 <ul id="news-social-media" class="horizontal-list">
     <li class="google-plus"><div class="g-plusone"></div></li>
     <li class="facebook"><div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-action="recommend" data-font="segoe ui"></div></li>
@@ -40,18 +34,15 @@
     <li class="xing"><script type="XING/Share" data-counter="right" data-lang="de"></script></li>
     <li class="rss-feed last"><a href="feed/news_de.xml"></a></li>
 </ul>
-
 <!-- BEGIN news_comments -->
     <!-- BEGIN news_add_comment -->
         <input class="btn btn-default" id="news-toggle" type="submit" value="Kommentar schreiben" />
         <form role="form" id="news-comment-form" method="post" action="index.php?section=News&amp;cmd=details&amp;newsid={NEWS_ID}">
             <fieldset> 
                 <legend>{TXT_NEWS_ADD_COMMENT}</legend>
-
                 <!-- BEGIN news_add_comment_error -->
                 <div class="news-error text-danger">{NEWS_ADD_COMMENT_ERROR}</div>
                 <!-- END news_add_comment_error -->
-
                 <!-- BEGIN news_add_comment_name -->
                 <p>
                     <label for="news_comment_name">{TXT_NEWS_NAME}</label>
@@ -66,23 +57,19 @@
                     <label for="news_comment_message">{TXT_NEWS_COMMENT}</label>
                     <textarea name="news_comment_message" id="news_comment_message" cols="40" rows="7">{NEWS_COMMENT_MESSAGE}</textarea>
                 </p>
-
                 <!-- BEGIN news_add_comment_captcha -->
                 <p>
                     <label>{TXT_NEWS_CAPTCHA}</label>
                     {NEWS_COMMENT_CAPTCHA_CODE}
                 </p>
                 <!-- END news_add_comment_captcha -->
-
                 <p><input class="btn btn-default" name="news_add_comment" type="submit" value="{TXT_NEWS_ADD}" /></p>
             </fieldset>
         </form>
     <!-- END news_add_comment -->
-
     <!-- BEGIN news_no_comment -->
     <div id="news-no-comments">{TXT_NEWS_COMMENTS_NONE_EXISTING}</div>
     <!-- END news_no_comment -->
-
     <!-- BEGIN news_comment_list -->
         <!-- BEGIN news_comment -->
         <div class="news-comment">
@@ -93,16 +80,13 @@
         <!-- END news_comment -->
     <!-- END news_comment_list -->
 <!-- END news_comments -->
-
 <script type="text/javascript">
     window.___gcfg = {lang: 'de'};
-
     (function () {
         var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
         po.src = 'https://apis.google.com/js/plusone.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
     })();
-
     (function (d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) return;
@@ -110,7 +94,6 @@
         js.src = "//connect.facebook.net/de_DE/all.js#xfbml=1";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
-
     !function (d,s,id) {
         var js,fjs = d.getElementsByTagName(s)[0];
         if (!d.getElementById(id)) {
@@ -119,7 +102,6 @@
             fjs.parentNode.insertBefore(js,fjs);
         }
     }(document,"script","twitter-wjs");
-
     ;(function (d, s) {
         var x = d.createElement(s),
         s = d.getElementsByTagName(s)[0];

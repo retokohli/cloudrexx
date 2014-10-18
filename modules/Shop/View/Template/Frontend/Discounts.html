@@ -3,7 +3,6 @@
         <!-- BEGIN core_message -->
         <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span>
         <!-- END core_message -->
-
         <!-- BEGIN products -->
         <!-- BEGIN shopProductRow -->
         <div class="product">
@@ -43,13 +42,13 @@
                                     <!-- END shopProductOptionsRow -->
                                 </div>
                                 <div class="details">
-                                    <button class="details-button btn btn-primary" type="button" onclick="location.href = '{SHOP_PRODUCT_DETAIL_URL}'">{TXT_SHOP_PRODUCT_DETAILS}</button>
+                                    <button class="details-button btn btn-default" type="button" onclick="location.href = '{SHOP_PRODUCT_DETAIL_URL}'">{TXT_SHOP_PRODUCT_DETAILS}</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="functions">
-                        <button class="btn btn-primary add-to-cart" type="submit" onclick="{
+                        <button class="btn btn-default add-to-cart" type="submit" onclick="{
                                                 SHOP_PRODUCT_SUBMIT_FUNCTION
                                             }" name="{SHOP_PRODUCT_SUBMIT_NAME}">{TXT_ADD_TO_CARD}</button>
                         <div class="price">
@@ -69,13 +68,11 @@
         </div>
         <!-- END shopProductRow -->
         <!-- END products -->
-
         <!-- BEGIN no_product -->
         <div class="no_product">
             <h2>{TXT_SHOP_NO_PRODUCTS}</h2>
         </div>
         <!-- END no_product -->
-
         <div class="paging">{SHOP_PRODUCT_PAGING}</div>
     </div>
 </div>

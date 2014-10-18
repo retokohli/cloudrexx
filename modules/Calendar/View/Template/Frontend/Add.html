@@ -1,20 +1,16 @@
 <div id="calendar">
     {CALENDAR_JAVASCRIPT}
-
     <!-- BEGIN calendarEventOkMessage -->
     Eintrag erfolgreich gespeichert. Sie werden benachrichtigt, sobald dieser erfolgreich geprüft und aufgeschaltet wurde.<br /><br />
     <!-- END calendarEventOkMessage -->
-
     <!-- BEGIN calendarEventErrMessage -->
     Bein Speichern trat ein Fehler auf. Bitte versuchen sie es erneut.<br /><br />
     <!-- END calendarEventErrMessage -->
-
     <!-- BEGIN calendarEventModifyForm -->
     <form enctype="multipart/form-data" method="post" action="{NODE_CALENDAR_ADD}" name="formModifyEvent" id="formModifyEvent">
         <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
         <input type="hidden" name="map_id" value="{CALENDAR_MAP_ID}" />
         <input type="hidden" name="picture_id" value="{CALENDAR_PICTURE_ID}" />
-
         <fieldset class="show_in" style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
             <legend>{TXT_CALENDAR_LANGUAGE}</legend>
             <!-- BEGIN eventShowIn -->

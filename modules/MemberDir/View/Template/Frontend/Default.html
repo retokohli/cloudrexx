@@ -12,7 +12,6 @@
     <div class="breadcrumb">
         <!-- BEGIN tree --><a title="{TXT_OVERVIEW}" href="index.php?section=MemberDir">{TXT_OVERVIEW}</a> <!-- BEGIN tree-element -->&gt; <a title="{MEMBERDIR_DIRNAME}" href="index.php?section=MemberDir&amp;id={MEMBERDIR_DIRID}">{MEMBERDIR_DIRNAME}</a><!-- END tree-element --><!-- END tree --></div>
     <h2>{MEMBERDIR_DESCRIPTION}</h2>
-
     <!-- BEGIN category_list -->
     <script type="text/javascript">
                 /* <![CDATA[ */
@@ -24,7 +23,6 @@
                         closeSubDir(this)
                     };
                 }
-
                 function closeSubDir(obj) {
                     var id = obj.id.substr(10);
                     document.getElementById("block_" + id).style.display = "none";
@@ -35,7 +33,6 @@
                 }
                 /* ]]> */
     </script>
-
     <div class="subcategories">
         <h3>{TXT_CATEGORY_TREE_DESC}</h3>
         <div class="row">
@@ -54,7 +51,6 @@
         </div>
     </div>
     <!-- END category_list -->
-
     <!-- BEGIN category_show -->
     <div class="char_list">{MEMBERDIR_CHAR_LIST}</div>
     <div class="adress_list">
@@ -75,7 +71,6 @@
     </div>
     <div class="paging">{MEMBERDIR_PAGING}</div>
     <!-- END category_show -->
-
     <!-- BEGIN memberdir_detail_view -->
     <div class="detail_list table-responsive">
         <table cellspacing="0" class="table">

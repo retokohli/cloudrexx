@@ -9,7 +9,6 @@
             document.getElementById('searchCheck').value = 'exp';
         }
     }
-
     function CheckForm() {
         var errorMsg = "";
         with (document.formEntry) {
@@ -25,11 +24,9 @@
             if (cat.value == "") {
                 errorMsg = errorMsg + "- {TXT_MARKET_CATEGORIE}\n";
             }
-
             {
                 END_DATE_JS
             }
-
             if (userdetails.value == "") {
                 errorMsg = errorMsg + "- {TXT_MARKET_USER_DETAIL}\n";
             }
@@ -43,7 +40,6 @@
                     errorMsg = errorMsg + "- {TXT_MARKET_EMAIL}\n";
                 }
             }
-
             if (errorMsg != "")
             {
                 alert("{TXT_MARKET_FIELDS_REQUIRED}n{TXT_MARKET_THOSE_FIELDS_ARE_EMPTY}\n" + errorMsg);
@@ -53,7 +49,6 @@
             }
         }
     }
-
     function matchType(pattern, value) {
         var reg = new RegExp(pattern);
         if (value.match(reg)) {
@@ -61,7 +56,6 @@
         }
         return false;
     }
-
     --></script>
 <div id="market">
     <form name="formEntry" enctype="multipart/form-data" method="post" action="index.php?section=Market&cmd=confirm" onsubmit="return CheckForm()">

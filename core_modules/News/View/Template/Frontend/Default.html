@@ -9,17 +9,14 @@
         $J('#news li:last').css('border', 0);
     });
 </script>
-
 <!-- BEGIN news_status_message -->
 {TXT_NEWS_NO_NEWS_FOUND}
 <!-- END news_status_message -->
-
 <!-- BEGIN news_menu -->
-<form name="formNews" method="post" action="index.php?section=News&cmd={NEWS_CMD}">
+<form name="formNews" method="post" action="index.php?section=News&amp;cmd={NEWS_CMD}">
     {NEWS_CAT_DROPDOWNMENU}
 </form>
 <!-- END news_menu -->
-
 <!-- BEGIN news_list -->
 <ul id="news">
     <!-- BEGIN newsrow -->
@@ -38,5 +35,4 @@
     <!-- END newsrow -->
 </ul>
 <!-- END news_list -->
-
 {NEWS_PAGING}
