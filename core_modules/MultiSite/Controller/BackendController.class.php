@@ -464,12 +464,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'readonly'      => true,
                     'table' => array(
                         'parse' => function($value, $arrData) {
-                            $domainRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('id' => $arrData['id']));
-                            $website    = $domainRepo->getWebsite();
-                            return ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN) ? $website->getFqdn() :
-                                    ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? $website->getIpAddress() : false);
+                            try {
+                                $domainRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('id' => $arrData['id']));
+                                $website = $domainRepo->getWebsite();
+                                if ($website) {
+                                    return ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN) ? $website->getFqdn() :
+                                            ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? $website->getIpAddress() : false);
+                                }
+                            } catch (\Exception $e) {}
+                            return false;
                         },
-                            
                     ),
                 ),
                 'coreNetDomainId' => array(
