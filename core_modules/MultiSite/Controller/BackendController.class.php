@@ -356,6 +356,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 function($rowData) {
                                     return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, false);
                                 } : false,
+                'showLicense' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) ? 
+                                function($rowData) {
+                                    return \Cx\Core_Modules\MultiSite\Controller\BackendController::showLicense($rowData, false);
+                                } : false,
             ),
             'fields' => array(
                 'id' => array('showOverview' => false),
@@ -813,7 +817,72 @@ END;
         
         return $dbEdit;
     }
-    
+    /**
+     * Fetching the license information from the associated website
+     * 
+     * @global \Cx\Core_Modules\MultiSite\Controller\type $_ARRAYLANG
+     * @param type $rowData
+     * @return string
+     */
+    public function showLicense($rowData) {
+        global $_ARRAYLANG;
+
+        $websiteId = $rowData['id'];
+        $data = "websiteId:" . $rowData['id'];
+        $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        if (!empty($websiteId)) {
+            $website = $webRepo->findOneById($websiteId);
+            if (!$website) {
+                return;
+            }
+            $title = $_ARRAYLANG['TXT_MULTISITE_FETCH_LICENSE_INFO'] . $website->getFqdn()->getName();
+        }
+        $cxjs = \ContrexxJavascript::getInstance();
+        $cxjs->setVariable(array('licenseInfo' => $_ARRAYLANG['TXT_MULTISITE_LICENSE_INFO'],), 'multisite/lang');
+        $javascript = <<<END
+        cx.ready(function() {
+            \$J(".showLicense_$websiteId").html('<div id="showLicenseDetails_$websiteId"><div id="statusMsg"></div></div>')
+            \$J(".showLicense_$websiteId").click(function() {
+                cx.trigger("loadingStart", "executeSql", {});
+                cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + \$J('#loading').html() + "</div>");
+                domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getLicense";
+                \$J.ajax({
+                    url     :  domainUrl,
+                    type    : "POST",
+                    data    : {command:"getLicense", $data},
+                    dataType : "json",
+                    success: function(response) {
+                        cx.trigger("loadingEnd", "executeSql", {});
+                        if (response.status == 'error') {
+                            cx.tools.StatusMessage.showMessage(response.message,  null, 4000);
+                        }
+                        if (response.status == 'success') {
+                            cx.tools.StatusMessage.showMessage(cx.variables.get('licenseInfo', "multisite/lang"),  null, 3000);
+                            \$J("#showLicenseDetails_$websiteId").html(response.data.licenseData);
+                            licenseDialog_$websiteId.open(); 
+                        }
+                    }
+                });
+   
+            });
+              
+            var licenseDialog_$websiteId = cx.ui.dialog({ 
+                width: 820,
+                height: 400,
+                title: '$title',
+                content: \$J('#showLicenseDetails_$websiteId'),
+                autoOpen: false,
+            });
+        });       
+END;
+        \JS::registerCode($javascript);
+
+        $className = 'showLicense_' . $websiteId;
+        $showLicense = '<a href="javascript:void(0);" class="showLicense ' . $className . '" title="' . $_ARRAYLANG['TXT_MULTISITE_SHOW_LICENSE'] . '"></a>';
+
+        return $showLicense;
+    }
+
     /**
      * get Dns Records
      * 
