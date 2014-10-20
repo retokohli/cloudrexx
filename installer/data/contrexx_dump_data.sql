@@ -4622,8 +4622,8 @@ INSERT INTO `contrexx_module_mediadir_level_names` (`lang_id`, `level_id`, `leve
 INSERT INTO `contrexx_module_mediadir_level_names` (`lang_id`, `level_id`, `level_name`, `level_description`) VALUES (2,31,'Referenzen','Die Referenzen von MaxMuster AG');
 INSERT INTO `contrexx_module_mediadir_level_names` (`lang_id`, `level_id`, `level_name`, `level_description`) VALUES (2,30,'Team','Die Mitarbeiter von MaxMusterAG');
 INSERT INTO `contrexx_module_mediadir_level_names` (`lang_id`, `level_id`, `level_name`, `level_description`) VALUES (1,31,'Referenzen','Die Referenzen von MaxMuster AG');
-INSERT INTO `contrexx_module_mediadir_levels` (`id`, `parent_id`, `order`, `show_sublevels`, `show_categories`, `show_entries`, `picture`, `active`) VALUES (30,0,0,0,1,1,'/images/mediadir/uploads/team.jpg',1);
-INSERT INTO `contrexx_module_mediadir_levels` (`id`, `parent_id`, `order`, `show_sublevels`, `show_categories`, `show_entries`, `picture`, `active`) VALUES (31,0,0,0,1,1,'/images/mediadir/uploads/referenzen.jpg',1);
+INSERT INTO `contrexx_module_mediadir_levels` (`id`, `parent_id`, `order`, `show_sublevels`, `show_categories`, `show_entries`, `picture`, `active`) VALUES (30,0,0,0,1,1,'/images/MediaDir/uploads/team.jpg',1);
+INSERT INTO `contrexx_module_mediadir_levels` (`id`, `parent_id`, `order`, `show_sublevels`, `show_categories`, `show_entries`, `picture`, `active`) VALUES (31,0,0,0,1,1,'/images/MediaDir/uploads/referenzen.jpg',1);
 INSERT INTO `contrexx_module_mediadir_mail_actions` (`id`, `name`, `default_recipient`, `need_auth`) VALUES (1,'newEntry','admin',0);
 INSERT INTO `contrexx_module_mediadir_mail_actions` (`id`, `name`, `default_recipient`, `need_auth`) VALUES (2,'entryAdded','author',1);
 INSERT INTO `contrexx_module_mediadir_mail_actions` (`id`, `name`, `default_recipient`, `need_auth`) VALUES (3,'entryConfirmed','author',1);
@@ -4650,7 +4650,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_categories` (`entry_id`, `catego
 INSERT INTO `contrexx_module_mediadir_rel_entry_categories` (`entry_id`, `category_id`) VALUES (403,179);
 INSERT INTO `contrexx_module_mediadir_rel_entry_categories` (`entry_id`, `category_id`) VALUES (405,179);
 INSERT INTO `contrexx_module_mediadir_rel_entry_categories` (`entry_id`, `category_id`) VALUES (404,179);
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (405,1,24,180,'/images/mediadir/uploads/contrexx.png');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (405,1,24,180,'/images/MediaDir/uploads/contrexx.png');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (405,3,24,179,'www.contrexx.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (405,2,24,179,'www.contrexx.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (405,1,24,179,'www.contrexx.com');
@@ -4672,7 +4672,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (405,3,24,173,'Contrexx');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (405,2,24,173,'Contrexx');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (405,1,24,173,'Contrexx');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (404,1,24,180,'/images/mediadir/uploads/hotelcard.png');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (404,1,24,180,'/images/MediaDir/uploads/hotelcard.png');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (404,3,24,179,'http://www.hotelcard.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (404,2,24,179,'http://www.hotelcard.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (404,1,24,179,'http://www.hotelcard.com');
@@ -4694,7 +4694,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (404,3,24,173,'Hotelcard AG');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (404,2,24,173,'Hotelcard AG');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (404,1,24,173,'Hotelcard AG');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (403,1,24,180,'/images/mediadir/uploads/comvation.png');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (403,1,24,180,'/images/MediaDir/uploads/comvation.png');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (403,3,24,179,'http://www.comvation.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (403,2,24,179,'http://www.comvation.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (403,1,24,179,'http://www.comvation.com');
@@ -4719,7 +4719,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (402,3,23,172,'Sekretärin');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (402,2,23,172,'Sekretärin');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (402,1,23,172,'Sekretärin');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (402,1,23,171,'/images/mediadir/uploads/jessica.jpg');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (402,1,23,171,'/images/MediaDir/uploads/jessica.jpg');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (402,3,23,170,'Volleyball, Schwimmen');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (402,2,23,170,'Volleyball, Schwimmen');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (402,1,23,170,'Volleyball, Schwimmen');
@@ -4735,7 +4735,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (401,3,23,172,'Entwickler');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (401,2,23,172,'Entwickler');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (401,1,23,172,'Entwickler');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (401,1,23,171,'/images/mediadir/uploads/george.jpg');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (401,1,23,171,'/images/MediaDir/uploads/george.jpg');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (401,3,23,170,'Programmieren, Unihockey');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (401,2,23,170,'Programmieren, Unihockey');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (401,1,23,170,'Programmieren, Unihockey');
@@ -4751,7 +4751,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (400,3,23,172,'Verkäuferin');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (400,2,23,172,'Verkäuferin');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (400,1,23,172,'Verkäuferin');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (400,1,23,171,'/images/mediadir/uploads/emily.jpg');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (400,1,23,171,'/images/MediaDir/uploads/emily.jpg');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (400,3,23,170,'Kochen, Ski fahren, meine Familie');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (400,2,23,170,'Kochen, Ski fahren, meine Familie');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields` (`entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (400,1,23,170,'Kochen, Ski fahren, meine Familie');
@@ -4788,7 +4788,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entr
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (16,400,1,23,170,'Kochen, Ski fahren, meine Familie');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (17,400,2,23,170,'Kochen, Ski fahren, meine Familie');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (18,400,3,23,170,'Kochen, Ski fahren, meine Familie');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (19,400,1,23,171,'/images/mediadir/uploads/emily.jpg');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (19,400,1,23,171,'/images/MediaDir/uploads/emily.jpg');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (20,400,1,23,172,'Verkäuferin');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (21,400,2,23,172,'Verkäuferin');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (22,400,3,23,172,'Verkäuferin');
@@ -4804,7 +4804,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entr
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (32,401,1,23,170,'Programmieren, Unihockey');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (33,401,2,23,170,'Programmieren, Unihockey');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (34,401,3,23,170,'Programmieren, Unihockey');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (35,401,1,23,171,'/images/mediadir/uploads/george.jpg');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (35,401,1,23,171,'/images/MediaDir/uploads/george.jpg');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (36,401,1,23,172,'Entwickler');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (37,401,2,23,172,'Entwickler');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (38,401,3,23,172,'Entwickler');
@@ -4820,7 +4820,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entr
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (48,402,1,23,170,'Volleyball, Schwimmen');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (49,402,2,23,170,'Volleyball, Schwimmen');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (50,402,3,23,170,'Volleyball, Schwimmen');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (51,402,1,23,171,'/images/mediadir/uploads/jessica.jpg');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (51,402,1,23,171,'/images/MediaDir/uploads/jessica.jpg');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (52,402,1,23,172,'Sekretärin');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (53,402,2,23,172,'Sekretärin');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (54,402,3,23,172,'Sekretärin');
@@ -4850,7 +4850,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entr
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (78,403,2,24,179,'http://www.comvation.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (79,403,3,24,179,'http://www.comvation.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (80,403,1,24,180,'');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (81,403,1,24,180,'/images/mediadir/uploads/comvation.png');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (81,403,1,24,180,'/images/MediaDir/uploads/comvation.png');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (82,404,1,24,173,'Hotelcard AG');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (83,404,2,24,173,'Hotelcard AG');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (84,404,3,24,173,'Hotelcard AG');
@@ -4876,7 +4876,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entr
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (104,404,2,24,179,'http://www.hotelcard.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (105,404,3,24,179,'http://www.hotelcard.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (106,404,1,24,180,'');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (107,404,1,24,180,'/images/mediadir/uploads/hotelcard.png');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (107,404,1,24,180,'/images/MediaDir/uploads/hotelcard.png');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (108,405,1,24,173,'Contrexx');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (109,405,2,24,173,'Contrexx');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (110,405,3,24,173,'Contrexx');
@@ -4900,7 +4900,7 @@ INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entr
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (128,405,2,24,179,'www.contrexx.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (129,405,3,24,179,'www.contrexx.com');
 INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (130,405,1,24,180,'');
-INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (131,405,1,24,180,'/images/mediadir/uploads/contrexx.png');
+INSERT INTO `contrexx_module_mediadir_rel_entry_inputfields_clean1` (`id`, `entry_id`, `lang_id`, `form_id`, `field_id`, `value`) VALUES (131,405,1,24,180,'/images/MediaDir/uploads/contrexx.png');
 INSERT INTO `contrexx_module_mediadir_rel_entry_levels` (`entry_id`, `level_id`) VALUES (402,30);
 INSERT INTO `contrexx_module_mediadir_rel_entry_levels` (`entry_id`, `level_id`) VALUES (405,31);
 INSERT INTO `contrexx_module_mediadir_rel_entry_levels` (`entry_id`, `level_id`) VALUES (404,31);
