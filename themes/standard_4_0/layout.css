@@ -26,15 +26,7 @@ body a:hover {text-decoration: none;}
 .regForm span {
     float: left;
 }
-/*#access .login-social {
-    float: left;
-    width: 46%;
-    padding-left: 0;
-}*/
-/*.regForm {
-    float: left;
-    width: 46%;
-}*/
+.slider-text {color: #0A85C8;}
 .login h2 {
     font-size: 2em;
 }
