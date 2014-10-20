@@ -544,7 +544,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupLicense($options);
 
             \DBG::msg('Website: initializeConfig..');
-            $this->initializeConfig($websiteName);
+            $this->initializeConfig();
             
             \DBG::msg('Website: initializeLanguage..');
             $this->initializeLanguage();
@@ -818,13 +818,6 @@ class Website extends \Cx\Model\Base\EntityBase {
                         case 'installationId':
                             $value = $this->installationId;
                             break;
-                        case 'dashboardNewsSrc':
-                            $value = \Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc');
-                            break;
-                        case 'coreAdminEmail':
-                        case 'contactFormEmail':
-                            $value = $this->owner->getEmail();
-                            break;
                         default:
                             return $originalString;
                             break;
@@ -841,9 +834,14 @@ class Website extends \Cx\Model\Base\EntityBase {
           
     }
 
-    protected function initializeConfig($websiteName) {
+    protected function initializeConfig() {
         try {
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', array(), $this);
+            $params = array(
+                'dashboardNewsSrc' => \Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc'),
+                'coreAdminEmail'   => $this->owner->getEmail(),
+                'contactFormEmail' => $this->owner->getEmail()
+            );
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', $params, $this);
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 if (isset($resp->log)) {

@@ -1443,9 +1443,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      /**
      * setup the config options
      */
-    public function setupConfig() {
-        global $_CONFIG;
-
+    public function setupConfig($params) {
+        if (empty($params['post']['coreAdminEmail']) || empty($params['post']['contactFormEmail']) || empty($params['post']['dashboardNewsSrc'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::setupConfig() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient arguments supplied: '.var_export($params, true));
+        }
+        
         // activate memory-log for website mode by default
         if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
             \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
@@ -1455,29 +1457,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
-        if (!\Cx\Core\Setting\Controller\Setting::isDefined('installationId')
-                && !\Cx\Core\Setting\Controller\Setting::add('installationId', $_CONFIG['installationId'], 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')) {
-            throw new MultiSiteJsonException(array(
-                'log'       => \DBG::getMemoryLogs(),
-                'message'   => "Failed to add Setting entry for installationId",
-            ));
-        }
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc') 
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', $_CONFIG['dashboardNewsSrc'], 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')) {
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', $params['post']['dashboardNewsSrc'], 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')) {
             throw new MultiSiteJsonException(array(
                 'log'       => \DBG::getMemoryLogs(),
                 'message'   => "Failed to add Setting entry for dashboardNewsSrc",
             ));
         }
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreAdminEmail') 
-                && !\Cx\Core\Setting\Controller\Setting::add('coreAdminEmail', $_CONFIG['coreAdminEmail'], 3, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')) {
+                && !\Cx\Core\Setting\Controller\Setting::add('coreAdminEmail', $params['post']['coreAdminEmail'], 3, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')) {
             throw new MultiSiteJsonException(array(
                 'log'       => \DBG::getMemoryLogs(),
                 'message'   => "Failed to add Setting entry for coreAdminEmail",
             ));
         }
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('contactFormEmail') 
-                && !\Cx\Core\Setting\Controller\Setting::add('contactFormEmail', $_CONFIG['contactFormEmail'], 4, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')) {
+                && !\Cx\Core\Setting\Controller\Setting::add('contactFormEmail', $params['post']['contactFormEmail'], 4, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'contactInformation')) {
             throw new MultiSiteJsonException(array(
                 'log'       => \DBG::getMemoryLogs(),
                 'message'   => "Failed to add Setting entry for contactFormEmail",
