@@ -323,6 +323,17 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'jqueryui',
             ),
         ),
+        'bootstrapvalidator' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/bootstrapvalidator/js/bootstrapValidator.min.js'
+            ),
+            'cssfiles' => array(
+                'lib/javascript/jquery/bootstrapvalidator/css/bootstrapValidator.min.css',
+            ),
+            'dependencies' => array(
+                'twitter-bootstrap'
+            ),
+        ),
         'twitter-bootstrap' => array(
             'versions' => array(
                 '3.2.0' => array(
