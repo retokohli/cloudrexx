@@ -1321,4 +1321,3 @@ $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Settings have been updated.';
 $_ARRAYLANG['TXT_ACTIVATED'] = "Activated";
 $_ARRAYLANG['TXT_DEACTIVATED'] = "Deactivated";
 $_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Your session has expired.<br /><a href="./index.php" target="_blank">Click here to log in again.</a>';
-$_ARRAYLANG['TXT_CORE_RECORD_EXECUTE_DB_TITLE'] = 'Excute query on website';
