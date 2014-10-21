@@ -2348,7 +2348,6 @@ dl.data_module img {
     clear: both;
     margin-bottom: 15px;
     margin-top: -15px;
-    padding-left: 180px;
 }
 .mediadirSelectorCenter{
     padding: 60px 5px 0 !important;
@@ -3000,13 +2999,13 @@ input[type="checkbox"] {
     margin-right: 10px;
 }
 /*Directory_Add*/
-.selectorCenter {
+.selectorCenter, .mediadirSelectorCenter {
     padding: 60px 10px 0px;
     float: left;
     height: 100px;
     text-align: center;
 }
-.selectorCenter input, .notification_center input {
+.selectorCenter input, .notification_center input, .mediadirSelectorCenter input {
     margin-bottom: 15px;
 }
 .notification {
@@ -3025,10 +3024,6 @@ input[type="checkbox"] {
     float: left;
     width: 90%;
     margin-bottom: 10px;
-}
-#market .breadcrumb {
-    float: left;
-    width: 100%;
 }
 .adv-search {
     float: left;

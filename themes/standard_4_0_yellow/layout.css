@@ -19,6 +19,11 @@ body a:hover {text-decoration: none;}
     width: 100%;
     background: #f7f7f7;
 }
+.addir-search {
+    float: left;
+    width: 100%;
+    padding-top: 20px;
+}
 .login {
     display: none;
     background: #fff;
@@ -166,6 +171,10 @@ body a:hover {text-decoration: none;}
     color: #fff;
     text-decoration: none;
 }
+#metanavigation li#select-language:hover a, #metanavigation li#select-language.active:hover a.active {
+    color: #000;
+}
+#metanavigation li#select-language:hover a.active {color: #fff;}
 #metanavigation li#select-language {
     z-index: 6;
     padding: 0;
@@ -1042,7 +1051,7 @@ span.disconnected {
 }
 .modal-nav button:hover {
     background: none;
-    color: #ffdd00;
+    color: #fff;
 }
 /*modal*/
 .modal-body .left {

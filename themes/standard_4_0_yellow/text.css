@@ -72,13 +72,17 @@ body {
 body section {
     margin-top: 63px;
 }
-body a {
+body a, body .btn-link {
     color: #000;
     text-decoration: none;
     outline: 0 none;
 }
-body a:hover, body a:focus {
+body a:hover,body .btn-link:hover,body .btn-link:focus {
     color: #323F55;
+    text-decoration: none;
+    outline: 0 none;
+}
+body a:focus {
     text-decoration: none;
     outline: 0 none;
 }
