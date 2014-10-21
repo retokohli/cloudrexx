@@ -810,7 +810,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $objDomain->setCoreNetDomainId($params['post']['coreNetDomainId']);
             \Env::get('em')->persist($objDomain);
             \Env::get('em')->flush();
-            return true;
+            return array(
+                'status' => 'success',
+                'log'    => \DBG::getMemoryLogs(),
+            );
         } catch (\Exception $e) {
             throw new MultiSiteJsonException($e->getMessage());
         }
@@ -829,7 +832,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             || empty($params['post']['auth'])
             || empty($params['post']['componentType'])
             || !isset($params['post']['componentId'])
-            || !isset($params['post']['coreNetDomainId'])
+            //|| !isset($params['post']['coreNetDomainId'])
         ) {
             throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Insufficient mapping information supplied.');
         }
@@ -897,12 +900,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $componentId = null;
                     break;
             }
-            $objDomain = $domainRepo->findOneBy(array(
+            $critieria = array(
                 'name'              => $params['post']['domainName'],
                 'componentType'     => $params['post']['componentType'],
                 'componentId'       => $componentId,
-                'coreNetDomainId'   => $params['post']['coreNetDomainId'],
-            ));
+                'type'              => $params['post']['type'],
+            );
+            if (isset($params['post']['coreNetDomainId'])) {
+                $critieria['coreNetDomainId'] = $params['post']['coreNetDomainId'];
+            }
+            $objDomain = $domainRepo->findOneBy($critieria);
 
             if (!$objDomain) {
                 throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Domain to remove not found.');
@@ -915,7 +922,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 \Env::get('em')->remove($objDomain);
             }
             \Env::get('em')->flush();
-            return true;
+            return array(
+                'status' => 'success',
+                'log'    => \DBG::getMemoryLogs(),
+            );
         } catch (\Exception $e) {
             throw new MultiSiteJsonException($e->getMessage());
         }
@@ -1024,11 +1034,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $componentId = null;
                     break;
             }
-            $objDomain = $domainRepo->findOneBy(array(
+            $critieria = array(
                 'componentType'     => $params['post']['componentType'],
                 'componentId'       => $componentId,
-                'coreNetDomainId'   => $params['post']['coreNetDomainId'],
-            ));
+                'type'              => $params['post']['type'],
+            );
+            if (isset($params['post']['coreNetDomainId'])) {
+                $critieria['coreNetDomainId'] = $params['post']['coreNetDomainId'];
+            }
+            $objDomain = $domainRepo->findOneBy($critieria);
 
             if (!$objDomain) {
                 throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Domain to update not found.');
@@ -1036,7 +1050,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             $objDomain->setName($params['post']['domainName']);
             \Env::get('em')->flush();
-            return true;
+            return array(
+                'status' => 'success',
+                'log'    => \DBG::getMemoryLogs(),
+            );
         } catch (\Exception $e) {
             throw new MultiSiteJsonException($e->getMessage());
         }

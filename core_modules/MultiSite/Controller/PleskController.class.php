@@ -594,7 +594,17 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $recordType = $xmldoc->createElement('type',$type);
         $addRec->appendChild($recordType);
         
-        $host = rtrim(substr($host, 0, -strlen($zone)), '.');
+        // In case the record is a subdomain of the DNS-zone, then
+        // we'll have to strip the DNS-zone part from the record.
+        // I.e.:
+        //      DNS-zone ($zone):   example.com
+        //      DNS-record ($host): foo.example.com
+        //      strip $host to:     foo
+        if (strrpos($host, $zone) === strlen(substr($host, 0, -strlen($zone)))) {
+            $host = rtrim(substr($host, 0, -strlen($zone)), '.');
+        }
+
+        $host = rtrim($host, '.');
         $host = $xmldoc->createElement('host', $host);
         $addRec->appendChild($host);
 
@@ -611,7 +621,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in adding DNS Record: {$error}");
         }
-        return $resultNode->id;       
+        return intval($resultNode->id);
     }
 
     /**
