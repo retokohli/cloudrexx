@@ -563,9 +563,9 @@ class FWUser extends User_Setting
         }
 
         if ($isBackendMode) {
-            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$websitePath.\Env::get('cx')->getBackendFolderName()."/index.php?cmd=Login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$websitePath.\Env::get('cx')->getBackendFolderName()."/index.php?cmd=Login&act=resetpw&email=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
         } else {
-            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$websitePath."/?section=Login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+            $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$websitePath."/?section=Login&cmd=resetpw&email=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
         }
 
         return $restoreLink;
@@ -699,7 +699,7 @@ class FWUser extends User_Setting
      * @param   mixed  $objTemplate Template
      * @global  array  Core language array
      */
-    function resetPassword($username, $restoreKey, $password = null, $confirmedPassword = null, $store = false)
+    function resetPassword($email, $restoreKey, $password = null, $confirmedPassword = null, $store = false)
     {
         global $_CORELANG;
 
@@ -712,14 +712,8 @@ class FWUser extends User_Setting
                 '=' => time(),
             ),
             'active'           => 1,
+            'email'            => $email,
         );
-
-        $arrSettings = User_Setting::getSettings();
-        if ($arrSettings['use_usernames']['status']) {
-            $userFilter['username'] = $username;
-        } else {
-            $userFilter['email'] = $username;
-        }
 
         $objUser = $this->objUser->getUsers($userFilter, null, null, null, 1);
         if ($objUser) {
