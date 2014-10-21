@@ -131,14 +131,14 @@ class Login
         global $_CORELANG;
 
         $objFWUser = FWUser::getFWUserObject();
-        $username = isset($_POST['username']) ? contrexx_stripslashes($_POST['username']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
+        $email = isset($_POST['email']) ? contrexx_stripslashes($_POST['email']) : (isset($_GET['email']) ? contrexx_stripslashes($_GET['email']) : '');
         $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
         $password = isset($_POST['password']) ? trim(contrexx_stripslashes($_POST['password'])) : '';
         $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
         $statusMessage = '';
 
         if (isset($_POST['reset_password'])) {
-            if ($objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword, true)) {
+            if ($objFWUser->resetPassword($email, $restoreKey, $password, $confirmedPassword, true)) {
                 $statusMessage = $_CORELANG['TXT_PASSWORD_CHANGED_SUCCESSFULLY'];
                 if ($this->_objTpl->blockExists('login_reset_password')) {
                     $this->_objTpl->hideBlock('login_reset_password');
@@ -147,7 +147,7 @@ class Login
                 $statusMessage = $objFWUser->getErrorMsg();
 
                 $this->_objTpl->setVariable(array(
-                    'TXT_USERNAME'						=> $_CORELANG['TXT_USERNAME'],
+                    'TXT_EMAIL'						    => $_CORELANG['TXT_EMAIL'],
                     'TXT_PASSWORD'						=> $_CORELANG['TXT_PASSWORD'],
                     'TXT_VERIFY_PASSWORD'				=> $_CORELANG['TXT_VERIFY_PASSWORD'],
                     'TXT_PASSWORD_MINIMAL_CHARACTERS'	=> $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
@@ -157,14 +157,14 @@ class Login
 
                 $this->_objTpl->parse('login_reset_password');
             }
-        } elseif (!$objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword)) {
+        } elseif (!$objFWUser->resetPassword($email, $restoreKey, $password, $confirmedPassword)) {
             $statusMessage = $objFWUser->getErrorMsg();
             if ($this->_objTpl->blockExists('login_reset_password')) {
                 $this->_objTpl->hideBlock('login_reset_password');
             }
         } else {
             $this->_objTpl->setVariable(array(
-                'TXT_USERNAME'						=> $_CORELANG['TXT_USERNAME'],
+                'TXT_EMAIL'						    => $_CORELANG['TXT_EMAIL'],
                 'TXT_PASSWORD'						=> $_CORELANG['TXT_PASSWORD'],
                 'TXT_VERIFY_PASSWORD'				=> $_CORELANG['TXT_VERIFY_PASSWORD'],
                 'TXT_PASSWORD_MINIMAL_CHARACTERS'	=> $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
@@ -177,7 +177,7 @@ class Login
 
         $this->_objTpl->setVariable(array(
             'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
-            'LOGIN_USERNAME'		=> htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
+            'LOGIN_USERNAME'		=> htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET),
             'LOGIN_RESTORE_KEY'		=> htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET)
         ));
 
