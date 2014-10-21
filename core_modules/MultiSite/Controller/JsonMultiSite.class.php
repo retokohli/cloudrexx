@@ -487,29 +487,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                 $objUser = $objFWUser->objUser->getUser(intval($params['post']['userId']));
-                if (!$objUser) {
-                    throw new MultiSiteJsonException(array(
-                        'object'    => 'form',
-                        'type'      => 'danger',
-                        'message'   => 'Unknown user account',
-                        'log'       => \DBG::getMemoryLogs(),
-                    ));
-                }
                 break;
+
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                 $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                 $objUser = $objFWUser->objUser->getUser(intval($websiteUserId));
-                if (!$objUser) {
-                    throw new MultiSiteJsonException(array(
-                        'object'    => 'form',
-                        'type'      => 'danger',
-                        'message'   => 'Unknown user account',
-                        'log'       => \DBG::getMemoryLogs(),
-                    ));
-                }
                 break;
+
             default:
                 break;
+        }
+
+        if (!$objUser) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'Unknown user account',
+                'log'       => \DBG::getMemoryLogs(),
+            ));
         }
         
         // set account data
