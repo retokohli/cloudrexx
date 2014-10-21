@@ -1811,7 +1811,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     'log'       => \DBG::getMemoryLogs(),
                 );            
             }
-            $website->destroy();
             \Env::get('em')->remove($website);
             \Env::get('em')->flush();
             return array(
