@@ -538,11 +538,6 @@
     .mediadirSelector .mediadirSelectorCenter {
         padding: 5px 65px 0 !important;
     }
-    #page #mediadir .mediadirSelector, #page #mediadir .mediadirGoogleMap {padding-left: 0; margin-top: 0;}
-    .mediadirSelector div {
-        float: left;
-        clear: both;
-    }
     /*MediaDir Edit End*/
     .row .image img {
         width: auto;

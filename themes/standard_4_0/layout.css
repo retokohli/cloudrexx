@@ -11,6 +11,11 @@ body > iframe {display: none;}
 html, body {
     height: 100%;
 }
+.addir-search {
+    float: left;
+    width: 100%;
+    padding-top: 20px;
+}
 body a:hover {text-decoration: none;}
 .wrapper {
     position: relative;
