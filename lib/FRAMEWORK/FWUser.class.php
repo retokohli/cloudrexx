@@ -465,9 +465,9 @@ class FWUser extends User_Setting
                 $objMail->Subject = $objUserMail->getSubject();
 
                 if ($this->isBackendMode()) {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=login&act=resetpw&email=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
                 } else {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&email=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
                 }
 
                 if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
