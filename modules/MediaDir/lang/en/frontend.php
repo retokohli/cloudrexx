@@ -76,4 +76,5 @@ $_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'] = "successfully deleted.";
 $_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'] = "could not be deleted.";
 $_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_CONFIRM'] = "successfully confirmed.";
 $_ARRAYLANG['TXT_MEDIADIR_ACCOUNT_SUCCESSFULLY_CREATED'] = "Your user account has been created succcessfully.";
+$_ARRAYLANG['TXT_MEDIADIR_SUBMIT'] = "Save";
 ?>

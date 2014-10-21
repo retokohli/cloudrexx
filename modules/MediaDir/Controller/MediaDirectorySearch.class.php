@@ -82,12 +82,13 @@ EOF;
 <input name="type" value="exp" type="hidden" />
 <input type="hidden" value="Suchen" name="search">
 $strSearchFormCmd
-<p><label>$strTextSearchterm</label><input name="term" class="$strInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /></p>
+<p><label>$strTextSearchterm</label><input name="term" class="$strInputfieldSearch searchbox" value="$strSearchFormTerm" onfocus="this.select();" type="text" />
+<input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
+</p>
 </div>
 <div class="expanded">
 $strExpandedInputfields
 </div>
-<p><input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit"></p>
 </form>
 </div>
 EOF;
