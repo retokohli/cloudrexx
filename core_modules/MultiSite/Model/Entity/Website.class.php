@@ -812,9 +812,6 @@ class Website extends \Cx\Model\Base\EntityBase {
                     $closure = $match[5];
                     $escapedDelimiter = addslashes($delimiter);
                     switch ($settingsOption) {
-                        case 'domainUrl':
-                            $value = $this->getBaseDn()->getName();
-                            break;
                         case 'installationId':
                             $value = $this->installationId;
                             break;
