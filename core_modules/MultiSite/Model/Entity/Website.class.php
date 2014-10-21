@@ -1049,6 +1049,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
 
                     //unmap all the domains
                     foreach ($this->domains as $domain) {
+                        \DBG::msg(__METHOD__.': Remove domain '.$domain->getName());
                         \Env::get('em')->remove($domain);
                         \Env::get('em')->getUnitOfWork()->computeChangeSet(\Env::get('em')->getClassMetadata('Cx\Core_Modules\MultiSite\Model\Entity\Domain'), $domain);
                     }                    
@@ -1257,6 +1258,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function getDomainAliases(){
         // fetch domain aliases from Domain repository
         if (!$this->domainAliases) {
+            $this->domainAliases = array();
             foreach ($this->domains as $domain) {
                 if ($domain->getType() == Domain::TYPE_EXTERNAL_DOMAIN) {
                     $this->domainAliases[] = $domain;
@@ -1305,11 +1307,11 @@ throw new WebsiteException('implement secret-key algorithm first!');
     /**
      * unMapDomain
      *
-     * @param string $name websitename
+     * @param Domain $domain
      */  
     public function unMapDomain($domain){
-        foreach ($this->getDomainAliases() as $domainAlias) {
-            if($domainAlias == $domain) {
+        foreach ($this->getDomains() as $mappedDomain) {
+            if($mappedDomain == $domain) {
                 \Env::get('em')->remove($domain);
                 break;
             }   
