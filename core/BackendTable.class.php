@@ -174,9 +174,6 @@ class BackendTable extends HTML_Table {
                 $code .= $functions['actions']($rowData);                
             }
             
-            if (isset($functions['showLicense']) && $functions['showLicense']) {
-                $code .= $functions['showLicense']($rowData);
-            }
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl = clone $baseUrl;
                 $editUrl->setParam('editid', $rowname);

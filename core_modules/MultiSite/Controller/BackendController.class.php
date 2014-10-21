@@ -352,14 +352,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'sorting' => true,
                 'paging' => true,       // cannot be turned off yet
                 'filtering' => false,   // this does not exist yet
-                'actions' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
-                                function($rowData) {
-                                    return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, false);
-                                } : false,
-                'showLicense' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) ? 
-                                function($rowData) {
-                                    return \Cx\Core_Modules\MultiSite\Controller\BackendController::showLicense($rowData, false);
-                                } : false,
+                'actions' => function($rowData) {
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                    $actions = \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, false);
+                                }
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
+                                    $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::showLicense($rowData, false);
+                                }
+                                return $actions;
+                            }
             ),
             'fields' => array(
                 'id' => array('showOverview' => false),
@@ -653,10 +654,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         
         if ($service) {
             $websiteServiceId = $rowData['id'];
-            $data = "serviceId:".$rowData['id'];
+            $data = "service:".$rowData['id'];
         } else {
            $websiteId = $rowData['id']; 
-           $data = "websiteId:".$rowData['id'];
+           $data = "website:".$rowData['id'];
         }
         
         $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
@@ -686,135 +687,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                  'sqlStatus' => $_ARRAYLANG['TXT_MULTISITE_SQL_STATUS'],
                                  'plsInsertQuery' => $_ARRAYLANG['TXT_MULTISITE_PLEASE_INSERT_QUERY'],
                         ), 'multisite/lang');
-        $javascript = <<<END
-        cx.ready(function() {
-            \$J('#instance_table').append('<div id ="load-lock"></div>');
-            cx.bind("loadingStart", cx.lock, "executeSql");
-            cx.bind("loadingEnd", cx.unlock, "executeSql");
-            cx.lock = function() {
-                \$J("#load-lock").show();
-            };
-            cx.unlock = function() {
-               \$J("#load-lock").hide();
-            };
-                
-            \$J(".executeQuery_$websiteId").html('<div id="executeSqlQuery_$websiteId"><form id="ExecuteSql"><div id="statusMsg"></div><div id="resultSet"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>')
-            var activateDialog_$websiteId = cx.ui.dialog({
-                width: 820,
-                height: 400,
-                title: '$title',
-                content: \$J('#executeSqlQuery_$websiteId'),
-                autoOpen: false,
-                buttons: {
-                    "Cancel": function() {
-                        \$J(this).dialog("close");
-                    },
-                    "Execute": function() {
-                        cx.trigger("loadingStart", "executeSql", {});
-                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + \$J('#loading').html() + "</div>");
-                        var query = \$J('#executeSqlQuery_$websiteId #queryContent').val();
-                        if(query == '') {
-                            cx.tools.StatusMessage.showMessage(cx.variables.get('plsInsertQuery', "multisite/lang"), null, 3000);
-                            cx.trigger("loadingEnd", "executeSql", {});
-                            return false;
-                        } else {
-                            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql";
-                            \$J.ajax({
-                                url     :  domainUrl,
-                                type    : "POST",
-                                data    : {query: \$J("#executeSqlQuery_$websiteId #queryContent").val(),
-                                           $data,
-                                           command:'executeSql'},
-                                dataType : "json",
-                                success: function(response) {
-                                    if (response.status == 'error') {
-                                        cx.trigger("loadingEnd", "executeSql", {});
-                                        cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', "multisite/lang"),  null, 3000);
-                                        \$J('#executeSqlQuery_$websiteId #resultSet').hide();
-                                        \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
-                                    }
-                                    var html = '';
-                                    \$J.each(response.data, function(key, value){
-                                        if (value.status) {
-                                            var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist">';
-                                            var col_count = 0;
-                                            var tbody = "";
-                                            var thead ="";
-
-                                            if (value.sqlResult) {
-                                                var cols = Object.keys(value.sqlResult).length;
-                                                \$J.each(value.sqlResult, function (key, data) {
-                                                    tbody += "<tr class =row1>";
-                                                    if (col_count == 0) {
-                                                        thead += "<th>"+ cx.variables.get('sqlQuery', "multisite/lang") +"</th>";
-                                                        thead += "<th>"+cx.variables.get('sqlStatus', "multisite/lang") +"</th>";
-                                                    }
-                                                    if (col_count < cols) {
-                                                        tbody += "<td>"+ key +"</td>";
-                                                        tbody += "<td>"+ data +"</td>";
-                                                    }
-                                                    col_count++;
-                                                    tbody += "</tr>";
-                                                });
-                                                html += "<strong>"+ cx.variables.get('queryExecutedWebsite', "multisite/lang") + value.websiteName + "</strong><br/>" + theader + thead + tbody + "</table></br>";
-                                            }
-                
-                                            if (value.selectQueryResult) {
-                                                \$J.each(value.selectQueryResult, function (key, data) {
-                                                    var count = 0;
-                                                    var tsbody = "";
-                                                    var tshead ="";
-                                                    var objdata = JSON.parse(data);
-                                                    var no_cols = (objdata).length;
-                                                    \$J.each(objdata, function (key, data) {
-                                                        tsbody += "<tr class =row1>";    
-                                                        for (jsonkey in data) {
-                                                            if (count == 0) {
-                                                                tshead += "<th>";
-                                                                tshead += jsonkey;
-                                                                tshead += "</th>"
-                                                            }
-                                                            if (count < no_cols) {
-                                                                tsbody += "<td>";
-                                                                tsbody += data[jsonkey];
-                                                                tsbody += "</td>"
-                                                            }
-                                                        }
-                                                        count++;
-                                                        tsbody += "</tr>";
-                                                    });
-                                                    html += theader + tshead + tsbody + "</table></br>";
-                                                });
-                                            }
-                                        cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', "multisite/lang"),  null, 3000);
-                                        } else {
-                                            cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', "multisite/lang"),  null, 3000);
-                                            \$J('#executeSqlQuery_$websiteId #resultSet').hide();
-                                            \$J('#executeSqlQuery_$websiteId #statusMsg').show().text(response.message);
-                                        }
-                                    });
-                                    cx.trigger("loadingEnd", "executeSql", {});
-                                    if (html != '') {
-                                        \$J('#executeSqlQuery_$websiteId #resultSet').show().html(html);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-               
-            \$J(".executeQuery_$websiteId").click(function() {
-                \$J('#executeSqlQuery_$websiteId #resultSet, #executeSqlQuery_$websiteId #statusMsg').hide();
-                \$J('#executeSqlQuery_$websiteId #queryContent').val('');
-                activateDialog_$websiteId.open();
-            });
-        });
-END;
-        \JS::registerCode($javascript);
-        $className = 'executeQuery_'.$websiteId;
-        $dbEdit = '<a href="javascript:void(0);" class="dbEdit '.$className.'" title="'.$title.'"></a>';
-        
+        $className = 'executeQuery executeQuery_'.$websiteId;
+        $dbEdit = '<a href="javascript:void(0);" class="dbEdit '.$className.'" title="'.$title.'" data-params="'.$data.'"></a>';
         return $dbEdit;
     }
     /**
@@ -839,46 +713,8 @@ END;
         }
         $cxjs = \ContrexxJavascript::getInstance();
         $cxjs->setVariable(array('licenseInfo' => $_ARRAYLANG['TXT_MULTISITE_LICENSE_INFO'],), 'multisite/lang');
-        $javascript = <<<END
-        cx.ready(function() {
-            \$J(".showLicense_$websiteId").html('<div id="showLicenseDetails_$websiteId"><div id="statusMsg"></div></div>')
-            \$J(".showLicense_$websiteId").click(function() {
-                cx.trigger("loadingStart", "executeSql", {});
-                cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + \$J('#loading').html() + "</div>");
-                domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getLicense";
-                \$J.ajax({
-                    url     :  domainUrl,
-                    type    : "POST",
-                    data    : {command:"getLicense", $data},
-                    dataType : "json",
-                    success: function(response) {
-                        cx.trigger("loadingEnd", "executeSql", {});
-                        if (response.status == 'error') {
-                            cx.tools.StatusMessage.showMessage(response.message,  null, 4000);
-                        }
-                        if (response.status == 'success') {
-                            cx.tools.StatusMessage.showMessage(cx.variables.get('licenseInfo', "multisite/lang"),  null, 3000);
-                            \$J("#showLicenseDetails_$websiteId").html(response.data.licenseData);
-                            licenseDialog_$websiteId.open(); 
-                        }
-                    }
-                });
-   
-            });
-              
-            var licenseDialog_$websiteId = cx.ui.dialog({ 
-                width: 820,
-                height: 400,
-                title: '$title',
-                content: \$J('#showLicenseDetails_$websiteId'),
-                autoOpen: false,
-            });
-        });       
-END;
-        \JS::registerCode($javascript);
-
         $className = 'showLicense_' . $websiteId;
-        $showLicense = '<a href="javascript:void(0);" class="showLicense ' . $className . '" title="' . $_ARRAYLANG['TXT_MULTISITE_SHOW_LICENSE'] . '"></a>';
+        $showLicense = '<a href="javascript:void(0);" class="showLicense ' . $className . '" title="' . $title . '">';
 
         return $showLicense;
     }

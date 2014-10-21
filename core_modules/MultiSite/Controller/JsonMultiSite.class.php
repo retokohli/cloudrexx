@@ -1879,23 +1879,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query, the sql query is empty');
                 }
                 $websiteServiceRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                if (isset($params['post']['websiteId'])) {
-                    $website = $websiteServiceRepo->findOneBy(array('id' => $params['post']['websiteId']));
+                if (isset($params['post']['mode']) && $params['post']['mode'] == 'website') {
+                    $website = $websiteServiceRepo->findOneBy(array('id' => $params['post']['id']));
                     $params['post']['websiteName'] = $website->getFqdn()->getName();
-                    $params['post']['params'] = $params['post'];
-                    $resp[] = self::executeOnWebsite($params);
-                    return $resp;
+                     $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
+                     if($resp && $resp->status){
+                        $result[] = $resp->data;
+                     }
+                    return $result;
                 }
                 
-                if (isset($params['post']['serviceId'])) {
+                if (isset($params['post']['mode']) && $params['post']['mode'] == 'service') {
                     $websites = $websiteServiceRepo->findBy(array('websiteServiceServerId' => $params['post']['serviceId']));
                     foreach($websites as $website) {
                         $params['post']['websiteId'] = $website->getId();
                         $params['post']['websiteName'] = $website->getFqdn()->getName();
-                        $params['post']['params'] = $params['post'];
-                        $resp = self::executeOnWebsite($params);
+                        $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
                         if ($resp && $resp->status == 'success') {
-                            $result[] = $resp; 
+                            $result[] = $resp->data; 
                         }
                     }
                     return $result;
@@ -1943,19 +1944,33 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (!isset($params['post']['websiteId'])) {
                         throw new MultiSiteJsonException('JsonMultiSite::getLicense() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied: '.var_export($params, true));
                     }
-                    $params['post']['params'] = $params['post'];
-                    return self::executeOnWebsite($params); 
+                    //find User's Website
+                    $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website   = $webRepo->findOneById($params['post']['websiteId']);
+                    $params    = array(
+                        'websiteId'   => $params['post']['websiteId']
+                    );
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getLicense', $params, $website);
+//                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getLicense', $params, $website);
+                    if ($resp && $resp->data->status == 'success') {
+                        return $resp->data;
+                    }
+                    
                 break;
-                case ComponentController::MODE_WEBSITE:
+            case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
                     if (!$license) {
                         throw new MultiSiteJsonException('JsonMultiSite::getLicense(): on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' $license was not set properly');
                     }
-                    $result = $this->licenseDetailsTable($license);
+                    $result = array('installationId' => $license->getInstallationId(), 'licenseKey' => $license->getLicenseKey(), 'licenseState' => $license->getState(),
+                                    'licenseValidTo' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getValidToDate())), 'licenseMessage' => preg_replace('/,/', ', ', json_encode($license->getMessage())) , 'licensePartner' => preg_replace('/,/', ', ', json_encode($license->getPartner())), 'licenseCustomer' => preg_replace('/,/', ', ', json_encode($license->getCustomer())), 
+                                    'upgradeUrl' => $license->getUpgradeUrl(), 'licenseCreatedAt' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getCreatedAtDate())), 'licenseDomains' => $license->getRegisteredDomains(), 'availableComponents' => preg_replace('/,/',', ', json_encode($license->getAvailableComponents())), 
+                                    'dashboardMessages' => preg_replace('/,/',', ', json_encode($license->getDashboardMessages())), 'isUpgradable' => $license->getUpgradeUrl(), 'licenseGrayzoneMessages' => preg_replace('/,/', ', ', json_encode($license->getGrayzoneMessages())), 
+                                    'licenseGrayzoneTime' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getGrayzoneTime())), 'licenseLockTime' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getFrontendLockTime())), 'licenseUpdateInterval' => $license->getRequestInterval(), 'licenseFailedUpdate' => $license->getFirstFailedUpdateTime(),
+                                    'licenseSuccessfulUpdate' => $license->getLastSuccessfulUpdateTime(), 'coreCmsEdition' => $license->getEditionName(), 'coreCmsVersion' => $license->getVersion()->getNumber(), 'coreCmsCodeName' => $license->getVersion()->getCodeName(), 'coreCmsStatus' => $license->getVersion()->getState(), 'coreCmsReleaseDate' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getVersion()->getReleaseDate())), 'coreCmsName' => $license->getVersion()->getName());
                     if ($result) {
-                        return array('status' => true, 'licenseData' => $result);
+                        return array('status' => true, 'result' => contrexx_raw2xhtml($result));
                     }
-
                     break;
             }
         } catch (Exception $e) {
@@ -1963,50 +1978,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
     }
-    /**
-     * Displayed the license information as a table format
-     * 
-     * @global type $_ARRAYLANG
-     * @param \Cx\Core_Modules\License\License $license
-     * @return string
-     */
-    public function licenseDetailsTable(\Cx\Core_Modules\License\License $license) {
-        global $_ARRAYLANG;
-        
-        $class = "class='row1'";
-        $result = "<table class='adminlist' width='100%'>
-                        <tr><th colspan='2'>License Information</th></tr>
-                        <tr $class><td>" . $_ARRAYLANG['TXT_INSTALLATION_ID'] . "</td><td>" . htmlspecialchars_decode($license->getInstallationId()) . "</td></tr>
-                        <tr $class><td>" . $_ARRAYLANG['TXT_LICENSE_KEY'] . "</td><td>" . htmlspecialchars_decode($license->getLicenseKey()) . "</td></tr>
-                        <tr $class><td>" . $_ARRAYLANG['TXT_LICENSE_STATE'] . "</td><td>" . htmlspecialchars_decode($license->getState()) . "</td></tr>
-                        <tr $class><td>" . $_ARRAYLANG['TXT_LICENSE_VALID_TO'] . "</td><td>" . date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getValidToDate())) . "</td></tr>
-                        <tr $class><td>License Message</td><td>" . json_encode($license->getMessages()) . "</td></tr>
-                        <tr $class><td>License Partner</td><td>" . json_encode($license->getPartner()) . "</td></tr>
-                        <tr $class><td>License Customer</td><td>" . json_encode($license->getCustomer()) . "</td></tr>
-                        <tr $class><td>Upgrade Url</td><td>" . htmlspecialchars_decode($license->getUpgradeUrl()) . "</td></tr>
-                        <tr $class><td>" . $_ARRAYLANG['TXT_LICENSE_CREATED_AT'] . "</td><td>" . date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getCreatedAtDate())) . "</td></tr>
-                        <tr $class><td>" . $_ARRAYLANG['TXT_LICENSE_REGISTERED_DOMAINS'] . "</td><td>" . json_encode($license->getRegisteredDomains()) . "</td></tr>
-                        <tr $class><td>Available Components</td><td>" . json_encode($license->getAvailableComponents()) . "</td></tr>
-                        <tr $class><td>Dashboard Messages</td><td>" . json_encode($license->getDashboardMessages()) . "</td></tr>
-                        <tr $class><td>IsUpgradable</td><td>" . htmlspecialchars_decode($license->isUpgradable()) . "</td></tr>
-                        <tr $class><td>License Grayzone Messages</td><td>" . json_encode($license->getGrayzoneMessages()) . "</td></tr>
-                        <tr $class><td>License Grayzone Time</td><td>" . date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getGrayzoneTime())) . "</td></tr>
-                        <tr $class><td>License Lock Time</td><td>" . date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getFrontendLockTime())) . "</td></tr>
-        
-                        <tr $class><td>License Update Interval</td><td>" . date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getRequestInterval())) . "</td></tr>
-                        <tr $class><td>License Failed Update</td><td>" . date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getFirstFailedUpdateTime())) . "</td></tr>
-                        <tr $class><td>License Successful Update</td><td>" . date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getLastSuccessfulUpdateTime())) . "</td></tr>
-                        <tr $class><td>" . $_ARRAYLANG['TXT_LICENSE_EDITION'] . "</td><td>" . htmlspecialchars_decode($license->getEditionName()) . "</td></tr>
-                        <tr $class><td>Core Cms Version</td><td>" . htmlspecialchars_decode($license->getVersion()->getNumber()) . "</td></tr>
-                        <tr $class><td>Core Cms CodeName</td><td>" . htmlspecialchars_decode($license->getVersion()->getCodeName()) . "</td></tr>
-                        <tr $class><td>Core Cms Status</td><td>" . htmlspecialchars_decode($license->getVersion()->getState()) . "</td></tr>
-                        <tr $class><td>Core Cms ReleaseDate</td><td>" . date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getVersion()->getReleaseDate())) . "</td></tr>
-                        <tr $class><td>Core Cms Name</td><td>" . htmlspecialchars_decode($license->getVersion()->getName()) . "</td></tr>";
-
-        $result .= "<table>";
-        return $result;
-    }
-
     /**
      * Remove the user
      * 
