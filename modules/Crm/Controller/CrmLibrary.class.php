@@ -1791,7 +1791,7 @@ class CrmLibrary
             return $resources;
         }
         if (empty ($groupId)) {
-            return false;
+            return array();;
         }
 
         $objFWUser  = \FWUser::getFWUserObject();
@@ -1812,7 +1812,7 @@ class CrmLibrary
             }
             return $resources;
         }
-        return false;
+        return array();
     }
 
     /**
