@@ -1440,7 +1440,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
                 //create FTP-Account
                 //validate FTP user name if website name doesn't starts with alphabetic letters, add the prefix to website name
-                $ftpUser   = !preg_match('#^[a-z]#i', $websiteName) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') . $websiteName : $websiteName;
+                $ftpUser   = (\Cx\Core\Setting\Controller\Setting::getValue('forceFtpAccountFixPrefix')) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') . $websiteName : 
+                             !preg_match('#^[a-z]#i', $websiteName) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') . $websiteName : $websiteName;
                 $password  = \User::make_password(8, true);
                 $accountId = $this->websiteController->addFtpAccount($ftpUser, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
 
