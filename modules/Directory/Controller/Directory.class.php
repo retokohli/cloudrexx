@@ -782,7 +782,7 @@ $this->arrRows[2] = '';
             '    <input id="searchCheck" type="hidden" name="check" value="norm" size="10" />'."\n".
             '    <input type="hidden" name="section" value="Directory" size="10" />'."\n".
             '    <input type="hidden" name="cmd" value="search" size="10" />'."\n".
-            '    <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> &raquo; <a href="javascript:toggle(\'hiddenSearch\')" >'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br />'."\n".
+            '    <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> <span class="addir-search"> &raquo; <a href="javascript:toggle(\'hiddenSearch\')" >'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br /></span>'."\n".
             '    <div style="display: none;" id="hiddenSearch">'."\n".
             '    <br />'."\n".
             '    <table width="100%" cellspacing="0" cellpadding="0" border="0">'."\n".

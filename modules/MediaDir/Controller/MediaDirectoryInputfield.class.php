@@ -406,19 +406,19 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 	                            $strNotSelectedOptionsName = "deselectedCategories";
 	                        }
                         	
-                        	$strInputfield .= '<div class="mediadirSelector" style="float: left; height: auto !important;">';
-	                        $strInputfield .= '<div class="mediadirSelectorLeft" style="float: left; height: auto !important;"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple" style="width: 180px;">';
+                        	$strInputfield .= '<div class="mediadirSelector container-fluid"><div class="row"><div class="col-md-offset-3">';
+	                        $strInputfield .= '<div class="col-md-4"><div class="row"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple">';
 	                        $strInputfield .= $arrSelectorOptions['not_selected'];
-	                        $strInputfield .= '</select></div>';
-	                        $strInputfield .= '<div class="mediadirSelectorCenter" style="float: left; height: 100px; padding: 60px 10px 0px 10px;">';
-	                        $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],addElement,removeElement);" type="button">';
+	                        $strInputfield .= '</select></div></div>';
+	                        $strInputfield .= '<div class="mediadirSelectorCenter col-md-2">';
+	                        $strInputfield .= '<input class="btn btn-default" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],addElement,removeElement);" type="button">';
 	                        $strInputfield .= '<br />';
-	                        $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],removeElement,addElement);" type="button">';
+	                        $strInputfield .= '<input class="btn btn-default" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],removeElement,addElement);" type="button">';
 	                        $strInputfield .= '</div>';
-	                        $strInputfield .= '<div class="mediadirSelectorRight" style="float: left; height: auto !important;"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple" style="width: 180px;">';
+	                        $strInputfield .= '<div class="col-md-4"><div class="row"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple">';
 	                        $strInputfield .= $arrSelectorOptions['selected'];
-	                        $strInputfield .= '</select></div>';
-	                        $strInputfield .= '</div>';
+	                        $strInputfield .= '</select></div></div>';
+	                        $strInputfield .= '</div></div></div>';
 	                        
                             $this->makeJavascriptInputfieldArray($arrInputfield['id'], $strSelectedOptionsName, 1, 1, "selector");
                             $this->arrJavascriptFormOnSubmit[$arrInputfield['id']] = "selectAll(document.entryModfyForm.elements['".$strSelectedOptionsName."[]']); "; 

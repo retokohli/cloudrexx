@@ -207,7 +207,7 @@ class Market extends MarketLibrary
                 break;
             }
             //typselector
-            $selector = '<input type="radio" name="type" onclick="location.replace(\'index.php?section=Market&id='.$_GET['id'].'\')" '.$selectionAll.' />'.$_ARRAYLANG['TXT_MARKET_ALL'].'&nbsp;<input type="radio" name="type" onclick="location.replace(\'index.php?section=Market&id='.$_GET['id'].'&type=offer\')" '.$selectionOffer.' />'.$_ARRAYLANG['TXT_MARKET_OFFERS'].'&nbsp;<input type="radio" name="type" onclick="location.replace(\'index.php?section=Market&id='.$_GET['id'].'&type=search\')" '.$selectionSearch.' />'.$_ARRAYLANG['TXT_MARKET_REQUEST'];
+            $selector = '<span class="radio"><label><input type="radio" name="type" onclick="location.replace(\'index.php?section=Market&id='.$_GET['id'].'\')" '.$selectionAll.' />'.$_ARRAYLANG['TXT_MARKET_ALL'].'&nbsp;</label></span><span class="radio"><label><input type="radio" name="type" onclick="location.replace(\'index.php?section=Market&id='.$_GET['id'].'&type=offer\')" '.$selectionOffer.' />'.$_ARRAYLANG['TXT_MARKET_OFFERS'].'&nbsp;</label></span><span class="radio"><label><input type="radio" name="type" onclick="location.replace(\'index.php?section=Market&id='.$_GET['id'].'&type=search\')" '.$selectionSearch.' />'.$_ARRAYLANG['TXT_MARKET_REQUEST'].'</label></span>';
             //get entries
             $this->showEntries($_GET['id']);
 
