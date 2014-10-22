@@ -1939,6 +1939,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         return false;
     }
+
     /**
      * Fetching License information
      * 
@@ -1962,33 +1963,56 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         'websiteId'   => $params['post']['websiteId']
                     );
                     $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getLicense', $params, $website);
-//                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getLicense', $params, $website);
                     if ($resp && $resp->data->status == 'success') {
                         return $resp->data;
                     }
-                    
-                break;
-            case ComponentController::MODE_WEBSITE:
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
                     if (!$license) {
                         throw new MultiSiteJsonException('JsonMultiSite::getLicense(): on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' $license was not set properly');
                     }
-                    $result = array('installationId' => $license->getInstallationId(), 'licenseKey' => $license->getLicenseKey(), 'licenseState' => $license->getState(),
-                                    'licenseValidTo' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getValidToDate())), 'licenseMessage' => preg_replace('/,/', ', ', json_encode($license->getMessage())) , 'licensePartner' => preg_replace('/,/', ', ', json_encode($license->getPartner())), 'licenseCustomer' => preg_replace('/,/', ', ', json_encode($license->getCustomer())), 
-                                    'upgradeUrl' => $license->getUpgradeUrl(), 'licenseCreatedAt' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getCreatedAtDate())), 'licenseDomains' => $license->getRegisteredDomains(), 'availableComponents' => preg_replace('/,/',', ', json_encode($license->getAvailableComponents())), 
-                                    'dashboardMessages' => preg_replace('/,/',', ', json_encode($license->getDashboardMessages())), 'isUpgradable' => $license->getUpgradeUrl(), 'licenseGrayzoneMessages' => preg_replace('/,/', ', ', json_encode($license->getGrayzoneMessages())), 
-                                    'licenseGrayzoneTime' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getGrayzoneTime())), 'licenseLockTime' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getFrontendLockTime())), 'licenseUpdateInterval' => $license->getRequestInterval(), 'licenseFailedUpdate' => $license->getFirstFailedUpdateTime(),
-                                    'licenseSuccessfulUpdate' => $license->getLastSuccessfulUpdateTime(), 'coreCmsEdition' => $license->getEditionName(), 'coreCmsVersion' => $license->getVersion()->getNumber(), 'coreCmsCodeName' => $license->getVersion()->getCodeName(), 'coreCmsStatus' => $license->getVersion()->getState(), 'coreCmsReleaseDate' => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getVersion()->getReleaseDate())), 'coreCmsName' => $license->getVersion()->getName());
+                    $result = array(
+                        'installationId'            => $license->getInstallationId(),
+                        'licenseKey'                => $license->getLicenseKey(), 
+                        'licenseState'              => $license->getState(),
+                        'licenseValidTo'            => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getValidToDate())),
+                        'licenseMessage'            => preg_replace('/,/', ', ', json_encode($license->getMessage())),
+                        'licensePartner'            => preg_replace('/,/', ', ', json_encode($license->getPartner())),
+                        'licenseCustomer'           => preg_replace('/,/', ', ', json_encode($license->getCustomer())), 
+                        'upgradeUrl'                => $license->getUpgradeUrl(),
+                        'licenseCreatedAt'          => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getCreatedAtDate())),
+                        'licenseDomains'            => $license->getRegisteredDomains(),
+                        'availableComponents'       => preg_replace('/,/',', ', json_encode($license->getAvailableComponents())), 
+                        'dashboardMessages'         => preg_replace('/,/',', ', json_encode($license->getDashboardMessages())),
+                        'isUpgradable'              => $license->getUpgradeUrl(),
+                        'licenseGrayzoneMessages'   => preg_replace('/,/', ', ', json_encode($license->getGrayzoneMessages())), 
+                        'licenseGrayzoneTime'       => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getGrayzoneTime())),
+                        'licenseLockTime'           => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getFrontendLockTime())),
+                        'licenseUpdateInterval'     => $license->getRequestInterval(),
+                        'licenseFailedUpdate'       => $license->getFirstFailedUpdateTime(),
+                        'licenseSuccessfulUpdate'   => $license->getLastSuccessfulUpdateTime(),
+                        'coreCmsEdition'            => $license->getEditionName(),
+                        'coreCmsVersion'            => $license->getVersion()->getNumber(),
+                        'coreCmsCodeName'           => $license->getVersion()->getCodeName(),
+                        'coreCmsStatus'             => $license->getVersion()->getState(),
+                        'coreCmsReleaseDate'        => date(ASCMS_DATE_FORMAT_DATE, htmlspecialchars_decode($license->getVersion()->getReleaseDate())),
+                        'coreCmsName'               => $license->getVersion()->getName(),
+                    );
                     if ($result) {
                         return array('status' => true, 'result' => contrexx_raw2xhtml($result));
                     }
+                    break;
+
+                default:
                     break;
             }
         } catch (Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getLicense() failed: to get License Information: ' . $e->getMessage());
         }
-        
     }
+
     /**
      * Remove the user
      * 
