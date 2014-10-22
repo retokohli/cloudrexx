@@ -666,6 +666,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (!$website) {
                 return;
             }
+            if (!$website->getFqdn()) {
+                return;
+            }
             $title = $_ARRAYLANG['TXT_MULTISITE_EXECUTE_QUERY_ON_WEBSITE'].$website->getFqdn()->getName();
         }
         
@@ -707,6 +710,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (!empty($websiteId)) {
             $website = $webRepo->findOneById($websiteId);
             if (!$website) {
+                return;
+            }
+            if (!$website->getFqdn()) {
                 return;
             }
             $title = $_ARRAYLANG['TXT_MULTISITE_FETCH_LICENSE_INFO'] . $website->getFqdn()->getName();
