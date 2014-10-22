@@ -2001,7 +2001,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         'coreCmsName'               => $license->getVersion()->getName(),
                     );
                     if ($result) {
-                        return array('status' => true, 'result' => contrexx_raw2xhtml($result));
+                        return array(
+                            'status' => true,
+                            'result' => contrexx_raw2xhtml($result),
+                        );
                     }
                     break;
 
