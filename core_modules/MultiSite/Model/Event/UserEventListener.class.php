@@ -99,6 +99,9 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                             'multisite_user_account_backend_language'   => $objUser->getBackendLanguage(),
                             'multisite_user_account_email_access'       => $objUser->getEmailAccess(),
                             'multisite_user_account_profile_access'     => $objUser->getProfileAccess(),
+                            'multisite_user_account_verified'           => $objUser->isVerified(),
+                            'multisite_user_account_restore_key'        => $objUser->getRestoreKey(),
+                            'multisite_user_account_restore_key_time'   => $objUser->getRestoreKeyTime(),
                             'multisite_user_md5_password'               => $objUser->getHashedPassword(),
                         );
                         try {
@@ -198,6 +201,9 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             'multisite_user_account_backend_language'   => $objUser->getBackendLanguage(),
             'multisite_user_account_email_access'       => $objUser->getEmailAccess(),
             'multisite_user_account_profile_access'     => $objUser->getProfileAccess(),
+            'multisite_user_account_verified'           => $objUser->isVerified(),
+            'multisite_user_account_restore_key'        => $objUser->getRestoreKey(),
+            'multisite_user_account_restore_key_time'   => $objUser->getRestoreKeyTime(),
             'multisite_user_md5_password'               => $objUser->getHashedPassword(),
         );
         try {

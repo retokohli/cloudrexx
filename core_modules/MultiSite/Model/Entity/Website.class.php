@@ -1478,6 +1478,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
 
     public function generateVerificationUrl() {
         $this->owner->setRestoreKey();
+        // hard-coded to 30 days
+        $this->owner->setRestoreKeyTime(86400 * 30);
         $this->owner->store();
         $websiteVerificationUrl = \FWUser::getVerificationLink(true, $this->owner, $this->baseDn->getName());
         return $websiteVerificationUrl;
@@ -1507,8 +1509,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * 
      * @return string
      */
-    public function generateAccountPassword() {
-        
+    public function generateAccountPassword() {        
         $newPassword = \User::make_password(8, true);
         $params = array(
             'userId' => $this->ownerId,

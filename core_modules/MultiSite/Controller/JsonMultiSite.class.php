@@ -486,12 +486,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                $objUser = $objFWUser->objUser->getUser(intval($params['post']['userId']));
+                $objUser = $objFWUser->objUser->getUser(intval($params['post']['userId']), true);
                 break;
 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                 $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
-                $objUser = $objFWUser->objUser->getUser(intval($websiteUserId));
+                $objUser = $objFWUser->objUser->getUser(intval($websiteUserId), true);
                 break;
 
             default:
@@ -525,6 +525,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         if (isset($data['multisite_user_account_profile_access']) && $objUser->isAllowedToChangeProfileAccess()) {
             $objUser->setProfileAccess(contrexx_input2raw($data['multisite_user_account_profile_access']));
+        }
+        if (isset($data['multisite_user_account_verified'])) {
+            $objUser->setVerification((boolean)intval($data['multisite_user_account_verified']));
+        }
+        if (isset($data['multisite_user_account_restore_key'])) {
+            $objUser->setRestoreKey(contrexx_input2raw($data['multisite_user_account_restore_key']));
+        }
+        if (isset($data['multisite_user_account_restore_key_time'])) {
+            $objUser->setRestoreKeyTime(intval($data['multisite_user_account_restore_key_time']), true);
         }
 
         // set profile data
