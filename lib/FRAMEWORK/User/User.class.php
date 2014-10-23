@@ -865,11 +865,22 @@ class User extends User_Profile
         return $this->arrCachedUsers[$this->id]['static_access_ids'];
     }
 
-    public function getUser($id)
+    /**
+     * Fetch instance of User specified by ID $id.
+     *
+     * @param   integer $id The ID of the user to fetch
+     * @param   boolean $forceReload    Set to TRUE to refetch the user
+                                        from the database. Otherwise, the
+                                        user will be loaded from cache,
+                                        in case it has been loaded 
+                                        before. Defaults to FALSE.
+     * @return  mixed   Instance of \User if successful. Otherwise FALSE.
+     */
+    public function getUser($id, $forceReload = false)
     {
         $objUser = clone $this;
         $objUser->arrCachedUsers = &$this->arrCachedUsers;
-        if ($objUser->load($id)) {
+        if ($objUser->load($id, $forceReload)) {
             return $objUser;
         }
         return false;
@@ -1020,13 +1031,19 @@ class User extends User_Profile
     /**
      * Load user data
      *
-     * Get username, email, lang_id, is_active and is_admin states from database
-     * and put them into the analogous class variables.
-     * @param integer $id
+     * Load all user data (username, email, lang_id, is_active, etc.) of
+     * the user specified by ID $id into the current instance.
+     *
+     * @param integer $id   The ID of the user to load
+     * @param   boolean $forceReload    Set to TRUE to refetch the user
+                                        from the database. Otherwise, the
+                                        user will be loaded from cache,
+                                        in case it has been loaded 
+                                        before. Defaults to FALSE.
      * @throws UserException
-     * @return unknown
+     * @return boolean  TRUE on success, otherwise FALSE
      */
-    private function load($id)
+    private function load($id, $forceReload = false)
     {
         global $_LANGID;
 
@@ -1034,7 +1051,7 @@ class User extends User_Profile
             throw new UserException("User->load(): Illegal method call - try getUser()!");
         }
         if ($id) {
-            if (!isset($this->arrCachedUsers[$id])) {
+            if ($forceReload || !isset($this->arrCachedUsers[$id])) {
                 return $this->loadUsers($id);
             }
             $this->id = $id;
@@ -1046,8 +1063,8 @@ class User extends User_Profile
             $this->frontend_language = isset($this->arrCachedUsers[$id]['frontend_lang_id']) ? $this->arrCachedUsers[$id]['frontend_lang_id'] : $_LANGID;
             $this->backend_language = isset($this->arrCachedUsers[$id]['backend_lang_id']) ? $this->arrCachedUsers[$id]['backend_lang_id'] : $_LANGID;
             $this->is_active = isset($this->arrCachedUsers[$id]['active']) ? (bool)$this->arrCachedUsers[$id]['active'] : false;
-            $this->verified = isset($this->arrCachedUsers[$id]['verified']) ? (bool)$this->arrCachedUsers[$id]['verified'] : false;
-            $this->primary_group = isset($this->arrCachedUsers[$id]['primary_group']) ? $this->arrCachedUsers[$id]['primary_group'] : 0;            $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
+            $this->verified = isset($this->arrCachedUsers[$id]['verified']) ? (bool)$this->arrCachedUsers[$id]['verified'] : true;
+            $this->primary_group = isset($this->arrCachedUsers[$id]['primary_group']) ? $this->arrCachedUsers[$id]['primary_group'] : 0;
             $this->is_admin = isset($this->arrCachedUsers[$id]['is_admin']) ? (bool)$this->arrCachedUsers[$id]['is_admin'] : false;
             $this->regdate = isset($this->arrCachedUsers[$id]['regdate']) ? $this->arrCachedUsers[$id]['regdate'] : 0;
             $this->expiration = isset($this->arrCachedUsers[$id]['expiration']) ? $this->arrCachedUsers[$id]['expiration'] : 0;
@@ -1386,16 +1403,42 @@ class User extends User_Profile
         $this->auth_token_timeout = time() + $_CONFIG['sessionLifeTime'];
     }
 
-    public function setRestoreKey()
+    /**
+     * Set the restore-key
+     *
+     * The restore-key is used to reset the password or used for
+     * the user verification process.
+     *
+     * @param   string  $restoreKey The restore-key to set. Must be a
+     *                              MD5-hash. If left empty, a new
+     *                              restore-key will be generated.
+     */
+    public function setRestoreKey($restoreKey = null)
     {
+        if ($restoreKey) {
+            $this->restore_key = $restoreKey;
+            return;
+        }
+
         $this->restore_key = md5($this->email.$this->regdate.time());
         $this->restore_key_time = time() + 3600;
     }
 
-
-    public function setRestoreKeyTime($seconds)
+    /**
+     * Set the restore-key validity timeout
+     *
+     * @param   integer $seconds    Timeout specified in seconds.
+     * @param   boolean $absolute   If set to TRUE, the argument
+     *                              $seconds will be interpreted as
+     *                              timestamp instead. Defaults to FALSE.
+     */
+    public function setRestoreKeyTime($seconds, $absolute = false)
     {
-        $this->restore_key_time = time() + $seconds;
+        if ($absolute) {
+            $this->restore_key_time = $seconds;
+        } else {
+            $this->restore_key_time = time() + $seconds;
+        }
     }
 
 
