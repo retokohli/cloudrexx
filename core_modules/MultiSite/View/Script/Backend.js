@@ -126,7 +126,7 @@
             var paramsArr = ($(this).attr('data-params')).split(':');
             var argName = paramsArr[0];
             var argValue = paramsArr[1];
-            var initialContent = '<div id=""><form id="ExecuteSql"><div id="statusMsg"></div><div id="resultSet"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>';
+            var initialContent = '<div><form id="ExecuteSql"><div id="statusMsg"></div><div id="resultSet"></div><textarea rows="10" cols="100" id="queryContent" name="executeQuery"></textarea></form></div>';
             domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getLicense";
             cx.ui.dialog({
                 width: 820,
@@ -134,6 +134,7 @@
                 title: title,
                 content: initialContent,
                 autoOpen: true,
+                modal: true,
                 buttons: {
                     "Cancel": function() {
                         $(this).dialog("close");
@@ -152,10 +153,12 @@
                             $.ajax({
                                 url: domainUrl,
                                 type: "POST",
-                                data: {query: $("#queryContent").val(),
+                                data:{
+                                    query: query,
                                     mode: argName,
                                     id: argValue,
-                                    command: 'executeSql'},
+                                    command: 'executeSql'
+                                    },
                                 dataType: "json",
                                 success: function(response) {
                                       if (response.status == 'error') {
@@ -193,19 +196,18 @@
                                                     var count = 0;
                                                     var tsbody = "";
                                                     var tshead = "";
-                                                    var objdata = JSON.parse(data);
-                                                    var no_cols = (objdata).length;
-                                                    $.each(objdata, function(key, data) {
+                                                    var no_cols = (data).length;
+                                                    $.each(data, function(key, data) {
                                                         tsbody += "<tr class =row1>";
-                                                        for (jsonkey in data) {
+                                                        for (key in data) {
                                                             if (count == 0) {
                                                                 tshead += "<th>";
-                                                                tshead += jsonkey;
+                                                                tshead += key;
                                                                 tshead += "</th>"
                                                             }
                                                             if (count < no_cols) {
                                                                 tsbody += "<td>";
-                                                                tsbody += data[jsonkey];
+                                                                tsbody += data[key];
                                                                 tsbody += "</td>"
                                                             }
                                                         }
@@ -218,7 +220,7 @@
                                             cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', "multisite/lang"), null, 3000);
                                         } else {
                                             cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', "multisite/lang"), null, 3000);
-                                            $('#executeSqlQuery #statusMsg').show().text(response.message);
+                                            $('#executeSqlQuery #statusMsg').show().text(value.error);
                                         }
                                     });
                                     cx.trigger("loadingEnd", "executeSql", {});

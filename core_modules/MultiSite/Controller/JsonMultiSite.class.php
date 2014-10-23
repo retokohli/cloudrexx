@@ -1879,6 +1879,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
     
     /**
+     * Executing Sql query
      * 
      * @global $objDatabase
      * @param type $params
@@ -1891,60 +1892,72 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
         //load the multisite language
         $this->loadLanguageData('MultiSite');
-                
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-            case ComponentController::MODE_MANAGER:
-            case ComponentController::MODE_HYBRID:
-                if (empty($params['post']['query'])) {
-                    throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query, the sql query is empty');
-                }
-                $websiteServiceRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                if (isset($params['post']['mode']) && $params['post']['mode'] == 'website') {
-                    $website = $websiteServiceRepo->findOneBy(array('id' => $params['post']['id']));
-                    $params['post']['websiteName'] = $website->getFqdn()->getName();
-                     $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
-                     if($resp && $resp->status){
-                        $result[] = $resp->data;
-                     }
-                    return $result;
-                }
-                
-                if (isset($params['post']['mode']) && $params['post']['mode'] == 'service') {
-                    $websites = $websiteServiceRepo->findBy(array('websiteServiceServerId' => $params['post']['serviceId']));
-                    foreach($websites as $website) {
-                        $params['post']['websiteId'] = $website->getId();
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    if (empty($params['post']['query'])) {
+                        throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query, the sql query is empty');
+                    }
+
+                    $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    //execute sql query on website
+                    if (isset($params['post']['mode']) && $params['post']['mode'] == 'website') {
+                        $website = $websiteServiceRepo->findOneBy(array('id' => $params['post']['id']));
+                        if (empty($website)) {
+                            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to find the website.');
+                        }
                         $params['post']['websiteName'] = $website->getFqdn()->getName();
                         $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
-                        if ($resp && $resp->status == 'success') {
-                            $result[] = $resp->data; 
+                        if ($resp && $resp->status) {
+                            $result[] = $resp->data;
                         }
+                        return $result;
                     }
-                    return $result;
-                    
-                }
-                break;
-            case ComponentController::MODE_WEBSITE:
-                try {
-                    $queryResult = array();
-                    $querys = array_filter(explode(";", $params['post']['query']));
-
-                    foreach ($querys as $key => $query) {
-                        $objResult = $objDatabase->GetAll($query);
-                        if ($objResult !== false) {
-                            if (!empty($objResult)) {
-                                $resultArray[] = json_encode($objResult);
+                    //execute sql query on all websites running on service server 
+                    if (isset($params['post']['mode']) && $params['post']['mode'] == 'service') {
+                        $websites = $websiteServiceRepo->findBy(array('websiteServiceServerId' => $params['post']['id']));
+                        if (empty($websites)) {
+                            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to find the service server.');
+                        }
+                        foreach ($websites as $website) {
+                            $params['post']['websiteName'] = $website->getFqdn()->getName();
+                            $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
+                            if ($resp && $resp->status == 'success') {
+                                $result[] = $resp->data;
                             }
-                            $queryResult[$key] = $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_SUCCESSFULLY'];
-                        } else {
-                            $queryResult[$key] = $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_FAILED'];
                         }
+                        return $result;
                     }
-                    $finalResult = array_combine($querys, $queryResult);
-                    return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($finalResult), 'selectQueryResult' => $resultArray, 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
-                } catch(\Exception $e) {
-                    throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query'.$e->getMessage());
-                }
-                break;
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                    if (isset($params['post']['query']) && !empty($params['post']['query'])) {
+                        $queryResult = array();
+                        $querys = array_filter(explode(";", $params['post']['query']));
+                        foreach ($querys as $key => $query) {
+                            $objResult = $objDatabase->GetAll($query);
+                            if ($objResult !== false) {
+                                if (!empty($objResult)) {
+                                    $resultArray[] = $objResult;
+                                }
+                                $queryResult[$key] = $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_SUCCESSFULLY'];
+                            } else {
+                                $queryResult[$key] = $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_FAILED'];
+                            }
+                        }
+                        $finalResult = array_combine($querys, $queryResult);
+                        return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($finalResult), 'selectQueryResult' => contrexx_raw2xhtml($resultArray), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
+                    } else {
+                        return array('status' => false, 'error' => 'JsonMultiSite (executeSql): empty sql query sent from manager.');
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query' . $e->getMessage());
         }
         return false;
     }
