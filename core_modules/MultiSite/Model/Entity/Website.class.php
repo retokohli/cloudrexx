@@ -509,7 +509,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 if (isset($resp->log)) {
                     \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->log));
                 }
-                throw new WebsiteException('Problem in creating website '.$errMsg);    
+                throw new WebsiteException('Problem in creating website '.serialize($errMsg));
             }
             if (isset($resp->data->log)) {
                 \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->data->log));
@@ -1002,16 +1002,19 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
                     $websiteServiceServer = $websiteServiceServerRepo->findOneBy(array('id' => $this->websiteServiceServerId));
+                    if (!$websiteServiceServer) {
+                        throw new WebsiteException('Unable to delete the website: Website Service Server (#'.$this->websiteServiceServerId.') unknown');
+                    }
                     $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('destroyWebsite', array('websiteId' => $this->id), $websiteServiceServer);
                     if (!$resp || $resp->status == 'error') {
                         $errMsg = isset($resp->message) ? $resp->message : '';
                         if (isset($resp->log)) {
                             \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$websiteServiceServer->getLabel().') '.$logEntry;}, $resp->log));
                         }
-                        throw new WebsiteException('Unable to delete the website: ' . $errMsg);
+                        throw new WebsiteException('Unable to delete the website: ' . serialize($errMsg));
                     }
                     if (isset($resp->data->log)) {
-                        \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$websiteServiceServer->getName().') '.$logEntry;}, $resp->data->log));
+                        \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$websiteServiceServer->getLabel().') '.$logEntry;}, $resp->data->log));
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
@@ -1515,12 +1518,20 @@ throw new WebsiteException('implement secret-key algorithm first!');
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('updateUser', $params);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
-                if (isset($resp->data->log)) {
+                // do only append logs from executed command, if command was not executed on our own system,
+                // otherwise we would re-add our existing log-messages (-> duplicating whole log stack)
+                if (   \Cx\Core\Setting\Controller\Setting::getValue('mode') != \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
+                    && isset($resp->data->log)
+                ) {
                     \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Manager) '.$logEntry;}, $resp->data->log));
                 }
                 return $newPassword;
             } else {
-                if (isset($resp->log)) {
+                // do only append logs from executed command, if command was not executed on our own system,
+                // otherwise we would re-add our existing log-messages (-> duplicating whole log stack)
+                if (   \Cx\Core\Setting\Controller\Setting::getValue('mode') != \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
+                    && isset($resp->log)
+                ) {
                     \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Manager) '.$logEntry;}, $resp->log));
                 }
                 throw new WebsiteException('Unable to generate account password: Error in generate account password');
