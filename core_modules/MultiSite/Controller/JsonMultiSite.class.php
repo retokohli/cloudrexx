@@ -1949,7 +1949,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $finalResult = array_combine($querys, $queryResult);
                         return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($finalResult), 'selectQueryResult' => contrexx_raw2xhtml($resultArray), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
                     } else {
-                        return array('status' => false, 'error' => 'JsonMultiSite (executeSql): empty sql query sent from manager.');
+                        return array('status' => false, 'error' => $_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY']);
                     }
                     break;
 
