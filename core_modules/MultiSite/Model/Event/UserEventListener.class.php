@@ -84,6 +84,10 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                        if (!$objUser->isVerified()) {
+                            throw new \Exception('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
+                        }
+
                         //get user's profile details
                         $objUser->objAttribute->first();
                         while (!$objUser->objAttribute->EOF) {
