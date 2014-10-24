@@ -1000,21 +1000,16 @@ throw new WebsiteException('implement secret-key algorithm first!');
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $websiteServiceServer = $websiteServiceServerRepo->findOneBy(array('id' => $this->websiteServiceServerId));
-                    if (!$websiteServiceServer) {
-                        throw new WebsiteException('Unable to delete the website: Website Service Server (#'.$this->websiteServiceServerId.') unknown');
-                    }
-                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('destroyWebsite', array('websiteId' => $this->id), $websiteServiceServer);
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('destroyWebsite', array('websiteId' => $this->id), $this->websiteServiceServer);
                     if (!$resp || $resp->status == 'error') {
                         $errMsg = isset($resp->message) ? $resp->message : '';
                         if (isset($resp->log)) {
-                            \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$websiteServiceServer->getLabel().') '.$logEntry;}, $resp->log));
+                            \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->log));
                         }
                         throw new WebsiteException('Unable to delete the website: ' . serialize($errMsg));
                     }
                     if (isset($resp->data->log)) {
-                        \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$websiteServiceServer->getLabel().') '.$logEntry;}, $resp->data->log));
+                        \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Service: '.$this->websiteServiceServer->getLabel().') '.$logEntry;}, $resp->data->log));
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
