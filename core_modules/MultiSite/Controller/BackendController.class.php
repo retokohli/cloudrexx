@@ -418,6 +418,23 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         },
                     ),
                 ),
+                'themeId' => array(
+                    'showOverview' => false
+                    ),
+                'ftpUser' => array(
+                    'header' => 'FTP User'
+                    ),
+                'websiteServiceServer' => array(
+                    'showOverview' => false
+                    ),
+                'domains' => array(
+                    'header' => 'Domains',
+                    'table'  => array(
+                        'parse' => function ($value,$arrayData) {
+                            return $this->getWebsiteDomains($arrayData['id']);
+                        }
+                    )
+                ),
                 'secretKey' => array(
                     'readonly'      => true,
                     'showOverview'  => false,
@@ -734,5 +751,23 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     {
         $hostingController  = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
         return $hostingController->getDnsRecords();
+    }
+    
+
+    /**
+     * Get All Domains Based On Website
+     * 
+     * @param integer $websiteId websiteId
+     * 
+     * @return array 
+     */
+    public function getWebsiteDomains($websiteId)
+    {
+        $domainRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+        $domains    = $domainRepo->findBy(array('componentId' => $websiteId));
+        foreach ($domains as $domain) {
+            $domainArray[]    = $domain->getName();
+        }
+        return implode(",<br>", $domainArray);
     }
 }
