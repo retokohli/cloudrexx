@@ -67,6 +67,16 @@
         };
         // show license
         $('.showLicense').click(function() {
+            $('#instance_table').append('<div id ="load-lock"></div>');
+            cx.bind("loadingStart", cx.lock, "showLicense");
+            cx.bind("loadingEnd", cx.unlock, "showLicense");
+            cx.lock = function() {
+                $("#load-lock").show();
+            };
+            cx.unlock = function() {
+                $("#load-lock").hide();
+            };
+            cx.trigger("loadingStart", "showLicense", {});
             var className = $(this).attr('class');
             var id = parseInt(className.match(/[0-9]+/)[0], 10);
             var title = $(this).attr('title');
@@ -78,19 +88,27 @@
                 data: {command: 'getLicense', websiteId: id},
                 dataType: "json",
                 success: function(response) {
-                    cx.trigger("loadingEnd", "executeSql", {});
+                    cx.trigger("loadingEnd", "showLicense", {});
                     if (response.status == 'error') {
                         cx.tools.StatusMessage.showMessage(response.message, null, 4000);
                     }
                     if (response.status == 'success') {
-                        cx.tools.StatusMessage.showMessage(cx.variables.get('licenseInfo', "multisite/lang"), null, 3000);
                         var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%">';
                         var tbody = '';
                         $.each(response.data.result, function(key, data) {
-                            tbody += '<tr>';
-                            tbody += '<td>' + key + '</td>';
-                            tbody += '<td>' + data + '</td>';
-                            tbody += '</tr>';
+                            if (typeof data === 'object') {
+                                tbody += '<tr>';
+                                tbody += '<td>' + key + '</td><td>';
+                                $.each(data, function(key, data) {
+                                    tbody += key + ' : ' + data + ', ';
+                                });
+                                tbody += '<a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="edit" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td></tr>';
+                            } else {
+                                tbody += '<tr>';
+                                tbody += '<td>' + key + '</td>';
+                                tbody += '<td>' + data + '<a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="edit" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td>';
+                                tbody += '</tr>';
+                            }
                         });
                         var tfooter = '</table>';
                         html = theader + tbody + tfooter;
@@ -102,6 +120,7 @@
                         title: title,
                         content: html,
                         autoOpen: true,
+                        modal: true,
                         buttons: {
                             "Close": function() {
                                 $(this).dialog("close");
