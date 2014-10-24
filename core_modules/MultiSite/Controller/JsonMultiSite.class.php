@@ -2105,20 +2105,28 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function remoteLogin($params)
     {
-        if (empty($params['post']['id'])) {
+        if (empty($params['post']['websiteId'])) {
             return false;
         }
-        $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $website   = $websiteRepository->findOneBy(array('id' => $params['post']['id']));
-        $authToken = null;
-        $websiteLoginUrl = null;
-        if ($website) {
-            list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
-            $websiteName = $website->getBaseDn()->getName();
-            $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
-            return array('status' => 'success', 'webSiteLoginUrl' => $websiteLoginUrl->toString(), 'websiteName' => $websiteName);
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                    $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website   = $websiteRepository->findOneBy(array('id' => $params['post']['websiteId']));
+                    $authToken = null;
+                    $websiteLoginUrl = null;
+                    if ($website) {
+                        list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
+                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $website->getBaseDn()->getName() . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
+                        return array('status' => 'success', 'message' => 'Successfully Login to website!','webSiteLoginUrl' => $websiteLoginUrl->toString());
+                    }
+                    return array('status' => 'error','message' => 'This website doesnot exists!');
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::remoteLogin() failed: to get remote website Login Link: ' . $e->getMessage());
         }
-        return array('status' => 'failed','This website doesnot exists!');
     }
-
 }

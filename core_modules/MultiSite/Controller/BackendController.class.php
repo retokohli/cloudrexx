@@ -754,22 +754,20 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function remoteLogin($rowData)
     {
-        $params = array('id' => $rowData['id']);
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
-                $response = JsonMultiSite::executeCommandOnManager('remoteLogin', $params);
-                break;
-            default:
-                break;
+        $wesiteId = $rowData['id'];
+        $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        if (!empty($wesiteId)) {
+            $website = $webRepo->findOneById($wesiteId);
+            if (!$website) {
+                return;
+            }
+            if (!$website->getFqdn()) {
+                return;
+            }
+            $title = 'Remote Login to '  . $website->getFqdn()->getName();
         }
-        if ($response->data->status == 'success') {
-            $websiteLoginUrl = $response->data->webSiteLoginUrl;
-            $title = 'Remote Login to '.$response->data->websiteName;
-            $showRemoteLogin = '<a href="'.$websiteLoginUrl.'" target = "_blank" class = "remoteWebsiteLogin" title = "'.$title.'" ></a>';
-            return $showRemoteLogin; 
-        }
-        return false;
+        $websiteRemoteLogin = '<a href="javascript:void(0);" target = "_blank" class = "remoteWebsiteLogin" data-id = "'.$wesiteId.'" title = "'.$title.'" ></a>';
+        return $websiteRemoteLogin; 
     }
     
     /**

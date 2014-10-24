@@ -253,5 +253,32 @@
                 }
             });
         });
+        
+        //Login to remote website when the following click operation is performed
+        $('.remoteWebsiteLogin').click(function() {
+            cx.bind("loadingStart", cx.lock, "remoteLogin");
+            cx.bind("loadingEnd", cx.unlock, "remoteLogin");
+            cx.trigger("loadingStart", "remoteLogin", {});
+            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=remoteLogin";
+            $.ajax({
+                url: domainUrl,
+                type: "POST",
+                data: {websiteId: $(this).attr('data-id')},
+                dataType: "json",
+                success: function(response) {
+                    if (response.status == 'error' && response.data.status == 'error') {
+                        cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                        cx.trigger("loadingEnd", "remoteLogin", {});
+                    }
+                    if (response.status == 'success' && response.data.status == 'success') {
+                        cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                        cx.trigger("loadingEnd", "remoteLogin", {});
+                        window.open(response.data.webSiteLoginUrl, '_blank');
+                    }
+                }
+            });
+        });
+        
     });
 })(jQuery);
