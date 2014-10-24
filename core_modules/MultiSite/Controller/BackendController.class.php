@@ -359,6 +359,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::showLicense($rowData, false);
                                 }
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                    $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::remoteLogin($rowData, false);
+                                }
                                 return $actions;
                             }
             ),
@@ -743,6 +746,33 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
 
     /**
+     * Remote Login to Website
+     * 
+     * @param type $rowData arrayData of website
+     * 
+     * @return string
+     */
+    public function remoteLogin($rowData)
+    {
+        $params = array('id' => $rowData['id']);
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                $response = JsonMultiSite::executeCommandOnManager('remoteLogin', $params);
+                break;
+            default:
+                break;
+        }
+        if ($response->data->status == 'success') {
+            $websiteLoginUrl = $response->data->webSiteLoginUrl;
+            $title = 'Remote Login to '.$response->data->websiteName;
+            $showRemoteLogin = '<a href="'.$websiteLoginUrl.'" target = "_blank" class = "remoteWebsiteLogin" title = "'.$title.'" ></a>';
+            return $showRemoteLogin; 
+        }
+        return false;
+    }
+    
+    /**
      * get Dns Records
      * 
      * @return array 
@@ -763,8 +793,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getWebsiteDomains($websiteId)
     {
-        $domainRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-        $domains    = $domainRepo->findBy(array('componentId' => $websiteId));
+        $domainRepo  = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+        $domains     = $domainRepo->findBy(array('componentId' => $websiteId,'componentType' => ComponentController::MODE_WEBSITE));
+        $domainArray = array();
         foreach ($domains as $domain) {
             $domainArray[]    = $domain->getName();
         }

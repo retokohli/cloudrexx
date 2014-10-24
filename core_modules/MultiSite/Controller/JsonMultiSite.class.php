@@ -107,6 +107,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setWebsiteTheme'       => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getFtpUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getLicense'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
+            'remoteLogin'           => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
         );  
     }
 
@@ -2072,6 +2073,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             default:
                 break;
         }
+    }
+    
+    /**
+     * Remote Login to website
+     * 
+     * @param type $params websiteId
+     * 
+     * @return array 
+     */
+    public function remoteLogin($params)
+    {
+        if (empty($params['post']['id'])) {
+            return false;
+        }
+        $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website   = $websiteRepository->findOneBy(array('id' => $params['post']['id']));
+        $authToken = null;
+        $websiteLoginUrl = null;
+        if ($website) {
+            list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
+            $websiteName = $website->getBaseDn()->getName();
+            $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
+            return array('status' => 'success', 'webSiteLoginUrl' => $websiteLoginUrl->toString(), 'websiteName' => $websiteName);
+        }
+        return array('status' => 'failed','This website doesnot exists!');
     }
 
 }
