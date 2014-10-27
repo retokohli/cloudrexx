@@ -706,7 +706,7 @@ $this->arrRows[2] = '';
             $lid = (isset($_REQUEST['lid']) ? intval($_REQUEST['lid']) : 0);
             $options = $this->getSearchLevels($lid);
             $name = $_ARRAYLANG['TXT_LEVEL'];
-            $field = '<select name="lid" style="width:194px;"><option value="">&nbsp;</option>'.$options.'</select>';
+            $field = '<select name="lid" ><option value="">&nbsp;</option>'.$options.'</select>';
 
             // set variables
             $expSearch .=
@@ -720,7 +720,7 @@ $this->arrRows[2] = '';
         $cid = (isset($_REQUEST['cid']) ? intval($_REQUEST['cid']) : 0);
         $options = $this->getSearchCategories($cid);
         $name = $_ARRAYLANG['TXT_DIR_F_CATEGORIE'];
-        $field = '<select name="cid" style="width:194px;"><option value="">&nbsp;</option>'.$options.'</select>';
+        $field = '<select name="cid" ><option value="">&nbsp;</option>'.$options.'</select>';
 
         // set variables
         $expSearch .=
@@ -784,7 +784,7 @@ $this->arrRows[2] = '';
             '    <input type="hidden" name="cmd" value="search" size="10" />'."\n".
             '    <input type="submit" value="'.$_ARRAYLANG['TXT_DIR_F_SEARCH'].'" name="search" /> <span class="addir-search"> &raquo; <a href="javascript:toggle(\'hiddenSearch\')" >'.$_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'].'</a><br /></span>'."\n".
             '    <div style="display: none;" id="hiddenSearch">'."\n".
-            '    <br />'."\n".
+            '    '."\n".
             '    <table width="100%" cellspacing="0" cellpadding="0" border="0">'."\n".
             '    '.$expSearch."\n".
             '    </table>'."\n".

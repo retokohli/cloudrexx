@@ -193,7 +193,7 @@ class Newsletter extends NewsletterLib
                 }
             }
         }else{
-            $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<font color="red">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</font>');
+            $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>');
         }
     }
 
@@ -218,22 +218,22 @@ class Newsletter extends NewsletterLib
                 //send notification before trying to delete the record
                 $this->_sendNotificationEmail(2, $objUser->fields['id']);
                 if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$objUser->fields['id']) && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_user WHERE id=".$objUser->fields['id'])) {
-                    $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
+                    $message = '<span class="text-success">' . $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] . '</span>';
                 } else {
-                    $message = $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'];
+                    $message = '<span class="text-danger">' . $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] . '</span>';
                 }
             } else {
                 //deactivate
                 if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET status='0' WHERE id='".$objUser->fields['id']."'")) {
                     //send notification
                     $this->_sendNotificationEmail(2, $objUser->fields['id']);
-                    $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
+                    $message = '<span class="text-success">' . $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] . '</span>';
                 } else {
-                    $message = $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'];
+                    $message = '<span class="text-danger">' . $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] . '</span>';
                 }
             }
         } else {
-            $message = '<font color="red">'.$_ARRAYLANG['TXT_AUTHENTICATION_FAILED'].'</font>';
+            $message = '<span class="text-danger">'.$_ARRAYLANG['TXT_AUTHENTICATION_FAILED'].'</span>';
         }
 
         $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $message);
@@ -1248,4 +1248,3 @@ class Newsletter extends NewsletterLib
     }
 
 }
-

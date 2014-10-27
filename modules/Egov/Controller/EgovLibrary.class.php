@@ -412,7 +412,7 @@ class EgovLibrary {
             "<input type=\"hidden\" name=\"send\" value=\"1\" />".
 //            "<input type=\"hidden\" name=\"paypal\" value=\"".EgovLibrary::GetProduktValue('product_paypal', $id)."\" />".
             $strCalendarSource.
-            "<br /><table summary=\"\" border=\"0\">\n";
+            "<br /><div class=\"table-responsive\"><table class=\"table\" summary=\"\" border=\"0\">\n";
         $i = 1;
         foreach ($arrFields as $fieldId => $arrField) {
             $feldbezeichnung = $arrField['name'];
@@ -423,7 +423,7 @@ class EgovLibrary {
             $sourcecode .=
                 "<tr".
                 ($flagBackend ? ' class="row'.((++$i % 2)+1).'"' : '').
-                ">\n<td style=\"width:180px;\">".
+                ">\n<td >".
                 ($arrField['type'] != 'hidden' && $arrField['type'] != 'label'
                     ? $feldbezeichnung : '&nbsp;'
                 ).
@@ -435,7 +435,7 @@ class EgovLibrary {
             switch ($arrField['type']) {
                 case 'text':
                     $sourcecode .=
-                        "<input style=\"width:300px;\" type=\"text\" ".
+                        "<input type=\"text\" ".
                         "name=\"contactFormField_$fieldId\" ".
                         "value=\"".$arrField['attributes']."\" />\n";
                     break;
@@ -456,17 +456,17 @@ class EgovLibrary {
                     $nr = 0;
                     foreach ($options as $option) {
                         $sourcecode .=
-                            "<input type=\"checkbox\" ".
+                            "<span class=\"checkbox\"><label for=\"contactFormField_{$nr}_$fieldId\"><input type=\"checkbox\" ".
                             "name=\"contactFormField_{$fieldId}[]\" ".
                             "id=\"contactFormField_{$nr}_$fieldId\" ".
                             "value=\"$option\" />".
-                            "<label for=\"contactFormField_{$nr}_$fieldId\">$option</label>\n";
+                            "$option</label></span>\n";
                         ++$nr;
                     }
                     break;
                 case 'file':
                     $sourcecode .=
-                        "<input style=\"width:300px;\" type=\"file\" ".
+                        "<input type=\"file\" ".
                         "name=\"contactFormField_$fieldId\" />\n";
                     break;
                 case 'hidden':
@@ -477,7 +477,7 @@ class EgovLibrary {
                     break;
                 case 'password':
                     $sourcecode .=
-                        "<input style=\"width:300px;\" type=\"password\" ".
+                        "<input type=\"password\" ".
                         "name=\"contactFormField_$fieldId\" value=\"\" />\n";
                     break;
                 case 'radio':
@@ -485,8 +485,8 @@ class EgovLibrary {
                     $nr = 0;
                     foreach ($options as $option) {
                         $sourcecode .=
-                            "<input type=\"radio\" name=\"contactFormField_$fieldId\" id=\"contactFormField_{$nr}_$fieldId\" value=\"$option\" />".
-                            "<label for=\"contactFormField_{$nr}_$fieldId\">$option</label>\n";
+                            "<span class=\"radio\"><label for=\"contactFormField_{$nr}_$fieldId\"><input type=\"radio\" name=\"contactFormField_$fieldId\" id=\"contactFormField_{$nr}_$fieldId\" value=\"$option\" />".
+                            "$option</label></span>\n";
                         ++$nr;
                     }
                     break;
@@ -494,14 +494,14 @@ class EgovLibrary {
                     $options = explode(',', $arrField['attributes']);
                     $nr = 0;
                     $sourcecode .=
-                        "<select style=\"width:300px;\" name=\"contactFormField_$fieldId\">\n";
+                        "<select class=\"form-control\" name=\"contactFormField_$fieldId\">\n";
                     foreach ($options as $option) {
                         $sourcecode .= "<option>$option</option>\n";
                     }
                     $sourcecode .= "</select>\n";
                     break;
                 case 'textarea':
-                    $sourcecode .= "<textarea style=\"width:300px; height:100px;\" name=\"contactFormField_$fieldId\"></textarea>\n";
+                    $sourcecode .= "<textarea style=\"height:100px;\" name=\"contactFormField_$fieldId\"></textarea>\n";
                     break;
             }
             $sourcecode .=
@@ -556,13 +556,13 @@ class EgovLibrary {
             "<tr>\n<td>&nbsp;</td>\n<td>\n";
         if (count($arrFields) > 0) {
             $sourcecode .=
-                "<br /><input type=\"reset\" value=\"".
+                "<br /><input type=\"reset\" class=\"btn btn-default egov-btn\" value=\"".
                 $_ARRAYLANG['TXT_EGOV_DELETE']."\" />\n".
-                "<input type=\"submit\" name=\"submitContactForm\" value=\"".
+                "<input type=\"submit\" name=\"submitContactForm\" class=\"btn btn-default\" value=\"".
                 $_ARRAYLANG['TXT_EGOV_SUBMIT']."\" />\n";
         }
         $sourcecode .=
-            "</td>\n</tr>\n</table>\n</form>".
+            "</td>\n</tr>\n</table></div>\n</form>".
             ($flagYellowbill
               ? "<script type=\"text/javascript\">\n".
                 "/* <![CDATA[ */\n".

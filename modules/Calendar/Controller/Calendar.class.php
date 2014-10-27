@@ -756,7 +756,7 @@ UPLOADER;
             $captchaCheck =  \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check();
             if (!$captchaCheck) {
                 $this->_objTpl->setVariable(array(
-                    'TXT_'.$this->moduleLangVar.'_ERROR' => '<br /><font color="#ff0000">'.$_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'].'</font>',
+                    'TXT_'.$this->moduleLangVar.'_ERROR' => '<span class="text-danger">'.$_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'].'</span>',
                 ));
             }
         }
@@ -837,7 +837,7 @@ UPLOADER;
                         $this->_objTpl->hideBlock('calendarRegistrationForm');
                     } else {                        
                         $this->_objTpl->setVariable(array(
-                            'TXT_'.$this->moduleLangVar.'_ERROR' => '<br /><font color="#ff0000">'.$_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'].'</font>',
+                            'TXT_'.$this->moduleLangVar.'_ERROR' => '<span class="text-danger">'.$_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'].'</span>',
                         ));
 
                         $this->_objTpl->parse('calendarRegistrationForm');

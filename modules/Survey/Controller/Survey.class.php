@@ -369,10 +369,10 @@ END;
                         if(!empty($InputType)) {
                             switch($InputType) {
                             case "1":
-                                $SurveyOptionText .="<div class='radioWrapper'><input type='radio' name='votingoption_$cou' value='".contrexx_raw2xhtml($objResult->fields['id'])."' /><div class='radioText'>".contrexx_raw2xhtml($objResult->fields['answer'])."</div></div>";
+                                $SurveyOptionText .="<div class='radio'><label><input type='radio' name='votingoption_$cou' value='".contrexx_raw2xhtml($objResult->fields['id'])."' />".contrexx_raw2xhtml($objResult->fields['answer'])."</label></div>";
                                 break;
                             case "2":
-                                $SurveyOptionText .="<div class='checkboxWrapper'><input type='checkbox' name='votingoption_".$cou."[]' value='".contrexx_raw2xhtml($objResult->fields['id'])."' /><div class='checkboxText'>".contrexx_raw2xhtml($objResult->fields['answer'])."</div></div>";
+                                $SurveyOptionText .="<div class='checkbox'><label><input type='checkbox' name='votingoption_".$cou."[]' value='".contrexx_raw2xhtml($objResult->fields['id'])."' />".contrexx_raw2xhtml($objResult->fields['answer'])."</label></div>";
                                 break;
                             case "3":
                                 $SurveyOptionText .="<tr><td width='150px;'>".contrexx_raw2xhtml($objResult->fields['answer'])."</td>";
@@ -557,7 +557,7 @@ END;
 
                 if($AnswerQuestCountCheck == 0) {
                     $this->_objTpl->setVariable(array(
-                        'SURVEY_SUCCESS' => "<div style='padding:0px; color:red;'>$_ARRAYLANG[TXT_SURVEY_NO_ANSWERED_ERR]</div>"
+                        'SURVEY_SUCCESS' => "<div class='text-danger'>$_ARRAYLANG[TXT_SURVEY_NO_ANSWERED_ERR]</div>"
                     ));
                 } else {	// End Of if the checking for the attend any one question
                     $emailAdd = isset($_POST['additional_email']) ? trim($_POST['additional_email']) : '';
@@ -998,10 +998,10 @@ END;
                         if(!empty($InputType)) {
                             switch($InputType) {
                             case "1":
-                                $SurveyOptionText .="<div class='radioWrapper'><input type='radio' name='votingoption_$cou' value='".contrexx_raw2xhtml($objResult->fields['id'])."' /><div class='radioText'>".contrexx_raw2xhtml($objResult->fields['answer'])."</div></div>";
+                                $SurveyOptionText .="<div class='radio'><label><input type='radio' name='votingoption_$cou' value='".contrexx_raw2xhtml($objResult->fields['id'])."' />".contrexx_raw2xhtml($objResult->fields['answer'])."</label></div>";
                                 break;
                             case "2":
-                                $SurveyOptionText .="<div class='checkboxWrapper'><input type='checkbox' name='votingoption_".$cou."[]' value='".contrexx_raw2xhtml($objResult->fields['id'])."' /><div class='checkboxText'>".contrexx_raw2xhtml($objResult->fields['answer'])."</div></div>";
+                                $SurveyOptionText .="<div class='checkbox'><label><input type='checkbox' name='votingoption_".$cou."[]' value='".contrexx_raw2xhtml($objResult->fields['id'])."' />".contrexx_raw2xhtml($objResult->fields['answer'])."</label></div>";
                                 break;
                             case "3":
                                 $SurveyOptionText .="<tr><td width='150px;'>".contrexx_raw2xhtml($objResult->fields['answer'])."</td>";
@@ -1186,7 +1186,7 @@ END;
 
                 if($AnswerQuestCountCheck == 0) {
                     $this->_objTpl->setVariable(array(
-                        'SURVEY_SUCCESS' => "<div style='padding:0px; color:red;'>$_ARRAYLANG[TXT_SURVEY_NO_ANSWERED_ERR]</div>"
+                        'SURVEY_SUCCESS' => "<div class='text-danger'>$_ARRAYLANG[TXT_SURVEY_NO_ANSWERED_ERR]</div>"
                     ));
                 } else {	// End Of if the checking for the attend any one question
                     $emailAdd = isset($_POST['additional_email']) ? trim($_POST['additional_email']) : '';
@@ -1439,17 +1439,17 @@ END;
 
                     \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=survey&cmd=surveyattend&id=".$idOfSurvey);
                     $this->_objTpl->setVariable(array(
-                        'SURVEY_SUCCESS' => "<div style='padding:0px; color:rgb(2, 146, 2);'>$_ARRAYLANG[TXT_SURVEY_COMPLETED]</div>"
+                        'SURVEY_SUCCESS' => "<div class='text-success'>$_ARRAYLANG[TXT_SURVEY_COMPLETED]</div>"
                     ));
                 }// End Of else the checking for the attend any one question
             }
         } elseif ($surveyId == "") { // end of user restriction checking condition
             $this->_objTpl->setVariable(array(
-                'TXT_SUBMIT' => "<div style='padding:0px; color:red;'>$_ARRAYLANG[TXT_NO_SURVEY_HOME]</div>"
+                'TXT_SUBMIT' => "<div class='text-danger'>$_ARRAYLANG[TXT_NO_SURVEY_HOME]</div>"
             ));
         } else {
             $this->_objTpl->setVariable(array(
-                'SURVEY_SUCCESS' => "<div style='padding:0px; color:red;'>$_ARRAYLANG[TXT_SURVEY_ALREADY_ATTEND]</div>"
+                'SURVEY_SUCCESS' => "<div class='text-danger'>$_ARRAYLANG[TXT_SURVEY_ALREADY_ATTEND]</div>"
             ));
         }
     }
@@ -1536,10 +1536,10 @@ END;
                     if(!empty($InputType)) {
                         switch($InputType) {
                             case "1":
-                                $SurveyOptionText .="<div class='radioWrapper'><input type='radio' name='votingoption_$cou' value='".contrexx_raw2xhtml($objResult->fields['id'])."' /><div class='radioText'>".contrexx_raw2xhtml($objResult->fields['answer'])."</div></div>";
+                                $SurveyOptionText .="<div class='radio'><label><input type='radio' name='votingoption_$cou' value='".contrexx_raw2xhtml($objResult->fields['id'])."' />".contrexx_raw2xhtml($objResult->fields['answer'])."</label></div>";
                                 break;
                             case "2":
-                                $SurveyOptionText .="<div class='checkboxWrapper'><input type='checkbox' name='votingoption_".$cou."[]' value='".contrexx_raw2xhtml($objResult->fields['id'])."' /><div class='checkboxText'>".contrexx_raw2xhtml($objResult->fields['answer'])."</div></div>";
+                                $SurveyOptionText .="<div class='checkbox'><label><input type='checkbox' name='votingoption_".$cou."[]' value='".contrexx_raw2xhtml($objResult->fields['id'])."' />".contrexx_raw2xhtml($objResult->fields['answer'])."</label></div>";
                                 break;
                             case "3":
                                 $SurveyOptionText .="<tr><td width='150px;'>".contrexx_raw2xhtml($objResult->fields['answer'])."</td>";
@@ -1708,10 +1708,10 @@ END;
                     if(!empty($InputType)) {
                         switch($InputType) {
                         case "1":
-                            $SurveyOptionText .="<div class='radioWrapper'><input type='radio' name='votingoption_$cou' value='".contrexx_raw2xhtml($objResult->fields['id'])."' /><div class='radioText'>".contrexx_raw2xhtml($objResult->fields['answer'])."</div></div>";
+                            $SurveyOptionText .="<div class='radio'><label><input type='radio' name='votingoption_$cou' value='".contrexx_raw2xhtml($objResult->fields['id'])."' />".contrexx_raw2xhtml($objResult->fields['answer'])."</label></div>";
                             break;
                         case "2":
-                            $SurveyOptionText .="<div class='checkboxWrapper'><input type='checkbox' name='votingoption_".$cou."[]' value='".contrexx_raw2xhtml($objResult->fields['id'])."' /><div class='checkboxText'>".contrexx_raw2xhtml($objResult->fields['answer'])."</div></div>";
+                            $SurveyOptionText .="<div class='checkbox'><label><input type='checkbox' name='votingoption_".$cou."[]' value='".contrexx_raw2xhtml($objResult->fields['id'])."' />".contrexx_raw2xhtml($objResult->fields['answer'])."</label></div>";
                             break;
                         case "3":
                             $SurveyOptionText .="<tr><td width='150px;'>".contrexx_raw2xhtml($objResult->fields['answer'])."</td>";

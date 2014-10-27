@@ -27,7 +27,7 @@ form p label {
     float: left;
     margin-right: 10px;
 }
-#memberdir .search_form form#memberForm, #memberdir .breadcrumb {
+#memberdir .search_form form#memberForm, #memberdir .breadcrumb, .egov-desc {
     float: left;
     width: 100%;
 }
@@ -2428,7 +2428,7 @@ dl.data_module img {
     border-bottom: 1px solid #dddddd;
 }
 #mediadir .employee.last {
-        border: 0;
+    border: 0;
 }
 #mediadir .container-fluid:nth-child(2) .employee {
     padding-top: 0;
@@ -2917,10 +2917,6 @@ input[name="recipient_save"] {
     float: left;
     width: auto !important;
 }
-.mediadirSearchForm .mediadirInputfieldSearch {
-    width: 70%;
-    float: left;
-}
 .search {
     margin-bottom: 15px;
 }
@@ -3037,3 +3033,6 @@ input[type="checkbox"] {
 }
 #regkey {margin-bottom: 10px;}
 .jobs-category > div {margin-bottom: 15px;}
+#registrationForm, #guestbook div.information {
+    margin-top: 5px;
+}

@@ -1,6 +1,7 @@
 {CALENDAR_JAVASCRIPT}
 <div id="calendar">
     <!-- BEGIN calendarRegistrationForm -->
+    {TXT_CALENDAR_ERROR}
     <form role="form" name="registrationForm" id="registrationForm" method="post" action="index.php?section={CALENDAR_MODULE_NAME}&amp;cmd=register">
         <fieldset>
             <legend>An- \ Abmeldeformular</legend>        
@@ -17,7 +18,7 @@
                 {CALENDAR_CAPTCHA_CODE}
             </p>
             <!-- END calendarRegistrationCaptcha -->
-            <p><input type="submit" class="btn btn-default" name="submitRegistration" value="{TXT_CALENDAR_REGISTRATION_SUBMIT}" /><br />{TXT_CALENDAR_ERROR}</p>    
+            <p><input type="submit" class="btn btn-default" name="submitRegistration" value="{TXT_CALENDAR_REGISTRATION_SUBMIT}" /></p>    
         </fieldset>
     </form>
     <!-- END calendarRegistrationForm -->

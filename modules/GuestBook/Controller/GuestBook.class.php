@@ -180,11 +180,9 @@ class GuestBook extends GuestBookLibrary {
         $this->_objTpl->setTemplate($this->pageContent);
 
         if (!empty($this->error)) {
-            $errors = "<span style=\"color: red\">";
             foreach ($this->error as $error) {
                 $errors .= $error . "<br />";
             }
-            $errors .= "</span>";
         }
         
         $checked = "checked=\"checked\"";
