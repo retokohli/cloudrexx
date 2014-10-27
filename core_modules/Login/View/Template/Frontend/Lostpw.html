@@ -1,11 +1,11 @@
 <div id="login">
-    <form role="form" method="post" action="{NODE_LOGIN_LOSTPW}">
+    <p class="text-danger">{LOGIN_STATUS_MESSAGE}</p>
+    <form class="resetForm" role="form" method="post" action="{NODE_LOGIN_LOSTPW}">
         <!-- BEGIN login_lost_password -->
         <p><label for="email">{TXT_EMAIL}</label><input id="email" name="email" value="" type="text"></p>
         <p>{TXT_LOST_PASSWORD_TEXT}</p>
         <p><input class="btn btn-default" type="submit" name="restore_pw" value="{TXT_RESET_PASSWORD}" /></p>
         <!-- END login_lost_password -->
         <br />
-        <p class="text-danger">{LOGIN_STATUS_MESSAGE}</p>
     </form>
 </div>

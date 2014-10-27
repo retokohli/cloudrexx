@@ -1385,7 +1385,7 @@ p#loginerror {
     padding-bottom: 16px;
 }
 .regdivider span {
-    background: #fff;
+    background: #f6f6f6;
     top: 36%;
     float: left;
     position: relative;

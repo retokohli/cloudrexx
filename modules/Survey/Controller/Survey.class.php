@@ -307,8 +307,8 @@ END;
                 // Static Place holders for labels
                 $this->_objTpl->setVariable(array(
                     'VOTING_SURVEY_JAVASCRIPT' => $this->getVotingSurveyJavascript(),
-                    'TXT_SUBMIT'               => '<input type="submit" name="submit_survey" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" style="margin-left:0px;" onclick="return AdditionalValidate()">',
-                    'TXT_CANCEL'               => '<input type="reset" name="submit_reset" value="'.$_ARRAYLANG['TXT_CANCEL'].'" style="margin-left:149px;">'
+                    'TXT_SUBMIT'               => '<input type="submit" class="btn btn-default" name="submit_survey" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" style="margin-left:0px;" onclick="return AdditionalValidate()">',
+                    'TXT_CANCEL'               => '<input type="reset" class="btn btn-default" name="submit_reset" value="'.$_ARRAYLANG['TXT_CANCEL'].'" style="margin-left:149px;">'
                 ));
             } else {
                 $this->_objTpl->setVariable(array(
@@ -816,11 +816,11 @@ END;
             }
         } elseif ($surveyId == "") { // end of user restriction checking condition
             $this->_objTpl->setVariable(array(
-                'TXT_SUBMIT' => "<div style='padding:0px; color:red;'>$_ARRAYLANG[TXT_NO_SURVEY_HOME]</div>"
+                'TXT_SUBMIT' => "<div class='text-danger'>$_ARRAYLANG[TXT_NO_SURVEY_HOME]</div>"
             ));
         } else {
             $this->_objTpl->setVariable(array(
-                'SURVEY_SUCCESS' => "<div style='padding:0px; color:red;'>$_ARRAYLANG[TXT_SURVEY_ALREADY_ATTEND]</div>"
+                'SURVEY_SUCCESS' => "<div class='text-danger'>$_ARRAYLANG[TXT_SURVEY_ALREADY_ATTEND]</div>"
             ));
         }
     }
@@ -936,8 +936,8 @@ END;
                 // Static Place holders for labels
                 $this->_objTpl->setVariable(array(
                     'VOTING_SURVEY_JAVASCRIPT' => $this->getVotingSurveyJavascript(),
-                    'TXT_SUBMIT'               => '<input type="submit" name="submit_survey" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" style="margin-left:0px;" onclick="return AdditionalValidate()">',
-                    'TXT_CANCEL'               => '<input type="reset" name="submit_reset" value="'.$_ARRAYLANG['TXT_CANCEL'].'" style="margin-left:149px;">'
+                    'TXT_SUBMIT'               => '<input class="btn btn-default" type="submit" name="submit_survey" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" style="margin-left:0px;" onclick="return AdditionalValidate()">',
+                    'TXT_CANCEL'               => '<input class="btn btn-default" type="reset" name="submit_reset" value="'.$_ARRAYLANG['TXT_CANCEL'].'" style="margin-left:149px;">'
                 ));
             } else {
                 $this->_objTpl->setVariable(array(
