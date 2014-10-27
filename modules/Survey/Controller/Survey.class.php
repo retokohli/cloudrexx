@@ -168,7 +168,7 @@ class Survey {
 
         $activesurveyQuery = 'SELECT  * FROM '.DBPREFIX.'module_survey_surveygroup WHERE isActive !=0 ORDER BY id desc';
 
-        $strPagingSource    = getPaging($this->countEntriesOfJoin($activesurveyQuery), $intPos, '&amp;section=survey&amp;cmd=activesurveys', false, $intPerPage);
+        $strPagingSource    = getPaging($this->countEntriesOfJoin($activesurveyQuery), $intPos, '&amp;section=Survey&amp;cmd=activesurveys', false, $intPerPage);
         $this->_objTpl->setVariable('ENTRIES_PAGING', $strPagingSource);
         $limit = $this->getPagingLimit();                 //how many items to show per page
         $page = isset($_REQUEST['pos']) ? contrexx_input2raw($_REQUEST['pos']) : 0;
@@ -808,7 +808,7 @@ END;
                         setcookie ("votingcookie_$surveyId", $cookieVal, time()+3600*24); // 1 Day
                     }
 
-                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=survey&cmd=surveyattend&id=".$idOfSurvey);
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Survey&cmd=surveyattend&id=".$idOfSurvey);
                     $this->_objTpl->setVariable(array(
                         'SURVEY_SUCCESS' => "<div style='padding:0px; color:rgb(2, 146, 2);'>$_ARRAYLANG[TXT_SURVEY_COMPLETED]</div>"
                     ));
@@ -1437,7 +1437,7 @@ END;
                         setcookie ("votingcookie_$surveyId", $cookieVal, time()+3600*24); // 1 Day
                     }
 
-                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=survey&cmd=surveyattend&id=".$idOfSurvey);
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Survey&cmd=surveyattend&id=".$idOfSurvey);
                     $this->_objTpl->setVariable(array(
                         'SURVEY_SUCCESS' => "<div class='text-success'>$_ARRAYLANG[TXT_SURVEY_COMPLETED]</div>"
                     ));
@@ -1814,7 +1814,7 @@ END;
         // Static Place holders for labels
         $this->_objTpl->setVariable(array(
             'THANKS_MSG'=> contrexx_remove_script_tags($thanksMSG),
-            'TXT_SURVEY_OK_TXT'=>'<a href="index.php?section=survey&cmd=activesurveys"><input type="submit" name="submit_survey" value="'.$_ARRAYLANG['TXT_SURVEY_OK_TXT'].'" > </a>'
+            'TXT_SURVEY_OK_TXT'=>'<a href="index.php?section=Survey&cmd=activesurveys"><input type="submit" name="submit_survey" value="'.$_ARRAYLANG['TXT_SURVEY_OK_TXT'].'" > </a>'
         ));
     }
 
