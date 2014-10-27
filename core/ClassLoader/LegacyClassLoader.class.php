@@ -277,7 +277,7 @@ class LegacyClassLoader {
         } else {
             require_once $this->cx->getCodeBaseDocumentRootPath() . '/' . $path;
         }
-        if ( ! class_exists($name) ) {
+        if ( ! class_exists($name, false) ) {
             return false;
         }
         $bytes = memory_get_peak_usage()-$bytes;
