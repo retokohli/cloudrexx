@@ -149,7 +149,7 @@ class ClassLoader {
             $resolvedPath = $path . '/' . $className . $suffix . '.php';
         }
         if ($this->loadFile($resolvedPath)) {
-            return class_exists($name, false);
+            return true;
         } else if ($this->loadFile($path.'/'.$className.'.interface.php')) {
             return true;
         }
