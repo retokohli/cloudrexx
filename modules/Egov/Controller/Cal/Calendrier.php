@@ -152,7 +152,7 @@ function calendar(
     $output .= '}'."\n";
     $output .= '// ]]>'."\n";
     $output .= '</script>'."\n";
-    $output .= '<table summary="" cellspacing="0" cellpadding="0" border="0">';
+    $output .= '<div class="table-responsive"><table  class="table" summary="" cellspacing="0" cellpadding="0" border="0">';
     $output .= '<tr><td class="zero" valign="top">';
     $output .= '<table class="'.
       ($flagBackend ? 'noborder' : 'calendarTable'.$param['calendar_id']).'" '.
@@ -454,11 +454,11 @@ function calendar(
         ($flagBackend ? ' class="zero"' : '').
         '>'.$legende3.'</td></tr>';
     $output .= '</table>';
-    $output .= '<br />'.$DatumLabel.
-      ' <input type="text" name="contactFormField_1000" id="CalDate" value="" style="width: 70px;" readonly /><br />'.
+    $output .= '<br /><span class="egov-desc">'.$DatumLabel.
+      ' <input type="text" name="contactFormField_1000" id="CalDate" value=""  readonly /><br />'.
       $DatumDesc;
-    $output .= '<br /><br />'.$AnzahlTxT.': '.$AnzahlDropdown;
-    $output .= '</td></tr></table><br />'."\n";
+    $output .= '<br /><br />'.$AnzahlTxT.': '.$AnzahlDropdown.'</span>';
+    $output .= '</td></tr></table></div><br />'."\n";
     $output .= '<script type="text/javascript">'."\n";
     $output .= '// <![CDATA['."\n";
     $output .= 'if (document.getElementById("CalDate").value=="") {'."\n";

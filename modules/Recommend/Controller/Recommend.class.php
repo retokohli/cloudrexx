@@ -161,7 +161,7 @@ class Recommend extends RecommendLibrary
 
         if (!empty($this->_pageMessage) || !\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()) {
             //something's missing or wrong
-            $this->_objTpl->setVariable('RECOM_STATUS', '<div style="color: red">'.$this->_pageMessage.'</div>');
+            $this->_objTpl->setVariable('RECOM_STATUS', '<div class="text-danger">'.$this->_pageMessage.'</div>');
             $this->_objTpl->setCurrentBlock('recommend_form');
             $this->_objTpl->setVariable(array(
                 'RECOM_SCRIPT'                    => $this->getJs(),

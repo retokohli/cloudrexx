@@ -17,6 +17,9 @@
     #regkey {
         width: 58%;
     }
+    .table .egov-btn {
+        margin-bottom: 10px;
+    }
     /*survey*/
     .survey td {
         float: left;

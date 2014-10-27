@@ -68,7 +68,7 @@ class MediaDirectorySearch extends MediaDirectoryLibrary
 <input name="type" value="normal" type="hidden" />
 <input type="hidden" value="Suchen" name="search">
 $strSearchFormCmd
-<input name="term" class="$strInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /><input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
+<input name="term" class="$strInputfieldSearch searchbox" value="$strSearchFormTerm" onfocus="this.select();" type="text" /><input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
 </form>
 </div>
 EOF;
