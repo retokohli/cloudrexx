@@ -3033,6 +3033,6 @@ input[type="checkbox"] {
 }
 #regkey {margin-bottom: 10px;}
 .jobs-category > div {margin-bottom: 15px;}
-#registrationForm, #guestbook div.information {
+#registrationForm, #guestbook div.information, .resetForm {
     margin-top: 5px;
 }

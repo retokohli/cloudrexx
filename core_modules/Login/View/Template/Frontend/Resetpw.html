@@ -1,5 +1,6 @@
 <div id="login">
-    <form method="post" action="{NODE_LOGIN_RESETPW}">
+    <p class="text-danger" >{LOGIN_STATUS_MESSAGE}</p>   
+    <form class="resetForm" method="post" action="{NODE_LOGIN_RESETPW}">
         <input type="hidden" name="restore_key" value="{LOGIN_RESTORE_KEY}" /> 
         <input type="hidden" name="email" value="{LOGIN_USERNAME}" />
         <!-- BEGIN login_reset_password -->
@@ -11,6 +12,5 @@
             <input class="form-control" type="password" maxlength="50" name="password2" /></p>
         <p><input class="btn btn-default" type="submit" value="{TXT_SET_NEW_PASSWORD}" name="reset_password" /></p>
         <!-- END login_reset_password -->
-        <p class="text-danger" >{LOGIN_STATUS_MESSAGE}</p>   
     </form>
 </div>
