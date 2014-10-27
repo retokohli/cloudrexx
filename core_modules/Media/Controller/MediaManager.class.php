@@ -129,6 +129,10 @@ class MediaManager extends MediaLibrary
             }
         }
 
+        if (empty($this->arrWebPaths)) {
+            \Permission::noAccess();
+        }
+
         if (isset($_REQUEST['archive']) && array_key_exists($_REQUEST['archive'], $this->arrWebPaths)) {
             $this->archive = $_REQUEST['archive'];
         } else {
