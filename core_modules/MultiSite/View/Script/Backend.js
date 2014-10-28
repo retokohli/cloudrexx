@@ -70,12 +70,6 @@
             $('#instance_table').append('<div id ="load-lock"></div>');
             cx.bind("loadingStart", cx.lock, "showLicense");
             cx.bind("loadingEnd", cx.unlock, "showLicense");
-            cx.lock = function() {
-                $("#load-lock").show();
-            };
-            cx.unlock = function() {
-                $("#load-lock").hide();
-            };
             cx.trigger("loadingStart", "showLicense", {});
             var className = $(this).attr('class');
             var id = parseInt(className.match(/[0-9]+/)[0], 10);
@@ -98,15 +92,22 @@
                         $.each(response.data.result, function(key, data) {
                             if (typeof data === 'object') {
                                 tbody += '<tr>';
-                                tbody += '<td>' + key + '</td><td>';
+                                tbody += '<td>' + key + '</td><td><span class="'+ key + '">';
                                 $.each(data, function(key, data) {
-                                    tbody += key + ' : ' + data + ', ';
+                                    if (typeof data === 'object') {
+                                        tbody += '<strong>' + key + ':</strong>&nbsp;';
+                                        $.each(data, function(languageId, messages) {
+                                            tbody += messages + '<br>';
+                                        });
+                                    } else {
+                                        tbody += key + ' : ' + data + ', ';
+                                    }
                                 });
-                                tbody += '<a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="edit" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td></tr>';
+                                tbody += '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="edit" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td></tr>';
                             } else {
                                 tbody += '<tr>';
                                 tbody += '<td>' + key + '</td>';
-                                tbody += '<td>' + data + '<a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="edit" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td>';
+                                tbody += '<td><span class="'+ key + '">' + data + '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="edit" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td>';
                                 tbody += '</tr>';
                             }
                         });
@@ -127,6 +128,74 @@
                             }
                         }
                     });
+                }
+            });
+        });
+        
+        cx.jQuery('.editLicense').live('click', function() {
+            var fieldLabel = $(this).attr('data-field');
+            var title      = $(this).attr('title');
+            var websiteId  = $(this).attr('data-websiteid');
+            var licenseArray = ["licenseMessag","dashboardMessages","licenseGrayzoneMessages"];
+            var licenseMessageObj = $(this).attr('data-value');
+            var liceneseTable ='';
+            
+            if (!$.inArray(fieldLabel,licenseArray)) {
+                var i =1;
+                var licenseTabs ='';
+                var licenseDivs ='';
+                liceneseTable = '<div id="tabs"><ul id="tab-menu">';
+                $.each(licenseMessageObj, function(key, data){
+                    licenseTabs += '<li><a href="#tab-'+i+'">'+key+'</a></li>';
+                    $.each(data, function(id, messages) {
+                        licenseDivs += '<div id = "#tab-'+i+'" data-license-langId ="'+id+'" >'+messages+'</div>';
+                    });
+                    i++;
+                });
+                liceneseTable += licenseTabs+'</ul>'+ licenseDivs + '</div>';
+            } else {
+                liceneseTable = '<table id="editLicense" cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
+                liceneseTable += '<tr><td><label>'+ fieldLabel +'</label></td><td><textarea rows="4" cols="40" class = "'+ fieldLabel +'" name ="'+ fieldLabel +'">'+$(this).attr('data-value')+'</textarea></td></tr>';
+                liceneseTable += '</table>';
+            }
+            
+            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=editLicense";
+            cx.ui.dialog({
+                width: 500,
+                height: 200,
+                title: title,
+                content: liceneseTable,
+                autoOpen: true,
+                modal: true,
+                buttons: {
+                    "Save": function() {
+                        var fieldValue = $('.licenceEdit').find('textarea.'+fieldLabel).val();
+                        $.ajax({
+                            url: domainUrl,
+                            type: "POST",
+                            data: {licenseLabel: fieldLabel,licenseValue: fieldValue,websiteId: websiteId},
+                            dataType: "json",
+                            success: function(response) {
+                                if (response.status == 'error' && response.data.status == 'error') {
+                                    cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                                }
+                                if (response.status == 'success' && response.data.status == 'success') {
+                                    $('span.'+fieldLabel).text(fieldValue);                                   
+                                    $('.editLicense_'+ fieldLabel).attr('data-value', fieldValue);
+                                    cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                                }
+                            }
+                        });
+                        $('#editLicense').remove();
+                        $(this).dialog("close");
+                    },
+                    "Cancel": function() {
+                        $('#editLicense').remove();
+                        $(this).dialog("close");
+                    }
+                },
+                close: function() {
+                    $('#editLicense').remove();
                 }
             });
         });

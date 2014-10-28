@@ -183,6 +183,10 @@ class License {
         return $this->createdAt;
     }
     
+    public function setCreatedAtDate($createdAt) {
+        $this->createdAt = $createdAt;
+    }
+    
     public function getRegisteredDomains() {
         return $this->registeredDomains;
     }

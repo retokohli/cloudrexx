@@ -108,6 +108,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getFtpUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getLicense'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'remoteLogin'           => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
+            'editLicense'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'executeQueryBySession' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
         );  
     }
@@ -1158,14 +1159,18 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
                 case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
-                    if (isset($params['post']['state'])) {
-                        $license->setState($params['post']['state']);
+                    $licenseState = isset($params['post']['state']) ? $params['post']['state'] : (isset($params['post']['licenseState']) ? $params['post']['licenseState'] : '');
+                    $licenseValidTo = isset($params['post']['validTo']) ? $params['post']['validTo'] : (isset($params['post']['licenseValidTo']) ? $params['post']['licenseValidTo'] : '');
+                    $licenseUpdateInterval = isset($params['post']['updateInterval']) ? $params['post']['updateInterval'] : (isset($params['post']['licenseUpdateInterval']) ? $params['post']['licenseUpdateInterval'] : '');
+                    $licenseLegalComponents = isset($params['post']['legalComponents']) ? $params['post']['legalComponents'] : (isset($params['post']['availableComponents']) ? explode(', ', $params['post']['availableComponents']) : '');
+                    if (!empty($licenseState)) {
+                        $license->setState($licenseState);
                     }
-                    if (isset($params['post']['validTo'])) {
-                        $license->setValidToDate($params['post']['validTo']);
+                    if (!empty($licenseValidTo)) {
+                        $license->setValidToDate($licenseValidTo);
                     }
-                    if (isset($params['post']['updateInterval'])) {
-                        $license->setUpdateInterval($params['post']['updateInterval']);
+                    if (!empty($licenseUpdateInterval)) {
+                        $license->setUpdateInterval($licenseUpdateInterval);
                     }
                     if (isset($params['post']['dashboardMessages'])) {
                         $dashboardMessages = array();
@@ -1174,13 +1179,137 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         }
                         $license->setDashboardMessages($dashboardMessages);
                     }
-                    if (isset($params['post']['legalComponents'])) {
-                        $license->setAvailableComponents($params['post']['legalComponents']);
-                        $license->setLegalComponents($params['post']['legalComponents']);
+                    if (!empty($licenseLegalComponents)) {
+                        $license->setAvailableComponents($licenseLegalComponents);
+                        $license->setLegalComponents($licenseLegalComponents);
                     }
                     if (isset($params['post']['isUpgradable'])) {
                         $license->setIsUpgradable($params['post']['isUpgradable']);
                     }
+                    if (isset($params['post']['licenseMessage'])) {
+                        $license->setMessages($params['post']['licenseMessage']);
+                    }
+                    if (isset($params['post']['licenseGrayzoneMessages'])) {
+                        $license->setGrayZoneMessages($params['post']['licenseGrayzoneMessages']);
+                    }
+                    if (isset($params['post']['licenseFailedUpdate'])) {
+                        $license->setFirstFailedUpdateTime($params['post']['licenseFailedUpdate']);
+                    }
+                    if (isset($params['post']['licenseSuccessfulUpdate'])) {
+                        $license->setLastSuccessfulUpdateTime($params['post']['licenseSuccessfulUpdate']);
+                    }
+                    if (isset($params['post']['licenseKey'])) {
+                        $license->setLicenseKey($params['post']['licenseKey']);
+                    }
+                    if (isset($params['post']['installationId'])) {
+                        $license->setInstallationId($params['post']['installationId']);
+                    }
+                    if (isset($params['post']['licensePartnerTitle'])) {
+                        $license->getPartner()->setTitle($params['post']['licensePartnerTitle']);
+                    }
+                    if (isset($params['post']['licensePartnerLastname'])) {
+                        $license->getPartner()->setLastname($params['post']['licensePartnerLastname']);
+                    }
+                    if (isset($params['post']['licensePartnerFirstname'])) {
+                        $license->getPartner()->setFirstname($params['post']['licensePartnerFirstname']);
+                    }
+                    if (isset($params['post']['licensePartnerCompanyname'])) {
+                        $license->getPartner()->setCompanyName($params['post']['licensePartnerCompanyname']);
+                    }
+                    if (isset($params['post']['licensePartnerAddress'])) {
+                        $license->getPartner()->setAddress($params['post']['licensePartnerAddress']);
+                    }
+                    if (isset($params['post']['licensePartnerZip'])) {
+                        $license->getPartner()->setZip($params['post']['licensePartnerZip']);
+                    }
+                    if (isset($params['post']['licensePartnerCity'])) {
+                        $license->getPartner()->setCity($params['post']['licensePartnerCity']);
+                    }
+                    if (isset($params['post']['licensePartnerCountry'])) {
+                        $license->getPartner()->setCountry($params['post']['licensePartnerCountry']);
+                    }
+                    if (isset($params['post']['licensePartnerPhone'])) {
+                        $license->getPartner()->setPhone($params['post']['licensePartnerPhone']);
+                    }
+                    if (isset($params['post']['licensePartnerUrl'])) {
+                        $license->getPartner()->setUrl($params['post']['licensePartnerUrl']);
+                    }
+                    if (isset($params['post']['licensePartnerMail'])) {
+                        $license->getPartner()->setMail($params['post']['licensePartnerMail']);
+                    }
+                    if (isset($params['post']['licenseCustomerTitle'])) {
+                        $license->getCustomer()->setTitle($params['post']['licenseCustomerTitle']);
+                    }
+                    if (isset($params['post']['licenseCustomerLastname'])) {
+                        $license->getCustomer()->setLastname($params['post']['licenseCustomerLastname']);
+                    }
+                    if (isset($params['post']['licenseCustomerFirstname'])) {
+                        $license->getCustomer()->setFirstname($params['post']['licenseCustomerFirstname']);
+                    }
+                    if (isset($params['post']['licenseCustomerCompanyname'])) {
+                        $license->getCustomer()->setCompanyName($params['post']['licenseCustomerCompanyname']);
+                    }
+                    if (isset($params['post']['licenseCustomerAddress'])) {
+                        $license->getCustomer()->setAddress($params['post']['licenseCustomerAddress']);
+                    }
+                    if (isset($params['post']['licenseCustomerZip'])) {
+                        $license->getCustomer()->setZip($params['post']['licenseCustomerZip']);
+                    }
+                    if (isset($params['post']['licenseCustomerCity'])) {
+                        $license->getCustomer()->setCity($params['post']['licenseCustomerCity']);
+                    }
+                    if (isset($params['post']['licenseCustomerCountry'])) {
+                        $license->getCustomer()->setCountry($params['post']['licenseCustomerCountry']);
+                    }
+                    if (isset($params['post']['licenseCustomerPhone'])) {
+                        $license->getCustomer()->setPhone($params['post']['licenseCustomerPhone']);
+                    }
+                    if (isset($params['post']['licenseCustomerUrl'])) {
+                        $license->getCustomer()->setUrl($params['post']['licenseCustomerUrl']);
+                    }
+                    if (isset($params['post']['licenseCustomerMail'])) {
+                        $license->getCustomer()->setMail($params['post']['licenseCustomerMail']);
+                    }
+                    if (isset($params['post']['upgradeUrl'])) {
+                        $license->setUpgradeUrl($params['post']['upgradeUrl']);
+                    }
+                    if (isset($params['post']['licenseCreatedAt'])) {
+                        $license->setCreatedAtDate($params['post']['licenseCreatedAt']);
+                    }
+                    if (isset($params['post']['licenseDomains'])) {
+                        $license->setRegisteredDomains(explode(', ',$params['post']['licenseDomains']));
+                    }
+                    if (isset($params['post']['isUpgradable'])) {
+                        $license->setIsUpgradable($params['post']['isUpgradable']);
+                    }
+                    if (isset($params['post']['licenseGrayzoneTime'])) {
+                        $license->setGrayzoneTime($params['post']['licenseGrayzoneTime']);
+                    }
+                    if (isset($params['post']['licenseLockTime'])) {
+                        $license->setFrontendLockTime($params['post']['licenseLockTime']);
+                    }
+                    if (isset($params['post']['licenseUpdateInterval'])) {
+                        $license->setRequestInterval($params['post']['licenseUpdateInterval']);
+                    }
+                    if (isset($params['post']['coreCmsEdition'])) {
+                        $license->setEditionName($params['post']['coreCmsEdition']);
+                    }
+                    if (isset($params['post']['coreCmsVersion'])) {
+                        $license->getVersion()->setNumber($params['post']['coreCmsVersion']);
+                    }
+                    if (isset($params['post']['coreCmsCodeName'])) {
+                        $license->getVersion()->setCodeName($params['post']['coreCmsCodeName']);
+                    }
+                    if (isset($params['post']['coreCmsStatus'])) {
+                        $license->getVersion()->setState($params['post']['coreCmsStatus']);
+                    }
+                    if (isset($params['post']['coreCmsReleaseDate'])) {
+                        $license->getVersion()->setReleaseDate($params['post']['coreCmsReleaseDate']);
+                    }
+                    if (isset($params['post']['coreCmsName'])) {
+                        $license->getVersion()->setName($params['post']['coreCmsName']);
+                    }
+                    
                     try {
                         $license->save($objDatabase);
                         return array(
@@ -2009,6 +2138,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException
      */
     public function getLicense($params) {
+        global $_CORELANG;
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
@@ -2034,13 +2164,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (!$license) {
                         throw new MultiSiteJsonException('JsonMultiSite::getLicense(): on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' $license was not set properly');
                     }
-                    
+                    $dashboardMessages = array();
+                    $licenseMessage = array();
+                    $licenseGrayzoneMessages = array();
+                    foreach (\FWLanguage::getActiveFrontendLanguages() as $languages) {
+                        $lang_id = $languages['id'];
+                        $lang_name = $languages['name'];
+                        $licenseMessage[$lang_name] = array($lang_id => $license->getMessage(false, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG)->getText());
+                        $dashboardMessages[$lang_name] = array($lang_id=> $license->getMessage(true, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG)->getText());
+                        $licenseGrayzoneMessages[$lang_name] = array($lang_id => $license->getGrayzoneMessage(\FWLanguage::getLanguageCodeById($lang_id), $_CORELANG)->getText());
+                    }
                     $result = array(
                         'installationId'            => $license->getInstallationId(),
                         'licenseKey'                => $license->getLicenseKey(), 
                         'licenseState'              => $license->getState(),
                         'licenseValidTo'            => $license->getValidToDate(),
-                        'licenseMessage'            => $license->getMessages(),
+                        'licenseMessage'            => $licenseMessage,
                         'licensePartnerTitle'       => $license->getPartner()->getTitle(),
                         'licensePartnerLastname'    => $license->getPartner()->getLastname(),
                         'licensePartnerFirstname'   => $license->getPartner()->getFirstname(),
@@ -2065,11 +2204,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         'licenseCustomerMail'       => $license->getCustomer()->getMail(),
                         'upgradeUrl'                => $license->getUpgradeUrl(),
                         'licenseCreatedAt'          => $license->getCreatedAtDate(),
-                        'licenseDomains'            => $license->getRegisteredDomains(),
+                        'licenseDomains'            => implode(', ',$license->getRegisteredDomains()),
                         'availableComponents'       => implode(', ', $license->getLegalComponentsList()), 
-                        'dashboardMessages'         => $license->getDashboardMessages(),
+                        'dashboardMessages'         => $dashboardMessages,
                         'isUpgradable'              => $license->getIsUpgradable(),
-                        'licenseGrayzoneMessages'   => $license->getGrayzoneMessages(), 
+                        'licenseGrayzoneMessages'   => $licenseGrayzoneMessages,
                         'licenseGrayzoneTime'       => $license->getGrayzoneTime(),
                         'licenseLockTime'           => $license->getFrontendLockTime(),
                         'licenseUpdateInterval'     => $license->getRequestInterval(),
@@ -2165,6 +2304,43 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
         } catch (Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::remoteLogin() failed: to get remote website Login Link: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Edit/Update License data
+     * 
+     * @param array $params Post values of License
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function editLicense($params)
+    {
+        $websiteId = $params['post']['websiteId'];
+        $licenseOption = $params['post']['licenseLabel'];
+        $licenseValue = $params['post']['licenseValue'];
+        if (!$websiteId) {
+            throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::editLicense.');
+        }
+        try{
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    $paramsArray = array($licenseOption => $licenseValue,'websiteId' => $websiteId);
+                    $webRepo     = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website     = $webRepo->findOneById($websiteId);
+                    $resp        = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $paramsArray, $website);
+                    
+                    if (($resp->status == 'success') && ($resp->data->status == 'success')) {
+                        return array('status' => 'success','message' => 'The license Option "'.$licenseOption.'" was successfully updated!.');
+                    }
+                    return array('status' => 'error','message' => 'Failed to Update The license Option "'.$licenseOption.'" !.');
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::editLicense() failed: to Update License Information of the This Website: ' . $e->getMessage());
         }
     }
 }
