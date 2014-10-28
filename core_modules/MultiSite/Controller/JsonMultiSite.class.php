@@ -2110,7 +2110,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
-                    if (empty($_SESSION['MultiSite']['executeSql']->toArray()) || !isset($_SESSION['MultiSite']['executeSql'])) {
+                    $sqlQuery = array();
+                    if (is_object($_SESSION['MultiSite']['executeSql'])) {
+                        $sqlQuery = $_SESSION['MultiSite']['executeSql']->toArray();
+                    }
+                    
+                    if (!isset($_SESSION['MultiSite']) || !isset($_SESSION['MultiSite']['executeSql']) || empty($sqlQuery)) {
                         return array('status' => 'error', 'message' => 'There are no more websites in the queue.');
                     }
 
