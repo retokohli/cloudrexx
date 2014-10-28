@@ -73,7 +73,7 @@ a:active {
     top: 0;
     width: 100%;
     height: 53px;
-    background: #0873bb url(../Media/gradient.jpg) left top repeat-y;
+    background-color: #000;
 }
 
 #header a.logo {
@@ -137,7 +137,7 @@ a:active {
     top: 26px;
     z-index: 10;
     padding: 5px 0 5px;
-    background: #0873bb;
+    background: #000;
 }
 
 #metanavigation>ul>li:hover ul {
@@ -149,7 +149,7 @@ a:active {
 }
 
 #metanavigation a {
-    color: #c5dbe8;
+    color: #fff;
     margin-top: 5px;
 }
 
@@ -161,9 +161,17 @@ a:active {
     color: #ffffff;
 }
 
-#metanavigation a.license-upgrade {
-    padding-left: 18px;
-    background: url(../Media/metanavigation_upgrade.png) no-repeat;
+#metanavigation a span.license-upgrade {
+    padding-bottom: 7px;
+    padding-left: 20px;
+    background: url(../Media/icon-upgrade.png) no-repeat;
+}
+#metanavigation a.license-upgrade_bg {
+    background: none repeat scroll 0 0 #fff;
+    float: left;
+    margin-right: 10px;
+    margin-top: -20px;
+    padding: 20px 12.5px;
 }
 
 #metanavigation a.frontend {
@@ -439,7 +447,7 @@ textarea.cke_source {
     bottom: 0;
     width: 100%;
     height: 24px;
-    background: #0873bb url(../Media/gradient.jpg) repeat-y left top;
+    background-color: #000;
 }
 
 #footer a {
@@ -523,10 +531,15 @@ textarea.cke_source {
 .navigation_level_1 li:focus,
 .navigation_level_1 li:active,
 .navigation_level_1 li.active {
-    background: url(../Media/gradient.jpg) repeat-y left top;
+    background-color: #000;
     padding-bottom: 1px;
     border: 0;
     cursor: pointer;
+}
+
+.navigation_level_1 li:active,
+.navigation_level_1 li.active {
+    background-color: #0071bc;
 }
 
 .navigation_level_1 li .icon_1 {
@@ -862,7 +875,6 @@ li.nav_upgrade > a {
 
 .breadcrumb li.level_3 {
     font-size: 13px;
-    background
 }
 
 .breadcrumb li a {
@@ -895,7 +907,7 @@ table.adminlist {
     background: #ffffff;
 }
 table.adminlist th {
-    background: #0a85c8;
+    background: #eeeeee;
     height: 28px;
     line-height: 28px;
     margin: 0;
@@ -903,15 +915,15 @@ table.adminlist th {
     text-align: left;
     font-size: 13px;
     font-weight: bold;
-    color: #ffffff;
+    color: #444;
 }
 table.adminlist th a {
-    color: #ffffff;
+    color: #444;
 }
 table.adminlist th a:hover,
 table.adminlist th a:focus,
 table.adminlist th a:active {
-    color: #ececec;
+    color: #eeeeee;
 }
 table.adminlist tr.row0,
 table.adminlist tr.row1,
@@ -924,7 +936,7 @@ table.adminlist tr.row2:hover {
     background: #ffffd6;
 }
 table.adminlist tr.row3 {
-    background: #f5f5f5;
+    background: #fafafa;
     font-weight: bold;
 }
 table.adminlist tr.highlighted {
@@ -1027,7 +1039,7 @@ table tr.reset td {
     line-height: 24px;
     padding: 3px 0;
     margin: 10px 0 8px 0;
-    background: #0a85c8;
+    background: #0071bc;
     color: #ffffff !important;
     cursor: pointer;
 }
@@ -1064,7 +1076,7 @@ table tr.reset td {
     float: left;
     width: 100%;
     padding: 0;
-    border-bottom: 1px solid #0a85c8;
+    border-bottom: 1px solid #eeeeee;
     margin: 0;
 }
 
@@ -1099,11 +1111,11 @@ table tr.reset td {
 .tabmenu li a.active {
     height: 22px;
     line-height: 22px;
-    background: #0a85c8;
-    border-top: 1px solid #0a85c8;
-    border-right: 1px solid #0a85c8;
-    border-left: 1px solid #0a85c8;
-    color: #ffffff;
+    background: #eeeeee;
+    border-top: 1px solid #eee;
+    border-right: 1px solid #eee;
+    border-left: 1px solid #eee;
+    color: #000;
 }
 
 .sort-handle { /*the drag handle*/
@@ -1526,12 +1538,12 @@ table.adminlist td.nowrap {
 
 a.cke_dialog_ui_button_ok {
     border-color: #0aa3ea !important;
-    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#0aa3ea),color-stop(100%,#0a85c8)) !important;
-    background: -webkit-linear-gradient(top,#0aa3ea 0,#0a85c8 100%) !important;
-    background: -o-linear-gradient(top,#0aa3ea 0,#0a85c8 100%) !important;
-    background: linear-gradient(to bottom,#0aa3ea 0,#0a85c8 100%) !important;
-    background: -moz-linear-gradient(top,#0aa3ea 0,#0a85c8 100%) !important;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0aa3ea',endColorstr='#0a85c8',GradientType=0) !important;
+    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#0aa3ea),color-stop(100%,#0071bc)) !important;
+    background: -webkit-linear-gradient(top,#0aa3ea 0,#0071bc 100%) !important;
+    background: -o-linear-gradient(top,#0aa3ea 0,#0071bc 100%) !important;
+    background: linear-gradient(to bottom,#0aa3ea 0,#0071bc 100%) !important;
+    background: -moz-linear-gradient(top,#0aa3ea 0,#0071bc 100%) !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0aa3ea',endColorstr='#0071bc',GradientType=0) !important;
 }
 
 a.cke_dialog_ui_button_ok:hover {
@@ -1589,4 +1601,52 @@ a.cke_dialog_ui_button_ok:hover {
 }
 #configSettingsTabs tr td input[type="radio"]:first-child{
     margin:3px 3px 3px -1px;
+}
+
+
+/* Base styles (regardless of theme) */
+.bs-callout {
+    margin: 20px 0;
+    padding: 15px 30px 15px 15px;
+    border: 1px solid #eee;
+    border-left: 3px solid #eee;
+}
+.bs-callout h4 {
+    margin-top: 0;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code,
+.bs-callout .highlight {
+    background-color: #fff;
+}
+#dashboard .bs-callout {
+    padding-right: 15px;
+    margin: 0 0 15px 0;
+}
+/* Themes for different contexts */
+.bs-callout-danger {
+    border-left-color: #b94a48;
+}
+.bs-callout-warning {
+    border-left-color: #da7a0c;
+}
+.bs-callout-info {
+    border-left-color: #0a85c8;
+}
+.bs-callout-danger h4,
+.bs-callout-danger a.alert-link {
+    color: #b94a48;
+}
+.bs-callout-warning h4,
+.bs-callout-warning a.alert-link {
+    color: #da7a0c;
+}
+.bs-callout-info h4,
+.bs-callout-info a.alert-link {
+    color: #0a85c8;
+}
+.bs-callout a.alert-link {
+    font-weight: bold;
 }
