@@ -128,6 +128,10 @@ class License {
         return $this->editionName;
     }
     
+    public function setEditionName($editionName) {
+        $this->editionName = $editionName;
+    }
+    
     public function getAvailableComponents() {
         return $this->availableComponents;
     }
@@ -171,6 +175,10 @@ class License {
         return $this->upgradeUrl;
     }
     
+    public function setUpgradeUrl($upgradeUrl) {
+        $this->upgradeUrl = $upgradeUrl;
+    }
+    
     public function getCreatedAtDate() {
         return $this->createdAt;
     }
@@ -179,8 +187,15 @@ class License {
         return $this->registeredDomains;
     }
     
+    public function setRegisteredDomains($registeredDomains) {
+        $this->registeredDomains = $registeredDomains;
+    }
+
     public function getInstallationId() {
         return $this->instId;
+    }
+    public function setInstallationId($insId) {
+        $this->instId = $insId;
     }
     
     public function getLicenseKey() {
@@ -289,6 +304,10 @@ class License {
         return $this->grayzoneTime;
     }
     
+    public function setGrayzoneTime($grayzoneTime) {
+        $this->grayzoneTime = $grayzoneTime;
+    }
+    
     public function getGrayzoneMessages() {
         return $this->grayzoneMessages;
     }
@@ -310,12 +329,20 @@ class License {
         return $this->frontendLockTime;
     }
     
+    public function setFrontendLockTime($frontendLockTime) {
+        $this->frontendLockTime = $frontendLockTime;
+    }
+    
     public function setUpdateInterval($requestInterval) {
         $this->requestInterval = $requestInterval;
     }
     
     public function getRequestInterval() {
         return $this->requestInterval;
+    }
+    
+    public function setRequestInterval($requestInterval) {
+        $this->requestInterval = $requestInterval;
     }
     
     public function getFirstFailedUpdateTime() {
