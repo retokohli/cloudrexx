@@ -107,7 +107,7 @@
                             } else {
                                 tbody += '<tr>';
                                 tbody += '<td>' + key + '</td>';
-                                tbody += '<td><span class="'+ key + '">' + data + '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="edit" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td>';
+                                tbody += '<td><span class="'+ key + '">' + data + '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td>';
                                 tbody += '</tr>';
                             }
                         });
@@ -169,6 +169,7 @@
                 modal: true,
                 buttons: {
                     "Save": function() {
+                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
                         var fieldValue = $('.licenceEdit').find('textarea.'+fieldLabel).val();
                         $.ajax({
                             url: domainUrl,
