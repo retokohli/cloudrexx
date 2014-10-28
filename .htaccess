@@ -7,6 +7,10 @@
     # I.e.: /
     RewriteBase   /
 
+    # Strip virtual language directory for MEDIA RESSOURCES, CONTENT DATA and THEME
+    RewriteCond %{REQUEST_URI} ^/\w+/(core|core_modules|lib|modules|feed|media|images|themes)/
+    RewriteRule ^\w+\/(.*)$ /$1 [L]
+
     # Deny direct access to directories containing sensitive data
     RewriteCond %{ENV:REDIRECT_END} !1
     RewriteCond %{REQUEST_URI} ^/(config|tmp|websites|core\/.*/Data|core_modules\/.*\/Data|modules\/.*\/Data)/
