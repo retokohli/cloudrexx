@@ -19,6 +19,9 @@ body a:hover {text-decoration: none;}
     width: 100%;
     background: #f7f7f7;
 }
+.item h1 span {
+    color: #000 !important;
+}
 .addir-search {
     float: left;
     width: 100%;
