@@ -72,3 +72,7 @@ a.editLicense {
     margin-left: 4px;
     cursor: pointer;
 }
+
+.queueStatus {
+    font-weight: bold;
+}

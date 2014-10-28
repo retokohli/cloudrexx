@@ -108,6 +108,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getFtpUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getLicense'            => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'remoteLogin'           => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
+            'executeQueryBySession' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
         );  
     }
 
@@ -1921,14 +1922,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         if (empty($websites)) {
                             throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to find the service server.');
                         }
+                        
+                        if (!isset($_SESSION['MultiSite'])) {
+                            $_SESSION['MultiSite'] = array();
+                        }
+                        
+                        if (!isset($_SESSION['MultiSite']['executeSql'])) {
+                            $_SESSION['MultiSite']['executeSql'] = array();
+                        }
+                        
                         foreach ($websites as $website) {
-                            $params['post']['websiteName'] = $website->getFqdn()->getName();
-                            $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
-                            if ($resp && $resp->status == 'success') {
-                                $result[] = $resp->data;
+                            if ($website) {
+                                $_SESSION['MultiSite']['executeSql'][$website->getId()] = $params['post']['query'];
                             }
                         }
-                        return $result;
+                        return array('status' => 'success');
                     }
                     break;
 
@@ -1961,6 +1969,36 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query' . $e->getMessage());
         }
         return false;
+    }
+
+    /**
+     * Execute the Queued Sql Query
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function executeQueryBySession() {
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                    if (empty($_SESSION['MultiSite']['executeSql']->toArray()) || !isset($_SESSION['MultiSite']['executeSql'])) {
+                        return array('status' => 'error', 'message' => 'There are no more websites in the queue.');
+                    }
+
+                    $websiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    foreach ($_SESSION['MultiSite']['executeSql'] as $websiteId => $query) {
+                        $website = $websiteRepo->findOneBy(array('id' => $websiteId));
+                        $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $website->getFqdn()->getName()), $website);
+                        if ($resp && $resp->status == 'success') {
+                            unset($_SESSION['MultiSite']['executeSql'][$websiteId]);
+                            return array($resp->data);
+                        }
+                    }
+                break;    
+            }
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite (executeQueryBySession): failed to execute query' . $e->getMessage());
+        }
     }
 
     /**
