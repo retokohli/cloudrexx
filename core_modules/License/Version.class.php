@@ -32,20 +32,40 @@ class Version {
         return $this->number;
     }
     
+    public function setNumber($number) {
+        $this->number = $number;
+    }
+    
     public function getName() {
         return $this->name;
+    }
+    
+    public function setName($name) {
+        $this->name = $name;
     }
     
     public function getCodeName() {
         return $this->codeName;
     }
     
+    public function setCodeName($codeName) {
+        $this->codeName = $codeName;
+    }
+    
     public function getState() {
         return $this->state;
     }
     
+    public function setState($state) {
+        $this->state = $state;
+    }
+    
     public function getReleaseDate() {
         return $this->releaseDate;
+    }
+    
+    public function setReleaseDate($releaseDate) {
+        $this->releaseDate = $releaseDate;
     }
     
     public function isNewerThan($otherVersion) {
