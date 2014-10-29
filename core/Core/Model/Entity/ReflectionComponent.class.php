@@ -469,7 +469,7 @@ class ReflectionComponent {
     {                        
         $data = array_intersect_key($replacements + $data, $data);
         
-        $sql  = 'INSERT INTO `'.$table.'`';
+        $sql  = 'INSERT INTO `'.$table.'` ';
         $sql .= "SET \n";
         
         $firstCol = true;
@@ -611,12 +611,11 @@ class ReflectionComponent {
     }
     
     /**
-     * Write db structure and data into a file 
+     * Get the component related tables
      * 
-     * @global type $_DBCONFIG
+     * @return array  component related tables
      */
-    private function writeDatabaseStructureAndData()
-    {
+    protected function getComponentTables() {
         global $_DBCONFIG;
         
         // load tables
@@ -626,7 +625,19 @@ class ReflectionComponent {
         while (!$objResult->EOF) {
             $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. DBPREFIX .'module_'. strtolower($this->componentName) .'_%)'];
             $objResult->MoveNext();
-        }
+        } 
+        
+        return $componentTables;
+    }
+    
+    /**
+     * Write db structure and data into a file 
+     * 
+     * @global type $_DBCONFIG
+     */
+    private function writeDatabaseStructureAndData()
+    {
+        $componentTables = $this->getComponentTables();
         
         $dataFolder = ASCMS_APP_CACHE_FOLDER . '/DLC_FILES'. SystemComponent::getPathForType($this->componentType) . '/' . $this->componentName . '/Data';
         \Cx\Lib\FileSystem\FileSystem::make_folder($dataFolder);
@@ -1813,12 +1824,12 @@ class ReflectionComponent {
             }
         }
         $em->flush();
-                
+        
+        $this->internalCopyData($newComponent);
+        
         // remove old component from db (component, modules, backend_areas)
         if (!$copy) {
             $this->removeFromDb();
-        } else {
-            // copy db tables and refactor
         }
         
         // copy/move in filesystem (name, type and customizing)
@@ -1865,5 +1876,126 @@ class ReflectionComponent {
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
         }
+    }
+    
+    /**
+     * Copy table data's using mysql query
+     * 
+     * @param string $table        Table name
+     * @param array  $replacements Possible replacements
+     * @param string $query        mysql query
+     */
+    protected function copyDataFromQuery($table, $replacements, $query) {
+        $fields    = $this->getColumnsFromTable($table);
+        $objResult = $this->db->query($query);
+        
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $datas = array();
+                foreach ($fields as $field) {
+                    $datas[$field] = $objResult->fields[$field];
+                }
+                
+                $sqlQuery = $this->repalceDataInQuery($table, contrexx_raw2db($datas), $replacements);
+                $this->db->query($sqlQuery);
+                
+                $objResult->MoveNext();
+            }
+        }
+    }
+    
+    /**
+     * Copy the DB data's to new component name
+     * 
+     * @param object $newComponent Cx\Core\Core\Model\Entity\ReflectionComponent target component name
+     */
+    protected function internalCopyData($newComponent) {
+        
+        // copy module table
+        $newModuleId = $this->db->GetOne('SELECT MAX(`id`)+1 FROM `'. DBPREFIX .'modules`');
+        $table = DBPREFIX.'modules';
+        $query = 'SELECT *
+                    FROM
+                        `'. DBPREFIX .'modules`
+                    WHERE
+                        `name` = "' . $this->componentName . '"';
+        $replacements = array(
+            'id'      => $newModuleId,
+            'name'    => $newComponent->getName(),
+            'is_core' => $newComponent->getType() == SystemComponent::TYPE_CORE_MODULE ? 1 : 0
+        );
+        $this->copyDataFromQuery($table, $replacements, $query);
+        
+        // copy component table
+        $table = DBPREFIX .'component';
+        $query = 'SELECT *
+                        FROM                             
+                            `'. DBPREFIX .'component`
+                        WHERE
+                            `name` = "' . $this->componentName . '"';
+        $replacements = array(
+            'id'   => NULL,            
+            'type' => $newComponent->getType()
+        );
+        $this->copyDataFromQuery($table, $replacements, $query);
+        
+        // copy backend areas
+        $table = DBPREFIX .'backend_areas';
+        $query = 'SELECT b.*
+                    FROM 
+                        `'. DBPREFIX .'backend_areas` AS b 
+                    LEFT JOIN 
+                        `'. DBPREFIX .'modules` AS m
+                    ON 
+                        m.`id` = b.`module_id`
+                    WHERE 
+                        m.`name` = "' . $this->componentName . '"';
+        $replacements = array('module_id' => $newModuleId);
+        $this->copyDataFromQuery($table, $replacements, $query);
+        
+        
+        $query = 'SELECT `key`, `text_id` FROM `'. DBPREFIX .'core_mail_template` WHERE `section` = "'. $this->componentName .'"';
+        $objResult = $this->db->query($query);
+        
+        $coreMailTemplatetable = DBPREFIX .'core_mail_template';
+        $coreTextTable         = DBPREFIX .'core_text';
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $newTextId = $this->db->GetOne('SELECT MAX(`text_id`)+1 FROM `'. DBPREFIX .'core_mail_template`');
+                                
+                $query = 'SELECT * FROM `'. DBPREFIX .'core_mail_template` WHERE `section` = "'. $this->componentName .'" AND `key` = "'. $objResult->fields['key'] .'"';
+                $replacements = array(
+                    'section' => $newComponent->getName(),
+                    'text_id' => $newTextId
+                );
+                $this->copyDataFromQuery($coreMailTemplatetable, $replacements, $query);
+                
+                $query = 'SELECT * FROM `'. DBPREFIX .'core_text` WHERE `section` = "'. $this->componentName .'" AND `text_id` = "'. $objResult->fields['text_id'] .'"';        
+                $replacements = array('section' => $newComponent->getName(), 'id' => $newTextId);
+                $this->copyDataFromQuery($table, $replacements, $query);
+                
+                $objResult->MoveNext();
+            }
+        }
+        
+        $table = DBPREFIX .'core_setting';
+        $query = 'SELECT * FROM `'. DBPREFIX .'core_setting` WHERE `section` = "'. $this->componentName .'"';
+        $replacements = array('section' => $newComponent->getName());
+        $this->copyDataFromQuery($table, $replacements, $query);
+
+        $table = DBPREFIX .'settings';
+        $query = 'SELECT * FROM `'. DBPREFIX .'settings` WHERE `setname` LIKE "'. $this->componentName .'%"';
+        $replacements = array('section' => $newComponent->getName());
+        $this->copyDataFromQuery($table, $replacements, $query);
+        
+        $componentTables = $this->getComponentTables();                
+        foreach ($componentTables as $table) {
+            $newTable = preg_replace('/(\w)module_'. strtolower($this->componentName) .'_(\w)/', '$1module_'. strtolower($newComponent->getName()) .'_$2', $table);
+            $query = 'CREATE TABLE '. $newTable .' LIKE '. $table ;
+            $this->db->query($query);
+            $query = 'INSERT '. $newTable .' SELECT * FROM '. $table;
+            $this->db->query($query);
+        }
+        
     }
 }
