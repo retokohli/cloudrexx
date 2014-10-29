@@ -141,6 +141,7 @@ namespace Cx\Core
             $arrCmInstalledModules[] = 'Crm';
             $arrCmInstalledModules[] = 'Order';
             $arrCmInstalledModules[] = 'Pim';
+            $arrCmInstalledModules[] = 'Support';
             $arrCmActiveModules[] = 'Block';
             $arrCmInstalledModules[] = 'upload';
             $arrCmActiveModules[] = 'upload';
