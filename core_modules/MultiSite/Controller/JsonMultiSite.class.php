@@ -1175,7 +1175,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (isset($params['post']['dashboardMessages'])) {
                         $dashboardMessages = array();
                         foreach ($params['post']['dashboardMessages'] as $lang => $value) {
-                            $dashboardMessages[] = new \Cx\Core_Modules\License\Message($lang, $value['text'], $value['type'], $value['link'], $value['linkTarget'], true);
+                            if (!empty($value)) {
+                                $dashboardMessages[] = new \Cx\Core_Modules\License\Message($lang, $value['text'], $value['type'], $value['link'], $value['linkTarget'], true);
+                            }
                         }
                         $license->setDashboardMessages($dashboardMessages);
                     }
@@ -1187,10 +1189,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $license->setIsUpgradable($params['post']['isUpgradable']);
                     }
                     if (isset($params['post']['licenseMessage'])) {
-                        $license->setMessages($params['post']['licenseMessage']);
+                        $licenseMessage = array();
+                        foreach ($params['post']['licenseMessage'] as $lang => $value) {
+                            if (!empty($value)) {
+                                $licenseMessage[] = new \Cx\Core_Modules\License\Message($lang, $value['text']);
+                            }
+                        }
+                        $license->setMessages($licenseMessage);
                     }
                     if (isset($params['post']['licenseGrayzoneMessages'])) {
-                        $license->setGrayZoneMessages($params['post']['licenseGrayzoneMessages']);
+                        $licenseGrayzoneMessages = array();
+                        foreach ($params['post']['licenseGrayzoneMessages'] as $lang => $value) {
+                            if (!empty($value)) {
+                                $licenseGrayzoneMessages[] = new \Cx\Core_Modules\License\Message($lang, $value['text']);
+                            }
+                        }
+                        $license->setGrayZoneMessages($licenseGrayzoneMessages);
                     }
                     if (isset($params['post']['licenseFailedUpdate'])) {
                         $license->setFirstFailedUpdateTime($params['post']['licenseFailedUpdate']);
