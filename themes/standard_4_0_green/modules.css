@@ -234,7 +234,7 @@ table th {
     color: #fff;
 }
 table th a {
-    color: #000;
+    color: #fff;
 }
 table tr.row1,
 table tr.marketRow2 {
@@ -1544,7 +1544,7 @@ form[name="registrationForm"] .row {
 }
 #shop button.details-button:hover,
 #shop button.add-to-cart:hover {
-    background-color: #556B2F;
+    background-color: #33CC33;
 }
 #shop form#card-tds-form .card-expiry-month {width: 50px}
 #shop form#card-tds-form .card-expiry-year {width: 75px}
@@ -2075,13 +2075,13 @@ dl.data_module img {
     color: black;
 }
 #downloads div.overview div.row div.category div.content a:hover {
-    color: #B8D30B;
+    color: #5BA11C;
 }
 #downloads div.overview div.row div.category div.content a.more {
     color: #8b9581;
 }
 #downloads div.overview div.row div.category div.content a.more:hover {
-    color: #B8D30B;
+    color: #5BA11C;
 }
 #downloads div.file_list {
     float: left;
