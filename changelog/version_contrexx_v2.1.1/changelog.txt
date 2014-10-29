@@ -1,0 +1,75 @@
+////////////////////////////////////////
+// CHANGELOG 2.1.0-2.1.1 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Allgemein
+- Die im Benutzerprofil definierte bevorzugte Frontend-Sprache wird nach der
+  Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
+  Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
+- Geschwindigkeitsoptimierung der Benutzerverwaltung.
+- Die Verwendung des Apache Moduls mod_rewrite wird nur aktiviert, sofern die
+  Option 'Virtuelle Sprachverzeichnisse verwenden' aktiviert wurde.
+- Erweiterte Berechtigungen beim News Manager und den Modulen Kalender,
+  Inserate Mark und Verzeichnis.
+
+Benutzerverwaltung
+- Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
+  erfasst werden.
+
+Block System
+- Das Interface zur Auswahl der Frontend Seiten funktioniert korrekt.
+
+News Manager
+- Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
+
+Modul: Adressverzeichnis
+- Die Suche funktioniert in jedem Bereich.
+
+Modul: Bildergalerie
+- Die Shadowbox funktioniert nun auch mit dem Internet Explorer 8
+
+Modul: Digital Asset Management
+- Die Benutzerdefinierte Sortierung funktioniert.
+- Kategorien können keinen Unterkategorien zugeordnet werden.
+
+Modul: Dokumenten System
+- Kompatibel mit der Alias Verwaltung.
+
+Modul: Kleinanzeigemarkt
+- Die Suche nach Anzeigen im Backend funktioniert.
+
+Modul: Newsletter
+- Die Anmeldung und Bearbeitung des Profils funktioniert korrekt.
+
+Modul: Shop
+- E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
+- Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
+  Benutzerkonto mit der entsprechend definierten Gültigkeitsdauer erstellt.
+- Beim Versand der Bestellbestätigung per E-Mail wird, falls die benötigte
+  E-Mail Vorlage in der ausgewählten Sprache nicht vorhanden ist, die, in der
+  Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
+  vorhanden ist, wird die nächste vorhandene Sprache verwendet.
+- Es werden wieder alle Einstellungen gespeichert
+
+Modul: User to User Nachrichten
+- Die E-Mail Benachrichtigungen über neue Nachrichten werden versendet.
+
+Statistik
+- Die Zählung der Besucher erfolgt korrekt.
+
+Webinstaller
+- Kontrollkästchen werden beim Browser Opera angezeigt.
+
+****************************************
+* Neue Module **************************
+****************************************
+
+

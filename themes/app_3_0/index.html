@@ -1,0 +1,62 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+        
+        <meta name="generator" content="{VERSION}" /> 
+        <meta name="keywords" content="{METAKEYS}" />        
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="description" content="{METADESC}" />            
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="cache-control" content="no-cache" />
+        <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
+        
+        <link type="images/x-icon" rel="icon" href="favicon.ico">
+        <link type="text/css" rel="stylesheet" href="themes/app_3_0/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/app_3_0/text.css" />
+        <link type="text/css" rel="stylesheet" href="themes/app_3_0/modules.css" />
+        
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+        {LOGIN_CONTENT}
+        {COUNTER}
+        
+        <script type="text/javascript" src="themes/app_3_0/modernizr.js"></script>
+        <script type="text/javascript" src="themes/app_3_0/javascript.js"></script>
+        
+        <!--[if IE 6]>
+        <script type="text/javascript" src="themes/app_3_0/DD_belatedPNG.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+        
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/app_3_0/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    var elements = '#search-input';
+                    $J(elements).each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
+        </script>
+        <![endif]-->
+    </head>
+    
+    <body>
+        <div id="page" class="content">
+            {CONTENT_FILE}
+        </div>
+    </body>
+</html>

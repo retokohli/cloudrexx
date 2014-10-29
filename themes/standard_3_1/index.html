@@ -1,0 +1,178 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+        
+        <meta name="generator" content="{VERSION}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="description" content="{METADESC}" />
+        <meta charset="{CHARSET}" />
+
+        <meta property="og:site_name" content="{GLOBAL_TITLE}" />
+        <meta property="og:title" content="{METATITLE}" />
+        <meta property="og:description" content="{METADESC}" />
+        <meta property="og:url" content="http://{DOMAIN_URL}{CURRENT_URL}" />
+        <meta property="og:image" content="{BASE_URL}/themes/standard_3_1/images/logo_social_media.png" />
+
+        <meta name="twitter:title" content="{METATITLE}" />
+        <meta name="twitter:description" content="{METADESC}" />
+        <meta name="twitter:image" content="{BASE_URL}/themes/standard_3_1/images/logo_social_media.png" />
+
+        <link type="images/x-icon" rel="icon" href="favicon.ico" />
+        <link rel="apple-touch-icon" href="/themes/standard_3_1/images/logo_apple_touch.png" />
+
+        <link type="text/css" rel="stylesheet" href="themes/standard_3_1/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/standard_3_1/text.css" />
+        <link type="text/css" rel="stylesheet" href="themes/standard_3_1/modules.css" />
+
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+
+        <script type="text/javascript">
+            var cssName = '{CSS_NAME}';
+            if (cssName.length > 0) {
+                $J.ajax({
+                    url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_' + cssName + '.jpg',
+                    complete: function (jqXHR) {
+                        var contentType = jqXHR.getResponseHeader('Content-Type');
+                        if ($J.type(contentType) == 'string' && contentType.substring(0, 5) == 'image') {
+                            $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_' + cssName + '.jpg" alt="Titelbild" />');
+                        }
+                    }
+                });
+            }
+        </script>
+
+        <script type="text/javascript" src="themes/standard_3_1/modernizr.js"></script>
+        <script type="text/javascript" src="themes/standard_3_1/jquery.cycle.js"></script>
+        <script type="text/javascript" src="themes/standard_3_1/javascript.js"></script>
+
+        <!--[if IE 6]>
+        <script type="text/javascript" src="themes/standard_3_1/DD_belatedPNG.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+        
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/standard_3_1/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    var elements = '#search-input';
+                    $J(elements).each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
+        </script>
+        <![endif]-->
+    </head>
+
+    <body>
+        <header class="login">
+            <div class="inner clearfix">
+                <h2>Login</h2>
+                <div class="left">
+                    <a href="{NODE_LOGIN}?provider=facebook" class="facebook loginbutton">Facebook</a>
+                    <a href="{NODE_LOGIN}?provider=google" class="google loginbutton">Google</a>
+                    <a href="{NODE_LOGIN}?provider=twitter" class="twitter loginbutton">Twitter</a>
+                </div>
+                <div class="right">
+                    <form method="post" action="{NODE_LOGIN}">
+                        <input name="USERNAME" placeholder="Benutzername" type="text"/>
+                        <input name="PASSWORD" placeholder="Passwort" type="password"/>
+                        <input type="submit" value="Anmelden" name="login">
+                        <input type="checkbox" id="remember_me" class="remember_me" name="remember_me" value="1">
+                        <label class="remember_me" for="remember_me">Angemeldet bleiben</label>
+                    </form>
+                    <a href="{NODE_LOGIN_LOSTPW}">Passwort vergessen?</a><br />
+                    <a href="{NODE_ACCESS_SIGNUP}">Haben Sie noch kein Konto? Jetzt registrieren</a>
+                </div>
+            </div>
+        </header>
+        <header id="header">
+            <div class="inner clearfix">
+                <a id="logo" href="{NODE_HOME}">&nbsp;</a>
+
+                <form id="search-form" action="{NODE_SEARCH}" method="get">
+                    <input id="search-input" type="text" name="term" value="Suchen" onclick="this.value=''" onblur="this.value='Suchen'" />
+                </form>
+                <ul id="language-navigation">
+                    <li id="select-language">{LANGUAGE_NAVBAR_SHORT}</li>
+                </ul>
+
+                <nav id="metanavigation">
+                    <ul>
+                        <!-- BEGIN access_logged_out -->
+                        <li class="first login-toggle">
+                            <a class="open" href="{NODE_LOGIN}">Login</a>
+                            <a class="close" href="#">Schliessen</a>
+                        </li>
+                        <li><a href="{NODE_ACCESS_SIGNUP}">Registrieren</a></li>
+                        <!-- END access_logged_out -->
+                        <!-- BEGIN access_logged_in -->
+                        <li class="first"><a href="{NODE_ACCESS_SETTINGS_PROFILE}">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
+                        <li><a href="{LOGOUT_URL}">Logout</a></li>
+                        <!-- END access_logged_in -->
+                    </ul>
+                </nav>
+            </div>
+            <div id="navigation-wrapper">
+                {NAVBAR_FILE}
+            </div>
+        </header>
+        <section id="content-wrapper">
+            {CONTENT_FILE}
+        </section>
+
+        <footer id="footer" class="inner">
+            <div class="inner">
+                <img src="https://chart.googleapis.com/chart?cht=qr&amp;chs=90x90&amp;chl=http://{DOMAIN_URL}{PAGE_URL}" alt="QR-Code" id="qr-code" />
+
+                <div id="footer-top">
+                    <ul class="footer-left horizontal-list">
+                        <li>Seitenansicht:&nbsp;&nbsp;<a href="{STANDARD_URL}">Normal</a></li>
+                        <li><a href="{MOBILE_URL}">Mobile</a></li>
+                        <li><a href="{PRINT_URL}">Druck</a></li>
+                        <li><a href="{PDF_URL}">PDF</a></li>
+                        <li class="last"><a href="{APP_URL}">App</a></li>
+                    </ul>
+                    <ul class="footer-right horizontal-list no-bg">
+                        <li><a target="_blank" href="https://plus.google.com/101022530429663496888"><img src="themes/standard_3_1/images/googleplus-icon.png" alt="Google Plus" /></a></li>
+                        <li><a target="_blank" href="http://www.facebook.com/contrexxsoftware"><img src="themes/standard_3_1/images/facebook-icon.png" alt="Facebook" /></a></li>
+                        <li><a target="_blank" href="http://twitter.com/contrexx"><img src="themes/standard_3_1/images/twitter-icon.png" alt="Twitter" /></a></li>
+                        <li class="last"><a target="_blank" href="/feed/news_de.xml"><img src="themes/standard_3_1/images/rss-feed-icon.png" alt="RSS Feed" /></a></li>
+                    </ul>
+                </div>
+
+                <div id="footer-bottom">
+                    <div class="footer-left">&copy; 2013 <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a> Standard Theme</div>
+                    <div class="footer-right">
+                        <ul class="horizontal-list">
+                            <li><a href="{NODE_CONTACT_10}">Kontakt</a></li>
+                            <li><a href="{NODE_PRIVACY}">Rechtliche Hinweise</a></li>
+                            <li><a href="{NODE_SITEMAP}">Inhaltsverzeichnis</a></li>
+                            <li><a href="{NODE_IMPRINT}">Impressum</a></li>
+                            <li class="last">{LOGIN_URL}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <div id="back-top">&nbsp;</div>
+
+        {LOGIN_CONTENT}
+        {COUNTER}
+    </body>
+</html>

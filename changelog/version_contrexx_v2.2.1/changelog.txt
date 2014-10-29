@@ -1,0 +1,46 @@
+////////////////////////////////////////
+// CHANGELOG 2.2.0-2.2.1 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+Administrationsoberfläche (Backend)
+- Navigation alphabetisch sortiert
+
+News Modul
+- Datumsauswahl mit Kalender
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Allgemein
+- CAPTCHA-Schutz funktioniert bei Bots.
+- Ist die PHP-Erweiterung "json" nicht aktiviert, wird auf eine
+  PEAR-Alternative zurückgegriffen.
+
+Bildergalerie
+- Thumbnails von transparenten PNGs haben keinen schwarzen Hintergrund mehr.
+
+Datenbank Manager
+- Darstellung erfolgt korrekt.
+- InnoDB-Tabellen mit Überhang werden als in Ordnung behandelt (diese haben immer einen Überhang)
+
+Digital Asset Management
+- Wird im Frontend eine Datei heraufgeladen, wird nun der Original-Dateiname als Titel verwendet.
+- Gruppen-Platzhalter generiert funktionierende Links.
+
+Kontakte Manager
+- Dateiupload funktioniert bei nicht authentifizierten Benutzer.
+- Dateiupload-Pflichtfelder funktionieren.
+- Wird ein Eintrag gelöscht, werden die zugehörigen heraufgeladenen Dateien ebenfalls gelöscht.
+
+Modul: Newsletter
+- Debug Meldungen ausgeblendet.
+
+Uploader
+- Funktioniert mit HTTP-Authentifikation
+
+Update
+- Datenbankmigrationsskript des Medienverzeichnis korrigiert.

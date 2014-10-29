@@ -1,0 +1,65 @@
+#/bin/bash
+
+###############################
+# Contrexx Workbench install  #
+# and wrapper script for UNIX #
+#                             #
+# (c) 2013 by Comvation AG    #
+###############################
+
+DOWNLOAD_URL="http://updatesrv1.contrexx.com/"
+FILENAME="workbench-%s.tar.gz"
+
+if [ "$1" != "" ] && [ -d "$1" ]; then
+    INSTALLATION_PATH="$1"
+    COMMANDLINE_ARGS=${@:2}
+else
+    INSTALLATION_PATH=`dirname $(readlink -f $0)`
+    COMMANDLINE_ARGS=$@
+fi
+
+if [ ! -f "$INSTALLATION_PATH/config/settings.php" ]; then
+    echo "$INSTALLATION_PATH is not a Contrexx installation directory"
+    exit
+fi
+
+CONTREXX_VERSION=`grep "'coreCmsVersion'" "$INSTALLATION_PATH/config/settings.php" | awk '{print substr($3, 2, index($3,";")-3)}'`
+FILENAME=`printf "$FILENAME" $CONTREXX_VERSION`
+
+PHP_PATH="php"
+while ! command -v "$PHP_PATH" &> /dev/null
+do
+    read -p "PHP could not be found, please enter the correct path to php or leave empty to abort: " path
+    if [ "$path" == "" ]; then
+        exit
+    fi
+    PHP_PATH=$path
+done
+
+if [ -f "$INSTALLATION_PATH/workbench.config" ]; then
+    # workbench is installed
+    php "$INSTALLATION_PATH/core_modules/Workbench/console.php" $COMMANDLINE_ARGS
+else
+    read -p "This will install the current version of the Contrexx Workbench into the following path ($INSTALLATION_PATH). Are you sure? [Y,n] " answer
+    if [ "$answer" == "n" ]; then
+        exit
+    fi
+    
+    read -p "What name should be used as distributor for components? " DISTRIBUTOR
+
+    echo -n "Downloading workbench... "
+    wget "$DOWNLOAD_URL$FILENAME" -o /dev/null
+
+    if [ ! -f "./$FILENAME" ]; then
+        echo "Download failed, aborting."
+        exit
+    fi
+    echo "done"
+
+    echo -n "Installing... "
+    tar -zxvf "$FILENAME" > /dev/null
+    rm "$FILENAME"
+    echo -e "php=$PHP_PATH\ndistributor=$DISTRIBUTOR" > "$INSTALLATION_PATH/workbench.config"
+    echo -e "done\n"
+    ./workbench
+fi

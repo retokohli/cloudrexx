@@ -1,0 +1,29 @@
+////////////////////////////////////////
+// CHANGELOG 2.2.2-2.2.3 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+Modul: Galerie
+- Optionen Status, Kommentarfunktion und Bewertung per Vorgabe inaktiv bei einem neuen Eintrag
+
+Modul: Medienverzeichnis
+- Schweizer Datumsformat für Anzeigedauer, verwendet Datepicker
+
+Code-Qualität
+- Sämtlicher Eigencode verzichtet auf "new &"-Statements, um PHP5.3-Kompatibel zu sein. Drittcode (Bibliotheken) benutzt zum Teil noch "new &".
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+
+Layout & Design
+- Wird eine Benutzerdefinierte Vorlage nicht gefunden (z.B. weil die Datei in der Druckansicht nicht vorhanden ist), so wird auf die Standardmässige Inhaltsvorlage des aktiven Templates zurückgegriffen.
+
+Modul: Newsletter
+- Deaktivierte News werden im Newsletter nicht mehr angezeigt.
+
+Captcha
+- Funktioniert auch, wenn ASCMS_BACKEND_PATH verändert wird

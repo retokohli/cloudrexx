@@ -1,0 +1,16 @@
+default:
+  paths:
+    features:  features
+    bootstrap: features/bootstrap
+
+  extensions:
+    Behat\MinkExtension\Extension:
+      selenium2: ~
+
+annotations:
+  paths:
+    features: features/annotations
+
+closures:
+  paths:
+    features: features/closures

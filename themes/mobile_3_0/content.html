@@ -1,0 +1,31 @@
+<section data-role="content" role="main" id="main" >
+    <header data-role="header" >
+        <a data-role="button" href="{NODE_HOME}" class="backbutton ">Startseite</a>
+        <h1>{CONTENT_TITLE}</h1>
+    </header>
+    <div class="fullWidth">
+    </div>
+    <article>
+        <div id="subpage_content">
+            {CONTENT_TEXT}
+        </div>
+        <footer>
+            <a title="to top" href="#container" id="back-to-top" class="backtotop" data-role="none">nach oben</a>
+        </footer>
+    </article>    
+    <div class="mp-content-holder">
+        <div class="mp-content-wrap">           
+            <div class="content1 nopad">
+                <article class="linklist">
+                    {SUBNAVBAR_FILE}
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+<nav>
+    <header class="visuallyhidden">
+        <h1>Main Navigation</h1>
+    </header>
+    {NAVBAR_FILE}
+</nav>

@@ -1,0 +1,159 @@
+////////////////////////////////////////
+// CHANGELOG 2.1.1-2.1.2 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+Benutzerverwaltung
+- Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
+  Kategorie beim Digital Asset Management Modul erstellt werden.
+- Das Aktualisierungsintervall der Benutzersitzungen in der Datenbank
+  kann definiert werden.
+- Bei der Auflistung der Benutzer wird der Link 'zum Adressbuch hinzufügen'
+  nur dann angezeigt, sofern der jeweilige Benutzer nicht bereits im Adressbuch
+  enthalten ist.
+
+News Manager
+- Die ID der Newsmeldungen wird bei der Übersicht im Backend aufgelistet.
+- Die Platzhalter [[NEWS_TEASER_TEXT]] und [[NEWS_CATEGORY_NAME]] werden beim
+  Platzhalterverzeichnis im Backend aufgelistet.
+- Der neue Platzhalter [[NEWS_IMAGE_LINK]] erzeugt einen Bild-Link auf die
+  Detailseite der Newsmeldung.
+- Die Bild Platzhalter [[NEWS_IMAGE]], [[NEWS_IMAGE_LINK]], [[NEWS_IMAGE_SRC]]
+  und [[NEWS_IMAGE_ALT]] können optional mit dem Block news_image umschlossen
+  werden, damit diese nur dann angezeigt werden, wenn auch ein Bild vorhanden
+  ist.
+
+Modul: Digital Asset Management
+- Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
+  werden.
+- Die Gültigkeit (Zeitdauer) eines Downloads kann definiert werden.
+- Kategorien können in einer Gruppe zusammengefasst werden.
+- Über die Benutzerverwaltung kann beim Erstellen eines neuen Benutzerkontos
+  direkt eine neue persönliche Kategorie im Digital Asset Management Modul
+  für diesen Benutzer erstellt werden.
+
+Modul: Shop
+- Bilder können von einem Produkt wieder entfernt werden.
+- Warenkorb funktioniert jetzt mit IE8
+
+Content Manager
+- Flash-Objekte werden nun "gepatcht", um floating divs darüber darstellen
+  zu können (#268)
+
+Statistik
+- Windows 7 wird nun erkannt
+
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Allgemein:
+- Das Versenden von E-Mails bei der Verwendung eines separaten SMTP-Servers
+  funktioniert.
+- Datei-Upload: Anstatt einer Whitelist wird nun eine Blacklist eingesetzt.
+  Dies ermöglicht auch den Upload von Dateien, die nicht explizit von Contrexx
+  erlaubt wurden.
+- Bei der Inhaltsnavigation wird beim Typ 'dropdown' ab der zweiten Ebene
+  auch ein CSS-Style (active/inactive) ausgegeben.
+- Der Platzhalter [[LANGUAGE_NAVBAR]] ist kompatibel mit der Funktion
+  'Virtuelle Sprachverzeichnisse verwenden'.
+- Fehler mit Weiterleitung in einem neuen Fenster behoben
+- Namen von Designs werden jetzt in jedem Fall korrekt übernommen
+
+Benutzerverwaltung
+- Beim Export werden Benutzer, welche als Frontend Sprache die Standard
+  Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
+- Der Gruppenfilter bei der Auflistung der Benutzer im Frontend funktioniert.
+
+Content Manager
+- Beim Löschen der Seitenänderungen einer Seite (im Bearbeitungsmodus der
+  Seite) gehen die definierten Zugriffsberechtigungen der jeweiligen Seite
+  nicht verloren.
+- Flash-Objekte werden nun "gepatcht", um floating divs darüber darstellen
+  zu können (#268)
+
+News Manager
+- Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn
+  diese geschützt ist und er sich kein expliziter Zugriff erteilt hat.
+- Die Meldungen werden in der Administrationskonsole korrekt aufgelistet,
+  wenn die Erweiterung 'Zugriffsschutz' aktiviert ist.
+
+Modul: Bildergalerie
+- Die ToolTips der Bilder sind korrekt.
+- Die Statistik wird von Suchmaschinen nicht beeinflusst.
+- Als Zufallsbild [[GALLERY_RANDOM]] wird nur ein Bild aus einer Kategorie
+  verwendet, auf welche der Besucher Zugriffs berechtigt ist.
+- Web-Spider können nun keine Bilder mehr bewerten (#201)
+- Hartcodierter Rahmen bei den IMG-Tags
+
+Modul: Blog
+- Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
+- Anführungszeichen werden bei Kommentaren akzeptiert.
+- Die Statistik & Tag Cloud wird von Suchmaschinen nicht mehr beeinflusst.
+
+Modul: E-Card
+- Die Bilder werden gemäss den Einstellungen verkleinert.
+- Sicherheitslücke geschlossen.
+- Fehler in Dateiberechtigungen behoben
+
+Modul: Digital Asset Management
+- Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.
+- XHTML validierte Ausgabe.
+- Input-Validierung: beim Erstellen eines Downloads muss nun eine Datei
+  angegeben werden
+
+Modul: Forum
+- Die Statistik wird von Suchmaschinen nicht beeinflusst.
+
+Modul: Gästebuch
+- Der Inhalt des Benachrichtigung-E-Mails wird korrekt dargestellt.
+
+Modul: Kalender
+- Die Kategorienauswahl wird bei der Suche berücksichtigt.
+- Anzeige von Terminen funktioniert jetzt von der Boxenansicht aus.
+- Anzeigeproblem in IE behoben (Backend)
+- Probleme im Zusammenhang mit Aliases behoben
+- Den Platzhalter CALENDAR_CATEGORIE gibt es wieder.
+
+Modul: Linkverzeichnis
+- Die Statistik wird von Suchmaschinen nicht beeinflusst.
+- Es werden keine leeren Einträge aufgelistet.
+- Kleine Korrekturen in der Darstellung
+
+Medienarchiv
+- In gewissen Situationen konnten nach Updates Archive 2-4 nicht installiert
+  werden
+- Direkte verlinkung im Medienarchiv geht jetzt wieder. Für "richtig" zu
+  schützende Dateien bitte Digital Asset Management benutzen.
+
+
+Modul: Shop
+- Bei einer Bestellung wird das Land der Lieferadresse gespeichert.
+
+Modul: Livecam
+- Nach Updates funktionierten unter Umständen die Einstellungen nicht
+
+Modul: User to User Nachrichten
+- Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
+- Die Einstellungen werden nun immer gespeichert
+
+Modul: Newsletter
+- Fehler beim Versenden einer Multipart-Nachricht, wenn nur HTML erfasst
+  wurde, ohne Text
+
+
+Modul: Wissensdatenbank
+- Verbesserte Live-Suche.
+- IE6 stürzt nicht mehr ab
+
+Modul: Memberdir
+- Input-Validierung verbessert
+
+Modul: Statistik
+- Beim Bereich 'Beliebteste Seiten' werden Seitenaufrufe, welche unter
+  Verwendung eines Alias getätigt wurden, korrekt aufgelistet.
+
+Standard-Design:
+- CSS für Tabellen korrigiert

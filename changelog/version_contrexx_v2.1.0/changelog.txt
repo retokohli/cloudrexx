@@ -1,0 +1,205 @@
+////////////////////////////////////////
+// CHANGELOG 2.0.2-2.1.0 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+Allgemein
+- Navigationspunkte, welche als Weiterleitung dienen, zeigen auf die
+  Ziel Adresse. Ausgenommen davon sind Navigationspunkte welche ein Alias
+  verwenden.
+- Die Einträge im XML-Sitemap (/sitemap.xml) zeigen auf die Ziel Adresse
+  von Weiterleitungsseiten, sofern es sich um solche handelt.
+- Das XML-Sitemap enthält keine Einträge mehr, welche auf eine andere Webseite
+  zeigen. Das selbe trifft auch für Bereiche zu, welche sich ausserhalb des
+  Ablagepfades von Contrexx befinden.
+- Der WYSIWYG-Editor visualisiert HTML Blöcke.
+
+Grundeinstellungen
+- Neue Konfigurationsoption 'Virtuelle Sprachverzeichnisse verwenden'.
+
+Design-Manager
+- Es kann neu ein Design für Mobile Geräte festgelegt werden. Dies wird
+  dann automatisch aktiviert, wenn ein Smartphone, PDA oder ähnliches die
+  Seite aufruft. Es kann auch "händisch" aktiviert werden, entweder mittels
+  Query-Parameter smallscreen=1, oder via Javascript
+  (Platzhalter JAVASCRIPT_MOBILE_DETECTOR)
+
+WYSIWYG-Editor
+- Neue Version 2.6.4 des FCKeditors. Weitere Informationen unter:
+  http://www.fckeditor.net/whatsnew/
+
+Galerie
+- Shadowbox wird nun anstelle des alten Pop-Ups verwendet.
+
+Gästebuch
+- Name wird nun in zwei getrennten Feldern abgelegt: Vor- und Nachname.
+- Das Benachrichtigungs-E-Mail enthält als Absender und Antwort Adresse die
+  E-Mail Adresse des Verfassers des Gästebucheintrages.
+
+Forum
+- Thread Aktionen werden nur noch angezeigt, wenn man Berechtigungen hat.
+
+Directory
+- Neuer Feldtyp YouTube wurde hinzugefügt.
+
+Kalender
+- Es können im Frontend Termine angemeldet werden
+- Es kann ein Serietyp für einen Termin festgelegt werden.
+
+Benutzerverwaltung
+- Es kann eine CSV Datei aller Benutzer exportiert werden basierend auf Gruppenzugehörigkeit und Standardsprache.
+- Die Profileigenschaft E-Mail Adresse wird bei der Suche im Backend auch mit
+  einbezogen.
+- Neue Profileigenschaften vom Typ Kontrollkästchen können definiert werden.
+
+Statistik
+- Wird ein bestehender Besucher wieder als neuer solcher gezählt, wird dessen
+  Seitenaufrufe auch wieder gezählt, auch wenn es sich um dieselbe letzte
+  Seite handelt die er zuletzt aufgerufen hat.
+
+News
+- Bei der Auflistung der News Meldungen wurde der Platzhalter [[NEWS_LINK]]
+  durch den neuen Platzhalter [[NEWS_LINK_TITLE]] ersetzt. Der Platzhalter
+  [[NEWS_LINK]] gibt nun den Text "[mehr...]" anstatt den Titel der Newsmeldung
+  aus.
+- Zwei neue Platzhalter bei der Auflistung der News Meldungen
+    [[NEWS_LINK_TITLE]]    => Titel der Newsmeldung
+	[[NEWS_LINK_TEASER]]   => Teasertext der Newsmeldung
+- Die Newsmeldungen können sowie im Frontend, wie auch im Backend vor
+  unerlaubtem Zugriff/Modifikation geschützt werden.
+- Neuer Platzhalter [[NEWS_CATEGORY_NAME]] bei der Detailseite.
+- Die exakte Zeit des Veröffentlichungszeitraumes kann angegeben werden.
+- Als Thumbnail kann optional ein separates Bild ausgewählt werden.
+
+Shop
+- Neue Bezahlmethode für den Anbieter Datatrans hinzugefügt (http://datatrans.biz/).
+  Hinweise zur Konfiguration: http://www.contrexx.com/wiki/de/index.php?title=Shop#Datatrans_.28ab_Version_2.1.0.29
+- Auswahl der auf der Shop Startseite angezeigten Produkte in den Einstellungen.
+  Mögliche Optionen:  Keine, markierte, Sonderangebote, neuste fünf.
+  Die bei der Einstellung "markierte" anzuzeigenden Produkte können im Backend
+  mittels eines Häkchens gekennzeichnet werden.
+- Rabattsystem mit Mengenrabatten und Rabatten pro Kunden- und Artikelgruppe
+- Grosse Produktebilder werden mit Shadowbox angezeigt, nicht mehr als Popup
+- Das Verhalten bei der Berechnung der Mehrwertsteuer lässt sich individuell
+  für In- und Ausland, Kunden und Reseller konfigurieren
+
+Webinstaller
+- Französische Übersetzung
+
+Inserate
+- Der Platzhalter [[MARKET_PICTURE]] kann nun mit dem Block market_picture
+  umschlossen werden. Dieser Block wird nur angezeigt, sofern das Inserat ein
+  Bild enthält.
+- Die Inserate verfügen über die neue Eigenschaft 'Farbe'. Diese wird durch den
+  Platzhalder [[MARKET_COLOR]] im Frontend repräsentiert.
+- Inserate können kopieren und sortiert werden.
+
+Datenlisten
+- Volltextsuche
+- Als Thumbnail kann optional ein separates Bild ausgewählt werden.
+- Den Anhängen kann eine Beschreibung zugewiesen werden.
+- Inserate können kopieren werden.
+
+Medien Archive
+- Die Medien Archive verwenden im Frontend keine PHP-Sitzung mehr.
+  Dies ermöglicht es Suchmaschinen den Inhalt der Archive zu Indexieren.
+
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Allgemein
+- Skript Dateien können nicht mehr hoch geladen werden.
+- Die Unterstützung von HTTPS wurde verbessert.
+- Automatisch generierte Links sind kompatibel mit der Alias Verwaltung.
+- Verbesserte Unterstützung für Installationen bei welchen PHP nicht als
+  Apache Modul läuft.
+
+Benutzerverwaltung
+- Benutzer welche keiner Backend-Gruppe zugeordnet sind, können sich nicht
+  mehr im Backend anmelden.
+- Die Auflistung der Benutzer erfolgt korrekt, egal nach welchem Merkmal
+  sortiert wird.
+- Die Auflistung der Benutzer, welche Geburtstag haben funktioniert.
+
+Datenbank Manager
+- Die mySQL Syntax der Sicherungen wurde gefixt, so dass die erzeugten .sql
+  Dateien auch über myPhpAdmin oder mySQL Clients fehlerfrei importiert werden
+  können.
+
+Grundeinstellungen
+- Auf die Konfigurationsdatei /config/settings.php wird automatisch versucht
+  Schreibzugriff zu vergeben.
+- Es können keine Änderungen getätigt werden, solange auf die
+  Konfigurationsdatei kein Schreibzugriff besteht.
+
+Directory
+- Seitentitel wird korrekt ausgegeben
+- Fehler beim Paging bei der Suche wurde behoben
+- Der Navigationsbaum wurd korrekt zusamengestellt.
+- Fehler beim verschicken der E-Mails wurde behoben
+- Die Uploadfunktion wurde verbessert.
+
+Kontakte Manager
+- Die Liste der Eingabefelder wird bei Verwendung des Safari Browsers korrekt
+  dargestellt.
+
+News
+- Die Einträge im RSS Feed enthalten den Text der Newsmeldung nur, wenn es
+  sich nicht um eine Weiterleitung handelt.
+
+Bildergalerie
+- Die Zugriffsrechte können bei bestehenden Kategorien verändert werden.
+- Das Erstellen von Unterkategorien ist nur auf der ersten Ebene möglich.
+
+Datenlisten
+- Wird bei der Option "Anzahl Zeichen in Einleitungstext" der Wert "0"
+  definiert, so wird jeweils der komplette Einleitungstext ausgegeben.
+- Frontend-Seiten werden korrekt aufgelistet bei der Verwaltung einer
+  Kategorie.
+
+Seitentitel Tag
+- Der Seitentitel wird nun XHTML Konform mit htmlentities ausgegeben.
+
+Validator-Class
+- E-Mails die folgendem Muster entsprechen xxx.x@example.com werden nun
+  bei Prüfungen nicht mehr als ungültig zurückgegeben.
+
+Alias Verwaltung
+- Die Zielseite kann geändert werden.
+- Die Synchronisation mit dem Content Manager funktioniert korrekt.
+- Gelöschte Aliase werden aus der .HTAccess Datei gelöscht.
+- Änderungen werden im XML-Sitemap (/sitemap.xml) übernommen.
+- Die Alias Verwaltung kann nur (de)aktiviert werden, sofern auf die
+  Konfigurationsdatei (/config/settings.php) Schreibzugriff besteht.
+
+
+****************************************
+* Neue Module **************************
+****************************************
+E-Card-Modul
+- Ermöglicht das Versenden von E-Cards mit Grusstext. Es können bis zu 9
+  verschiedene Motive festgelegt werden. Die Karte wird nicht direkt verschickt,
+  es wird eine URL generiert, die das Betrachten der Karte auf dem Server
+  ermöglicht.
+
+Private Nachrichten (u2u Messaging)
+- Erlaubt das Versenden von privaten Nachrichten zwischen Benutzern (user to user messaging)
+- Buddylist und Versenden an mehrere Empfänger gleichzeitig
+- Benachrichtigung bei neuen Nachrichten
+
+Wissensdatenbank (knowledge)
+- Ermöglicht das Erfassen von häufig gestellten Fragen
+- Die Fragen lassen sich Kategorien undendlichen Levels zuordnen
+- Überall auf der Seite können die beliebtesten Fragen aufgelistet werden
+
+Auktions-Modul (auction)
+- Ermöglicht Online-Auktionen
+
+Partner-Modul (partners)
+- Kategoriebasiertes Partner-Verwaltungssystem
+
+
+
