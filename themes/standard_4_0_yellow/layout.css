@@ -531,12 +531,12 @@ body a:hover {text-decoration: none;}
     border-bottom: 1px solid #fff;
 }
 #subnavigation li.level-4 a {
-    width: 190px;
-    padding: 0 5px 0 45px;
     font-size: 12px;
-    line-height: 1.7;
     background-image: url('images/nav-3-inactive.png');
-    background-position: 31px 7px;
+    background-position: 30px 16px;
+}
+#subnavigation li.level-4:last-child a {
+    border-bottom: 0;
 }
 #subnavigation li.level-1 > a {
     display: none;
