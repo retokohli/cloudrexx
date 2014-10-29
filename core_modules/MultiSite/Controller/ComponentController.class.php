@@ -557,6 +557,16 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for force ftp account fix prefix during website setup");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('supportFaqUrl') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('supportFaqUrl', 'https://www.cloudrexx.com/FAQ', 16,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for support faq url during website setup");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('supportRecipientMailAddress') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('supportRecipientMailAddress', $_CONFIG['coreAdminEmail'], 17,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for support recipient mail address during website setup");
+            }
 
             // websiteSetup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');

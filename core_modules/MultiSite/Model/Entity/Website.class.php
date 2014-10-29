@@ -540,6 +540,9 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: setupMultiSiteConfig..');
             $this->setupMultiSiteConfig($websiteName);
 
+            \DBG::msg('Website: setupSupportConfig..');
+            $this->setupSupportConfig($websiteName);
+            
             \DBG::msg('Website: setupLicense..');
             $this->setupLicense($options);
 
@@ -933,6 +936,37 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         // we must re-initialize the original MultiSite settings of the main installation
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+    }
+
+    /**
+     * setup support configuration
+     * 
+     * @param string $websiteName websitename
+     * 
+     * @throws WebsiteException
+     */
+    protected function setupSupportConfig($websiteName) {
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
+
+        $faqUrl = \Cx\Core\Setting\Controller\Setting::getValue('supportFaqUrl');
+        $recipientMailAddress = \Cx\Core\Setting\Controller\Setting::getValue('supportRecipientMailAddress');
+
+        try {
+            \Cx\Core\Setting\Controller\Setting::init('Support', 'setup', 'Yaml', $websiteConfigPath);
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('faqUrl') && !\Cx\Core\Setting\Controller\Setting::add('faqUrl', $faqUrl, 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for faq url");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('recipientMailAddress') && !\Cx\Core\Setting\Controller\Setting::add('recipientMailAddress', $recipientMailAddress, 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')) {
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for recipient mail address");
+            }
+        } catch (\Exception $e) {
+            // we must re-initialize the original MultiSite settings of the main installation
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
+            throw new WebsiteException('Error in setting up the Support configuration:' . $e->getMessage());
+        }
+        // we must re-initialize the original MultiSite settings of the main installation
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
     }
 
     /**
