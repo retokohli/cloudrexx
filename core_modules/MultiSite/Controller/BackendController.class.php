@@ -343,7 +343,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
     
     public function parseSectionWebsites(\Cx\Core\Html\Sigma $template, array $cmd) {
-        $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
+        global $_ARRAYLANG;
+        if (isset($_GET['term']) && !empty($_GET['term'])) {
+            $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findWebsitesBySearchTerms($_GET['term']);
+        }  else {
+            $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
+            
+        }
         $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
             'header' => 'Websites',
             'functions' => array(
@@ -448,6 +454,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 ),
             ),
         ));
+        $template->setVariable(array('SEARCH' => $_ARRAYLANG['TXT_MULTISITE_SEARCH'],
+                                     'FILTER' => $_ARRAYLANG['TXT_MULTISITE_FILTER'],
+                                     'SEARCH_TERM' => $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM']
+                                ));
+        $template->touchBlock("website_filter");
         $template->setVariable('TABLE', $view->render());
     }
     

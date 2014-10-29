@@ -144,3 +144,8 @@ $_ARRAYLANG['TXT_MULTISITE_FETCH_LICENSE_INFO'] = 'Fetch license information of 
 $_ARRAYLANG['TXT_MULTISITE_SHOW_LICENSE'] = 'Show License';
 $_ARRAYLANG['TXT_MULTISITE_LICENSE_INFO'] = 'License information for the selected website';
 $_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY'] = 'JsonMultiSite (executeSql): sql query is empty..';
+
+//filter
+$_ARRAYLANG['TXT_MULTISITE_SEARCH'] = 'Search';
+$_ARRAYLANG['TXT_MULTISITE_FILTER'] = 'Filter';
+$_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'] = 'Enter your search term';

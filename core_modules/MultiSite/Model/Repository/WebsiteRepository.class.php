@@ -84,5 +84,15 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
 
         return $qb->getQuery()->getResult();
     }
+    
+    public function findWebsitesBySearchTerms($param) {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $where = "website.name='$param' OR website.ftpUser ='$param'";
+        $qb->select('website')
+                ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
+                ->where($where)
+                ->getDql();
+        return $qb->getQuery()->getResult();
+    }
 }
 
