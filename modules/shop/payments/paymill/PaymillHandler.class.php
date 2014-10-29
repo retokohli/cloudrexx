@@ -59,8 +59,8 @@ class PaymillHandler {
                        );
         }
         
-        $testMode = intval(\Cx\Core\Setting\Controller\Setting::getValue('paymill_use_test_account')) == 0;
-        $apiKey   = $testMode ? \Cx\Core\Setting\Controller\Setting::getValue('paymill_test_private_key') : \Cx\Core\Setting\Controller\Setting::getValue('paymill_live_private_key');
+        $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;
+        $apiKey   = $testMode ? SettingDb::getValue('paymill_test_private_key') : SettingDb::getValue('paymill_live_private_key');
         
         if ($token) {
             try {

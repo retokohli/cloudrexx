@@ -103,15 +103,54 @@ class JS
 Shadowbox.loadSkin('classic', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/skin/');
 Shadowbox.loadLanguage('en', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/lang');
 Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/player');
-jQuery(document).ready(function(){
+cx.jQuery(document).ready(function(){
   Shadowbox.init();
 })"
         ),
         'jquery'     => array(
-            'jsfiles'       => array(
-                'lib/javascript/jquery/jquery-1.6.1.min.js',
+            'versions' => array(
+                '2.0.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/2.0.3/js/jquery.min.js',
+                     ),
+                ),
+                '2.0.2' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/2.0.2/js/jquery.min.js',
+                     ),
+                ),
+                '1.10.1' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.10.1/js/jquery.min.js',
+                     ),
+                ),
+                '1.9.1' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.9.1/js/jquery.min.js',
+                     ),
+                ),
+                '1.8.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.8.3/js/jquery.min.js',
+                     ),
+                ),
+                '1.7.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.7.3/js/jquery.min.js',
+                     ),
+                ),
+                '1.6.4' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.6.4/js/jquery.min.js',
+                     ),
+                ),
+                '1.6.1' => array(
+            		'jsfiles'       => array(
+                        'lib/javascript/jquery/1.6.1/js/jquery.min.js',
+                     ),
+                ),
             ),
-            'specialcode'  => 'var $J = jQuery.noConflict();',
+            'specialcode' => '$J = jQuery;'
         ),
         'jquery-tools' => array(
             'jsfiles' => array(
@@ -205,8 +244,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'jquery',
             ),
             // When invoking jcrop, add code like this to create the widget:
-            // jQuery(window).load(function(){
-            //   jQuery("#my_image").Jcrop({ [option: value, ...] });
+            // cx.jQuery(window).load(function(){
+            //   cx.jQuery("#my_image").Jcrop({ [option: value, ...] });
             // });
             // where option may be any of
             // aspectRatio   decimal
@@ -260,9 +299,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             ),
             'dependencies' => array('jquery'),
             'specialcode'  => '
-                $J(document).ready(function() {
-                    if($J(".chzn-select").length > 0) {
-                        $J(".chzn-select").chosen({
+                cx.jQuery(document).ready(function() {
+                    if(cx.jQuery(".chzn-select").length > 0) {
+                        cx.jQuery(".chzn-select").chosen({
                             disable_search: true
                         });
                     }
@@ -284,6 +323,65 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'jqueryui',
             ),
         ),
+        'twitter-bootstrap' => array(
+            'versions' => array(
+                '3.1.0' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.1.0/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.3/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.3/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.2' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.2/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.2/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.1' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.1/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.1/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.0' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.0/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.0/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '2.3.2' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/2.3.2/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/2.3.2/css/bootstrap.min.css',
+                        'lib/javascript/twitter-bootstrap/2.3.2/css/bootstrap-responsive.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+            ),
+        ),
     );
 
     /**
@@ -293,6 +391,14 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @var array
      */
     private static $customJS = array();
+
+    /**
+     * Holds the template JS files
+     * @static
+     * @access private
+     * @var array
+     */
+    private static $templateJS = array();
 
     /**
      * The custom CSS files
@@ -452,11 +558,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * then this one will be loaded instead.
      * @param string $file The path of $file must be specified relative to the document root of the website.
      *     I.e. modules/foo/bar.js
+     * @param bool $template is a javascript file which has been included from template
      *
      * External files are also suppored by providing a valid HTTP(S) URI as $file.
      * @return bool Returns TRUE if the file will be loaded, otherwiese FALSE.
      */
-    public static function registerJS($file)
+    public static function registerJS($file, $template = false)
     {
         // check whether the script has a query string and remove it
         // this is necessary to check whether the file exists in the filesystem or not
@@ -464,14 +571,6 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         $queryStringBegin = strpos($fileName, '?');
         if ($queryStringBegin) {
             $fileName = substr($fileName, 0, $queryStringBegin);
-        }
-
-        // $basename = strtolower(preg_replace("/\.[^\.]+$/", "", basename($file)));
-        // we assume, every javascript files ends with .js
-        $basename = strtolower(str_replace(".js", "", basename($fileName)));
-        if (array_search($basename, array_keys(self::$available)) !== false) {
-            self::activate($basename);
-            return true;
         }
 
         // if it is an local javascript file
@@ -483,7 +582,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
 
         // add original file name with query string to custom javascripts array
-        if (array_search($file, self::$customJS) === false) {
+        if (array_search($file, self::$customJS) !== false || array_search($file, self::$templateJS) !== false) {
+            return true;
+        }
+        if ($template) {
+            self::$templateJS[] = $file;
+        } else {
             self::$customJS[] = $file;
         }
         return true;
@@ -544,6 +648,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 //        $specialcode = array();
         $lazyLoadingFiles = array();
         $retstring  = '';
+        $jsScripts = array();
         if (count(self::$active) > 0) {
             // check for lazy dependencies, if there are lazy dependencies, activate cx
             // cx provides the lazy loading mechanism
@@ -568,36 +673,54 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
             // set cx.variables with lazy loading file paths
             ContrexxJavascript::getInstance()->setVariable('lazyLoadingFiles', $lazyLoadingFiles, 'contrexx');
-
+            
             // Note the "reverse" here.  Dependencies are at the end of the
             // array, and must be loaded first!
             foreach (array_reverse(self::$active) as $name) {
                 $data = self::$available[$name];
-                if (!isset($data['jsfiles'])) {
+                if (!isset($data['jsfiles']) && !isset($data['versions'])) {
                     self::$error = "A JS entry should at least contain one js file...";
                     return false;
                 }
-                $retstring .= self::makeJSFiles($data['jsfiles']);
+                // get js files which are specified or the js files from first version
+                if (!isset($data['jsfiles'])) {
+                    // get data from default version and load the files from there
+                    $versionData = end($data['versions']);
+                    $data = array_merge($data, $versionData);
+                }
+                $jsScripts[] = self::makeJSFiles($data['jsfiles']);
                 if (!empty($data['cssfiles'])) {
                     $cssfiles = array_merge($cssfiles, $data['cssfiles']);
                 }
                 if (isset($data['specialcode']) && strlen($data['specialcode']) > 0) {
-                    $retstring .= self::makeSpecialCode(array($data['specialcode']));
+                    $jsScripts[] = self::makeSpecialCode(array($data['specialcode']));
                 }
                 if (isset($data['makecallback'])) {
                     self::$data['makecallback']();
                 }
                 // Special case contrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {
-                    $retstring .= self::makeSpecialCode(
+                    $jsScripts[] = self::makeSpecialCode(
                         array(ContrexxJavascript::getInstance()->initJs()));
                 }
             }
         }
 
-        $retstring .= self::makeJSFiles(self::$customJS);
+        $jsScripts[] = self::makeJSFiles(self::$customJS);
+        
+        // if jquery is activated, do a noConflict
+        if (array_search('jquery', self::$active) !== false) {
+        $jsScripts[] = self::makeSpecialCode('$J = cx.jQuery = jQuery.noConflict();');
+        }
+        $jsScripts[] = self::makeJSFiles(self::$templateJS);
+        
+        // no conflict for normal jquery version which has been included in template or by theme dependency
+        $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         $retstring .= self::makeCSSFiles($cssfiles);
         $retstring .= self::makeCSSFiles(self::$customCSS);
+        // Add javscript files
+        $retstring .= implode(' ', $jsScripts);
+        $retstring .= self::makeJSFiles(self::$customJS);
         $retstring .= self::makeSpecialCode(self::$customCode);
         return $retstring;
     }
@@ -692,14 +815,17 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function makeSpecialCode($code)
     {
-        $retcode = "";
-        if (!empty($code)) {
-            $retcode .= "<script type=\"text/javascript\">\n/* <![CDATA[ */\n";
-            foreach ($code as $segment) {
-                $retcode .= $segment."\n";
-            }
-            $retcode .= "\n/* ]]> */\n</script>\n";
+        if (empty($code)) {
+            return '';
         }
+        
+        $retcode = "<script type=\"text/javascript\">\n/* <![CDATA[ */\n";
+        if (is_array($code)) {
+            $retcode .= implode("\r\n", $code);
+        } else {
+            $retcode .= $code;
+        }
+        $retcode .= "\n/* ]]> */\n</script>\n";
         return $retcode;
     }
 
@@ -711,14 +837,16 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         //make sure we include the alternative if provided
         foreach(self::$alternatives as $pattern => $alternative) {
             if(preg_match($pattern, basename($script)) > 0) {
-                $alternativeFound = true;
-                self::activate($alternative);
+                if ($alternative != 'jquery') {
+                    self::activate($alternative);
+                    $alternativeFound = true;
+                }
                 break;
             }
         }
         //only register the js if we didn't activate the alternative
         if(!$alternativeFound)
-            self::registerJS($script);
+            self::registerJS($script, true);
     }
 
 
@@ -734,6 +862,21 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         JS::grabComments($content);
         $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
         JS::restoreComments($content);
+    }
+    
+    /**
+     * Get an array of libraries which are ready to load in different versions
+     * @return array the libraries which are ready to configure for skin
+     */
+    public static function getConfigurableLibraries()
+    {
+        $configurableLibraries = array();
+        foreach (self::$available as $libraryName => $libraryInfo) {
+            if (isset($libraryInfo['versions'])) {
+                $configurableLibraries[$libraryName] = $libraryInfo;
+            }
+        }
+        return $configurableLibraries;
     }
 
 

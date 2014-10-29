@@ -51,6 +51,7 @@ $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Liste des catégories";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Enregistrer modifications";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Voulez-vous vraiment supprimer cet élément?";
+$_ARRAYLANG['TXT_CONFIRM_DELETE_WITH_SUBENTRIES'] = "Êtes-vous sûr que vous voulez effacer cette catégorie avec toutes les entrées?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Cette opération peut altérer les fonctionnalités du système!";
 $_ARRAYLANG['TXT_PERFORM'] = "Exécuter";
 $_ARRAYLANG['TXT_DELETE'] = "Supprimer";

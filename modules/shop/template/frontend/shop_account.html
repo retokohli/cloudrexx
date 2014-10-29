@@ -111,22 +111,22 @@
 </div>
 <script type="text/javascript">//<![CDATA[
 function copy_address() {
-  if (jQuery("#equal_address").is(":checked")) {
+  if (cx.jQuery("#equal_address").is(":checked")) {
     var selector = "#shop_acc_data form ";
-    jQuery(selector+"[name=gender2]").val(jQuery(selector+"[name=gender]").val());
-    jQuery(selector+"[name=company2]").val(jQuery(selector+"[name=company]").val());
-    jQuery(selector+"[name=lastname2]").val(jQuery(selector+"[name=lastname]").val());
-    jQuery(selector+"[name=firstname2]").val(jQuery(selector+"[name=firstname]").val());
-    jQuery(selector+"[name=address2]").val(jQuery(selector+"[name=address]").val());
-    jQuery(selector+"[name=zip2]").val(jQuery(selector+"[name=zip]").val());
-    jQuery(selector+"[name=city2]").val(jQuery(selector+"[name=city]").val());
-    jQuery(selector+"[name=phone2]").val(jQuery(selector+"[name=phone]").val());
-    jQuery(selector+"[name=countryId2]").val(jQuery(selector+"[name=countryId]").val());
-    jQuery(selector+"[name=2]").val(jQuery(selector+"[name=]").val());
-    jQuery(selector+"[name=2]").val(jQuery(selector+"[name=]").val());
-    jQuery("#shipping_address").hide();
+    cx.jQuery(selector+"[name=gender2]").val(cx.jQuery(selector+"[name=gender]").val());
+    cx.jQuery(selector+"[name=company2]").val(cx.jQuery(selector+"[name=company]").val());
+    cx.jQuery(selector+"[name=lastname2]").val(cx.jQuery(selector+"[name=lastname]").val());
+    cx.jQuery(selector+"[name=firstname2]").val(cx.jQuery(selector+"[name=firstname]").val());
+    cx.jQuery(selector+"[name=address2]").val(cx.jQuery(selector+"[name=address]").val());
+    cx.jQuery(selector+"[name=zip2]").val(cx.jQuery(selector+"[name=zip]").val());
+    cx.jQuery(selector+"[name=city2]").val(cx.jQuery(selector+"[name=city]").val());
+    cx.jQuery(selector+"[name=phone2]").val(cx.jQuery(selector+"[name=phone]").val());
+    cx.jQuery(selector+"[name=countryId2]").val(cx.jQuery(selector+"[name=countryId]").val());
+    cx.jQuery(selector+"[name=2]").val(cx.jQuery(selector+"[name=]").val());
+    cx.jQuery(selector+"[name=2]").val(cx.jQuery(selector+"[name=]").val());
+    cx.jQuery("#shipping_address").hide();
   } else {
-    jQuery("#shipping_address").show();
+    cx.jQuery("#shipping_address").show();
 /* Optionally clear the shipment address
     gender2.value = "";
     company2.value = "";
@@ -138,21 +138,21 @@ function copy_address() {
     phone2.value = "";*/
   }
 }
-jQuery(function () {
-  jQuery(".customer_address").delegate("input,select", "blur", function() {
-    if (jQuery("#equal_address:checked").length) {
+cx.jQuery(function () {
+  cx.jQuery(".customer_address").delegate("input,select", "blur", function() {
+    if (cx.jQuery("#equal_address:checked").length) {
       copy_address();
     }
   });
 });
 function toggle_registering() {
-  var checked = jQuery("#dont_register").is(":checked");
+  var checked = cx.jQuery("#dont_register").is(":checked");
   if (checked) {
-    jQuery('#account_password').hide();
-    jQuery('#account_password_hint').hide();
+    cx.jQuery('#account_password').hide();
+    cx.jQuery('#account_password_hint').hide();
   } else {
-    jQuery('#account_password').show();
-    jQuery('#account_password_hint').show();
+    cx.jQuery('#account_password').show();
+    cx.jQuery('#account_password_hint').show();
   }
 }
 // Redisplay the shipping address after the reset button has been clicked
@@ -161,7 +161,7 @@ function shopReset()
   if (!confirm("[[TXT_SHOP_FORM_RESET_CONFIRM]]")) {
     return false;
   }
-  jQuery("#shipping_address").show();
+  cx.jQuery("#shipping_address").show();
   return true;
 }
 copy_address();

@@ -331,8 +331,11 @@ class Checkout extends CheckoutLibrary {
 
         //get country options
         if (!empty($this->arrCountries)) {
-            $arrSelectOptions['countries'][] = '<option value="0">'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredField.'</option>';
+            //$arrSelectOptions['countries'][] = '<option value="0">'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredField.'</option>';
             foreach ($this->arrCountries as $id => $name) {
+                if (\Country::getAlpha2ById($id) != 'CH') {
+                    continue;
+                }
                 $selected = $id == $arrFieldValues['contact_country'] ? ' selected="selected"' : '';
                 $arrSelectOptions['countries'][] = '<option value="'.$id.'"'.$selected.'>'.contrexx_raw2xhtml($name).'</option>';
             }
@@ -534,20 +537,20 @@ class Checkout extends CheckoutLibrary {
             arrLabels['contact_phone'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_PHONE'].$htmlRequiredField."';
             arrLabels['contact_email'] = '".$_ARRAYLANG['TXT_CHECKOUT_CONTACT_EMAIL'].$htmlRequiredField."';
 
-            jQuery(document).ready(function() {
-                jQuery('#checkout input[type=text]').focus(function() {
-                    if (jQuery(this).val() == arrLabels[jQuery(this).attr('name')]) {
-                        jQuery(this).val('');
-                        jQuery(this).removeClass('label');
+            cx.jQuery(document).ready(function() {
+                cx.jQuery('#checkout input[type=text]').focus(function() {
+                    if (cx.jQuery(this).val() == arrLabels[cx.jQuery(this).attr('name')]) {
+                        cx.jQuery(this).val('');
+                        cx.jQuery(this).removeClass('label');
                     }
                 });
 
-                jQuery('#checkout input[type=text]').blur(function() {
-                    if (jQuery(this).val() == '') {
-                        jQuery(this).val(arrLabels[jQuery(this).attr('name')]);
-                        jQuery(this).addClass('label');
-                    } else if (jQuery(this).val() == arrLabels[jQuery(this).attr('name')]) {
-                        jQuery(this).addClass('label');
+                cx.jQuery('#checkout input[type=text]').blur(function() {
+                    if (cx.jQuery(this).val() == '') {
+                        cx.jQuery(this).val(arrLabels[cx.jQuery(this).attr('name')]);
+                        cx.jQuery(this).addClass('label');
+                    } else if (cx.jQuery(this).val() == arrLabels[cx.jQuery(this).attr('name')]) {
+                        cx.jQuery(this).addClass('label');
                     }
                 });
             });

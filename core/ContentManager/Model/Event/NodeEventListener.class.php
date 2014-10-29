@@ -62,6 +62,11 @@ class NodeEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
         $nodeRepo->removeFromTree($entity);
     }
+    
+    public function onFlush($eventArgs) {
+        global $objCache;
+        $objCache->clearCache();
+    }
 
     public function onEvent($eventName, $eventArgs) {
         $this->$eventName(current($eventArgs));

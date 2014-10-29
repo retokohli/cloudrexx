@@ -47,7 +47,7 @@ class ForumAdmin extends ForumLibrary {
 
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
-            '<a href="?cmd=forum&amp;act=category" class="'.($this->act == 'category' ? 'active' : '').'">'.$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'].'</a>
+            '<a href="?cmd=forum&amp;act=category" class="'.(in_array($this->act, array('category', '')) ? 'active' : '').'">'.$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'].'</a>
             <a href="?cmd=forum&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_FORUM_MENU_SETTINGS'].'</a>
         ');
     }
@@ -168,7 +168,7 @@ class ForumAdmin extends ForumLibrary {
             'TXT_SUBTITLE_STATUS'         =>    $_ARRAYLANG['TXT_FORUM_CATEGORY_STATUS'],
             'TXT_SUBTITLE_NAME'         =>    $_ARRAYLANG['TXT_FORUM_CATEGORY_NAME'],
             'TXT_SUBTITLE_DESC'         =>    $_ARRAYLANG['TXT_FORUM_CATEGORY_DESCRIPTION'],
-            'TXT_SUBTITLE_LANGUAGES'    =>    $_ARRAYLANG['TXT_FORUM_CATEGORY_LANGUAGES'],
+            'TXT_SUBTITLE_LANGUAGES'    =>    count($this->_arrLanguages) > 1 ? $_ARRAYLANG['TXT_FORUM_CATEGORY_LANGUAGES'] : '',
             'TXT_SUBTITLE_POSTINGS'     =>    $_ARRAYLANG['TXT_FORUM_CATEGORY_POSTINGS'],
             'TXT_SUBTITLE_LASTPOST'     =>    $_ARRAYLANG['TXT_FORUM_CATEGORY_LASTPOST'],
             'TXT_SUBTITLE_ACTIONS'         =>    $_ARRAYLANG['TXT_FORUM_CATEGORY_ACTIONS'],
@@ -196,21 +196,13 @@ class ForumAdmin extends ForumLibrary {
                 ));
 
                 $strLanguages = '';
-                if (is_array($arrValues['languages'])) {
-                    foreach ($arrValues['languages'] as $intLangId => $arrTranslations) {
-                        $strLanguages .= $this->_arrLanguages[$intLangId]['long'].' ['.$this->_arrLanguages[$intLangId]['short'].']'.'<br />';
-                    }
-                } else {
-                    $strLanguages = '-';
-                }
                 $langState = array();
                 if (is_array($arrValues['languages'])) {
-                    foreach ($arrValues['languages'] as $intLangId => $arrTranslations) {
-                        $langState[$intLangId] = 'active';
-                    }
+                        foreach ($arrValues['languages'] as $intLangId => $arrTranslations) {
+                            $langState[$intLangId] = 'active';
+                        }
                 }
-                    $strLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=forum&amp;act=category_edit&amp;id=' . $arrValues['id']);
-
+                $strLanguages = count($this->_arrLanguages) > 1 ? \Html::getLanguageIcons($langState, 'index.php?cmd=forum&amp;act=category_edit&amp;id=' . $arrValues['id']) : '';
 
                 $this->_objTpl->setVariable(array(
                        'CATEGORY_ROWCLASS'            =>    'row'.($index % 2),
@@ -252,7 +244,7 @@ class ForumAdmin extends ForumLibrary {
             'TXT_CATEGORY_STATUS'                    =>    $_ARRAYLANG['TXT_CATEGORY_STATUS'],
            ));
 
-           if (count($this->_arrLanguages) > 0) {
+           if (count($this->_arrLanguages) > 1) {
                $intCounter = 0;
                $arrLanguages = array();
 
@@ -297,20 +289,19 @@ class ForumAdmin extends ForumLibrary {
            ));
            $this->_objTpl->setVariable('CATEGORY_FORUM_ADD_DROPDOWN',$this->createForumDD('frmAddCategory_ParentId',0,'onchange="markCheckboxes(this.options[this.selectedIndex].value);"', null, false, true));
 
-           foreach ($this->_arrTranslations as $intCatId => $arrInner) {
-               $strLanguages = '';
-               foreach ($arrInner as $intLangId => $arrTranslations) {
-                   $strLanguages .= $intLangId.',';
-               }
-               $strLanguages = substr($strLanguages,0,-1);
+            foreach ($this->_arrTranslations as $intCatId => $arrInner) {
+                 $strLanguages = '';
+                 foreach ($arrInner as $intLangId => $arrTranslations) {
+                     $strLanguages .= $intLangId.',';
+                 }
+                 $strLanguages = substr($strLanguages,0,-1);
 
-            $this->_objTpl->setVariable(array(
-                'FORUM_ADD_PARCAT_ID'        =>    $intCatId,
-                'FORUM_ADD_PARCAT_VALUES'    =>    $strLanguages
-               ));
-               $this->_objTpl->parse('forumAllowedParcats');
-           }
-
+                 $this->_objTpl->setVariable(array(
+                     'FORUM_ADD_PARCAT_ID'        =>    $intCatId,
+                     'FORUM_ADD_PARCAT_VALUES'    =>    $strLanguages
+                 ));
+                 $this->_objTpl->parse('forumAllowedParcats');
+            }
     }
 
 

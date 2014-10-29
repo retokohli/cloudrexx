@@ -456,12 +456,12 @@ class Datatrans
 
     static function getGatewayUri()
     {
-//echo("Testserver: self: ".(self::$useTestserver ? 'Ja' : 'Nein').", conf: ".(\Cx\Core\Setting\Controller\Setting::getValue('datatrans_use_testserver') ? 'Ja' : 'Nein')."<br />");
+//echo("Testserver: self: ".(self::$useTestserver ? 'Ja' : 'Nein').", conf: ".(SettingDb::getValue('datatrans_use_testserver') ? 'Ja' : 'Nein')."<br />");
 // See setTestonly() for details on why this is not used.
 //            (self::$arrFieldOptional['testOnly']
         return
             (   self::$useTestserver
-             || \Cx\Core\Setting\Controller\Setting::getValue('datatrans_use_testserver')
+             || SettingDb::getValue('datatrans_use_testserver')
               ? SHOP_PSP_URI_DATATRANS_TEST
               : SHOP_PSP_URI_DATATRANS
             );

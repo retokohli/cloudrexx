@@ -88,6 +88,7 @@ class ContactManager extends ContactLib
             'checkboxGroup' => $_ARRAYLANG['TXT_CONTACT_CHECKBOX_GROUP'],
             'country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
             'date'          => $_ARRAYLANG['TXT_CONTACT_DATE'],
+            'datetime'      => $_ARRAYLANG['TXT_CONTACT_DATETIME'],
             'file'          => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_SINGLE'],
             'multi_file'    => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_MULTI'],
             'fieldset'      => $_ARRAYLANG['TXT_CONTACT_FIELDSET'],
@@ -918,6 +919,7 @@ class ContactManager extends ContactLib
                 'CONTACT_FORM_FIELD_ACCESS_COUNTRY_TPL'         => $this->_getFormFieldAttribute(0, 'access_country','',true, 0),
                 'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'         => $this->_getFormFieldAttribute(0, 'checkboxGroup', '', false),
                 'CONTACT_FORM_FIELD_DATE_TPL'                   => $this->_getFormFieldAttribute(0, 'date', '', false),
+                'CONTACT_FORM_FIELD_DATETIME_TPL'               => $this->_getFormFieldAttribute(0, 'datetime', '', false),
                 'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', '', false),
                 'CONTACT_FORM_FIELD_RADIO_TPL'                  => $this->_getFormFieldAttribute(0, 'radio', '', false),
                 'CONTACT_FORM_FIELD_SELECT_TPL'                 => $this->_getFormFieldAttribute(0, 'select', '', false)
@@ -1024,7 +1026,7 @@ class ContactManager extends ContactLib
             'FORM_COPY'                                     => intval($copy),
             'CONTACT_FORM_TEXT'                             => new \Cx\Core\Wysiwyg\Wysiwyg('contactFormTextEditor'),
             'CONTACT_FORM_FEEDBACK'                         => new \Cx\Core\Wysiwyg\Wysiwyg('contactFormFeedbackEditor'),
-            'CONTACT_MAIL_TEMPLATE'                         => new \Cx\Core\Wysiwyg\Wysiwyg('contactMailTemplateEditor', '', 'full'),
+            'CONTACT_MAIL_TEMPLATE'                         => new \Cx\Core\Wysiwyg\Wysiwyg('contactMailTemplateEditor', '', 'fullpage'),
 
             'TXT_CONTACT_FORM_FIELDS'                       => $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'],
             'TXT_CONTACT_DELETE'                            => $_ARRAYLANG['TXT_CONTACT_DELETE'],
@@ -1527,6 +1529,7 @@ class ContactManager extends ContactLib
                             
                         //case 'label':
                         case 'date':
+                        case 'datetime':
                         case 'file':
                         case 'multi_file':
                         case 'fieldset':
@@ -1640,6 +1643,7 @@ class ContactManager extends ContactLib
         case 'checkboxGroup':
         case 'country':
         case 'date':
+        case 'datetime':
         case 'fieldset':
         case 'hidden':
         case 'radio':
@@ -1807,6 +1811,11 @@ class ContactManager extends ContactLib
                                     ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
                                     .$required.'</label>';
                     break;
+                case 'datetime':
+                    $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label>';
+                    break;
                 default:
                     $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
                                     ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
@@ -1857,7 +1866,10 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'date':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" />';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" value="{'.$fieldId.'_VALUE}" />';
+                    break;
+                case 'datetime':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' datetime" type="text" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" value="{'.$fieldId.'_VALUE}" />';
                     break;
                 case 'access_birthday':
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].' date" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '{'.$fieldId.'_VALUE}').'" />';
@@ -2030,6 +2042,7 @@ class ContactManager extends ContactLib
                         case 'checkboxGroup':
                         case 'country':
                         case 'date':
+                        case 'datetime':
                         case 'hidden':
                         case 'password':
                         case 'radio':

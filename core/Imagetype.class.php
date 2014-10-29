@@ -622,7 +622,7 @@ class Imagetype
         if (!$objTemplateLocal->loadTemplateFile('imagetypes.html'))
             die("Failed to load template imagetypes.html");
         $uri = Html::getRelativeUri_entities();
-        $active_tab = \Cx\Core\Setting\Controller\Setting::getTabIndex();
+        $active_tab = SettingDb::getTabIndex();
         Html::replaceUriParameter($uri, 'active_tab='.$active_tab);
         Html::stripUriParam($uri, 'imagetype_delete_key');
         Html::stripUriParam($uri, 'key');

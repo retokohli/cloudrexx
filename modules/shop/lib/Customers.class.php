@@ -108,8 +108,8 @@ class Customers
 
         if (empty($arrGroupId)) {
             $arrGroupId = array(
-                \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller'),
-                \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer'));
+                SettingDb::getValue('usergroup_id_reseller'),
+                SettingDb::getValue('usergroup_id_customer'));
         }
         $user_count = 0;
         foreach ($arrGroupId as $usergroup_id) {
@@ -239,8 +239,8 @@ DBG::log("Customers::getCount(): ERROR: Failed to get Usergroup for ID $usergrou
     {
         // Consider members of the customer groups only
         $arrFilter = array('group' => array(
-            \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller'),
-            \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer'),
+            SettingDb::getValue('usergroup_id_reseller'),
+            SettingDb::getValue('usergroup_id_customer'),
         ));
         if (!$inactive) $arrFilter['active'] = true;
         $objCustomer = Customers::get($arrFilter, null,

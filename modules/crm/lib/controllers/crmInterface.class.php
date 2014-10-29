@@ -203,7 +203,7 @@ class crmInterface extends CrmLibrary
             $rowIndex      = 1;
             $importedLines = 0;
             $first         = true;
-            $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
+            $objCsv        = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
             $line          = $objCsv->NextLine();
             while ($line) { 
                 if ($first) {
@@ -246,7 +246,7 @@ class crmInterface extends CrmLibrary
         $currentRow     = isset ($_GET['currentRow']) ? (int) $_GET['currentRow'] : '';
 
         $importedLines = 0;
-        $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
+        $objCsv        = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
         $line          = $objCsv->NextLine();
         while ($line) {
             if ($importedLines == $currentRow) {
@@ -753,9 +753,9 @@ class crmInterface extends CrmLibrary
         }
         
         if (isset($firstname) || isset($lastname) || isset($company)) {
-            $this->contact = $this->load->model('crmContact', __CLASS__);
+            $this->contact = new crmContact();
 
-            $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
+            $objCsv        = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
             $line          = $objCsv->NextLine();
             $first         = true;
             $totalLines    = 0;

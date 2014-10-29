@@ -24,7 +24,7 @@ function selectMultiAction() {
 
 var switchActive = function(id, obj, action)
 {
-    jQuery.get('index.php', {cmd: 'data', act: 'switchEntryState', id: id, switchTo: action}).success(function() {
+    cx.jQuery.get('index.php', {cmd: 'data', act: 'switchEntryState', id: id, switchTo: action}).success(function() {
         if (action) {
             path = 'images/icons/led_green.gif';
             action = 0;
@@ -32,14 +32,14 @@ var switchActive = function(id, obj, action)
             path = 'images/icons/led_red.gif';
             action = 1;
         }
-        jQuery(obj).children('img:first').attr('src', path);
-        jQuery(obj).attr('onclick', 'switchActive('+id+', this, '+action+')');
+        cx.jQuery(obj).children('img:first').attr('src', path);
+        cx.jQuery(obj).attr('onclick', 'switchActive('+id+', this, '+action+')');
     });
 }
 
 var saveOrder = function()
 {
-    jQuery.post('index.php?cmd=data&act=saveEntryOrder', {
+    cx.jQuery.post('index.php?cmd=data&act=saveEntryOrder', {
         'entries[]': $J('#entry_list').sortable('toArray')
     });
 }

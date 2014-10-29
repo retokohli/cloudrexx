@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Csv interface
  *
@@ -18,6 +19,7 @@ namespace Cx\Core_Modules\Listing\Model;
  * @package     contrexx
  * @subpackage  core_module_listing
  */
+
 class CsvInterface implements Exportable, Importable {
     protected $lineEnding;
     protected $separator;

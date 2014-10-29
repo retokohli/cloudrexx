@@ -167,37 +167,37 @@ class Vat
             // Foreign countries
             0 => array(
                 // Customer
-                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_foreign_customer'),
+                0 => SettingDb::getValue('vat_enabled_foreign_customer'),
                 // Reseller
-                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_foreign_reseller'),
+                1 => SettingDb::getValue('vat_enabled_foreign_reseller'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_home_customer'),
+                0 => SettingDb::getValue('vat_enabled_home_customer'),
                 // Reseller
-                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_home_reseller'),
+                1 => SettingDb::getValue('vat_enabled_home_reseller'),
             ),
         );
         self::$arrVatIncluded = array(
             // Foreign country
             0 => array(
                 // Customer
-                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_foreign_customer'),
+                0 => SettingDb::getValue('vat_included_foreign_customer'),
                 // Reseller
-                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_foreign_reseller'),
+                1 => SettingDb::getValue('vat_included_foreign_reseller'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_home_customer'),
+                0 => SettingDb::getValue('vat_included_home_customer'),
                 // Reseller
-                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_home_reseller'),
+                1 => SettingDb::getValue('vat_included_home_reseller'),
             ),
         );
-        self::$vatDefaultId = \Cx\Core\Setting\Controller\Setting::getValue('vat_default_id');
+        self::$vatDefaultId = SettingDb::getValue('vat_default_id');
         self::$vatDefaultRate = self::getRate(self::$vatDefaultId);
-        self::$vatOtherId = \Cx\Core\Setting\Controller\Setting::getValue('vat_other_id');
+        self::$vatOtherId = SettingDb::getValue('vat_other_id');
         return true;
     }
 

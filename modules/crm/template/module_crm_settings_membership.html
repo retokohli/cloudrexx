@@ -15,17 +15,6 @@
         margin-bottom: 5px;
         clear: left;
     }
-    #alertbox {
-        margin-bottom: 5px;
-        display: none;
-        clear: left;
-        background-color: rgb(255, 204, 204);
-        border: 1px solid;
-        color: rgb(255, 0, 0);
-        font-size: 12px;
-        line-height: 14px;
-        padding: 5px;
-    }
 </style>
 <script type="text/javascript">
     var inputFileds = [0];
@@ -69,6 +58,7 @@
             $J("input, select").css("border", "1px solid #0A50A1");
             var errors = new Array();
             var errChk;
+            var mandErr  = "{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}";
 
 
             if ($J.trim($J("#Inputfield_0_" + defaultLang).val()) == "") {
@@ -80,7 +70,7 @@
                 });
             }
             if (errChk == 1) {
-                $J('#alertbox').html("All mandatory fields have not been filled out.!");
+                $J('#alertbox').html(mandErr);
                 $J('#alertbox').css('display', 'block');
                 return false;
             } else {

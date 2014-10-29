@@ -98,11 +98,13 @@ class ContentManager extends \Module
             var_dump($this->nodeRepository->recover());
         }
         $objCx    = \ContrexxJavascript::getInstance();
-        $objSkins = new \skins();
-        $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'contentmanager/theme');
-        foreach ($objSkins->getThemes() as $arrTheme) {
-            if ($arrTheme['id'] == $objSkins->selectDefaultTheme()) {
-                $objCx->setVariable('themeName', $arrTheme['foldername'], 'contentmanager/theme');
+        
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $defaultTheme = $themeRepo->getDefaultTheme();
+        $objCx->setVariable('themeId', $defaultTheme->getId(), 'contentmanager/theme');
+        foreach ($themeRepo->findAll() as $theme) {
+            if ($theme == $defaultTheme) {
+                $objCx->setVariable('themeName', $theme->getFoldername(), 'contentmanager/theme');
             }
         }
 
@@ -152,7 +154,7 @@ class ContentManager extends \Module
             //access tab
             'TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND', 'TXT_CORE_CM_ACCESS_PROTECTION_BACKEND', 'TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS', 'TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS',
             //advanced tab
-            'TXT_CORE_CM_THEMES', 'TXT_CORE_CM_THEMES_INFO', 'TXT_CORE_CM_CUSTOM_CONTENT', 'TXT_CORE_CM_CUSTOM_CONTENT_INFO', 'TXT_CORE_CM_CSS_CLASS', 'TXT_CORE_CM_CSS_CLASS_INFO', 'TXT_CORE_CM_CACHE', 'TXT_CORE_CM_NAVIGATION', 'TXT_CORE_CM_LINK_TARGET', 'TXT_CORE_CM_LINK_TARGET_INO', 'TXT_CORE_CM_SLUG', 'TXT_CORE_CM_SLUG_INFO', 'TXT_CORE_CM_ALIAS', 'TXT_CORE_CM_ALIAS_INFO', 'TXT_CORE_CM_CSS_NAV_CLASS', 'TXT_CORE_CM_CSS_NAV_CLASS_INFO', 'TXT_CORE_CM_SOURCE_MODE', 'TXT_RECURSIVE_CHANGE',
+            'TXT_CORE_CM_THEMES', 'TXT_CORE_CM_THEMES_INFO', 'TXT_CORE_CM_CUSTOM_CONTENT', 'TXT_CORE_CM_CUSTOM_CONTENT_INFO', 'TXT_CORE_CM_CSS_CLASS', 'TXT_CORE_CM_CSS_CLASS_INFO', 'TXT_CORE_CM_CACHE', 'TXT_CORE_CM_NAVIGATION', 'TXT_CORE_CM_LINK_TARGET', 'TXT_CORE_CM_LINK_TARGET_INO', 'TXT_CORE_CM_SLUG', 'TXT_CORE_CM_SLUG_INFO', 'TXT_CORE_CM_ALIAS', 'TXT_CORE_CM_ALIAS_INFO', 'TXT_CORE_CM_CSS_NAV_CLASS', 'TXT_CORE_CM_CSS_NAV_CLASS_INFO', 'TXT_CORE_CM_SOURCE_MODE', 'TXT_RECURSIVE_CHANGE', 'TXT_CORE_CM_USE_ALL_CHANNELS', 'TXT_CORE_CM_USE_SKIN_ALL_CHANNELS_INFO', 'TXT_CORE_CM_USE_CUSTOM_CONTENT_ALL_CHANNELS_INFO',
             //blocks tab
             'TXT_CORE_CM_BLOCKS', 'TXT_CORE_CM_BLOCKS_AVAILABLE', 'TXT_CORE_CM_BLOCKS_ASSIGNED',
             //settings tab
@@ -311,6 +313,19 @@ class ContentManager extends \Module
         $cxjs->setVariable('availableBlocks', $objJsonData->jsondata('block', 'getBlocks', array(), false), 'contentmanager');
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
+        $getLangOptions=$this->getLangOptions();
+        $statusPageLayout='';
+        $languageDisplay='';
+        if (((!empty($_GET['act']) && $_GET['act'] == 'new')
+                ||!empty($_GET['page'])) && $getLangOptions=="") {
+            $statusPageLayout='margin0';
+            $languageDisplay='display:none';
+        }
+
+        $this->template->setVariable('ADMIN_LIST_MARGIN', $statusPageLayout);
+        $this->template->setVariable('LANGUAGE_DISPLAY', $languageDisplay);
+
+        // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $this->template->setVariable('CXJS_INIT_JS', \ContrexxJavascript::getInstance()->initJs());
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
         $this->template->setVariable('LANGSWITCH_OPTIONS', $this->getLangOptions());
@@ -318,6 +333,8 @@ class ContentManager extends \Module
         $this->template->setVariable('FALLBACK_ARRAY', json_encode($this->getFallbackArray()));
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
         $this->template->setVariable('EDIT_VIEW_CSS_CLASS', $editViewCssClass);
+        
+        $this->template->touchBlock('content_manager_language_selection');
 
         $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $editmodeTemplate->loadTemplateFile('content_editmode.html');
@@ -364,13 +381,19 @@ class ContentManager extends \Module
     protected function getLangOptions()
     {
         $output = '';
-        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-            $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
-            $output .= '<option value="' . \FWLanguage::getLanguageCodeById($lang['id']) . '"' . $selected . '>' . $lang['name'] . '</option>';
+        $language=\FWLanguage::getActiveFrontendLanguages();
+        if (count($language)>1) {
+            $output .='<select id="language" class="chzn-select">';
+            foreach ($language as $lang) {
+                $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
+                $output .= '<option value="' . \FWLanguage::getLanguageCodeById($lang['id']) . '"' . $selected . '>' . $lang['name'] . '</option>';
+            }
+            $output .='</select>';
         }
-
+        $output .= '<input type="hidden"  name="languageCount" id="languageCount" value="'.count($language).'">';
         return $output;
     }
+
 
     protected function getLangLabels()
     {

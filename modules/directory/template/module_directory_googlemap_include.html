@@ -99,7 +99,7 @@ var updateAddress = function(){
 var load = function() {
     var options = {
         zoom: 13,
-        center: new google.maps.LatLng(37.4419, -122.1419),
+        center: new google.maps.LatLng(-122.1419, 37.4419),
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     
@@ -110,7 +110,7 @@ var load = function() {
 		lat = elLat.value;
 		latf = elLatFrac.value;
 		options.zoom = parseInt((elZoom.value != '') ? elZoom.value : 13);
-		options.center = new google.maps.LatLng(lon+'.'+lonf, lat+'.'+latf);
+		options.center = new google.maps.LatLng(lat+'.'+latf, lon+'.'+lonf);
 		point = options.center;
 	} else {
 		options.center = new google.maps.LatLng(
@@ -128,21 +128,31 @@ var load = function() {
         document.getElementById('gmap'),
         options
     );
-
+    
     marker = new google.maps.Marker({
         position: point,
-        map: map
+        map: map,
+        draggable: isBackend ? true : false,
+        animation: google.maps.Animation.DROP
     });
+
+    if ( isBackend ) {
+        google.maps.event.addListener(map, 'click', function(event) {
+            marker.setPosition( event.latLng );  // update marker
+            map.panTo( event.latLng );  // update map center
+
+            point = event.latLng;
+            passValues();
+        }); 
+
+        google.maps.event.addListener(marker, 'dragend', function(event){
+            point = event.latLng;
+            passValues();
+        });
+    }
     
     geocoder = new google.maps.Geocoder();
 
-    google.maps.event.addListener(map, 'idle', function() {
-        if(isBackend){
-            point = map.getCenter();
-            passValues();
-            marker.setPosition(point);
-        }
-    });
     passValues();
     var loclayer = document.getElementById("loclayer");
     loclayer.parentNode.removeChild(loclayer);
@@ -153,10 +163,10 @@ var getStatusString = function(X, Y){
 }
 
 var passValues = function(){
-	lon 	= point.ob.toString().split('.')[0];
-	lonfac 	= point.ob.toString().split('.')[1];
-	lat 	= point.pb.toString().split('.')[0];
-	latfac 	= point.pb.toString().split('.')[1];
+	lon 	= point.lng().toString().split('.')[0];
+	lonfac 	= point.lng().toString().split('.')[1];
+	lat 	= point.lat().toString().split('.')[0];
+	latfac 	= point.lat().toString().split('.')[1];
 	if (!lonfac) {
 	    lonfac = 0;
 	}

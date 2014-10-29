@@ -24,8 +24,6 @@ use \Cx\Core\Json\Adapter\JsonContentManager;
  * @subpackage  core_json
  */
 class JsonData {
-    
-    const PHP_SESSION_ID_COOKIE_NAME = 'PHPSESSID';
     /**
      * List of adapter class names.
      * @deprecated Use component framework instead (SystemComponentController->getControllersAccessableByJson())
@@ -37,6 +35,9 @@ class JsonData {
         ),
         '\\Cx\\Core\\Json\\Adapter\\User' => array(
             'JsonUser',
+        ),
+        '\\Cx\\Core\\Json\\Adapter\\Calendar' => array(
+            'JsonCalendar',
         ),
         '\\Cx\\modules\\crm\\lib\\controllers' => array(
             'JsonCrm',
@@ -153,27 +154,14 @@ class JsonData {
         $adapter = $this->adapters[$adapter];
         $methods = $adapter->getAccessableMethods();
         $realMethod = '';
-        if (in_array($method, $methods) || array_key_exists($method, $methods)) {
+        if (in_array($method, $methods)) {
             $realMethod = $method;
+        } else if (isset($methods[$method])) {
+            $realMethod = $methods[$method];
         }
-        
         if ($realMethod == '') {
             return $this->getErrorData('No such method: ' . $method);
         }
-        //permission checks
-        $objPermission = new \Cx\Core\Access\Model\Entity\Permission(null, null, true, null);
-        $defaultPermission = $adapter->getDefaultPermissions();
-        if (!empty($methods[$method]) && ($methods[$method] instanceof \Cx\Core\Access\Model\Entity\Permission)) {
-            $objPermission = $methods[$method];
-        } else if (!empty ($defaultPermission) && ($defaultPermission instanceof \Cx\Core\Access\Model\Entity\Permission)) {
-            $objPermission = $defaultPermission;
-        }
-        
-        if ($objPermission && ($objPermission instanceof \Cx\Core\Access\Model\Entity\Permission)) {
-            if (!$objPermission->hasAccess($arguments))
-                return $this->getErrorData('JsonData-request to method ' . $realMethod . ' of adapter ' . $adapter->getName() . ' has been rejected by not complying to the permission requirements of the requested method.');
-        }
-        
         try {
             $output = call_user_func(array($adapter, $realMethod), $arguments);
 
@@ -188,6 +176,14 @@ class JsonData {
         }
     }
     
+    public function setSessionId($sessionId) {
+        $this->sessionId = $sessionId;
+    }
+    
+    public function getSessionId() {
+        return $this->sessionId;
+    }
+    
     /**
      * Fetches a json response via HTTP request
      * @todo Support cookies (to allow login and similiar features)
@@ -197,26 +193,13 @@ class JsonData {
      * @param string $certificateFile (optional) Local certificate file for non public SSL certificates
      * @return mixed Decoded JSON on success, false otherwise
      */
-    public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array()) {
+    public function getJson($url, $data = array(), $secure = false, $certificateFile = '') {
         $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
-        if(!empty($httpAuth)){
-            switch($httpAuth['httpAuthMethod']){
-                case 'basic':
-                    $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_BASIC);
-                    break;
-                case 'disgest':
-                    $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_DIGEST);
-                    break;
-                case 'none':
-                default:
-                    break;
-            }
-        }
         foreach ($data as $name=>$value) {
             $request->addPostParameter($name, $value);
         }
         if ($this->sessionId !== null) {
-            $request->addCookie(static::PHP_SESSION_ID_COOKIE_NAME, $this->sessionId);
+            $request->addCookie(session_name(), $this->sessionId);
         }
         $request->setConfig(array(
             'ssl_verify_host' => false,
@@ -226,7 +209,7 @@ class JsonData {
         //echo '<pre>';var_dump($response->getBody());echo '<br /><br />';
         $cookies = $response->getCookies();
         foreach ($cookies as &$cookie) {
-            if ($cookie['name'] === static::PHP_SESSION_ID_COOKIE_NAME) {
+            if ($cookie['name'] === session_name()) {
                 $this->sessionId = $cookie['value'];
                 break;
             }
@@ -234,6 +217,7 @@ class JsonData {
         if ($response->getStatus() != 200) {
             return false;
         }
+        
         return json_decode($response->getBody());
     }
     

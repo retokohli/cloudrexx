@@ -137,8 +137,10 @@ class MediaManager extends MediaLibrary
 
         // get variables
         $this->getAct      = isset($_POST['deleteMedia']) && $_POST['deleteMedia'] ? 'delete' : (!empty($_GET['act']) ? trim($_GET['act']) : '');
-        $this->getPath     = !empty($_GET['path']) && !stristr($_GET['path'], '..') ? trim($_GET['path']) : $this->arrWebPaths[$this->archive];
-        $this->getFile     = !empty($_REQUEST['file']) && !stristr($_REQUEST['file'], '..') ? trim($_REQUEST['file']) : '';
+        $this->getPath     = \Cx\Lib\FileSystem\FileSystem::sanitizePath($_GET['path']);
+        if ($this->getPath === false) $this->getPath = $this->arrWebPaths[$this->archive];
+        $this->getFile     = \Cx\Lib\FileSystem\FileSystem::sanitizeFile($_REQUEST['file']);
+        if ($this->getFile === false) $this->getFile = '';
         $this->getData     = !empty($_GET['data']) ? $_GET['data']       : '';
         $this->sortBy      = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
         $this->sortDesc    = !empty($_GET['sort_desc']);
@@ -773,20 +775,18 @@ class MediaManager extends MediaLibrary
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_RENAME_FILE'];
 
         $check = true;
-        (!isset($this->getFile) && empty($this->getFile)) ? $check = false : '';
-        (!isset($this->getPath) && empty($this->getPath)) ? $check = false : '';
-        (!file_exists($this->path . $this->getFile))      ? $check = false : '';
+        if (empty($this->getFile) || empty($this->getPath)) $check = false;
+        if ($check) {
+            if (!file_exists($this->path . $this->getFile)) $check = false;
+        }
 
-        if($check == false)  // file doesn't exist
-        {
+        if ($check == false) { // file doesn't exist
             $this->_objTpl->setVariable(array(  // ERROR
                 'TXT_MEDIA_ERROR_OCCURED'    => $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'],
                 'TXT_MEDIA_FILE_DONT_EXISTS' => $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS']
             ));
             $this->_objTpl->parse('mediaErrorFile');
-        }
-        elseif($check == true)  // file exists
-        {
+        } else if ($check == true) { // file exists
             $this->_objTpl->setVariable(array(  // java script
                 'TXT_MEDIA_RENAME_NAME'  => $_ARRAYLANG['TXT_MEDIA_RENAME_NAME'],
                 'TXT_MEDIA_RENAME_EXT'   => $_ARRAYLANG['TXT_MEDIA_RENAME_EXT']
@@ -806,8 +806,7 @@ class MediaManager extends MediaLibrary
             $fileName = $this->getFile;
 
             // extension
-            if(is_file($this->path . $this->getFile))
-            {
+            if (is_file($this->path . $this->getFile)) {
                 $info     = pathinfo($this->getFile);
                 $fileExt  = $info['extension'];
                 $ext      = (!empty($fileExt)) ? '.' . $fileExt : '';

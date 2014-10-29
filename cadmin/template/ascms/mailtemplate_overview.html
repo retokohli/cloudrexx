@@ -15,9 +15,11 @@
       <td width="10%">
         <b>{CORE_MAILTEMPLATE_KEY}</b>
       </td>
-      <td width="10%">
-        <b>{CORE_MAILTEMPLATE_LANGUAGES}</b>
+<!-- BEGIN core_mailtemplate_language_header -->
+      <td width="01%">
+        <b>{MAILTEMPLATE_LANGUAGE_HEADER}</b>
       </td>
+<!-- END core_mailtemplate_language_header -->
       <td width="02%" style="text-align: center;">
         <b>{CORE_MAILTEMPLATE_HTML}</b>
       </td>
@@ -36,9 +38,11 @@
       <td valign="top">
         {MAILTEMPLATE_KEY}
       </td>
+<!-- BEGIN core_mailtemplate_language_column -->
       <td valign="top">
-        {MAILTEMPLATE_LANGUAGES}
+        {MAILTEMPLATE_LANGUAGE}
       </td>
+<!-- END core_mailtemplate_language_column -->
       <td valign="top" style="text-align: center;">
         {MAILTEMPLATE_HTML}
       </td>
@@ -56,7 +60,7 @@
 {PAGING}
 <br />
 <br />
-<form name="form_mailtemplate_new" method="post" action="{URI_BASE}&amp;key=" >
+<form name="form_mailtemplate_new" method="post" action="{URI_EDIT}&amp;key=" >
   <input type="submit" name="badd" value="{TXT_CORE_MAILTEMPLATE_NEW}"
       tabindex="101" />
 </form>

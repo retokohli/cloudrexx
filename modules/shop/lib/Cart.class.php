@@ -172,7 +172,7 @@ class Cart
             return;
         }
         $quantity = intval($arrNewProduct['quantity']);
-        $products = &$_SESSION['shop']['cart']['items'];
+        $products = $_SESSION['shop']['cart']['items']->toArray(); // $_SESSION is a object so convert into array
         $cart_id = null;
         // Add as a new product if true
         $new = true;
@@ -322,6 +322,7 @@ class Cart
                 }
             }
         }
+        $_SESSION['shop']['cart']['items'] = $products;
 //DBG::log("Cart::add_product(): New options: ".var_export($products[$cart_id]['options'], true));
 //DBG::log("Cart::add_product(): Leaving");
     }
@@ -351,7 +352,7 @@ class Cart
 //DBG::log("Cart::update_quantity(): Quantities: ".var_export($_REQUEST['quantity'], true));
         // Update quantity to cart
         if (empty($_SESSION['shop']['cart']['items'])) return;
-        foreach (array_keys($_SESSION['shop']['cart']['items']) as $cartId) {
+        foreach (array_keys($_SESSION['shop']['cart']['items']->toArray()) as $cartId) {
             // Remove Products
             if (isset($_REQUEST['quantity'][$cartId])) {
                 if (intval($_REQUEST['quantity'][$cartId] < 1)) {
@@ -406,9 +407,9 @@ class Cart
         $total_vat_amount = 0;
         $total_weight = 0;
         $total_discount_amount = 0;
-        $products = &$_SESSION['shop']['cart']['items'];
 //DBG::log("Cart::update(): Products: ".var_export($products, true));
         // Loop 1: Collect necessary Product data
+        $products = $_SESSION['shop']['cart']['items']->toArray();
         foreach ($products as $cart_id => &$product) {
             $objProduct = Product::getById($product['id']);
             if (!$objProduct) {
@@ -514,6 +515,7 @@ class Cart
             );
 //DBG::log("Cart::update(): Loop 1: Product: ".var_export(self::$products[$cart_id], true));
         }
+        $_SESSION['shop']['cart']['items'] = $products;
         // Loop 2: Calculate Coupon discounts and VAT
         $objCoupon = null;
         $hasCoupon = false;
@@ -655,7 +657,7 @@ class Cart
      */
     static function get_products_array()
     {
-        return $_SESSION['shop']['cart']['items'];
+        return $_SESSION['shop']['cart']['items']->toArray();
     }
 
 
@@ -793,7 +795,7 @@ die("Cart::view(): ERROR: No template");
                     'SHOP_PRODUCT_ID' => $arrProduct['id'],
                     'SHOP_PRODUCT_CODE' => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID' => $arrProduct['cart_id'],
-                    'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', $arrProduct['title']),
+                    'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', contrexx_raw2xhtml($arrProduct['title'])),
                     'SHOP_PRODUCT_PRICE' => $arrProduct['price'],  // items * qty
                     'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                     'SHOP_PRODUCT_QUANTITY' => $arrProduct['quantity'],
@@ -807,7 +809,7 @@ die("Cart::view(): ERROR: No template");
                     $objTemplate->setVariable(
                         'SHOP_PRODUCT_OPTIONS', $arrProduct['options_long']);
                 }
-                if (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable')) {
+                if (SettingDb::getValue('weight_enable')) {
                     $objTemplate->setVariable(array(
                         'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($arrProduct['weight']),
                         'TXT_WEIGHT' => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
@@ -906,26 +908,26 @@ die("Cart::view(): ERROR: No template");
                     $_SESSION['shop']['countryId2']),
             ));
         }
-        if (   \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min') > 0
-            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min') > self::get_price()
+        if (   SettingDb::getValue('orderitems_amount_min') > 0
+            && SettingDb::getValue('orderitems_amount_min') > self::get_price()
         ) {
             $objTemplate->setVariable(
-                'TXT_SHOP_NOTE_AMOUNT_TOO_LOW',
+                'MESSAGE_TEXT',
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'],
                         Currency::formatPrice(
-                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min')),
+                            SettingDb::getValue('orderitems_amount_min')),
                         Currency::getActiveCurrencySymbol()));
         } elseif (
-               \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max') > 0
-            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max') < self::get_price()
+               SettingDb::getValue('orderitems_amount_max') > 0
+            && SettingDb::getValue('orderitems_amount_max') < self::get_price()
         ) {
             $objTemplate->setVariable(
-                'TXT_SHOP_NOTE_AMOUNT_LIMIT_REACHED',
+                'MESSAGE_TEXT',
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX'],
                         Currency::formatPrice(
-                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max')),
+                            SettingDb::getValue('orderitems_amount_max')),
                         Currency::getActiveCurrencySymbol()));
         } else {
             $objTemplate->setVariable(

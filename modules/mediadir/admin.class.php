@@ -361,6 +361,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 $objForms->listForms($this->_objTpl, 2, $intFormId);
 
                 //parse blocks
+                $this->_objTpl->hideBlock($this->moduleName.'EntryStatus');
                 $this->_objTpl->hideBlock($this->moduleName.'InputfieldList');
                 $this->_objTpl->hideBlock($this->moduleName.'SpezfieldList');
             } else {
@@ -576,6 +577,8 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 
                 //get form onsubmit
                 $strOnSubmit = parent::getFormOnSubmit($objInputfields->arrJavascriptFormOnSubmit);
+                
+                $this->_objTpl->setVariable($this->moduleLangVar.'_ENTRY_STATUS', ($intEntryId && intval($objEntry->arrEntries[$intEntryId]['entryActive']) ? 'checked="checked"' : ''));
 
                 //parse blocks
                 $this->_objTpl->hideBlock($this->moduleName.'FormList');
@@ -603,6 +606,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 $this->moduleLangVar.'_DISPLAYDURATION_SELECT_PERIOD' =>  $intEntryDourationPeriod,
                 $this->moduleLangVar.'_DISPLAYDURATION_SHOW_PERIOD' =>  $intEntryDourationShowPeriod,
                 'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
+                'TXT_'.$this->moduleLangVar.'_ENTRY_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
             ));
         } else {
 			CSRF::header("Location: index.php?cmd=".$this->moduleName."&act=settings&tpl=forms");
@@ -728,34 +732,22 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_VISIBLE_CATEGORY_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_CATEGORY_INFO'],
             $this->moduleLangVar.'_CATEGORIES_DROPDOWN_OPTIONS' => $catDropdown,
             $this->moduleLangVar.'_CATEGORY_DEFAULT_LANG_ID' => $_LANGID,
+            'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
+            'TXT_'.$this->moduleLangVar.'_CATEGORY_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORY_DETAILS'],
         ));
 
+        if (count($this->arrFrontendLanguages) == 1) {
+            $this->_objTpl->setVariable($this->moduleLangVar.'_HIDE_ON_SINGLE_LANG', "display:none;");
+        }
         //category name language block
+        $first = true;
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
             if(isset($intCategoryId)){
                 $strCategoryName = empty($objCategory->arrCategories[$intCategoryId]['catName'][$arrLang['id']]) ? $objCategory->arrCategories[$intCategoryId]['catName'][0] : $objCategory->arrCategories[$intCategoryId]['catName'][$arrLang['id']];
             } else {
                 $strCategoryName = '';
             }
-
-            $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_CATEGORY_NAME_LANG_ID' => $arrLang['id'],
-                'TXT_'.$this->moduleLangVar.'_CATEGORY_NAME_LANG_NAME' => $arrLang['name'],
-                'TXT_'.$this->moduleLangVar.'_CATEGORY_NAME_LANG_SHORTCUT' => $arrLang['lang'],
-                $this->moduleLangVar.'_CATEGORY_NAME' => $strCategoryName,
-            ));
-
-            if(($key+1) == count($this->arrFrontendLanguages)) {
-                $this->_objTpl->setVariable(array(
-                    $this->moduleLangVar.'_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'categoryName\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
-                ));
-            }
-
-            $this->_objTpl->parse($this->moduleName.'CategoryNameList');
-        }
-
-        //category description language block
-        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+            //category description language block
             if(isset($intCategoryId)){
                 $strCategoryDescription = empty($objCategory->arrCategories[$intCategoryId]['catDescription'][$arrLang['id']]) ? $objCategory->arrCategories[$intCategoryId]['catDescription'][0] : $objCategory->arrCategories[$intCategoryId]['catDescription'][$arrLang['id']];
             } else {
@@ -763,20 +755,24 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             }
 
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_CATEGORY_DESCRIPTION_LANG_ID' => $arrLang['id'],
-                'TXT_'.$this->moduleLangVar.'_CATEGORY_DESCRIPTION_LANG_NAME' => $arrLang['name'],
-                'TXT_'.$this->moduleLangVar.'_CATEGORY_DESCRIPTION_LANG_SHORTCUT' => $arrLang['lang'],
-                $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => $strCategoryDescription,
+                $this->moduleLangVar.'_CATEGORY_LANG_ID' => $arrLang['id'],
+                $this->moduleLangVar.'_CATEGORY_NAME' => $strCategoryName,                
+                $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg("categoryDescription[{$arrLang['id']}]", $strCategoryDescription),
+                $this->moduleLangVar.'_CATEGORY_BLOCK_DISPLAY' => $first ? 'display:block;' : 'display:none;'
             ));
 
-            if(($key+1) == count($this->arrFrontendLanguages)) {
-                $this->_objTpl->setVariable(array(
-                    $this->moduleLangVar.'_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'categoryDescription\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
-                ));
-            }
-
-            $this->_objTpl->parse($this->moduleName.'CategoryDescriptionList');
+            $this->_objTpl->parse($this->moduleName.'_category_name_and_description');
+            
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_CATEGORY_LANG_ID'   => $arrLang['id'],
+                $this->moduleLangVar.'_CATEGORY_LANG_NAME' => $arrLang['name'],
+                $this->moduleLangVar.'_CATEGORY_LANG_TAB_CLASS' => $first ? 'active' : 'inactive',                
+            ));
+            $this->_objTpl->parse($this->moduleName.'CategoryLanguages');
+            
+            $first = false;
         }
+
     }
 
 
@@ -949,59 +945,51 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_NEW_LEVEL' =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']." ---",
             'TXT_'.$this->moduleLangVar.'_VISIBLE_LEVEL_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_LEVEL_INFO'],
             $this->moduleLangVar.'_LEVEL_DEFAULT_LANG_ID' => $_LANGID,
+            'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
+            'TXT_'.$this->moduleLangVar.'_LEVEL_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_LEVEL_DETAILS'],
         ));
 
         //get level dropdown
         $levelDropdown = $objLevels->listLevels($this->_objTpl, 3, $intLevelId);
 
+        if (count($this->arrFrontendLanguages) == 1) {
+            $this->_objTpl->setVariable($this->moduleLangVar.'_HIDE_ON_SINGLE_LANG', "display:none;");
+        }
         //level name language block
+        $first = true;
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
             if(isset($intLevelId)){
                 $strLevelName = empty($objLevel->arrLevels[$intLevelId]['levelName'][$arrLang['id']]) ? $objLevel->arrLevels[$intLevelId]['levelName'][0] : $objLevel->arrLevels[$intLevelId]['levelName'][$arrLang['id']];
             } else {
                 $strLevelName = '';
             }
-
-            $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_LEVEL_NAME_LANG_ID' => $arrLang['id'],
-                'TXT_'.$this->moduleLangVar.'_LEVEL_NAME_LANG_NAME' => $arrLang['name'],
-                'TXT_'.$this->moduleLangVar.'_LEVEL_NAME_LANG_SHORTCUT' => $arrLang['lang'],
-                $this->moduleLangVar.'_LEVEL_NAME' => $strLevelName,
-                $this->moduleLangVar.'_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
-            ));
-
-            if(($key+1) == count($this->arrFrontendLanguages)) {
-                $this->_objTpl->setVariable(array(
-                    $this->moduleLangVar.'_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'levelName\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
-                ));
-            }
-
-            $this->_objTpl->parse($this->moduleName.'LevelNameList');
-        }
-
-        //levvel description language block
-        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+            //level description language
             if(isset($intLevelId)){
                 $strLevelDescription = empty($objLevel->arrLevels[$intLevelId]['levelDescription'][$arrLang['id']]) ? $objLevel->arrLevels[$intLevelId]['levelDescription'][0] : $objLevel->arrLevels[$intLevelId]['levelDescription'][$arrLang['id']];
             } else {
                 $strLevelDescription = '';
             }
-
+            
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_LEVEL_DESCRIPTION_LANG_ID' => $arrLang['id'],
-                'TXT_'.$this->moduleLangVar.'_LEVEL_DESCRIPTION_LANG_NAME' => $arrLang['name'],
-                'TXT_'.$this->moduleLangVar.'_LEVEL_DESCRIPTION_LANG_SHORTCUT' => $arrLang['lang'],
-                $this->moduleLangVar.'_LEVEL_DESCRIPTION' => $strLevelDescription,
+                $this->moduleLangVar.'_LEVEL_LANG_ID' => $arrLang['id'],
+                $this->moduleLangVar.'_LEVEL_NAME' => $strLevelName,
+                $this->moduleLangVar.'_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
+                $this->moduleLangVar.'_LEVEL_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg("levelDescription[{$arrLang['id']}]", $strLevelDescription),
+                $this->moduleLangVar.'_LEVEL_BLOCK_DISPLAY' => $first ? 'display:block;' : 'display:none;'
             ));
 
-            if(($key+1) == count($this->arrFrontendLanguages)) {
-                $this->_objTpl->setVariable(array(
-                    $this->moduleLangVar.'_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'levelDescription\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
-                ));
-            }
-
-            $this->_objTpl->parse($this->moduleName.'LevelDescriptionList');
+            $this->_objTpl->parse($this->moduleName.'_level_name_and_description');
+            
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_LEVEL_LANG_ID'   => $arrLang['id'],
+                $this->moduleLangVar.'_LEVEL_LANG_NAME' => $arrLang['name'],
+                $this->moduleLangVar.'_LEVEL_LANG_TAB_CLASS' => $first ? 'active' : 'inactive',                
+            ));
+            $this->_objTpl->parse($this->moduleName.'LevelLanguages');
+            
+            $first = false;
         }
+        
     }
 
 

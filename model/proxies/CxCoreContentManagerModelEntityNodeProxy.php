@@ -153,6 +153,24 @@ class CxCoreContentManagerModelEntityNodeProxy extends \Cx\Core\ContentManager\M
         return parent::translatePage($activate, $targetLang);
     }
 
+    public function copy($recursive = false, \Cx\Core\ContentManager\Model\Entity\Node $newParent = NULL, $persist = true)
+    {
+        $this->_load();
+        return parent::copy($recursive, $newParent, $persist);
+    }
+
+    public function serialize()
+    {
+        $this->_load();
+        return parent::serialize();
+    }
+
+    public function unserialize($data)
+    {
+        $this->_load();
+        return parent::unserialize($data);
+    }
+
 
     public function __sleep()
     {
@@ -174,5 +192,9 @@ class CxCoreContentManagerModelEntityNodeProxy extends \Cx\Core\ContentManager\M
             unset($this->_entityPersister, $this->_identifier);
         }
         
+    }
+    
+    public function __toString() {
+        return strval($this->getId());
     }
 }

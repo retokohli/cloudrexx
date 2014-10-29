@@ -66,7 +66,7 @@ function() {
         });
 }
 );
-jQuery(document).ready(function($) {
+cx.jQuery(document).ready(function($) {
     \$J('a.toggle').click(function() {
         \$J('div.toggle').toggle();
         return false;
@@ -100,11 +100,11 @@ CODE
     public static function getTemporaryFilePaths($uploadId)
     {
         global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
 
         return array(
-            $sessionObj->getTempPath() . '/',
-            $sessionObj->getWebTempPath() . '/',
+            $_SESSION->getTempPath() . '/',
+            $_SESSION->getWebTempPath() . '/',
             'filesharing_' . $uploadId,
         );
     }
@@ -329,7 +329,10 @@ CODE
          */
         $objResult = $objDatabase->Execute("SELECT `id` FROM " . DBPREFIX . "module_filesharing WHERE `upload_id` = '" . intval($uploadId) . "'");
         if ($objResult !== false && $objResult->RecordCount() > 0) {
-            $files[] = $objResult->fields["id"];
+            while (!$objResult->EOF) {
+                $files[] = $objResult->fields["id"];
+                $objResult->MoveNext();
+            }
         }
 
         if (!is_int($uploadId) && empty($files)) {

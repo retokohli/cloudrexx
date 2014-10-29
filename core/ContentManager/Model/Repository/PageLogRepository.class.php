@@ -59,6 +59,20 @@ class PageLogRepository extends LogEntryRepository
     }
     
     /**
+     * Loads all log entries for the
+     * given $entity
+     *
+     * @param object $entity
+     * @return array
+     */
+    public function getLogEntries($entity, $useCache = true)
+    {
+        $q = $this->getLogEntriesQuery($entity);
+        $q->useResultCache($useCache);
+        return $q->getResult();
+    }
+    
+    /**
      * Returns an integer with the quantity of log entries with the given action.
      * The log entries are filtered by the page object.
      * 

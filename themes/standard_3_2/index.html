@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<title>Contrexx Standard Theme</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- @todo: fill with your company info or remove -->
+<meta name="description" content="">
+<meta name="author" content="Contrexx">
+
+{JAVASCRIPT}
+
+<!-- Bootstrap CSS -->
+<link href="themes/standard_3_2/css/bootstrap.css" rel="stylesheet">
+<link href="themes/standard_3_2/css/responsive.css" rel="stylesheet">
+
+<!-- animate.css CSS -->
+<link href="themes/standard_3_2/css/animate.css" rel="stylesheet">
+
+<!-- Flexslider -->
+<link href="themes/standard_3_2/css/flexslider.css" rel="stylesheet">
+
+<!-- Theme style -->
+<link href="themes/standard_3_2/css/theme-style.css" rel="stylesheet">
+
+<!-- Contrexx CSS -->
+<link href="themes/standard_3_2/modules.css" rel="stylesheet">
+
+
+<!--
+    @option:
+    Colour skins, choose from:
+    1. colour-blue.css (default no need to include file)
+    2. colour-red.css
+    3. colour-grey.css
+    4. colour-purple
+    5. colour-green.css
+    Uncomment line below to enable
+    -->
+<link href="/themes/standard_3_2/css/colour-blue.css" rel="stylesheet" id="colour-scheme">
+
+<!-- Your custom override -->
+<link href="themes/standard_3_2/css/custom-style.css" rel="stylesheet">
+
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+      <script src="themes/standard_3_2/js/html5.js"></script>
+    <![endif]-->
+
+<!-- Le fav and touch icons - @todo: fill with your icons or remove -->
+<link rel="shortcut icon" href="themes/standard_3_2/img/icons/favicon.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="themes/standard_3_2/img/icons/114x114.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="themes/standard_3_2/img/icons/72x72.png">
+<link rel="apple-touch-icon-precomposed" href="themes/standard_3_2/img/icons/default.png">
+<link href='http://fonts.googleapis.com/css?family=Monda:400,700' rel='stylesheet' type='text/css'>
+</head>
+
+<body class="has-navbar-fixed-top page-index">
+<div id="navigation" class="wrapper">
+  <div class="navbar navbar-fixed-top" id="top">
+    <div class="navbar-inner">
+      <div class="inner">
+        <div class="container"> <a class="brand" href="/index.php?section=home" title="Home"></a> 
+           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+           <div class="nav-collapse collapse">
+          {NAVBAR_FILE}
+          <div class="colour-switcher tool"> <a href="#blue" class="blue active">Blue</a> <a href="#green" class="green">Green</a> <a href="#red" class="red">Red</a> <a href="#purple" class="purple">Purple</a> <a href="#grey" class="grey">Grey</a> </div>
+          </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+{CONTENT_FILE}
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="inner">
+    <div class="container">
+      <div class="row">
+        {HEADLINES_FILE}
+        <div class="span4 col contact-block"> 
+          <!--@todo: replace with company contact details-->
+          <h3>Contact Us!</h3>
+          <address>
+          <p><strong>{CONTACT_COMPANY}</strong></p>
+          <p><abbr title="Phone">P</abbr>: {CONTACT_PHONE}</p>
+          <p><abbr title="Fax">F</abbr>: {CONTACT_FAX}</p>
+          <p><abbr title="Email">E</abbr>: {CONTACT_EMAIL}</p>
+          <p><abbr title="Address">A</abbr>: {CONTACT_ADDRESS}</p>
+          </address>
+        </div>
+        <div class="span2 col social-media"> 
+          <!--@todo: replace with company social media details-->
+          <h3>Follow us on</h3>
+          <a href="#"><i class="icon-twitter"></i> Twitter</a> <a href="#"><i class="icon-facebook"></i> Facebook</a> <a href="#"><i class="icon-linkedin"></i> LinkedIn</a> <a href="#"><i class="icon-google-plus"></i> Google +</a> </div>
+      </div>
+      <div class="row"> 
+        <!--@todo: replace with company copyright details-->
+        <div class="subfooter">
+          <div class="span12">
+            <p>&copy;{DATE_YEAR} Contrexx Standard Theme</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!--Scripts --> 
+
+<!-- @todo: remove unused Javascript for better performance --> 
+<script src= "/themes/standard_3_2/js/bootstrap-transition.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-affix.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-alert.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-modal.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-dropdown.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-scrollspy.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-tab.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-tooltip.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-popover.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-button.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-collapse.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-carousel.js"></script> 
+<script src= "/themes/standard_3_2/js/bootstrap-typeahead.js"></script> 
+
+<!--Non-Bootstrap JS--> 
+<script src= "/themes/standard_3_2/js/jquery.quicksand.js"></script> 
+<script src= "/themes/standard_3_2/js/jquery.flexslider-min.js"></script> 
+
+<!--Custom scripts mainly used to trigger libraries --> 
+<script src= "/themes/standard_3_2/js/script.js"></script>
+</body>
+</html>

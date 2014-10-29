@@ -1500,10 +1500,148 @@ class CommonFunctions
             */
         }
 
+        if (isset($_SESSION['installer']['config']['cachingByDefault']) && $_SESSION['installer']['config']['cachingByDefault']) {
+            // configure caching
+            $this->configureCaching();
+        }
+
         if (empty($statusMsg)) {
             return $this->_createSettingsFile();
         } else {
             return $statusMsg;
+        }
+    }
+
+    /**
+     * Configure the Contrexx caching so it fits the server configuration
+     */
+    protected function configureCaching() {
+        $_CONFIG = array();
+
+        require_once ASCMS_CORE_MODULE_PATH . '/cache/lib/cacheLib.class.php';
+
+        $isInstalled = function($cacheEngine) {
+            switch ($cacheEngine) {
+                case \cacheLib::CACHE_ENGINE_APC:
+                    return extension_loaded('apc');
+                case \cacheLib::CACHE_ENGINE_ZEND_OPCACHE:
+                    return extension_loaded('opcache') || extension_loaded('Zend OPcache');
+                case \cacheLib::CACHE_ENGINE_MEMCACHE:
+                    return extension_loaded('memcache') || extension_loaded('memcached');
+                case \cacheLib::CACHE_ENGINE_XCACHE:
+                    return extension_loaded('xcache');
+                case \cacheLib::CACHE_ENGINE_FILESYSTEM:
+                    return true;
+            }
+        };
+
+        $isConfigured = function($cacheEngine, $user = false) {
+            switch ($cacheEngine) {
+                case \cacheLib::CACHE_ENGINE_APC:
+                    if ($user) {
+                        return ini_get('apc.serializer') == 'php';
+                    }
+                    return true;
+                case \cacheLib::CACHE_ENGINE_ZEND_OPCACHE:
+                    return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
+                case \cacheLib::CACHE_ENGINE_MEMCACHE:
+                    return false;
+                case \cacheLib::CACHE_ENGINE_XCACHE:
+                    if ($user) {
+                        return (
+                            ini_get('xcache.var_size') > 0 &&
+                            ini_get('xcache.admin.user') &&
+                            ini_get('xcache.admin.pass')
+                        );
+                    }
+                    return ini_get('xcache.size') > 0;
+                case \cacheLib::CACHE_ENGINE_FILESYSTEM:
+                    return is_writable(ASCMS_DOCUMENT_ROOT . '/tmp/cache');
+            }
+        };
+
+        // configure opcaches
+        $configureOPCache = function() use($isInstalled, $isConfigured, &$_CONFIG) {
+            // APC
+            if ($isInstalled(\cacheLib::CACHE_ENGINE_APC) && $isConfigured(\cacheLib::CACHE_ENGINE_APC)) {
+                $_CONFIG['cacheOPCache'] = \cacheLib::CACHE_ENGINE_APC;
+                return;
+            }
+
+            // Disable zend opcache if it is enabled
+            // If save_comments is set to TRUE, doctrine2 will not work properly.
+            // It is not possible to set a new value for this directive with php.
+            if ($isInstalled(\cacheLib::CACHE_ENGINE_ZEND_OPCACHE)) {
+                ini_set('opcache.save_comments', 1);
+                ini_set('opcache.load_comments', 1);
+                ini_set('opcache.enable', 1);
+
+                if ($isConfigured(\cacheLib::CACHE_ENGINE_ZEND_OPCACHE)) {
+                    $_CONFIG['cacheOPCache'] = \cacheLib::CACHE_ENGINE_ZEND_OPCACHE;
+                    return;
+                }
+            }
+
+            // XCache
+            if ($isInstalled(\cacheLib::CACHE_ENGINE_XCACHE) &&
+                $isConfigured(\cacheLib::CACHE_ENGINE_XCACHE)
+            ) {
+                $_CONFIG['cacheOPCache'] = \cacheLib::CACHE_ENGINE_XCACHE;
+                return;
+            }
+            return false;
+        };
+
+        // configure user caches
+        $configureUserCache = function() use($isInstalled, $isConfigured, &$_CONFIG) {
+            // APC
+            if ($isInstalled(\cacheLib::CACHE_ENGINE_APC)) {
+                // have to use serializer "php", not "default" due to doctrine2 gedmo tree repository
+                ini_set('apc.serializer', 'php');
+                if ($isConfigured(\cacheLib::CACHE_ENGINE_APC, true)) {
+                    $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_APC;
+                    return;
+                }
+            }
+
+            // Memcache
+            if ($isInstalled(\cacheLib::CACHE_ENGINE_MEMCACHE) && $isConfigured(\cacheLib::CACHE_ENGINE_MEMCACHE)) {
+                $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_MEMCACHE;
+                return;
+            }
+
+            // XCache
+            if (
+                $isInstalled(\cacheLib::CACHE_ENGINE_XCACHE) &&
+                $isConfigured(\cacheLib::CACHE_ENGINE_XCACHE, true)
+            ) {
+                $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_XCACHE;
+                return;
+            }
+
+            // Filesystem
+            if ($isConfigured(\cacheLib::CACHE_ENGINE_FILESYSTEM)) {
+                $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_FILESYSTEM;
+                return;
+            }
+            return false;
+        };
+
+        if ($configureOPCache() === false) {
+            $_CONFIG['cacheOpStatus'] = 'off';
+        } else {
+            $_CONFIG['cacheOpStatus'] = 'on';
+        }
+
+        if ($configureUserCache() === false) {
+            $_CONFIG['cacheDbStatus'] = 'off';
+        } else {
+            $_CONFIG['cacheDbStatus'] = 'on';
+        }
+
+        $objDb = $this->_getDbObject($statusMsg);
+        foreach ($_CONFIG as $key => $value) {
+            $objDb->Execute("UPDATE `".$_SESSION['installer']['config']['dbTablePrefix']."settings` SET `setvalue` = '".$value."' WHERE `setname` = '".$key."'");
         }
     }
 

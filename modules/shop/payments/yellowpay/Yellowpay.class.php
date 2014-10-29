@@ -433,7 +433,7 @@ class Yellowpay
      * @param   array       $arrFields      The parameter array
      * @param   string      $submitValue    The optional label for the submit button
      * @param   boolean     $autopost       If true, the form is automatically submitted. Defaults to false.
-     * @param   array       $arrSettings    Settings from \Cx\Core\Setting\Controller\Setting
+     * @param   array       $arrSettings    Settings from SettingDb
      * @param   object      $landingPage    The optional URI parameter string
      * @return  string                      The HTML form code
      */
@@ -452,9 +452,9 @@ class Yellowpay
         }
 
         if (empty($arrSettings)) {
-            $SettingDb = \Cx\Core\Setting\Controller\Setting::getArray(self::$sectionName, 'config');
-            if (!empty($SettingDb) && $SettingDb['postfinance_active']['value']) {
-                $arrSettings = $SettingDb;
+            $settingDb = SettingDb::getArray(self::$sectionName, 'config');
+            if (!empty($settingDb) && $settingDb['postfinance_active']['value']) {
+                $arrSettings = $settingDb;
             } else {
                 self::$arrError[] = "Could not load settings.";
             }
@@ -902,22 +902,22 @@ class Yellowpay
      * Applies to the section (module) SettingsDb has been initialized with.
      * In particular, tries to add missing Settings using the defaults.
      * However, you will have to set them to their correct values after this.
-     * Note that you *MUST* call \Cx\Core\Setting\Controller\Setting::init() using the proper section
+     * Note that you *MUST* call SettingDb::init() using the proper section
      * and group parameters beforehand.  Otherwise, no settings will be added.
      */
     static function errorHandler()
     {
 // Yellowpay
-        \Cx\Core\Setting\Controller\Setting::errorHandler();
+        SettingDb::errorHandler();
         // You *MUST* call this yourself beforehand, using the proper section!
-        //\Cx\Core\Setting\Controller\Setting::init('shop', 'config');
+        //SettingDb::init('shop', 'config');
         // Signature: ($name, $value, $ord, $type, $values, $key)
-        \Cx\Core\Setting\Controller\Setting::add('postfinance_shop_id', 'Ihr Kontoname',
-                1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
-        \Cx\Core\Setting\Controller\Setting::add('postfinance_active', '0',
-                2, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1');
-        \Cx\Core\Setting\Controller\Setting::add('postfinance_authorization_type', 'SAL',
-                3, \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'RES:Reservation,SAL:Verkauf');
+        SettingDb::add('postfinance_shop_id', 'Ihr Kontoname',
+                1, SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_active', '0',
+                2, SettingDb::TYPE_CHECKBOX, '1');
+        SettingDb::add('postfinance_authorization_type', 'SAL',
+                3, SettingDb::TYPE_DROPDOWN, 'RES:Reservation,SAL:Verkauf');
 // OBSOLETE
         // As it appears that in_array(0, $array) is true for each non-empty
         // $array, indices for the entries must be numbered starting at 1.
@@ -925,17 +925,17 @@ class Yellowpay
 //        foreach (self::$arrKnownPaymentMethod as $index => $name) {
 //            $arrPayments[$index] = $name;
 //        }
-//        \Cx\Core\Setting\Controller\Setting::add('postfinance_accepted_payment_methods', '',
-//                4, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOXGROUP,
-//                \Cx\Core\Setting\Controller\Setting::joinValues($arrPayments));
-        \Cx\Core\Setting\Controller\Setting::add('postfinance_hash_signature_in',
+//        SettingDb::add('postfinance_accepted_payment_methods', '',
+//                4, SettingDb::TYPE_CHECKBOXGROUP,
+//                SettingDb::joinValues($arrPayments));
+        SettingDb::add('postfinance_hash_signature_in',
                 'Mindestens 16 Buchstaben, Ziffern und Zeichen',
-                5, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
-        \Cx\Core\Setting\Controller\Setting::add('postfinance_hash_signature_out',
+                5, SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_hash_signature_out',
                 'Mindestens 16 Buchstaben, Ziffern und Zeichen',
-                6, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
-        \Cx\Core\Setting\Controller\Setting::add('postfinance_use_testserver', '1',
-                7, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1');
+                6, SettingDb::TYPE_TEXT);
+        SettingDb::add('postfinance_use_testserver', '1',
+                7, SettingDb::TYPE_CHECKBOX, '1');
 
         // Always
         return false;

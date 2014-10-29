@@ -103,15 +103,14 @@ class Url {
      */
     public function __construct($url) {
         $matches = array();
-        $matchCount = preg_match('/^((https?):\/\/[^\/]+\/)(.*)?/', $url, $matches);
+        $matchCount = preg_match('/^(https?:\/\/[^\/]+\/)(.*)?/', $url, $matches);
         if ($matchCount == 0) {
             throw new UrlException('Malformed URL: ' . $url);
         }
 
         $this->domain = $matches[1];
-        $this->protocol = $matches[2];
-        if (isset($matches[3])) {
-            $this->setPath($matches[3]);
+        if (isset($matches[2])) {
+            $this->setPath($matches[2]);
         } else {
             $this->suggest();
         }
@@ -127,15 +126,6 @@ class Url {
         }
     }
 
-     /**
-     * Get the protocol
-     * 
-     * @return String
-     */
-    public function getProtocol() {
-        return $this->protocol;
-    }
-    
     public function getMode() {
         return $this->mode;
     }
@@ -236,6 +226,15 @@ class Url {
      * @param   mixed       $value
      */
     public function setParam($key, $value) {
+        if ($value === null) {
+            $params = $this->getParamArray();
+            if (isset($params[$key])) {
+                unset($params[$key]);
+                $this->removeAllParams();
+                $this->addParamsToPath($params);
+                return;
+            }
+        }
         if (!empty($key)) {
             $this->setParams(array($key => $value));
         }
@@ -450,7 +449,7 @@ class Url {
 
         //cut offset
         $request = substr($request, strlen($pathOffset)+1);
-        $host = $_CONFIG['domainUrl'];
+        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
         $protocol = ASCMS_PROTOCOL;
 
 
@@ -459,7 +458,10 @@ class Url {
 
         // workaround for legacy ?page=123 requests by routing to an alias like /legacy_page_123
         $additionalParams = '';
-        if (isset($get['page']) && preg_match('/^\d+$/', $get['page'])) {
+        if (
+            isset($get['page']) && preg_match('/^\d+$/', $get['page']) &&
+            \Env::get('cx')->getMode() != \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+        ) {
             $request = 'legacy_page_'.$get['page'];
             $additionalParams = 'external=permanent';
             unset($get['page']);
@@ -535,8 +537,8 @@ class Url {
         // relative URL
         if (!count($matches)) {
             
-            $absoluteUrl = $_SERVER['HTTP_REFERER'];
-            preg_match('#(http(?:s)?://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl, $matches);
+            $absoluteUrl = self::fromRequest();
+            preg_match('#(http(?:s)?://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl->toString(true), $matches);
             
             // starting with a /?
             if (substr($url, 0, 1) == '/') {
@@ -576,7 +578,7 @@ class Url {
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
-        $host = $_CONFIG['domainUrl'];
+        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
         $offset = ASCMS_INSTANCE_OFFSET;
         $langDir = \FWLanguage::getLanguageCodeById($lang);
         $parameters = '';
@@ -656,7 +658,7 @@ class Url {
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
-        $host = $_CONFIG['domainUrl'];
+        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
         $offset = ASCMS_INSTANCE_OFFSET;
         $path = $page->getPath();
         $langDir = \FWLanguage::getLanguageCodeById($page->getLang());

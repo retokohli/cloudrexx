@@ -10,13 +10,13 @@ function deleteLanguage(id)
     }
 }
 
-jQuery(function() {
+cx.jQuery(function() {
     updateCurrent(true);
 });
 
 function updateCurrent(init) {
-    jQuery(".langrow").each(function(index, el) {
-        var lang = jQuery(el);
+    cx.jQuery(".langrow").each(function(index, el) {
+        var lang = cx.jQuery(el);
         var langId = lang.children(".langId").text();
         var defField = lang.children(".langDefault").children("input");
         var fallbackField = lang.children(".langFallback").children("select");
@@ -24,7 +24,7 @@ function updateCurrent(init) {
         var backendField = lang.children(".langActiveBackend").children("input");
         var functionsField = lang.children(".langFunctions").children("div");
         //small language
-        if (jQuery(".langrow .langFallback").length == 0) {
+        if (cx.jQuery(".langrow .langFallback").length == 0) {
             if (defField.is(":checked")) {
                 defField.after("<input type=\"hidden\" name=\"langActiveStatus[" + langId + "]\" value=\"1\" />");
                 defField.after("<input type=\"hidden\" name=\"langAdminStatus[" + langId + "]\" value=\"1\" />");
@@ -75,15 +75,15 @@ function linkPages(toLangId) {
 }
 
 function performLanguageAction(actionName, toLangId, action) {
-    var defaultLangId = jQuery(".langrow .langDefault input:checked").closest(".langrow").attr("id");
-    var fromLangId = jQuery(".langrow#" + toLangId).children(".langFallback").children("select").val();
+    var defaultLangId = cx.jQuery(".langrow .langDefault input:checked").closest(".langrow").attr("id");
+    var fromLangId = cx.jQuery(".langrow#" + toLangId).children(".langFallback").children("select").val();
     if (fromLangId === "") {
         return;
     } else if (fromLangId == 0) {
         fromLangId = defaultLangId;
     }
-    var fromLangName = jQuery(".langrow#" + fromLangId).children(".langShortName").text();
-    var toLangName = jQuery(".langrow#" + toLangId).children(".langShortName").text();
+    var fromLangName = cx.jQuery(".langrow#" + fromLangId).children(".langShortName").text();
+    var toLangName = cx.jQuery(".langrow#" + toLangId).children(".langShortName").text();
     showActionDialog(actionName, fromLangName, toLangName, function() {
         var waitDialog = cx.ui.dialog({
             title: cx.variables.get("waitTitle", "language/lang"),
@@ -91,14 +91,14 @@ function performLanguageAction(actionName, toLangId, action) {
             modal: true,
             autoOpen: true,
             open: function(event, ui) {
-                jQuery(".ui-dialog-titlebar-close").hide();
+                cx.jQuery(".ui-dialog-titlebar-close").hide();
             }
         });
         var offset = 0;
         var count = 0;
         while ((offset < count) || offset == 0) {
             var url = "index.php?cmd=jsondata&object=cm&act=" + actionName + "&to=" + toLangId + "&offset=" + offset + "&limit=1";
-            jQuery.ajax({
+            cx.jQuery.ajax({
                 async: false,
                 url: url,
                 dataType: "json",
@@ -139,7 +139,7 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     var noOption = cx.variables.get("noOption", "language/lang");
     var buttons = new Object();
     buttons[yesOption] = function() {
-        jQuery(this).dialog("close");
+        cx.jQuery(this).dialog("close");
         if (checkboxText) {
             if (!dialog.getElement().children().children("#really").is(":checked")) {
                 return;
@@ -147,7 +147,7 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
         }
         yesAction();
     };
-    buttons[noOption] = function() {jQuery(this).dialog("close");}
+    buttons[noOption] = function() {cx.jQuery(this).dialog("close");}
     var content = "<p>" + cx.variables.get(action + "Text", "language/lang");
     if (action == 'link') {
         content = content.replace("%1", toLang).replace("%2", fromLang);
@@ -168,8 +168,8 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
     });
     var yesButton = dialog.getElement().siblings(".ui-dialog-buttonpane").children(".ui-dialog-buttonset").children("button").first();
     yesButton.hide();
-    jQuery("#really").change(function() {
-        yesButton.toggle(jQuery("#really").is(":checked"));
+    cx.jQuery("#really").change(function() {
+        yesButton.toggle(cx.jQuery("#really").is(":checked"));
     });
     dialog.open();
     return dialog;

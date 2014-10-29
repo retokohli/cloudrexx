@@ -283,10 +283,10 @@ class Orders
             $customer_type = intval($_REQUEST['customer_type']);
             Html::replaceUriParameter($uri, 'customer_type='.$customer_type);
             if ($customer_type == 0) {
-                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
+                $usergroup_id = SettingDb::getValue('usergroup_id_customer');
             }
             if ($customer_type == 1) {
-                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
+                $usergroup_id = SettingDb::getValue('usergroup_id_reseller');
             }
             global $objFWUser;
             $objGroup = $objFWUser->objGroup->getGroup($usergroup_id);
@@ -376,7 +376,7 @@ class Orders
             'SHOP_CURRENCY', Currency::getDefaultCurrencySymbol()
         ));
         $count = 0;
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend');
+        $limit = SettingDb::getValue('numof_orders_per_page_backend');
 // TODO: Obsolete ASAP
 if (!$limit) {
     ShopSettings::errorHandler();
@@ -1199,7 +1199,6 @@ if (!$limit) {
         $payment_id = $objOrder->payment_id();
         $shipment_id = $objOrder->shipment_id();
         $arrSubstitution = array (
-            // Must be present in the Order, so the Customer can be found
             'CUSTOMER_COUNTRY_ID' => $objOrder->billing_country_id(),
             'LANG_ID' => $lang_id,
             'NOW' => date(ASCMS_DATE_FORMAT_DATETIME),

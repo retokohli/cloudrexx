@@ -61,7 +61,7 @@ function entriesDoAction(formId, objSelect)
 
 var switchState = function(id, obj, action, type)
 {
-    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
+    cx.jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
         if (action) {
             if (type == 'entry') {
                 path = 'images/icons/status_green.gif';
@@ -78,13 +78,13 @@ var switchState = function(id, obj, action, type)
             action = 1;
         }
 
-        jQuery(obj).children('img:first').attr('src', path);
-        jQuery(obj).attr('onclick', 'switchState('+id+', this, '+action+', \''+type+'\')');
+        cx.jQuery(obj).children('img:first').attr('src', path);
+        cx.jQuery(obj).attr('onclick', 'switchState('+id+', this, '+action+', \''+type+'\')');
     });
 }
 
-jQuery(document).ready(function(){
-	jQuery('#submit-search').click(function(e){
+cx.jQuery(document).ready(function(){
+	cx.jQuery('#submit-search').click(function(e){
 	searchEntries(e);
 	});
 });
@@ -94,16 +94,16 @@ var searchEntries = function (event) {
 	formId = '';
 	levelId = '';
 	catId = '';
-	if(jQuery('select[name="form_id"]').length>0){
-		formId = '&form_id='+jQuery('select[name="form_id"]').val();
+	if(cx.jQuery('select[name="form_id"]').length>0){
+		formId = '&form_id='+cx.jQuery('select[name="form_id"]').val();
 	}
-	if(jQuery('select[name="level_id"]').length>0){
-		levelId = '&level_id='+jQuery('select[name="level_id"]').val();
+	if(cx.jQuery('select[name="level_id"]').length>0){
+		levelId = '&level_id='+cx.jQuery('select[name="level_id"]').val();
 	}
-	if(jQuery('select[name="cat_id"]').length>0){
-		catId = '&cat_id='+jQuery('select[name="cat_id"]').val();
+	if(cx.jQuery('select[name="cat_id"]').length>0){
+		catId = '&cat_id='+cx.jQuery('select[name="cat_id"]').val();
 	}
-	jQuery('#search_mediadir').attr('action', jQuery('#search_mediadir').attr('action') + catId+formId+levelId).submit();
+	cx.jQuery('#search_mediadir').attr('action', cx.jQuery('#search_mediadir').attr('action') + catId+formId+levelId).submit();
 }
 
 //]]>

@@ -52,7 +52,7 @@ class feedLibrary
         $old_filename = $objResult->fields['filename'];
 
         if($old_link != '') {
-            $filename = "feed_".$time."_".$this->_replaceCharacters(basename($old_link));
+            $filename = 'feed_' . $time . '_' . \Cx\Lib\FileSystem\FileSystem::replaceCharacters(basename($old_link));
             @copy($old_link, $path.$filename);
 
             //rss class
@@ -79,33 +79,6 @@ class feedLibrary
         if($old_link != '') {
             @unlink($path.$old_filename);
         }
-    }
-
-    // replaces some characters
-    function _replaceCharacters($string){
-        // replace $change with ''
-        $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|', '+');
-        // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
-        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
-
-        foreach($change as $str){
-            $string = str_replace($str, '_', $string);
-        }
-        for($x = 0; $x < count($signs1); $x++){
-            $string = str_replace($signs1[$x], $signs2[$x], $string);
-        }
-        $string = str_replace('__', '_', $string);
-
-        if(strlen($string) > 60){
-            $info       = pathinfo($string);
-            $stringExt  = $info['extension'];
-
-            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
-            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
-            $string     = $stringName . '.' . $stringExt;
-        }
-        return $string;
     }
 }
 

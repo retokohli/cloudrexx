@@ -580,11 +580,15 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                     'sort_type' => 'asc',
                     'parent_id' => 'title',
                     'desc' => $objResult->fields['title'],
-                    'names' => array($this->langId => $objResult->fields['title']),
                     'value' => $objResult->fields['id'],
                     'order_id' => $objResult->fields['order_id'],
                     'modifiable' => array('names'),
                 );
+
+                // add names for all languages
+                foreach (\FWLanguage::getLanguageArray() as $langId => $langData) {
+                    $this->arrAttributes['title_'.$objResult->fields['id']]['names'][$langId] = $objResult->fields['title'];
+                }
                 $objResult->MoveNext();
             }
         }
@@ -1401,6 +1405,15 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         foreach ($arrNames as $langId => $name) {
             $this->arrName[intval($langId)] = $name;
         }
+
+        // add text for inactive languages too
+        $defaultLangId = \FWLanguage::getDefaultLangId();
+        foreach (\FWLanguage::getLanguageArray() as $langId => $langInfo) {
+            if (!isset($arrNames[$langId])) {
+                $this->arrName[$langId] = $this->arrName[$defaultLangId];
+            }
+        }
+
         $this->arrAttributes[$this->id]['names'] = $this->arrName;
     }
 
@@ -1797,7 +1810,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
      *
      * If the $langId parameter is empty, the language is taken from the
      * global LANG_ID constant.
-     * Used by {@see \Cx\Core\Setting\Controller\Setting::show()},
+     * Used by {@see SettingDb::show()},
      * {@see Shopmanager::view_settings_general()}
      * @param   integer     $langId         The optional language ID
      * @return  array                       An array with attribute names

@@ -7,7 +7,7 @@
         setAliasTarget($J('#alias_target').val(), $J('#alias_target_text').text());
 
         $J('#alias_target').keyup(function() {
-            var targetValue = jQuery.trim($J(this).val());
+            var targetValue = cx.jQuery.trim($J(this).val());
             if ($J(this).val() != targetValue) {
                 $J(this).val(targetValue);
             }
@@ -36,8 +36,8 @@
             $J('#alias_target_check').toggle(showOrHide);
         });
         $J('#alias_target_edit').click(function() {
-            jQuery('#alias_target_cancel').show();
-            jQuery('#alias_target_text_wrapper').hide().prev().show();
+            cx.jQuery('#alias_target_cancel').show();
+            cx.jQuery('#alias_target_text_wrapper').hide().prev().show();
         });
         $J('#alias_target_cancel').click(function() {
             setAliasTarget($J("#alias_target_backup").val(), $J("#alias_target_text").text());

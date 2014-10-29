@@ -29,47 +29,6 @@ function openWindow(theURL,winName,features){
     browserPopup.focus();
 }
 
-function ExpandMinimize(toggle){
-
-    if (toggle == 'levelName') {
-        var pattern = /^levelName/;
-    } else {
-        var pattern = /^levelDescription/;
-    }
-
-    var reg = new RegExp(pattern);
-
-    var masterValue = document.getElementsByName(toggle + '[0]')[0].value;
-    var defaultValue = document.getElementsByName(toggle + '[{MEDIADIR_LEVEL_DEFAULT_LANG_ID}]')[0].value;
-
-    for (i = 0; i < document.levelModfyForm.elements.length; ++i) {
-        var field = document.levelModfyForm.elements[i];
-
-        if (field.name.match(reg)) {
-            if (field.value == '') {
-                field.value = masterValue;
-            }
-
-            var regDefaultLang = new RegExp(toggle + '\\[{MEDIADIR_LEVEL_DEFAULT_LANG_ID}\\]');
-
-            if (field.name.match(regDefaultLang)) {
-                field.value = masterValue;
-            }
-
-            var regMaster = new RegExp(toggle + '\\[0\\]');
-
-            if (field.name.match(regMaster)) {
-                field.value = defaultValue;
-            }
-        }
-    }
-
-    elm1 = document.getElementById(toggle + 'Minimized');
-    elm2 = document.getElementById(toggle + 'Expanded');
-
-    elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
-    elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
-}
 //]]>
 </script>
 
@@ -79,6 +38,9 @@ function ExpandMinimize(toggle){
     <tr>
         <th colspan="2">{TXT_MEDIADIR_PAGE_TITLE}</th>
     </tr>
+    <tr class="row3">
+        <td colspan="2">{TXT_MEDIADIR_BASIC_DATA}</td>
+    </tr>
     <tr class="row1">
         <td width="200">{TXT_MEDIADIR_LEVEL}</td>
         <td>
@@ -86,32 +48,6 @@ function ExpandMinimize(toggle){
                 <option value="0">{TXT_MEDIADIR_NEW_LEVEL}</option>
                 {MEDIADIR_LEVELS_DROPDOWN_OPTIONS}
             </select>
-        </td>
-    </tr>
-    <tr class="row2">
-        <td valign="top">{TXT_MEDIADIR_NAME}</td>
-        <td>
-            <div id="levelNameMinimized" style="display: block;">
-                <input name="levelName[0]" type="text" style="width: 300px" value="{MEDIADIR_LEVEL_NAME_MASTER}" />&nbsp;<a href="javascript:ExpandMinimize('levelName');">{TXT_MEDIADIR_MORE}&nbsp;&raquo;</a><br />
-            </div>
-            <div id="levelNameExpanded" style="display: none;">
-                <!-- BEGIN mediadirLevelNameList -->
-                <input name="levelName[{MEDIADIR_LEVEL_NAME_LANG_ID}]" type="text" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('images/flags/flag_{TXT_MEDIADIR_LEVEL_NAME_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{TXT_MEDIADIR_LEVEL_NAME_LANG_NAME}" value="{MEDIADIR_LEVEL_NAME}" />&nbsp;{TXT_MEDIADIR_LEVEL_NAME_LANG_NAME}&nbsp;&nbsp;&nbsp;{MEDIADIR_MINIMIZE}<br />
-                <!-- END mediadirLevelNameList -->
-            </div>
-        </td>
-    </tr>
-    <tr class="row1">
-        <td valign="top">{TXT_MEDIADIR_DESCRIPTION}</td>
-        <td>
-            <div id="levelDescriptionMinimized" style="display: block;">
-                <textarea name="levelDescription[0]" style="width: 300px; height: 50px;" >{MEDIADIR_LEVEL_DESCRIPTION_MASTER}</textarea>&nbsp;<a href="javascript:ExpandMinimize('levelDescription');">{TXT_MEDIADIR_MORE}&nbsp;&raquo;</a>
-            </div>
-            <div id="levelDescriptionExpanded" style="display: none;">
-                <!-- BEGIN mediadirLevelDescriptionList -->
-                <textarea name="levelDescription[{MEDIADIR_LEVEL_DESCRIPTION_LANG_ID}]" style="height: 50px; width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('images/flags/flag_{TXT_MEDIADIR_LEVEL_DESCRIPTION_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{TXT_MEDIADIR_LEVEL_DESCRIPTION_LANG_NAME}" >{MEDIADIR_LEVEL_DESCRIPTION}</textarea>&nbsp;{TXT_MEDIADIR_LEVEL_DESCRIPTION_LANG_NAME}&nbsp;&nbsp;&nbsp;{MEDIADIR_MINIMIZE}<br />
-                <!-- END mediadirLevelDescriptionList -->
-            </div>
         </td>
     </tr>
     <tr class="row2">
@@ -133,9 +69,38 @@ function ExpandMinimize(toggle){
     <tr class="row2">
         <td valign="top">{TXT_MEDIADIR_VISIBLE}</td>
         <td><input type="radio" name="levelActive" value="1" {MEDIADIR_LEVEL_ACTIVE_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="levelActive" value="0" {MEDIADIR_LEVEL_ACTIVE_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_MEDIADIR_VISIBLE_LEVEL_INFO}</span></td>
-    </tr>
+    </tr>        
 </table>
 <br />
+<ul id="tabmenu" class="language_tab" style="{MEDIADIR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
+    <!-- BEGIN mediadirLevelLanguages -->
+    <li><a id="levelLanguage_{MEDIADIR_LEVEL_LANG_ID}_desc" class="{MEDIADIR_LEVEL_LANG_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{MEDIADIR_LEVEL_LANG_ID}_desc');" title="{MEDIADIR_LEVEL_LANG_NAME}">{MEDIADIR_LEVEL_LANG_NAME}</a></li>
+    <!-- END mediadirLevelLanguages -->
+</ul>
+<!-- BEGIN mediadir_level_name_and_description -->
+<div id="{MEDIADIR_LEVEL_LANG_ID}_desc" class="levelLanguage" style="{MEDIADIR_LEVEL_BLOCK_DISPLAY}">
+    <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+        <tr>
+            <th colspan="2">{TXT_MEDIADIR_LEVEL_DETAILS}</th>
+        </tr>
+        <tr class="row2">
+            <td valign="top" width="200">{TXT_MEDIADIR_NAME}</td>
+            <td>
+                <input name="levelName[{MEDIADIR_LEVEL_LANG_ID}]" type="text" style="width: 279px;" value="{MEDIADIR_LEVEL_NAME}" />
+                <br />
+            </td>
+        </tr>
+        <tr class="row3">
+            <td valign="top" colspan="2">
+                {TXT_MEDIADIR_DESCRIPTION}
+                <br />
+                {MEDIADIR_LEVEL_DESCRIPTION}
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- END mediadir_level_name_and_description -->
+<br/>
 <input type="submit" name="submitLevelModfyForm" value="{TXT_MEDIADIR_SUBMIT}" />
 </form>
 <!-- END module_mediadir_modify_level.html -->

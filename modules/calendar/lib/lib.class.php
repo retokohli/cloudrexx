@@ -277,6 +277,11 @@ class CalendarLibrary
     {
         global $objDatabase, $_ARRAYLANG, $objInit;
         
+        // only initialize once
+        if ($this->arrSettings) {
+            return;
+        }
+        
     	$arrSettings = array();
         $arrDateSettings =  array(
                             'separatorDateList','separatorDateTimeList', 'separatorSeveralDaysList', 'separatorTimeList',
@@ -636,15 +641,19 @@ EOF;
      */
     protected function handleUniqueId($key) {
         global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
         
         $id = 0;
         if (isset($_REQUEST[$key])) { //an id is specified - we're handling a page reload
             $id = intval($_REQUEST[$key]);
         } else { //generate a new id
-            if (!isset($_SESSION['calendar_last_id']))
-                $_SESSION['calendar_last_id'] = 0;
-            $id = ++$_SESSION['calendar_last_id'];
+            if (!isset($_SESSION['calendar_last_id'])) {
+                $_SESSION['calendar_last_id'] = 1;
+            } else {
+                $_SESSION['calendar_last_id'] += 1;
+            }
+                
+            $id = $_SESSION['calendar_last_id'];
         }
         
         $this->_objTpl->setVariable("{$this->moduleLangVar}_".  strtoupper($key), $id);   
@@ -665,10 +674,10 @@ EOF;
     public static function getTemporaryUploadPath($fieldName, $submissionId) {
         global $sessionObj;
 
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
         
-        $tempPath = $sessionObj->getTempPath();
-        $tempWebPath = $sessionObj->getWebTempPath();
+        $tempPath = $_SESSION->getTempPath();
+        $tempWebPath = $_SESSION->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new Exception('could not get temporary session folder');
 
@@ -680,4 +689,32 @@ EOF;
         );
         return $result;
     }
+        
+    /**
+     * Returns all series dates based on the given post data
+     *       
+     * @return array Array of dates
+     */    
+    function getExeceptionDates()
+    {
+        global $_CORELANG;
+        
+        $exceptionDates = array();
+        
+        $objEvent = new CalendarEvent();
+        $objEvent->loadEventFromPost($_POST);
+
+        $objEventManager = new CalendarEventManager($objEvent->startDate);
+        $objEventManager->_setNextSeriesElement($objEvent);
+        
+        $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
+        foreach ($objEventManager->eventList as $event) {
+            $exceptionDates[date(self::getDateFormat(), $event->startDate)] = $event->startDate != $event->endDate 
+                                                                              ? $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate).' - '. $dayArray[date("w", $event->endDate)] .", ". date(self::getDateFormat(), $event->endDate)
+                                                                              : $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate);
+        }
+        
+        return $exceptionDates;        
+    }
+    
 }

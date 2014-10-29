@@ -184,8 +184,23 @@ class CalendarMailManager extends CalendarLibrary {
         $this->loadMailList($actionId, $mailTemplate);
         
         if (!empty($this->mailList)) {
-            
+
+            $eventManager = new CalendarEventManager();
+
             $objEvent = new CalendarEvent($eventId);
+
+            $eventManager->_setNextSeriesElement($objEvent);
+
+            $lastEvent = null;
+            while ($objEvent->startDate != $_POST['date']){
+                foreach ($eventManager->eventList as $event){
+                    if ($event->startDate == $_POST['date']){
+                        $objEvent = $event;
+                    }
+                    $lastEvent = $event;
+                }
+                $eventManager->_setNextSeriesElement($lastEvent);
+            }
             
             $objRegistration = null;
             if(!empty($regId)) {

@@ -79,6 +79,8 @@ class CheckoutManager extends CheckoutLibrary {
 
         parent::__construct();
 
+        $this->arrStatusMessages['warning'][] = $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_ONLY_FOR_SWITZERLAND'];
+
         $_GET['act'] = !empty($_GET['act']) ? $_GET['act'] : '';
         $_GET['tpl'] = !empty($_GET['tpl']) ? $_GET['tpl'] : '';
 
@@ -573,9 +575,9 @@ class CheckoutManager extends CheckoutLibrary {
             'TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER_MAIL_CONFIRM' => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_CUSTOMER_MAIL_CONFIRM'],
             'TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT'               => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_MAILS_SUBJECT'],
             'CHECKOUT_ADMIN_MAIL_TITLE'                         => $arrAdminMail['title'],
-            'CHECKOUT_ADMIN_MAIL_CONTENT'                       => new \Cx\Core\Wysiwyg\Wysiwyg('adminMail[content]', $arrAdminMail['content'], 'full'),
+            'CHECKOUT_ADMIN_MAIL_CONTENT'                       => new \Cx\Core\Wysiwyg\Wysiwyg('adminMail[content]', $arrAdminMail['content'], 'fullpage'),
             'CHECKOUT_CUSTOMER_MAIL_TITLE'                      => $arrCustomerMail['title'],
-            'CHECKOUT_CUSTOMER_MAIL_CONTENT'                    => new \Cx\Core\Wysiwyg\Wysiwyg('customerMail[content]', $arrCustomerMail['content'], 'full'),
+            'CHECKOUT_CUSTOMER_MAIL_CONTENT'                    => new \Cx\Core\Wysiwyg\Wysiwyg('customerMail[content]', $arrCustomerMail['content'], 'fullpage'),
             'TXT_CORE_SAVE'                                     => $_CORELANG['TXT_SAVE'],
             'TXT_CORE_PLACEHOLDERS'                             => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
             'TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_MAILS_TITLE'    => $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PLACEHOLDERS_MAILS_TITLE'],

@@ -21,14 +21,14 @@ function deletePages(form)
 }
 
 function addPlaceholder(object, placeholder) {
-    var el = jQuery(object);
+    var el = cx.jQuery(object);
     if (el.val() == "") {
         el.val(placeholder);
     }
 }
 
 function removePlaceholder(object, placeholder) {
-    var el = jQuery(object);
+    var el = cx.jQuery(object);
     if (el.val() == placeholder) {
         el.val("");
     }
@@ -80,7 +80,12 @@ $J(document).ready(function() {
       <td valign="top" nowrap="nowrap" width="1%"><b>{TXT_STATUS}</b></td>
       <td valign="top" nowrap="nowrap"><b>{TXT_TITLE}</b></td>
       <td valign="top" nowrap="nowrap"><b>{TXT_VIEW}</b></td>
-      <td valign="top" nowrap="nowrap"><b>{TXT_LANGUAGE}</b></td>
+      <td valign="top" nowrap="nowrap">
+          <!-- BEGIN txt_languages_block -->
+          <b>{TXT_LANGUAGE}</b>
+          <!-- END txt_languages_block -->
+          &nbsp;
+      </td>
       <td valign="top" nowrap="nowrap" width="10%">
         <select id="categoryFilter" style="margin-left: 0; font-weight: bold; font-size: 12px;">
           <option value="0">{TXT_CATEGORY}</option>
@@ -164,7 +169,12 @@ $J(document).ready(function() {
       <td valign="top" nowrap="nowrap" width="1%"><b>#</b></td>
       <td valign="top" nowrap="nowrap" width="1%"><b>{TXT_STATUS}</b></td>
       <td valign="top" nowrap="nowrap"><b>{TXT_TITLE}</b></td>
-      <td valign="top" nowrap="nowrap"><b>{TXT_LANGUAGE}</b></td>
+      <td valign="top" nowrap="nowrap">
+          <!-- BEGIN txt_languages_block_invalidated -->
+          <b>{TXT_LANGUAGE}</b>
+          <!-- END txt_languages_block_invalidated -->
+          &nbsp;
+      </td>
       <td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_CATEGORY}</b></td>
       <td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_USER}</b></td>
       <td valign="top" nowrap="nowrap" width="5%"><b>{TXT_DATE}</b></td>

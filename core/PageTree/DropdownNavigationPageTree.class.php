@@ -135,6 +135,26 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         // if we're going to parse a subnavigation or not
         $this->previousLevel = $level;
     }
+    
+    protected function getFirstLevel() {
+        $match = array();
+        if (preg_match_all('/level_(\d)*/', trim($this->template->_blocks['navigation_dropdown']), $match)) {
+            return intval(current($match[1]));
+        }
+        return 1;
+    }
+
+    protected function getLastLevel() {
+        $match = array();
+        if (preg_match_all('/level_(\d)*/', trim($this->template->_blocks['navigation_dropdown']), $match)) {
+            return intval(end($match[1]));
+        }
+        return 0;
+    }
+    
+    protected function getFullNavigation() {
+        return 1;
+    }
 
     /**
      * @todo: add docbloc

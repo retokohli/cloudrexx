@@ -44,7 +44,10 @@ class Shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Cx\Core\Setting\Controller\Setting::init('shop', 'config');
+        SettingDb::init('shop', 'config');
+
+        $this->checkProfileAttributes();
+
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         self::$objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/shop/template');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -55,6 +58,79 @@ class Shopmanager extends ShopLibrary
             'SHOP_CURRENCY' => Currency::getActiveCurrencySymbol(),
             'CSRF_PARAM' => CSRF::param()
         ));
+    }
+
+    protected function checkProfileAttributes() {
+        $objUser = FWUser::getFWUserObject()->objUser;
+
+        $index_notes = SettingDb::getValue('user_profile_attribute_notes');
+        if ($index_notes) {
+            $objProfileAttribute = $objUser->objAttribute->getById($index_notes);
+            $attributeNames = $objProfileAttribute->getAttributeNames($index_notes);
+            if (empty($attributeNames)) {
+                $index_notes = false;
+            }
+        }
+        if (!$index_notes) {
+//DBG::log("Customer::errorHandler(): Adding notes attribute...");
+//            $objProfileAttribute = new User_Profile_Attribute();
+            $objProfileAttribute = $objUser->objAttribute->getById(0);
+//DBG::log("Customer::errorHandler(): NEW notes attribute: ".var_export($objProfileAttribute, true));
+            $objProfileAttribute->setNames(array(
+                1 => 'Notizen',
+                2 => 'Notes',
+// TODO: Translate
+                3 => 'Notes', 4 => 'Notes', 5 => 'Notes', 6 => 'Notes',
+            ));
+            $objProfileAttribute->setType('text');
+            $objProfileAttribute->setMultiline(true);
+            $objProfileAttribute->setParent(0);
+            $objProfileAttribute->setProtection(array(1));
+//DBG::log("Customer::errorHandler(): Made notes attribute: ".var_export($objProfileAttribute, true));
+            if (!$objProfileAttribute->store()) {
+                throw new Cx\Lib\Update_DatabaseException(
+                    "Failed to create User_Profile_Attribute 'notes'");
+            }
+//DBG::log("Customer::errorHandler(): Stored notes attribute, ID ".$objProfileAttribute->getId());
+            if (!(SettingDb::set('user_profile_attribute_notes', $objProfileAttribute->getId())
+                && SettingDb::update('user_profile_attribute_notes'))) {
+                throw new Cx\Lib\Update_DatabaseException(
+                    "Failed to update User_Profile_Attribute 'notes' setting");
+            }
+//DBG::log("Customer::errorHandler(): Stored notes attribute ID setting");
+        }
+
+        $index_group = SettingDb::getValue('user_profile_attribute_customer_group_id');
+        if ($index_group) {
+            $objProfileAttribute = $objUser->objAttribute->getById($index_notes);
+            $attributeNames = $objProfileAttribute->getAttributeNames($index_group);
+            if (empty($attributeNames)) {
+                $index_group = false;
+            }
+        }
+        if (!$index_group) {
+//            $objProfileAttribute = new User_Profile_Attribute();
+            $objProfileAttribute = $objUser->objAttribute->getById(0);
+            $objProfileAttribute->setNames(array(
+                1 => 'Kundenrabattgruppe',
+                2 => 'Discount group',
+// TODO: Translate
+                3 => 'Kundenrabattgruppe', 4 => 'Kundenrabattgruppe',
+                5 => 'Kundenrabattgruppe', 6 => 'Kundenrabattgruppe',
+            ));
+            $objProfileAttribute->setType('text');
+            $objProfileAttribute->setParent(0);
+            $objProfileAttribute->setProtection(array(1));
+            if (!$objProfileAttribute->store()) {
+                throw new Cx\Lib\Update_DatabaseException(
+                    "Failed to create User_Profile_Attribute 'notes'");
+            }
+            if (!(SettingDb::set('user_profile_attribute_customer_group_id', $objProfileAttribute->getId())
+                && SettingDb::update('user_profile_attribute_customer_group_id'))) {
+                throw new Cx\Lib\Update_DatabaseException(
+                    "Failed to update User_Profile_Attribute 'customer_group_id' setting");
+            }
+        }
     }
 
 
@@ -88,7 +164,7 @@ class Shopmanager extends ShopLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-//DBG::activate(DBG_ERROR_FIREPHP | DBG_LOG);
+//\DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
         }
@@ -204,7 +280,7 @@ class Shopmanager extends ShopLibrary
         $count = 0;
 // TODO: Implement the filter in the Manufacturer class
         $filter = null;
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_manufacturers_per_page_backend');
+        $limit = SettingDb::getValue('numof_manufacturers_per_page_backend');
         $arrManufacturers = Manufacturer::getArray($count,
             $objSorting->getOrder(), Paging::getPosition(), $limit, $filter);
         $i = 0;
@@ -225,8 +301,10 @@ class Shopmanager extends ShopLibrary
         }
         if (!empty($_POST['name'])) $name = contrexx_input2raw($_POST['name']);
         if (!empty($_POST['url'])) $url = contrexx_input2raw($_REQUEST['url']);
-// TODO: Paging
+
+        $currentUrl = clone \Env::get('Resolver')->getUrl();
         self::$objTemplate->setVariable(array(
+            'SHOP_MANUFACTURER_PAGING' => Paging::get($currentUrl, $_ARRAYLANG['TXT_SHOP_MANUFACTURER'], $count, $limit),
             'SHOP_EDIT_MANUFACTURER' => ($manufacturer_id
                 ? $_ARRAYLANG['TXT_SHOP_MANUFACTURER_EDIT']
                 : $_ARRAYLANG['TXT_SHOP_MANUFACTURER_ADD']),
@@ -335,7 +413,10 @@ class Shopmanager extends ShopLibrary
             if (!preg_match('/\.csv$/i', $file['name'])) {
                 Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_EXTENSION_MISMATCH']);
             } else {
-                if (!preg_match('/application\\/vnd\.ms-excel|text\\/(?:plain|csv)/', $file['type'])) {
+                if (!preg_match('
+                    /application\\/vnd\.ms-excel
+                    |text\\/(?:plain|csv|comma-separated-values)
+                    /x', $file['type'])) {
                     Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_TYPE_MISMATCH']);
                 }
             }
@@ -1076,16 +1157,16 @@ class Shopmanager extends ShopLibrary
     {
         global $_ARRAYLANG;
 
-        \Cx\Core\Setting\Controller\Setting::init('shop', 'config');
+        SettingDb::init('shop', 'config');
         if (ShopSettings::storeSettings() === false) {
             // Triggers update
             ShopSettings::errorHandler();
-            \Cx\Core\Setting\Controller\Setting::init('shop', 'config');
+            SettingDb::init('shop', 'config');
         }
         // $success may also be '', in which case no changed setting has
         // been detected.
         // Refresh the Settings, so changes are made visible right away
-        \Cx\Core\Setting\Controller\Setting::init('shop', 'config');
+        SettingDb::init('shop', 'config');
         self::$pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         self::$objTemplate->loadTemplateFile('module_shop_settings.html');
         if (empty($_GET['tpl'])) $_GET['tpl'] = '';
@@ -1333,14 +1414,14 @@ if (!$template) {
             $_REQUEST['active_tab'] = 2;
         }
         $objTemplate = null;
-        $result &= \Cx\Core\Setting\Controller\Setting::show_external(
+        $result &= SettingDb::show_external(
             $objTemplate,
             $_CORELANG['TXT_CORE_MAILTEMPLATES'],
             MailTemplate::overview('shop', 'config',
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend')
+                SettingDb::getValue('numof_mailtemplate_per_page_backend')
             )->get()
         );
-        $result &= \Cx\Core\Setting\Controller\Setting::show_external(
+        $result &= SettingDb::show_external(
             $objTemplate,
             (empty($_REQUEST['key'])
               ? $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD']
@@ -1360,25 +1441,25 @@ if (!$template) {
 
 // TODO: Temporary.  Remove in release with working update
 // Returns NULL on missing entries even when other settings are properly loaded
-$vat_number = \Cx\Core\Setting\Controller\Setting::getValue('vat_number');
+$vat_number = SettingDb::getValue('vat_number');
 if (is_null($vat_number)) {
-    \Cx\Core\Setting\Controller\Setting::add('vat_number', '12345678', 1, 'text', '', 'config');
+    SettingDb::add('vat_number', '12345678', 1, 'text', '', 'config');
 }
 
         // Shop general settings template
         self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE',
             'settings_block', 'module_shop_settings_vat.html');
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
-        $enabled_home_customer = \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_home_customer');
-        $included_home_customer = \Cx\Core\Setting\Controller\Setting::getValue('vat_included_home_customer');
-        $enabled_home_reseller = \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_home_reseller');
-        $included_home_reseller = \Cx\Core\Setting\Controller\Setting::getValue('vat_included_home_reseller');
-        $enabled_foreign_customer = \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_foreign_customer');
-        $included_foreign_customer = \Cx\Core\Setting\Controller\Setting::getValue('vat_included_foreign_customer');
-        $enabled_foreign_reseller = \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_foreign_reseller');
-        $included_foreign_reseller = \Cx\Core\Setting\Controller\Setting::getValue('vat_included_foreign_reseller');
+        $enabled_home_customer = SettingDb::getValue('vat_enabled_home_customer');
+        $included_home_customer = SettingDb::getValue('vat_included_home_customer');
+        $enabled_home_reseller = SettingDb::getValue('vat_enabled_home_reseller');
+        $included_home_reseller = SettingDb::getValue('vat_included_home_reseller');
+        $enabled_foreign_customer = SettingDb::getValue('vat_enabled_foreign_customer');
+        $included_foreign_customer = SettingDb::getValue('vat_included_foreign_customer');
+        $enabled_foreign_reseller = SettingDb::getValue('vat_enabled_foreign_reseller');
+        $included_foreign_reseller = SettingDb::getValue('vat_included_foreign_reseller');
         self::$objTemplate->setVariable(array(
-            'SHOP_VAT_NUMBER' => \Cx\Core\Setting\Controller\Setting::getValue('vat_number'),
+            'SHOP_VAT_NUMBER' => SettingDb::getValue('vat_number'),
             'SHOP_VAT_CHECKED_HOME_CUSTOMER' => ($enabled_home_customer ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_DISPLAY_HOME_CUSTOMER' => ($enabled_home_customer ? 'block' : 'none'),
             'SHOP_VAT_SELECTED_HOME_CUSTOMER_INCLUDED' => ($included_home_customer ? Html::ATTRIBUTE_SELECTED : ''),
@@ -1396,9 +1477,9 @@ if (is_null($vat_number)) {
             'SHOP_VAT_SELECTED_FOREIGN_RESELLER_INCLUDED' => ($included_foreign_reseller ? Html::ATTRIBUTE_SELECTED : ''),
             'SHOP_VAT_SELECTED_FOREIGN_RESELLER_EXCLUDED' => ($included_foreign_reseller ? '' : Html::ATTRIBUTE_SELECTED),
             'SHOP_VAT_DEFAULT_MENUOPTIONS' => Vat::getMenuoptions(
-                \Cx\Core\Setting\Controller\Setting::getValue('vat_default_id'), true),
+                SettingDb::getValue('vat_default_id'), true),
             'SHOP_VAT_OTHER_MENUOPTIONS' => Vat::getMenuoptions(
-                \Cx\Core\Setting\Controller\Setting::getValue('vat_other_id'), true),
+                SettingDb::getValue('vat_other_id'), true),
         ));
         // start value added tax (VAT) display
         // fill in the VAT fields of the template
@@ -1423,87 +1504,87 @@ if (is_null($vat_number)) {
 
 // TODO: Temporary.  Remove in release with working update
 // Returns NULL on missing entries even when other settings are properly loaded
-$test = \Cx\Core\Setting\Controller\Setting::getValue('shopnavbar_on_all_pages');
+$test = SettingDb::getValue('shopnavbar_on_all_pages');
 if ($test === NULL) {
     ShopSettings::errorHandler();
-    \Cx\Core\Setting\Controller\Setting::init('shop', 'config');
+    SettingDb::init('shop', 'config');
 }
 
         self::$objTemplate->setVariable(array(
-            'SHOP_CONFIRMATION_EMAILS' => \Cx\Core\Setting\Controller\Setting::getValue('email_confirmation'),
-            'SHOP_CONTACT_EMAIL' => \Cx\Core\Setting\Controller\Setting::getValue('email'),
-            'SHOP_CONTACT_COMPANY' => \Cx\Core\Setting\Controller\Setting::getValue('company'),
-            'SHOP_CONTACT_ADDRESS' => \Cx\Core\Setting\Controller\Setting::getValue('address'),
-            'SHOP_CONTACT_TEL' => \Cx\Core\Setting\Controller\Setting::getValue('telephone'),
-            'SHOP_CONTACT_FAX' => \Cx\Core\Setting\Controller\Setting::getValue('fax'),
+            'SHOP_CONFIRMATION_EMAILS' => SettingDb::getValue('email_confirmation'),
+            'SHOP_CONTACT_EMAIL' => SettingDb::getValue('email'),
+            'SHOP_CONTACT_COMPANY' => SettingDb::getValue('company'),
+            'SHOP_CONTACT_ADDRESS' => SettingDb::getValue('address'),
+            'SHOP_CONTACT_TEL' => SettingDb::getValue('telephone'),
+            'SHOP_CONTACT_FAX' => SettingDb::getValue('fax'),
             // Country settings
             'SHOP_GENERAL_COUNTRY_MENUOPTIONS' => Country::getMenuoptions(
-                \Cx\Core\Setting\Controller\Setting::getValue('country_id'), false),
+                SettingDb::getValue('country_id'), false),
             // Thumbnail settings
-            'SHOP_THUMBNAIL_MAX_WIDTH' => \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
-            'SHOP_THUMBNAIL_MAX_HEIGHT' => \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'),
-            'SHOP_THUMBNAIL_QUALITY' => \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality'),
+            'SHOP_THUMBNAIL_MAX_WIDTH' => SettingDb::getValue('thumbnail_max_width'),
+            'SHOP_THUMBNAIL_MAX_HEIGHT' => SettingDb::getValue('thumbnail_max_height'),
+            'SHOP_THUMBNAIL_QUALITY' => SettingDb::getValue('thumbnail_quality'),
             // Enable weight setting
-            'SHOP_WEIGHT_ENABLE_CHECKED' => (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable')
+            'SHOP_WEIGHT_ENABLE_CHECKED' => (SettingDb::getValue('weight_enable')
                 ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SHOW_PRODUCTS_DEFAULT_OPTIONS' => Products::getDefaultViewMenuoptions(
-                \Cx\Core\Setting\Controller\Setting::getValue('show_products_default')),
+                SettingDb::getValue('show_products_default')),
             'SHOP_PRODUCT_SORTING_MENUOPTIONS' => Products::getProductSortingMenuoptions(),
             // Order amount upper limit
             'SHOP_ORDERITEMS_AMOUNT_MAX' => Currency::formatPrice(
-                \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max')),
+                SettingDb::getValue('orderitems_amount_max')),
             // Order amount lower limit
             'SHOP_ORDERITEMS_AMOUNT_MIN' => Currency::formatPrice(
-                \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min')),
+                SettingDb::getValue('orderitems_amount_min')),
             'SHOP_CURRENCY_CODE' => Currency::getCurrencyCodeById(
                 Currency::getDefaultCurrencyId()),
             // New extended settings in V3.0.0
             'SHOP_SETTING_CART_USE_JS' =>
                 Html::getCheckbox('use_js_cart', 1, false,
-                    \Cx\Core\Setting\Controller\Setting::getValue('use_js_cart')),
+                    SettingDb::getValue('use_js_cart')),
             'SHOP_SETTING_SHOPNAVBAR_ON_ALL_PAGES' =>
                 Html::getCheckbox('shopnavbar_on_all_pages', 1, false,
-                    \Cx\Core\Setting\Controller\Setting::getValue('shopnavbar_on_all_pages')),
+                    SettingDb::getValue('shopnavbar_on_all_pages')),
             'SHOP_SETTING_REGISTER' => Html::getSelectCustom('register',
                 ShopLibrary::getRegisterMenuoptions(
-                    \Cx\Core\Setting\Controller\Setting::getValue('register')), false, '',
+                    SettingDb::getValue('register')), false, '',
                     'style="width: 270px;"'),
             'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_BACKEND' =>
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_products_per_page_backend'),
+                SettingDb::getValue('numof_products_per_page_backend'),
             'SHOP_SETTING_NUMOF_ORDERS_PER_PAGE_BACKEND' =>
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend'),
+                SettingDb::getValue('numof_orders_per_page_backend'),
             'SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND' =>
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_customers_per_page_backend'),
+                SettingDb::getValue('numof_customers_per_page_backend'),
             'SHOP_SETTING_NUMOF_MANUFACTURERS_PER_PAGE_BACKEND' =>
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_manufacturers_per_page_backend'),
+                SettingDb::getValue('numof_manufacturers_per_page_backend'),
             'SHOP_SETTING_NUMOF_MAILTEMPLATE_PER_PAGE_BACKEND' =>
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend'),
+                SettingDb::getValue('numof_mailtemplate_per_page_backend'),
             'SHOP_SETTING_NUMOF_COUPON_PER_PAGE_BACKEND' =>
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_coupon_per_page_backend'),
-// TODO: Use \Cx\Core\Setting\Controller\Setting::show(), and add a proper setting type!
+                SettingDb::getValue('numof_coupon_per_page_backend'),
+// TODO: Use SettingDb::show(), and add a proper setting type!
             'SHOP_SETTING_USERGROUP_ID_CUSTOMER' =>
                 Html::getSelect(
                     'usergroup_id_customer',
                     UserGroup::getNameArray(),
-                    \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer'),
+                    SettingDb::getValue('usergroup_id_customer'),
                     '', '', 'tabindex="0" style="width: 270px;"'),
             'SHOP_SETTING_USERGROUP_ID_RESELLER' =>
                 Html::getSelect(
                     'usergroup_id_reseller',
                     UserGroup::getNameArray(),
-                    \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller'),
+                    SettingDb::getValue('usergroup_id_reseller'),
                     '', '', 'tabindex="0" style="width: 270px;"'),
             'SHOP_SETTING_USER_PROFILE_ATTRIBUTE_CUSTOMER_GROUP_ID' =>
                 Html::getSelect(
                     'user_profile_attribute_customer_group_id',
                     User_Profile_Attribute::getCustomAttributeNameArray(),
-                    \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_group_id'),
+                    SettingDb::getValue('user_profile_attribute_customer_group_id'),
                     '', '', 'tabindex="0" style="width: 270px;"'),
             'SHOP_SETTING_USER_PROFILE_ATTRIBUTE_NOTES' =>
                 Html::getSelect(
                     'user_profile_attribute_notes',
                     User_Profile_Attribute::getCustomAttributeNameArray(),
-                    \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes'),
+                    SettingDb::getValue('user_profile_attribute_notes'),
                     '', '', 'tabindex="0" style="width: 270px;"'),
         ));
     }
@@ -1564,8 +1645,8 @@ if ($test === NULL) {
                 }
             }
         }
-        $max_width = intval(\Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'));
-        $max_height = intval(\Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'));
+        $max_width = intval(SettingDb::getValue('thumbnail_max_width'));
+        $max_height = intval(SettingDb::getValue('thumbnail_max_height'));
         if (empty($max_width)) $max_width = 1e5;
         if (empty($max_height)) $max_height = 1e5;
         $count = ShopCategories::getTreeNodeCount();
@@ -1715,9 +1796,9 @@ if ($test === NULL) {
                 ASCMS_SHOP_IMAGES_PATH.'/',
                 ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                 $picture,
-                \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
-                \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'),
-                \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality')
+                SettingDb::getValue('thumbnail_max_width'),
+                SettingDb::getValue('thumbnail_max_height'),
+                SettingDb::getValue('thumbnail_quality')
             )) {
                 Message::warning($_ARRAYLANG['TXT_SHOP_ERROR_CREATING_CATEGORY_THUMBNAIL']);
             }
@@ -2148,7 +2229,7 @@ if ($test === NULL) {
                 Discount::getMenuOptionsGroupArticle($discount_group_article_id),
             'SHOP_KEYWORDS' => contrexx_raw2xhtml($keywords),
             // Enable JavaScript functionality for the weight if enabled
-            'SHOP_WEIGHT_ENABLED' => (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable')
+            'SHOP_WEIGHT_ENABLED' => (SettingDb::getValue('weight_enable')
                 ? 1 : 0),
         ));
         return true;
@@ -2342,9 +2423,9 @@ if ($test === NULL) {
                     ASCMS_SHOP_IMAGES_PATH.'/',
                     ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                     $arrImage['img'],
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'),
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality')
+                    SettingDb::getValue('thumbnail_max_width'),
+                    SettingDb::getValue('thumbnail_max_height'),
+                    SettingDb::getValue('thumbnail_quality')
                 )) {
                     Message::error(sprintf($_ARRAYLANG['TXT_SHOP_COULD_NOT_CREATE_THUMBNAIL'],
                         $arrImage['img']));
@@ -2410,14 +2491,6 @@ if ($test === NULL) {
             $edit = true;
         } elseif ($result === true) {
             $edit = false;
-        }
-        if($edit){
-            $order_id = intval($_REQUEST['order_id']);
-            $objOrder = Order::getById($order_id);
-            $options = $objOrder->getOptionArray();
-            if(!empty($options[$order_id])){
-                $edit = false;
-            }
         }
         if ($edit) {
             self::$pageTitle = $_ARRAYLANG['TXT_EDIT_ORDER'];
@@ -2490,8 +2563,8 @@ if ($test === NULL) {
         $customer_type = null;
         $searchterm = null;
         $listletter = null;
-        $group_id_customer = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
-        $group_id_reseller = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
+        $group_id_customer = SettingDb::getValue('usergroup_id_customer');
+        $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
         $uri = Html::getRelativeUri();
 // TODO: Strip what URI parameters?
         Html::stripUriParam($uri, 'active');
@@ -2556,7 +2629,7 @@ if ($test === NULL) {
             'SHOP_HEADING_CUSTOMER_EMAIL' => $objSorting->getHeaderForField('email'),
             'SHOP_HEADING_CUSTOMER_ACTIVE' => $objSorting->getHeaderForField('active'),
         ));
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_customers_per_page_backend');
+        $limit = SettingDb::getValue('numof_customers_per_page_backend');
         $objCustomer = Customers::get(
             $arrFilter, ($listletter ? $listletter.'%' : $searchterm),
             array($objSorting->getOrderField() => $objSorting->getOrderDirection()),
@@ -2751,7 +2824,7 @@ if ($test === NULL) {
 // TODO: TEST
         $count = NULL;
         $orders = Orders::getArray($count, NULL, array(), Paging::getPosition(),
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend'));
+                SettingDb::getValue('numof_orders_per_page_backend'));
         $i = 1;
         foreach ($orders as $order) {
             Currency::init($order->currency_id());
@@ -3059,10 +3132,11 @@ if ($test === NULL) {
             '`product`.`stock`' => $_ARRAYLANG['TXT_SHOP_PRODUCT_STOCK'],
         );
         $objSorting = new Sorting($url, $arrSorting, false, 'order_shop_product');
-        $count = $limit =
-            \Cx\Core\Setting\Controller\Setting::getValue('numof_products_per_page_backend');
+        $limit = SettingDb::getValue('numof_products_per_page_backend');
         $tries = 2;
         while ($tries--) {
+            // have to set $count again because it will be set to 0 in Products::getByShopParams
+            $count = $limit;
             // Mind that $count is handed over by reference.
             $arrProducts = Products::getByShopParams(
                 $count, Paging::getPosition(),
@@ -3126,7 +3200,7 @@ if ($test === NULL) {
                 'SHOP_ROWCLASS' => 'row'.(++$i % 2 + 1),
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
                 'SHOP_PRODUCT_CODE' => $objProduct->code(),
-                'SHOP_PRODUCT_NAME' => $objProduct->name(),
+                'SHOP_PRODUCT_NAME' => contrexx_raw2xhtml($objProduct->name()),
                 'SHOP_PRODUCT_PRICE1' => Currency::formatPrice($objProduct->price()),
                 'SHOP_PRODUCT_PRICE2' => Currency::formatPrice($objProduct->resellerprice()),
                 'SHOP_PRODUCT_DISCOUNT' => Currency::formatPrice($objProduct->discountprice()),
@@ -3154,8 +3228,7 @@ if ($test === NULL) {
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD' =>
                     ($objProduct->shown_on_startpage() ? '1' : ''),
 // This is used when the Product name can be edited right on the overview
-                'SHOP_PRODUCT_NAME' => htmlentities(
-                    $objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_NAME' => contrexx_raw2xhtml($objProduct->name()),
             ));
             // All languages active
             foreach ($arrLanguages as $lang_id => $arrLanguage) {
@@ -3524,10 +3597,11 @@ if ($test === NULL) {
             'lang_id' => $lang_id,
             'to' =>
                 $arrSubstitution['CUSTOMER_EMAIL'],
-                //.','.\Cx\Core\Setting\Controller\Setting::getValue('email_confirmation'),
+                //.','.SettingDb::getValue('email_confirmation'),
             'substitution' => &$arrSubstitution,
         );
-        return MailTemplate::send($arrMailTemplate);
+        if (!MailTemplate::send($arrMailTemplate)) return false;
+        return $arrSubstitution['CUSTOMER_EMAIL'];
     }
 
 

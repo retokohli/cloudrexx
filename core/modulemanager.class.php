@@ -86,6 +86,11 @@ class modulemanager
                 $this->modModules();
                 $this->showModules();
                 break;
+            case "changestatus":
+                Permission::checkAccess(23, 'static');
+                $this->changeModuleStatus();
+                $this->showModules();
+                break;
             default:
                 Permission::checkAccess(23, 'static');
                 $this->showModules();
@@ -106,6 +111,29 @@ class modulemanager
     }
 
 
+    function changeModuleStatus()
+    {
+        global $objDatabase, $_CORELANG;
+        
+        $moduleId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : 0;
+        $status   = isset($_GET['status']) ? contrexx_input2raw($_GET['status']) : 0;
+        
+        $query = "UPDATE 
+                    `".DBPREFIX."modules`
+                  SET
+                    `is_active` = '". contrexx_raw2db($status) ."'
+                  WHERE 
+                    `id` = '" . contrexx_raw2db($moduleId) . "'";
+        $objResult = $objDatabase->Execute($query);
+        
+        if ($objResult) {            
+            $this->strOkMessage = $status ? $_CORELANG['TXT_MODULE_ACTIVATED_SUCCESSFULLY'] : $_CORELANG['TXT_MODULE_DEACTIVATED_SUCCESSFULLY'];
+        } else {
+            $this->errorHandling();
+            return false;
+        }
+    }
+    
     function getModules()
     {
         global $objDatabase;
@@ -157,7 +185,8 @@ class modulemanager
                 m.description_variable,
                 m.is_core,
                 m.is_required,
-                m.is_active
+                m.is_active,
+                m.is_licensed
             FROM
                 '.DBPREFIX.'modules AS m
             WHERE
@@ -168,22 +197,39 @@ class modulemanager
         ';
         $i = 0;
         $objResult = $objDatabase->Execute($query);
+        
+        $statusLink = '<a href="index.php?cmd=modulemanager&amp;act=changestatus&amp;id=%d&amp;status=%d"> %s </a>';
+        $statusIcon = '<img src="images/icons/%s" alt="" />';
+        
+        $moduleLink = '<a href="index.php?cmd=%s"> %s </a>';
+        $moduleArchiveLink = '<a href="index.php?cmd=%s&amp;archive=%s"> %s </a>';
+        
         if ($objResult) {
             while (!$objResult->EOF) {
-                $class = (++$i % 2 ? 'row1' : 'row2');
+                $class = (++$i % 2 ? 'row1' : 'row2');                                  
                 if (   in_array($objResult->fields['id'], $arrayInstalledModules)
                     || $objResult->fields['id'] == 6) {
+                    $moduleStatusLink = $objResult->fields['is_active'] 
+                                        ? sprintf($statusLink, (int) $objResult->fields['id'], 0, sprintf($statusIcon, 'led_green.gif'))
+                                        : sprintf($statusLink, (int) $objResult->fields['id'], 1, sprintf($statusIcon, 'led_red.gif'));
+                    
                     $objTemplate->setVariable(array(
                         'MODULE_REMOVE'  => "<input type='checkbox' name='removeModule[".$objResult->fields['id']."]' value='0' />",
                         'MODULE_INSTALL' => "&nbsp;",
-                        'MODULE_STATUS'  => ($objResult->fields['is_active'] ? "<img src='images/icons/led_green.gif' alt='' />" : "<img src='images/icons/led_orange.gif' alt='' />")
+                        'MODULE_STATUS'  => $moduleStatusLink
                     ));
                 } else  {
+                    $moduleStatusLink = $objResult->fields['is_licensed'] 
+                                        ? ( $objResult->fields['is_active'] 
+                                           ? sprintf($statusLink, $objResult->fields['id'], 0, sprintf($statusIcon, 'led_green.gif'))
+                                           : sprintf($statusLink, $objResult->fields['id'], 1, sprintf($statusIcon, 'led_red.gif'))
+                                          )
+                                        : sprintf($statusLink, $objResult->fields['id'], 1, sprintf($statusIcon, 'led_red.gif'));
                     $objTemplate->setVariable(array(
                         'MODULE_INSTALL' => ($objResult->fields['is_active'] ? "<input type='checkbox' name='installModule[".$objResult->fields['id']."]' value='1' />" : ''),
                         'MODULE_REMOVE'  => "&nbsp;",
-                        'MODULE_STATUS'  => "<img src='images/icons/led_red.gif' alt='' />"
-                    ));
+                        'MODULE_STATUS'  => $moduleStatusLink
+                    ));                                       
                 }
 
                 /*
@@ -204,17 +250,36 @@ class modulemanager
                 } else {
                     $literalName = ucfirst($objResult->fields['name']);
                 }
+                
+                if (!in_array($objResult->fields['name'], array('agb', 'error', 'home', 'ids', 'imprint', 'login', 'privacy', 'search', 'sitemap'))   
+                    && (   in_array($objResult->fields['id'], $arrayInstalledModules)
+                        || $objResult->fields['id'] == 6)
+                    ) {
+                        switch ($objResult->fields['name']) {
+                            case 'media1':
+                            case 'media2':
+                            case 'media3':
+                            case 'media4':
+                                $archiveId   = substr($objResult->fields['name'], 5,1);
+                                $literalName = sprintf($moduleArchiveLink, 'media', 'archive'.$archiveId, $literalName);
+                                break;
+                            default:
+                                $literalName = sprintf($moduleLink, $objResult->fields['name'], $literalName);
+                                break;
+                        }
+                }
+                
                 $objTemplate->setVariable('MODULE_NAME', $literalName . ' (' . $objResult->fields['name'] . ')');
 
                 // Required Modules
                 if ($objResult->fields['is_required'] == 1) {
                     $class = 'highlighted';
                     $objTemplate->setVariable(array(
-                        'MODULE_REQUIRED' => $_CORELANG['TXT_REQUIRED'],
+                        'MODULE_REQUIRED' => $_CORELANG['TXT_REQUIRED'] . ' ' . (!$objResult->fields['is_licensed'] ? $_CORELANG['TXT_LICENSE_NOT_LICENSED'] : ''),
                         'MODULE_REMOVE'   => '&nbsp;'
                     ));
                 } else {
-                    $objTemplate->setVariable('MODULE_REQUIRED', $objResult->fields['is_active'] ? $_CORELANG['TXT_OPTIONAL'] : $_CORELANG['TXT_LICENSE_NOT_LICENSED']);
+                    $objTemplate->setVariable('MODULE_REQUIRED', $_CORELANG['TXT_OPTIONAL']);
                 }
 
                 if (isset($_CORELANG[$objResult->fields['description_variable']])) {
@@ -389,41 +454,40 @@ class modulemanager
     function removeModules()
     {
         global $objDatabase;
-return false;
-        if (isset($_POST['removeModule']) && is_array($_POST['removeModule'])) {
-            foreach (array_keys($_POST['removeModule']) as $moduleId) {
-                
-                $query = "
-                    SELECT name
-                    FROM ".DBPREFIX."modules
-                    WHERE id='" . $moduleId . "'
-                ";
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult) {
-                    if (!$objResult->EOF) {
-                        $moduleName = $objResult->fields['name'];
-                    }
-                } else {
-                    $this->errorHandling();
-                    return false;
-                }
 
-                $em = \Env::get('em');
-                $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-                $pages = $pageRepo->findBy(array(
-                    'module' => $moduleName,
-                    'lang' => $this->langId,
-                ));
-                foreach ($pages as $page) {
-                    $em->remove($page->getNode());
-                    $em->flush();
-                }
-            }
-            return true;
-        } else {
+        if (!isset($_POST['removeModule']) || !is_array($_POST['removeModule'])) {
             return false;
         }
 
+        $em = \Env::get('em');
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        $nodes = array();
+        foreach (array_keys($_POST['removeModule']) as $moduleId) {
+            $query = "
+                SELECT name
+                FROM ".DBPREFIX."modules
+                WHERE id='" . $moduleId . "'
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult || $objResult->EOF) {
+                $this->errorHandling();
+                return false;
+            }
+            $pages = $pageRepo->findBy(array(
+                'module' => $objResult->fields['name'],
+            ));
+            foreach ($pages as $page) {
+                $nodes[$page->getNode()->getLft()] = $page->getNode()->getId();
+            }
+        }
+        ksort($nodes);
+        $jd = new \Cx\Core\Json\JsonData();
+        $status = $jd->data('node', 'multipleDelete', array('post'=>array('nodes'=>$nodes, 'currentNodeId' => 0)));
+        if (!$status['status'] == 'success') {
+            return false;
+        }
+        return true;
     }
 
 

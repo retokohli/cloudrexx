@@ -250,10 +250,12 @@
                 <a id="page_skin_edit" href="javascript:void(0)">{TXT_EDIT}</a>
             </div>
             <div class="line big_space">
-                <select id="page_skin" name="page[skin]">
+                <select class="select_small" id="page_skin" name="page[skin]">
                     <option value="0">(Default)</option>
                     {SKIN_OPTIONS}
                 </select>
+                <label><input type="checkbox" name="page[useSkinForAllChannels]" value="1" id="use-skin-all-channels" />{TXT_CORE_CM_USE_ALL_CHANNELS}</label>
+                <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_USE_SKIN_ALL_CHANNELS_INFO}</span>
                 <div class="inherit">
                     <input type="checkbox" name="inheritSkin" value="on" id="inherit-skin" />
                     <label for="inherit-skin">{TXT_RECURSIVE_CHANGE}</label>
@@ -265,9 +267,11 @@
                 <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_CUSTOM_CONTENT_INFO}</span>
             </div>
             <div class="line big_space">
-                <select id="page_custom_content" name="page[customContent]">
+                <select class="select_small" id="page_custom_content" name="page[customContent]">
                     <option value="">(Default)</option>
                 </select>
+                <label><input type="checkbox" name="page[useCustomContentForAllChannels]" value="1" id="use-custom-content-all-channels" />{TXT_CORE_CM_USE_ALL_CHANNELS}</label>
+                <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CORE_CM_USE_CUSTOM_CONTENT_ALL_CHANNELS_INFO}</span>
                 <div class="inherit">
                     <input type="checkbox" name="inheritCustomContent" value="on" id="inherit-custom-content" />
                     <label for="inherit-custom-content">{TXT_RECURSIVE_CHANGE}</label>

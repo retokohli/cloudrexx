@@ -72,9 +72,9 @@ class SocialLogin
      */
     public static function getProviders()
     {
-        \Cx\Core\Setting\Controller\Setting::init('access', 'sociallogin');
+        \SettingDb::init('access', 'sociallogin');
 
-        $settingProviders = json_decode(\Cx\Core\Setting\Controller\Setting::getValue('providers'));
+        $settingProviders = json_decode(\SettingDb::getValue('providers'));
         foreach ($settingProviders as $providerName => $providerData) {
             $class = self::getClassByProvider($providerName);
             if ($class != null) {
@@ -101,9 +101,9 @@ class SocialLogin
      */
     public static function updateProviders($providers)
     {
-        \Cx\Core\Setting\Controller\Setting::init('access', 'sociallogin');
-        \Cx\Core\Setting\Controller\Setting::set('providers', json_encode($providers));
-        \Cx\Core\Setting\Controller\Setting::update('providers');
+        \SettingDb::init('access', 'sociallogin');
+        \SettingDb::set('providers', json_encode($providers));
+        \SettingDb::update('providers');
     }
 
     /**

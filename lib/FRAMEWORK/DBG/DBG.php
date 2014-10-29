@@ -104,6 +104,30 @@ class DBG
         }
     }
 
+    public static function activateIf($condition, $mode = null) {
+        if (
+            (!is_callable($condition) && $condition) ||
+            (is_callable($condition) && $condition())
+        ) {
+            static::activate($mode);
+        }
+    }
+    
+    public static function isIp($ip) {
+        return $_SERVER['REMOTE_ADDR'] == $ip;
+    }
+    
+    public static function hasCookie($cookieName) {
+        return isset($_COOKIE[$cookieName]);
+    }
+    
+    public static function hasCookieValue($cookieName, $cookieValue) {
+        if (!static::hasCookie($cookieName)) {
+            return false;
+        }
+        return $_COOKIE[$cookieName] == $cookieValue;
+    }
+
 
     /**
      * Deactivates debugging according to the bits given in $mode
@@ -311,7 +335,14 @@ class DBG
         while (file_exists($file.$suffix)) {
             $suffix = '.'.++$nr;
         }*/
-        if (class_exists('\Cx\Lib\FileSystem\File')) {
+        if ($file == 'php://output') {
+			self::$dbg_fh = fopen($file, $mode);
+            if (self::$dbg_fh) {
+                return true;
+            } else {
+                return false;
+            }
+		} elseif (class_exists('\Cx\Lib\FileSystem\File')) {
             try {
                 self::$dbg_fh = new \Cx\Lib\FileSystem\File($file.$suffix);
                 self::$dbg_fh->touch();

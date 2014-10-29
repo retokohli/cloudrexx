@@ -48,19 +48,29 @@ class BlogAdmin extends BlogLibrary {
 
         $isAdmin = $objFWUser->objUser->getAdminStatus();
         //if(in_array(120, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog" 
+                    class="'.($_GET['act'] == '' ? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>';
         //}
         if(in_array(121, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=addEntry" 
+                    class="'.(in_array($_GET['act'], array('addEntry', 'editEntry')) ? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>';
         }
         if(in_array(122, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=manageCategory">'.$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=manageCategory" 
+                    class="'.(in_array($_GET['act'], array('manageCategory', 'manageCategory')) ? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>';
         }
         if(in_array(125, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=networks">'.$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=networks" 
+                    class="'.(in_array($_GET['act'], array('networks', 'editNetwork')) ? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>';
         }
         if(in_array(124, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=settings">'.$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=settings" 
+                    class="'.(in_array($_GET['act'], array('settings'))? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>';
         }
 
         $objTemplate->setVariable('CONTENT_NAVIGATION', $strNavigation);
@@ -602,13 +612,19 @@ class BlogAdmin extends BlogLibrary {
                 ));
 
                 //Check active languages
-                $langState = array();
-                foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
-                    if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
-                        $langState[$intLangId] = 'active';
-                    }
+                $strActiveLanguages = '';
+                if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+			        $langState = array();
+			        foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
+			            if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
+			                $langState[$intLangId] = 'active';
+			            }
+			        }
+			        $strActiveLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=blog&amp;act=editEntry&amp;id=' . $intEntryId . '&amp;langId=%1$d');
+                    $this->_objTpl->touchBlock('txt_languages_block');
+                } else {
+                    $this->_objTpl->hideBlock('txt_languages_block');
                 }
-                $strActiveLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=blog&amp;act=editEntry&amp;id=' . $intEntryId . '&amp;langId=%1$d');
 
                 $this->_objTpl->setVariable(array(
                     'ENTRY_ROWCLASS'        =>  ($intRowClass % 2 == 0) ? 'row1' : 'row2',

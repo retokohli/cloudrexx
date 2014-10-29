@@ -115,7 +115,7 @@ class AliasAdmin extends aliasLib
 
     function _list()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_CORELANG, $_ARRAYLANG, $_CONFIG;
 
         $showLegacyPagealiases = isset($_GET['legacyPages']) && $_GET['legacyPages'];
 
@@ -125,6 +125,7 @@ class AliasAdmin extends aliasLib
             'TXT_ALIAS_ALIASES' => $_ARRAYLANG['TXT_ALIAS_ALIASES'],
             'TXT_ALIAS_SHOW_LEGACY_PAGE_ALIASES' => $_ARRAYLANG['TXT_ALIAS_SHOW_LEGACY_PAGE_ALIASES'],
             'ALIAS_SHOW_LEGACY_PAGE_ALIASES_CHECKED' => $showLegacyPagealiases ? 'checked="checked"' : '',
+            'ALIAS_SHOW_LEGACY_PAGE_VALUE' => intval($showLegacyPagealiases),
         ));
 
         // show warning message if contrexx is running on an IIS webserver and the web.config seems not be be registred in the server configuration
@@ -143,8 +144,21 @@ class AliasAdmin extends aliasLib
                 DBG::msg($objException->getMessage());
             }
         }
-
-        $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit'], false, $showLegacyPagealiases);
+        
+        // Alias search was triggerd
+        if(!empty($_GET['term'])){
+            $slug = '%' . $_GET['term'] . '%';
+            $this->_objTpl->setVariable('ALIAS_SEARCH_TERM', contrexx_input2xhtml($_GET['term']));
+        } else {
+            $slug = null;
+        }
+        
+        // search for aliases
+        $this->_objTpl->setVariable(array(
+            'TXT_SEARCH'        => $_CORELANG['TXT_SEARCH'],
+        ));
+        
+        $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit'], false, $showLegacyPagealiases, $slug);
 
         if ($this->hasLegacyPages) {
             $this->_objTpl->touchBlock('alias_show_legacy_pages');
@@ -206,8 +220,9 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->parse('alias_data');
             $this->_objTpl->hideBlock('alias_no_data');
 
-            if ($this->_getAliasesCount($showLegacyPagealiases) > count($arrAliases)) {
-                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount($showLegacyPagealiases), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&cmd=alias&legacyPages=' . ($showLegacyPagealiases ? 1 : 0), $_ARRAYLANG['TXT_ALIAS_ALIASES']));
+            $aliasesCount = $this->_getAliasesCount($showLegacyPagealiases, $slug);
+            if ($aliasesCount > count($arrAliases)) {
+                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($aliasesCount, !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&cmd=alias&legacyPages=' . ($showLegacyPagealiases ? 1 : 0) . (isset($_GET['term']) ? '&term=' . $_GET['term'] : ''), $_ARRAYLANG['TXT_ALIAS_ALIASES']));
             }
         } else {
             $this->_objTpl->setVariable('TXT_ALIAS_NO_ALIASES_MSG', $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG']);

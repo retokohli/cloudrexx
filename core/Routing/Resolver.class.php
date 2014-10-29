@@ -200,7 +200,7 @@ class Resolver {
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
-                                $sessionObj = new \cmsSession();
+                                $sessionObj = \cmsSession::getInstance();
                             }
                             $this->init($url, $this->lang, \Env::em(), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
@@ -275,9 +275,9 @@ class Resolver {
                                 }*/
 
 
-                            \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent());
+                            \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent(), $page->getUseSkinForAllChannels());
 
-                            $themesPages = \Env::get('init')->getTemplates();
+                            $themesPages = \Env::get('init')->getTemplates($page);
 
                             //replace the {NODE_<ID>_<LANG>}- placeholders
                             \LinkGenerator::parseTemplate($themesPages);
@@ -411,7 +411,6 @@ class Resolver {
             header('Connection: close');
             exit;
         }
-
         return $this->page;
     }
     
@@ -447,7 +446,6 @@ class Resolver {
 
             //(I) see what the model has for us
             $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
-            
             if (isset($result['page']) && $result['page'] && $this->pagePreview) {
                 if (empty($this->sessionPage)) {
                     if (\Permission::checkAccess(6, 'static', true)) {
@@ -570,7 +568,7 @@ class Resolver {
                 if ($langId != $this->lang) {
                     $this->lang = $langId;
                     $this->url->setLangDir(\FWLanguage::getLanguageCodeById($langId));
-                    $this->pathOffset = ASCMS_INSTANCE_OFFSET.'/'.\FWLanguage::getLanguageCodeById($langId);
+                    $this->pathOffset = ASCMS_INSTANCE_OFFSET;
                 }
 
                 $targetPath = substr($targetPage->getPath(), 1);
@@ -648,7 +646,7 @@ class Resolver {
         if ($section) {
             if ($section == 'logout') {
                 if (empty($sessionObj)) {
-                    $sessionObj = new \cmsSession();
+                    $sessionObj = \cmsSession::getInstance();
                 }
                 if ($objFWUser->objUser->login()) {
                     $objFWUser->logout();
@@ -711,6 +709,13 @@ class Resolver {
      */
     public function handleFallbackContent($page, $requestedPage = true) {
         //handle untranslated pages - replace them by the right language version.
+
+        // Important: We must reset the modified $page object here.
+        // Otherwise the EntityManager holds false information about the page.
+        // I.e. type might be 'application' instead of 'fallback'
+        // See bug-report #1536
+        $page = $this->pageRepo->findOneById($page->getId());
+
         if($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
             // in case the first resolved page (= original requested page) is a fallback page
             // we must check here if this very page is active.
@@ -741,12 +746,6 @@ class Resolver {
             // be reset, when we reset (see next command) the original
             // requested page $page.
             $this->page = clone $page;
-
-            // Important: We must reset the modified $page object here.
-            // Otherwise the EntityManager holds false information about the page.
-            // I.e. type might be 'application' instead of 'fallback'
-            // See bug-report #1536
-            $this->em->refresh($page);
 
             // Due to the fallback-resolving, the virtual language directory
             // is currently set to the fallback language. Therefore we must set
@@ -804,18 +803,18 @@ class Resolver {
             && (   !isset($_REQUEST['section'])
                 || $_REQUEST['section'] != 'login')
         ) {
-            if (empty($sessionObj)) $sessionObj = new \cmsSession();
-            $sessionObj->cmsSessionStatusUpdate('frontend');
+            if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
+            $_SESSION->cmsSessionStatusUpdate('frontend');
             if (\FWUser::getFWUserObject()->objUser->login()) {
                 if ($page_protected) {
                     if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {
-                        $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                        $link=base64_encode(\Env::get('cx')->getRequest()->toString());
                         \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
                         exit;
                     }
                 }
                 if ($history && !\Permission::checkAccess(78, 'static', true)) {
-                    $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                    $link=base64_encode(\Env::get('cx')->getRequest()->toString());
                     \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
                     exit;
                 }
@@ -825,7 +824,7 @@ class Resolver {
                 if (isset($_GET['redirect'])) {
                     $link = $_GET['redirect'];
                 } else {
-                    $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                    $link=base64_encode(\Env::get('cx')->getRequest()->toString());
                 }
                 \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', '', '', array('redirect' => $link)));
                 exit;

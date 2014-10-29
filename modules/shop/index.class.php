@@ -85,8 +85,11 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         }
         if (self::use_session()) {
             global $sessionObj;
-            if (empty($sessionObj)) $sessionObj = new cmsSession();
+            if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
         }
+        if (!isset($_SESSION['shop'])) {
+            $_SESSION['shop'] = array();
+		}
         if (   empty($_REQUEST['section'])
             || $_REQUEST['section'] != 'shop'.MODULE_INDEX) {
             global $_ARRAYLANG, $objInit;
@@ -96,12 +99,12 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         // Check session and user data, log in if present.
         // The Customer is required to properly calculate prices in the Cart
         self::_authenticate();
-        \Cx\Core\Setting\Controller\Setting::init('shop', 'config');
+        SettingDb::init('shop', 'config');
         if (isset($_REQUEST['remoteJs'])) return;
         // Javascript Cart: Shown when active,
         // either on shop pages only, or on any
-        if (   \Cx\Core\Setting\Controller\Setting::getValue('use_js_cart')
-            && (   \Cx\Core\Setting\Controller\Setting::getValue('shopnavbar_on_all_pages')
+        if (   SettingDb::getValue('use_js_cart')
+            && (   SettingDb::getValue('shopnavbar_on_all_pages')
                 || (   isset($_REQUEST['section'])
                     && $_REQUEST['section'] == 'shop'.MODULE_INDEX
                     && (   empty($_REQUEST['cmd'])
@@ -113,7 +116,6 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 //DBG::log("Shop::init(): section {$_REQUEST['section']}, cmd {$_REQUEST['cmd']}: Calling setJsCart()");
             self::setJsCart();
         }
-        self::registerJavascriptCode();
 //DBG::log("Shop::init(): After setJsCart: shopnavbar: {$themesPages['shopnavbar']}");
         self::$initialized = true;
     }
@@ -139,6 +141,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 //\DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
 //\DBG::activate(DBG_LOG_FILE);
         self::init();
+        self::registerJavascriptCode();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         // PEAR Sigma template
         self::$objTemplate = new \Cx\Core\Html\Sigma('.');
@@ -152,7 +155,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             $_SESSION['shop']['countryId2'] =
                 (isset($_POST['countryId2'])
                   ? intval($_POST['countryId2'])
-                  : \Cx\Core\Setting\Controller\Setting::getValue('country_id'));
+                  : SettingDb::getValue('country_id'));
         }
 // TODO: This should be set up in a more elegant way
         Vat::is_reseller(self::$objCustomer && self::$objCustomer->is_reseller());
@@ -160,7 +163,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         if (isset($_REQUEST['coupon_code'])) {
             global $sessionObj;
             if (!$sessionObj) {
-                $sessionObj = new \cmsSession();
+                $sessionObj = \cmsSession::getInstance();
             }
             $_SESSION['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
@@ -248,7 +251,7 @@ die("Failed to get Customer for ID $customer_id");
                     'substitution' => &$arrSubstitution,
                     'to' => 'reto.kohli@comvation.com',
 //                        $arrSubstitution['CUSTOMER_EMAIL'].','.
-//                        \Cx\Core\Setting\Controller\Setting::getValue('email_confirmation'),
+//                        SettingDb::getValue('email_confirmation'),
 //                    'do_not_strip_empty_placeholders' => true,
                 );
                 DBG::activate(DBG_LOG_FIREPHP);
@@ -491,7 +494,7 @@ die("Failed to get Customer for ID $customer_id");
     {
         global $_ARRAYLANG, $themesPages;
 
-        if (!\Cx\Core\Setting\Controller\Setting::getValue('use_js_cart')) return;
+        if (!SettingDb::getValue('use_js_cart')) return;
         $objTemplate = new \Cx\Core\Html\Sigma('.');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $match = null;
@@ -541,6 +544,7 @@ die("Failed to get Customer for ID $customer_id");
         }
         if (!self::$use_js_cart) return;
 
+        self::registerJavascriptCode();
         ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_CART_IS_LOADING', $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] ,'shop/cart');
         ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_COULD_NOT_LOAD_CART', $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] ,'shop/cart');
         ContrexxJavascript::getInstance()->setVariable('TXT_EMPTY_SHOPPING_CART', $_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'] ,'shop/cart');
@@ -678,7 +682,7 @@ die("Failed to update the Cart!");
             $_SESSION['shop']['shipment_price'] = 0;
         Vat::is_home_country(
                empty($_SESSION['shop']['countryId2'])
-            || $_SESSION['shop']['countryId2'] == \Cx\Core\Setting\Controller\Setting::getValue('country_id'));
+            || $_SESSION['shop']['countryId2'] == SettingDb::getValue('country_id'));
         // VAT enabled?
         if (Vat::isEnabled()) {
             // VAT included?
@@ -884,7 +888,10 @@ die("Failed to update the Cart!");
     {
         global $_ARRAYLANG;
 
-        $flagSpecialoffer = intval(\Cx\Core\Setting\Controller\Setting::getValue('show_products_default'));
+        // activate javascript shadowbox
+        JS::activate('shadowbox');
+
+        $flagSpecialoffer = intval(SettingDb::getValue('show_products_default'));
         if (isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'discounts') {
             $flagSpecialoffer = Products::DEFAULT_VIEW_DISCOUNTS;
         }
@@ -910,15 +917,19 @@ die("Failed to update the Cart!");
         }
         // Validate parameters
         if ($product_id && empty($category_id)) {
-            if (isset($_SESSION['shop']['previous_category_id'])) {
-                $category_id = $_SESSION['shop']['previous_category_id'];
+            $objProduct = Product::getById($product_id);
+            if ($objProduct) {
+                $category_id = $objProduct->category_id();
             }
-            if (!$category_id) {
-                $objProduct = Product::getById($product_id);
-                if ($objProduct) {
-                    $category_id = $objProduct->category_id();
+            if (isset($_SESSION['shop']['previous_category_id'])) {
+                $category_id_previous = $_SESSION['shop']['previous_category_id'];
+                foreach (preg_split('/\s*,\s*/', $category_id) as $id) {
+                    if ($category_id_previous == intval($id)){
+                        $category_id = $category_id_previous;
+                    }
                 }
             }
+
         }
         $objCategory = null;
         if ($category_id && empty($product_id)) {
@@ -997,9 +1008,9 @@ die("Failed to update the Cart!");
         // The Product count is passed by reference and set to the total
         // number of records, though only as many as specified by the core
         // paging limit are returned in the array.
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_products_per_page_frontend');
+        $limit = SettingDb::getValue('numof_products_per_page_frontend');
 // TODO: Use Sorting class for the Product order
-        $order = \Cx\Core\Setting\Controller\Setting::getValue('product_sorting');
+        $order = SettingDb::getValue('product_sorting');
         $count = $limit;
         $arrProduct = Products::getByShopParams(
             $count, Paging::getPosition(),
@@ -1060,7 +1071,7 @@ die("Failed to update the Cart!");
         // Global microdata: Seller information
         $seller_url =
             \Cx\Core\Routing\Url::fromModuleAndCmd('shop', '')->toString();
-        $seller_name = \Cx\Core\Setting\Controller\Setting::getValue('company');
+        $seller_name = SettingDb::getValue('company');
         if (empty ($seller_name)) $seller_name = $seller_url;
         self::$objTemplate->setVariable(array(
             'SHOP_SELLER_NAME' => $seller_name,
@@ -1138,9 +1149,9 @@ die("Failed to update the Cart!");
                         'TXT_SEE_LARGE_PICTURE' => $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'],
                     ));
                 } else {
-                    self::$objTemplate->setVariable(array(
-                        'TXT_SEE_LARGE_PICTURE' => $objProduct->name(),
-                    ));
+                    self::$objTemplate->setVariable(
+                        'TXT_SEE_LARGE_PICTURE',
+                        contrexx_raw2xhtml($objProduct->name()));
                 }
                 if ($arrProductImage['POPUP_LINK']) {
                     self::$objTemplate->setVariable(
@@ -1246,7 +1257,7 @@ die("Failed to update the Cart!");
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.$row,
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
-                'SHOP_PRODUCT_TITLE' => htmlentities($objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_TITLE' => contrexx_raw2xhtml($objProduct->name()),
                 'SHOP_PRODUCT_DESCRIPTION' => $short,
 // TODO: Test whether this produces double descriptions in some views
                 'SHOP_PRODUCT_DETAILDESCRIPTION' => ($longDescription
@@ -1366,7 +1377,7 @@ die("Failed to update the Cart!");
 
             // Hide the weight if it is zero or disabled in the configuration
             if (   $weight > 0
-                && \Cx\Core\Setting\Controller\Setting::getValue('weight_enable')) {
+                && SettingDb::getValue('weight_enable')) {
                 self::$objTemplate->setVariable(array(
                     'TXT_SHOP_PRODUCT_WEIGHT' => $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'],
                     'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($weight),
@@ -1427,7 +1438,7 @@ die("Failed to update the Cart!");
         global $objInit, $_ARRAYLANG;
 
         $_ARRAYLANG += $objInit->loadLanguageData('shop');
-        if (!\Cx\Core\Setting\Controller\Setting::init('shop', 'config')) return false;
+        if (!SettingDb::init('shop', 'config')) return false;
         $original_REQUEST = &$_REQUEST;
         self::$objTemplate = new \Cx\Core\Html\Sigma();
         self::$objTemplate->setTemplate($content);
@@ -1858,17 +1869,18 @@ die("Failed to update the Cart!");
      * with it, the $flagUpload parameter *MUST* be set to true.  Note that this
      * will force the respective product form to use mutipart/form-data encoding
      * and disable the JSON cart for the complete page.
-     * @param   boolean $flagUpload         Force the POST cart to be used if true
+     * //@param   boolean $flagUpload         Force the POST cart to be used if true
      * @global  array   $_ARRAYLANG         Language array
      * @global  array   $_CONFIGURATION     Core configuration array, see {@link /config/settings.php}
-     *
+     * @todo    Reimplement the $flagUpload parameter
      */
-    static function registerJavascriptCode($flagUpload=false)
+    static function registerJavascriptCode()//$flagUpload=false)
     {
         global $_ARRAYLANG;//, $_CONFIGURATION;
 
+        // needed for cart
+        JS::activate('cx');
         JS::activate('jquery');
-        JS::activate('shadowbox');
 
 // Update prices with options included
 // TODO Also consider Customer type (reseller, final customer)
@@ -1906,7 +1918,7 @@ die("Failed to update the Cart!");
     {
         if (self::$objCustomer) return true;
         $objUser = FWUser::getFWUserObject()->objUser;
-        global $sessionObj;
+        
         if ($objUser->login()) {
             self::$objCustomer = Customer::getById($objUser->getId());
             if (self::$objCustomer) {
@@ -1914,7 +1926,7 @@ die("Failed to update the Cart!");
                 $_SESSION['shop']['username'] = self::$objCustomer->username();
                 $_SESSION['shop']['email'] = self::$objCustomer->email();
 //DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().', email '.self::$objCustomer->email().")");
-                $sessionObj->cmsSessionUserUpdate(self::$objCustomer->id());
+                $_SESSION->cmsSessionUserUpdate(self::$objCustomer->id());
                 return true;
             }
         }
@@ -1947,14 +1959,14 @@ die("Failed to update the Cart!");
         global $_ARRAYLANG;
 
         if (   isset($_POST['bnoaccount'])
-            && \Cx\Core\Setting\Controller\Setting::getValue('register') != self::REGISTER_MANDATORY) {
+            && SettingDb::getValue('register') != self::REGISTER_MANDATORY) {
             $_SESSION['shop']['dont_register'] = true;
         } else {
             $_SESSION['shop']['dont_register'] = false;
         }
 // TODO: Even though no one can register herself, there still might
 // be registered Customers already!
-//        if (\Cx\Core\Setting\Controller\Setting::getValue('register') == self::REGISTER_NONE) {
+//        if (SettingDb::getValue('register') == self::REGISTER_NONE) {
 //            \CSRF::redirect(
 //                Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'account'));
 //        }
@@ -1986,7 +1998,7 @@ die("Failed to update the Cart!");
           'SHOP_LOGIN_REDIRECT' => base64_encode(
             Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'account'))
         ));
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('register')) {
+        switch (SettingDb::getValue('register')) {
             case self::REGISTER_MANDATORY:
                 if (self::$objTemplate->blockExists('register'))
                     self::$objTemplate->touchBlock('register');
@@ -2108,7 +2120,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             // Compatibility with 2.0 and older versions
             'SHOP_ACCOUNT_COUNTRY' => Country::getMenu('countryId', $country_id),
         ));
-        $register = \Cx\Core\Setting\Controller\Setting::getValue('register');
+        $register = SettingDb::getValue('register');
 
 /**
  * @internal  Heavy logic ahead!
@@ -2293,8 +2305,8 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         // Registered Customers are okay now
         if (self::$objCustomer) return $status;
-        if (   \Cx\Core\Setting\Controller\Setting::getValue('register') == ShopLibrary::REGISTER_MANDATORY
-            || (   \Cx\Core\Setting\Controller\Setting::getValue('register') == ShopLibrary::REGISTER_OPTIONAL
+        if (   SettingDb::getValue('register') == ShopLibrary::REGISTER_MANDATORY
+            || (   SettingDb::getValue('register') == ShopLibrary::REGISTER_OPTIONAL
                 && empty($_SESSION['shop']['dont_register']))) {
             if (   isset($_SESSION['shop']['password'])
                 && !User::isValidPassword($_SESSION['shop']['password'])) {
@@ -2741,12 +2753,12 @@ die("Shop::processRedirect(): This method is obsolete!");
                 ? contrexx_raw2xhtml($_SESSION['shop']['account_blz']) : ''),
             'SHOP_CUSTOMER_ACCOUNT' => '', // not available
             'SHOP_DATE' => date(ASCMS_DATE_FORMAT_DATE),
-            'SHOP_FAX' => contrexx_raw2xhtml(\Cx\Core\Setting\Controller\Setting::getValue('fax')),
+            'SHOP_FAX' => contrexx_raw2xhtml(SettingDb::getValue('fax')),
             'SHOP_COMPANY' => contrexx_raw2xhtml(
-                \Cx\Core\Setting\Controller\Setting::getValue('company')),
+                SettingDb::getValue('company')),
             'SHOP_ADDRESS' => contrexx_raw2xhtml(
                 preg_replace('/[\012\015]+/', ', ',
-                    \Cx\Core\Setting\Controller\Setting::getValue('address'))),
+                    SettingDb::getValue('address'))),
         ));
     }
 
@@ -2761,7 +2773,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         if (   Cart::get_weight() > 0
-            && \Cx\Core\Setting\Controller\Setting::getValue('weight_enable')) {
+            && SettingDb::getValue('weight_enable')) {
             self::$objTemplate->setVariable(array(
                 'SHOP_TOTAL_WEIGHT' => Weight::getWeightString(Cart::get_weight()),
             ));
@@ -2914,7 +2926,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 self::$objTemplate->setVariable(
                     'SHOP_PRODUCT_OPTIONS', $attributes);
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable')) {
+            if (SettingDb::getValue('weight_enable')) {
                 self::$objTemplate->setVariable(array(
                     'SHOP_PRODUCT_WEIGHT' => $weight,
                     'TXT_WEIGHT' => $_ARRAYLANG['TXT_WEIGHT'],
@@ -3092,8 +3104,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 // to order without registration.  The generated one
                 // defaults to length 8, fulfilling the requirements for
                 // complex passwords.  And it's kept absolutely secret.
-                $password = ((empty($_SESSION['shop']['password']) || 
-                        \Cx\Core\Setting\Controller\Setting::getValue('register') == ShopLibrary::REGISTER_OPTIONAL)
+                $password = (empty($_SESSION['shop']['password'])
                     ? User::make_password()
                     : $_SESSION['shop']['password']);
 //\DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
@@ -3120,7 +3131,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objCustomer->fax($_SESSION['shop']['fax']);
 
         $arrGroups = self::$objCustomer->getAssociatedGroupIds();
-        $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
+        $usergroup_id = SettingDb::getValue('usergroup_id_reseller');
         if (empty($usergroup_id)) {
 //DBG::log("Shop::process(): ERROR: Missing reseller group");
             Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
@@ -3130,7 +3141,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (!in_array($usergroup_id, $arrGroups)) {
 //DBG::log("Shop::process(): Customer is not in Reseller group (ID $usergroup_id)");
             // Not a reseller.  See if she's a final customer
-            $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
+            $usergroup_id = SettingDb::getValue('usergroup_id_customer');
             if (empty($usergroup_id)) {
 //DBG::log("Shop::process(): ERROR: Missing final customer group");
                 Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);

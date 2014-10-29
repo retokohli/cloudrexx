@@ -107,6 +107,80 @@ class newsLibrary
     }
 
     /**
+     * Generates the formated ul/li of Archive list
+     * Used in the template's
+     * 
+     * @return string Formated ul/li of Archive list
+     */
+    public function getNewsArchiveList() {
+        $monthlyStats = $this->getMonthlyNewsStats();
+
+        $html = '';
+        if (!empty($monthlyStats)) {
+            $newsArchiveLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'archive');
+            
+            $html  = '<ul class="news_archive">';
+            foreach ($monthlyStats as $key => $value) {
+                $html .= '<li><a href="'.$newsArchiveLink.'#'.$key.'" title="'.$value['name'].'">'.$value['name'].'</a></li>';
+            }
+            $html .= '</ul>';
+        }
+        
+        return $html;
+    }
+    
+    /**
+     * Generates the formated ul/li of categories
+     * Used in the template's
+     * 
+     * @return string Formated ul/li of categories
+     */
+    public function getNewsCategories()
+    {
+        
+        $categoriesLang = $this->getCategoriesLangData();
+        
+        return $this->_buildNewsCategories($this->nestedSetRootId, $categoriesLang);
+    }
+    
+    /**
+     * Generates the formated ul/li of categories
+     * Used in the template's
+     * 
+     * @return string Formated ul/li of categories
+     */
+    function _buildNewsCategories($catId, $categoriesLang)
+    {
+        if ($this->categoryExists($catId)) {
+            
+            $category = $this->objNestedSet->pickNode($catId, true);            
+            if ($catId != $this->nestedSetRootId) {
+                $html .= "<li>";
+                
+                $newsUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('news');                
+                $newsUrl->setParam('category', $catId);
+                
+                $html .= '<a href="'.$newsUrl.'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'</a>';
+            }
+            
+            $subCategories = $this->objNestedSet->getChildren($catId, true);
+            if (!empty($subCategories)) {
+                $html .= "<ul class='news_category_lvl_{$category['level']}'>";
+                foreach ($subCategories as $subCat) {
+                    $html .= $this->_buildNewsCategories($subCat['id'], $categoriesLang);
+                }
+                $html .= "</ul>";
+            }
+            
+            if ($catId != $this->nestedSetRootId) {
+                $html .= "</li>";
+            }
+        }
+        
+        return $html;
+    }
+
+    /**
      * Generates the category menu.
      *
      * @access  protected
@@ -123,6 +197,7 @@ class newsLibrary
         } else if (!is_array($categories)) {
             $categories = array(intval($categories));
         }
+
         $nestedSetCategories = $this->getNestedSetCategories($categories);
 
         if ($onlyCategoriesWithEntries) {
@@ -142,7 +217,12 @@ class newsLibrary
                 continue;
             }
             $selected = $category['id'] == $selectedCategory ? 'selected="selected"' : '';
-            $options .= '<option value="'.$category['id'].'" '.$selected.'>'.str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level)).contrexx_raw2xhtml($categoriesLang[$category['id']][BACKEND_LANG_ID]).'</option>';
+            $options .= '<option value="'.$category['id'].'" '.$selected.'>'
+                    .str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level))
+                    .contrexx_raw2xhtml($categoriesLang[$category['id']][
+                        \Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND ? BACKEND_LANG_ID : FRONTEND_LANG_ID
+                    ])
+                    .'</option>';
         }
 
         return $options;
@@ -850,7 +930,7 @@ class newsLibrary
      * @return  string      $cmd
      */
     protected function findCmdById($cmdName, $cmdId, $cmdSeparator=',', $module='news', $lang=FRONTEND_LANG_ID)
-    {
+    {        
         $qb = \Env::get('em')->createQueryBuilder();
         $qb ->select('p', 'LENGTH(p.cmd) AS length')
             ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p')
@@ -907,4 +987,116 @@ class newsLibrary
         }
         return false;
     }
+    
+    /**
+     * Returns the news monthly stats by the given filters
+     * 
+     * @access protected
+     * @param  array     $category      category filter
+     * 
+     * @return array     $monthlyStats  Monthly status array
+     */
+    protected function getMonthlyNewsStats($categories) {
+        global $objDatabase, $_CORELANG;
+        
+        $categoryFilter = '';
+        if (!empty($categories)) {
+           $categoryFilter .= ' AND (n.catid = '.implode(' OR n.catid = ', array_map('intval', $categories)).')';            
+        }
+
+        $query = "SELECT            n.id             AS id,
+                                    n.date           AS date,
+                                    n.changelog      AS changelog,
+                                    n.redirect       AS newsredirect,
+                                    nl.title         AS newstitle,
+                                    n.catid          AS cat
+                            FROM    ".DBPREFIX."module_news AS n LEFT JOIN  ".DBPREFIX."module_news_locale AS nl ON nl.news_id = n.id
+                            WHERE   n.validated = '1'
+                                    AND n.status = 1
+                                    AND nl.lang_id = ".FRONTEND_LANG_ID."
+                                    AND nl.is_active=1
+                                    ".$categoryFilter."
+                                    " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                    ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                        " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
+                                        :   " AND frontend_access_id=0 ")
+                                    :   '')
+                            ."ORDER BY date DESC";
+
+        $objResult = $objDatabase->Execute($query);
+
+        if ($objResult !== false) {
+            $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
+            while (!$objResult->EOF) {
+                $filterDate = $objResult->fields['date'];
+                $newsYear = date('Y', $filterDate);
+                $newsMonth = date('m', $filterDate);
+                if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
+                    $monthlyStats[$newsYear.'_'.$newsMonth]['name'] = $arrMonthTxt[date('n', $filterDate) - 1].' '.$newsYear;
+                }
+                $monthlyStats[$newsYear.'_'.$newsMonth]['news'][] = $objResult->fields;
+                $objResult->MoveNext();
+            }
+        }
+        
+        return $monthlyStats;
+    }
+    
+    /**
+     * Parses a user's account and profile data specified by $userId.
+     * If the \Cx\Core\Html\Sigma template block specified by $blockName
+     * exists, then the user's data will be parsed inside this block.
+     * Otherwise, it will try to parse a template variable by the same
+     * name. For instance, if $blockName is set to news_publisher,
+     * it will first try to parse the template block news_publisher,
+     * if unable it will parse the template variable NEWS_PUBLISHER.
+     *
+     * @param   object  Template object \Cx\Core\Html\Sigma
+     * @param   integer User-ID
+     * @param   string  User name/title that shall be used as fallback,
+     *                  if no user account specified by $userId could be found
+     * @param   string  Name of the \Cx\Core\Html\Sigma template block to parse.
+     *                  For instance if you have a block like:
+     *                      <!-- BEGIN/END news_publisher -->
+     *                  set $blockName to:
+     *                      news_publisher
+     */
+    public static function parseUserAccountData($objTpl, $userId, $userTitle, $blockName)
+    {
+        $placeholderName = strtoupper($blockName);
+
+        if ($userId && $objUser = FWUser::getFWUserObject()->objUser->getUser($userId)) {
+            if ($objTpl->blockExists($blockName)) {
+                // fill the template block user (i.e. news_publisher) with the user account's data 
+                $objTpl->setVariable(array(
+                    $placeholderName.'_ID'          => $objUser->getId(),
+                    $placeholderName.'_USERNAME'    => contrexx_raw2xhtml($objUser->getUsername())
+                ));
+                
+                $objAccessLib = new AccessLib($objTpl);
+                $objAccessLib->setModulePrefix($placeholderName.'_');
+                $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+                    $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, FALSE, false, false, false);
+                    $objUser->objAttribute->next();
+                }
+            } elseif ($objTpl->placeholderExists($placeholderName)) {
+                // fill the placeholder (i.e. NEWS_PUBLISHER) with the user title
+                $userTitle = FWUser::getParsedUserTitle($userId);
+                $objTpl->setVariable($placeholderName, contrexx_raw2xhtml($userTitle));
+            }
+        } elseif (!empty($userTitle)) {
+            if ($objTpl->blockExists($blockName)) {
+                // replace template block (i.e. news_publisher) by the user title
+                $objTpl->replaceBlock($blockName, contrexx_raw2xhtml($userTitle));
+            } elseif ($objTpl->placeholderExists($placeholderName)) {
+                // fill the placeholder (i.e. NEWS_PUBLISHER) with the user title
+                $objTpl->setVariable($placeholderName, contrexx_raw2xhtml($userTitle));
+            }
+        }
+    }
+
 }

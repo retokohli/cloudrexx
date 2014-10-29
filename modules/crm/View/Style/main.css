@@ -216,16 +216,13 @@ table#general-info tr td:first-child {
 #profile-photo h4{
     margin: 5px 0;
 }
-#formerr {
-    margin-bottom: 5px;
+#formerr, #newContact {
+    margin: 0px 0px 15px 0px;
     display: none;
-    clear: left;
-    background-color: rgb(255, 204, 204);
-    border: 1px solid;
-    color: rgb(255, 0, 0);
-    font-size: 12px;
-    line-height: 14px;
-    padding: 5px;
+    overflow: auto;
+    background-color: #F2DEDE;
+    color: #B94A48;
+    padding: 8px;
 }
 #content table.adminlist a,
 #content table.adminlist a:link,

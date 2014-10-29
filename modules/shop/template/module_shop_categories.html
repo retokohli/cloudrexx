@@ -265,10 +265,10 @@ function SetUrl(url, width, height, alt) {
     factor = imgRatioWidth;
   }
   var file_name = /.*\/(.*?)$/.exec(url)[1];
-  jQuery("#img").attr('value', url);
-  jQuery("#img_name").html(file_name);
-  jQuery("#img_remove").show();
-  jQuery("#img_img")
+  cx.jQuery("#img").attr('value', url);
+  cx.jQuery("#img_name").html(file_name);
+  cx.jQuery("#img_remove").show();
+  cx.jQuery("#img_img")
     .attr("src", url)
     .css("width", (width/factor)+"px")
     .css("height", (height/factor)+"px");
@@ -277,10 +277,10 @@ function cancelEdit() {
   window.location.replace("index.php?{CSRF_PARAM}&cmd=shop{MODULE_INDEX}&act=categories");
 }
 function remove_image() {
-  jQuery("#img").val("");
-  jQuery("#img_name").html("{TXT_SHOP_IMAGE_UNDEFINED}");
-  jQuery("#img_remove").hide();
-  jQuery("#img_img").attr("src", "../images/shop/no_picture.gif");//hide();//
+  cx.jQuery("#img").val("");
+  cx.jQuery("#img_name").html("{TXT_SHOP_IMAGE_UNDEFINED}");
+  cx.jQuery("#img_remove").hide();
+  cx.jQuery("#img_img").attr("src", "../images/shop/no_picture.gif");//hide();//
 }
 // ]]></script>
 <!-- END shop_categories.html -->

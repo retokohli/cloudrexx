@@ -45,14 +45,6 @@ class JsonContentManager implements JsonAdapter {
     }
     
     /**
-     * Returns default permission as object
-     * @return Object
-     */
-    public function getDefaultPermissions() {
-        return null;
-    }
-    
-    /**
      * Saves the toggle statuses in the session.
      * @param Array $params Client parameters
      * @author Yannic Tschanz <yannic.tschanz@comvation.com>

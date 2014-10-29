@@ -93,6 +93,7 @@ h1{ font-size: 20px }
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
     margin-left: -1px;
+    min-height: 31px;
 }
 
 #content-manager.edit_view #site-language {
@@ -1060,6 +1061,10 @@ div.date img{
     width: 574px;
 }
 
+#page select.select_small {
+    width: 287px;
+}
+
 #page input[type=radio],
 #page input[type=checkbox],
 #page input[type=submit],
@@ -1413,4 +1418,7 @@ div.date img{
 
 #content-manager.edit_view .chosen-container {
     width: 352px !important;
+}
+.margin0 {
+    margin:0px !important;
 }

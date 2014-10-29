@@ -1,5 +1,4 @@
 <?php
-@ini_set('date.timezone', 'Europe/Zurich');
 /**
  * This file loads everything needed to load Contrexx. Just require this file
  * and execute \init($mode); while $mode is optional. $mode can be one of
@@ -29,8 +28,7 @@ if (version_compare($php, '5.3.0') < 0) {
 }
 
 global $_PATHCONFIG;
-
-/** 
+/**
  * Load config for this instance
  */
 $configFilePath = dirname(dirname(dirname(__FILE__))).'/config/configuration.php';
@@ -60,30 +58,6 @@ require_once dirname(dirname(dirname(__FILE__))).'/lib/FRAMEWORK/DBG/DBG.php';
 /**
  * If you activate debugging here, it will be activated everywhere (even in cronjobs, since they should base on this too)
  */
+//\DBG::activate(DBG_PHP);
 
-    //\DBG::activate(DBG_PHP);
-
-	require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Repository/WebsiteRepository.class.php';
-	require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Core/Model/Entity/EntityBase.class.php';
-	require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/License/Person.class.php';
-	require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Entity/Website.class.php';   
-    $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
-	$subdomain = current(explode('.', $_SERVER['HTTP_HOST']));
-	global $multiSiteWebsiteOffset, $multiSiteWebsiteName;
-	$multiSiteWebsiteOffset = '';
-	$multiSiteWebsiteName = '';
-	$website = $multiSiteRepo->findByName($_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/websites', $subdomain);
-    if ($website) {
-	//foreach ($multiSiteRepo->findAll($_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/websites/') as $website) {
-	//	if ($subdomain == strtolower($website->getName())) {
-			//\DBG::activate(DBG_PHP);
-			$_PATHCONFIG['ascms_root_offset'] .= '/websites/'.$website->getName();
-			$multiSiteWebsiteOffset .= '/websites/'.$website->getName();
-			$multiSiteWebsiteName = $website->getName();
-			$pathconfigBackup = $_PATHCONFIG;
-    		require_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/configuration.php';
-			//$_PATHCONFIG = $pathconfigBackup;
-	//		break;
-	//	}
-	}
-    require_once dirname(dirname(dirname(__FILE__))).'/core/Core/Controller/Cx.class.php';
+require_once dirname(dirname(dirname(__FILE__))).'/core/Core/Controller/Cx.class.php';

@@ -63,6 +63,32 @@ class NestedNavigationPageTree extends SigmaPageTree {
         }
     }
     
+    protected function getFirstLevel() {
+        $match = array();
+        if (preg_match('/levels_([1-9])([1-9\+]*)(_full)?/', trim($this->template->_blocks['nested_navigation']), $match)) {
+            return intval($match[1]);
+        }
+        return 1;
+    }
+    
+    protected function getLastLevel() {
+        $match = array();
+        if (preg_match('/levels_([1-9])([1-9\+]*)(_full)?/', trim($this->template->_blocks['nested_navigation']), $match)) {
+            if($match[2] != '+')
+                return intval($match[2]);
+        }
+        return 0;
+    }
+    
+    protected function getFullNavigation() {
+        $match = array();
+        if (preg_match('/levels_([1-9])([1-9\+]*)(_full)?/', trim($this->template->_blocks['nested_navigation']), $match)) {
+            if(isset($match[3]))
+                return true;
+        }
+        return false;
+    }
+    
     protected function realPreRender($lang) {
         // checks which levels to use
         // default is 1+ (all)

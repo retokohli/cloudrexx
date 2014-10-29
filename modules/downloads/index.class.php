@@ -375,7 +375,7 @@ class downloads extends DownloadsLibrary
 
             $info = pathinfo($file);
 
-            $cleanFile = self::cleanFileName($file);
+            $cleanFile = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
             if ($cleanFile != $file) {
                 rename($tempPath.'/'.$file, $tempPath.'/'.$cleanFile);
                 $file = $cleanFile;
@@ -417,35 +417,6 @@ class downloads extends DownloadsLibrary
            files are present in $tempPath */
 
         return array($path, $webPath);
-    }
-
-    protected static function cleanFileName($string) {
-        //contrexx file name policies
-        $string = FWValidator::getCleanFileName($string);
-
-        //media library special changes; code depends on those
-        // replace $change with ''
-        $change = array('+');
-        // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
-        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
-
-        foreach ($change as $str) {
-            $string = str_replace($str, '_', $string);
-        }
-        for ($x = 0; $x < count($signs1); $x++) {
-            $string = str_replace($signs1[$x], $signs2[$x], $string);
-        }
-        $string = str_replace('__', '_', $string);
-        if (strlen($string) > 60) {
-            $info       = pathinfo($string);
-            $stringExt  = $info['extension'];
-
-            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
-            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
-            $string     = $stringName.'.'.$stringExt;
-        }
-        return $string;
     }
 
     public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads, $sourceName)

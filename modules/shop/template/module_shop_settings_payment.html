@@ -8,9 +8,23 @@ function deletePayment(pId)
 }
 // ]]>
 </script>
+<style type="text/css">
+    .table {
+        display: table;
+    }
+    .table-row {
+        display: table-row;
+    }
+    .table-cell {
+        display: table-cell;
+    }
+</style>
 <!-- BEGIN statusBar -->
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
+<div class="infobox">
+    {TXT_SHOP_PAYMENT_POSTFINANCE_ONLY_FOR_SWITZERLAND}
+</div>
 <ul id="tabmenu">
   <li><a id="paymentTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_PAYMENT_TYPE}">{TXT_PAYMENT_TYPES}</a></li>
   <li><a id="paymentTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
@@ -346,6 +360,71 @@ function deletePayment(pId)
       <td class="a_center">
         <input type="checkbox" name="paypal_active" value="1"
                {SHOP_PAYPAL_STATUS} />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td>{TXT_SHOP_PAYMILL}</td>
+      <td>          
+          <label for="paymill_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+          <input name="paymill_swapper" id="paymill_swapper" type="checkbox" onclick="swapBlock('paymill');" value="1" />&nbsp;
+        <div id="paymill" style="display:none;">
+          <table width="100%">
+            <tr>
+              <td class="table" style="width:100%">
+                  <div class="table-row">
+                        <div style="width:20%" class="table-cell">{TXT_SHOP_MODE}</div>
+                        <div style="width:80%" class="table-cell">
+                            <select name="paymill_use_test_account" style="width: 270px;">
+                                <option value="0" {SHOP_PAYMILL_TEST_SELECTED} >{TXT_SHOP_TEST}</option>
+                                <option value="1" {SHOP_PAYMILL_LIVE_SELECTED} >{TXT_SHOP_LIVE}</option>
+                            </select>                            
+                        </div>
+                  </div>
+              </td>
+            </tr>
+            <tr>
+                <td>{TXT_SHOP_PAYMILL_TEST_ACCOUNT}</td>
+            </tr>
+            <tr>
+                <td class="table" style="width:100%">
+                    <div class="table-row">
+                        <div style="width:20%" class="table-cell">{TXT_SHOP_PAYMILL_PRIVATE_KEY}</div>
+                        <div style="width:80%" class="table-cell">
+                            <input type="text" name="paymill_test_private_key" value="{SHOP_PAYMILL_TEST_PRIVATE_KEY}" style="width: 270px;" maxlength="254" style="margin-bottom:1px;" />
+                        </div>
+                    </div>
+                    <div class="table-row">
+                        <div style="width:20%" class="table-cell">{TXT_SHOP_PAYMILL_PUBLIC_KEY}</div>
+                        <div style="width:80%" class="table-cell">
+                            <input type="text" name="paymill_test_public_key" value="{SHOP_PAYMILL_TEST_PUBLIC_KEY}" style="width: 270px;" maxlength="254" style="margin-bottom:1px;" />
+                        </div>
+                    </div>
+                </td>
+            </tr>  
+            <tr>
+                <td>{TXT_SHOP_PAYMILL_LIVE_ACCOUNT}</td>
+            </tr>
+            <tr>
+                <td class="table" style="width:100%">
+                    <div class="table-row">
+                        <div style="width:20%" class="table-cell">{TXT_SHOP_PAYMILL_PRIVATE_KEY}</div>
+                        <div style="width:80%" class="table-cell">
+                            <input type="text" name="paymill_live_private_key" value="{SHOP_PAYMILL_LIVE_PRIVATE_KEY}" style="width: 270px;" maxlength="254" style="margin-bottom:1px;" />
+                        </div>
+                    </div>
+                    <div class="table-row">
+                        <div style="width:20%" class="table-cell">{TXT_SHOP_PAYMILL_PUBLIC_KEY}</div>
+                        <div style="width:80%" class="table-cell">
+                            <input type="text" name="paymill_live_public_key" value="{SHOP_PAYMILL_LIVE_PUBLIC_KEY}" style="width: 270px;" maxlength="254" style="margin-bottom:1px;" />
+                        </div>
+                    </div>
+                </td>
+            </tr>                        
+          </table>
+        </div>
+      </td>
+      <td class="a_center">
+        <input type="checkbox" name="paymill_active" value="1" {SHOP_PAYMILL_STATUS} />
       </td>
     </tr>
     <tr class="row1">

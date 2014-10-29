@@ -659,6 +659,7 @@ class jobsManager extends jobsLibrary
         $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
         $author =  get_magic_quotes_gpc() ? strip_tags($_POST['author']) : addslashes(strip_tags($_POST['author']));
 
+        $date = $this->_checkDate(date('H:i:s d.m.Y'));
         $dberr = false;
         $locset = '';                //set of location that is associated with this job in the POST Data
         $locset_indb = '';           //set of locations that is associated with this job in the db
@@ -720,6 +721,7 @@ class jobsManager extends jobsLibrary
             'status' => array('val' => $status, 'omitEmpty' => true),
             'userid' => array('val' => $userid, 'omitEmpty' => true),
             'changelog' => array('val' => $date, 'omitEmpty' => true),
+            'catId' => array('val' => $catId, 'omitEmpty' => true),
         ))." WHERE id = $id;";
       
         if (!$objDatabase->Execute($query) or $dberr) {

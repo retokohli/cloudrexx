@@ -33,21 +33,21 @@ class Paging
      * @access  public
      * @global  array     $_CONFIG        Configuration
      * @global  array     $_CORELANG      Core language
-     * @param   integer   $numof_rows     The number of rows available
-     * @param   integer   $position       The optional starting position
-     *                                    offset.  Defaults to null
      * @param   string    $uri_parameter  Optional additional URI parameters,
      *                                    *MUST* start with an URI encoded
      *                                    ampersand (&amp;).  By reference
      * @param   string    $paging_text    The text to be put in front of the
      *                                    paging
-     * @param   boolean   $showeverytime  If true, the paging is shown even if
-     *                                    $numof_rows is less than
-     *                                    $results_per_page
+     * @param   integer   $numof_rows     The number of rows available
      * @param   integer   $results_per_page   The optional maximum number of
      *                                    rows to be shown on a single page.
      *                                    Defaults to the corePagingLimit
      *                                    setting.
+     * @param   boolean   $showeverytime  If true, the paging is shown even if
+     *                                    $numof_rows is less than
+     *                                    $results_per_page
+     * @param   integer   $position       The optional starting position
+     *                                    offset.  Defaults to null
      * @param   string    $parameter_name The optional name for the URI
      *                                    parameter.  Will be determined
      *                                    automatically if empty.
@@ -61,7 +61,7 @@ class Paging
 
         if (empty($results_per_page)) $results_per_page = intval($_CONFIG['corePagingLimit']);
         if ($numof_rows <= $results_per_page && !$showeverytime) return '';
-        if (empty($parameter_name)) $parameter_name = self::getParametername();
+        $parameter_name = self::getParametername($parameter_name);
         if (!isset($position)) $position = self::getPosition($parameter_name);
 
         // Fix illegal values:
@@ -79,7 +79,11 @@ class Paging
 
         // remove all parameters otherwise the url object has parameters like &act=add
         $requestUrl = clone \Env::get('Resolver')->getUrl();
+        $currentParams = $requestUrl->getParamArray();
         $requestUrl->removeAllParams();
+        if (isset($currentParams['section'])) {
+            $requestUrl->setParam('section', $currentParams['section']);
+        }
         $requestUrl->setParams($uri_parameter);
 
         $firstUrl = clone $requestUrl;
@@ -163,9 +167,10 @@ class Paging
      */
     static function getPosition($parameter_name=null)
     {
-        if (empty($parameter_name)) {
-            $parameter_name = self::getParametername();//'pos';
-        }
+        $parameter_name = self::getParametername($parameter_name);//'pos';
+        if (!isset($_SESSION['paging'])) {
+            $_SESSION['paging'] = array();
+        }        
         if (!isset($_SESSION['paging'][$parameter_name]))
             $_SESSION['paging'][$parameter_name] = 0;
         if (isset($_REQUEST[$parameter_name])) {
@@ -186,15 +191,22 @@ class Paging
      */
     static function reset($parameter_name=null)
     {
-        if (empty($parameter_name)) {
-            $parameter_name = self::getParametername();//'pos';
-        }
+        $parameter_name = self::getParametername($parameter_name);//'pos';
         $_SESSION['paging'][$parameter_name] = 0;
         unset($_REQUEST[$parameter_name]);
     }
 
 
-    static function getParametername()
+    static function getParametername($parameterName = null)
+    {
+        if (empty($parameterName)) {
+            $parameterName = self::generateParameterName();
+        }
+
+        return self::sanitizeParameterName($parameterName);
+    }
+
+    private static function generateParameterName()
     {
 /*
         die(nl2br(var_export(debug_backtrace(
@@ -217,5 +229,25 @@ class Paging
 //        die(nl2br(var_export($arrStack)));
         $name = $arrStack['class'].'_'.$arrStack['function'];
         return $name;
+    }
+
+    /**
+     * Ensure that the used parameter name complies with the session
+     * restrictions defined for variable keys, as the parameter name
+     * is being used as a sesison-variable-key.
+     * @param string $parameterName The name of the session-variable-key used to store the current paging position.
+     * @return string $parameterName The sanitized session-variable-key.
+     */
+    private static function sanitizeParameterName($parameterName)
+    {
+        // Important: As the parameter name is used as a session-variable-key,
+        // it must not exceed the allowed session-variable-key-length.
+        // Therefore, if required, the parameter name is hashed and cut to the
+        // maximum allowed session-variable-key-length.
+        if (strlen($parameterName) > \cmsSession::getVariableKeyMaxLength()) {
+            $parameterName = substr(md5($parameterName), 0, \cmsSession::getVariableKeyMaxLength());
+        }
+        
+        return $parameterName;
     }
 }

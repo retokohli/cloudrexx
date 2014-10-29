@@ -107,7 +107,7 @@ class crmTask extends CrmLibrary
 
         $filter     = array();
         $filterLink = '';
-
+        
         if (!empty($filterTaskType)) {
             $filter[]    = " t.task_type_id = '$filterTaskType'";
             $filterLink .= "&searchType=$filterTaskType";
@@ -375,7 +375,7 @@ class crmTask extends CrmLibrary
                     $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $objFWUser->objUser->getUser($assignedto)->getEmail());
                     $info['lang_id']          = $availableLangId;  
 
-                    $dispatcher = EventDispatcher::getInstance();
+                    $dispatcher = CrmEventDispatcher::getInstance();
                     $dispatcher->triggerEvent(CRM_EVENT_ON_TASK_CREATED, null, $info);
                 }
 
@@ -442,6 +442,7 @@ class crmTask extends CrmLibrary
                 'TXT_CRM_SAVE'                 => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_BACK'                 => $_ARRAYLANG['TXT_CRM_BACK'],
                 'TXT_CRM_NOTIFY'               => $_ARRAYLANG['TXT_CRM_NOTIFY'],
+                'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT' => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
                 
         ));
     }

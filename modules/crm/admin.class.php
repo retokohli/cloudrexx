@@ -10,11 +10,7 @@
  * @license    trial license
  * @link       www.contrexx.com
  */
-require_once ASCMS_MODULE_PATH.'/crm/lib/crmLib.class.php';
-
-require_once CRM_MODULE_LIB_PATH.'/javascript.class.php';
-require_once CRM_MODULE_LIB_PATH.'/sort.class.php';
-require_once CRM_MODULE_LIB_PATH.'/Csv_bv.class.php';
+//DBG::activate();
 /**
  * Admin Class CRM
  *
@@ -80,7 +76,7 @@ class CrmManager extends CrmLibrary
 
         global $objTemplate, $_ARRAYLANG, $objJs;
         parent::__construct();
-        $objJs = new Javascript();
+        $objJs = new CrmJavascript();
 
         $this->_mediaPath = ASCMS_MEDIA_PATH.'/crm';
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
@@ -108,8 +104,8 @@ class CrmManager extends CrmLibrary
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", $contentNavigation);
 
-        $dispatcher = EventDispatcher::getInstance();
-        $default_handler = new DefaultEventHandler();
+        $dispatcher = CrmEventDispatcher::getInstance();
+        $default_handler = new CrmDefaultEventHandler();
 
         $dispatcher->addHandler(CRM_EVENT_ON_USER_ACCOUNT_CREATED, $default_handler);
         $dispatcher->addHandler(CRM_EVENT_ON_TASK_CREATED, $default_handler);
@@ -602,7 +598,7 @@ class CrmManager extends CrmLibrary
 
         $row       = 'row2';
 
-        $sortOrder = ($_GET['sorto'] == 0) ? 1 : 0;
+        $sortOrder = ($searchFields['sorto'] == 0) ? 1 : 0;
         //Apply standard values.
         $this->_objTpl->setGlobalVariable(array(
                 'TXT_CRM_CUSTOMER_OVERVIEW'     => $_ARRAYLANG['TXT_CRM_CUSTOMER_OVERVIEW'],
@@ -633,7 +629,6 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_DATE'                  =>  $_ARRAYLANG['TXT_CRM_DATE'],
                 'TXT_CRM_TITLE'                 =>  $_ARRAYLANG['TXT_CRM_TITLE'],
                 'TXT_CRM_DESCRIPTION'           =>  $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
-                'TXT_SUPPORTPLAN_COVERAGE'      =>  $_ARRAYLANG['TXT_SUPPORTPLAN_COVERAGE'],
                 'TXT_CRM_TITLE_STATUS'          =>  $_ARRAYLANG['TXT_CRM_TITLE_STATUS'],
                 'TXT_CRM_HOSTING'               =>  $_ARRAYLANG['TXT_CRM_HOSTING'],
                 'TXT_CRM_START_DATE'            =>  $_ARRAYLANG['TXT_CRM_START_DATE'],
@@ -643,19 +638,11 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_ISSUE_DATE'            =>  $_ARRAYLANG['TXT_CRM_ISSUE_DATE'],
                 'TXT_CRM_VADIL_UNTIL'           =>  $_ARRAYLANG['TXT_CRM_VADIL_UNTIL'],
                 'TXT_CRM_CASES_USED'            =>  $_ARRAYLANG['TXT_CRM_CASES_USED'],
-                'TXT_SERVICE_TYPE'              =>  $_ARRAYLANG['TXT_SERVICE_TYPE'],
-                'TXT_CUSTOMER_ADDSUPPORT_PLAN'  =>  $_ARRAYLANG['TXT_CUSTOMER_ADDSUPPORT_PLAN'],
                 'TXT_CRM_CUSTOMER'              =>  $_ARRAYLANG['TXT_CRM_CUSTOMER'],
-                'TXT_CUSTOMER_ADDSUPPORT_CASE'  =>  $_ARRAYLANG['TXT_CUSTOMER_ADDSUPPORT_CASE'],
-                'TXT_HOSTING_TYPE'              =>  $_ARRAYLANG['TXT_HOSTING_TYPE'],
                 'TXT_CRM_DOMAIN'                =>  $_ARRAYLANG['TXT_CRM_DOMAIN'],
                 'TXT_CRM_PRICE'                 =>  $_ARRAYLANG['TXT_CRM_PRICE'],
                 'TXT_CRM_ADDITIONAL_INFORMATION'=>  $_ARRAYLANG['TXT_CRM_ADDITIONAL_INFORMATION'],
-                'TXT_CUSTOMER_ADDHOSTING'       =>  $_ARRAYLANG['TXT_CUSTOMER_ADDHOSTING'],
-                'TXT_CUSTOMER_SUPPORT_PLAN'     =>  $_ARRAYLANG['TXT_CUSTOMER_SUPPORT_PLAN'],
                 'TXT_STATUS'                    =>  $_ARRAYLANG['TXT_STATUS'],
-                'TXT_SUPPORT_VADIL_UNTIL'       =>  $_ARRAYLANG['TXT_SUPPORT_VADIL_UNTIL'],
-                'TXT_SUPPORT_CASES_USED'        =>  $_ARRAYLANG['TXT_SUPPORT_CASES_USED'],
                 'TXT_CRM_TITLE_EMAIL'           =>  $_ARRAYLANG['TXT_CRM_TITLE_EMAIL'],
                 'TXT_CRM_CUSTOMER_EXPORT'       =>  $_ARRAYLANG['TXT_CRM_EXPORT_NAME'],
                 'TXT_CRM_ADD_NEW_CUSTOMER'      =>  $_ARRAYLANG['TXT_CRM_ADD_NEW_CUSTOMER'],
@@ -694,13 +681,13 @@ class CrmManager extends CrmLibrary
 
                 'CRM_CUSTOMER_CHECKED'          =>  in_array(1, $searchContactTypeFilter) ? "checked" : '',
                 'CRM_CONTACT_CHECKED'           =>  in_array(2, $searchContactTypeFilter) ? "checked" : '',
-                'CRM_SEARCH_TERM'               =>  contrexx_input2xhtml($_GET['term']),
-                'CRM_SEARCH_NAME'               =>  contrexx_input2xhtml($_GET['s_name']),
-                'CRM_SEARCH_EMAIL'              =>  contrexx_input2xhtml($_GET['s_email']),
-                'CRM_SEARCH_ADDRESS'            =>  contrexx_input2xhtml($_GET['s_address']),
-                'CRM_SEARCH_CITY'               =>  contrexx_input2xhtml($_GET['s_city']),
-                'CRM_SEARCH_ZIP'                =>  contrexx_input2xhtml($_GET['s_postal_code']),
-                'CRM_SEARCH_NOTES'              =>  contrexx_input2xhtml($_GET['s_notes']),
+                'CRM_SEARCH_TERM'               =>  contrexx_input2xhtml($searchFields['term']),
+                'CRM_SEARCH_NAME'               =>  contrexx_input2xhtml($searchFields['s_name']),
+                'CRM_SEARCH_EMAIL'              =>  contrexx_input2xhtml($searchFields['s_email']),
+                'CRM_SEARCH_ADDRESS'            =>  contrexx_input2xhtml($searchFields['s_address']),
+                'CRM_SEARCH_CITY'               =>  contrexx_input2xhtml($searchFields['s_city']),
+                'CRM_SEARCH_ZIP'                =>  contrexx_input2xhtml($searchFields['s_postal_code']),
+                'CRM_SEARCH_NOTES'              =>  contrexx_input2xhtml($searchFields['s_notes']),
                 'CRM_ACCESS_PROFILE_IMG_WEB_PATH'=> CRM_ACCESS_PROFILE_IMG_WEB_PATH,
                 'TXT_CRM_ENTER_SEARCH_TERM'     =>  $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
                 'CRM_REDIRECT_LINK'             =>  '&redirect='.base64_encode($searchLink.$sortLink.$pageLink),
@@ -708,7 +695,7 @@ class CrmManager extends CrmLibrary
 
         $this->getCustomerTypeDropDown($this->_objTpl, isset($_GET['customer_type']) ? $_GET['customer_type'] : 0, 'customerTypes', array('is_hide' => true));
 
-        $this->membership = $this->load->model("membership", __CLASS__);
+        $this->membership = new membership();
         $this->getOverviewMembershipDropdown($this->_objTpl, $this->membership, isset($_GET['filter_membership']) ? $_GET['filter_membership'] : 0, 'memberships', array('is_hide' => true));
 
         $this->_objTpl->setGlobalVariable('TXT_CRM_DOWNLOAD_VCARD', $_ARRAYLANG['TXT_CRM_DOWNLOAD_VCARD']);
@@ -902,7 +889,7 @@ class CrmManager extends CrmLibrary
                 'COMBO_UPLOADER_CODE3' => $uploaderCode3
             ));
 
-            $this->contact = $this->load->model('crmContact', __CLASS__);
+            $this->contact = new crmContact();
             $this->contact->load($contactId);
             $custDetails = $this->contact->getCustomerDetails();
 
@@ -1489,7 +1476,7 @@ END;
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
         $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
-        $this->settingsController = $this->load->controller('settings', __CLASS__, $this->_objTpl);
+        $this->settingsController = new CrmSettings($this->_objTpl);
 
         switch ($tpl) {
         case 'interface':
@@ -1837,6 +1824,7 @@ END;
                 'TXT_CRM_DELETE_MESSAGE'            => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'],
                 'TXT_ACTIVE'                        => $_ARRAYLANG['TXT_ACTIVE'],
                 'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'=> $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
+                'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'=> $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
         ));
 
     }
@@ -1996,7 +1984,7 @@ END;
 
         $id               = (isset($_REQUEST['id'])) ? intval($_REQUEST['id']) : 0;
 
-        $this->contact = $this->load->model('crmContact', __CLASS__);
+        $this->contact = new crmContact();
         !empty($id) ? $this->contact->id = $id : '';
         $contactType      = (isset($_GET['type']) && $_GET['type'] == 'contact') ? 2 : 1;
 
@@ -2788,7 +2776,7 @@ END;
         $tpl = isset($_GET['subTpl']) ? $_GET['subTpl'] : '';
         $_SESSION['pageTitle'] = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
-        $this->crmInterfaceController = $this->load->controller('crmInterface', __CLASS__, $this->_objTpl);
+        $this->crmInterfaceController = new crmInterface($this->_objTpl);
 
         switch ($tpl) {
         case 'export':
@@ -3481,9 +3469,7 @@ END;
                 }
             }
 
-            include_once "lib/class_vcard.php";
-
-            $vc        = new vcard();
+            $vc        = new CrmVcard();
             $vc->data['customer_name']      = $firstName." ".$lastName;
             $vc->data['company']            = $companyName;
             $vc->data['email1']             = !$primary ? (!empty ($primaryHomeEmail) ? $primaryHomeEmail : $homeEmail) : (!empty ($primaryWorkEmail) ? $primaryWorkEmail : $workEmail);
@@ -3569,7 +3555,7 @@ END;
     {
         global $_ARRAYLANG, $objDatabase;
 
-        $this->crmTaskController = $this->load->controller('crmTask', __CLASS__, $this->_objTpl);
+        $this->crmTaskController = new crmTask($this->_objTpl);
         $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
 
         switch ($tpl) {
@@ -3696,7 +3682,7 @@ END;
         $customerId = (isset ($_GET['customerid'])) ? (int) $_GET['customerid'] : 0;
         $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
 
-        $this->contact = $this->load->model('crmContact', __CLASS__);
+        $this->contact = new crmContact();
         if ($contactId)
             $this->contact->load($contactId);
 
@@ -4477,7 +4463,7 @@ END;
         ));
 
         if ($allowPm) {
-            include_once ASCMS_MODULE_PATH . '/pm/lib/pmLib.class.php';
+//            include_once ASCMS_MODULE_PATH . '/pm/lib/pmLib.class.php';
             $objPmLib = new PmLibrary;
         }
 
@@ -4741,6 +4727,7 @@ END;
                 'CRM_MODIFY_DEAL_DESCRIPTION'   => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
                 'IS_EDIT_TRUE'                  => empty($id) ? 'false' : 'true',
                 'TXT_CRM_FIND_COMPANY_BY_NAME'  => $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME'],
+                'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'  => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
                 'TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR' => $_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR']
         ));
 
@@ -4920,6 +4907,7 @@ END;
             'TXT_CRM_NOTHING_SELECTED'      => $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'],
             'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'           => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
             'TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'  => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'],
+            'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'       => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
         ));
 
     }
@@ -5069,6 +5057,7 @@ END;
                 'TXT_CRM_SAVE'                    => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_PARENT_INDUSTRY_TYPE'    => $_ARRAYLANG['TXT_CRM_PARENT_INDUSTRY_TYPE'],
                 'TXT_CRM_NEW_INDUSTRY_TYPE'       => $_ARRAYLANG['TXT_CRM_NEW_INDUSTRY_TYPE'],
+                'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'       => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
                 'TXT_CRM_BACK'                    => $_ARRAYLANG['TXT_CRM_BACK'],
                 'TXT_TITLE_MODIFY_INDUSTRY'       => (!empty ($id)) ? $_ARRAYLANG['TXT_CRM_EDIT_INDUSTRY'] : $_ARRAYLANG['TXT_CRM_ADD_INDUSTRY'],
                 'CSRF_PARAM'                      => CSRF::param(),
@@ -5273,6 +5262,7 @@ END;
             'TXT_CRM_TITLEACTIVE'           => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
             'TXT_CRM_SORTING_NUMBER'        => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
             'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'           => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
+            'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'       => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
             'TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'  => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES']
         ));
 
@@ -5398,6 +5388,7 @@ END;
                 'TXT_CRM_SORTING_NUMBER'          => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
                 'TXT_CRM_SAVE'                    => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_BACK'                    => $_ARRAYLANG['TXT_CRM_BACK'],
+                'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'  => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
                 'TXT_TITLE_MODIFY_INDUSTRY'       => (!empty ($id)) ? $_ARRAYLANG['TXT_CRM_EDIT_MEMBERSHIP'] : $_ARRAYLANG['TXT_CRM_ADD_MEMBERSHIP'],
         ));
     }

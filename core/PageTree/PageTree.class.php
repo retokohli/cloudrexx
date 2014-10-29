@@ -32,7 +32,7 @@ abstract class PageTree {
     protected $currentPagePath = null;
     protected $pageRepo = null;
     protected $skipInvisible = true;
-    
+
     /**
      * @param $entityManager the doctrine em
      * @param \Cx\Core_Modules\License\License $license License used to check if a module is allowed in frontend
@@ -76,53 +76,68 @@ abstract class PageTree {
     public function render() {
         $content = $this->preRender($this->lang);
         $content .= $this->renderHeader($this->lang);
-$this->bytes = memory_get_peak_usage();
+        $this->bytes = memory_get_peak_usage();
         $content .= $this->internalRender($this->rootNode, $this->currentPageOnRootNode);
 //echo 'PageTree2(' . get_class($this) . '): ' . formatBytes(memory_get_peak_usage()-$this->bytes) . '<br />';
         $content .= $this->renderFooter($this->lang);
         $content .= $this->postRender($this->lang);
         return $content;
     }
-    
+
     /**
      * @todo Virtual pages!
      * @param type $nodes
      * @param type $level
-     * @param type $dontDescend 
+     * @param type $dontDescend
      */
     private function internalRender($node, $dontDescend = false) {
         global $_CONFIG;
         $content = '';
         $nodeStack = array();
         array_push($nodeStack, $node);
+
+        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.lft > ?1 AND n.rgt < ?2 AND p.lang = ?3 ORDER BY n.lft  ASC");
+
+        $q->setParameter(1, $node->getLft());
+        $q->setParameter(2, $node->getRgt());
+        $q->setParameter(3, $this->lang);
+
+        $children = $q->getResult();
+
+        $nodeArray = array();
+        foreach ($children as $child) {
+            $nodeArray[$child->getParent()->getId()][] = $child;
+        }
+
+        $lastLevel = $this->getLastLevel();
         while (count($nodeStack)) {
             $node = array_pop($nodeStack);
             if (is_callable($node)) {
                 $content .= $node();
                 continue;
             }
-            $children = $node->getChildren();
-            
-            $children2 = array();
-            foreach ($children as $child) {
-                $page = $child->getPage($this->lang);
-                if (!$page) {
-                    // do not add children node has no pages (root node)
-                    continue;
-                }
-                $children2[$child->getLft()] = $child;
-            }
-            ksort($children2);
-            $children = $children2;
-            unset($children2);
-            
             $page = $node->getPage($this->lang);
-            
+            if (
+                ($node->getLvl() == $lastLevel && $lastLevel > 0) ||
+                (
+                    !$this->getFullNavigation() && // don't show full navigation
+                    $page && // don't be on root node
+                    !in_array($page->getId(), $this->pageIdsAtCurrentPath) // I am not on active page
+                )
+            ) {
+                // hide children
+                $children = array();
+            } else {
+                $children = isset($nodeArray[$node->getId()]) ? $nodeArray[$node->getId()] : array();
+            }
+
+            $page = $node->getPage($this->lang);
             $hasChilds = false;
             if ($this->skipInvisible) {
                 if (!$page || ($page->isVisible() && $page->isActive())) {
                     foreach ($children as $child) {
-                        if ($child->getPage($this->lang) && $child->getPage($this->lang)->isVisible() && $child->getPage($this->lang)->isActive()) {
+                        $childPage = $child->getPage($this->lang);
+                        if ($childPage && $childPage->isVisible() && $childPage->isActive()) {
                             $hasChilds = true;
                             break;
                         }
@@ -131,7 +146,8 @@ $this->bytes = memory_get_peak_usage();
             } else {
                 if (!$page || $page->isActive()) {
                     foreach ($children as $child) {
-                        if ($child->getPage($this->lang) && $child->getPage($this->lang)->isActive()) {
+                        $childPage = $child->getPage($this->lang);
+                        if ($childPage && $childPage->isActive()) {
                             $hasChilds = true;
                             break;
                         }
@@ -156,17 +172,18 @@ $this->bytes = memory_get_peak_usage();
                     return $pageTree->preRenderLevel($level, $lang, $node);
                 });
             }
-            
+
             if (!$page || !$page->isActive() || !$page->isVisible()) {
                 continue;
             }
-            
+
             try {
+                $parentPage = $page->getParent();
                 // if parent is invisible or unpublished and parent node is not start node
-                if ($page->getParent() &&
-                        (!$page->getParent()->isVisible() || !$page->getParent()->isActive()) &&
-                        $page->getNode()->getParent()->getId() != $this->rootNode->getId()
-                    ) {
+                if ($parentPage &&
+                    (!$parentPage->isVisible() || !$parentPage->isActive()) &&
+                    $page->getNode()->getParent()->getId() != $this->rootNode->getId()
+                ) {
                     continue;
                 }
             } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
@@ -174,8 +191,8 @@ $this->bytes = memory_get_peak_usage();
             }
             // if page is protected, user has not sufficent permissions and protected pages are hidden
             if ($page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
-                    !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
-                ) {
+                !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
+            ) {
                 continue;
             }
 
@@ -185,12 +202,12 @@ $this->bytes = memory_get_peak_usage();
 
             // prepare data for element
             $current = in_array($page->getId(), $this->pageIdsAtCurrentPath);
-            
+
             $href = $page->getPath();
             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1) {
                 $href .= '?pagePreview=1';
             }
-            
+
             $bytes = memory_get_peak_usage();
             $content .= $this->preRenderElement($node->getLvl(), $hasChilds, $this->lang, $page);
             $content .= $this->renderElement($page->getTitle(), $node->getLvl(), $hasChilds, $this->lang, $href, $current, $page);
@@ -200,7 +217,7 @@ $this->bytes = memory_get_peak_usage();
         }
         return $content;
     }
-    
+
     /**
      * Tells wheter $pathToPage is in the active branch
      * @param String $pathToPage
@@ -210,7 +227,7 @@ $this->bytes = memory_get_peak_usage();
         if ($pathToPage == '') {
             return false;
         }
-        
+
         $pathToPage = str_replace('//', '/', $pathToPage . '/');
         return substr($this->currentPagePath . '/', 0, strlen($pathToPage)) == $pathToPage;
     }
@@ -218,7 +235,7 @@ $this->bytes = memory_get_peak_usage();
     public function setVirtualLanguageDirectory($dir) {
         $this->virtualLanguageDirectory = $dir;
     }
-    
+
     protected abstract function preRenderElement($level, $hasChilds, $lang, $page);
     /**
      * Override this to do your representation of the tree.
@@ -235,21 +252,33 @@ $this->bytes = memory_get_peak_usage();
     protected abstract function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page);
 
     protected abstract function postRenderElement($level, $hasChilds, $lang, $page);
-    
+
     public abstract function preRenderLevel($level, $lang, $parentNode);
-    
+
     public abstract function postRenderLevel($level, $lang, $parentNode);
-    
+
     protected abstract function renderHeader($lang);
-    
+
     protected abstract function renderFooter($lang);
-    
+
     protected abstract function preRender($lang);
-    
+
     protected abstract function postRender($lang);
-    
+
     /**
      * Called on construction. Override if you do not want to override the ctor.
      */
     protected abstract function init();
+
+    protected function getFirstLevel() {
+        return 1; // show from first level
+    }
+
+    protected function getLastLevel() {
+        return 0; // show all levels
+    }
+
+    protected function getFullNavigation() {
+        return false;
+    }
 }

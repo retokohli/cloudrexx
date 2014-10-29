@@ -22,13 +22,12 @@ class BackendTable extends HTML_Table {
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
         
-    	if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
-    		$first = true;
-    		$row = 1;
+        if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+            $first = true;
+            $row = 1;
             foreach ($attrs as $rowname=>$rows) {
-    			$col = 0;
-    			foreach ($rows as $header=>$data) {
-                    $encode = true;
+                $col = 0;
+                foreach ($rows as $header=>$data) {
                     if (
                         isset($options['fields']) &&
                         isset($options['fields'][$header]) &&
@@ -37,62 +36,23 @@ class BackendTable extends HTML_Table {
                     ) {
                         continue;
                     }
-                    $origHeader = $header;
-    				if ($first) {
+                    if ($first) {
                         if (isset($_ARRAYLANG[$header])) {
                             $header = $_ARRAYLANG[$header];
-    				}
-                        if (
-                            is_array($options['functions']) &&
-                            isset($options['functions']['sorting']) &&
-                            $options['functions']['sorting']
-                        ) {
-                            $order = '';
-                            $img = '&uarr;&darr;';
-                            if (isset($_GET['order'])) {
-                                $supOrder = explode('/', $_GET['order']);
-                                if (current($supOrder) == $origHeader) {
-                                    $order = '/DESC';
-                                    $img = '&darr;';
-                                    if (count($supOrder) > 1 && $supOrder[1] == 'DESC') {
-                                        $order = '';
-                                        $img = '&uarr;';
-                                    }
-                                }
-                            }
-                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
-                        $this->setCellContents(0, $col, $header, 'th', 0);
+                        $this->setCellContents(0, $col, $header, 'th');
                     }
-                    if (
-                        isset($options['fields']) &&
-                        isset($options['fields'][$origHeader]) &&
-                        isset($options['fields'][$origHeader]['table']) &&
-                        isset($options['fields'][$origHeader]['table']['parse']) &&
-                        is_callable($options['fields'][$origHeader]['table']['parse'])
-                    ) {
-                        $callback = $options['fields'][$origHeader]['table']['parse'];
-                        $data = $callback($data);
-                        $encode = false; // todo: this should be set by callback
-                    } else if (is_object($data) && get_class($data) == 'DateTime') {
+                    if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
-                    } else if (isset($options['fields'][$origHeader]) && isset($options['fields'][$origHeader]['type']) && $options['fields'][$origHeader]['type'] == '\Country') {
-                        $data = \Country::getNameById($data);
-                        if (empty($data)) {
-                            $data = \Country::getNameById(204);
-                        }
                     } else if (gettype($data) == 'boolean') {
                         $data = '<i>' . ($data ? 'Yes' : 'No') . '</i>';
-                        $encode = false;
                     } else if ($data === null) {
                         $data = '<i>NULL</i>';
-                        $encode = false;
                     } else if (empty($data)) {
                         $data = '<i>(empty)</i>';
-                        $encode = false;
                     }
-                    $this->setCellContents($row, $col, $data, 'TD', 0, $encode);
-    				$col++;
+                    $this->setCellContents($row, $col, $data);
+                    $col++;
                 }
                 if (is_array($options['functions'])) {
                     if ($first) {
@@ -100,44 +60,19 @@ class BackendTable extends HTML_Table {
                         if (isset($_ARRAYLANG['FUNCTIONS'])) {
                             $header = $_ARRAYLANG['FUNCTIONS'];
                         }
-                        $this->setCellContents(0, $col, $header, 'th', 0, true);
+                        $this->setCellContents(0, $col, $header, 'th');
                     }
                     if (!isset($options['functions']['baseUrl'])) {
-                        $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
+                        $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest();
                     }
-                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions']), 'TD', 0);
-    			}
-    			$first = false;
-    			$row++;
-    		}
-    		$attrs = array();
-    	}
+                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions']));
+                }
+                $first = false;
+                $row++;
+            }
+            $attrs = array();
+        }
         parent::__construct(array_merge($attrs, array('class' => 'adminlist')));
-    }
-
-    /**
-     * Override from parent. Added contrexx_raw2xhtml support
-     * @param type $row
-     * @param type $col
-     * @param type $contents
-     * @param type $type
-     * @param type $body
-     * @param type $encode
-     * @return type 
-     */
-    function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = false)
-    {
-        if ($encode) {
-            $contents = contrexx_raw2xhtml($contents);
-        }
-        $ret = $this->_adjustTbodyCount($body, 'setCellContents');
-        if (PEAR::isError($ret)) {
-            return $ret;
-        }
-        $ret = $this->_tbodies[$body]->setCellContents($row, $col, $contents, $type);
-        if (PEAR::isError($ret)) {
-            return $ret;
-        }
     }
     
     protected function getFunctionsCode($rowname, $functions) {
@@ -149,13 +84,7 @@ class BackendTable extends HTML_Table {
             $code .= '<a href="' . $editUrl . '" class="edit"></a>';
         }
         if (isset($functions['delete']) && $functions['delete']) {
-            $deleteUrl = clone $baseUrl;
-            $deleteUrl->setParam('deleteid', $rowname);
-            $deleteUrl.='&csrf='.\CSRF::code();
-            $onclick ='if (confirm(\'Do you really want to delete?\'))'.
-                    'window.location.replace(\''.$deleteUrl.'\');';
-            $_uri = 'javascript:void(0);';
-            $code .= '<a onclick="'.$onclick.'" href="'.$_uri.'" class="delete"></a>';
+            $code .= '<a href="#" class="delete"></a>';
         }
         return $code . '</span>';
     }
@@ -164,5 +93,4 @@ class BackendTable extends HTML_Table {
         $this->altRowAttributes(1, array('class' => 'row1'), array('class' => 'row2'), true);
         return parent::toHtml();
     }
-
 }

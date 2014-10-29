@@ -85,6 +85,9 @@
             <td width="68%">{FTP_PATH}</td>
         </tr>
         <!-- END ftpPath -->
+        <tr>
+            <td colspan="2"><br /></td>
+        </tr>
     <!-- END ftp -->
     <!-- BEGIN ftpPathConfig -->
         <tr>
@@ -102,6 +105,14 @@
             <!-- END ftpDirectory -->
         <!-- END ftpDirectoryTree -->
     <!-- END ftpPathConfig -->
+    <!-- BEGIN caching -->
+        <tr>
+            <th colspan="2">{TXT_CACHING}<input type="hidden" name="cachingConfig" value="1" /></th>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="checkbox" name="cachingConfigDefault" id="cachingConfigDefault" value="1" {CACHING_CHECKED} /> <label for="cachingConfigDefault">{TXT_CACHING_ACTIVATE_BY_DEFAULT}</label></td>
+        </tr>
+    <!-- END caching -->
 </table>
 <br />
 <!-- end configuration.html -->

@@ -95,7 +95,12 @@ function selectMultiAction()
                     <tr class="row3">                                                    
                         <td style="width: 80px"><b>{TXT_CALENDAR_DATE}</b></td>
                         <td><b>{TXT_CALENDAR_TITLE}</b></td>
-                        <td><b>{TXT_CALENDAR_LANGUAGES}</b></td>
+                        <td>
+                            <!-- BEGIN txt_languages_block_confirm_list -->
+                            <b>{TXT_CALENDAR_LANGUAGES}</b>
+                            <!-- END txt_languages_block_confirm_list -->
+                            &nbsp;
+                        </td>
                         <td><b>{TXT_CALENDAR_CATEGORY}</b></td>            
                         <td style="width: 60px; text-align: right;"><b>{TXT_CALENDAR_ACTION}</b></td>
                     </tr>
@@ -127,12 +132,17 @@ function selectMultiAction()
                         <td style="width: 40px;"><b>{TXT_CALENDAR_STATUS}</b></td>
 						<td style="width: 80px"><b>{TXT_CALENDAR_DATE}</b></td>
 						<td><b>{TXT_CALENDAR_TITLE}</b></td>
-                        <td><b>{TXT_CALENDAR_LANGUAGES}</b></td>
+                        <td>
+                            <!-- BEGIN txt_languages_block -->
+                            <b>{TXT_CALENDAR_LANGUAGES}</b>
+                            <!-- END txt_languages_block -->
+                            &nbsp;
+                        </td>
 						<td><b>{TXT_CALENDAR_CATEGORY}</b></td>
 						<td><b>{TXT_CALENDAR_SERIES}</b></td>
 						<td><b>{TXT_CALENDAR_RE_DEREGISTRATIONS}</b></td>
                         <td><b>{TXT_CALENDAR_WAITLIST}</b></td>
-						<td style="width: 60px; text-align: right;"><b>{TXT_CALENDAR_ACTION}</b></td>
+						<td style="width: 75px; text-align: right;"><b>{TXT_CALENDAR_ACTION}</b></td>
 					</tr>
                                         <!-- BEGIN eventList -->
 					<tr class="{CALENDAR_EVENT_ROW}">
@@ -147,6 +157,7 @@ function selectMultiAction()
                                             <td><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=event_registrations&amp;tpl=w&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_WAITLIST}</a></td>
                                             <td style="text-align: right;">
                                                 <a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;export={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EXPORT_ICAL_FORMAT}"><img src="images/icons/EventExport.png" border="0" alt="{TXT_CALENDAR_EXPORT_ICAL_FORMAT}" /></a>
+						<a href="{CALENDAR_EVENT_COPY_LINK}" title="{TXT_CALENDAR_COPY}"><img src="images/icons/copy.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_COPY}" /></a>
 						<a href="{CALENDAR_EVENT_EDIT_LINK}" title="{TXT_CALENDAR_EDIT}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_EDIT}" /></a>
 						<a href="javascript:deleteNote('{CALENDAR_EVENT_ID}');" title="{TXT_CALENDAR_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" border="0" alt="{TXT_CALENADR_DELETE}" /></a>
                                             </td>

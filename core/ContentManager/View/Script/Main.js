@@ -2,7 +2,7 @@ var baseUrl = 'index.php?cmd=content';
 var regExpUriProtocol = new RegExp(cx.variables.get('regExpUriProtocol', 'contentmanager'));
 
 var mouseIsUp = true;
-jQuery(document).bind('mouseup.global', function() {
+cx.jQuery(document).bind('mouseup.global', function() {
     mouseIsUp = true;
 }).bind('mousedown.global', function() {
     mouseIsUp = false;
@@ -10,7 +10,7 @@ jQuery(document).bind('mouseup.global', function() {
 
 //called from links in history table.
 loadHistoryVersion = function(version) {
-    pageId = parseInt(jQuery('#pageId').val());
+    pageId = parseInt(cx.jQuery('#pageId').val());
     if (isNaN(pageId)) {
         return;
     }
@@ -18,7 +18,7 @@ loadHistoryVersion = function(version) {
     cx.cm.loadPage(pageId, 0, version, "content", false);
 };
 
-jQuery.extend({
+cx.jQuery.extend({
     getUrlVars: function(){
         var vars = [], hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -32,7 +32,7 @@ jQuery.extend({
     },
     getUrlVar: function(name){
         try {
-            return jQuery.getUrlVars()[name];
+            return cx.jQuery.getUrlVars()[name];
         } catch (ex) {
             return undefined;
         }
@@ -45,7 +45,7 @@ jQuery.extend({
     }
 });
 
-jQuery.fn.equals = function(compareTo) {
+cx.jQuery.fn.equals = function(compareTo) {
     if (!compareTo || !compareTo.length || this.length!=compareTo.length) {
         return false;
     }
@@ -67,9 +67,9 @@ var arrayContains = function(array, value) {
 
 var fillBlockSelect = function(select, data) {
     select.empty();
-    jQuery.each(data.groups, function(group, id) {
+    cx.jQuery.each(data.groups, function(group, id) {
         var selected = arrayContains(data.assignedGroups, group);
-        var option = jQuery('<option></option>');
+        var option = cx.jQuery('<option></option>');
         option.html(id.name);
         option.val(group);
         if (selected || id.selected)
@@ -84,9 +84,9 @@ var fillBlockSelect = function(select, data) {
 
 var fillSelect = function(select, data) {
     select.empty();
-    jQuery.each(data.groups, function(group, id) {
+    cx.jQuery.each(data.groups, function(group, id) {
         var selected = arrayContains(data.assignedGroups, group);
-        var option = jQuery('<option></option>');
+        var option = cx.jQuery('<option></option>');
         option.html(id);
         option.val(group);
         if (selected)
@@ -118,12 +118,14 @@ var initMultiSelect = function(select) {
 };
 
 reloadCustomContentTemplates = function() {
-    var skinId = jQuery('#page select[name="page[skin]"]').val();
-    var module = jQuery('#page select[name="page[application]"]').val();
-    var select = jQuery('#page select[name="page[customContent]"]');
+    var skinId = cx.jQuery('#page select[name="page[skin]"]').val();
+    var module = cx.jQuery('#page select[name="page[application]"]').val();
+    var select = cx.jQuery('#page select[name="page[customContent]"]');
     var lastChoice = select.data('sel');
     select.empty();
-    select.append(jQuery("<option value=\"\" selected=\"selected\">(Default)</option>"));
+    select.append(cx.jQuery("<option value=\"\" selected=\"selected\">(Default)</option>"));
+    
+    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
     
     // Default skin
     if (skinId == 0) {
@@ -138,7 +140,7 @@ reloadCustomContentTemplates = function() {
     for (var i = 0; i < templates[skinId].length; i++) {
         var isHome = /^home_/.exec(templates[skinId][i]);
         if ((isHome && module == "home") || !isHome && module != "home") {
-            select.append(jQuery('<option>', {
+            select.append(cx.jQuery('<option>', {
                 value : templates[skinId][i]
             }).text(templates[skinId][i]));
         }
@@ -150,8 +152,15 @@ cx.ready(function() {
     cx.cm.all_opened = false;
     // are we opening all nodes at the moment?
     cx.cm.is_opening = false;
+    // initialise the page skin
+    cx.cm.pageSkin = 0;
+    // initialise the page custom template
+    cx.cm.pageContentTemplate = '';
+
+    // Disable the option use for all channels by default
+    cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"]').attr('disabled', 'disabled');
     
-    jQuery('#page_target_browse').click(function() {
+    cx.jQuery('#page_target_browse').click(function() {
         url = '?cmd=fileBrowser&csrf='+cx.variables.get('csrf', 'contrexx')+'&standalone=true&type=webpages';
         opts = 'width=800,height=600,resizable=yes,status=no,scrollbars=yes';
         window.open(url, 'target', opts).focus();
@@ -165,19 +174,19 @@ cx.ready(function() {
         if (path[0] == '/') {
             path = path.substr(1);
         }
-        jQuery('#page_target_wrapper').hide();
-        jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + path).attr('href', function() {return jQuery(this).text()});
-        jQuery('#page_target_text_wrapper').show();
-        jQuery('#page_target_protocol > option').removeAttr('selected');
-        jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
-        jQuery('#page_target, #page_target_backup').val(url);
+        cx.jQuery('#page_target_wrapper').hide();
+        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + path).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('#page_target_protocol > option').removeAttr('selected');
+        cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
+        cx.jQuery('#page_target, #page_target_backup').val(url);
     }
-    jQuery('#page_target').keyup(function() {
-        var targetValue = jQuery.trim(jQuery(this).val());
-        if (jQuery(this).val() != targetValue) {
-            jQuery(this).val(targetValue);
+    cx.jQuery('#page_target').keyup(function() {
+        var targetValue = cx.jQuery.trim(cx.jQuery(this).val());
+        if (cx.jQuery(this).val() != targetValue) {
+            cx.jQuery(this).val(targetValue);
         }
-        var targetValueBackup = jQuery('#page_target_backup').val();
+        var targetValueBackup = cx.jQuery('#page_target_backup').val();
         var matchesPageTarget = regExpUriProtocol.exec(targetValueBackup);
         if (matchesPageTarget) {
             targetValueBackup = targetValueBackup.replace(matchesPageTarget[0], '');
@@ -186,52 +195,52 @@ cx.ready(function() {
         if ((targetValue == '') || (targetValue == targetValueBackup)) {
             showOrHide = false;
         }
-        jQuery('#page_target_check').toggle(showOrHide);
+        cx.jQuery('#page_target_check').toggle(showOrHide);
     });
-    jQuery('#page_target_protocol').change(function() {
-        var targetValueBackup    = jQuery('#page_target_backup').val();
+    cx.jQuery('#page_target_protocol').change(function() {
+        var targetValueBackup    = cx.jQuery('#page_target_backup').val();
         var matchesPageTarget    = regExpUriProtocol.exec(targetValueBackup);
         var targetProtocolBackup = '';
         if (matchesPageTarget) {
             targetProtocolBackup = matchesPageTarget[0];
         }
         var showOrHide = true;
-        if (jQuery(this).val() == targetProtocolBackup) {
+        if (cx.jQuery(this).val() == targetProtocolBackup) {
             showOrHide = false;
         }
-        jQuery('#page_target_check').toggle(showOrHide);
+        cx.jQuery('#page_target_check').toggle(showOrHide);
     });
-    jQuery('#page_target_edit').click(function() {
-        jQuery('#page_target_cancel').show();
-        jQuery('#page_target_text_wrapper').hide().prev().show();
+    cx.jQuery('#page_target_edit').click(function() {
+        cx.jQuery('#page_target_cancel').show();
+        cx.jQuery('#page_target_text_wrapper').hide().prev().show();
     });
-    jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(jQuery("#page_target_backup").val(), jQuery("#page_target_text").text());
+    cx.jQuery('#page_target_cancel').click(function() {
+        cx.cm.setPageTarget(cx.jQuery("#page_target_backup").val(), cx.jQuery("#page_target_text").text());
     });
-    jQuery('#page_target_check').click(function() {
-        jQuery(this).hide();
-        jQuery('#page_target_text').text('');
-        jQuery('#page_target_backup').val(jQuery('#page_target_protocol').val() + jQuery('#page_target').val());
-        jQuery.getJSON('index.php?cmd=jsondata&object=page&act=getPathByTarget', {
-            target: jQuery('#page_target_backup').val()
+    cx.jQuery('#page_target_check').click(function() {
+        cx.jQuery(this).hide();
+        cx.jQuery('#page_target_text').text('');
+        cx.jQuery('#page_target_backup').val(cx.jQuery('#page_target_protocol').val() + cx.jQuery('#page_target').val());
+        cx.jQuery.getJSON('index.php?cmd=jsondata&object=page&act=getPathByTarget', {
+            target: cx.jQuery('#page_target_backup').val()
         }, function(data) {
-            jQuery('#page_target_text').text(data.data).attr('href', function() {return jQuery(this).text()});
+            cx.jQuery('#page_target_text').text(data.data).attr('href', function() {return cx.jQuery(this).text()});
         });
-        jQuery('#page_target_wrapper').hide().next().show();
+        cx.jQuery('#page_target_wrapper').hide().next().show();
     });
     
-    jQuery('.jstree-action').click(function(event) {
+    cx.jQuery('.jstree-action').click(function(event) {
         event.preventDefault();
-        action = jQuery(this).attr('class').split(' ')[1];
+        action = cx.jQuery(this).attr('class').split(' ')[1];
         if (action == "open" && !cx.cm.all_opened) {
             // no need to get the whole tree twice
             cx.cm.all_opened = true;
             cx.cm.is_opening = true;
-            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
-            jQuery("#site-tree").hide();
+            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+            cx.jQuery("#site-tree").hide();
             // get complete tree
             cx.trigger("loadingStart", "contentmanager", {});
-            jQuery.ajax({
+            cx.jQuery.ajax({
                 url: "?cmd=jsondata&object=node&act=getTree&recursive=true",
                 dataType: 'json',
                 success: function(response) {
@@ -241,33 +250,33 @@ cx.ready(function() {
                     if (cx.cm.actions == undefined) {
                         cx.cm.actions = response.data.actions;
                     } else {
-                        jQuery(languages).each(function(index, lang) {
-                            jQuery.extend(cx.cm.actions[lang], response.data.actions[lang]);
+                        cx.jQuery(languages).each(function(index, lang) {
+                            cx.jQuery.extend(cx.cm.actions[lang], response.data.actions[lang]);
                         });
                     }
                     // add tree data to jstree (replace tree by new one) and open all nodes
-                    cx.cm.createJsTree(jQuery("#site-tree"), response.data.tree, response.data.nodeLevels, true);
+                    cx.cm.createJsTree(cx.jQuery("#site-tree"), response.data.tree, response.data.nodeLevels, true);
                     cx.trigger("loadingEnd", "contentmanager", {});
                 }
             });
         } else {
-            jQuery('#site-tree').jstree(action+'_all');
+            cx.jQuery('#site-tree').jstree(action+'_all');
         }
     });
     
-    jQuery('#multiple-actions-select').change(function() {
+    cx.jQuery('#multiple-actions-select').change(function() {
         data = new Object();
-        data.action = jQuery(this).children('option:selected').val();
+        data.action = cx.jQuery(this).children('option:selected').val();
         if (data.action == '0') {
             return false;
         }
-        data.lang  = jQuery('#site-tree').jstree('get_lang');
+        data.lang  = cx.jQuery('#site-tree').jstree('get_lang');
         data.nodes = new Array();
-        jQuery('#site-tree ul li.jstree-checked').not(".action-item").each(function() {
-            nodeId = jQuery(this).attr('id').match(/\d+$/)[0];
+        cx.jQuery('#site-tree ul li.jstree-checked').not(".action-item").each(function() {
+            nodeId = cx.jQuery(this).attr('id').match(/\d+$/)[0];
             data.nodes.push(nodeId);
         });
-        data.currentNodeId = jQuery('input#pageNode').val();
+        data.currentNodeId = cx.jQuery('input#pageNode').val();
         if ((data.action != '') && (data.lang != '') && (data.nodes.length > 0)) {
             object = (data.action == 'delete') ? 'node'   : 'page';
             act    = (data.action == 'delete') ? 'Delete' : 'Set';
@@ -289,7 +298,7 @@ cx.ready(function() {
                     offset = "";
                 }
                 cx.trigger("loadingStart", "contentmanager", {});
-                jQuery.ajax({
+                cx.jQuery.ajax({
                     type: 'POST',
                     url:  'index.php?cmd=jsondata&object='+object+'&act=multiple'+act+recursive+offset,
                     data: data,
@@ -301,8 +310,8 @@ cx.ready(function() {
                         if (json.message) {
                             cx.tools.StatusMessage.showMessage(json.message, null, 10000);
                         }
-                        jQuery('#multiple-actions-select').val(0);
-                        cx.cm.createJsTree(jQuery("#site-tree"), json.data.tree, json.data.nodeLevels, false);
+                        cx.jQuery('#multiple-actions-select').val(0);
+                        cx.cm.createJsTree(cx.jQuery("#site-tree"), json.data.tree, json.data.nodeLevels, false);
                         if (json.data.action == 'delete') {
                             if (json.data.deletedCurrentPage) {
                                 cx.cm.hideEditView();
@@ -318,53 +327,53 @@ cx.ready(function() {
             };
             multipleActionAjaxRequest();
         } else {
-            jQuery('#multiple-actions-select').val(0);
+            cx.jQuery('#multiple-actions-select').val(0);
         }
     });
     
     // aliases:
     if (!publishAllowed) {
-        jQuery("div.page_alias").each(function (index, field) {
-            field = jQuery(field);
+        cx.jQuery("div.page_alias").each(function (index, field) {
+            field = cx.jQuery(field);
             field.removeClass("empty");
             if (field.children("span.noedit").html() == "") {
                 field.addClass("empty");
             }
         });
-        jQuery(".empty").hide();
+        cx.jQuery(".empty").hide();
     }
     
     // alias input fields
-    jQuery("div.page_alias input").keyup(function() {
-        jQuery("div.page_alias input.warning").removeClass("warning");
+    cx.jQuery("div.page_alias input").keyup(function() {
+        cx.jQuery("div.page_alias input.warning").removeClass("warning");
         
-        var originalAlias  = jQuery(this).val();
+        var originalAlias  = cx.jQuery(this).val();
         var slugifiedAlias = cx.cm.slugify(originalAlias);
         if (originalAlias != slugifiedAlias) {
-            jQuery(this).val(slugifiedAlias);
+            cx.jQuery(this).val(slugifiedAlias);
         }
         // remove unused alias input fields
         // do not remove the last input field
-        if (jQuery(this).val() == "") {
+        if (cx.jQuery(this).val() == "") {
             var emptyCount = 0;
-            jQuery("div.page_alias").each(function(index, el) {
-                if (jQuery(el).children("input").val() == "") {
+            cx.jQuery("div.page_alias").each(function(index, el) {
+                if (cx.jQuery(el).children("input").val() == "") {
                     emptyCount++;
                 }
             });
             if (emptyCount > 1) {
-                jQuery(this).closest("div.page_alias").next("div.page_alias").children("#page_alias").focus();
-                jQuery(this).closest("div.page_alias").remove();
+                cx.jQuery(this).closest("div.page_alias").next("div.page_alias").children("#page_alias").focus();
+                cx.jQuery(this).closest("div.page_alias").remove();
             }
         }
         // highlight same text
-        jQuery("div.page_alias").each(function(index, el) {
-            var me = jQuery(el);
+        cx.jQuery("div.page_alias").each(function(index, el) {
+            var me = cx.jQuery(el);
             if (me.children("input").val() != "") {
                 me.children("input").attr("id", "page_alias_" + index);
             }
-            jQuery("div.page_alias").each(function(index, el) {
-                var it = jQuery(el);
+            cx.jQuery("div.page_alias").each(function(index, el) {
+                var it = cx.jQuery(el);
                 if (me.get(0) == it.get(0)) {
                     return true;
                 }
@@ -376,17 +385,17 @@ cx.ready(function() {
             });
         });
         // add new alias input fields
-        if (jQuery(this).val() != "") {
+        if (cx.jQuery(this).val() != "") {
             var hasEmpty = false;
-            jQuery("div.page_alias").each(function(index, el) {
-                if (jQuery(el).children("input").val() == "") {
+            cx.jQuery("div.page_alias").each(function(index, el) {
+                if (cx.jQuery(el).children("input").val() == "") {
                     // there is already a empty field
                     hasEmpty = true;
                     return;
                 }
             });
             if (!hasEmpty) {
-                var parent = jQuery(this).parent("div.page_alias");
+                var parent = cx.jQuery(this).parent("div.page_alias");
                 var clone = parent.clone(true);
                 clone.children("input").val("");
                 clone.children("input").attr("id", "page_alias");
@@ -395,15 +404,15 @@ cx.ready(function() {
         }
     });
     
-    var data = jQuery.parseJSON(cx.variables.get("tree-data", "contentmanager/tree"));
+    var data = cx.jQuery.parseJSON(cx.variables.get("tree-data", "contentmanager/tree"));
     cx.cm.actions = data.data.actions;
     cx.cm.hasHome = data.data.hasHome;
-    cx.cm.createJsTree(jQuery("#site-tree"), data.data.tree, data.data.nodeLevels);
+    cx.cm.createJsTree(cx.jQuery("#site-tree"), data.data.tree, data.data.nodeLevels);
 
-    jQuery(".chzn-select").chosen().change(function() {
+    cx.jQuery(".chzn-select").chosen().change(function() {
         var str = "";
-        jQuery("select.chzn-select option:selected").each(function () {
-            str += jQuery(this).attr('value');
+        cx.jQuery("select.chzn-select option:selected").each(function () {
+            str += cx.jQuery(this).attr('value');
         });
         cx.cm.setCurrentLang(str);
         var dpOptions = {
@@ -411,66 +420,92 @@ cx.ready(function() {
             dateFormat: 'dd.mm.yy',
             timeFormat: 'hh:mm' 
         };
-        jQuery("input.date").datetimepicker(dpOptions);
+        cx.jQuery("input.date").datetimepicker(dpOptions);
 
-        node = jQuery('#page input[name="page[node]"]').val();
-        //pageId = jQuery('#node_'+node+" a."+str).attr("id");
-        pageId = jQuery('#pageId').val();
+        node = cx.jQuery('#page input[name="page[node]"]').val();
+        //pageId = cx.jQuery('#node_'+node+" a."+str).attr("id");
+        pageId = cx.jQuery('#pageId').val();
         
         // get translated page id (page->getNode()->getPage(lang)->getId())
         if (pageId) {
-            pageId = jQuery('li#node_'+node).children('.'+str).attr('id');
+            pageId = cx.jQuery('li#node_'+node).children('.'+str).attr('id');
         }
         
         if (fallbacks[str]) {
-            jQuery('.hidable_nofallback').show();
-            jQuery('#fallback').text(language_labels[fallbacks[str]]);
+            cx.jQuery('.hidable_nofallback').show();
+            cx.jQuery('#fallback').text(language_labels[fallbacks[str]]);
         } else {
-            jQuery('.hidable_nofallback').hide();
+            cx.jQuery('.hidable_nofallback').hide();
         }
         if (pageId && pageId != "new") {
             cx.cm.loadPage(pageId, node);
         } else {
-            jQuery('#page input[name="source_page"]').val(jQuery('#page input[name="page[id]"]').val());
-            jQuery('#page input[name="page[id]"]').val("new");
-            jQuery('#page input[name="page[lang]"]').val(str);
-            jQuery('#page input[name="page[node]"]').val(node);
-            jQuery('#page #preview').attr('href', cx.variables.get('basePath', 'contrexx') + str + '/index.php?pagePreview=1');
+            cx.jQuery('#page input[name="source_page"]').val(cx.jQuery('#page input[name="page[id]"]').val());
+            cx.jQuery('#page input[name="page[id]"]').val("new");
+            cx.jQuery('#page input[name="page[lang]"]').val(str);
+            cx.jQuery('#page input[name="page[node]"]').val(node);
+            cx.jQuery('#page #preview').attr('href', cx.variables.get('basePath', 'contrexx') + str + '/index.php?pagePreview=1');
         }
 
-        jQuery('#site-tree>ul li .jstree-wrapper').each(function() {
-            jsTreeLang = jQuery('#site-tree').jstree('get_lang');
-            jQuery(this).children('.module.show, .preview.show, .lastupdate.show').removeClass('show').addClass('hide');
-            jQuery(this).children('.module.'+jsTreeLang + ', .preview.'+jsTreeLang + ', .lastupdate.' + jsTreeLang).toggleClass('show hide');
+        cx.jQuery('#site-tree>ul li .jstree-wrapper').each(function() {
+            jsTreeLang = cx.jQuery('#site-tree').jstree('get_lang');
+            cx.jQuery(this).children('.module.show, .preview.show, .lastupdate.show').removeClass('show').addClass('hide');
+            cx.jQuery(this).children('.module.'+jsTreeLang + ', .preview.'+jsTreeLang + ', .lastupdate.' + jsTreeLang).toggleClass('show hide');
         });
     });
-    jQuery(".chzn-select").trigger('change');
+    cx.jQuery(".chzn-select").trigger('change');
 
-    jQuery('div.actions-expanded li.action-item').live('click', function(event) {
-        var classes =  jQuery(event.target).attr("class").split(/\s+/);
-        var url = jQuery(event.target).attr('data-href');
-        var lang = jQuery('#site-tree').jstree('get_lang');
+    cx.jQuery('div.actions-expanded li.action-item').live('click', function(event) {
+        var classes =  cx.jQuery(event.target).attr("class").split(/\s+/);
+        var url = cx.jQuery(event.target).attr('data-href');
+        var lang = cx.jQuery('#site-tree').jstree('get_lang');
         
         var action = classes[1];
-        var pageId = jQuery(event.target).closest(".jstree-wrapper").nextAll("a." + lang).attr("id");
-        var nodeId = jQuery(event.target).closest(".jstree-wrapper").parent().attr("id").split("_")[1];
+        var pageId = cx.jQuery(event.target).closest(".jstree-wrapper").nextAll("a." + lang).attr("id");
+        var nodeId = cx.jQuery(event.target).closest(".jstree-wrapper").parent().attr("id").split("_")[1];
         
         cx.cm.performAction(action, pageId, nodeId);
         
-        jQuery(event.target).closest('.actions-expanded').hide();
+        cx.jQuery(event.target).closest('.actions-expanded').hide();
     });
 
     //add callback to reload custom content templates available as soon as template or module changes
-    jQuery('#page select[name="page[skin]"]').bind('change', function() {
+    cx.jQuery('#page select[name="page[skin]"]').bind('change', function() {
+        if (parseInt(cx.jQuery(this).val()) == 0) {
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').attr('disabled', 'disabled');
+        } else {            
+            if (parseInt(cx.cm.pageSkin) == 0) {
+                cx.jQuery('input[name="page[useSkinForAllChannels]"]').attr('checked', 'checked');
+            }
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').removeAttr('disabled');
+        }
+        
+        cx.cm.pageSkin = cx.jQuery(this).val();
+        
         reloadCustomContentTemplates();
     });
 
-    jQuery('#page_skin_view, #page_skin_edit').click(function(event) {
+    cx.jQuery('#page select[name="page[customContent]"]').bind('change', function() {
+        if (cx.jQuery(this).val() == '') {
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').attr('disabled', 'disabled');
+        } else {            
+            if (cx.cm.pageContentTemplate == '') {
+                cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+            }
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').removeAttr('disabled');
+        }        
+        
+        cx.cm.pageContentTemplate = cx.jQuery(this).val();
+    });
+
+    cx.jQuery('#page_skin_view, #page_skin_edit').click(function(event) {
         var themeId = 0;
         var themeName = "";
-        if (jQuery('#page_skin').val() != '') {
-            themeId = jQuery('#page_skin').val();
-            themeName = jQuery('#page_skin option:selected').text();
+        if (cx.jQuery('#page_skin').val() != '') {
+            themeId = cx.jQuery('#page_skin').val();
+            themeName = cx.jQuery('#page_skin option:selected').text();
         } else {
             themeId = cx.variables.get('themeId', 'contentmanager/theme');
             themeName = cx.variables.get('themeName', 'contentmanager/theme');
@@ -480,14 +515,14 @@ cx.ready(function() {
             themeId = cx.variables.get('defaultTemplates', 'contentmanager/themes')[cx.cm.getCurrentLang()];
         }
 
-        if (jQuery(event.currentTarget).is('#page_skin_view')) {
+        if (cx.jQuery(event.currentTarget).is('#page_skin_view')) {
             window.open('../index.php?preview='+themeId);
         } else {
             window.open('index.php?cmd=skins&act=templates&themes='+cx.variables.get("templateFolders", "contentmanager/themes")[themeId]+'&csrf='+cx.variables.get('csrf', 'contrexx'));
         }
     });
 
-    jQuery('#page select[name="page[application]"]').bind('blur', function() {
+    cx.jQuery('#page select[name="page[application]"]').bind('blur', function() {
         reloadCustomContentTemplates();
     });
 
@@ -495,8 +530,8 @@ cx.ready(function() {
     /*if (jQuery.getUrlVar('loadPage')) {
         cx.cm.loadPage(jQuery.getUrlVar('loadPage'));
     }*/
-    if (jQuery.getUrlVar("page") || jQuery.getUrlVar("node")) {
-        cx.cm.loadPage(jQuery.getUrlVar("page"), jQuery.getUrlVar("node"), jQuery.getUrlVar("version"), jQuery.getUrlVar("tab"));
+    if (cx.jQuery.getUrlVar("page") || cx.jQuery.getUrlVar("node")) {
+        cx.cm.loadPage(cx.jQuery.getUrlVar("page"), cx.jQuery.getUrlVar("node"), cx.jQuery.getUrlVar("version"), cx.jQuery.getUrlVar("tab"));
     }
 
     cx.cm();
@@ -512,75 +547,75 @@ cx.cm = function(target) {
         buttonImage: "template/ascms/images/calender.png",
         buttonImageOnly: true
     };
-    jQuery("input.date").datetimepicker(dpOptions);
+    cx.jQuery("input.date").datetimepicker(dpOptions);
 
-    jQuery('#page input[name="page[slug]"]').keyup(function() {
-        var originalSlug  = jQuery(this).val();
+    cx.jQuery('#page input[name="page[slug]"]').keyup(function() {
+        var originalSlug  = cx.jQuery(this).val();
         var slugifiedSlug = cx.cm.slugify(originalSlug);
         if (originalSlug != slugifiedSlug) {
-            jQuery(this).val(slugifiedSlug);
-            jQuery('#liveSlug').text(slugifiedSlug);
+            cx.jQuery(this).val(slugifiedSlug);
+            cx.jQuery('#liveSlug').text(slugifiedSlug);
         }
     });
 
-    if (jQuery("#page")) {
-        jQuery("#page").tabs().css('display', 'block');
+    if (cx.jQuery("#page")) {
+        cx.jQuery("#page").tabs().css('display', 'block');
     }
 
-    if (jQuery('#showHideInfo')) {
-        jQuery('#showHideInfo').toggle(function() {
-            jQuery('#additionalInfo').slideDown();
+    if (cx.jQuery('#showHideInfo')) {
+        cx.jQuery('#showHideInfo').toggle(function() {
+            cx.jQuery('#additionalInfo').slideDown();
         }, function() {
-            jQuery('#additionalInfo').slideUp();
+            cx.jQuery('#additionalInfo').slideUp();
         });
     }
 
-    jQuery('#buttons input').click(function(event) {
+    cx.jQuery('#buttons input').click(function(event) {
         event.preventDefault();
     });
 
-    var inputs = jQuery('.additionalInfo input');
+    var inputs = cx.jQuery('.additionalInfo input');
     inputs.focus(function(){
-        jQuery(this).css('color','#000000');
+        cx.jQuery(this).css('color','#000000');
     });
     inputs.blur(function(){
-        jQuery(this).css('color','#000000');
+        cx.jQuery(this).css('color','#000000');
     });
     
-    jQuery("#cancel").click(function() {
+    cx.jQuery("#cancel").click(function() {
         cx.cm.hideEditView();
     });
 
-    jQuery('#publish, #release').unbind("click").click(function() {
+    cx.jQuery('#publish, #release').unbind("click").click(function() {
         if (!cx.cm.validateFields()) {
             return false;
         }
         if (cx.cm.editorInUse()) {
-            jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
+            cx.jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         }
         cx.trigger("loadingStart", "contentmanager", {});
-        jQuery.post('index.php?cmd=jsondata&object=page&act=set', 'action=publish&'+jQuery('#cm_page').serialize(), function(response) {
+        cx.jQuery.post('index.php?cmd=jsondata&object=page&act=set', 'action=publish&'+cx.jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
-                if (jQuery('#historyConatiner').html() != '') {
+                if (cx.jQuery('#historyConatiner').html() != '') {
                     cx.cm.loadHistory();
                 }
-                var newName = jQuery('#page_name').val();
-                if (jQuery('#pageId').val() == 'new' || jQuery('#pageId').val() == 0) {
-                    jQuery("#pageId").val(response.data.id);
+                var newName = cx.jQuery('#page_name').val();
+                if (cx.jQuery('#pageId').val() == 'new' || cx.jQuery('#pageId').val() == 0) {
+                    cx.jQuery("#pageId").val(response.data.id);
                 }
                 if (response.data.reload) {
                     cx.cm.createJsTree();
-                    cx.cm.loadHistory(jQuery("#pageId").val());
+                    cx.cm.loadHistory(cx.jQuery("#pageId").val());
                     return;
                 }
-                var page = cx.cm.getPageStatus(cx.cm.getNodeId(jQuery("#pageId").val()), cx.cm.getCurrentLang());
+                var page = cx.cm.getPageStatus(cx.cm.getNodeId(cx.jQuery("#pageId").val()), cx.cm.getCurrentLang());
                 if (publishAllowed) {
                     page.publishing.published = true;
                     page.publishing.hasDraft = "no";
                 } else {
                     page.publishing.hasDraft = "waiting";
                 }
-                switch (jQuery("[name=\"page[type]\"]:checked").attr("value")) {
+                switch (cx.jQuery("[name=\"page[type]\"]:checked").attr("value")) {
                     case "content":
                         page.visibility.type = "standard";
                         page.visibility.fallback = false;
@@ -590,7 +625,7 @@ cx.cm = function(target) {
                         page.visibility.fallback = false;
                         break;
                     case "application":
-                        var module = jQuery("[name=\"page[application]\"").val();
+                        var module = cx.jQuery("[name=\"page[application]\"").val();
                         if (module != "home") {
                             page.visibility.type = "application";
                         } else {
@@ -606,17 +641,17 @@ cx.cm = function(target) {
                         }
                         break;
                 }
-                //page.publishing.locked = jQuery("#page_protection_backend").is(":checked");
-                page.visibility.protected = jQuery("#page_protection_frontend").is(":checked");
+                //page.publishing.locked = cx.jQuery("#page_protection_backend").is(":checked");
+                page.visibility.protected = cx.jQuery("#page_protection_frontend").is(":checked");
                 page.name = newName;
                 page.version = response.data.version;
 
                 parameter = new Object;
-                parameter.pageId = jQuery('#pageId').val();
-                if (jQuery('#page_target_protocol option:selected').val() == '') {
-                    parameter.pageRedirectPlaceholder = jQuery('#page_target').val();
+                parameter.pageId = cx.jQuery('#pageId').val();
+                if (cx.jQuery('#page_target_protocol option:selected').val() == '') {
+                    parameter.pageRedirectPlaceholder = cx.jQuery('#page_target').val();
                 }
-                jQuery.ajax({
+                cx.jQuery.ajax({
                     url: 'index.php?cmd=jsondata&object=page&act=isBroken',
                     dataType: 'json',
                     async: false,
@@ -636,31 +671,31 @@ cx.cm = function(target) {
         });
     });
 
-    jQuery('#save, #refuse').unbind("click").click(function() {
+    cx.jQuery('#save, #refuse').unbind("click").click(function() {
         if (!cx.cm.validateFields()) {
             return false;
         }
         if (CKEDITOR.instances.cm_ckeditor != null) {
-            jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
+            cx.jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         }
         cx.trigger("loadingStart", "contentmanager", {});
-        jQuery.post('index.php?cmd=jsondata&object=page&act=set', jQuery('#cm_page').serialize(), function(response) {
+        cx.jQuery.post('index.php?cmd=jsondata&object=page&act=set', cx.jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
-                if (jQuery('#historyConatiner').html() != '') {
+                if (cx.jQuery('#historyConatiner').html() != '') {
                     cx.cm.loadHistory();
                 }
-                var newName = jQuery('#page_name').val();
-                if (jQuery('#pageId').val() == 'new' || jQuery('#pageId').val() == 0) {
-                    jQuery("#pageId").val(response.data.id);
+                var newName = cx.jQuery('#page_name').val();
+                if (cx.jQuery('#pageId').val() == 'new' || cx.jQuery('#pageId').val() == 0) {
+                    cx.jQuery("#pageId").val(response.data.id);
                 }
                 if (response.data.reload) {
                     cx.cm.createJsTree();
-                    cx.cm.loadHistory(jQuery("#pageId").val());
+                    cx.cm.loadHistory(cx.jQuery("#pageId").val());
                     return;
                 }
-                var page = cx.cm.getPageStatus(cx.cm.getNodeId(jQuery("#pageId").val()), cx.cm.getCurrentLang());
+                var page = cx.cm.getPageStatus(cx.cm.getNodeId(cx.jQuery("#pageId").val()), cx.cm.getCurrentLang());
                 page.publishing.hasDraft = "yes";
-                switch (jQuery("[name=\"page[type]\"]:checked").attr("value")) {
+                switch (cx.jQuery("[name=\"page[type]\"]:checked").attr("value")) {
                     case "content":
                         page.visibility.type = "standard";
                         page.visibility.fallback = false;
@@ -670,7 +705,7 @@ cx.cm = function(target) {
                         page.visibility.fallback = false;
                         break;
                     case "application":
-                        var module = jQuery("[name=\"page[application]\"").val();
+                        var module = cx.jQuery("[name=\"page[application]\"").val();
                         if (module != "home") {
                             page.visibility.type = "application";
                         } else {
@@ -686,17 +721,17 @@ cx.cm = function(target) {
                         }
                         break;
                 }
-                page.publishing.locked = jQuery("#page_protection_backend").is(":checked");
-                page.visibility.protected = jQuery("#page_protection_frontend").is(":checked");
+                page.publishing.locked = cx.jQuery("#page_protection_backend").is(":checked");
+                page.visibility.protected = cx.jQuery("#page_protection_frontend").is(":checked");
                 page.name = newName;
                 page.version = response.data.version;
 
                 parameter = new Object;
-                parameter.pageId = jQuery('#pageId').val();
-                if (jQuery('#page_target_protocol option:selected').val() == '') {
-                    parameter.pageRedirectPlaceholder = jQuery('#page_target').val();
+                parameter.pageId = cx.jQuery('#pageId').val();
+                if (cx.jQuery('#page_target_protocol option:selected').val() == '') {
+                    parameter.pageRedirectPlaceholder = cx.jQuery('#page_target').val();
                 }
-                jQuery.ajax({
+                cx.jQuery.ajax({
                     url: 'index.php?cmd=jsondata&object=page&act=isBroken',
                     dataType: 'json',
                     async: false,
@@ -715,17 +750,17 @@ cx.cm = function(target) {
         });
     });
 
-    jQuery('#preview').click(function(event) {
+    cx.jQuery('#preview').click(function(event) {
         if (!cx.cm.validateFields()) {
             return false;
         }
         if (CKEDITOR.instances.cm_ckeditor != null) {
-            jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
+            cx.jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         }
-        jQuery.ajax({
+        cx.jQuery.ajax({
             type: 'post',
             url:  'index.php?cmd=jsondata&object=page&act=setPagePreview',
-            data:  jQuery('#cm_page').serialize(),
+            data:  cx.jQuery('#cm_page').serialize(),
             async: false,
             error: function() {
                 event.preventDefault();
@@ -733,24 +768,24 @@ cx.cm = function(target) {
         });
     });
 
-    jQuery('div.wrapper').click(function(event) {
-        jQuery(event.target).find('input[name="page[type]"]:radio').click();
+    cx.jQuery('div.wrapper').click(function(event) {
+        cx.jQuery(event.target).find('input[name="page[type]"]:radio').click();
     });
 
-    jQuery('div.wrapper input[name="page[type]"]:radio').click(function(event) {
-        jQuery('div.activeType').removeClass('activeType');
-        jQuery(event.target).parentsUntil('div.type').addClass('activeType');
+    cx.jQuery('div.wrapper input[name="page[type]"]:radio').click(function(event) {
+        cx.jQuery('div.activeType').removeClass('activeType');
+        cx.jQuery(event.target).parentsUntil('div.type').addClass('activeType');
     });
     
-    jQuery('#page').bind('tabsselect', function(event, ui) {
+    cx.jQuery('#page').bind('tabsselect', function(event, ui) {
         if (ui.index == 5) {
-            if (jQuery('#page_history').html() == '') {
+            if (cx.jQuery('#page_history').html() == '') {
                 cx.cm.loadHistory();
             }
         }
     });
 
-    jQuery('#page').bind('tabsshow', function(event, ui) {
+    cx.jQuery('#page').bind('tabsshow', function(event, ui) {
         if (ui.index == 0) {
             cx.cm.resizeEditorHeight();
         }
@@ -758,9 +793,9 @@ cx.cm = function(target) {
     });
 
     //lock together the title and content title.
-    var contentTitle = jQuery('#contentTitle');
-    var navTitle = jQuery('#title');
-    var headerTitlesLock = new Lock(jQuery('#headerTitlesLock'), function(isClosed) {
+    var contentTitle = cx.jQuery('#contentTitle');
+    var navTitle = cx.jQuery('#title');
+    var headerTitlesLock = new Lock(cx.jQuery('#headerTitlesLock'), function(isClosed) {
         if (isClosed) {
             contentTitle.attr('disabled', 'true');
             contentTitle.val(navTitle.val());
@@ -774,34 +809,34 @@ cx.cm = function(target) {
     });
 
     // show/hide elemnts when a page's type is changed
-    jQuery('input[name="page[type]"]').click(function(event) {
-        jQuery('#page .type_hidable').hide();
-        jQuery('#page .type_'+jQuery(event.target).val()).show();
-        jQuery('#page #type_toggle label').text(jQuery(this).next().text());
-        if (jQuery(this).val() == 'application') {
-            jQuery('#page #application_toggle label').text(jQuery(this).next().text());
+    cx.jQuery('input[name="page[type]"]').click(function(event) {
+        cx.jQuery('#page .type_hidable').hide();
+        cx.jQuery('#page .type_'+cx.jQuery(event.target).val()).show();
+        cx.jQuery('#page #type_toggle label').text(cx.jQuery(this).next().text());
+        if (cx.jQuery(this).val() == 'application') {
+            cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
         }
-        if (jQuery(this).val() == 'redirect') {
-            jQuery('#page #preview').hide();
+        if (cx.jQuery(this).val() == 'redirect') {
+            cx.jQuery('#page #preview').hide();
         } else {
-            jQuery('#page #preview').show();
+            cx.jQuery('#page #preview').show();
         }
-        if (jQuery(this).val() == 'fallback') {
-            jQuery("#type_toggle").hide();
+        if (cx.jQuery(this).val() == 'fallback') {
+            cx.jQuery("#type_toggle").hide();
         } else {
-            jQuery("#type_toggle").show();
+            cx.jQuery("#type_toggle").show();
         }
         cx.cm.resizeEditorHeight();
         
         // if we change type from fallback to content or application, we want to
         // load content from fallback page:
-        var content = jQuery('#cm_ckeditor').val();
+        var content = cx.jQuery('#cm_ckeditor').val();
         var isCkEditor = false;
         if (CKEDITOR.instances.cm_ckeditor != null) {
             content = CKEDITOR.instances.cm_ckeditor.getData();
             isCkEditor = true;
         }
-        if (cx.cm.lastPageType == "fallback" && (jQuery(this).val() == "content" || jQuery(this).val() == "application") && content == "") {
+        if (cx.cm.lastPageType == "fallback" && (cx.jQuery(this).val() == "content" || cx.jQuery(this).val() == "application") && content == "") {
             var fallbackLanguage = cx.cm.getCurrentLang();
             while (true) {
                 if (!fallbacks[fallbackLanguage]) {
@@ -809,9 +844,9 @@ cx.cm = function(target) {
                 }
                 fallbackLanguage = fallbacks[fallbackLanguage];
             }
-            var fallbackPageId = jQuery("#" + jQuery("#pageId").val()).parent().children("." + fallbackLanguage).attr("id");
+            var fallbackPageId = cx.jQuery("#" + cx.jQuery("#pageId").val()).parent().children("." + fallbackLanguage).attr("id");
             cx.trigger("loadingStart", "contentmanager", {});
-            jQuery.ajax({
+            cx.jQuery.ajax({
                 url: "index.php?cmd=jsondata&object=page&act=get&page=" + fallbackPageId,
                 async: false,
                 success: function(response) {
@@ -823,51 +858,51 @@ cx.cm = function(target) {
                     if (isCkEditor) {
                         CKEDITOR.instances.cm_ckeditor.setData(fallbackPageContent);
                     } else {
-                        jQuery("#cm_ckeditor").val(fallbackPageContent);
+                        cx.jQuery("#cm_ckeditor").val(fallbackPageContent);
                     }
                 }
             });
             cx.trigger("loadingEnd", "contentmanager", {});
         }
-        cx.cm.lastPageType = jQuery(this).val();
+        cx.cm.lastPageType = cx.jQuery(this).val();
     });
-    jQuery('input[name="page[type]"]:checked').trigger('click');
+    cx.jQuery('input[name="page[type]"]:checked').trigger('click');
 
     // togglers
-    jQuery('#content-manager #sidebar_toggle').click(function() {
+    cx.jQuery('#content-manager #sidebar_toggle').click(function() {
         cx.cm.toggleSidebar();
-        if (jQuery('#pageId').val() !== 'new') {
+        if (cx.jQuery('#pageId').val() !== 'new') {
             cx.cm.saveToggleStatuses();
         }
     });
 
-    jQuery('.toggle').click(function(objEvent) {
-        jQuery(this).toggleClass('open closed');
-        if (jQuery(objEvent.currentTarget).is('#titles_toggle')) {
+    cx.jQuery('.toggle').click(function(objEvent) {
+        cx.jQuery(this).toggleClass('open closed');
+        if (cx.jQuery(objEvent.currentTarget).is('#titles_toggle')) {
             cx.cm.resizeEditorHeight();
         }
-        jQuery(this).nextAll('.container').first().animate({height: 'toggle'}, 400, function() {
-            if (jQuery('#pageId').val() !== 'new') {
+        cx.jQuery(this).nextAll('.container').first().animate({height: 'toggle'}, 400, function() {
+            if (cx.jQuery('#pageId').val() !== 'new') {
                 cx.cm.saveToggleStatuses();
             }
         });
     });
 
-    jQuery('.checkbox').click(function(event) {
-        var indicator = jQuery(this).children('.indicator');
-        var container = jQuery(this).nextAll('.container').first();
+    cx.jQuery('.checkbox').click(function(event) {
+        var indicator = cx.jQuery(this).children('.indicator');
+        var container = cx.jQuery(this).nextAll('.container').first();
 
-        if (!jQuery(event.target).is('.indicator') ) {
+        if (!cx.jQuery(event.target).is('.indicator') ) {
             indicator.prop('checked', !indicator.prop('checked'));
             indicator.trigger('change');
         }
-        if (!jQuery(this).hasClass('no_toggle')) {
+        if (!cx.jQuery(this).hasClass('no_toggle')) {
             container.animate({height: 'toggle'}, 400);
         }
     });
     
-    jQuery("#page_name").blur(function() {
-        var val = jQuery(this).val();
+    cx.jQuery("#page_name").blur(function() {
+        var val = cx.jQuery(this).val();
         if (val != "") {
             var fields = [
                 "page_title",
@@ -876,21 +911,21 @@ cx.cm = function(target) {
                 "page_metakeys",
                 "page_slug"
             ];
-            jQuery.each(fields, function(index, el) {
-                var element = jQuery("#" + el);
+            cx.jQuery.each(fields, function(index, el) {
+                var element = cx.jQuery("#" + el);
                 if (element.val() == "") {
                     element.val(val);
                 }
             });
-            var previewTarget = cx.variables.get("basePath", "contrexx") + jQuery("#page_slug_breadcrumb").text() + val;
-            jQuery("#preview").attr("href", previewTarget + "?pagePreview=1");
+            var previewTarget = cx.variables.get("basePath", "contrexx") + cx.jQuery("#page_slug_breadcrumb").text() + val;
+            cx.jQuery("#preview").attr("href", previewTarget + "?pagePreview=1");
         }
     });
     
-    jQuery("select#page_application").change(cx.cm.homeCheck, jQuery("#pageId").val());
-    jQuery("input#page_application_area").keyup(cx.cm.homeCheck, jQuery("#pageId").val());
+    cx.jQuery("select#page_application").change(cx.cm.homeCheck, cx.jQuery("#pageId").val());
+    cx.jQuery("input#page_application_area").keyup(cx.cm.homeCheck, cx.jQuery("#pageId").val());
     // prevent enter key from opening fileBrowser
-    jQuery("#content-manager input").keydown(function(event) {
+    cx.jQuery("#content-manager input").keydown(function(event) {
         if (event.keyCode == 13) {
             return false;
         }
@@ -908,16 +943,23 @@ cx.cm = function(target) {
     cx.cm.resetEditView();
 
     // toggle ckeditor when sourceMode is toggled
-    jQuery('#page input[name="page[sourceMode]"]').change(function() {
+    cx.jQuery('#page input[name="page[sourceMode]"]').change(function() {
         cx.cm.toggleEditor();
     });
 
-    jQuery(document).ready(function() {
-        if (jQuery.getUrlVar('act') == 'new') {
+    cx.jQuery(document).ready(function() {
+        if (cx.jQuery('#languageCount').val()<=1) {
+            cx.jQuery("#site-language").hide();
+            cx.jQuery(".adminlist ").addClass("margin0");
+        } else {
+            cx.jQuery("#site-language").show();
+            cx.jQuery(".adminlist ").removeClass("margin0");
+        }
+        if (cx.jQuery.getUrlVar('act') == 'new') {
             // make sure history tab is hidden
-            jQuery('.tab.page_history').hide();
+            cx.jQuery('.tab.page_history').hide();
             // load selected tab
-            cx.cm.selectTab(jQuery.getUrlVar('tab'), false);
+            cx.cm.selectTab(cx.jQuery.getUrlVar('tab'), false);
             // load ckeditor if it's a new page
             cx.cm.createEditor();
         }
@@ -925,8 +967,8 @@ cx.cm = function(target) {
 };
 
 cx.cm.homeCheck = function(addClasses, pageId) {
-    var module = jQuery("select#page_application");
-    var cmd = jQuery("input#page_application_area");
+    var module = cx.jQuery("select#page_application");
+    var cmd = cx.jQuery("input#page_application_area");
 
     module.removeClass("warning");
     cmd.removeClass("warning");
@@ -985,7 +1027,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     if (nodeId == -1) {
                         nodeId = "";
                     } else {
-                        nodeId = jQuery(nodeId).closest('li').attr('id').split("_")[1];
+                        nodeId = cx.jQuery(nodeId).closest('li').attr('id').split("_")[1];
                         nodeId = "&nodeid=" + nodeId;
                     }
                     return "?cmd=jsondata&object=node&act=getTree" + nodeId;
@@ -998,8 +1040,8 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     if (cx.cm.actions == undefined) {
                         cx.cm.actions = response.data.actions;
                     } else {
-                        jQuery(languages).each(function(index, lang) {
-                            jQuery.extend(cx.cm.actions[lang], response.data.actions[lang]);
+                        cx.jQuery(languages).each(function(index, lang) {
+                            cx.jQuery.extend(cx.cm.actions[lang], response.data.actions[lang]);
                         });
                     }
                     nodeLevels = [];
@@ -1050,7 +1092,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     })
     .bind("before.jstree", function(e, data) {
         if (!eventAdded) {
-            jQuery('#site-tree').delegate('a', 'mouseup', function() {
+            cx.jQuery('#site-tree').delegate('a', 'mouseup', function() {
                 mouseIsUp = true;
             }).delegate('a', 'mousedown', function() {
                 mouseIsUp = false;
@@ -1059,7 +1101,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         eventAdded = true;;
     })
     .bind("create.jstree", function (e, data) {
-        jQuery.post(
+        cx.jQuery.post(
             "server.php",
             {
                 "operation" : "create_node",
@@ -1070,16 +1112,16 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             },
             function (r) {
                 if (r.status) {
-                    jQuery(data.rslt.obj).attr("id", "node_" + r.id);
+                    cx.jQuery(data.rslt.obj).attr("id", "node_" + r.id);
                 } else {
-                    jQuery.jstree.rollback(data.rlbk);
+                    cx.jQuery.jstree.rollback(data.rlbk);
                 }
             }
             );
     })
     .bind("remove.jstree", function (e, data) {
         data.rslt.obj.each(function () {
-            jQuery.ajax({
+            cx.jQuery.ajax({
                 async : false,
                 type: 'POST',
                 url: "server.php",
@@ -1111,20 +1153,20 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
       );
       })*/
     .bind("prepare_move.jstree", function(e, data) {
-        jQuery(".jstree-leaf").addClass("cm-leaf");
+        cx.jQuery(".jstree-leaf").addClass("cm-leaf");
     })
     .bind("move_node.jstree", function (e, data) {
         // The following line (together with prepare_move event listener) fixes #1359
-        jQuery(".cm-leaf").removeClass("jstree-closed").addClass("jstree-leaf").removeClass("cm-leaf");
+        cx.jQuery(".cm-leaf").removeClass("jstree-closed").addClass("jstree-leaf").removeClass("cm-leaf");
         data.rslt.o.each(function (i) {
             cx.trigger("loadingStart", "contentmanager", {});
-            jQuery.ajax({
+            cx.jQuery.ajax({
                 async : false,
                 type: 'POST',
                 url: "?cmd=jsondata&object=node&act=move",
                 data : {
                     "operation" : "move_node",
-                    "id" : jQuery(this).attr("id").replace("node_", ""),
+                    "id" : cx.jQuery(this).attr("id").replace("node_", ""),
                     "ref" : data.rslt.cr === -1 ? 1 : data.rslt.np.attr("id").replace("node_", ""),
                     "position" : data.rslt.o.index(),
                     "title" : data.rslt.name,
@@ -1135,16 +1177,16 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         nodeLevels[nodeId] = r.data.nodeLevels[nodeId];
                     }
                     for (nodeId in r.data.nodeLevels) {
-                        jQuery('#node_' + nodeId).children('a').children('.jstree-checkbox').css('left', '-' + ((r.data.nodeLevels[nodeId] * 18) + 20) + 'px');
+                        cx.jQuery('#node_' + nodeId).children('a').children('.jstree-checkbox').css('left', '-' + ((r.data.nodeLevels[nodeId] * 18) + 20) + 'px');
                     }
                     cx.trigger("loadingEnd", "contentmanager", {});
                     return true;
                     // TODO: response/reporting/refresh
                     if (!r.status) { 
-                        jQuery.jstree.rollback(data.rlbk);
+                        cx.jQuery.jstree.rollback(data.rlbk);
                     } else {
-                        jQuery(data.rslt.oc).attr("id", "node_" + r.id);
-                        if (data.rslt.cy && jQuery(data.rslt.oc).children("UL").length) {
+                        cx.jQuery(data.rslt.oc).attr("id", "node_" + r.id);
+                        if (data.rslt.cy && cx.jQuery(data.rslt.oc).children("UL").length) {
                             data.inst.refresh(data.inst._get_parent(data.rslt.oc));
                         }
                     }
@@ -1153,81 +1195,81 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         });
     })
     .bind("load_node.jstree", function (event, siteTreeData) {
-        var jst = jQuery.jstree._reference('#site-tree');
+        var jst = cx.jQuery.jstree._reference('#site-tree');
         var langs = jst.get_settings().languages;
 
         for (nodeId in nodeLevels) {
-            jQuery('#node_' + nodeId).children('a').children('.jstree-checkbox').css('left', '-' + ((nodeLevels[nodeId] * 18) + 20) + 'px');
+            cx.jQuery('#node_' + nodeId).children('a').children('.jstree-checkbox').css('left', '-' + ((nodeLevels[nodeId] * 18) + 20) + 'px');
         }
 
-        jQuery('#site-tree ul li').not(".actions-expanded li").each(function() {
-            jQuery(this).children('a:last').after(function() {
-                if (!jQuery(this).hasClass('jstree-move') && jQuery(this).siblings('.jstree-move').length == 0) {
+        cx.jQuery('#site-tree ul li').not(".actions-expanded li").each(function() {
+            cx.jQuery(this).children('a:last').after(function() {
+                if (!cx.jQuery(this).hasClass('jstree-move') && cx.jQuery(this).siblings('.jstree-move').length == 0) {
                     return '<a class="jstree-move" href="#"></a>';
                 }
             });
         });
 
         // load pages on click
-        jQuery('#site-tree a').each(function(index, leaf) {
-            jQuery(leaf).not('.jstree-move').click(function(event) {
+        cx.jQuery('#site-tree a').each(function(index, leaf) {
+            cx.jQuery(leaf).not('.jstree-move').click(function(event) {
                 var action;
                 // don't load a page if the user only meant to select/unselect its checkbox
-                if (!jQuery(event.target).hasClass('jstree-checkbox') 
-                    && !jQuery(this).hasClass('broken')
-                    && !jQuery(event.target).is('ins')) {
+                if (!cx.jQuery(event.target).hasClass('jstree-checkbox') 
+                    && !cx.jQuery(this).hasClass('broken')
+                    && !cx.jQuery(event.target).is('ins')) {
                     var module = "";
                     try {
-                        module = jQuery.trim(jQuery.parseJSON(jQuery(leaf).attr("data-href")).module);
+                        module = cx.jQuery.trim(cx.jQuery.parseJSON(cx.jQuery(leaf).attr("data-href")).module);
                         module = module.split(" ")[0];
                     } catch (ex) {}
-                    if (jQuery.inArray(module, ["", "home", "login", "imprint", "ids", "error", "sitemap", "agb", "privacy", "search"]) == -1) {
-                        cx.cm.showEditModeWindow(module, this.id, jQuery(this).closest('li').attr("id").split("_")[1]);
+                    if (cx.jQuery.inArray(module, ["", "home", "login", "imprint", "ids", "error", "sitemap", "agb", "privacy", "search"]) == -1) {
+                        cx.cm.showEditModeWindow(module, this.id, cx.jQuery(this).closest('li').attr("id").split("_")[1]);
                     } else {
-                        cx.cm.loadPage(this.id, jQuery(this).closest('li').attr("id").split("_")[1], null, "content");
+                        cx.cm.loadPage(this.id, cx.jQuery(this).closest('li').attr("id").split("_")[1], null, "content");
                     }
-                } else if (jQuery(event.target).is('ins.page') ||
-                        jQuery(event.target).is('ins.publishing')) {
-                    if (jQuery(event.target).is('ins.page')) {
+                } else if (cx.jQuery(event.target).is('ins.page') ||
+                        cx.jQuery(event.target).is('ins.publishing')) {
+                    if (cx.jQuery(event.target).is('ins.page')) {
                         action = "hide";
-                        if (jQuery(event.target).hasClass('invisible')) {
+                        if (cx.jQuery(event.target).hasClass('invisible')) {
                             action = "show";
                         }
                     } else {
                         action = "deactivate";
-                        if (jQuery(event.target).hasClass('unpublished')) {
+                        if (cx.jQuery(event.target).hasClass('unpublished')) {
                             action = "activate";
                         }
                     }
-                    var nodeId = jQuery(event.target).closest("li").attr("id").split("_")[1];
+                    var nodeId = cx.jQuery(event.target).closest("li").attr("id").split("_")[1];
                     cx.cm.performAction(action, this.id, nodeId);
                 }
             });
             
-            jQuery(this).hover(
+            cx.jQuery(this).hover(
                 function() {
                     if (mouseIsUp) {
-                        jQuery(this).siblings('.jstree-wrapper').addClass('hover');
-                        jQuery(this).parent().children('.jstree-move').css('display', 'inline-block');
+                        cx.jQuery(this).siblings('.jstree-wrapper').addClass('hover');
+                        cx.jQuery(this).parent().children('.jstree-move').css('display', 'inline-block');
                     } else {
-                        jQuery(this).mouseup(function() {
-                            jQuery(this).siblings('.jstree-wrapper').addClass('hover');
-                            jQuery(this).parent().children('.jstree-move').css('display', 'inline-block');
-                            jQuery(this).unbind('mouseup');
+                        cx.jQuery(this).mouseup(function() {
+                            cx.jQuery(this).siblings('.jstree-wrapper').addClass('hover');
+                            cx.jQuery(this).parent().children('.jstree-move').css('display', 'inline-block');
+                            cx.jQuery(this).unbind('mouseup');
                         });
                     }
                 },
                 function(e) {
                     if (mouseIsUp) {
-                        jQuery(this).siblings('.jstree-wrapper').removeClass('hover');
-                        jQuery(this).parent().children('.jstree-move').css('display', 'none');
+                        cx.jQuery(this).siblings('.jstree-wrapper').removeClass('hover');
+                        cx.jQuery(this).parent().children('.jstree-move').css('display', 'none');
                     } else {
-                        jQuery(document).bind('mouseup.link', function() {
+                        cx.jQuery(document).bind('mouseup.link', function() {
                             if (e.type != 'mouseleave') {
-                                jQuery(e.currentTarget).siblings('.jstree-wrapper').removeClass('hover');
-                                jQuery(e.currentTarget).parent().children('.jstree-move').css('display', 'none');
+                                cx.jQuery(e.currentTarget).siblings('.jstree-wrapper').removeClass('hover');
+                                cx.jQuery(e.currentTarget).parent().children('.jstree-move').css('display', 'none');
                             }
-                            jQuery(document).unbind('mouseup.link');
+                            cx.jQuery(document).unbind('mouseup.link');
                         });
                     }
                 }
@@ -1235,53 +1277,53 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         });
 
         // highlight active page
-        jQuery('#' + jQuery('#pageId').val()).siblings('.jstree-wrapper').addClass('active');
+        cx.jQuery('#' + cx.jQuery('#pageId').val()).siblings('.jstree-wrapper').addClass('active');
 
         // add a wrapper div for the horizontal lines
-        jQuery('#site-tree li > ins.jstree-icon').each(function(index, node) {
-            jQuery(this).hover(
+        cx.jQuery('#site-tree li > ins.jstree-icon').each(function(index, node) {
+            cx.jQuery(this).hover(
                 function() {
                     if (mouseIsUp) {
-                        jQuery(this).siblings('.jstree-wrapper').addClass('hover');
-                        jQuery(this).siblings('.jstree-move').css('display', 'inline-block');
+                        cx.jQuery(this).siblings('.jstree-wrapper').addClass('hover');
+                        cx.jQuery(this).siblings('.jstree-move').css('display', 'inline-block');
                     } else if (!mouseIsUp) {
-                        jQuery(this).mouseup(function() {
-                            jQuery(this).siblings('.jstree-wrapper').addClass('hover');
-                            jQuery(this).siblings('.jstree-move').css('display', 'inline-block');
-                            jQuery(this).unbind('mouseup');
+                        cx.jQuery(this).mouseup(function() {
+                            cx.jQuery(this).siblings('.jstree-wrapper').addClass('hover');
+                            cx.jQuery(this).siblings('.jstree-move').css('display', 'inline-block');
+                            cx.jQuery(this).unbind('mouseup');
                         });
                     }
                 },
                 function(e) {
                     if (mouseIsUp) {
-                        jQuery(this).siblings('.jstree-wrapper').removeClass('hover');
-                        jQuery(this).siblings('.jstree-move').css('display', 'none');
+                        cx.jQuery(this).siblings('.jstree-wrapper').removeClass('hover');
+                        cx.jQuery(this).siblings('.jstree-move').css('display', 'none');
                     } else {
-                        jQuery(document).bind('mouseup.ins', function() {
-                            jQuery(e.currentTarget).siblings('.jstree-wrapper').removeClass('hover');
-                            jQuery(e.currentTarget).siblings('.jstree-move').css('display', 'none');
-                            jQuery(document).unbind('mouseup.ins');
+                        cx.jQuery(document).bind('mouseup.ins', function() {
+                            cx.jQuery(e.currentTarget).siblings('.jstree-wrapper').removeClass('hover');
+                            cx.jQuery(e.currentTarget).siblings('.jstree-move').css('display', 'none');
+                            cx.jQuery(document).unbind('mouseup.ins');
                         });
                     }
                 }
             );
 
-            if (jQuery(node).prev().is(".jstree-wrapper")) {
+            if (cx.jQuery(node).prev().is(".jstree-wrapper")) {
                 return;
             }
 
-            var translations = jQuery("<div class=\"translations\" />");
+            var translations = cx.jQuery("<div class=\"translations\" />");
             var nodeIds = [];
-            jQuery(this).parent().children("a").each(function(index, el) {
-                if (!jQuery(el).is(".jstree-move")) {
-                    var lang = jQuery(el).attr("class");
-                    var node = jQuery(el).parent("li");
+            cx.jQuery(this).parent().children("a").each(function(index, el) {
+                if (!cx.jQuery(el).is(".jstree-move")) {
+                    var lang = cx.jQuery(el).attr("class");
+                    var node = cx.jQuery(el).parent("li");
                     nodeIds[lang] = node.attr("id").substr(5);
                 }
             });
-            jQuery.each(jQuery("select.chzn-select option"), function(index, el) {
-                var lang = jQuery(el).val();
-                var langEl = jQuery("<div class=\"translation " + lang + "\" />");
+            cx.jQuery.each(cx.jQuery("select.chzn-select option"), function(index, el) {
+                var lang = cx.jQuery(el).val();
+                var langEl = cx.jQuery("<div class=\"translation " + lang + "\" />");
                 langEl.text(lang);
                 langEl.click(function() {
                     var page = cx.cm.getPageStatus(nodeIds[lang], lang);
@@ -1294,105 +1336,109 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 });
                 translations.append(langEl);
             });
-            var actions = jQuery('<div class="actions"><div class="label">' + cx.variables.get('TXT_CORE_CM_ACTIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
+            var actions = cx.jQuery('<div class="actions"><div class="label">' + cx.variables.get('TXT_CORE_CM_ACTIONS', 'contentmanager/lang') + '</div><div class="arrow" /></div>')
                             .append("<div class=\"actions-expanded\" style=\"display: none;\"><ul></ul></div>")
                             .click(function() {
-                                jQuery(this).children(".actions-expanded").toggle();
+                                cx.jQuery(this).children(".actions-expanded").toggle();
                             });
-            var wrapper = jQuery(actions).wrap('<div class="jstree-wrapper" />').parent();
+            var wrapper = cx.jQuery(actions).wrap('<div class="jstree-wrapper" />').parent();
             wrapper.prepend(translations);
-            jQuery(node).before(wrapper);
+            cx.jQuery(node).before(wrapper);
         });
+        if (cx.jQuery(".translations").first().children(".translation").length <= 1) {
+            cx.jQuery(".translations").hide();
+            cx.jQuery(".translation").html("");
+        }
 
-        jQuery('.jstree-wrapper').hover(
+        cx.jQuery('.jstree-wrapper').hover(
             function(e) {
                 if (mouseIsUp) {
-                    jQuery(this).addClass('hover');
-                    jQuery(this).siblings('.jstree-move').css('display', 'inline-block');
+                    cx.jQuery(this).addClass('hover');
+                    cx.jQuery(this).siblings('.jstree-move').css('display', 'inline-block');
                 } else {
-                    jQuery(this).mouseup(function() {
-                        jQuery(this).addClass('hover');
-                        jQuery(this).siblings('.jstree-move').css('display', 'inline-block');
-                        jQuery(this).unbind('mouseup');
+                    cx.jQuery(this).mouseup(function() {
+                        cx.jQuery(this).addClass('hover');
+                        cx.jQuery(this).siblings('.jstree-move').css('display', 'inline-block');
+                        cx.jQuery(this).unbind('mouseup');
                     });
                 }
             },
             function (e) {
                 if (mouseIsUp) {
-                    jQuery(this).removeClass('hover');
-                    jQuery(this).siblings('.jstree-move').css('display', 'none');
+                    cx.jQuery(this).removeClass('hover');
+                    cx.jQuery(this).siblings('.jstree-move').css('display', 'none');
                 } else {
-                    jQuery(document).bind('mouseup.jstree-wrapper', function() {
-                        jQuery(e.currentTarget).removeClass('hover');
-                        jQuery(e.currentTarget).siblings('.jstree-move').css('display', 'none');
-                        jQuery(document).unbind('mouseup.jstree-wrapper');
+                    cx.jQuery(document).bind('mouseup.jstree-wrapper', function() {
+                        cx.jQuery(e.currentTarget).removeClass('hover');
+                        cx.jQuery(e.currentTarget).siblings('.jstree-move').css('display', 'none');
+                        cx.jQuery(document).unbind('mouseup.jstree-wrapper');
                     });
                 }
             }
         );
 
         // prepare the expanded table
-        jQuery(langs).each(function(a, lang) {
+        cx.jQuery(langs).each(function(a, lang) {
             $J('div#site-tree li .jstree-wrapper').each(function(b, e) {
-                if (jQuery(e).children('span.module.' + lang).length > 0) {
+                if (cx.jQuery(e).children('span.module.' + lang).length > 0) {
                     return;
                 }
-                if (lang == jQuery('#site-tree').jstree('get_lang')) {
+                if (lang == cx.jQuery('#site-tree').jstree('get_lang')) {
                     display = 'show';
                 } else {
                     display = 'hide';
                 }
-                jQuery(e).append($J('<span class="module ' + lang + ' ' + display + '" /><a class="preview ' + lang + ' ' + display + '" target="_blank">' + cx.variables.get('TXT_CORE_CM_VIEW', 'contentmanager/lang') + '</a><span class="lastupdate ' + lang + ' ' + display + '"><span class="date" /><span class="user tp-trigger" /><span class="user tp-value"/></span>'));
-                var info = jQuery.parseJSON(jQuery(e).siblings('a[data-href].' + lang).attr('data-href'));
+                cx.jQuery(e).append($J('<span class="module ' + lang + ' ' + display + '" /><a class="preview ' + lang + ' ' + display + '" target="_blank">' + cx.variables.get('TXT_CORE_CM_VIEW', 'contentmanager/lang') + '</a><span class="lastupdate ' + lang + ' ' + display + '"><span class="date" /><span class="user tp-trigger" /><span class="user tp-value"/></span>'));
+                var info = cx.jQuery.parseJSON(cx.jQuery(e).siblings('a[data-href].' + lang).attr('data-href'));
                 try {
                     if (info != null) {
-                        jQuery(e).children('span.module.' + lang).text(info.module);
-                        jQuery(e).children('a.preview.' + lang).attr('href', "#");
-                        jQuery(e).find('span.lastupdate.' + lang + ' .date').text(info.lastupdate);
-                        jQuery(e).find('span.lastupdate.' + lang + ' .user.tp-value').text(cx.variables.get('TXT_CORE_CM_LAST_MODIFIED', 'contentmanager/lang/tooltip') + ' ' + (info.user != '' ? '„'+info.user+'“'  : '“'));
+                        cx.jQuery(e).children('span.module.' + lang).text(info.module);
+                        cx.jQuery(e).children('a.preview.' + lang).attr('href', "#");
+                        cx.jQuery(e).find('span.lastupdate.' + lang + ' .date').text(info.lastupdate);
+                        cx.jQuery(e).find('span.lastupdate.' + lang + ' .user.tp-value').text(cx.variables.get('TXT_CORE_CM_LAST_MODIFIED', 'contentmanager/lang/tooltip') + ' ' + (info.user != '' ? '„'+info.user+'“'  : '“'));
                     }
                 } catch (ex) {
-                    jQuery(e).children('a.preview.' + lang).css('display', 'none');
+                    cx.jQuery(e).children('a.preview.' + lang).css('display', 'none');
                 }
             });
         });
         
-        jQuery("a.preview").click(function() {
-            var pageId = jQuery(this).parent().parent().children("a." + cx.cm.getCurrentLang()).attr("id");
+        cx.jQuery("a.preview").click(function() {
+            var pageId = cx.jQuery(this).parent().parent().children("a." + cx.cm.getCurrentLang()).attr("id");
             var path = "../" + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
-            jQuery(this).attr("href", path);
+            cx.jQuery(this).attr("href", path);
         });
 
-        jQuery('.jstree li, .actions-expanded').live('mouseleave', function(event) {
-            if (!jQuery(event.target).is('li.action-item') && jQuery('.actions-expanded').length > 0) {
-                jQuery('.actions-expanded').each(function() {
-                    jQuery(this).parent().parent().children().css('z-index', 'auto');
-                    jQuery(this).hide();
+        cx.jQuery('.jstree li, .actions-expanded').live('mouseleave', function(event) {
+            if (!cx.jQuery(event.target).is('li.action-item') && cx.jQuery('.actions-expanded').length > 0) {
+                cx.jQuery('.actions-expanded').each(function() {
+                    cx.jQuery(this).parent().parent().children().css('z-index', 'auto');
+                    cx.jQuery(this).hide();
                 });
             }
         });
         
         // publishing and visibility icons
-        jQuery('#site-tree li a ins.jstree-icon').each(function(index, node) {
-            if (jQuery(node).hasClass("publishing") || jQuery(node).hasClass("page")) {
+        cx.jQuery('#site-tree li a ins.jstree-icon').each(function(index, node) {
+            if (cx.jQuery(node).hasClass("publishing") || cx.jQuery(node).hasClass("page")) {
                 return;
             }
-            publishing = jQuery(node).closest('li').data(jQuery(node).parent().attr('id')).publishing;
-            visibility = jQuery(node).closest('li').data(jQuery(node).parent().attr('id')).visibility;
+            publishing = cx.jQuery(node).closest('li').data(cx.jQuery(node).parent().attr('id')).publishing;
+            visibility = cx.jQuery(node).closest('li').data(cx.jQuery(node).parent().attr('id')).visibility;
 
-            jQuery(node).before('<ins class="jstree-icon publishing '+publishing+'">&nbsp;</ins>');
-            jQuery(node).addClass("page " + visibility);
+            cx.jQuery(node).before('<ins class="jstree-icon publishing '+publishing+'">&nbsp;</ins>');
+            cx.jQuery(node).addClass("page " + visibility);
         });
         
-        jQuery("#site-tree ul li > a").each(function(index, element) {
-            var pageId = jQuery(element).attr("id");
-            var nodeId = jQuery(element).parent("li").attr("id").substr(5);
-            var lang = jQuery(element).attr("class").split(" ")[0];
+        cx.jQuery("#site-tree ul li > a").each(function(index, element) {
+            var pageId = cx.jQuery(element).attr("id");
+            var nodeId = cx.jQuery(element).parent("li").attr("id").substr(5);
+            var lang = cx.jQuery(element).attr("class").split(" ")[0];
             // theres an error here, we'll fix it later:
-            if (!jQuery(element).children(".name").length) {
-                var pageName = jQuery.trim(jQuery(element).text());
-                jQuery(element).html(jQuery(element).html().replace(pageName.replace("&", "&amp;"), " "));
-                jQuery(element).append("<div class=\"name\">" + pageName + "</div>");
+            if (!cx.jQuery(element).children(".name").length) {
+                var pageName = jQuery.trim(cx.jQuery(element).text());
+                cx.jQuery(element).html(cx.jQuery(element).html().replace(pageName.replace("&", "&amp;"), " "));
+                cx.jQuery(element).append("<div class=\"name\">" + pageName + "</div>");
             }
             if (pageId) {
                 cx.cm.updateTreeEntry(cx.cm.getPageStatus(nodeId, lang));
@@ -1400,14 +1446,14 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         });
         
         var checkSiteTree = setInterval(function() {
-            if (jQuery('#site-tree li').length) {
-                jQuery('.jstree-move').empty();
+            if (cx.jQuery('#site-tree li').length) {
+                cx.jQuery('.jstree-move').empty();
                 clearInterval(checkSiteTree);
             }
         }, 100);
 
 
-        jQuery('#site-tree .user.tp-trigger').tooltip({
+        cx.jQuery('#site-tree .user.tp-trigger').tooltip({
             tip: '#tooltip_message',
             offset: [-124,-202],
             position: 'top left',
@@ -1416,7 +1462,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 this.getTip().html(this.getTrigger().siblings('.user.tp-value').text());
             }
         });
-        jQuery('#site-tree .publishing, #site-tree .page, #site-tree .jstree-move, #site-tree .translation, #site-tree .preview, #site-tree .name').tooltip({
+        cx.jQuery('#site-tree .publishing, #site-tree .page, #site-tree .jstree-move, #site-tree .translation, #site-tree .preview, #site-tree .name').tooltip({
             tip: '#tooltip_message',
             offset: [-130,-231],
             predelay: 700,
@@ -1424,7 +1470,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 var objTrigger = this.getTrigger();
                 var objTip = this.getTip();
                 objTip.html('');
-                var arrCssClasses = jQuery.trim(objTrigger.attr('class')).split(' ');
+                var arrCssClasses = cx.jQuery.trim(objTrigger.attr('class')).split(' ');
 
                 if (objTrigger.hasClass('publishing')) {
 
@@ -1447,7 +1493,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
 
                     if (arrStatuses.length > 0) {
-                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_INFO_STATUSES', 'contentmanager/lang/tooltip')+jQuery.ucfirst(arrStatuses.join(', ')));
+                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_INFO_STATUSES', 'contentmanager/lang/tooltip')+cx.jQuery.ucfirst(arrStatuses.join(', ')));
                     }
                     if (!objTrigger.hasClass('inexistent')) {
                         if (objTrigger.hasClass('unpublished')) {
@@ -1494,10 +1540,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
 
                     if (arrStatuses.length > 0) {
-                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PAGE_INFO_STATUSES', 'contentmanager/lang/tooltip')+jQuery.ucfirst(arrStatuses.join(', ')));
+                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PAGE_INFO_STATUSES', 'contentmanager/lang/tooltip')+cx.jQuery.ucfirst(arrStatuses.join(', ')));
                     }
                     if (arrTypes.length > 0) {
-                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_INFO_TYPES', 'contentmanager/lang/tooltip')+jQuery.ucfirst(arrTypes.join(', ')));
+                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_INFO_TYPES', 'contentmanager/lang/tooltip')+cx.jQuery.ucfirst(arrTypes.join(', ')));
                     }
                     if (!objTrigger.parent().hasClass('inexistent')) {
                         if (objTrigger.hasClass('invisible')) {
@@ -1525,36 +1571,36 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
         });
         
-        if (jQuery.browser.msie  && parseInt(jQuery.browser.version, 10) === 7) {
-            zIndex = jQuery('#site-tree li').length * 10;
-            jQuery('#site-tree li').each(function() {
-                jQuery(this).children('.jstree-wrapper').css('zIndex', zIndex);
-                jQuery(this).children('a, ins').css('zIndex', zIndex + 1);
+        if (cx.jQuery.browser.msie  && parseInt(cx.jQuery.browser.version, 10) === 7) {
+            zIndex = cx.jQuery('#site-tree li').length * 10;
+            cx.jQuery('#site-tree li').each(function() {
+                cx.jQuery(this).children('.jstree-wrapper').css('zIndex', zIndex);
+                cx.jQuery(this).children('a, ins').css('zIndex', zIndex + 1);
                 zIndex -= 10;
             });
         }
     })
     .bind("loaded.jstree", function(event, data) {
         if (open_all) {
-            jQuery("#site-tree").jstree("open_all");
+            cx.jQuery("#site-tree").jstree("open_all");
         }
         cx.cm.is_opening = false;
-        jQuery("#site-tree").show();
+        cx.jQuery("#site-tree").show();
         cx.tools.StatusMessage.removeAllDialogs();
         
         var setPageTitlesWidth = setInterval(function() {
-            if (jQuery('#content-manager').hasClass('edit_view') && jQuery('#site-tree .name').length) {
-                jQuery('#site-tree .name').each(function() {
-                    width    = jQuery(this).width();
-                    var data = jQuery(this).parent().attr('data-href');
+            if (cx.jQuery('#content-manager').hasClass('edit_view') && cx.jQuery('#site-tree .name').length) {
+                cx.jQuery('#site-tree .name').each(function() {
+                    width    = cx.jQuery(this).width();
+                    var data = cx.jQuery(this).parent().attr('data-href');
                     if (data == null) {
                         clearInterval(setPageTitlesWidth);
                         return;
                     }
-                    level    = jQuery.parseJSON(data).level;
+                    level    = cx.jQuery.parseJSON(data).level;
                     maxWidth = 228 - ((level - 1) * 18) - 26;
                     if (width >= maxWidth) {
-                        jQuery(this).css('width', maxWidth + 'px');
+                        cx.jQuery(this).css('width', maxWidth + 'px');
                     }
                 });
                 clearInterval(setPageTitlesWidth);
@@ -1562,14 +1608,14 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         }, 100);
     })
     .bind("refresh.jstree", function(event, data) {
-        jQuery(event.target).jstree('loaded');
+        cx.jQuery(event.target).jstree('loaded');
     })
     .bind("set_lang.jstree", function(event, data) {
         document.cookie = "userFrontendLangId=" + data.rslt;
     })
     .ajaxStart(function(){
         if (!cx.cm.is_opening) {
-            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery("#loading").html() + "</div>");
+            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery("#loading").html() + "</div>");
         }
     })
     .ajaxError(function(event, request, settings) {
@@ -1595,13 +1641,13 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
 
 cx.cm.saveToggleStatuses = function() {
     var toggleStatuses = {
-        toggleTitles: jQuery('#titles_container').css('display'),
-        toggleType: jQuery('#type_container').css('display'),
-        toggleNavigation: jQuery('#navigation_container').css('display'),
-        toggleBlocks: jQuery('#blocks_container').css('display'),
-        toggleThemes: jQuery('#themes_container').css('display'),
-        toggleApplication: jQuery('#application_container').css('display'),
-        sidebar: jQuery('#content-manager #cm-left').css('display')
+        toggleTitles: cx.jQuery('#titles_container').css('display'),
+        toggleType: cx.jQuery('#type_container').css('display'),
+        toggleNavigation: cx.jQuery('#navigation_container').css('display'),
+        toggleBlocks: cx.jQuery('#blocks_container').css('display'),
+        toggleThemes: cx.jQuery('#themes_container').css('display'),
+        toggleApplication: cx.jQuery('#application_container').css('display'),
+        sidebar: cx.jQuery('#content-manager #cm-left').css('display')
     };
     cx.variables.set('toggleTitles', toggleStatuses['toggleTitles'], 'contentmanager/toggle');
     cx.variables.set('toggleType', toggleStatuses['toggleType'], 'contentmanager/toggle');
@@ -1610,14 +1656,14 @@ cx.cm.saveToggleStatuses = function() {
     cx.variables.set('toggleThemes', toggleStatuses['toggleThemes'], 'contentmanager/toggle');
     cx.variables.set('toggleApplication', toggleStatuses['toggleApplication'], 'contentmanager/toggle');
     cx.variables.set('sidebar', toggleStatuses['sidebar'], 'contentmanager/toggle');
-    jQuery.post('index.php?cmd=jsondata&object=cm&act=saveToggleStatuses', toggleStatuses);
+    cx.jQuery.post('index.php?cmd=jsondata&object=cm&act=saveToggleStatuses', toggleStatuses);
 };
 
 CKEDITOR.on('instanceReady', function() {
     cx.cm.resizeEditorHeight();
 });
 
-jQuery(window).resize(function() {
+cx.jQuery(window).resize(function() {
     if (cx.cm.isEditView()) {
         if (this.resizeTimeout) {
             clearTimeout(this.resizeTimeout);
@@ -1629,47 +1675,47 @@ jQuery(window).resize(function() {
 });
 
 cx.cm.resizeEditorHeight = function() {
-    var windowHeight = jQuery(window).height();
+    var windowHeight = cx.jQuery(window).height();
     var contentHeightWithoutEditor = 
-        jQuery('#header').outerHeight(true) +
-        parseInt(jQuery('#content').css('padding-top')) +
-        jQuery('.breadcrumb').outerHeight(true) +
-        jQuery('#cm-tabs').outerHeight(true) +
-        jQuery('#titles_toggle').outerHeight(true) +
-        (jQuery('#titles_toggle').hasClass('closed') ? 0 : jQuery('#titles_container').outerHeight(true)) +
-        jQuery('#type_toggle').outerHeight(true) +
-        (jQuery('#type_container .container').is(':visible') ? jQuery('#type_container .container').outerHeight() : 0) +
-        jQuery('#buttons').outerHeight(true) +
-        parseInt(jQuery('#content-manager').css('padding-bottom')) +
-        parseInt(jQuery('#content').css('padding-bottom')) +
-        jQuery('#footer').outerHeight(true)
+        cx.jQuery('#header').outerHeight(true) +
+        parseInt(cx.jQuery('#content').css('padding-top')) +
+        cx.jQuery('.breadcrumb').outerHeight(true) +
+        cx.jQuery('#cm-tabs').outerHeight(true) +
+        cx.jQuery('#titles_toggle').outerHeight(true) +
+        (cx.jQuery('#titles_toggle').hasClass('closed') ? 0 : cx.jQuery('#titles_container').outerHeight(true)) +
+        cx.jQuery('#type_toggle').outerHeight(true) +
+        (cx.jQuery('#type_container .container').is(':visible') ? cx.jQuery('#type_container .container').outerHeight() : 0) +
+        cx.jQuery('#buttons').outerHeight(true) +
+        parseInt(cx.jQuery('#content-manager').css('padding-bottom')) +
+        parseInt(cx.jQuery('#content').css('padding-bottom')) +
+        cx.jQuery('#footer').outerHeight(true)
     ;
     var restHeight = windowHeight-contentHeightWithoutEditor;
 
     if (cx.cm.editorInUse() && CKEDITOR.status == 'basic_ready') {//resize ckeditor
         var ckeditorSpacing =
-            parseInt(jQuery('.cke_wrapper').css('padding-top')) +
-            jQuery('#cke_top_cm_ckeditor').outerHeight(true) +
-            jQuery('#cke_bottom_cm_ckeditor').outerHeight(true) +
-            parseInt(jQuery('.cke_wrapper').css('padding-bottom'))
+            parseInt(cx.jQuery('.cke_wrapper').css('padding-top')) +
+            cx.jQuery('#cke_top_cm_ckeditor').outerHeight(true) +
+            cx.jQuery('#cke_bottom_cm_ckeditor').outerHeight(true) +
+            parseInt(cx.jQuery('.cke_wrapper').css('padding-bottom'))
         ;
         if (restHeight > 400) {
             ckeditorHeight = restHeight - ckeditorSpacing;
-            if (jQuery.browser.msie && jQuery.browser.version == 9 ) {
+            if (cx.jQuery.browser.msie && cx.jQuery.browser.version == 9 ) {
                 ckeditorHeight = ckeditorHeight - 1;
             }
         } else if (restHeight < 400) {
             ckeditorHeight = 400 - ckeditorSpacing;
         }
-        jQuery('#cke_contents_cm_ckeditor').css('height', ckeditorHeight + 'px');
+        cx.jQuery('#cke_contents_cm_ckeditor').css('height', ckeditorHeight + 'px');
     } else {//resize textarea
-        textareaSpacing = (jQuery('#cm_ckeditor').outerHeight(true) - jQuery('#cm_ckeditor').height());
+        textareaSpacing = (cx.jQuery('#cm_ckeditor').outerHeight(true) - cx.jQuery('#cm_ckeditor').height());
         if (restHeight > 400) {
             textareaHeight = restHeight - textareaSpacing;
         } else if (restHeight < 400) {
             textareaHeight = 400 - textareaSpacing;
         }
-        jQuery('#cm_ckeditor').css('height', textareaHeight + 'px');
+        cx.jQuery('#cm_ckeditor').css('height', textareaHeight + 'px');
     }
 };
 
@@ -1677,8 +1723,8 @@ cx.cm.validateFields = function() {
     var error = false;
     var errorMessage = cx.variables.get('TXT_CORE_CM_VALIDATION_FAIL', 'contentmanager/lang');
     var firstError = true;
-    var fields = [jQuery("#page_name"), jQuery("#page_title")];
-    jQuery.each(fields, function(index, el) {
+    var fields = [cx.jQuery("#page_name"), cx.jQuery("#page_title")];
+    cx.jQuery.each(fields, function(index, el) {
         el.removeClass("warning");
         if (el.val() == "") {
             error = true;
@@ -1691,12 +1737,12 @@ cx.cm.validateFields = function() {
             firstError = false;
         }
     });
-    if (cx.cm.homeCheck(true, jQuery("#pageId").val())) {
+    if (cx.cm.homeCheck(true, cx.jQuery("#pageId").val())) {
         error = true;
         if (firstError) {
             errorMessage = cx.variables.get('TXT_CORE_CM_HOME_FAIL', 'contentmanager/lang');
             
-            var tabName = jQuery("#page_application").closest(".ui-tabs-panel").attr("id");
+            var tabName = cx.jQuery("#page_application").closest(".ui-tabs-panel").attr("id");
             cx.cm.selectTab(tabName.substr(5));
         }
         firstError = false;
@@ -1708,15 +1754,15 @@ cx.cm.validateFields = function() {
 }
 
 cx.cm.performAction = function(action, pageId, nodeId) {
-    var pageElement = jQuery("a#" + pageId);
+    var pageElement = cx.jQuery("a#" + pageId);
     var pageLang = pageElement.attr("class").split(" ")[0];
     var page = cx.cm.getPageStatus(nodeId, pageLang);
     var url = "index.php?cmd=jsondata&object=page&act=set&action=" + action + "&pageId=" + pageId;
     switch (action) {
         case "new":
             cx.cm.showEditView(true);
-            jQuery('.tab.page_history').hide();
-            jQuery("#parent_node").val(nodeId);
+            cx.jQuery('.tab.page_history').hide();
+            cx.jQuery("#parent_node").val(nodeId);
             cx.cm.createEditor();
             return;
         case "copy":
@@ -1738,7 +1784,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             if (!cx.cm.confirmDeleteNode()) {
                 return;
             }
-            var currentNodeId = jQuery('input#pageNode').val();
+            var currentNodeId = cx.jQuery('input#pageNode').val();
             url = "index.php?cmd=jsondata&object=node&act=delete&action=" + action + "&id=" + nodeId + "&currentNodeId=" + currentNodeId;
             break;
         default:
@@ -1747,7 +1793,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             return;
     }
     cx.trigger("loadingStart", "contentmanager", {});
-    jQuery.ajax({
+    cx.jQuery.ajax({
         url: url,
         dataType: "json",
         type: "POST",
@@ -1794,7 +1840,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
 }
 
 cx.cm.updatePageIcons = function(args) {
-    var node = jQuery("#node_" + args.page.nodeId);
+    var node = cx.jQuery("#node_" + args.page.nodeId);
     var page = node.children("a." + args.page.lang);
 
     if (!args.page.existing) {
@@ -1804,7 +1850,7 @@ cx.cm.updatePageIcons = function(args) {
     }
 
     // reload the editor values
-    if (args.page.id == jQuery('input#pageId').val()) {
+    if (args.page.id == cx.jQuery('input#pageId').val()) {
         cx.cm.loadPage(args.page.id, undefined, args.page.version, undefined, false);
     }
 }
@@ -1818,7 +1864,7 @@ cx.cm.updatePagesIcons = function(args) {
 }
 
 cx.cm.updateTranslationIcons = function(args) {
-    var node = jQuery("#node_" + args.page.nodeId);
+    var node = cx.jQuery("#node_" + args.page.nodeId);
     var page = node.children("a." + args.page.lang);
     var translationIcon = page.siblings(".jstree-wrapper").children(".translations").children(".translation." + args.page.lang);
 
@@ -1828,7 +1874,7 @@ cx.cm.updateTranslationIcons = function(args) {
     if (args.page.deleted || !args.page.publishing.published) {
         translationIcon.addClass("unpublished");
     }
-    if (jQuery.inArray(args.page.publishing.hasDraft, ["yes", "waiting"]) >= 0) {
+    if (cx.jQuery.inArray(args.page.publishing.hasDraft, ["yes", "waiting"]) >= 0) {
         translationIcon.addClass("draft");
     }
     if (!args.page.existing) {
@@ -1850,7 +1896,7 @@ cx.cm.updateActionMenu = function(args) {
         args.page = cx.cm.getPageStatus(args.page.nodeId, cx.cm.getCurrentLang());
     }
     
-    var node = jQuery("#node_" + args.page.nodeId);
+    var node = cx.jQuery("#node_" + args.page.nodeId);
     var menu = node.children(".jstree-wrapper").children(".actions").children(".actions-expanded").children("ul");
     
     if (!menu.length) {
@@ -1861,24 +1907,24 @@ cx.cm.updateActionMenu = function(args) {
     menu.html("");
 
     // add actions
-    menu.append(jQuery("<li class=\"action-item\">").addClass("new").text(cx.variables.get("new", "contentmanager/lang/actions")));
-    menu.append(jQuery("<li class=\"action-item\">").addClass("copy").text(cx.variables.get("copy", "contentmanager/lang/actions")));
+    menu.append(cx.jQuery("<li class=\"action-item\">").addClass("new").text(cx.variables.get("new", "contentmanager/lang/actions")));
+    menu.append(cx.jQuery("<li class=\"action-item\">").addClass("copy").text(cx.variables.get("copy", "contentmanager/lang/actions")));
     if (!args.page.publishing.locked) {
         if (args.page.publishing.hasDraft == "no") {
             if (args.page.publishing.published) {
-                menu.append(jQuery("<li class=\"action-item\">").addClass("deactivate").text(cx.variables.get("deactivate", "contentmanager/lang/actions")));
+                menu.append(cx.jQuery("<li class=\"action-item\">").addClass("deactivate").text(cx.variables.get("deactivate", "contentmanager/lang/actions")));
             } else {
-                menu.append(jQuery("<li class=\"action-item\">").addClass("activate").text(cx.variables.get("activate", "contentmanager/lang/actions")));
+                menu.append(cx.jQuery("<li class=\"action-item\">").addClass("activate").text(cx.variables.get("activate", "contentmanager/lang/actions")));
             }
         } else {
-            menu.append(jQuery("<li class=\"action-item\">").addClass("publish").text(cx.variables.get("publish", "contentmanager/lang/actions")));
+            menu.append(cx.jQuery("<li class=\"action-item\">").addClass("publish").text(cx.variables.get("publish", "contentmanager/lang/actions")));
         }
         if (args.page.visibility.visible) {
-            menu.append(jQuery("<li class=\"action-item\">").addClass("hide").text(cx.variables.get("hide", "contentmanager/lang/actions")));
+            menu.append(cx.jQuery("<li class=\"action-item\">").addClass("hide").text(cx.variables.get("hide", "contentmanager/lang/actions")));
         } else {
-            menu.append(jQuery("<li class=\"action-item\">").addClass("show").text(cx.variables.get("show", "contentmanager/lang/actions")));
+            menu.append(cx.jQuery("<li class=\"action-item\">").addClass("show").text(cx.variables.get("show", "contentmanager/lang/actions")));
         }
-        menu.append(jQuery("<li class=\"action-item\">").addClass("delete").text(cx.variables.get("delete", "contentmanager/lang/actions")));
+        menu.append(cx.jQuery("<li class=\"action-item\">").addClass("delete").text(cx.variables.get("delete", "contentmanager/lang/actions")));
     }
 }
 
@@ -1920,7 +1966,7 @@ cx.cm.updateActionMenus = function(args) {
  */
 cx.cm.updateTreeEntry = function(newStatus) {
     // get things we won't change
-    var node = jQuery("#node_" + newStatus.nodeId);
+    var node = cx.jQuery("#node_" + newStatus.nodeId);
     if (!node.length) {
         // we don't have such a node, so our data must be outdated --> reload()
         cx.cm.createJsTree();
@@ -1958,7 +2004,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         // Illegal publishing state
         return false;
     }
-    if (jQuery.inArray(newStatus.publishing.hasDraft, ["no", "yes", "waiting"]) < 0) {
+    if (cx.jQuery.inArray(newStatus.publishing.hasDraft, ["no", "yes", "waiting"]) < 0) {
         // Illegal draft state
         return false;
     }
@@ -1977,7 +2023,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         // Illegal fallback state
         return false;
     }
-    if (jQuery.inArray(newStatus.visibility.type, ["standard", "application", "home", "redirection"]) < 0) {
+    if (cx.jQuery.inArray(newStatus.visibility.type, ["standard", "application", "home", "redirection"]) < 0) {
         // Illegal type
         return false;
     }
@@ -2077,7 +2123,7 @@ cx.cm.updateTreeEntries = function(newStatuses) {
  * if an error occurs, null is returned
  */
 cx.cm.getPageStatus = function(nodeId, lang) {
-    var node = jQuery("#node_" + nodeId);
+    var node = cx.jQuery("#node_" + nodeId);
     var page = node.children("a." + lang);
     var pageId = page.attr("id");
     if (!page || !page.length || pageId == 0) {
@@ -2133,7 +2179,7 @@ cx.cm.getPageStatus = function(nodeId, lang) {
     if (page.children(".name").length) {
         name = page.children(".name").text();
     } else {
-        name = jQuery.trim(page.text());
+        name = cx.jQuery.trim(page.text());
     }
 
     return {
@@ -2167,7 +2213,7 @@ cx.cm.getNodeId = function(pageId) {
     if (!pageId || pageId == 0) {
         return null;
     }
-    var page = jQuery("a#" + pageId);
+    var page = cx.jQuery("a#" + pageId);
     if (!page || !page.length) {
         return null;
     }
@@ -2188,13 +2234,13 @@ cx.cm.getcontactFormId = function(pageId) {
     if (!pageId || pageId == 0) {
         return null;
     }
-    var page = jQuery("a#" + pageId);
+    var page = cx.jQuery("a#" + pageId);
     if (!page || !page.length) {        
         return null;
     }    
     
     formId = 0;
-    module = jQuery.trim(jQuery.parseJSON(page.attr("data-href")).module);
+    module = cx.jQuery.trim(cx.jQuery.parseJSON(page.attr("data-href")).module);
     formId = module.split(" ")[1];
     
     return formId;
@@ -2205,7 +2251,7 @@ cx.cm.getcontactFormId = function(pageId) {
  * @return object jQuery object
  */
 cx.cm.getTree = function() {
-    return jQuery("#site-tree");
+    return cx.jQuery("#site-tree");
 }
 
 /**
@@ -2233,7 +2279,7 @@ cx.cm.selectTab = function(tab, push) {
     if (push == undefined) {
         push = true;
     }
-    var tabElement = jQuery(".tab.page_" + tab);
+    var tabElement = cx.jQuery(".tab.page_" + tab);
     if (tabElement) {
         var adjusting = cx.cm.historyAdjusting;
         cx.cm.historyAdjusting = true;
@@ -2246,38 +2292,38 @@ cx.cm.selectTab = function(tab, push) {
 }
 
 cx.cm.isEditView = function() {
-    return jQuery("#content-manager").hasClass("edit_view");
+    return cx.jQuery("#content-manager").hasClass("edit_view");
 }
 
 cx.cm.showEditView = function(forceReset) {
-    jQuery(".jstree-wrapper.active").removeClass("active");
+    cx.jQuery(".jstree-wrapper.active").removeClass("active");
     if (!cx.cm.isEditView()) {
-        jQuery("#content-manager").addClass("edit_view");
+        cx.jQuery("#content-manager").addClass("edit_view");
         cx.cm.resetEditView();
     } else if (forceReset) {
         cx.cm.resetEditView();
     }
-    jQuery('#multiple-actions-strike').hide();
-    jQuery('.jstree .actions .label, .jstree .actions .arrow').hide();
+    cx.jQuery('#multiple-actions-strike').hide();
+    cx.jQuery('.jstree .actions .label, .jstree .actions .arrow').hide();
 
-    jQuery('#site-tree .name').each(function() {
-        width    = jQuery(this).width();
-        data     = jQuery(this).parent().attr('data-href');
+    cx.jQuery('#site-tree .name').each(function() {
+        width    = cx.jQuery(this).width();
+        data     = cx.jQuery(this).parent().attr('data-href');
         if (data == null) {
             return;
         }
-        level    = jQuery.parseJSON(data).level;
+        level    = cx.jQuery.parseJSON(data).level;
         maxWidth = 228 - ((level - 1) * 18) - 26;
         if (width >= maxWidth) {
-            jQuery(this).css('width', maxWidth + 'px');
+            cx.jQuery(this).css('width', maxWidth + 'px');
         }
     });
 }
 
 cx.cm.resetEditView = function() {
     // reset all input fields
-    jQuery("form#cm_page input").not('#buttons input').each(function(index, el) {
-        el = jQuery(el);
+    cx.jQuery("form#cm_page input").not('#buttons input').each(function(index, el) {
+        el = cx.jQuery(el);
         var type = el.attr("type");
         var id = el.attr("id");
         if (type != "hidden") {
@@ -2298,81 +2344,87 @@ cx.cm.resetEditView = function() {
         }
     });
     // empty all textareas
-    jQuery("form#cm_page textarea").each(function(index, el) {
-        el = jQuery(el);
+    cx.jQuery("form#cm_page textarea").each(function(index, el) {
+        el = cx.jQuery(el);
         el.val("");
     });
+
+    // empty existing ckeditor
+    if (cx.cm.editorInUse()) {
+        CKEDITOR.instances.cm_ckeditor.setData('');
+    }
+
     // reset hidden fields
-    jQuery("input#pageId").val("new");
-    jQuery("input#pageLang").val(jQuery('.chzn-select').val());
-    jQuery("input#pageNode").val("");
-    jQuery("input#source_page").val("new");
-    jQuery("input#parent_node").val("");
-    jQuery("input#page[type]").val("off");
+    cx.jQuery("input#pageId").val("new");
+    cx.jQuery("input#pageLang").val(cx.jQuery('.chzn-select').val());
+    cx.jQuery("input#pageNode").val("");
+    cx.jQuery("input#source_page").val("new");
+    cx.jQuery("input#parent_node").val("");
+    cx.jQuery("input#page[type]").val("off");
     // reset page type
-    jQuery("input#type_content").click();
+    cx.jQuery("input#type_content").click();
     // remove application
-    jQuery("select#page_application").val("");
+    cx.jQuery("select#page_application").val("");
     // show seo details
-    jQuery("#page_metarobots").attr("checked", true);
-    jQuery("#metarobots_container").show();
+    cx.jQuery("#page_metarobots").attr("checked", true);
+    cx.jQuery("#metarobots_container").show();
     // same for scheduled publishing
-    jQuery("#scheduled_publishing_container").hide();
+    cx.jQuery("#scheduled_publishing_container").hide();
     // reset theme
-    jQuery("select#page_skin").val("");
+    cx.jQuery("select#page_skin").val("");
     // reset multiselects
-    var options = jQuery("select#frontendGroupsms2side__dx").html();
-    jQuery("select#frontendGroupsms2side__sx").html(options);
-    jQuery("select#frontendGroupsms2side__dx").html("");
-    options = jQuery("select#backendGroupsms2side__dx").html();
-    jQuery("select#backendGroupsms2side__sx").html(options);
-    jQuery("select#backendGroupsms2side__dx").html("");
+    var options = cx.jQuery("select#frontendGroupsms2side__dx").html();
+    cx.jQuery("select#frontendGroupsms2side__sx").html(options);
+    cx.jQuery("select#frontendGroupsms2side__dx").html("");
+    options = cx.jQuery("select#backendGroupsms2side__dx").html();
+    cx.jQuery("select#backendGroupsms2side__sx").html(options);
+    cx.jQuery("select#backendGroupsms2side__dx").html("");
     // (re-)load access data into multiselect
-    cx.cm.loadAccess(jQuery.parseJSON(cx.variables.get('cleanAccessData', 'contentmanager')).data);
+    cx.cm.loadAccess(cx.jQuery.parseJSON(cx.variables.get('cleanAccessData', 'contentmanager')).data);
     // (re-)load block data into multiselect
-    var data = {"groups": jQuery.parseJSON(cx.variables.get('availableBlocks', 'contentmanager')).data,"assignedGroups": []};
-    fillBlockSelect(jQuery('#pageBlocks'), data);
+    var data = {"groups": cx.jQuery.parseJSON(cx.variables.get('availableBlocks', 'contentmanager')).data,"assignedGroups": []};
+    fillBlockSelect(cx.jQuery('#pageBlocks'), data);
     // hide refuse button by default
-    jQuery('#page input#refuse').hide();
+    cx.jQuery('#page input#refuse').hide();
 
     // remove unused classes
-    jQuery(".warning").removeClass("warning");
+    cx.jQuery(".warning").removeClass("warning");
 
     // switch to content tab
     cx.cm.selectTab("content", false);
 
     // remove or show language dropdown
     if (cx.cm.isEditView()) {
-        jQuery("#site-language .chzn-container").show();
+        cx.jQuery("#site-language .chzn-container").show();
     } else {
-        if (jQuery(".chzn-select").chosen().children("option").length == 1) {
-            jQuery("#site-language .chzn-container").hide();
+        if (cx.jQuery(".chzn-select").chosen().children("option").length == 1) {
+            cx.jQuery("#site-language .chzn-container").hide();
         }
     }
 }
 
 cx.cm.hideEditView = function() {
-    if (jQuery('#content-manager').hasClass('sidebar-show')) {
+    if (cx.jQuery('#content-manager').hasClass('sidebar-show')) {
         cx.cm.toggleSidebar();
     }
-    jQuery("#content-manager").removeClass("edit_view");
-    jQuery('#multiple-actions-strike').show();
-    jQuery('.jstree .actions .label, .jstree .actions .arrow').show();
+    cx.jQuery("#content-manager").removeClass("edit_view");
+    cx.jQuery('#multiple-actions-strike').show();
+    cx.jQuery('.jstree .actions .label, .jstree .actions .arrow').show();
     cx.cm.resetEditView();
     cx.cm.pushHistory("tab");
 
-    jQuery('#site-tree .name').each(function() {
-        jQuery(this).css('width', 'auto');
+    cx.jQuery('#site-tree .name').each(function() {
+        cx.jQuery(this).css('width', 'auto');
     });
 };
 
 cx.cm.toggleSidebar = function() {
-    jQuery('#content-manager #cm-left').toggle();
-    jQuery('#content-manager').toggleClass('sidebar-show sidebar-hide');
+    cx.jQuery('#content-manager #cm-left').toggle();
+    cx.jQuery('#content-manager').toggleClass('sidebar-show sidebar-hide');
 };
 
 cx.cm.toggleEditor = function() {
-    if (jQuery('#page_sourceMode').prop('checked')) {
+    if (cx.jQuery('#page_sourceMode').prop('checked')) {
         cx.cm.destroyEditor();
     } else {
         cx.cm.createEditor();
@@ -2411,11 +2463,11 @@ cx.cm.destroyEditor = function() {
 };
 
 cx.cm.setEditorData = function(pageContent) {
-    jQuery(document).ready(function() {
-        if (!jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
+    cx.jQuery(document).ready(function() {
+        if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
             CKEDITOR.instances.cm_ckeditor.setData(pageContent);
         } else {
-            jQuery('#page textarea[name="page[content]"]').val(pageContent);
+            cx.jQuery('#page textarea[name="page[content]"]').val(pageContent);
         }
     });
 };
@@ -2440,7 +2492,7 @@ cx.cm.showEditModeWindow = function(cmdName, pageId) {
     // Redirect to media module for media1, 2, 3 and 4
     } else if (/media[1-4]/.exec(cmdName)) {
         var archiveId = /media([1-4])/.exec(cmdName)[1];
-        editModeModuleLink = "index.php?cmd=media&archive" + archiveId + "&csrf=" + csrf;
+        editModeModuleLink = "index.php?cmd=media&archive=archive" + archiveId + "&csrf=" + csrf;
     }
     
     content = content.replace(/\%1/g, editModeLayoutLink);
@@ -2454,7 +2506,7 @@ cx.cm.showEditModeWindow = function(cmdName, pageId) {
         autoOpen: true,
         modal: true
     });
-    jQuery('.ui-dialog #edit_mode a').blur();
+    cx.jQuery('.ui-dialog #edit_mode a').blur();
     
     dialog.bind("close", function() {
         cx.variables.set("editmodedialog", null, "contentmanager");
@@ -2476,23 +2528,23 @@ cx.cm.loadHistory = function(id, pos) {
     }
     
     var hideDrafts = "";
-    if (jQuery("#hideDrafts").length) {
-        if (jQuery("#hideDrafts").is(":checked")) {
+    if (cx.jQuery("#hideDrafts").length) {
+        if (cx.jQuery("#hideDrafts").is(":checked")) {
             hideDrafts = "&hideDrafts=on";
         } else {
             hideDrafts = "&hideDrafts=off";
         }
     }
     
-    jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"../lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
-    pageId = (id != undefined) ? parseInt(id) : parseInt(jQuery('#pageId').val());
+    cx.jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"../lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
+    pageId = (id != undefined) ? parseInt(id) : parseInt(cx.jQuery('#pageId').val());
     if (isNaN(pageId) || (pageId == 0)) {
         return;
     }
     
-    jQuery('#page_history').load('index.php?cmd=jsondata&object=page&act=getHistoryTable&page='+pageId+'&pos='+pos+hideDrafts, function() {
-        jQuery("#history_paging").find("a").each(function(index, el) {
-            el = jQuery(el);
+    cx.jQuery('#page_history').load('index.php?cmd=jsondata&object=page&act=getHistoryTable&page='+pageId+'&pos='+pos+hideDrafts, function() {
+        cx.jQuery("#history_paging").find("a").each(function(index, el) {
+            el = cx.jQuery(el);
             var pos;
             if (el.attr("class") == "pagingFirst") {
                 pos = 0;
@@ -2501,10 +2553,10 @@ cx.cm.loadHistory = function(id, pos) {
             }
             el.data("pos", pos);
         }).attr("href", "#").click(function() {
-            cx.cm.loadHistory(id, jQuery(this).data("pos"));
+            cx.cm.loadHistory(id, cx.jQuery(this).data("pos"));
         });
         cx.cm.updateHistoryTableHighlighting();
-        jQuery("#hideDrafts").change(function(event) {
+        cx.jQuery("#hideDrafts").change(function(event) {
             // Exclude non-human events or history is loaded twice
             if (event.originalEvent === undefined) {
                 return;
@@ -2516,7 +2568,7 @@ cx.cm.loadHistory = function(id, pos) {
 
 cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
     cx.cm.resetEditView();
-    var url = '?cmd=jsondata&object=page&act=get&page='+pageId+'&node='+nodeId+'&lang='+jQuery("#site-tree").jstree("get_lang")+'&userFrontendLangId='+jQuery("#site-tree").jstree("get_lang");
+    var url = '?cmd=jsondata&object=page&act=get&page='+pageId+'&node='+nodeId+'&lang='+cx.jQuery("#site-tree").jstree("get_lang")+'&userFrontendLangId='+cx.jQuery("#site-tree").jstree("get_lang");
     if (historyId) {
         url += '&history=' + historyId;
     }
@@ -2526,10 +2578,10 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
     }
     
     cx.trigger("loadingStart", "contentmanager", {});
-    jQuery.ajax({
+    cx.jQuery.ajax({
         url : url,
         complete : function(response) {
-            var page = jQuery.parseJSON(response.responseText);
+            var page = cx.jQuery.parseJSON(response.responseText);
             if (page.status == "success") {
                 cx.cm.pageLoaded(page.data, selectTab, reloadHistory, historyId);
             }
@@ -2547,24 +2599,24 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.cm.showEditView();
     
     // make sure history tab is shown
-    jQuery('.tab.page_history').show();
+    cx.jQuery('.tab.page_history').show();
     
-    if (jQuery('#page input[name="page[lang]"]').val() != page.lang) {
+    if (cx.jQuery('#page input[name="page[lang]"]').val() != page.lang) {
         // lang has changed, preselect correct entry in lang select an reload tree
-        jQuery("#site-tree").jstree("set_lang", page.lang);
-        jQuery('.chzn-select').val(page.lang);
-        jQuery('#language_chzn').remove();
-        jQuery('#language').val(page.lang).change().removeClass('chzn-done').chosen();
+        cx.jQuery("#site-tree").jstree("set_lang", page.lang);
+        cx.jQuery('.chzn-select').val(page.lang);
+        cx.jQuery('#language_chzn').remove();
+        cx.jQuery('#language').val(page.lang).change().removeClass('chzn-done').chosen();
     }
     var str = "";
-    jQuery("select.chzn-select option:selected").each(function () {
-        str += jQuery(this).attr('value');
+    cx.jQuery("select.chzn-select option:selected").each(function () {
+        str += cx.jQuery(this).attr('value');
     });
     if (fallbacks[str]) {
-        jQuery('.hidable_nofallback').show();
-        jQuery('#fallback').text(language_labels[fallbacks[str]]);
+        cx.jQuery('.hidable_nofallback').show();
+        cx.jQuery('#fallback').text(language_labels[fallbacks[str]]);
     } else {
-        jQuery('.hidable_nofallback').hide();
+        cx.jQuery('.hidable_nofallback').hide();
     }
     
     // set toggle statuses
@@ -2576,116 +2628,139 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         ['toggleApplication', '#application_container'],
         ['toggleThemes', '#themes_container']
     );
-    jQuery.each(toggleElements, function() {
-        if (jQuery(this[1]).css('display') !== cx.variables.get(this[0], 'contentmanager/toggle')) {
-            jQuery(this[1]).css('display', cx.variables.get(this[0], 'contentmanager/toggle'));
-            jQuery(this[1]).prevAll('.toggle').first().toggleClass('open closed');
+    cx.jQuery.each(toggleElements, function() {
+        if (cx.jQuery(this[1]).css('display') !== cx.variables.get(this[0], 'contentmanager/toggle')) {
+            cx.jQuery(this[1]).css('display', cx.variables.get(this[0], 'contentmanager/toggle'));
+            cx.jQuery(this[1]).prevAll('.toggle').first().toggleClass('open closed');
         }
     });
 
     // set sidebar status
-    if (jQuery('#content-manager #cm-left').css('display') !== cx.variables.get('sidebar', "contentmanager/toggle")) {
-        jQuery('#content-manager #cm-left').css('display', cx.variables.get('sidebar', "contentmanager/toggle"));
-        jQuery('#content-manager').toggleClass('sidebar-show sidebar-hide');
+    if (cx.jQuery('#content-manager #cm-left').css('display') !== cx.variables.get('sidebar', "contentmanager/toggle")) {
+        cx.jQuery('#content-manager #cm-left').css('display', cx.variables.get('sidebar', "contentmanager/toggle"));
+        cx.jQuery('#content-manager').toggleClass('sidebar-show sidebar-hide');
     }
 
     // tab content
     if (!historyId) {
         historyId = page.historyId;
     }
-    jQuery('#page input[name="page[id]"]').val(page.id);
-    jQuery('#page input[name="page[historyId]"]').val(historyId);
-    jQuery('#page input[name="page[lang]"]').val(page.lang);
-    jQuery('#page input[name="page[node]"]').val(page.node);
-    jQuery('#page input[name="page[name]"]').val(page.name);
-    jQuery('#page input[name="page[title]"]').val(page.title);
-    jQuery('#page input[name="page[contentTitle]"]').val(page.contentTitle);
+    cx.jQuery('#page input[name="page[id]"]').val(page.id);
+    cx.jQuery('#page input[name="page[historyId]"]').val(historyId);
+    cx.jQuery('#page input[name="page[lang]"]').val(page.lang);
+    cx.jQuery('#page input[name="page[node]"]').val(page.node);
+    cx.jQuery('#page input[name="page[name]"]').val(page.name);
+    cx.jQuery('#page input[name="page[title]"]').val(page.title);
+    cx.jQuery('#page input[name="page[contentTitle]"]').val(page.contentTitle);
 
-    jQuery('#page input[name="page[type]"][value="'+page.type+'"]').trigger('click');
-    jQuery('#page select[name="page[application]"]').val(page.module);
-    jQuery('#page input[name="page[area]"]').val(page.area);
+    cx.jQuery('#page input[name="page[type]"][value="'+page.type+'"]').trigger('click');
+    cx.jQuery('#page select[name="page[application]"]').val(page.module);
+    cx.jQuery('#page input[name="page[area]"]').val(page.area);
 
     cx.cm.setPageTarget(page.target, page.target_path);
 
     // tab seo
-    jQuery('#page input[name="page[metarobots]"]').prop('checked', page.metarobots);
+    cx.jQuery('#page input[name="page[metarobots]"]').prop('checked', page.metarobots);
     if (page.metarobots) {
-        jQuery("#metarobots_container").show();
+        cx.jQuery("#metarobots_container").show();
     } else {
-        jQuery("#metarobots_container").hide();
+        cx.jQuery("#metarobots_container").hide();
     }
-    jQuery('#page input[name="page[metatitle]"]').val(page.metatitle);
-    jQuery('#page textarea[name="page[metadesc]"]').val(page.metadesc);
-    jQuery('#page textarea[name="page[metakeys]"]').val(page.metakeys);
+    cx.jQuery('#page input[name="page[metatitle]"]').val(page.metatitle);
+    cx.jQuery('#page textarea[name="page[metadesc]"]').val(page.metadesc);
+    cx.jQuery('#page textarea[name="page[metakeys]"]').val(page.metakeys);
 
     // tab access protection
-    jQuery('#page input[name="page[protection_frontend]"]').prop('checked', page.frontend_protection);
-    jQuery('#page input[name="page[protection_backend]"]').prop('checked', page.backend_protection);
+    cx.jQuery('#page input[name="page[protection_frontend]"]').prop('checked', page.frontend_protection);
+    cx.jQuery('#page input[name="page[protection_backend]"]').prop('checked', page.backend_protection);
 
     // tab settings
-    jQuery('#page input[name="page[scheduled_publishing]"]').prop('checked', page.scheduled_publishing);
+    cx.jQuery('#page input[name="page[scheduled_publishing]"]').prop('checked', page.scheduled_publishing);
     if (page.scheduled_publishing) {
-        jQuery('#page input[name="page[scheduled_publishing]"]').parent().nextAll('.container').first().show();
+        cx.jQuery('#page input[name="page[scheduled_publishing]"]').parent().nextAll('.container').first().show();
     }
-    jQuery('#page input[name="page[start]"]').val(page.start);
-    jQuery('#page input[name="page[end]"]').val(page.end);
+    cx.jQuery('#page input[name="page[start]"]').val(page.start);
+    cx.jQuery('#page input[name="page[end]"]').val(page.end);
 
-    jQuery('#page select[name="page[skin]"]').val(page.skin);
-    reloadCustomContentTemplates();
-    jQuery('#page select[name="page[customContent]"]').val(page.customContent);
-    jQuery('#page input[name="page[cssName]"]').val(page.cssName);
-
-    jQuery('#page input[name="page[caching]"]').prop('checked', page.caching);
-
-    jQuery('#page select[name="page[link_target]"]').val(page.linkTarget);
-    jQuery('#page input[name="page[slug]"]').val(page.slug);
-    jQuery('#page input[name="page[cssNavName]"]').val(page.cssNavName);
+    cx.jQuery('#page select[name="page[skin]"]').val(page.skin);
+    cx.cm.pageSkin = page.skin;
     
-    jQuery("#page span#page_slug_breadcrumb").html(jQuery("#site-tree").jstree("get_lang") + '/' + page.parentPath);
+    if (page.useSkinForAllChannels == '1') {
+        cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').attr('checked', 'checked');
+    } else {
+        cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
+    }
+    cx.jQuery('#page select[name="page[skin]"]').trigger('change');
+    
+    cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
+    cx.cm.pageContentTemplate = page.customContent;
+    
+    if (page.useCustomContentForAllChannels == '1') {
+        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+    } else {
+        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+    }
+    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
+    
+    cx.jQuery('#page input[name="page[cssName]"]').val(page.cssName);
 
-    jQuery('#page input[name="page[sourceMode]"]').prop('checked', page.sourceMode);
+    if (page.module === 'home') {
+        cx.jQuery(".content_template_info").html('home.html');
+    } else {
+        cx.jQuery(".content_template_info").html('content.html');
+    }
+
+    cx.jQuery('#page input[name="page[caching]"]').prop('checked', page.caching);
+
+    cx.jQuery('#page select[name="page[link_target]"]').val(page.linkTarget);
+    cx.jQuery('#page input[name="page[slug]"]').val(page.slug);
+    cx.jQuery('#page input[name="page[cssNavName]"]').val(page.cssNavName);
+    
+    cx.jQuery("#page span#page_slug_breadcrumb").html(cx.jQuery("#site-tree").jstree("get_lang") + '/' + page.parentPath);
+
+    cx.jQuery('#page input[name="page[sourceMode]"]').prop('checked', page.sourceMode);
     cx.cm.toggleEditor();
     cx.cm.setEditorData(page.content);
     cx.cm.resizeEditorHeight();
 
     // .change doesn't fire if a checkbox is changed through .prop. This is a workaround.
-    jQuery(':checkbox').trigger('change');
+    cx.jQuery(':checkbox').trigger('change');
 
     if (reloadHistory) {
-        jQuery('#page_history').empty();
+        cx.jQuery('#page_history').empty();
         cx.cm.loadHistory(page.id);
     }
     
     if (page.editingStatus == 'hasDraftWaiting') {
-        jQuery('#page input#refuse').show();
+        cx.jQuery('#page input#refuse').show();
     } else {
-        jQuery('#page input#refuse').hide();
+        cx.jQuery('#page input#refuse').hide();
     }
     
     if (page.type == 'redirect') {
-        jQuery('#preview').hide();
+        cx.jQuery('#preview').hide();
     }
-    jQuery('#page #preview').attr('href', cx.variables.get('basePath', 'contrexx') + page.lang + '/' + page.parentPath + page.slug + '?pagePreview=1');
+    cx.jQuery('#page #preview').attr('href', cx.variables.get('basePath', 'contrexx') + page.lang + '/' + page.parentPath + page.slug + '?pagePreview=1');
     
     cx.cm.loadAccess(page.accessData);
 
-    var data = {"groups": jQuery.parseJSON(cx.variables.get('availableBlocks', 'contentmanager')).data,"assignedGroups": page.assignedBlocks};
-    fillBlockSelect(jQuery('#pageBlocks'), data);
+    var data = {"groups": cx.jQuery.parseJSON(cx.variables.get('availableBlocks', 'contentmanager')).data,"assignedGroups": page.assignedBlocks};
+    fillBlockSelect(cx.jQuery('#pageBlocks'), data);
 
     /*                'editingStatus' =>  $page->getEditingStatus(),
                 'display'       =>  $page->getDisplay(),
                 'active'        =>  $page->getActive(),*/
     
-    var container = jQuery("div.page_alias").first().parent();
-    var field = jQuery("div.page_alias").first();
-    if (jQuery("div.page_alias").length > 1) {
+    var container = cx.jQuery("div.page_alias").first().parent();
+    var field = cx.jQuery("div.page_alias").first();
+    if (cx.jQuery("div.page_alias").length > 1) {
         // remove all alias fields
         field.children("input").val('');
         field.children(".noedit").html('');
-        jQuery("div.page_alias").remove();
+        cx.jQuery("div.page_alias").remove();
         container.append(field);
     }
-    jQuery(page.aliases).each(function(index, alias) {
+    cx.jQuery(page.aliases).each(function(index, alias) {
         // add a new field
         var myField = field.clone(true);
         myField.children("input").val(alias);
@@ -2694,14 +2769,14 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         field.before(myField);
     });
     if (!publishAllowed) {
-        jQuery("div.page_alias").each(function (index, field) {
-            field = jQuery(field);
+        cx.jQuery("div.page_alias").each(function (index, field) {
+            field = cx.jQuery(field);
             field.removeClass("empty");
             if (field.children("span.noedit").html() == "") {
                 field.addClass("empty");
             }
         });
-        jQuery(".empty").hide();
+        cx.jQuery(".empty").hide();
     }
     
     if (selectTab != undefined) {
@@ -2710,40 +2785,40 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         // will be done by selectTab too
         cx.cm.pushHistory('tab');
     }
-    jQuery("#node_" + page.node).children(".jstree-wrapper").addClass("active");
-    jQuery('html, body').animate({scrollTop:0}, 'slow');
+    cx.jQuery("#node_" + page.node).children(".jstree-wrapper").addClass("active");
+    cx.jQuery('html, body').animate({scrollTop:0}, 'slow');
 };
 
 cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
     if (pageTarget == null) {
         pageTarget = "";
     }
-    jQuery('#page_target_backup').val(pageTarget);
-    jQuery('#page_target_protocol > option').removeAttr("selected");
+    cx.jQuery('#page_target_backup').val(pageTarget);
+    cx.jQuery('#page_target_protocol > option').removeAttr("selected");
 
     var matchesPageTarget = regExpUriProtocol.exec(pageTarget);
     if (matchesPageTarget) {
-        jQuery('#page_target_protocol > option[value="' + matchesPageTarget[0] + '"]').attr("selected", "selected");
+        cx.jQuery('#page_target_protocol > option[value="' + matchesPageTarget[0] + '"]').attr("selected", "selected");
         pageTarget = pageTarget.replace(matchesPageTarget[0], "");
     } else {
         var pageTargetOptionValue = "";
         if (pageTarget == "") {
             pageTargetOptionValue = "http://";
         }
-        jQuery('#page_target_protocol > option[value="' + pageTargetOptionValue + '"]').attr("selected", "selected");
+        cx.jQuery('#page_target_protocol > option[value="' + pageTargetOptionValue + '"]').attr("selected", "selected");
     }
     if (pageTarget != "") {
-        jQuery('#page_target_text').text(pageTargetPath).attr('href', function() {return jQuery(this).text()});
-        jQuery('#page_target_wrapper').hide().next().show();
+        cx.jQuery('#page_target_text').text(pageTargetPath).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('#page_target_wrapper').hide().next().show();
     }
-    jQuery('#page_target').val(pageTarget);
+    cx.jQuery('#page_target').val(pageTarget);
 }
 
 cx.cm.loadAccess = function(accessData) {
-    jQuery('.ms2side__div').remove();
+    cx.jQuery('.ms2side__div').remove();
 
-    fillSelect(jQuery('#frontendAccessGroups'), accessData.frontend);
-    fillSelect(jQuery('#backendAccessGroups'), accessData.backend);
+    fillSelect(cx.jQuery('#frontendAccessGroups'), accessData.frontend);
+    fillSelect(cx.jQuery('#backendAccessGroups'), accessData.backend);
 }
 
 cx.cm.confirmDeleteNode = function() {
@@ -2767,11 +2842,11 @@ cx.cm.pushHistory = function(source) {
     var History = window.History;
     
     // get state
-    var activeTabName = jQuery("#cm-tabs li.ui-tabs-selected").children('a').attr('href');
+    var activeTabName = cx.jQuery("#cm-tabs li.ui-tabs-selected").children('a').attr('href');
     activeTabName = activeTabName.split("_")[1];
-    var activePageId = jQuery('#pageId').val();
-    var activeLanguageId = jQuery("#site-tree").jstree("get_lang");
-    var activeVersion = jQuery("#historyId").val();
+    var activePageId = cx.jQuery('#pageId').val();
+    var activeLanguageId = cx.jQuery("#site-tree").jstree("get_lang");
+    var activeVersion = cx.jQuery("#historyId").val();
     var oldPageId = undefined;
     try {
         oldPageId = /[?&]page=(\d+)/.exec(window.location)[1];
@@ -2790,7 +2865,7 @@ cx.cm.pushHistory = function(source) {
         cx.cm.historyAdjusting = false;
         return;
     }
-    
+
     // push state
     if (!cx.cm.isEditView()) {
         History.pushState({
@@ -2799,19 +2874,19 @@ cx.cm.pushHistory = function(source) {
     } else if (activePageId == "new" || activePageId == "" || activePageId == "0") {
         var node = "";
         var act = "&act=new";
-        if (jQuery("#parent_node").val() != "") {
-            node = "&node=" + jQuery("#parent_node").val();
-        } else if (jQuery("#pageNode").val() != "") {
+        if (cx.jQuery("#parent_node").val() != "") {
+            node = "&node=" + cx.jQuery("#parent_node").val();
+        } else if (cx.jQuery("#pageNode").val() != "") {
             act = "";
-            node = "&node=" + jQuery("#pageNode").val();
+            node = "&node=" + cx.jQuery("#pageNode").val();
         }
         History.pushState({
             state:cx.cm.historyPushes
         }, document.title, "?cmd=content" + act + "&userFrontendLangId=" + activeLanguageId + node + "&tab=" + activeTabName + "&csrf=" + cx.variables.get("csrf", "contrexx"));
     } else {
         var version = "";
-        if (jQuery("#historyId").val() != "") {
-            version = "&version=" + jQuery("#historyId").val();
+        if (cx.jQuery("#historyId").val() != "") {
+            version = "&version=" + cx.jQuery("#historyId").val();
         }
         History.pushState({
             state:cx.cm.historyPushes
@@ -2830,19 +2905,19 @@ cx.cm.hashChangeEvent = function(pageId, nodeId, lang, version, activeTab) {
     cx.cm.historyAdjusting = true;
     
     if (lang != undefined) {
-        jQuery("#site-tree").jstree("set_lang", lang);
+        cx.jQuery("#site-tree").jstree("set_lang", lang);
     }
     
     // load leaf if necessary
     if (pageId != undefined) {
-        if (pageId != jQuery("#pageId").val() || version != jQuery("#historyId").val()) {
+        if (pageId != cx.jQuery("#pageId").val() || version != cx.jQuery("#historyId").val()) {
             cx.cm.loadPage(pageId, undefined, version, activeTab);
         }
     } else if (nodeId != undefined && pageId != undefined && lang != undefined) {
         cx.cm.loadPage(undefined, node, version, activeTab);
-    } else if (jQuery.getUrlVar("act") == "new") {
+    } else if (cx.jQuery.getUrlVar("act") == "new") {
         // make sure history tab is hidden
-        jQuery('.tab.page_history').hide();
+        cx.jQuery('.tab.page_history').hide();
         // load empty editor
         cx.cm.showEditView();
     } else {
@@ -2860,7 +2935,7 @@ cx.cm.initHistory = function() {
         var url = state.url;
         var urlParams = url.split("?")[1].split("&");
         var params = [];
-        jQuery.each(urlParams, function(index, el) {
+        cx.jQuery.each(urlParams, function(index, el) {
             el = el.split("=");
             params[el[0]] = el[1];
         });
@@ -2874,26 +2949,26 @@ cx.cm.initHistory = function() {
 }
 
 cx.cm.updateHistoryTableHighlighting = function() {
-    var version = jQuery("#historyId").val();
+    var version = cx.jQuery("#historyId").val();
     if (version == "" || version == "new") {
-        jQuery('.historyLoad, .historyPreview').first().parent().children().hide();
+        cx.jQuery('.historyLoad, .historyPreview').first().parent().children().hide();
         return;
     }
     var hasHidden = false;
-    jQuery('.historyLoad, .historyPreview').each(function () {
-        if ((jQuery(this).attr('id') == 'load_' + version) || (jQuery(this).attr('id') == 'preview_' + version)) {
-            jQuery(this).css('display', 'none');
+    cx.jQuery('.historyLoad, .historyPreview').each(function () {
+        if ((cx.jQuery(this).attr('id') == 'load_' + version) || (cx.jQuery(this).attr('id') == 'preview_' + version)) {
+            cx.jQuery(this).css('display', 'none');
             hasHidden = true;
         } else {
-            jQuery(this).css('display', 'block');
+            cx.jQuery(this).css('display', 'block');
         }
     });
     if (!hasHidden) {
-        if (jQuery('#load_' + (version - 1)).length > 0) {
-            jQuery('#load_' + (version - 1)).hide();
+        if (cx.jQuery('#load_' + (version - 1)).length > 0) {
+            cx.jQuery('#load_' + (version - 1)).hide();
         }
-        if (jQuery('#preview_' + (version - 1)).length > 0) {
-            jQuery('#preview_' + (version - 1)).hide();
+        if (cx.jQuery('#preview_' + (version - 1)).length > 0) {
+            cx.jQuery('#preview_' + (version - 1)).hide();
         }
     }
 }
@@ -2914,21 +2989,21 @@ cx.cm.slugify = function(string) {
  * Locks the ContentManager in order to prevent user input
  */
 cx.cm.lock = function() {
-    jQuery("#cm-load-lock").show();
+    cx.jQuery("#cm-load-lock").show();
 }
 
 /**
  * Unlocks the ContentManager in order to allow user input
  */
 cx.cm.unlock = function() {
-    jQuery("#cm-load-lock").hide();
+    cx.jQuery("#cm-load-lock").hide();
 }
 
 /**
  * Returns the id of the parent page or undefined if none
  */
 cx.cm.getParentPageId = function(pageId) {
-    return jQuery("#" + pageId).
+    return cx.jQuery("#" + pageId).
         parent().                               // node
         parent().                               // <ul>
         parent().                               // parent node
@@ -2940,7 +3015,7 @@ cx.cm.getParentPageId = function(pageId) {
  * Returns the slug for the given page id
  */
 cx.cm.getPageSlug = function(pageId) {
-    return jQuery("#" + pageId).
+    return cx.jQuery("#" + pageId).
         data().
         href.
         slug;

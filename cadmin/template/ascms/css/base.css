@@ -443,6 +443,7 @@ textarea.cke_source {
 }
 
 #footer a {
+    display: block;
     position: absolute;
     left: 12px;
     top: 5px;
@@ -455,6 +456,13 @@ textarea.cke_source {
 #footer a:hover,
 #footer a:focus {
     background: transparent;
+}
+
+#version {
+    position: absolute;
+    right: 0;
+    color: #ffffff;
+    padding: 5px;
 }
 
 /* inline instruction */
@@ -1104,6 +1112,18 @@ table tr.reset td {
 
 .cx-lock-closed {
     background-position: 21px 0px;
+}
+
+.cx-expand{
+    padding: 0 0 0 13px;
+}
+
+.cx-expand.cx-expandUp{
+    background: url("../../../images/icons/advancedsearch-up.png") no-repeat left 3px;
+}
+
+.cx-expand.cx-expandDown{
+    background: url("../../../images/icons/advancedsearch-down.png") no-repeat left 3px;
 }
 
 

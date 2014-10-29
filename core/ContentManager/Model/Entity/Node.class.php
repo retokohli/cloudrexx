@@ -29,7 +29,7 @@ class NodeException extends \Exception {}
  * @package     contrexx
  * @subpackage  model_contentmanager
  */
-class Node extends \Cx\Model\Base\EntityBase
+class Node extends \Cx\Model\Base\EntityBase implements \Serializable
 {
     /**
      * @var integer $id
@@ -196,6 +196,11 @@ class Node extends \Cx\Model\Base\EntityBase
      */
     public function getChildren($lang = null)
     {
+        $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+        foreach ($this->children as $i => $child) {
+            if (!is_int($child)) continue;
+            $this->children[$i] = $repo->find($child);
+        }
         return $this->children;
 
     }
@@ -217,6 +222,11 @@ class Node extends \Cx\Model\Base\EntityBase
      */
     public function getPages($inactive_langs = false, $aliases = false)
     {
+        $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        foreach ($this->pages as $i => $page) {
+            if (!is_int($page)) continue;
+            $this->pages[$i] = $repo->find($page);
+        }
         if ($inactive_langs) {
             return $this->pages;
         }
@@ -279,6 +289,10 @@ class Node extends \Cx\Model\Base\EntityBase
      */
     public function getParent()
     {
+        if (is_int($this->parent)) {
+            $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+            $this->parent = $repo->find($this->parent);
+        }
         return $this->parent;
     }
 
@@ -390,5 +404,50 @@ class Node extends \Cx\Model\Base\EntityBase
             $copy->addParsedChild($child->copy(true, $copy));
         }
         return $copy;
+    }
+    
+    public function serialize() {
+        $parent = $this->getParent();
+        $childrenArray = array();
+        foreach ($this->children as $child) {
+            $childrenArray[] = $child->getId();
+        }
+        $pagesArray = array();
+        foreach ($this->pages as $page) {
+            $pagesArray[] = $page->getId();
+        }
+        return serialize(
+            array(
+                $this->id,
+                $this->lft,
+                $this->rgt,
+                $this->lvl,
+                $parent ? $parent->getId() : null,
+                $childrenArray,
+                $pagesArray,
+            )
+        );
+    }
+    public function unserialize($data) {
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->pages = new \Doctrine\Common\Collections\ArrayCollection();
+
+        //instance counter to provide unique ids
+        $this->instance = ++self::$instanceCounter;
+        
+        $unserialized = unserialize($data);
+        $this->id = $unserialized[0];
+        $this->lft = $unserialized[1];
+        $this->rgt = $unserialized[2];
+        $this->lvl = $unserialized[3];
+        if ($unserialized[4]) {
+            $this->parent = $unserialized[4];
+        }
+        foreach ($unserialized[5] as $childId) {
+            $this->children[] = $childId;
+        }
+        foreach ($unserialized[6] as $pageId) {
+            $this->pages[] = $pageId;
+        }
     }
 }

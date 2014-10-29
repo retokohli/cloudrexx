@@ -7,7 +7,7 @@
  * }
  */
 var ExposedCombo = function(theConfig) {
-    var $ = jQuery; //we want jQuery at $ internally
+    var $ = cx.jQuery; //we want jQuery at $ internally
     var config = theConfig;
 
     var starter = $(theConfig.starterElement); //open button of the dialog

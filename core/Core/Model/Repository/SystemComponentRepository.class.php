@@ -124,7 +124,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
         }
         
         if (!is_array($components)) {
-            $yamlDir = $components->getDirectory().'/Model/Yaml';
+            $yamlDir = $this->cx->getClassLoader()->getFilePath($components->getDirectory(false).'/Model/Yaml');
             if (file_exists($yamlDir)) {
                 $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
             }
@@ -137,8 +137,9 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
             if (isset($this->loadedComponents[$component->getId()])) {
                 continue;
             }
-            if (file_exists($component->getDirectory().'/Model/Yaml')) {
-                $yamlDirs[] = $component->getDirectory().'/Model/Yaml';
+            $yamlDir = $this->cx->getClassLoader()->getFilePath($component->getDirectory(false).'/Model/Yaml');
+            if ($yamlDir) {
+                $yamlDirs[] = $yamlDir;
             }
         }
         
@@ -178,7 +179,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * @return string Full qualified class name
      */
     protected function getComponentControllerClassFor(\Cx\Core\Core\Model\Entity\SystemComponent $component) {
-        if (!file_exists($component->getDirectory() . '/Controller/ComponentController.class.php')) {
+		if (!$this->cx->getClassLoader()->getFilePath($component->getDirectory(false) . '/Controller/ComponentController.class.php')) {
             return '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponentController';
         }
         $className = $component->getNamespace() . '\\Controller\\ComponentController';
@@ -190,7 +191,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      */
     public function callPreResolveHooks() {
         foreach ($this->findActive() as $component) {
-            $component->preResolve($this->cx->getRequest()->getUrl());
+            $component->preResolve($this->cx->getRequest());
         }
     }
     

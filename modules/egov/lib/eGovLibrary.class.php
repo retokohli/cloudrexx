@@ -1279,7 +1279,7 @@ class eGovLibrary {
      */
     static function errorHandler()
     {
-        Yellowpay::errorHandler(); // Also calls \Cx\Core\Setting\Controller\Setting::errorHandler()
+        Yellowpay::errorHandler(); // Also calls SettingDb::errorHandler()
         foreach (array(
             'postfinance_accepted_payment_methods' =>
                 'yellowpay_accepted_payment_methods',
@@ -1296,9 +1296,9 @@ class eGovLibrary {
         ) as $to => $from) {
             $value = eGovLibrary::GetSettings($from);
 //DBG::log("eGovLibrary::errorHandler(): Copying from $from, value $value, to $to<br />");
-            \Cx\Core\Setting\Controller\Setting::set($to, $value);
+            SettingDb::set($to, $value);
         }
-        \Cx\Core\Setting\Controller\Setting::updateAll();
+        SettingDb::updateAll();
     }
 
 }

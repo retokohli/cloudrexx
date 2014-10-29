@@ -1508,6 +1508,14 @@ div.row2 {
     background: #0A85C8;
 }
 
+#shop .cart-buttons input[type="submit"]{
+    margin: 0;
+}
+
+#shop .continue-button {
+    margin: 0 0 0 10px;
+}
+
 #shop .continue-button {
     margin: 0;
 }

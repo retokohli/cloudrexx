@@ -757,7 +757,7 @@ class InitCMS
      *  whenever the user switches the tab.  This value is posted in the
      *  active_tab parameter when the language is changed.
      *  See {@see getJavascript_activetab()} for details, and
-     *  {@see \Cx\Core\Setting\Controller\Setting::show()} and {@see \Cx\Core\Setting\Controller\Setting::show_external()}
+     *  {@see SettingDb::show()} and {@see SettingDb::show_external()}
      *  for implementations.
      * @return  string            The HTML language dropdown menu code
      */

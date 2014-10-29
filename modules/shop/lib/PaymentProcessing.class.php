@@ -290,7 +290,7 @@ DBG::log($error);
                 break;
             case 'paypal':
                 $order_id = $_SESSION['shop']['order_id'];
-                $account_email = \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email');
+                $account_email = SettingDb::getValue('paypal_account_email');
                 $item_name = $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'];
                 $currency_code = Currency::getCodeById(
                     $_SESSION['shop']['currencyId']);
@@ -298,6 +298,11 @@ DBG::log($error);
                 $return = PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
+            case 'paymill_cc':    
+            case 'paymill_elv':
+            case 'paymill_iban':
+                $return =  self::_PaymillProcessor(self::getPaymentProcessorName());
+                break;                
             case 'dummy':
                 $return = Dummy::getForm();
                 break;
@@ -350,7 +355,7 @@ DBG::log($error);
             'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
             'CURRENCY' => Currency::getActiveCurrencyCode(),
             'ORDERID' => $_SESSION['shop']['order_id'],
-            'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'),
+            'ACCOUNTID' => SettingDb::getValue('saferpay_id'),
             'SUCCESSLINK' =>
                 'http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.
                 '&cmd=success&result=1&handler=saferpay',
@@ -371,7 +376,7 @@ DBG::log($error);
             'DELIVERY' => 'no',
         );
         $payInitUrl = Saferpay::payInit($arrShopOrder,
-            \Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account'));
+            SettingDb::getValue('saferpay_use_test_account'));
 //DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
         // Fixed: Added check for empty return string,
         // i.e. on connection problems
@@ -383,7 +388,7 @@ DBG::log($error);
                 "<br />".Saferpay::getErrors();
         }
         $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option')) {
+        switch (SettingDb::getValue('saferpay_window_option')) {
             case 0: // iframe
                 return
                     $return.
@@ -421,6 +426,54 @@ DBG::log($error);
     }
 
 
+    /**
+     * Returns the HTML code for the Paymill payment method.
+     * 
+     * @return  string  HTML code
+     */
+    static function _PaymillProcessor($processMethod)
+    {
+        global $_ARRAYLANG;
+        
+        $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
+        
+        $arrShopOrder = array(
+            'order_id'  => $_SESSION['shop']['order_id'],
+            'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
+            'currency'  => Currency::getActiveCurrencyCode(),
+        );
+
+        switch ($processMethod) {
+            case 'paymill_cc':
+                $return = PaymillCCHandler::getForm($arrShopOrder, $landingPage);
+                break;
+            case 'paymill_elv':
+                $return = PaymillELVHandler::getForm($arrShopOrder, $landingPage);
+                break;
+            case 'paymill_iban':
+                $return = PaymillIBANHandler::getForm($arrShopOrder, $landingPage);
+                break;
+        }
+        
+        if (_PAYMENT_DEBUG && PaymillHandler::$arrError) {
+            $strError =
+                '<font color="red"><b>'.
+                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
+                '<br /></b>';
+            if (_PAYMENT_DEBUG) {
+                $strError .= join('<br />', PaymillHandler::$arrError); //.'<br />';
+            }
+            return $strError.'</font>';
+        }
+        if (empty ($return)) {
+            foreach (PaymillHandler::$arrError as $error) {
+                DBG::log("Paymill Error: $error");
+            }
+        }
+        
+        return $return;
+    }
+    
     /**
      * Returns the HTML code for the Yellowpay payment method.
      * @return  string  HTML code
@@ -491,7 +544,7 @@ DBG::log("Yellowpay Error: $error");
         global $_ARRAYLANG;
 
         Datatrans::initialize(
-            \Cx\Core\Setting\Controller\Setting::getValue('datatrans_merchant_id'),
+            SettingDb::getValue('datatrans_merchant_id'),
             $_SESSION['shop']['order_id'],
             $_SESSION['shop']['grand_total_price'],
             Currency::getActiveCurrencyCode()
@@ -529,11 +582,29 @@ DBG::log("Yellowpay Error: $error");
         }
         if (empty($_REQUEST['handler'])) return false;
         switch ($_REQUEST['handler']) {
+            case 'paymill_cc':
+            case 'paymill_elv':
+            case 'paymill_iban':
+                $arrShopOrder = array(
+                    'order_id'  => $_SESSION['shop']['order_id'],
+                    'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
+                    'currency'  => Currency::getActiveCurrencyCode(),
+                    'note'      => $_SESSION['shop']['note']
+                );
+                $response = PaymillHandler::processRequest($_REQUEST['paymillToken'], $arrShopOrder);
+                DBG::log(var_export($response, true));
+                if ($response['status'] === 'success') {
+                    return true;
+                } else {
+                    DBG::log("PaymentProcessing::checkIn(): WARNING: paymill: Payment verification failed; errors: ".var_export($response, true));
+                    return false;
+                }
+                
             case 'saferpay':
                 $arrShopOrder = array(
-                    'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'));
+                    'ACCOUNTID' => SettingDb::getValue('saferpay_id'));
                 $id = Saferpay::payConfirm();
-                if (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_finalize_payment')) {
+                if (SettingDb::getValue('saferpay_finalize_payment')) {
                     $arrShopOrder['ID'] = $id;
                     $id = Saferpay::payComplete($arrShopOrder);
                 }
@@ -566,9 +637,9 @@ DBG::log("Yellowpay Error: $error");
                 $currency_code = Currency::getCodeById($currency_id);
                 return PayPal::ipnCheck($amount, $currency_code,
                     $order_id, $customer_email,
-                    \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email'));
+                    SettingDb::getValue('paypal_account_email'));
             case 'yellowpay':
-                $passphrase = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_out');
+                $passphrase = SettingDb::getValue('postfinance_hash_signature_out');
                 return Yellowpay::checkIn($passphrase);
 //                    if (Yellowpay::$arrError || Yellowpay::$arrWarning) {
 //                        global $_ARRAYLANG;

@@ -91,6 +91,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                 input.`verification` AS `verification`,
                 input.`required` AS `required`,
                 input.`search` AS `search`,
+                input.`context_type` AS `context_type`,
                 names.`field_name` AS `field_name`,
                 names.`field_default_value` AS `field_default_value`,
                 names.`field_info` AS `field_info`,
@@ -165,6 +166,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                 $arrInputfield['name'] = $arrInputfieldName;
                 $arrInputfield['default_value'] = $arrInputfieldDefaultValue;
                 $arrInputfield['info'] = $arrInputfieldInfo;
+                $arrInputfield['context_type'] = $objInputfields->fields['context_type'];
 
                 $arrInputfields[$objInputfields->fields['id']] = $arrInputfield;
                 $objInputfields->MoveNext();
@@ -246,6 +248,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_TYPE' => $this->buildDropdownmenu($this->getInputfieldTypes(), $arrInputfield['type']),
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_VERIFICATION' => $this->buildDropdownmenu($this->getInputfieldVerifications(), $arrInputfield['verification']),
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_SHOW' => $this->buildDropdownmenu($arrShow, $arrInputfield['show_in']),
+                            $this->moduleLangVar.'_SETTINGS_INPUTFIELD_CONTEXT' => $this->buildDropdownmenu($this->getInputContexts(), $arrInputfield['context_type']),
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_MUSTFIELD' => $strMustfield,
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_EXP_SEARCH' => $strExpSearch,
                             $this->moduleLangVar.'_SETTINGS_INPUTFIELD_NAME_MASTER' => $arrInputfield['name'][0],
@@ -560,6 +563,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
             $intFieldVerification = intval($arrData['inputfieldVerification'][$intFieldId]);
             $intFieldMustfield = intval($arrData['inputfieldMustfield'][$intFieldId]);
             $intFieldExpSearch = intval($arrData['inputfieldExpSearch'][$intFieldId]);
+            $fieldContextType = contrexx_input2db($arrData['inputfieldContext'][$intFieldId]);
 
             //add inputfield
             $objSaveInputfield = $objDatabase->Execute("
@@ -573,7 +577,8 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                     `show_in` = '".$intFieldShowIn."',
                     `verification` = '".$intFieldVerification."',
                     `required` = '".$intFieldMustfield."',
-                    `search` = '".$intFieldExpSearch."'
+                    `search` = '".$intFieldExpSearch."',
+                    `context_type` = '".$fieldContextType."'
 
             ");
 
@@ -850,6 +855,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                     $this->moduleLangVar.'_SETTINGS_INPUTFIELD_TYPE' => $this->buildDropdownmenu($this->getInputfieldTypes(), $arrInputfield['type']),
                     $this->moduleLangVar.'_SETTINGS_INPUTFIELD_VERIFICATION' => $this->buildDropdownmenu($this->getInputfieldVerifications(), $arrInputfield['verification']),
                     $this->moduleLangVar.'_SETTINGS_INPUTFIELD_SHOW' => $this->buildDropdownmenu($arrShow, $arrInputfield['show_in']),
+                    $this->moduleLangVar.'_SETTINGS_INPUTFIELD_CONTEXT' => $this->buildDropdownmenu($this->getInputContexts(), $arrInputfield['context_type']),
                     $this->moduleLangVar.'_SETTINGS_INPUTFIELD_MUSTFIELD' => $strMustfield,
                     $this->moduleLangVar.'_SETTINGS_INPUTFIELD_EXP_SEARCH' => $strExpSearch,
                     $this->moduleLangVar.'_SETTINGS_INPUTFIELD_NAME_MASTER' => $arrInputfield['name'][0],
@@ -1098,7 +1104,26 @@ EOF;
         return $arrInputfieldVerifications;
     }
 
-
+    /**
+     * Returns available context options
+     * 
+     * @return array available contexts
+     */
+    public static function getInputContexts()
+    {
+        global $_ARRAYLANG;
+        
+        $arrContexts = array(
+          'none'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_NONE"],
+          'title'   => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_TITLE"],
+          'address' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ADDRESS"],
+          'zip'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ZIP"],
+          'city'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_CITY"],
+          'country' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_COUNTRY"],
+        );
+        
+        return $arrContexts;
+    }
 
     function listPlaceholders($objTpl)
     {

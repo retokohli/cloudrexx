@@ -540,6 +540,12 @@ class blockLibrary
             if ($objRs->RecordCount()) {
                 $content = $objRs->fields['content'];
                 LinkGenerator::parseTemplate($content);
+                
+                $em = \Env::get('cx')->getDb()->getEntityManager();
+                $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
+                
+                $frontendEditingComponent->prepareBlock($id, $content);
                 $code = str_replace("{".$this->blockNamePrefix.$id."}", $content, $code);
             }
         }
@@ -565,7 +571,7 @@ class blockLibrary
         $seperator = $category['seperator'];
 
         $now = time();
-        $objResult = $objDatabase->Execute("SELECT tblContent.content FROM
+        $objResult = $objDatabase->Execute("SELECT tblBlock.id, tblContent.content FROM
                                                 `" . DBPREFIX . "module_block_blocks` AS tblBlock
                                             INNER JOIN `" . DBPREFIX . "module_block_rel_lang_content` AS tblContent
                                                 ON tblBlock.id = tblContent.block_id
@@ -581,9 +587,16 @@ class blockLibrary
                                             ORDER BY tblBlock.`order`", array($id));
 
         $content = array();
+        
+        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
+        
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             while(!$objResult->EOF) {
-                $content[] = $objResult->fields['content'];
+                $blockContent = $objResult->fields['content'];
+                $frontendEditingComponent->prepareBlock($objResult->fields['id'], $blockContent);
+                $content[] = $blockContent;
                 $objResult->MoveNext();
             }
         }
@@ -652,9 +665,16 @@ class blockLibrary
 
         $objResult = $objDatabase->Execute($query);
         $block = '';
+        
+        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $block .= $objResult->fields['content'].$seperator;
+                $blockContent = $objResult->fields['content'];
+                $frontendEditingComponent->prepareBlock($objResult->fields['id'], $blockContent);
+                
+                $block .= $blockContent.$seperator;
                 $objResult->MoveNext();
             }
         }
@@ -725,7 +745,12 @@ class blockLibrary
 
             $objBlock = $objDatabase->SelectLimit("SELECT content FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$ranId." AND lang_id=".FRONTEND_LANG_ID, 1);
             if ($objBlock !== false) {
+                $em = \Env::get('cx')->getDb()->getEntityManager();
+                $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
+                
                 $content = $objBlock->fields['content'];
+                $frontendEditingComponent->prepareBlock($objBlockName->fields['id'], $content);
                 LinkGenerator::parseTemplate($content);
                 $code = str_replace("{".$this->blockNamePrefix."RANDOMIZER".$blockNr."}", $content, $code);
                 return true;

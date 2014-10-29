@@ -517,4 +517,4 @@
             (new $.ScrollToFixed(this, options));
         });
     };
-})(jQuery);
+})(cx.jQuery);

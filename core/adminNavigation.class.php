@@ -74,6 +74,7 @@ class adminMenu
                 areas.target AS target,
                 modules.name AS module_name,
                 modules.is_active,
+                modules.is_licensed,
                 areas.module_id
             FROM
                 ".DBPREFIX."backend_areas AS areas
@@ -117,7 +118,7 @@ class adminMenu
                     $objResult->fields['uri'],
                     $objResult->fields['target'],
                     $objResult->fields['module_name'],
-                    ($objResult->fields['is_active'] == 1 || $objResult->fields['module_id'] == 0),
+                    ($objResult->fields['is_licensed'] == 1 || $objResult->fields['module_id'] == 0),
                 );
                 $objResult->MoveNext();
             }

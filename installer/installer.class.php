@@ -786,6 +786,11 @@ class Installer
                 $this->_checkConfigFTP();
             }
 
+            if (isset($_POST['cachingConfig']) && empty($_POST['cachingConfigDefault'])) {
+                $_SESSION['installer']['config']['cachingByDefault'] = false;
+            } else {
+                $_SESSION['installer']['config']['cachingByDefault'] = true;
+            }
             if (!isset($_POST['ftpPathConfig']) && $this->configGeneral && $this->configTimezone && $this->configDb && $this->configFtp) {
                 $_SESSION['installer']['config']['status'] = true;
                 $_SESSION['installer']['step']++;
@@ -1017,6 +1022,7 @@ class Installer
             $objTpl->hideBlock('general');
             $objTpl->hideBlock('database');
             $objTpl->hideBlock('ftp');
+            $objTpl->hideBlock('caching');
         } else {
             // get offset path
             if (isset($_SESSION['installer']['config']['offsetPath'])) {
@@ -1224,6 +1230,16 @@ class Installer
                 $objTpl->hideBlock('ftp');
             }
             $objTpl->hideBlock('ftpPathConfig');
+
+            // caching configuration
+            $objTpl->setVariable(array(
+                'TXT_CACHING' => $_ARRLANG['TXT_CACHING'],
+                'TXT_CACHING_ACTIVATE_BY_DEFAULT' => $_ARRLANG['TXT_CACHING_ACTIVATE_BY_DEFAULT'],
+                'CACHING_CHECKED' =>
+                    !isset($_SESSION['installer']['config']['cachingByDefault']) ||
+                    $_SESSION['installer']['config']['cachingByDefault'] ? 'checked="checked"' : '',
+            ));
+            $objTpl->parse('caching');
         }
     }
 
@@ -1315,7 +1331,7 @@ class Installer
             $result = $this->_createHtaccessFile();
             $msg = $objCommon->getWebserverSoftware() == 'iis' ? $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] : $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'];
             $this->_setInstallationStatus($result, $msg);
-       }
+        }
     }
 
     /**
@@ -1881,14 +1897,14 @@ class Installer
             // this is required to allow the License system (versioncheck.php) to update
             // the license section template
             // We might have some overhead, since versioncheck.php does more or less the same again
-            $documentRoot = dirname($basePath);
+            $documentRoot = realpath(dirname($basePath));
             require_once($documentRoot.'/core/Core/init.php');
             init('minimal');
             
-            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = cmsSession::getInstance();
 
             $userId = 1;
-            $sessionObj->cmsSessionUserUpdate($userId);
+            $_SESSION->cmsSessionUserUpdate($userId);
 
             $_GET['force'] = 'true';
             $_GET['silent'] = 'true';

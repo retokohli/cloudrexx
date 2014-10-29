@@ -148,7 +148,7 @@ class Calendar extends CalendarLibrary
     function getCalendarPage()
     {
         self::loadEventManager();
-        
+
 
         if(isset($_GET['export'])) {
             $objEvent = new CalendarEvent(intval($_GET['export']));
@@ -173,12 +173,12 @@ class Calendar extends CalendarLibrary
                     self::boxesEventList();
                 } else {
                     self::showThreeBoxes();
-                }                
+                }
                 break;
             case 'category':
                 self::showCategoryView();
                 break;
-            case 'add':                
+            case 'add':
                 parent::checkAccess('add_event');
                 self::modifyEvent();
                 break;
@@ -206,7 +206,7 @@ class Calendar extends CalendarLibrary
 
     /**
      * Loads the event manager
-     * 
+     *
      * @return null
      */
     function loadEventManager()
@@ -242,34 +242,38 @@ class Calendar extends CalendarLibrary
 
 
         // get datepicker-time
-        if (isset($_GET['cmd']) && $_GET['cmd'] == 'boxes') {
+         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $_GET['cmd'] != 'boxes') {
             $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
             $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
-            
+
             $dateObj = new DateTime("{$year}-{$month}-{$day}");
-            
+
             $dateObj->modify("first day of this month");
             $dateObj->setTime(0, 0, 0);
             $this->startDate = $dateObj->getTimestamp();
-            
+
             // add months for the list view(month view)
-            if (isset($_GET['act']) && $_GET['act'] != "list" && empty($_REQUEST["dayID"])) {
+            if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
                 $dateObj->modify("+{$this->boxCount} months");
+
             }
-            
-            $dateObj->modify("last day of this month");
-            $dateObj->setTime(23, 59, 59);
-            $this->endDate = $dateObj->getTimestamp();
-            
-        } elseif ($_REQUEST["yearID"] || $_REQUEST["monthID"] || $_REQUEST["dayID"]) {
+
+             $dateObj->modify("last day of this month");
+             $dateObj->setTime(23, 59, 59);
+             $this->endDate = $dateObj->getTimestamp();
+
+
+         } elseif ($_GET["yearID"] && $_GET["monthID"] && $_GET["dayID"]) {
+
             $year = $_REQUEST["yearID"] ? $_REQUEST["yearID"] : date('Y', mktime());
             $month = $_REQUEST["monthID"] ? $_REQUEST["monthID"] : date('m', mktime());
             $day = $_REQUEST["dayID"] ? $_REQUEST["dayID"] : date('d', mktime());
+
             $this->startDate = mktime(0, 0, 0, $month, $day, $year);
             $this->endDate = mktime(23, 59, 59, $month, $day, $year);
         }
-        
+
         $this->searchTerm = !empty($_GET['term']) ? contrexx_addslashes($_GET['term']) : null;
         $this->categoryId = !empty($_GET['catid']) ? intval($_GET['catid']) : null;
 
@@ -299,7 +303,6 @@ class Calendar extends CalendarLibrary
         } else {
             $this->author = null;
         }
-        
         $this->objEventManager = new CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
         
         if($_GET['cmd'] != 'detail') {
@@ -336,8 +339,8 @@ cx.ready(function() {
         dateFormat: '$dateFormat',        
         timeFormat: 'hh:mm'
     };
-    jQuery('input[name=from]').datepicker(options);
-    jQuery('input[name=till]').datepicker(options);
+    cx.jQuery('input[name=from]').datepicker(options);
+    cx.jQuery('input[name=till]').datepicker(options);
 });
 
 </script>
@@ -359,7 +362,8 @@ EOF;
             $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($_GET['catid']), 1),
             $this->moduleLangVar.'_JAVASCRIPT'  => $javascript
         ));
-        
+         self::showThreeBoxes();
+         
         if($this->objEventManager->countEvents > $this->arrSettings['numPaging'] && (isset($_GET['search']) || $_GET['cmd'] == 'list' || $_GET['cmd'] == 'eventlist' || $_GET['cmd'] == 'archive')) {
             $pagingCmd = !empty($_GET['cmd']) ? '&amp;cmd='.$_GET['cmd'] : '';
             $pagingCategory = !empty($_GET['catid']) ? '&amp;catid='.intval($_GET['catid']) : '';
@@ -422,6 +426,7 @@ EOF;
         JS::registerJS('modules/calendar/View/Script/Frontend.js');
          
         parent::getFrontendLanguages();
+        parent::getSettings();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
         $showFrom = true;
@@ -452,7 +457,9 @@ EOF;
         }
 
         $dateFormat = parent::getDateFormat(1);
-
+        
+        $locationType = $this->arrSettings['placeData'] == 3 ? ($eventId != 0 ? $objEvent->locationType : 1) : $this->arrSettings['placeData'];
+        $hostType     = $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'];
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
               
@@ -461,18 +468,20 @@ cx.ready(function() {
         dateFormat: '$dateFormat',        
         timeFormat: 'hh:mm',
         onSelect: function(dateText, inst) {
-            startDateTime = jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
-            endDateTime   = jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
+            startDateTime = cx.jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
+            endDateTime   = cx.jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
 
             if (startDateTime > endDateTime) {
-                jQuery(".endDate").datetimepicker('setDate', jQuery(".startDate").val());
+                cx.jQuery(".endDate").datetimepicker('setDate', cx.jQuery(".startDate").val());
             }
         },
         showSecond: false
     };
-    jQuery('input[name=startDate]').datetimepicker(options);
-    jQuery('input[name=endDate]').datetimepicker(options);
+    cx.jQuery('input[name=startDate]').datetimepicker(options);
+    cx.jQuery('input[name=endDate]').datetimepicker(options);
     modifyEvent._handleAllDayEvent(\$J(".all_day"));
+    showOrHidePlaceFields('$locationType', 'place');
+    showOrHidePlaceFields('$hostType', 'host');
 });
 
 </script>
@@ -530,6 +539,10 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_REDIRECT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
+            'TXT_'.$this->moduleLangVar.'_PLACE_DATA_DEFAULT'       => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'],
+            'TXT_'.$this->moduleLangVar.'_PLACE_DATA_FROM_MEDIADIR' => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'],
+            'TXT_'.$this->moduleLangVar.'_PREV'                     => $_ARRAYLANG['TXT_CALENDAR_PREV'],
+            'TXT_'.$this->moduleLangVar.'_NEXT'                     => $_ARRAYLANG['TXT_CALENDAR_NEXT'],
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
@@ -551,9 +564,14 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_HOST_ADDRESS'              => $objEvent->org_street,
             $this->moduleLangVar.'_EVENT_HOST_ZIP'                  => $objEvent->org_zip,
             $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->org_city,
+            $this->moduleLangVar.'_EVENT_HOST_COUNTRY'              => $objEvent->org_country,
             $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->org_link,
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->org_email,
-                
+            $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MANUAL'      => $eventId != 0 ? ($objEvent->locationType == 1 ? "checked='checked'" : '') : "checked='checked'",
+            $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MEDIADIR'    => $eventId != 0 ? ($objEvent->locationType == 2 ? "checked='checked'" : '') : "",
+            $this->moduleLangVar.'_EVENT_HOST_TYPE_MANUAL'          => $eventId != 0 ? ($objEvent->hostType == 1 ? "checked='checked'" : '') : "checked='checked'",
+            $this->moduleLangVar.'_EVENT_HOST_TYPE_MEDIADIR'        => $eventId != 0 ? ($objEvent->hostType == 2 ? "checked='checked'" : '') : "",            
+            
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
             $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
             $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'             => count($this->arrFrontendLanguages) == 1 ? "display: none;" : "",
@@ -607,27 +625,64 @@ UPLOADER;
                                      
         }
         //parse placeSelect
-        /*if ($this->arrSettings['placeData'] != 0) {
+        if ((int) $this->arrSettings['placeData'] > 1) {
             $objMediadirEntries = new mediaDirectoryEntry();
-            $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeData']));
+            $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeDataForm']));
 
             $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
 
             foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
-                $selectedPlace = ($arrEntry['entryId'] == $objEvent->place) ? 'selected="selected"' : '';
+                $selectedPlace = ($arrEntry['entryId'] == $objEvent->place_mediadir_id) ? 'selected="selected"' : '';
                 $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';
             }
 
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,
             ));
-
-            $this->_objTpl->hideBlock('eventPlaceInput');
             $this->_objTpl->parse('eventPlaceSelect');
-        } else { */
+            
+            if ((int) $this->arrSettings['placeData'] == 2) {
+                $this->_objTpl->hideBlock('eventPlaceInput');
+                $this->_objTpl->hideBlock('eventPlaceTypeRadio');
+            } else {
+                $this->_objTpl->touchBlock('eventPlaceInput');
+                $this->_objTpl->touchBlock('eventPlaceTypeRadio');
+            }
+        } else {
             $this->_objTpl->touchBlock('eventPlaceInput');
-            $this->_objTpl->hideBlock('eventPlaceSelect');
-        /* } */
+            $this->_objTpl->hideBlock('eventPlaceSelect');  
+            $this->_objTpl->hideBlock('eventPlaceTypeRadio');
+        }
+        
+        //parse placeHostSelect
+        if ((int) $this->arrSettings['placeDataHost'] > 1) {
+            $objMediadirEntries = new mediaDirectoryEntry();
+            $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeDataHostForm']));
+
+            $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
+
+            foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
+                $selectedPlace = ($arrEntry['entryId'] == $objEvent->host_mediadir_id) ? 'selected="selected"' : '';   
+                $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';   
+            }
+
+            $this->_objTpl->setVariable(array(   
+                $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,    
+            ));
+            $this->_objTpl->parse('eventHostSelect');  
+            
+            if ((int) $this->arrSettings['placeDataHost'] == 2) {
+                $this->_objTpl->hideBlock('eventHostInput');
+                $this->_objTpl->hideBlock('eventHostTypeRadio');
+            } else {
+                $this->_objTpl->touchBlock('eventHostInput');
+                $this->_objTpl->touchBlock('eventHostTypeRadio');
+            }
+        } else {
+            $this->_objTpl->touchBlock('eventHostInput');
+            $this->_objTpl->hideBlock('eventHostSelect');  
+            $this->_objTpl->hideBlock('eventHostTypeRadio');
+        }
 
     }
 
@@ -706,7 +761,7 @@ UPLOADER;
         }
         
         $objEvent = new CalendarEvent(intval($_REQUEST['id']));
-
+        
         $numRegistrations = (int) $objEvent->registrationCount;
         
         $this->pageTitle = date("d.m.Y", (isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)).": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
@@ -954,7 +1009,7 @@ UPLOADER;
 <script type="text/javascript">
     cx.ready(function() {
             var ef = new ExtendedFileInput({
-                    field:  jQuery('#{$fieldName}'),
+                    field:  cx.jQuery('#{$fieldName}'),
                     instance: '{$uploaderInstanceName}',
                     widget: 'uploadWidget{$submissionId}'
             });
@@ -1045,11 +1100,17 @@ JAVASCRIPT;
     function showThreeBoxes()
     {
         global $_ARRAYLANG;
-        
+
+        $objEventManager = new CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,0,'n',$this->sortDirection,true,$this->author);
+        $objEventManager->getEventList();  
         $this->_objTpl->setTemplate($this->pageContent);
-        
-        $this->objEventManager->calendarBoxUrl         = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString()."?act=list";
-        $this->objEventManager->calendarBoxMonthNavUrl = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString();
+        if ($_REQUEST['cmd'] == 'boxes') {
+            $objEventManager->calendarBoxUrl         = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString()."?act=list";
+            $objEventManager->calendarBoxMonthNavUrl = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString();
+        } else {
+            $objEventManager->calendarBoxUrl         = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', '')->toString()."?act=list";
+            $objEventManager->calendarBoxMonthNavUrl = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', '')->toString();
+        }
         
         if (empty($_GET['catid'])) {
             $catid = 0;
@@ -1075,7 +1136,7 @@ JAVASCRIPT;
             $year  = date("Y");
         }
                 
-        $calendarbox = $this->objEventManager->getBoxes($this->boxCount, $year, $month, $day, $catid);
+        $calendarbox = $objEventManager->getBoxes($this->boxCount, $year, $month, $day, $catid);
 
         $objCategoryManager = new CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
@@ -1083,7 +1144,7 @@ JAVASCRIPT;
         $this->_objTpl->setVariable(array(
             "TXT_{$this->moduleLangVar}_ALL_CAT" => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
             "{$this->moduleLangVar}_BOX"	 => $calendarbox,
-            "{$this->moduleLangVar}_JAVA_SCRIPT" => $this->objEventManager->getCalendarBoxJS(),
+            "{$this->moduleLangVar}_JAVA_SCRIPT" => $objEventManager->getCalendarBoxJS(),
             "{$this->moduleLangVar}_CATEGORIES"	 => $objCategoryManager->getCategoryDropdown($catid, 1),            
         ));        
     }

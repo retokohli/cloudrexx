@@ -36,6 +36,72 @@ class NodeRepository extends NestedTreeRepository {
         $this->em = $em;
     }
 
+    public function find($id, $lockMode = 0, $lockVersion = NULL) {
+        return $this->findOneBy(array('id' => $id));
+    }
+
+    /**
+     * Finds entities by a set of criteria.
+     *
+     * @param array $criteria
+     * @return array
+     * @override
+     */
+    public function findBy(array $criteria)
+    {        
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('n')
+                ->from('\Cx\Core\ContentManager\Model\Entity\Node', 'n');
+        $i = 1;
+        foreach ($criteria as $key => $value) {
+            if ($i == 1) {
+                $qb->where('n.' . $key . ' = ?' . $i)->setParameter($i, $value);
+            } else {
+                $qb->andWhere('n.' . $key . ' = ?' . $i)->setParameter($i, $value);
+            }
+            $i++;
+        }
+        
+        try {
+            $q = $qb->getQuery();
+            $nodes = $q->getResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $nodes = array();
+        }
+        return $nodes;
+    }
+
+    /**
+     * Finds a single entity by a set of criteria.
+     *
+     * @param array $criteria
+     * @return object
+     * @override
+     */
+    public function findOneBy(array $criteria)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('n')
+                ->from('\Cx\Core\ContentManager\Model\Entity\Node', 'n')->setMaxResults(1);
+        $i = 1;
+        foreach ($criteria as $key => $value) {
+            if ($i == 1) {
+                $qb->where('n.' . $key . ' = ?' . $i)->setParameter($i, $value);
+            } else {
+                $qb->andWhere('n.' . $key . ' = ?' . $i)->setParameter($i, $value);
+            }
+            $i++;
+        }
+        
+        try {
+            $q = $qb->getQuery();
+            $node = $q->getSingleResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $node = null;
+        }
+        return $node;
+    }
+
     /**
      * Returns the root node.
      * @todo DO NOT use NestedTreeRepository->getRootNodes(), it needs a lot of RAM, implement own query to get all root nodes

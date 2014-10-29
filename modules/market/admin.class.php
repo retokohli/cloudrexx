@@ -473,6 +473,11 @@ class Market extends marketLibrary
             $like     = "'%".contrexx_addslashes($_POST['term'])."%' OR description LIKE '%".contrexx_addslashes($_POST['term'])."%' OR id LIKE '%".intval($_POST['term'])."%'";
         }
 
+        if (!isset($_SESSION['market'])) {
+            $_SESSION['market'] = array();
+            $_SESSION['market']['sort'] = array();
+        }
+        
         // Sort
         if (empty ($_SESSION['market']['sort'])) {
             $_SESSION['market']['sort'] = 'title ASC';

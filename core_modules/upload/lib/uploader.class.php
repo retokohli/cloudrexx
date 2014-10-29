@@ -69,6 +69,9 @@ abstract class Uploader
      */
     public function restrictUpload2SingleFile()
     {
+        if (!isset($_SESSION['upload']['handlers'][$this->uploadId])) {
+            $_SESSION['upload']['handlers'][$this->uploadId] = array();
+        }
         // limit upload to 1 file at a time
         \ContrexxJavascript::getInstance()->setVariable('restrictUpload2SingleFile', true, "upload/widget_$this->uploadId");
         $_SESSION['upload']['handlers'][$this->uploadId]['singleFileMode'] = true;
@@ -84,7 +87,7 @@ abstract class Uploader
        //start session if it's not ready yet
        global $sessionObj;
        if(empty($sessionObj)) { //session hasn't been initialized so far
-           $sessionObj = new cmsSession();
+           $sessionObj = \cmsSession::getInstance();
        }
     }
     /**
@@ -153,6 +156,9 @@ abstract class Uploader
     public function setUploadId($id)
     {
         $this->uploadId = $id;
+        if (!isset($_SESSION['upload']['handlers'][$this->uploadId])) {
+            $_SESSION['upload']['handlers'][$this->uploadId] = array();
+        }
         if(isset($_SESSION['upload']['handlers'][$this->uploadId]['callback']))
             $this->callbackData = $_SESSION['upload']['handlers'][$this->uploadId]['callback'];
     }
@@ -269,12 +275,11 @@ abstract class Uploader
      */
     public function notifyCallback()
     {
-        global $sessionObj;
 
         //temporary path where files were uploaded
         $tempDir = '/upload_'.$this->uploadId;
-        $tempPath = $sessionObj->getTempPath().$tempDir;
-        $tempWebPath = $sessionObj->getWebTempPath().$tempDir;
+        $tempPath = $_SESSION->getTempPath().$tempDir;
+        $tempWebPath = $_SESSION->getWebTempPath().$tempDir;
 
         //we're going to call the callbck, so the data is not needed anymore
         //well... not quite sure. need it again in contact form.
@@ -334,6 +339,7 @@ abstract class Uploader
                 
                 //move everything uploaded to target dir
                 $h = opendir($tempPath);
+                $im = new \ImageManager();
                 while(false != ($f = readdir($h))) {
                     //skip . and ..
                     if($f == '.' || $f == '..')
@@ -341,6 +347,9 @@ abstract class Uploader
 
                     //TODO: if return value = 'error' => react
                     \Cx\Lib\FileSystem\FileSystem::move($tempWebPath.$f, $pathWeb.$f, true);
+                    if($im->_isImage($path.$f)){
+                        $im->_createThumb($path, $pathWeb, $f);
+                    }
                     $response->increaseUploadedFilesCount();
                 }
                 closedir($h);
@@ -362,10 +371,9 @@ abstract class Uploader
      * Cleans up the session - unsets the callback data stored for this upload
      */
     protected function cleanupCallbackData() {
-        global $sessionObj;
 
         unset($_SESSION['upload']['handlers'][$this->uploadId]['callback']);
-        $sessionObj->cleanTempPaths();
+        $_SESSION->cleanTempPaths();
     }
 
     /**
@@ -395,7 +403,7 @@ abstract class Uploader
         if ($this->isBackendRequest) {
             $uploadPath = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=upload';
         } else {
-            $url = clone \Env::get('cx')->getRequest()->getUrl();
+            $url = clone \Env::get('cx')->getRequest();
             $url->removeAllParams();
             $url->setParams(array(
                 'section' => 'upload',
@@ -417,12 +425,10 @@ abstract class Uploader
      */
     protected function addChunk($fileName, $chunk, $chunks)
     {
-        global $sessionObj;
-      
         
         //get a writable directory
-        $tempPath = $sessionObj->getTempPath();
-        $webTempPath = $sessionObj->getWebTempPath();
+        $tempPath = $_SESSION->getTempPath();
+        $webTempPath = $_SESSION->getWebTempPath();
         $dirName = 'upload_'.$this->uploadId;
 
         $targetDir = $tempPath.'/'.$dirName;

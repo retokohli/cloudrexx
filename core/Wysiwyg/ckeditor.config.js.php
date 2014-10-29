@@ -10,8 +10,8 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
 require_once($contrexx_path . '/core/Core/init.php');
 init('minimal');
 
-$sessionObj = new cmsSession();
-$sessionObj->cmsSessionStatusUpdate('backend');
+$sessionObj = \cmsSession::getInstance();
+$_SESSION->cmsSessionStatusUpdate('backend');
 $CSRF = '&'.CSRF::key().'='.CSRF::code();
 
 
@@ -39,12 +39,18 @@ CKEDITOR.editorConfig = function( config )
     config.shiftEnterMode = CKEDITOR.ENTER_P;
     config.startupOutlineBlocks = true;
     config.allowedContent = true;
+    
+    config.ignoreEmptyParagraph = false;
+    config.protectedSource.push(/<i[^>]*><\/i>/g);
+    config.protectedSource.push(/<span[^>]*><\/span>/g);
+    config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
 
     config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser; ?>');
     config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
     config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
+    config.baseHref = 'http://<?php echo $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET; ?>/';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
 
@@ -90,6 +96,7 @@ CKEDITOR.editorConfig = function( config )
         ['Cut','Copy','Paste','-','Scayt'],
         ['Undo','Redo']
     ];
+    config.extraPlugins = 'codemirror';
 };
 
 if (<?php

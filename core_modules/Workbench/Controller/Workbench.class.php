@@ -31,6 +31,7 @@ class Workbench {
             '/core/Core/Data/Skeleton',
             '/core/Core/Model/Entity/ReflectionComponent.class.php',
             '/core_modules/Workbench',
+            '/lib/behat',
             '/workbench.config',
             '/workbench',
             '/workbench.sh',

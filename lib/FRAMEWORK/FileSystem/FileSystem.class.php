@@ -349,31 +349,67 @@ class FileSystem
 
     // replaces some characters
     public static function replaceCharacters($string) {
+        // contrexx file name policies
+        $string = \FWValidator::getCleanFileName($string);
+
+        // media library special changes; code depends on those
         // replace $change with ''
-        $change = array('+', '¦', '"', '@', '*', '#', '°', '%', '§', '&', '¬', '/', '|', '(', '¢', ')', '=', '?', '\'', '´', '`', '^', '~', '!', '¨', '[', ']', '{', '}', '£', '$', '-', '<', '>', '\\', ';', ',', ':');
+        $change = array('+');
+
         // replace $signs1 with $signs
         $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
-        $string = strtolower($string);
         foreach ($change as $str) {
-            $string = str_replace($str, '', $string);
+            $string = str_replace($str, '_', $string);
         }
+
         for ($x = 0; $x < count($signs1); $x++) {
             $string = str_replace($signs1[$x], $signs2[$x], $string);
         }
-        $string = str_replace('__', '_', $string);
 
+        $string = str_replace('__', '_', $string);
         if (strlen($string) > self::MAX_FILENAME_LENGTH) {
             $info       = pathinfo($string);
             $stringExt  = $info['extension'];
-
             $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + self::DOT_LENGTH));
             $stringName = substr($stringName, 0, self::MAX_FILENAME_LENGTH - (strlen($stringExt) + self::DOT_LENGTH));
-            $string     = $stringName . '.' . $stringExt;
+            $string     = $stringName.'.'.$stringExt;
         }
 
         return $string;
+    }
+
+
+    /**
+     * Sanitizes the given path.
+     *
+     * @param   string       $path
+     * @return  bool|string  $path
+     */
+    public static function sanitizePath($path) {
+        $path =    !empty($path)
+                && $path != '..'
+                && strpos($path, '../')  === false
+                && strpos($path, '..\\') === false
+                && strpos($path, '/..')  === false
+                && strpos($path, '\..')  === false ? trim($_GET['path']) : false;
+
+        return $path;
+    }
+
+
+    /**
+     * Sanitizes the given file name.
+     *
+     * @param   string       $file
+     * @return  bool|string  $file
+     */
+    public static function sanitizeFile($file) {
+        $file = !empty($file) ? basename(trim($file)) : false;
+        if ($file == '..') $file = false;
+
+        return $file;
     }
 
 

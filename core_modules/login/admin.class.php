@@ -108,7 +108,7 @@ class LoginManager {
      */
     private function showPasswordReset()
     {
-        global $_ARRAYLANG, $objFWUser, $sessionObj;
+        global $_ARRAYLANG, $objFWUser;
 
         JS::activate('jquery');
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login_reset_password.html');
@@ -124,25 +124,25 @@ class LoginManager {
         $this->objTemplate->hideBlock('success_message');
         $this->objTemplate->hideBlock('back_to_login');
         // TODO: Why oh why isn't function resetPassword() located in the AccessLibrary?
-        $username = isset($_POST['USERNAME']) ? contrexx_stripslashes($_POST['USERNAME']) : (isset($_GET['username']) ? contrexx_stripslashes($_GET['username']) : '');
+        $email = isset($_POST['email']) ? contrexx_stripslashes($_POST['email']) : (isset($_GET['email']) ? contrexx_stripslashes($_GET['email']) : '');
         $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
         $password = isset($_POST['PASSWORD']) ? trim(contrexx_stripslashes($_POST['PASSWORD'])) : '';
         $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
 
         $this->objTemplate->setVariable(array(
-            'LOGIN_USERNAME'    => htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
+            'LOGIN_USERNAME'    => htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET),
             'LOGIN_RESTORE_KEY' => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET),
         ));
 
         if (isset($_POST['reset_password'])) {
-            if ($objFWUser->resetPassword($username, $restoreKey, $password, $confirmedPassword, true)) {
+            if ($objFWUser->resetPassword($email, $restoreKey, $password, $confirmedPassword, true)) {
                 $this->objTemplate->setVariable('LOGIN_SUCCESS_MESSAGE', $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY']);
                 $this->objTemplate->touchBlock('success_message');
                 $this->objTemplate->hideBlock('login_reset_password');
                 $this->objTemplate->touchBlock('back_to_login');
 
                 $userFilter = array(
-                    'username'         => $username,
+                    'email'         => $email,
                     'active'           => 1,
                 );
 
@@ -153,7 +153,7 @@ class LoginManager {
                 $this->objTemplate->touchBlock('error_message');
 
                 $this->objTemplate->setVariable(array(
-                    'TXT_LOGIN_USERNAME'                    => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
+                    'TXT_LOGIN_EMAIL'                       => $_ARRAYLANG['TXT_LOGIN_EMAIL'],
                     'TXT_LOGIN_PASSWORD'                    => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
                     'TXT_LOGIN_VERIFY_PASSWORD'             => $_ARRAYLANG['TXT_LOGIN_VERIFY_PASSWORD'],
                     'TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS' => $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'],
@@ -164,7 +164,7 @@ class LoginManager {
             }
         } else {
             $this->objTemplate->setVariable(array(
-                'TXT_LOGIN_USERNAME'                    => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
+                'TXT_LOGIN_EMAIL'                       => $_ARRAYLANG['TXT_LOGIN_EMAIL'],
                 'TXT_LOGIN_PASSWORD'                    => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
                 'TXT_LOGIN_VERIFY_PASSWORD'             => $_ARRAYLANG['TXT_LOGIN_VERIFY_PASSWORD'],
                 'TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS' => $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'],
@@ -217,7 +217,7 @@ class LoginManager {
             'TXT_LOGIN_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
             'TXT_LOGIN_PASSWORD_LOST'       => $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
             'TXT_LOGIN_REMEMBER_ME'         => $_CORELANG['TXT_CORE_REMEMBER_ME'],
-            'REDIRECT_URL'                  => !empty($_POST['redirect']) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
+            'REDIRECT_URL'                  => !empty($_POST['redirect']) ? $_POST['redirect'] : ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/'.basename(getenv('REQUEST_URI')),
             'FRONTEND_LINK'                 => $frontendLink,
             'JAVASCRIPT'                    => JS::getCode(),
         ));

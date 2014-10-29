@@ -646,7 +646,6 @@ class AccessManager extends AccessLib
                 `parent_area_id`
             FROM `".DBPREFIX."backend_areas`
             WHERE `is_active` = 1 AND `access_id` != '0'
-            GROUP BY `area_name`
             ORDER BY `parent_area_id`, `order_id`
             ");
         if ($objResult) {
@@ -1172,7 +1171,7 @@ class AccessManager extends AccessLib
 
     private function modifyUser()
     {
-        global $_ARRAYLANG, $_CONFIG, $sessionObj;
+        global $_ARRAYLANG, $_CONFIG;
 
         $associatedGroups = '';
         $notAssociatedGroups = '';
@@ -1356,6 +1355,21 @@ class AccessManager extends AccessLib
         }
 
         $this->parseNewsletterLists($objUser);
+        
+        $urlParams = '';
+        $cancelUrl = 'index.php?cmd=access&amp;act=user';
+        $source = isset($_GET['source']) ? contrexx_input2raw($_GET['source']) : 'access';
+        switch($source){
+            case 'newsletter':
+                $cancelUrl = 'index.php?cmd=newsletter&act=users';
+                $urlParams =  //used for Filter here
+                    (!empty($_GET['newsletterListId']) ? '&newsletterListId='.contrexx_input2raw($_GET['newsletterListId']) : '').
+                    (!empty($_GET['filterkeyword']) ? '&filterkeyword='.contrexx_input2raw($_GET['filterkeyword']) : '').
+                    (!empty($_GET['filterattribute']) ? '&filterattribute='.contrexx_input2raw($_GET['filterattribute']) : '').
+                    (!empty($_GET['filterStatus']) ? '&filterStatus='.contrexx_input2raw($_GET['filterStatus']) : '')
+                ;
+                break;
+        }
 
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                       => $objUser->getId(),
@@ -1369,6 +1383,9 @@ class AccessManager extends AccessLib
             'ACCESS_JAVASCRIPT_FUNCTIONS'          => $this->getJavaScriptCode(),
             'CSS_DISPLAY_STATUS'                   => $cssDisplayStatus,
             'ACCESS_PASSWORT_COMPLEXITY'           => isset($_CONFIG['passwordComplexity']) ? $_CONFIG['passwordComplexity'] : 'off',
+            'SOURCE'                               => $source, //if source was newletter for ex.
+            'CANCEL_URL'                           => $cancelUrl,
+            'URL_PARAMS'                           => $urlParams,
         ));
 
         $rowNr = 0;
@@ -1439,6 +1456,20 @@ class AccessManager extends AccessLib
         // add a category in the digital asset management module
         if (contrexx_isModuleInstalled('downloads')) {
             $this->processDigitalAssetManagementExtension($objUser);
+        }
+        
+        if(isset($_GET['source'])){
+            switch ($_GET['source']){
+                case 'newsletter':
+                    \CSRF::header('Location: 
+                        index.php?cmd=newsletter&act=users&store=true'. //and add Params for Newsletter Filter
+                        (!empty($_GET['newsletterListId']) ? '&newsletterListId='.contrexx_input2raw($_GET['newsletterListId']) : '').
+                        (!empty($_GET['filterkeyword']) ? '&filterkeyword='.contrexx_input2raw($_GET['filterkeyword']) : '').
+                        (!empty($_GET['filterattribute']) ? '&filterattribute='.contrexx_input2raw($_GET['filterattribute']) : '').
+                        (!empty($_GET['filterStatus']) ? '&filterStatus='.contrexx_input2raw($_GET['filterStatus']) : '')
+                    );
+                    exit;                
+            }
         }
     }
 
@@ -2801,7 +2832,7 @@ class AccessManager extends AccessLib
             'ACCESS_MAIL_SENDER_ADDRESS'   => htmlentities($objUserMail->getSenderMail(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_MAIL_SENDER_NAME'      => htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_MAIL_BODY_TEXT'        => htmlentities($objUserMail->getBodyText(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ACCESS_MAIL_BODY_HTML'        => $objUserMail->getFormat() != 'text' ? new \Cx\Core\Wysiwyg\Wysiwyg('access_mail_body_html', $objUserMail->getBodyHtml(), 'Full') : '<input type="hidden" name="access_mail_body_html" value="'.htmlentities($objUserMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
+            'ACCESS_MAIL_BODY_HTML'        => $objUserMail->getFormat() != 'text' ? new \Cx\Core\Wysiwyg\Wysiwyg('access_mail_body_html', $objUserMail->getBodyHtml(), 'fullpage') : '<input type="hidden" name="access_mail_body_html" value="'.htmlentities($objUserMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
             'ACCESS_MAIL_HTML_BODY_STAUTS' => $objUserMail->getFormat() != 'text' ? 'block' : 'none',
             'ACCESS_MAIL_TEXT_BODY_STAUTS' => $objUserMail->getFormat() == 'text' ? 'block' : 'none',
             'ACCESS_MAIL_HTML_BODY_CLASS'  => $objUserMail->getFormat() != 'text' ? 'active' : '',

@@ -13,6 +13,12 @@
 CKEDITOR.disableAutoInline = true;
 
 /**
+ * Init the extra plugin array
+ * @type Array|Array
+ */
+var extraPlugins = [];
+
+/**
  * Init the frontend editing when DOM is loaded and ready
  */
 cx.ready(function() {
@@ -47,6 +53,13 @@ cx.fe = function() {
     cx.fe.publishedPage = {};
 
     /**
+     * Object for the block state which is published
+     * Used as a temporary storage for block data
+     * @type {{}}
+     */
+    cx.fe.publishedBlocks = {};
+
+    /**
      * The state of the toolbar
      * Default: closed
      * @type {boolean}
@@ -67,25 +80,32 @@ cx.fe = function() {
 };
 
 /**
+ * The current focused editor
+ * @type CKEDITOR.editor
+ */
+cx.fe.currentEditor = null;
+
+/**
  * Init the ckeditor for the content and title element
  * this line is necessary for the start and end method of contentEditor
  */
 cx.fe.contentEditor = function() {
 };
 
+cx.fe.contentEditor.loadPageEditors = false;
+
 /**
  * Start content editor
  */
-cx.fe.contentEditor.start = function() {
+cx.fe.contentEditor.start = function(pageEditor) {
     // set a flag to true
     cx.fe.editMode = true;
 
-    // add border around the editable contents
-    cx.jQuery("#fe_content,#fe_title").attr("contenteditable", true).addClass('fe_outline');
+    cx.fe.contentEditor.loadPageEditors = pageEditor;
 
     // check for publish permission and add publish button
     // not used at the moment, perhaps later if it is possible to edit blocks
-    var extraPlugins = [];
+    extraPlugins = [];
 //    var extraPlugins = ["save"];
 //    if (cx.variables.get("hasPublishPermission", "FrontendEditing")) {
 //        extraPlugins.push("publish");
@@ -95,36 +115,7 @@ cx.fe.contentEditor.start = function() {
     cx.fe.publishedPage = {};
 
     // init the editors if the editor is not already initialized
-    if (!CKEDITOR.instances.fe_title && cx.jQuery("#fe_title").length > 0) {
-        CKEDITOR.inline("fe_title", {
-            customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
-            toolbar: "FrontendEditingTitle",
-            forcePasteAsPlainText: true,
-            extraPlugins: extraPlugins.join(","),
-            basicEntities: false,
-            entities: false,
-            entities_latin: false,
-            entities_greek: false,
-            on: {
-                instanceReady: function() {
-                    cx.fe.publishedPage.title = CKEDITOR.instances.fe_title.getData()
-                }
-            }
-        });
-    }
-    if (!CKEDITOR.instances.fe_content && cx.jQuery("#fe_content").length > 0) {
-        CKEDITOR.inline("fe_content", {
-            customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
-            toolbar: "FrontendEditingContent",
-            extraPlugins: extraPlugins.join(","),
-            startupOutlineBlocks: false,
-            on: {
-                instanceReady: function() {
-                    cx.fe.publishedPage.content = CKEDITOR.instances.fe_content.getData()
-                }
-            }
-        });
-    }
+    cx.fe.contentEditor.initCkEditors();
 
     // bind event on window
     // if the user leaves the page without saving, ask him to save as draft
@@ -136,39 +127,226 @@ cx.fe.contentEditor.start = function() {
 };
 
 /**
+ * init the ckeditor instances for the editable fields
+ */
+cx.fe.contentEditor.initCkEditors = function() {
+    if (cx.fe.contentEditor.loadPageEditors) {
+        cx.fe.contentEditor.initPageCkEditors();
+    }
+    cx.fe.contentEditor.initBlockCkEditors();
+};
+
+/**
+ * init the ckeditor instances for the page fields (title, content)
+ */
+cx.fe.contentEditor.initPageCkEditors = function() {
+    if (!CKEDITOR.instances.fe_title && cx.jQuery("#fe_title").length > 0) {
+        CKEDITOR.inline("fe_title", {
+            customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
+            toolbar: "FrontendEditingTitle",
+            forcePasteAsPlainText: true,
+            extraPlugins: extraPlugins.join(","),
+            basicEntities: false,
+            entities: false,
+            entities_latin: false,
+            entities_greek: false,
+            on: {
+                instanceReady: function(event) {
+                    cx.fe.publishedPage.title = event.editor.getData();
+                },
+                focus: function(event) {
+                    cx.fe.currentEditor = event.editor;
+                    cx.fe.startPageEditing();
+                }
+            }
+        });
+    }
+    if (!CKEDITOR.instances.fe_content && cx.jQuery("#fe_content").length > 0) {
+        CKEDITOR.inline("fe_content", {
+            customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
+            toolbar: "FrontendEditingContent",
+            extraPlugins: extraPlugins.join(","),
+            startupOutlineBlocks: false,
+            on: {
+                instanceReady: function(event) {
+                    cx.fe.publishedPage.content = event.editor.getData();
+                },
+                focus: function(event) {
+                    cx.fe.currentEditor = event.editor;
+                    cx.fe.startPageEditing();
+                }
+            }
+        });
+    }
+
+    // add border around the editable contents
+    cx.jQuery("#fe_content,#fe_title").attr("contenteditable", true).addClass("fe_outline");
+};
+
+/**
+ * destroy all ckeditor instances without the currently active editor
+ * @param CKEDITOR.editor editor
+ */
+cx.fe.contentEditor.destroyAllCkEditorsExcept = function(editor) {
+    cx.jQuery.each(cx.fe.publishedBlocks, function(index, object) {
+        if (!CKEDITOR.instances[index]) {
+            return;
+        }
+        if (CKEDITOR.instances[index] != editor) {
+            CKEDITOR.instances[index].destroy();
+            cx.jQuery("#" + index).attr("contenteditable", false).removeClass("fe_outline");
+        }
+    });
+    if (CKEDITOR.instances.fe_content) {
+        CKEDITOR.instances.fe_content.destroy();
+    }
+    if (CKEDITOR.instances.fe_title) {
+        CKEDITOR.instances.fe_title.destroy();
+    }
+    // remove border around the editable contents
+    cx.jQuery("#fe_content,#fe_title").attr("contenteditable", false).removeClass("fe_outline");
+};
+
+/**
+ * init ckeditors for all block areas
+ */
+cx.fe.contentEditor.initBlockCkEditors = function() {
+    cx.jQuery(".fe_block").each(function() {
+        var blockId = cx.jQuery(this).attr("data-id");
+        if (!CKEDITOR.instances["fe_block_" + blockId]) {
+            cx.fe.publishedBlocks["fe_block_" + blockId] = {};
+            cx.fe.publishedBlocks["fe_block_" + blockId].contentHtml = cx.jQuery(this).html();
+
+            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=block&act=getBlockContent&block=" + blockId + "&lang=" + cx.jQuery.cookie("langId");
+            cx.jQuery.ajax({
+                url: url,
+                complete: function(response) {
+                    // get the block json data response
+                    cx.jQuery("#fe_block_" + blockId).html(cx.jQuery.parseJSON(response.responseText).data.content);
+                    CKEDITOR.inline("fe_block_" + blockId, {
+                        customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
+                        toolbar: "FrontendEditingContent",
+                        extraPlugins: extraPlugins.join(","),
+                        startupOutlineBlocks: false,
+                        on: {
+                            instanceReady: function(event) {
+                                cx.fe.publishedBlocks[event.editor.name].contentRaw = event.editor.getData();
+                            },
+                            focus: function(event) {
+                                cx.fe.startBlockEditing(event.editor);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+    // add border around the editable contents
+    cx.jQuery(".fe_block").attr("contenteditable", true).addClass("fe_outline");
+};
+
+/**
+ * destroy all ckeditor instances for block areas
+ */
+cx.fe.contentEditor.destroyBlockCkEditors = function() {
+    cx.jQuery.each(cx.fe.publishedBlocks, function(index, object) {
+        if (CKEDITOR.instances[index]) {
+            CKEDITOR.instances[index].destroy();
+        }
+    });
+    // remove border around the editable contents
+    cx.jQuery(".fe_block").attr("contenteditable", false).removeClass("fe_outline");
+};
+
+/**
+ * User starts to edit page (page title or page content)
+ */
+cx.fe.startPageEditing = function() {
+    // change value of cancel button
+    cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_CANCEL_EDIT);
+    // show state icon
+    cx.jQuery("#fe_state_wrapper").show();
+    // show action buttons
+    cx.fe.actionButtons.showPageButtons();
+    // remove all block editors
+    cx.fe.contentEditor.destroyBlockCkEditors();
+};
+
+/**
+ * User stops edit the page (page title or page content)
+ */
+cx.fe.stopPageEditing = function() {
+    if (cx.fe.pageHasBeenModified()) {
+    // want to save as draft?
+        if (cx.fe.confirmSaveAsDraft()) {
+            cx.fe.savePage();
+        }
+        if (cx.jQuery("#fe_title").length > 0) {
+            cx.jQuery("#fe_title").html(cx.fe.publishedPage.title);
+        }
+        if (cx.jQuery("#fe_content").length > 0) {
+            cx.jQuery("#fe_content").html(cx.fe.publishedPage.content);
+        }
+    }
+    // change value of cancel button
+    cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_FINISH_EDIT_MODE);
+    // show state icon
+    cx.jQuery("#fe_state_wrapper").hide();
+    // show action buttons
+    cx.fe.actionButtons.hidePageButtons();
+    // init all editors
+    cx.fe.contentEditor.initCkEditors();
+};
+
+/**
+ * start editing a block area
+ */
+cx.fe.startBlockEditing = function(editor) {
+    // change value of cancel button
+    cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_CANCEL_EDIT);
+    // show buttons for block editing
+    cx.fe.actionButtons.showBlockButtons();
+    
+    if (!cx.fe.currentEditor) {
+        // load html version of data
+        editor.setData(cx.fe.publishedBlocks[editor.name].contentRaw);
+    }
+    cx.fe.currentEditor = editor;
+    
+    // remove content page ckeditors
+    cx.fe.contentEditor.destroyAllCkEditorsExcept(editor);
+};
+
+/**
+ * @param CKEDITOR.editor editorInstance
+ */
+cx.fe.stopBlockEditing = function(editorInstance) {
+    if (editorInstance) {
+        if (cx.fe.blockHasBeenModified(editorInstance)) {
+            if (confirm(cx.fe.langVars.TXT_FRONTEND_EDITING_CONFIRM_BLOCK_SAVE)) {
+                cx.fe.saveBlock(editorInstance);
+            }
+        }
+    }
+    // change value of cancel button
+    cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_FINISH_EDIT_MODE);
+    // hide block action buttons
+    cx.fe.actionButtons.hideBlockButtons();
+    // show outlines
+    cx.jQuery("#fe_content,#fe_title").attr("contenteditable", true).addClass("fe_outline");
+    // load html content
+    editorInstance.setData(cx.fe.publishedBlocks[editorInstance.name].contentHtml);
+};
+
+/**
  * stop the edit mode
  */
 cx.fe.contentEditor.stop = function() {
     // set flag to false
     cx.fe.editMode = false;
 
-    // if (whether the CKEDITORs exist)
-    // why? they don't exist if the page is an application page
-    if (cx.fe.editorLoaded()) {
-        // load last published content if the page in the current editor is a draft
-        if (cx.fe.pageHasBeenModified()) {
-            if (cx.fe.confirmSaveAsDraft()) {
-                cx.fe.savePage();
-            }
-            if (cx.jQuery("#fe_title").length > 0) {
-                cx.jQuery("#fe_title").html(cx.fe.publishedPage.title);
-            }
-            if (cx.jQuery("#fe_content").length > 0) {
-                cx.jQuery("#fe_content").html(cx.fe.publishedPage.content);
-            }
-        }
-
-        // destroy and remove the inline editor
-        if (CKEDITOR.instances.fe_content) {
-            CKEDITOR.instances.fe_content.destroy();
-        }
-        if (CKEDITOR.instances.fe_title) {
-            CKEDITOR.instances.fe_title.destroy();
-        }
-    }
-
     // remove outline of editable content divs
-    cx.jQuery("#fe_content,#fe_title").attr("contenteditable", false).removeClass('fe_outline');
+    cx.jQuery("#fe_content,#fe_title,.fe_block").attr("contenteditable", false).removeClass('fe_outline');
 
     // remove history and options
     cx.fe.toolbar.hideAnchors();
@@ -177,19 +355,31 @@ cx.fe.contentEditor.stop = function() {
     cx.tools.StatusMessage.removeAllDialogs();
 
     // load published page data
+    if (cx.fe.contentEditor.loadPageEditors) {
     cx.fe.loadPageData(null, true, function() {
         if (cx.fe.pageIsADraft()) {
             cx.fe.loadPageData(cx.fe.page.historyId + 1, true);
         }
     });
+    }
+    
+    // load html format
+    cx.jQuery(".fe_block").each(function() {
+        var blockId = cx.jQuery(this).attr("data-id");
+        cx.jQuery(this).html(cx.fe.publishedBlocks["fe_block_" + blockId].contentHtml);
+    });
 
     // hide action buttons
-    cx.fe.actionButtons.hide();
+    cx.fe.actionButtons.hidePageButtons();
+    cx.fe.actionButtons.hideBlockButtons();
+    
+    // hide all destroys
+    cx.jQuery.each(CKEDITOR.instances, function(index, element) {
+        element.destroy();
+    });
 
     // remove event on window
-    cx.jQuery(window).unbind();
-
-
+    //cx.jQuery(window).unbind();
 };
 
 /**
@@ -202,6 +392,18 @@ cx.fe.pageHasBeenModified = function() {
         cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val() != cx.fe.page.skin ||
         cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]").val() != cx.fe.page.customContent ||
         cx.jQuery("#fe_options .fe_box input[name=\"page[cssName]\"]").val() != cx.fe.page.cssName;
+};
+
+/**
+ * If the block has been modified (content of block)
+ * @param CKEDITOR.editor editorInstance
+ * @returns {boolean}
+ */
+cx.fe.blockHasBeenModified = function(editorInstance) {
+    if (!cx.fe.publishedBlocks[editorInstance.name]) {
+        return false;
+    }
+    return editorInstance.getData() != cx.fe.publishedBlocks[editorInstance.name].contentRaw;
 };
 
 /**
@@ -252,53 +454,72 @@ cx.fe.toolbar = function() {
     cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT).click(function(e) {
         e.preventDefault();
         if (cx.fe.editMode) {
-            // if the edit mode was active, stop the editor
-            cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT);
-            cx.fe.contentEditor.stop();
-            // show state icon
-            cx.jQuery("#fe_state_wrapper").hide();
+            if (!cx.fe.currentEditor) {
+                // if the edit mode was active, stop the editor
+                cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT);
+                cx.fe.contentEditor.stop();
+                // show state icon
+                cx.jQuery("#fe_state_wrapper").hide();
+                    return;
+            }
+            
+            if (cx.fe.currentEditor.name.indexOf("fe_block") < 0) {
+                cx.fe.stopPageEditing();
+            } else {
+                cx.fe.stopBlockEditing(cx.fe.currentEditor);
+            }
+            // blur current editor
+            cx.fe.currentEditor.focusManager.blur(true);
+            cx.fe.currentEditor = null;
         } else {
             // if the edit mode was not active, start the editor
-            cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_CANCEL_EDIT);
+            cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_FINISH_EDIT_MODE);
 
             // load newest version, draft or published and refresh the editor's content
-            cx.fe.loadPageData(null, true, function() {
-                cx.fe.options.load();
+            if (cx.jQuery("#fe_title").length > 0 || cx.jQuery("#fe_content").length > 0) {
+                cx.fe.loadPageData(null, true, function() {
+                    cx.fe.options.load();
 
-                // check whether the content is editable or not
-                // don't show inline editor for module pages, except home
-                // don't show inline editor if the content and title cannot be found
-                if ((
-                        cx.fe.page.type == "content"
-                            || (cx.fe.page.type == "application" && cx.fe.page.module == "home"))
-                    && (cx.jQuery("#fe_title").length > 0 || cx.jQuery("#fe_content").length > 0)) {
-                    // init the inline ckeditor
-                    cx.fe.contentEditor.start();
-                    cx.fe.toolbar.showAnchors(true, true); // show both anchors, history and options
-                } else {
-                    cx.fe.editMode = true;
-                    if (cx.jQuery("#fe_title").length > 0 || cx.jQuery("#fe_content").length > 0) {
-                        cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info', 5000);
+                    // check whether the content is editable or not
+                    // don't show inline editor for module pages, except home
+                    // don't show inline editor if the content and title cannot be found
+                    if ((
+                            cx.fe.page.type == "content"
+                                    || (cx.fe.page.type == "application" && cx.fe.page.module == "home"))) {
+                        // init the inline ckeditor
+                            cx.fe.contentEditor.start(true);
+                        cx.fe.toolbar.showAnchors(true, true); // show both anchors, history and options
                     } else {
-                        cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_NO_TITLE_AND_CONTENT, 'info', 5000);
+                        if (cx.jQuery("#fe_title").length > 0 || cx.jQuery("#fe_content").length > 0) {
+                            cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info', 5000);
+                        } else {
+                            cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_NO_TITLE_AND_CONTENT, 'info', 5000);
+                        }
+                            cx.fe.contentEditor.start(false);
+                        cx.fe.toolbar.showAnchors(false, true); // only show option anchor, hide history anchor
                     }
-                    cx.fe.toolbar.showAnchors(false, true); // only show option anchor, hide history anchor
-                }
-
-                // show state icon
-                cx.jQuery("#fe_state_wrapper").show();
-                // show action buttons
-                cx.fe.actionButtons.show();
-            });
+                });
+            } else {
+                cx.fe.contentEditor.start(false);
+            }
         }
     }).hide();
 
-    // show start / stop button if the page is not an application
+    // show start / stop button if the page is not an application and does not have any blocks to edit
     cx.fe.loadPageData(null, false, function() {
-        if (cx.fe.page.type == "content" || (cx.fe.page.type == "application" && cx.fe.page.module == "home")) {
+        if (cx.fe.page.type == "content" ||
+            (
+                cx.fe.page.type == "application" &&
+                cx.fe.page.module == "home"
+            )
+           ) {
             cx.jQuery("#fe_toolbar_startEditMode").show();
         }
     });
+    
+    if (cx.jQuery(".fe_block").length > 0) {
+        cx.jQuery("#fe_toolbar_startEditMode").show();
+    }
 
     // detect esc key press
     cx.jQuery(document).keyup(function(e) {
@@ -309,7 +530,8 @@ cx.fe.toolbar = function() {
 
     // init action buttons and hide them
     cx.fe.actionButtons();
-    cx.fe.actionButtons.hide();
+    cx.fe.actionButtons.hidePageButtons();
+    cx.fe.actionButtons.hideBlockButtons();
 
     // init history and options
     cx.fe.history();
@@ -601,24 +823,46 @@ cx.fe.actionButtons = function() {
             e.preventDefault();
             cx.fe.savePage();
         });
+        
+    // init save block button and hide it
+    cx.jQuery("#fe_toolbar_saveBlock").click(function(e) {
+            e.preventDefault();
+            cx.fe.saveBlock(cx.fe.currentEditor);
+        });
 };
 
 /**
- * Show action buttons
+ * Show action buttons for page
  */
-cx.fe.actionButtons.show = function() {
+cx.fe.actionButtons.showPageButtons = function() {
     // show buttons
     cx.jQuery("#fe_toolbar_publishPage").show();
     cx.jQuery("#fe_toolbar_savePage").show();
 };
 
 /**
- * Hide action buttons
+ * Hide action buttons for page
  */
-cx.fe.actionButtons.hide = function() {
+cx.fe.actionButtons.hidePageButtons = function() {
     // hide buttons
     cx.jQuery("#fe_toolbar_publishPage").hide();
     cx.jQuery("#fe_toolbar_savePage").hide();
+};
+
+/**
+ * Show action buttons for block
+ */
+cx.fe.actionButtons.showBlockButtons = function() {
+    // show buttons
+    cx.jQuery("#fe_toolbar_saveBlock").show();
+};
+
+/**
+ * Hide action buttons for block
+ */
+cx.fe.actionButtons.hideBlockButtons = function() {
+    // hide buttons
+    cx.jQuery("#fe_toolbar_saveBlock").hide();
 };
 
 /**
@@ -676,7 +920,8 @@ cx.fe.publishPage = function() {
         cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set",
         {
             action: "publish",
-            page: cx.fe.page
+            page: cx.fe.page,
+            ignoreBlocks: true
         },
         function(response) {
             var className = "success";
@@ -711,7 +956,8 @@ cx.fe.savePage = function() {
     cx.jQuery.post(
         cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set",
         {
-            page: cx.fe.page
+            page: cx.fe.page,
+            ignoreBlocks: true
         },
         function(response) {
             if (response.data != null) {
@@ -723,6 +969,32 @@ cx.fe.savePage = function() {
             }
             // load new page data, but don't reload and don't put data into content
             cx.fe.loadPageData(null, false);
+        }
+    );
+};
+
+/**
+ * Save a block
+ * @param CKEditor.editor editorInstance
+ */
+cx.fe.saveBlock = function(editorInstance) {
+    cx.jQuery.post(
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + cx.jQuery.cookie("langId"),
+        {
+            content: editorInstance.getData()
+        },
+        function(response) {
+            var className = "success";
+            if (response.status != "success") {
+                className = "error";
+            }
+            cx.tools.StatusMessage.showMessage(response.message, className, 5000);
+            
+            if (response.data != null) {
+                cx.fe.publishedBlocks[editorInstance.name].contentHtml = response.data.content;
+                cx.fe.publishedBlocks[editorInstance.name].contentRaw = editorInstance.getData();
+            }
+            cx.fe.stopBlockEditing();
         }
     );
 };

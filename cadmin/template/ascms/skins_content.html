@@ -2,9 +2,6 @@
 <script language="JavaScript" type="text/javascript">
     <!-- // confirm delete page
     function reloadThemesPage(){
-        document.themesForm.action = 'index.php?cmd=skins&act=templates';
-        document.themesForm.themesDelName.value='';
-        document.themesForm.themesDelFileName.value='';
         document.themesForm.submit();
     }
     // -->
@@ -19,16 +16,16 @@
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
-        <td width="180" valign="top" nowrap>
+        <td width="240" valign="top" nowrap>
 
             <form name="themesForm" action="index.php?cmd=skins&amp;act=templates"  method="post">
-                <table summary="" width="180" border="0" cellspacing="0" cellpadding="3" class="adminlist">
+                <table summary="" width="240" border="0" cellspacing="0" cellpadding="3" class="adminlist">
                     <tr>
-                        <th width="180" nowrap="nowrap">{TXT_DESIGN_FOLDER}</th>
+                        <th width="240" nowrap="nowrap">{TXT_DESIGN_FOLDER}</th>
                     </tr>
                     <tr valign="top" class="row1">
                         <td>
-                            <select name="themes" size="9" onChange="reloadThemesPage()" style="WIDTH: 180px">
+                            <select name="themes" size="9" onChange="reloadThemesPage()" style="width: 100%;">
                                 <option value="">--- {TXT_CHOOSE_TEMPLATE_GROUP} ----</option>
                                 {THEMES_MENU}
                             </select>
@@ -39,33 +36,45 @@
                     </tr>
                     <tr valign="top" class="row1">
                         <td>
-                            <select name="themesPage" size="14" onChange="reloadThemesPage()" style="WIDTH: 180px">
+                            <select name="themesPage" size="14" onChange="reloadThemesPage()" style="width: 100%;">
                                 <option value="">--- {TXT_SELECT_FILE} -------------------</option>
                                 {THEMES_PAGES_MENU}
                             </select>
-                            <br /><br />
-                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 180px" /><br />
-                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" style="WIDTH: 100px" />
                         </td>
                     </tr>
-                    <tr valign="top" class="row1">
-                        <th width="180" nowrap="nowrap">{TXT_MANAGE_FILES}</th>
+                    <tr>
+                        <th nowrap="nowrap">{TXT_MANAGE_FILES}</th>
                     </tr>
                     <tr valign="top" class="row1">
                         <td>
-                            <select name="themesDelFileName" style="WIDTH: 180px">
+                            <select name="themesDelFileName" style="width: 100%">
                                 <option value="" selected>--- {TXT_SELECT_FILE} ---</option>
                                 {THEMES_PAGE_DEL_VALUE}
                             </select><br />
                             <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
-                            <br /><br />
-                            <select name="themesDelName" style="WIDTH: 180px">
-                                <option value="" selected>--- {TXT_SELECT_THEME} ---</option>
-                                {THEMES_MENU_DEL}
-                            </select><br />
-                            <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
+                            <br />
+                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 240px;" /><br />
+                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" />
                         </td>
                     </tr>
+                    <!-- BEGIN theme_libraries -->
+                    <tr>
+                        <th colspan="2" nowrap="nowrap">{TXT_TEMPLATE_USED_LIBRARIES}</th>
+                    </tr>
+                    <tr valign="top" class="row1">
+                        <td width="240">
+                            <!-- BEGIN theme_library -->
+                            <select name="libraryVersion[{THEME_LIBRARY_NAME}]" style="width: 100%">
+                                <option value="">{THEME_LIBRARY_NAME} {TXT_THEME_LIBRARY_NOT_USED}</option>
+                                <!-- BEGIN theme_library_version -->
+                                <option value="{THEME_LIBRARY_VERSION}" {THEME_LIBRARY_VERSION_SELECTED}>{THEME_LIBRARY_NAME} {THEME_LIBRARY_VERSION}</option>
+                                <!-- END theme_library_version -->
+                            </select><br />
+                            <!-- END theme_library -->
+                            <input type="submit" value="{TXT_SAVE}" />
+                        </td>
+                    </tr>
+                    <!-- END theme_libraries -->
                 </table>
             </form>
         </td>
@@ -84,7 +93,7 @@
                         </th>
                     </tr>
                     <tr class="row1">
-                        <td colspan="2">
+                        <td colspan="2" style="padding-right: 19px;">
                             <input type="hidden" name="themes" value="{THEMES_SELECTED_THEME}" />
                             <input type="hidden" name="themesPage" value="{THEMES_SELECTED_PAGENAME}" />
                             <!-- BEGIN template_content -->                             

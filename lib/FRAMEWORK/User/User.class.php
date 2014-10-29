@@ -1527,7 +1527,7 @@ class User extends User_Profile
      */
     public function store()
     {
-        global $objDatabase, $_CORELANG, $sessionObj;
+        global $objDatabase, $_CORELANG;
 
         if (!$this->validateUsername()) {
             return false;
@@ -1563,7 +1563,7 @@ class User extends User_Profile
             }
             if (!empty($this->password)) {
                 // deletes all sessions which are using this user (except the session changing the password)
-                $sessionObj->cmsSessionDestroyByUserId($this->id);
+                $_SESSION->cmsSessionDestroyByUserId($this->id);
             }
         } else {
             if ($objDatabase->Execute("
@@ -1841,13 +1841,12 @@ class User extends User_Profile
 
     public function login($backend = false)
     {
-        global $sessionObj;
 
         if ($this->loggedIn) return true;
-        if(isset($sessionObj)
-            && is_object($sessionObj)
-            && $sessionObj->userId
-            && $this->load($sessionObj->userId)
+        if(isset($_SESSION)
+            && is_object($_SESSION)
+            && $_SESSION->userId
+            && $this->load($_SESSION->userId)
             && $this->getActiveStatus()
             && $this->hasModeAccess($backend)
             && $this->updateLastActivityTime()) {
@@ -2540,8 +2539,8 @@ class User extends User_Profile
                     ++$have_digit;
                     continue;
                 }
-                if ($use_special && $have_other == 0) {
-                    $password .= substr($special, mt_rand(0, strlen($special))-1, 1);                   
+                if ($use_special && $have_other < 1 && mt_rand(0, 6) < 1) {
+                    $password .= substr($special, mt_rand(0, strlen($special))-1, 1);
                     ++$have_other;
                 }
             }

@@ -294,7 +294,8 @@
 }
 
 #fe_content.fe_outline,
-#fe_title.fe_outline {
+#fe_title.fe_outline,
+.fe_block.fe_outline {
     outline: 1px #0873bb dashed;
     *border: 1px #0873bb dashed;
     *margin: -1px;
@@ -364,74 +365,6 @@
 
 .warningbox a, #warningbox a {
     color: #DB7A0A;
-}
-
-/* jquery ui css customization */
-.ui-dialog.cxDialog {
-    position: fixed;
-    top: 0;
-    z-index: 2000000 !important;
-    border-top: 0;
-    border-right: 1px solid #0a85c8;
-    border-bottom: 1px solid #0a85c8;
-    border-left: 1px solid #0a85c8;
-    border-radius: 0;
-    text-align: center;
-    font-size: 13px;
-}
-
-.ui-dialog.noTitle .ui-dialog-titlebar {
-    display: none;
-}
-.ui-dialog .error {
-    color: #ff0000;
-}
-.ui-dialog .warning {
-    color: #DB7A0A;
-}
-.ui-dialog .info {
-    color: #3a87ad;
-}
-.ui-dialog #loading {
-    float: none;
-    margin: 0 auto;
-    width: 95px !important;
-    height: 16px !important;
-}
-.ui-dialog #loading img {
-    float: left;
-}
-.ui-dialog #loading span {
-    float: left;
-    margin: 0 0 0 5px;
-    line-height: 16px;
-}
-
-.ui-tabs {
-    position: static !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    padding: 0 !important;
-}
-.ui-tabs-nav {
-    border: 0 !important;
-    margin: 0 !important;
-}
-.ui-tabs-panel {
-    padding: 0 !important;
-}
-
-.ui-widget-content a,
-.ui-widget-content a:link,
-.ui-widget-content a:visited {
-    color: #1a74bd;
-}
-
-.ui-widget-content a:hover,
-.ui-widget-content a:focus,
-.ui-widget-content a:active {
-    color: #0b4c7a;
-    cursor: pointer;
 }
 
 #fe_state_wrapper {

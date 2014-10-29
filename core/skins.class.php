@@ -60,47 +60,10 @@ class skins
     public $_themeDir;
 
     /**
-     * Character encoding used by the XML parser
-     * @access private
-     * @var string
-     */
-    public $_xmlParserCharacterEncoding;
-
-    /**
-     * Defines the current XML element which is being parsed
-     * @access private
-     * @var array
-     */
-    public $_currentXmlElement;
-
-    /**
-     * Contains the referencies to the parent XML elements
-     * of each XML element
-     * @access private
-     * @var array
-     */
-    public $_arrParentXmlElement = array();
-
-    /**
-     * Structure with data of the XML document
-     * @access private
-     * @var array
-     */
-    public $_xmlDocument;
-
-    /**
-     * Defines the relevant XML element that
-     * will occurs multiple times in the XML document
-     * @access private
-     * @var string
-     */
-    public $_xmlElementName = '';
-
-    /**
      * Required files
      * @var array
      */
-    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html","podcast.html","blog.html","immo.html");
+    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","component.yml","forum.html","podcast.html","blog.html","immo.html");
 
     /**
      * Required directories
@@ -125,7 +88,8 @@ class skins
      * @var string
      */
     public $_parentPath = '';
-
+    
+    private $themeRepository;
 
     public $arrWebPaths;                      // array web paths
     public $getAct;                           // $_GET['act']
@@ -141,7 +105,6 @@ class skins
     {
         global  $_CORELANG, $objTemplate, $objDatabase;
 
-        $this->_xmlParserCharacterEncoding = CONTREXX_CHARSET;
         //add preview.gif to required files
         $this->filenames[] = 'images/preview.gif';
         //get path variables
@@ -163,9 +126,11 @@ class skins
 
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."skins");
         $this->oldTable = DBPREFIX."themes";
+        
+        $this->themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
         //\Cx\Lib\FileSystem\FileSystem::makeWritable($this->webPath);
     }
-
+    
 
     /**
      * checks whether this contrexx has the possibility to use multi language mode
@@ -273,6 +238,22 @@ class skins
             'TXT_THEMES_CREATE'               => $_CORELANG['TXT_CREATE'],
         ));
         $this->getDropdownContent();
+
+        // get library column
+        $theme = null;
+        if (isset($_POST['themes'])) {
+            $theme = $this->themeRepository->findOneBy(array('foldername' => $_POST['themes']));
+        }
+        if (!$theme) {
+            $theme = $this->themeRepository->getDefaultTheme();
+        }
+        $this->saveLibrarySettings($theme);
+        if ($theme->isComponent()) {
+            $this->getLibrarySettings($theme);
+        } else {
+            $objTemplate->hideBlock('theme_libraries');
+            $this->strErrMessage = sprintf($_CORELANG['TXT_THEME_NOT_COMPONENT'], $theme->getThemesname());
+        }
     }
 
     /**
@@ -341,49 +322,33 @@ class skins
                                               'CONTREXX_BASE_URL'             => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
         ));
         //create themelist
-        $themes = $this->getThemes();
-        if ($themes !== false){
-            $rowclass = 0;
-            foreach ($this->getThemes() as $theme) {
-                $this->_getXML($theme['foldername']);
+        $themes = $this->themeRepository->findAll();
+        $rowclass = 0;
+        foreach ($themes as $theme) {
+            $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme->getThemesname(), ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.urlencode($theme->getFoldername()).'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
+            $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme->getId().'" title="'.$_CORELANG['TXT_CORE_CM_ACTION_PUBLISH'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
 
-                $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme['themesname'], ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.urlencode($theme['foldername']).'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
-                $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_CORE_CM_ACTION_PUBLISH'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
-
-                $objTemplate->setVariable(array('THEME_NAME'            => $theme['themesname'],
-                                                'THEME_NAME_EXTRA'      => $theme['extra'],
-                                                'THEME_LANGUAGES'       => $theme['languages'],
-                                                'THEME_PREVIEW'         => $this->_getPreview($theme['foldername']),
-                                                'TXT_THEME_EXPORT'      => $_CORELANG['TXT_THEME_EXPORT'],
-                                                'TXT_DELETE'            => $_CORELANG['TXT_DELETE'],
-                                                'THEME_DELETE_LINK'     => (empty($theme['extra'])) ? $htmlDeleteLink : '',
-                                                'THEME_ACTIVATE_LINK'   => (empty($theme['extra'])) ? $htmlActivateLink : '',
-                                                'THEME_ID'              => $theme['id'],
-                                                'TXT_ACTIVATE_DESIGN'   => $_CORELANG['TXT_ACTIVATE_DESIGN'],
-                                                'ROW_CLASS'             => (!empty($theme['extra']) ? 'active' : (($rowclass++ % 2) ? 'row1' : 'row2')),
-                                                'THEME_XML_AUTHOR'      => $this->_xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
-                                                'THEME_XML_VERSION'     => $this->_xmlDocument['THEME']['VERSION']['cdata'],
-                                                'THEME_XML_DESCRIPTION' => $this->_xmlDocument['THEME']['DESCRIPTION']['cdata'],
-
-
-                ));
-                $objTemplate->parse('themeRow');
+            $version = $theme->getVersionNumber();
+            if (!$version) {
+                $version = '-';
             }
-        }
-    }
+            $objTemplate->setVariable(array('THEME_NAME'            => contrexx_raw2xhtml($theme->getThemesname()),
+                                            'THEME_LANGUAGES'       => $theme->getLanguages(),
+                                            'THEME_PREVIEW'         => $theme->getPreviewImage(),
+                                            'TXT_THEME_EXPORT'      => $_CORELANG['TXT_THEME_EXPORT'],
+                                            'TXT_DELETE'            => $_CORELANG['TXT_DELETE'],
+                                            'THEME_DELETE_LINK'     => !$theme->isDefault() ? $htmlDeleteLink : '',
+                                            'THEME_ACTIVATE_LINK'   => !$theme->isDefault() ? $htmlActivateLink : '',
+                                            'THEME_ID'              => $theme->getId(),
+                                            'TXT_ACTIVATE_DESIGN'   => $_CORELANG['TXT_ACTIVATE_DESIGN'],
+                                            'ROW_CLASS'             => $theme->isDefault() ? 'active' : (($rowclass++ % 2) ? 'row1' : 'row2'),
+                                            'THEME_AUTHOR'          => contrexx_raw2xhtml($theme->getPublisher()),
+                                            'THEME_VERSION'         => $version,
+                                            'THEME_DESCRIPTION'     => contrexx_raw2xhtml($theme->getDescription()),
 
-    /**
-     * check if images/preview.gif exists and return webpath
-     * return the default preview if it doesnt exists
-     * @access private
-     * @param string $themedir
-     * @return string
-     */
-    function _getPreview($themedir){
-        if (file_exists($this->path.$themedir.'/images/preview.gif')){
-            return ASCMS_THEMES_WEB_PATH . '/'.$themedir.'/images/preview.gif';
-        } else {
-            return ASCMS_ADMIN_TEMPLATE_WEB_PATH.'/images/preview.gif';
+
+            ));
+            $objTemplate->parse('themeRow');
         }
     }
 
@@ -635,7 +600,7 @@ class skins
                 $this->extractArchive($archive, $themeDirectory, $themeDirectoryFromArchive);
 
                 //create database entry
-                self::validateThemeName($themeName);
+                $this->validateThemeName($themeName);
                 $this->replaceThemeName($themeDirectoryFromArchive, $themeDirectory, $this->path . $arrDirectories[0]);
                 $this->insertSkinIntoDb($themeName, $themeDirectory);
                 $this->strOkMessage = contrexx_raw2xhtml($themeName).' ('.$themeDirectory.') '.$_CORELANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
@@ -921,7 +886,7 @@ class skins
             'TXT_SELECT_DIR'          => $_CORELANG['TXT_SELECT_DIR'],
             'TXT_CREATE'              => $_CORELANG['TXT_CREATE'],
             'TXT_FROM_TEMPLATE'       => $_CORELANG['TXT_FROM_TEMPLATE'],
-            'THEMES_TEMPLATE_MENU'    => $this->getThemesDropdown(""),
+            'THEMES_TEMPLATE_MENU'    => $this->getThemesDropdown(null, false),
             'TXT_THEMES_EDIT'         => $_CORELANG['TXT_SETTINGS_MODFIY'],
             'TXT_THEMES_CREATE'       => $_CORELANG['TXT_CREATE'],
         ));
@@ -930,28 +895,11 @@ class skins
 //      $this->newdir();
     }
 
-    private static function validateThemeName(&$themeName)
+    private function validateThemeName(&$themeName)
     {
-        global $objDatabase;
-
-        static $arrExistingThemeNames;
-
-        if (!isset($arrExistingThemeNames)) {
-            $arrExistingThemeNames = array();
-
-            $objResult = $objDatabase->Execute('SELECT themesname FROM '.DBPREFIX.'skins');
-            if ($objResult !== false) {
-                while (!$objResult->EOF) {
-                    $arrExistingThemeNames[] = $objResult->fields['themesname'];
-                    $objResult->MoveNext();
-                }
-            }
-        }
-
         $themeName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($themeName);
-
         $suffix = '';
-        while (in_array($themeName.$suffix, $arrExistingThemeNames)) {
+        while ($this->themeRepository->findOneBy(array('themesname' => $themeName.$suffix))) {
             $suffix++;
         }
 
@@ -981,7 +929,7 @@ class skins
             return;
         }
 
-        self::validateThemeName($themeName);
+        $this->validateThemeName($themeName);
 
         if (!empty($dirName) && empty($existingThemeInFilesystem)) {
 
@@ -1095,26 +1043,14 @@ class skins
      */
     function getDropdownNotInDb()
     {
-        global $objDatabase;
-        $activatedThemes = array();
-        $objResult = $objDatabase->Execute("SELECT id,foldername FROM ".DBPREFIX."skins ORDER BY id");
-        $i=0;
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $activatedThemes[$i] = $objResult->fields['foldername'];
-                $i++;
-                $objResult->MoveNext();
-            }
-        }
         $dir = ($this->path);
         $dh=opendir($dir);
         $file = readdir($dh);
         $nadm = '';
         while ($file) {
             if ($file!="." && $file!=".." && $file != "zip") {
-                if (!in_array($file, $activatedThemes)) {
-                    $selected="";
-                    $nadm .="<option value='".$file."' $selected>".$file."</option>\n";
+                if (!$this->themeRepository->findOneBy(array('foldername' => $file))) {
+                    $nadm .= "<option value='".$file."'>".$file."</option>\n";
                 }
             }
             $file = readdir($dh);
@@ -1243,20 +1179,20 @@ class skins
 
         $themesFile = isset($_POST['themesDelFileName']) ? $_POST['themesDelFileName'] : '';
         $themes = isset($_POST['themes']) ? $_POST['themes'] : '';
-        //path traversal security check
-        if (strpos(realpath($this->path.'/'.$themes.'/'.$themesFile), realpath($this->path.'/'.$themes)) !== 0) {
-            $themesFile = '';
-        }
-        $themes = str_replace(array('..','/'), '', $themes);
 
-        if (($themesFile!="") AND ($themes!="")){
-            if ($_POST['themesPage'] != $themesFile) {
-                if (\Cx\Lib\FileSystem\FileSystem::delete_file($this->path.$themes.'/'.$themesFile)) {
-                    $this->strOkMessage = $themesFile.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
-                }
-             } else {
-                $this->strErrMessage = $_CORELANG['TXT_STATUS_FILE_CURRENTLY_OPEN'];
-             }
+        if (empty($themesFile) || empty($themes)) {
+            return;
+        }
+
+        $directory = new RecursiveDirectoryIterator($this->path.$themes);
+        $iterator = new RecursiveIteratorIterator($directory);
+        $objects = new RegexIterator($iterator, '/^.+'.$themesFile.'$/i', RecursiveRegexIterator::GET_MATCH);
+
+        // iterate through all objects in the folder and search for matching files
+        foreach ($objects as $object) {
+            if (\Cx\Lib\FileSystem\FileSystem::delete_file(current($object))) {
+                $this->strOkMessage = $themesFile.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
+            }
         }
     }
 
@@ -1298,8 +1234,8 @@ class skins
             return false;
         }
 
-        $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE foldername = '".contrexx_raw2db($themes)."'");
-        if ($objResult == false) {
+        $theme = $this->themeRepository->findOneBy(array('foldername' => $themes));
+        if (!$theme) {
             $this->strErrMessage = $themes.": ".$_CORELANG['TXT_STATUS_CANNOT_DELETE'];
             return false;
         }
@@ -1318,7 +1254,7 @@ class skins
             \Env::get('em')->flush();
         }
         
-        if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."skins WHERE foldername = '".contrexx_raw2db($themes)."'") !== false) {
+        if ($this->themeRepository->remove($theme)) {
             $this->strOkMessage = $themes.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
             return true;
         }
@@ -1336,13 +1272,129 @@ class skins
         global $objTemplate;
         $themes = !empty($_REQUEST['themes']) && !stristr($_REQUEST['themes'], '..') ? contrexx_input2raw($_REQUEST['themes']) : '';
         $themesPage = !empty($_POST['themesPage']) && !stristr($_REQUEST['themes'], '..') ? contrexx_addslashes($_POST['themesPage']) : '';
+        $theme = $this->themeRepository->findOneBy(array('foldername' => $themes));
         $objTemplate->setVariable(array(
-            'THEMES_PAGES_MENU'     => $this->getFilesDropdown($themes, $themesPage),
-            'THEMES_MENU'           => $this->getThemesDropdown($themes),
-            'THEMES_PAGE_VALUE'     => $this->getFilesContent($themes, $themesPage),
-            'THEMES_PAGE_DEL_VALUE' => $this->getFilesDropdownDel($themes),
+            'THEMES_PAGES_MENU'     => $this->getFilesDropdown($theme, $themesPage),
+            'THEMES_MENU'           => $this->getThemesDropdown($theme),
+            'THEMES_PAGE_VALUE'     => $this->getFilesContent($theme, $themesPage),
+            'THEMES_PAGE_DEL_VALUE' => $this->getFilesDropdownDel($theme),
             'THEMES_MENU_DEL'       => $this->_getThemesDropdownDelete(),
         ));
+    }
+    
+    /**
+     * Save the library settings which have been done on the overview page
+     * @param \Cx\Core\View\Model\Entity\Theme $theme the template object
+     */
+    protected function saveLibrarySettings($theme)
+    {
+        global $_CORELANG;
+        // only save if the form has been fired
+        if (!isset($_POST['libraryVersion'])) return;
+        
+        $libraries = JS::getConfigurableLibraries();
+        
+        // create dependencies array with provided data from form
+        $dependencies = array();
+        foreach ($_POST['libraryVersion'] as $libraryName => $version) {
+            if (empty($version)) continue;            
+            $dependencies[$libraryName] = array(
+                'name' => $libraryName,
+                'type' => 'lib',
+                'minimumVersionNumber' => $version,
+                'maximumVersionNumber' => $version,
+            );
+        }
+        
+        $automaticallyModifiedDependencySettings = array();
+        
+        // check for dependencies of configured libraries
+        foreach ($dependencies as $dependency) {
+            $dependencyIssue = false;
+            $libraryInfo = $libraries[$dependency['name']]['versions'][$dependency['minimumVersionNumber']];
+            if (isset($libraryInfo['dependencies'])) {
+                // loop through dependencies which are required for the activated library
+                foreach ($libraryInfo['dependencies'] as $dependencyName => $dependencyVersionRegex) {
+                    
+                    // dependency not configured or needed version not matching regex
+                    if (   !isset($dependencies[$dependencyName])
+                        || !preg_match('/' . $dependencyVersionRegex . '/', $dependencies[$dependencyName]['minimumVersionNumber'])) {
+                        $dependencyIssue = true;
+                    }
+                    
+                    if ($dependencyIssue) {
+                        // find matching library version
+                        foreach ($libraries[$dependencyName]['versions'] as $version => $files) {
+                            if (preg_match('/' . $dependencyVersionRegex . '/', $version)) {
+                                $dependencies[$dependencyName] = array(
+                                    'name' => $dependencyName,
+                                    'type' => 'lib',
+                                    'minimumVersionNumber' => $version,
+                                    'maximumVersionNumber' => $version,
+                                );
+                                $automaticallyModifiedDependencySettings[] = $dependencyName;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!empty($automaticallyModifiedDependencySettings)) {
+            $this->strErrMessage = sprintf($_CORELANG['TXT_THEME_LIBRARY_AUTOMATICALLY_ADJUSTED'], implode(', ', $automaticallyModifiedDependencySettings));
+        }
+        
+        // save component.yaml file
+        $theme->setDependencies($dependencies);
+        try {
+            $this->themeRepository->saveComponentData($theme);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            $this->strErrMessage = $_CORELANG['TXT_COULD_NOT_WRITE_TO_FILE'] . ': ' . ASCMS_THEMES_PATH . '/' . $theme->getFoldername() . '/component.yml';
+        }
+    }
+    
+    /**
+     * Get the library settings column on overview page
+     * @param \Cx\Core\View\Model\Entity\Theme $theme the template object
+     */
+    protected function getLibrarySettings($theme)
+    {
+        global $objTemplate, $_CORELANG;
+        
+        $libraries = JS::getConfigurableLibraries();
+        
+        $objTemplate->setVariable(array(
+            'TXT_TEMPLATE_USED_LIBRARIES'     => $_CORELANG['TXT_TEMPLATE_USED_LIBRARIES'],
+            'TXT_SAVE'                        => $_CORELANG['TXT_SAVE'],
+            'THEMES_SELECTED_THEME'           => $theme->getFoldername(),
+        ));
+        $objTemplate->setGlobalVariable('TXT_THEME_LIBRARY_NOT_USED', $_CORELANG['TXT_THEME_LIBRARY_NOT_USED']);
+        
+        $usedLibraries = $theme->getDependencies();
+        
+        // parse available libraries as setting tab
+        $objTemplate->setCurrentBlock('theme_library');
+        foreach ($libraries as $libraryName => $libraryInfo) {
+            foreach ($libraryInfo['versions'] as $version => $files) {
+                $objTemplate->setVariable(array(
+                    'THEME_LIBRARY_NAME' => $libraryName,
+                    'THEME_LIBRARY_VERSION' => $version,
+                    'THEME_LIBRARY_VERSION_SELECTED' => $version == $usedLibraries[$libraryName][0] ? 'selected="selected"' : '', 
+                ));
+                
+                $objTemplate->parse('theme_library_version');
+            }
+            
+            if (array_key_exists($libraryName, $usedLibraries)) {
+                $objTemplate->setVariable('THEME_LIBRARY_ACTIVE_CHECKED', 'checked="checked"');
+            } else {
+                $objTemplate->setVariable('THEME_LIBRARY_VERSION_DROPDOWN_HIDDEN', 'style="display: none;"');
+            }
+            
+            $objTemplate->setVariable('THEME_LIBRARY_NAME', $libraryName);
+            $objTemplate->parseCurrentBlock();
+        }
     }
 
     /**
@@ -1351,85 +1403,63 @@ class skins
      * @param    string   $themes (optional)
      * @return   string   $atdm
      */
-    function _getDropdownActivated($themesId)
+    function _getDropdownActivated($selectedTheme)
     {
-        global $objDatabase;
-        $objResult = $objDatabase->Execute("SELECT id,themesname FROM ".DBPREFIX."skins ORDER BY id");
-        $atdm = '';
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $selected="";
-                if ($objResult->fields['id'] == intval($themesId))  $selected = "selected";
-                $atdm .="<option value='".$objResult->fields['id']."' $selected>".$objResult->fields['themesname']."</option>\n";
-                $objResult->MoveNext();
+        $themes = $this->themeRepository->findAll();
+        $selectedTheme = $this->themeRepository->findById($selectedTheme);
+        $html = '';
+        foreach ($themes as $theme) {
+            $selected = '';
+            if ($theme == $selectedTheme) {
+                $selected = 'selected="selected"';
             }
+            $html .= '<option value="'.$theme->getId().'" '.$selected.'>'.contrexx_raw2xhtml($theme->getThemesname()).'</option>';
+            $html .= "\n";
         }
-        return $atdm;
+        return $html;
     }
 
     /**
      * Gets the themes dropdown menu
-     * @access   public
-     * @global   ADONewConnection
-     * @global   array
-     * @param    string   $themes (optional)
-     * @return   string   $tdm
+     * @param    string   $selectedTheme the currently selected theme
+     * @param    boolean  $selectDefault pre select default theme if no theme is selected yet
+     * @return string $tdm the html code for the drop down
      */
-    function getThemesDropdown($themes = NULL)
+    function getThemesDropdown($selectedTheme = null, $selectDefault = true)
     {
-        global $objDatabase, $_CORELANG;
-        $themelist=array();
-        if (!isset($themes)) {
-            $themes = $this->selectTheme();
+        global $_CORELANG;
+        if (!$selectedTheme && $selectDefault) {
+            $selectedTheme = $this->themeRepository->getDefaultTheme();
         }
-        $defaultTheme = $this->selectTheme();
-        $defaultMobileTheme  = $this->getDefaultMobileTheme();
-        $defaultPrintTheme = $this->getDefaultPrintTheme();
-        $defaultPDFTheme = $this->getDefaultPDFTheme();
-        $defaultAppTheme = $this->getDefaultAppTheme();
-        $objResult = $objDatabase->Execute("SELECT id,themesname,foldername FROM ".DBPREFIX."skins ORDER BY themesname,id");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                if ($objResult->fields['foldername'] == $defaultTheme){
-                    array_unshift($themelist, $objResult->fields);
-                } elseif ($objResult->fields['foldername'] == $defaultPrintTheme){
-                    array_unshift($themelist, $objResult->fields);
-                } elseif ($objResult->fields['foldername'] == $defaultPDFTheme){
-                    array_unshift($themelist, $objResult->fields);
-                } elseif ($objResult->fields['foldername'] == $defaultAppTheme){
-                    array_unshift($themelist, $objResult->fields);
-                } else {
-                    $themelist[] = $objResult->fields;
-                }
-                $objResult->MoveNext();
-            }
-        }
-
+        
+        $themes = $this->themeRepository->findAll(array('themesname', 'id'));
+        usort($themes, array($this, 'sortThemesByDefault'));
+        
         $tdm = '';
-        foreach ($themelist as $item) {
+        foreach ($themes as $item) {
             $selected = "";
             $default = "";
             $mobilestyle = "";
             $printstyle = "";
             $pdfstyle = "";
             $appstyle = "";
-            if ($item['foldername'] == $defaultTheme){
+            if ($item->isDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB)){
                 $default = "(".$_CORELANG['TXT_DEFAULT'].")";
             }
-            if ($item['foldername'] == $defaultMobileTheme){
+            if ($item->isDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE)){
                 $mobilestyle = "(".$_CORELANG['TXT_ACTIVE_MOBILE_TEMPLATE'].")";
             }
-            if ($item['foldername'] == $defaultPrintTheme){
+            if ($item->isDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT)){
                 $printstyle = "(".$_CORELANG['TXT_THEME_PRINT'].")";
             }
-            if ($item['foldername'] == $defaultPDFTheme){
+            if ($item->isDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF)){
                 $pdfstyle = "(".$_CORELANG['TXT_THEME_PDF'].")";
             }
-            if ($item['foldername'] == $defaultAppTheme){
+            if ($item->isDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP)){
                 $appstyle = "(".$_CORELANG['TXT_APP_VIEW'].")";
             }
-            if ($themes == $item['foldername']) $selected = "selected";
-            $tdm .='<option id="'.$item['id']."\" value='".$item['foldername']."' $selected>".contrexx_stripslashes($item['themesname'])." ".$default.$mobilestyle.$printstyle.$pdfstyle.$appstyle."</option>\n";
+            if ($selectedTheme == $item) $selected = "selected";
+            $tdm .='<option id="'.$item->getId()."\" value='".$item->getFoldername()."' $selected>".contrexx_stripslashes($item->getThemesname())." ".$default.$mobilestyle.$printstyle.$pdfstyle.$appstyle."</option>\n";
         }
         return $tdm;
     }
@@ -1444,33 +1474,14 @@ class skins
      */
     function _getThemesDropdownDelete()
     {
-        global $objDatabase;
-
-        $activatedThemes = array();
-        $objResult = $objDatabase->Execute("SELECT id,themesid,print_themes_id,pdf_themes_id,mobile_themes_id,app_themes_id,is_default FROM ".DBPREFIX."languages WHERE frontend=1");
-        $i=0;
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $activatedThemes[] = $objResult->fields['themesid'];
-                $activatedThemes[] = $objResult->fields['print_themes_id'];
-                $activatedThemes[] = $objResult->fields['pdf_themes_id'];
-                $activatedThemes[] = $objResult->fields['mobile_themes_id'];
-                $activatedThemes[] = $objResult->fields['app_themes_id'];
-                $i++;
-                $objResult->MoveNext();
-            }
+        $html = '';
+        $themes = $this->themeRepository->findAll();
+        usort($themes, array($this, 'sortThemesByDefault'));
+        foreach ($themes as $theme) {
+            if ($theme->isDefault()) continue;
+            $html .= "<option value='".contrexx_raw2xhtml($theme->getFoldername())."'>".contrexx_raw2xhtml($theme->getThemesname())."</option>\n";
         }
-        $objResult = $objDatabase->Execute("SELECT id,themesname,foldername FROM ".DBPREFIX."skins ORDER BY themesname");
-        $tdm = '';
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                if (!in_array($objResult->fields['id'], $activatedThemes)) {
-                    $tdm .="<option value='".contrexx_raw2xhtml($objResult->fields['foldername'])."'>".$objResult->fields['themesname']."</option>\n";
-                }
-                $objResult->MoveNext();
-            }
-        }
-        return $tdm;
+        return $html;
     }
 
     /**
@@ -1530,13 +1541,14 @@ class skins
      * @param    string   $themesPage (optional)
      * @return   string   $fdm
      */
-    function getFilesDropdown($themes="", $themesPage="")
+    function getFilesDropdown($themes = null, $themesPage="")
     {
         global $_CORELANG;
 
-        if (!isset($themes)) {
-            $themes = $this->selectTheme();
+        if (!$themes) {
+            $themes = $this->themeRepository->getDefaultTheme();
         }
+        $themes = $themes->getFoldername();
         if (!isset($themesPage)) {
             $themesPage = "index.html";
         }
@@ -1608,33 +1620,34 @@ class skins
      * @access   public
      * @return   string   $fdmd
      */
-    function getFilesDropdownDel($themes="")
+    function getFilesDropdownDel($themes = null)
     {
         global $_CORELANG;
-        if (!isset($themes)) {
-            $themes = $this->selectTheme();
+        if (!$themes) {
+            $themes = $this->themeRepository->getDefaultTheme();
         }
+        $themes = $themes->getFoldername();
         $fdmd = "";
 
         if ($themes != "") {
             $file = $this->path.$themes;
             if (file_exists($file)) {
-                $themesPage = opendir ($file);
-                $page = readdir($themesPage);
-                while ($page) {
-                    $extension = preg_split("/\./",$page);
+                $directory = new RecursiveDirectoryIterator($file);
+                $objects = new RecursiveIteratorIterator($directory);
+
+                foreach ($objects as $name => $object) {
+                    $fileName = $object->getFileName();
+                    $extension = preg_split("/\./", $fileName);
                     $x = count($extension)-1;
                     if (in_array($extension[$x], $this->fileextensions)) {
-                        if (($page != ".") && ($page != "..") && (!in_array($page, $this->filenames))) {
-                            $fdmd .="<option value='".$page."'>".$page."</option>\n";
+                        if (($fileName != ".") && ($fileName != "..") && (!in_array($fileName, $this->filenames))) {
+                            $fdmd .="<option value='".$fileName."'>".$fileName."</option>\n";
                         }
                     }
-                    $page = readdir($themesPage);
                 }
-                closedir($themesPage);
+            } else {
+                $fdmd .="<option value='1'>".$_CORELANG['TXT_CHOOSE_DESIGN']."</option>\n";
             }
-        } else {
-            $fdmd .="<option value='1'>".$_CORELANG['TXT_CHOOSE_DESIGN']."</option>\n";
         }
         return $fdmd;
     }
@@ -1646,12 +1659,13 @@ class skins
      * @param    string   $themesPage
      * @return   string   $fileContent
      */
-    function getFilesContent($themes="", $themesPage="")
+    function getFilesContent($themes = null, $themesPage="")
     {
         global $objDatabase, $objTemplate;
-        if (!isset($themes)) {
-            $themes = $this->selectTheme();
+        if (!$themes) {
+            $themes = $this->themeRepository->getDefaultTheme();
         }
+        $themes = $themes->getFoldername();
         if (!isset($themesPage)) {
             $themesPage = "index.html";
         }        
@@ -1699,132 +1713,6 @@ class skins
     }
 
     /**
-     * if not isset themes
-     * @access   public
-     * @return   string   $themes
-     */
-    function selectTheme()
-    {
-        global $objDatabase;
-
-        $themeId = 0;
-        $objResult = $objDatabase->Execute("
-            SELECT id, themesid
-              FROM ".DBPREFIX."languages
-             WHERE is_default='true'
-             ORDER BY id"); // , is_default, print_themes_id
-        if ($objResult && !$objResult->EOF) {
-            $themeId = $objResult->fields['themesid'];
-//            $printThemeId = $objResult->fields['print_themes_id'];
-        }
-        $objResult = $objDatabase->Execute("
-            SELECT id, foldername
-              FROM ".DBPREFIX."skins
-             WHERE id=$themeId
-             ORDER BY id");
-        $themes = null;
-        if ($objResult && !$objResult->EOF) {
-            $themes = $objResult->fields['foldername'];
-        }
-        return $themes;
-    }
-
-
-    /**
-     * return the foldername of the default mobile_theme
-     * @return string $default_mobile_theme_foldername
-     */
-    function getDefaultMobileTheme()
-    {
-        global $objDatabase, $_CORELANG;
-        $objResultID = $objDatabase->SelectLimit("SELECT `mobile_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
-        if ($objResultID !== false && $objResultID->RecordCount() > 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['mobile_themes_id']." ORDER BY id", 1);
-            if ($objResult !== false && $objResult->RecordCount() > 0) {
-                return $objResult->fields['foldername'];
-            }
-        }
-        $this->strErrMessage = $_CORELANG['TXT_NO_DEFAULT_THEME'];
-        return false;
-    }
-
-
-    /**
-     * return the foldername of the default print_theme
-     * @return string $default_print_theme_foldername
-     */
-    function getDefaultPrintTheme()
-    {
-        global $objDatabase, $_CORELANG;
-        $objResultID = $objDatabase->SelectLimit("SELECT `print_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
-        if ($objResultID !== false && $objResultID->RecordCount() > 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['print_themes_id']." ORDER BY id", 1);
-            if ($objResult !== false && $objResult->RecordCount() > 0) {
-                return $objResult->fields['foldername'];
-            }
-        }
-        $this->strErrMessage = $_CORELANG['TXT_NO_DEFAULT_THEME'];
-        return false;
-    }
-
-    /**
-     * return the foldername of the default pdf_theme
-     * @return string $default_pdf_theme_foldername
-     */
-    function getDefaultPDFTheme()
-    {
-        global $objDatabase, $_CORELANG;
-        $objResultID = $objDatabase->SelectLimit("SELECT `pdf_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
-        if ($objResultID !== false && $objResultID->RecordCount() > 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['pdf_themes_id']." ORDER BY id", 1);
-            if ($objResult !== false && $objResult->RecordCount() > 0) {
-                return $objResult->fields['foldername'];
-            }
-        }
-        $this->strErrMessage = $_CORELANG['TXT_NO_DEFAULT_THEME'];
-        return false;
-    }
-
-
-    /**
-     * return the foldername of the default app_theme
-     * @return string $default_app_theme_foldername
-     */
-    function getDefaultAppTheme()
-    {
-        global $objDatabase, $_CORELANG;
-        $objResultID = $objDatabase->SelectLimit("SELECT `app_themes_id` FROM ".DBPREFIX."languages WHERE is_default='true'", 1);
-        if ($objResultID !== false && $objResultID->RecordCount() > 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT `foldername` FROM ".DBPREFIX."skins WHERE id=".$objResultID->fields['app_themes_id']." ORDER BY id", 1);
-            if ($objResult !== false && $objResult->RecordCount() > 0) {
-                return $objResult->fields['foldername'];
-            }
-        }
-        $this->strErrMessage = $_CORELANG['TXT_NO_DEFAULT_THEME'];
-        return false;
-    }
-
-
-    /**
-     * selectDefaultTheme
-     * @access   public
-     * @return   string   $themes
-     */
-    function selectDefaultTheme()
-    {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("SELECT id,themesid,is_default FROM ".DBPREFIX."languages WHERE is_default='true' ORDER BY id");
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $themeId = $objResult->fields['themesid'];
-                $objResult->MoveNext();
-            }
-        }
-        return $themeId;
-    }
-
-    /**
      * create default themepages
      * @todo    add proper error handling
      */
@@ -1848,6 +1736,8 @@ class skins
         }
 
         foreach ($this->filenames as $file) {
+            // skip component.yml, will be created later
+            if ($file == 'component.yml') continue;
             if (!file_exists($this->path.$themeDirectory.'/'.$file)) {
                 try {
                     $objFile = new \Cx\Lib\FileSystem\File($this->path.$themeDirectory.'/'.$file);
@@ -1860,6 +1750,10 @@ class skins
                 }
             }
         }
+        
+        // write component.yml file
+        // this line will create a default component.yml file
+        $this->themeRepository->convertThemeToComponent($themeDirectory);
 
         return true;
     }
@@ -1967,77 +1861,23 @@ class skins
             }
         }
     }
-
-
+    
     /**
-     * get all theme rows from the skins table
-     * @return array
+     * Sorts the themes by default value. that means,
+     * the themes which have been set as default for a theme type,
+     * they are listed first. 
+     * @param Cx\Core\View\Model\Entity\Theme $a theme 1
+     * @param Cx\Core\View\Model\Entity\Theme $b theme 2
+     * @return int
      */
-    function getThemes()
-    {
-        global $objDatabase, $_CORELANG;
-
-        $query = "SELECT id, themesname, foldername from ".DBPREFIX."skins ORDER BY themesname";
-        $objRS = $objDatabase->Execute($query);
-        if ($objRS){
-            $themes = array();
-            $defaultTheme = $this->selectTheme();
-            $defaultMobileTheme = $this->getDefaultMobileTheme();
-            $defaultPrintTheme = $this->getDefaultPrintTheme();
-            $defaultPDFTheme = $this->getDefaultPDFTheme();
-            $defaultAppTheme = $this->getDefaultAppTheme();
-            while(!$objRS->EOF){
-                $languagesWithThisTheme = '';
-                $query = '  SELECT `name`
-                            FROM '.DBPREFIX.'languages
-                            WHERE 1=1
-                            AND `frontend` = 1
-                            AND (`themesid` = '.$objRS->fields['id'].'
-                            OR `mobile_themes_id` = '.$objRS->fields['id'].'
-                            OR `print_themes_id` = '.$objRS->fields['id'].'
-                            OR `pdf_themes_id` = '.$objRS->fields['id'].'
-                            OR `app_themes_id` = '.$objRS->fields['id'].')';
-                $objRSLang = $objDatabase->Execute($query);
-                if ($objRSLang) {
-                    while(!$objRSLang->EOF){
-                        $languagesWithThisTheme .= $objRSLang->fields['name'].', ';
-                        $objRSLang->MoveNext();
-                    }
-                }
-                $languagesWithThisTheme = substr($languagesWithThisTheme, 0, -2);
-                $objRS->fields['languages'] = $languagesWithThisTheme;
-                if ($objRS->fields['foldername'] == $defaultTheme){
-                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_DEFAULT'].')';
-                    array_unshift($themes, $objRS->fields);
-                } elseif ($objRS->fields['foldername'] == $defaultMobileTheme){
-                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_ACTIVE_MOBILE_TEMPLATE'].')';
-                    array_unshift($themes, $objRS->fields);
-                } elseif ($objRS->fields['foldername'] == $defaultPrintTheme){
-                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_THEME_PRINT'].')';
-                    array_unshift($themes, $objRS->fields);
-                } elseif ($objRS->fields['foldername'] == $defaultPDFTheme) {
-                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_THEME_PDF'].')';
-                    array_unshift($themes, $objRS->fields);
-                } elseif ($objRS->fields['foldername'] == $defaultAppTheme) {
-                    $objRS->fields['extra'] = ' ('.$_CORELANG['TXT_APP_VIEW'].')';
-                    array_unshift($themes, $objRS->fields);
-                } else {
-                    $objRS->fields['extra'] = '';
-                    $themes[] = $objRS->fields;
-                }
-                $objRS->MoveNext();
-            }
-            //switch first two elements if print is first (we want default theme to be the first in the list)
-            if ($themes[0]['foldername'] == 'print'){
-                $tmp        = $themes[1];
-                $themes[1]  = $themes[0];
-                $themes[0]  = $tmp;
-            }
-            return $themes;
-        } else {
-            $this->strErrMessage = "DB error.";
-            return false;
+    public function sortThemesByDefault($a, $b) {
+        if ($a->isDefault() && $b->isDefault()) {
+            return 0;
         }
+        if ($a->isDefault() && !$b->isDefault()) {
+            return -1;
+        }
+        return 1;
     }
 
 
@@ -2056,93 +1896,4 @@ class skins
             }
         }
     }
-
-
-    /**
-     * get XML info of specified modulefolder
-     * @param string $themes
-     * @access private
-     */
-    function _getXML($themes)
-    {
-        $xmlFilePath = ASCMS_THEMES_PATH.'/'.$themes.'/info.xml';
-        $xml_parser = xml_parser_create($this->_xmlParserCharacterEncoding);
-        xml_set_object($xml_parser, $this);
-        xml_set_element_handler($xml_parser,"_xmlStartTag","_xmlEndTag");
-        xml_set_character_data_handler($xml_parser, "_xmlCharacterDataTag");
-        $documentContent = @file_get_contents($xmlFilePath);
-        xml_parse($xml_parser, $documentContent);
-        xml_parser_free($xml_parser);
-    }
-
-    /**
-     * XML parser start tag
-     * @access private
-     * @param resource $parser
-     * @param string $name
-     * @param array $attrs
-     */
-    function _xmlStartTag($parser, $name, $attrs)
-    {
-        if (isset($this->_currentXmlElement)) {
-            if (!isset($this->_currentXmlElement[$name])) {
-                $this->_currentXmlElement[$name] = array();
-                $this->_arrParentXmlElement[$name] = &$this->_currentXmlElement;
-                $this->_currentXmlElement = &$this->_currentXmlElement[$name];
-            } else {
-                if (!isset($this->_currentXmlElement[$name][0])) {
-                    $arrTmp = $this->_currentXmlElement[$name];
-                    unset($this->_currentXmlElement[$name]);// = array();
-                    $this->_currentXmlElement[$name][0] = $arrTmp;
-                }
-
-                array_push($this->_currentXmlElement[$name], array());
-                $this->_arrParentXmlElement[$name] = &$this->_currentXmlElement;
-                $this->_currentXmlElement = &$this->_currentXmlElement[$name][count($this->_currentXmlElement[$name])-1];
-            }
-
-        } else {
-            $this->_xmlDocument[$name] = array();
-            $this->_currentXmlElement = &$this->_xmlDocument[$name];
-        }
-
-        if (count($attrs)>0) {
-            foreach ($attrs as $key => $value) {
-                $this->_currentXmlElement['attrs'][$key] = $value;
-            }
-        }
-    }
-
-    /**
-     * XML parser character data tag
-     * @access private
-     * @param resource $parser
-     * @param string $cData
-     */
-    function _xmlCharacterDataTag($parser, $cData)
-    {
-        $cData = trim($cData);
-        if (!empty($cData)) {
-            if (!isset($this->_currentXmlElement['cdata'])) {
-                $this->_currentXmlElement['cdata'] = $cData;
-            } else {
-                $this->_currentXmlElement['cdata'] .= $cData;
-            }
-        }
-    }
-
-    /**
-     * XML parser end tag
-     * @access private
-     * @param resource $parser
-     * @param string $name
-     */
-    function _xmlEndTag($parser, $name)
-    {
-        $this->_currentXmlElement = &$this->_arrParentXmlElement[$name];
-        unset($this->_arrParentXmlElement[$name]);
-    }
-
 }
-
-?>

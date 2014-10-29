@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Main script for Contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -70,26 +71,6 @@ namespace Cx\Core\Core\Controller {
          * This mode is BETA at this time
          */
         const MODE_MINIMAL = 'minimal';
-        
-        /**
-         * Alternative PHP Cache extension
-         */
-        const CACHE_ENGINE_APC = 'apc';
-        
-        /**
-         * memcache(d) extension
-         */
-        const CACHE_ENGINE_MEMCACHE = 'memcache';
-        
-        /**
-         * xcache extension
-         */
-        const CACHE_ENGINE_XCACHE = 'xcache';
-        
-        /**
-         * No caching engine available
-         */
-        const CACHE_ENGINE_NONE = null;
         
         /**
          * Holds references to all currently loaded Cx instances
@@ -185,12 +166,6 @@ namespace Cx\Core\Core\Controller {
         protected $eventManager = null;
         
         /**
-         * Used cache engine
-         * @var string|null Cache engine name, null for none
-         */
-        protected $cacheEngine = self::CACHE_ENGINE_NONE;
-        
-        /**
          * This creates instances of this class
          * 
          * Normally the first instance is returned. This method is necessary
@@ -270,7 +245,7 @@ namespace Cx\Core\Core\Controller {
                  * Request is not initialized for CLI mode
                  */
                 $this->postInit();
-
+                
                 /**
                  * Since we have a valid state now, we can start executing
                  * all of the component's hook methods.
@@ -330,7 +305,7 @@ namespace Cx\Core\Core\Controller {
          * @throws \Exception If the CMS is deactivated, an exception is thrown
          */
         protected function loadConfig() {
-            global $_CONFIG, $_PATHCONFIG, $_DBCONFIG, $multiSiteInstanceOffset;
+            global $_CONFIG, $_PATHCONFIG, $_DBCONFIG;
 
             /**
              * Should we overwrite path configuration?
@@ -352,14 +327,15 @@ namespace Cx\Core\Core\Controller {
                 $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
                 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
             }
-            
+
             /**
              * User configuration settings
              *
              * This file is re-created by the CMS itself. It initializes the
              * {@link $_CONFIG[]} global array.
              */
-            $incSettingsStatus = include_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].$multiSiteInstanceOffset.'/config/settings.php';
+            $incSettingsStatus = include_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/settings.php';
+            
             @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
             
             // Set output url seperator
@@ -376,7 +352,7 @@ namespace Cx\Core\Core\Controller {
              * Set constants
              * -------------------------------------------------------------------------
              */
-            require_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/set_constants.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/set_constants.php';
 
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
@@ -390,7 +366,6 @@ namespace Cx\Core\Core\Controller {
             if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
                 $this->customizingPath = ASCMS_CUSTOMIZING_PATH;
             }
-            
         }
 
         /**
@@ -456,13 +431,13 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (!preg_match('#^' . ASCMS_PATH_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
                         break;
                     }
                     // this does not belong here:
-                    if (!preg_match('#^' . ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH . '/#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/#', $_GET['__cap'])) {
                         // do not use \CSRF::header() here, since ClassLoader is not loaded at this time
-                        header('Location: ' . ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH . '/');
+                        header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/');
                         die();
                     }
                     $mode = self::MODE_BACKEND;
@@ -470,7 +445,7 @@ namespace Cx\Core\Core\Controller {
             }
             $this->mode = $mode;
             if ($this->request) {
-                $this->request->getUrl()->setMode($this->mode);
+                $this->request->setMode($this->mode);
             }
         }
 
@@ -478,35 +453,7 @@ namespace Cx\Core\Core\Controller {
          * Early initializations. Tries to enable APC and increase RAM size
          */
         protected function preInit() {
-            global $_CONFIG, $_PATHCONFIG, $multiSiteInstanceOffset;
-
-            // check whether the instance exists or not
-            //$domain = substr($_CONFIG['domainUrl'], 2);
-            $domain = $_CONFIG['domainUrl'];
-            $hostNameParts = explode('.', $_SERVER['HTTP_HOST']);
-            $subdomain = null;
-            if (count($hostNameParts) > 2) {
-                current($hostNameParts);
-            }
-            if (!$subdomain || $subdomain == 'a' || $subdomain == 'staging' || $subdomain == 'dev') {
-                /*if ($this->getMode() == static::MODE_FRONTEND) {
-                    \header("Location: http://www." . $domain);
-                    exit;
-                }*/
-            } elseif (
-                // if these paths match, this is not an instance but a full installation
-                $_PATHCONFIG['ascms_root'] == $_PATHCONFIG['ascms_installation_root'] &&
-                $_PATHCONFIG['ascms_root_offset'] == $_PATHCONFIG['ascms_installation_offset']
-            ) {
-                // we don't want the frontend of the codebase to be accessible
-                if ($this->getMode() == static::MODE_FRONTEND) {
-                    \header("Location: http://www." . $domain . "/de/Existiert-nicht?instance=" . $subdomain);
-                    exit;
-                }
-            }
             $this->checkSystemState();
-            $this->tryToEnableCaching();
-            $this->tryToSetMemoryLimit();
             $this->adjustRequest();
         }
 
@@ -523,62 +470,6 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * This tries to enable any known caching engine
-         */
-        protected function tryToEnableCaching() {
-            // APC
-            if (extension_loaded('apc')) {
-                if (ini_get('apc.enabled')) {
-                    $this->apcEnabled = true;
-                    $this->cacheEngine = self::CACHE_ENGINE_APC;
-                } else {
-                    ini_set('apc.enabled', 1);
-                    if (ini_get('apc.enabled')) {
-                        $this->apcEnabled = true;
-                        $this->cacheEngine = self::CACHE_ENGINE_APC;
-                    }
-                }
-            
-            // Memcache
-            } else if (extension_loaded('memcache')) {
-                $memcache = new \Memcache();
-// TODO: Temporary fix for cloudrexx. Do not merge into Trunk or final product (issue might have been already solved by the new caching system) - 06/23/14 TD
-                /*if (@$memcache->connect('127.0.0.1')) {
-                    \Env::set('memcache', $memcache);
-                    $this->cacheEngine = self::CACHE_ENGINE_MEMCACHE;
-                }*/
-            }
-            
-            // XCache
-            if (
-                $this->cacheEngine == self::CACHE_ENGINE_NONE &&
-                extension_loaded('xcache') &&
-                ini_get('xcache.size') > 0
-            ) {
-                $this->cacheEngine = self::CACHE_ENGINE_XCACHE;
-            }
-
-            // Disable eAccelerator if active
-            if (extension_loaded('eaccelerator')) {
-                ini_set('eaccelerator.enable', 0);
-                ini_set('eaccelerator.optimizer', 0);
-            }
-
-            // Disable zend opcache if it is enabled
-            // If save_comments is set to TRUE, doctrine2 will not work properly.
-            // It is not possible to set a new value for this directive with php.
-            if (
-                (
-                    extension_loaded('opcache') ||
-                    extension_loaded('Zend OPcache')
-                ) &&
-                ini_get('opcache.save_comments') != 1
-            ) {
-                ini_set('opcache.enable', 0);
-            }
-        }
-
-        /**
          * This tries to set the memory limit if its lower than 32 megabytes
          */
         protected function tryToSetMemoryLimit() {
@@ -588,7 +479,12 @@ namespace Cx\Core\Core\Controller {
                 return;
             }
             $this->memoryLimit = $memoryLimit[0];
-            if ($this->apcEnabled) {
+            
+            global $objCache;
+            if (
+                $objCache->getUserCacheEngine() == \Cache::CACHE_ENGINE_APC ||
+                $objCache->getOpCacheEngine() == \Cache::CACHE_ENGINE_APC
+            ) {
                 if ($this->memoryLimit < 32) {
                     ini_set('memory_limit', '32M');
                 }
@@ -684,8 +580,8 @@ namespace Cx\Core\Core\Controller {
          * @global type $objDatabase
          * @global type $objInit 
          */
-        protected function init() { 
-            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache, $_DBCONFIG;
+        protected function init() {
+            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache;
 
             /**
              * This needs to be initialized before loading config/doctrine.php
@@ -694,12 +590,6 @@ namespace Cx\Core\Core\Controller {
              */
             require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
             $this->cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $this->customizingPath);
-
-            /**
-             * Start contrexx static cache
-             */
-            $objCache = new \Cache();
-            $objCache->startCache();
 
             /**
              * Environment repository
@@ -711,6 +601,20 @@ namespace Cx\Core\Core\Controller {
             \Env::set('ftpConfig', $_FTPCONFIG);
 
             /**
+             * Start caching with op cache, user cache and contrexx caching
+             */
+            $objCache = new \Cache();
+            if ($this->mode == self::MODE_FRONTEND) {
+                $objCache->deactivateNotUsedOpCaches();
+            } elseif (!isset($_GET['cmd']) || $_GET['cmd'] != 'settings') {
+                $objCache->deactivateNotUsedOpCaches();
+            }
+            $this->tryToSetMemoryLimit();
+            
+            // start contrexx caching
+            $objCache->startContrexxCaching();
+
+            /**
              * Include all the required files.
              * @todo Remove API.php, it should be unnecessary
              */
@@ -720,26 +624,7 @@ namespace Cx\Core\Core\Controller {
                 \CSRF::setFrontendMode();
             }
             
-            //create objects of the db
-            $objDb = new \Cx\Core\Model\Model\Entity\Db;
-            
-            //setting database configuration values to the db object
-            $objDb->setHost($_DBCONFIG['host']);
-            $objDb->setName($_DBCONFIG['database']);
-            $objDb->setTablePrefix($_DBCONFIG['tablePrefix']);
-            $objDb->setDbType($_DBCONFIG['dbType']);
-            $objDb->setCharset($_DBCONFIG['charset']);
-            $objDb->setCollation($_DBCONFIG['collation']);
-            $objDb->setTimezone($_DBCONFIG['timezone']);
-            //create objects of the dbUser
-            $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser;
-            
-            //setting database user configuration values to the dbUser object
-            $objDbUser->setName($_DBCONFIG['user']);
-            $objDbUser->setPassword($_DBCONFIG['password']);
-            
-            $cacheEngine = $this->getCacheEngine();
-            $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser, $cacheEngine); //pass these objects to the db class construct
+            $this->db = new \Cx\Core\Model\Db($this);
             $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
             $em = $this->db->getEntityManager();
@@ -755,6 +640,8 @@ namespace Cx\Core\Core\Controller {
             // TODO: Get rid of InitCMS class, merge it with this class instead
             $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::em());
             \Env::set('init', $objInit);
+            //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            //$bla->findAll();
         }
         
         /**
@@ -787,16 +674,15 @@ namespace Cx\Core\Core\Controller {
             if (!$this->request) {
                 // this makes \Env::get('Resolver')->getUrl() return a sensful result
                 $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-                $offset = ASCMS_PATH_OFFSET;
+                $offset = ASCMS_INSTANCE_OFFSET;
 
                 switch ($this->mode) {
                     case self::MODE_FRONTEND:
                     case self::MODE_BACKEND:
-                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], 
-                                                                                   \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET));
+                        $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
                         break;
                     case self::MODE_MINIMAL:
-                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], \Cx\Core\Routing\Url::fromRequest());
+                        $this->request = \Cx\Core\Routing\Url::fromRequest();
                         break;
                 }
             }
@@ -879,7 +765,7 @@ namespace Cx\Core\Core\Controller {
             switch ($no) {
                 case 1:
                     // Request URL
-                    $url = $this->request->getUrl();
+                    $url = $this->request;
                     // populate template
                     $objTemplate = $this->template;
                     // populate classloader
@@ -935,8 +821,8 @@ namespace Cx\Core\Core\Controller {
          * @todo Is this useful in CLI mode?
          */
         protected function resolve() {
-            $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest()->getUrl(), null, $this->getDb()->getEntityManager(), null, null);
-            $this->request->getUrl()->setMode($this->mode);
+            $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest(), null, $this->getDb()->getEntityManager(), null, null);
+            $this->request->setMode($this->mode);
 
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->resolvedPage = $this->resolver->resolve();
@@ -1012,6 +898,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function setPreContentLoadPlaceholders($objTemplate) {
             global $themesPages, $page_template, $_CONFIG;
+
             $objTemplate->setTemplate($themesPages['index']);
             $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
 
@@ -1063,7 +950,6 @@ namespace Cx\Core\Core\Controller {
             $this->ch->callPreContentParseHooks();
             
             $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
-            
             // This would be a postContentParseHook:
             \Message::show();
             
@@ -1091,9 +977,37 @@ namespace Cx\Core\Core\Controller {
             global $_CONFIG, $themesPages, $objCounter, $objBanner, $_CORELANG;
 
             if ($this->mode == self::MODE_BACKEND) {
+                $formattedVersion = htmlentities(
+                    $_CONFIG['coreCmsName'],
+                    ENT_QUOTES,
+                    CONTREXX_CHARSET
+                ) . ' ' .
+                htmlentities(
+                    str_replace(
+                        ' Service Pack 0',
+                        '',
+                        preg_replace(
+                            '#^(\d+\.\d+)\.(\d+)$#',
+                            '$1 Service Pack $2',
+                            $_CONFIG['coreCmsVersion'])
+                    ), 
+                    ENT_QUOTES,
+                    CONTREXX_CHARSET
+                ) . ' ' .
+                htmlentities(
+                    $_CONFIG['coreCmsEdition'],
+                    ENT_QUOTES,
+                    CONTREXX_CHARSET
+                ) . ' ' .
+                htmlentities(
+                    $_CONFIG['coreCmsStatus'],
+                    ENT_QUOTES,
+                    CONTREXX_CHARSET
+                );
                 $this->template->setGlobalVariable(array(
                     'TXT_FRONTEND'              => $_CORELANG['TXT_FRONTEND'],
                     'TXT_UPGRADE'               => $_CORELANG['TXT_UPGRADE'],
+                    'CONTREXX_VERSION'          => $formattedVersion,
                 ));
                 $this->template->setVariable(array(
                     'TXT_LOGOUT'                => $_CORELANG['TXT_LOGOUT'],
@@ -1107,7 +1021,7 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
+            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request, $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
                 'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
@@ -1146,8 +1060,8 @@ namespace Cx\Core\Core\Controller {
                 'COUNTER'                        => $objCounter->getCounterTag(),
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
                 'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
+                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request),
+                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request, true),
                 'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
@@ -1275,7 +1189,7 @@ namespace Cx\Core\Core\Controller {
                         "<link rel=\"stylesheet\" href=\"$moduleStyleFile\" type=\"text/css\" media=\"screen, projection\" />"
                     );
 
-                if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
+                if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
                     $this->cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
                     $pageTitle = $this->resolvedPage->getTitle();
                     $objPDF          = new \PDF();
@@ -1330,7 +1244,7 @@ namespace Cx\Core\Core\Controller {
 
                 echo $endcode;
 
-                $objCache->endCache($this->resolvedPage);
+                $objCache->endContrexxCaching($this->resolvedPage);
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -1479,14 +1393,6 @@ namespace Cx\Core\Core\Controller {
         }
         
         /**
-         * Returns the name of the used cache engine or null if none
-         * @return string|null Cache engine name
-         */
-        public function getCacheEngine() {
-            return $this->cacheEngine;
-        }
-        
-        /**
          * Returns the Contrexx event manager instance
          * @return \Cx\Core\Event\Controller\EventManager
          */
@@ -1512,7 +1418,7 @@ namespace Cx\Core\Core\Controller {
         public function getDb() {
             return $this->db;
         }
-
+        
         /**
          * Returns the license for this instance
          * @return \Cx\Core_Modules\License\License

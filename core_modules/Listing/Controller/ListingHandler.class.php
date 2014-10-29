@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Listing handler
  *
@@ -27,18 +28,12 @@ abstract class ListingHandler {
     public abstract function __construct();
     
     /**
-     * Handles the listing by changing parameters like limit and offset
-     *
-     * Both the params argument and the return value look like this:
-     * array(
-     *     'offset'     => {integer},   // start offset to use
-     *     'count'      => {integer},   // number of entries to show
-     *     'criteria'   => {array},     // criteria (similiar to SQLs WHERE)
-     *     'order'      => {array},     // order to sort by
-     * )
-     * @param array $params Parameters
-     * @param array $config Configuration
-     * @return array The handled parameters
+     * This method is called once for each Listing
+     * @param int $offset The limit offset for the listing
+     * @param int $count The limit count for the listing
+     * @param array $criteria Criteria to be matched by the listing
+     * @param array $order Order listing by this fields
+     * @param array $args Arguments supplied for this listing
      */
-    public abstract function handle($params, $config);
+    public abstract function handle(&$offset, &$count, &$criteria, &$order, &$args);
 }

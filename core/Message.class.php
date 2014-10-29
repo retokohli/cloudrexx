@@ -103,7 +103,7 @@ class Message
         if (empty($_SESSION['messages_stack'])) {
             $_SESSION['messages_stack'] = array();
         }
-        array_push($_SESSION['messages_stack'], $_SESSION['messages']);
+        $_SESSION['messages_stack'] = array_push($_SESSION['messages_stack']->toArray(), $_SESSION['messages']->toArray());
         self::clear();
     }
 
@@ -119,7 +119,7 @@ class Message
             self::clear();
             return;
         }
-        $_SESSION['messages'] = array_pop($_SESSION['messages_stack']);
+        $_SESSION['messages'] = array_pop($_SESSION['messages_stack']->toArray());
     }
 
 
@@ -137,14 +137,13 @@ class Message
      */
     static function add($message, $class=self::CLASS_INFO)
     {
-        global $sessionObj;
-        if (empty($sessionObj)) {
-            throw new \Exception("\Message can't be used at this point as no session has been initialized yet!");
-        }
-
         if (empty($_SESSION['messages'])) {
             $_SESSION['messages'] = array();
         }
+        if (empty($_SESSION['messages'][$class])) {
+            $_SESSION['messages'][$class] = array();
+        }
+        
         $_SESSION['messages'][$class][] = $message;
     }
 
@@ -255,7 +254,7 @@ class Message
                  || $class == self::CLASS_INFO
                     ? 'OK' : 'STATUS').
                 '_MESSAGE' =>
-                    join('<br />', $_SESSION['messages'][$class]),
+                    join('<br />', $_SESSION['messages'][$class]->toArray()),
 // Should be "MESSAGE_CLASS", see frontend version
                 'CONTENT_MESSAGE_TYPE' => $class,
             ));
@@ -294,7 +293,7 @@ class Message
             $objTemplateLocal->setVariable(array(
                 'MESSAGE_CLASS' => $class,
                 'MESSAGE_TEXT' =>
-                    join('<br />', $_SESSION['messages'][$class]),
+                    join('<br />', $_SESSION['messages'][$class]->toArray()),
             ));
             if ($objTemplateLocal->blockExists('messages')) {
                 $objTemplateLocal->parse('messages');
@@ -333,7 +332,7 @@ class Message
         if (empty($_SESSION['messages'])) return null;
         foreach (self::$message_classes as $class) {
             if (empty($_SESSION['messages'][$class])) continue;
-            return join('<br />', $_SESSION['messages'][$class]);
+            return join('<br />', $_SESSION['messages'][$class]->toArray());
         }
         return null;
     }

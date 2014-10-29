@@ -46,7 +46,7 @@
             
             tmptime = tmptime.toString()
                     .replace(/YYYY/g, t.year)
-                    .replace(/MM/g, ((t.month < 10) ? '0' : '') + t.month)
+                    .replace(/MM/g, ((t.month < 10) ? '0' : '') + (t.month + 1))
                     .replace(/DD/g, ((t.date < 10) ? '0' : '') + t.date)
                     .replace(/H/g, ((t.hour < 10) ? '0' : '') + t.hour)                   
                     .replace(/i/g, ((t.minute < 10) ? '0' : '') + t.minute);

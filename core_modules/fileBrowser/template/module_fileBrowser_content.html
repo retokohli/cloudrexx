@@ -86,7 +86,7 @@ function showPreview(fileNr, width, height) {
 <table class="adminlist">
     <!-- BEGIN content_files -->
     <tr class="{FILEBROWSER_ROW_CLASS}" {FILEBROWSER_ROW_STYLE}>
-        <td width="80%" class="col_1"><img src="{FILEBROWSER_FILE_ICON}" width="16" height="16" alt="{FILEBROWSER_FILE_NAME}" {FILEBROWSER_SPACING_STYLE} /><a href="{FILEBROWSER_FILE_PATH_CLICK}" ondblclick="{FILEBROWSER_FILE_PATH_DBLCLICK}" title="{FILEBROWSER_FILE_NAME}">{FILEBROWSER_FILE_NAME}</a></td>
+        <td width="80%" class="col_1"><a href="{FILEBROWSER_FILE_PATH_CLICK}" ondblclick="{FILEBROWSER_FILE_PATH_DBLCLICK}" title="{FILEBROWSER_FILE_NAME}"><img src="{FILEBROWSER_FILE_ICON}" width="16" height="16" alt="{FILEBROWSER_FILE_NAME}" {FILEBROWSER_SPACING_STYLE} />{FILEBROWSER_FILE_NAME}</a></td>
         <td width="10%" class="col_2">{FILEBROWSER_FILE_DIMENSION}</td>
         <td width="10%" class="col_3">{FILEBROWSER_FILESIZE}</td>
     </tr>

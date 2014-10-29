@@ -23,14 +23,13 @@ class FormUploader extends Uploader
      * @override
      */     
     public function handleRequest()
-    {        
-        global $sessionObj;
+    {
         global $_FILES;
 
         //get a writable directory
         $targetDir = '/upload_'.$this->uploadId;
-        $tempPath = $sessionObj->getTempPath();
-        $webTempPath = $sessionObj->getWebTempPath();
+        $tempPath = $_SESSION->getTempPath();
+        $webTempPath = $_SESSION->getWebTempPath();
 
 
         //make sure target directory exists
@@ -111,7 +110,7 @@ class FormUploader extends Uploader
         if($this->isBackendRequest) {
             $redirectUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=formUploaderFrameFinished&uploadId='.$this->uploadId;
         } else {
-            $url = clone \Env::get('cx')->getRequest()->getUrl();
+            $url = clone \Env::get('cx')->getRequest();
             $url->removeAllParams();
             $url->setParams(array(
                 'section' => 'upload',

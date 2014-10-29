@@ -193,7 +193,7 @@ die("MailTemplate::init(): Empty section!");
             $arrLanguageId = FWLanguage::getIdArray();
         }
         self::reset();
-        if (empty($limit)) $limit = \Cx\Core\Setting\Controller\Setting::getValue(
+        if (empty($limit)) $limit = SettingDb::getValue(
             'mailtemplate_per_page_backend');
         if (empty($limit)) $limit = 25;
         $query_from = null;
@@ -536,21 +536,10 @@ DBG::log("MailTemplate::send(): WARNING: No Template for key {$arrField['key']} 
 // Must handle any of CR, LF, CR/LF, and LF/CR!
 //                preg_replace('/[\015\012]/', "\015\012", $value);
             if ($search) {
-// we need to replace raw data with html entities for body of email
-                if ($field == 'message_html') {
-                    foreach ($search as $index => $searchTerm) {
-                        $value = str_replace($searchTerm, contrexx_raw2xhtml($replace[$index]), $value);
-                    }
-                } else {
                 $value = str_replace($search, $replace, $value);
             }
-            }
             if ($substitution) {
-                $convertToHtmlEntities = false;
-                if ($field == 'message_html') {
-                    $convertToHtmlEntities = true;
-                }
-                self::substitute($value, $substitution, $convertToHtmlEntities);
+                self::substitute($value, $substitution);
             }
             if ($strip) self::clearEmptyPlaceholders($value);
         }
@@ -707,9 +696,8 @@ DBG::log("MailTemplate::send(): INFO: Empty 'to:', falling back to config");
      *                                    by reference
      * @param   array     $substitution   The array of placeholders and values,
      *                                    by reference
-     * @param   boolean   $convertToHtmlEntities if true, converts the values to html entities
      */
-    static function substitute(&$string, &$substitution, $convertToHtmlEntities = false)
+    static function substitute(&$string, &$substitution)
     {
         if (empty($string)) return;
 //DBG::log("substitute($string, \$substitution): Entered");
@@ -730,7 +718,7 @@ DBG::log("MailTemplate::send(): INFO: Empty 'to:', falling back to config");
                     // Parse block with subarray contents (nested block)
                     foreach ($value as $value_inner) {
                         $block = $block_template;
-                        self::substitute($block, $value_inner, $convertToHtmlEntities);
+                        self::substitute($block, $value_inner);
                         $block_parsed .= $block;
 //echo("substitute(): Block parsed: ".htmlentities($block)."<br />");
                     }
@@ -740,7 +728,7 @@ DBG::log("MailTemplate::send(): INFO: Empty 'to:', falling back to config");
                     // it does not contain any placeholder present
                     // in the substitution (conditional block)
                     $block = $block_template;
-                    self::substitute($block, $substitution, $convertToHtmlEntities);
+                    self::substitute($block, $substitution);
                     if ($block != $block_template) {
                         $block_parsed = $block;
                     }
@@ -751,9 +739,6 @@ DBG::log("MailTemplate::send(): INFO: Empty 'to:', falling back to config");
                 // Cannot operate on simple placeholders with an array
                 if (is_array($value)) continue;
                 $placeholder_re = '/'.preg_quote("[$placeholder]", '/').'/i';
-                if ($convertToHtmlEntities && $placeholder != 'CHECKOUT_LOOK_FEEL_IMAGE') {
-                    $value = contrexx_raw2xhtml($value);
-                }
                 if (preg_match($placeholder_re, $string)) {
                     $string = preg_replace(
                         $placeholder_re, $value, $string);
@@ -991,26 +976,14 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         self::reset();
         return true;
     }
-
-    /**
-     * Show on adminview of the mail templates for the given section and group
-     *
-     * @param   string    $section      The section
-     * @param   string    $group        The group
-     *                                  default set to nonempty
-     * @param   string   $act           The action of the mail template
-     *                                  default set to mailtemplate_overview
-     * @return  \Cx\Core\Html\Sigma     The template object
-     */
-    static function adminView($section, $group = 'nonempty',$act='mailtemplate_overview') {
-        self::storeFromPost($section);
+    
+    
+    static function adminView($section, $group = 'nonempty') {
+        \MailTemplate::storeFromPost($section);
         if (!isset($_GET['key'])) {
-            if (!empty($_GET['delete_mailtemplate_key'])) {
-               self::deleteTemplate($section); 
-            }
-            return static::overview($section, $group, 0, false,$act);
+            return static::overview($section, $group, 0, false);
         } else {
-            return static::edit($section, '', false, $act);
+            return static::edit($section, '', false);
         }
     }
 
@@ -1025,16 +998,15 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      * @param   string    $group        The group
      * @param   integer   $limit        The optional limit for the number
      *                                  of templates to be shown
-     * @param   string   $act           The action of the mail template
-     *                                  default set to mailtemplate_overview
      * @return  \Cx\Core\Html\Sigma     The template object
      */
-    static function overview($section, $group, $limit=0, $useDefaultActs = true,$act='mailtemplate_overview')
+    static function overview($section, $group, $limit=0, $useDefaultActs = true)
     {
         global $_CORELANG;
 
         $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
+        \CSRF::add_placeholder($objTemplateLocal);
         if (!$objTemplateLocal->loadTemplateFile('mailtemplate_overview.html'))
             die("Failed to load template mailtemplate_overview.html");
         if (empty ($section) || empty ($group)) {
@@ -1043,25 +1015,22 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
             return false;
         }
         if (empty($limit)) {
-            \Cx\Core\Setting\Controller\Setting::init($section, $group);
-            $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend');
+            SettingDb::init($section, $group);
+            $limit = SettingDb::getValue('numof_mailtemplate_per_page_backend');
 // TODO: TEMPORARY
             if (is_null($limit)) {
               $limit = 25;
-              \Cx\Core\Setting\Controller\Setting::add('numof_mailtemplate_per_page_backend', $limit,
+              SettingDb::add('numof_mailtemplate_per_page_backend', $limit,
                   1001, 'text', '', $group);
             }
         }
         $uri = Html::getRelativeUri_entities();
-        $tab_index = \Cx\Core\Setting\Controller\Setting::tab_index();
+        $tab_index = SettingDb::tab_index();
         Html::replaceUriParameter($uri, 'active_tab='.$tab_index);
         Html::replaceUriParameter($uri, 'userFrontendLangId='.FRONTEND_LANG_ID);
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         Html::stripUriParam($uri, 'key');
         Html::stripUriParam($uri, 'delete_mailtemplate_key');
-// TODO: I guess that explicitly adding CSRF should not be necessary?!
-// TODO: And it doesn't seem to work like that, either?!
-        CSRF::enhanceURI($uri);
         $uri_edit = $uri_overview = $uri;
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         if ($useDefaultActs) {
@@ -1084,11 +1053,12 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         // Template titles are shown in the current language only, no need
         // (and no way either) to load them all.  Names are shown in the
         // currently active frontend language only.
+        $pagingParameterName = $section.'_'.$group;
         $arrTemplates = self::getArray(
             $section,
             FRONTEND_LANG_ID,
             $objSorting->getOrder(),
-            Paging::getPosition(),
+            Paging::getPosition($pagingParameterName),
             $limit,
             $count
         );
@@ -1098,16 +1068,20 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
           + array(
             'CORE_MAILTEMPLATE_NAME' => $objSorting->getHeaderForField('name'),
             'CORE_MAILTEMPLATE_KEY' => $objSorting->getHeaderForField('key'),
-            'CORE_MAILTEMPLATE_LANGUAGES' => $_CORELANG['TXT_CORE_MAILTEMPLATE_LANGUAGES'],
             'CORE_MAILTEMPLATE_HTML' => $objSorting->getHeaderForField('html'),
             'CORE_MAILTEMPLATE_PROTECTED' => $objSorting->getHeaderForField('protected'),
             'PAGING' => Paging::get(
                 $uri_overview, $_CORELANG['TXT_CORE_MAILTEMPLATE_PAGING'],
-                $count, $limit, true),
+                $count, $limit, true, null, $pagingParameterName),
             'URI_BASE' => $uri,
             'URI_EDIT' => $uri_edit,
             'CORE_MAILTEMPLATE_COLSPAN' => 5 + count($arrLanguageName),
         ));
+        foreach ($arrLanguageName as $language_name) {
+            $objTemplateLocal->setVariable(
+                'MAILTEMPLATE_LANGUAGE_HEADER', $language_name);
+            $objTemplateLocal->parse('core_mailtemplate_language_header');
+        }
 
         if (empty($arrTemplates)) {
             Message::information($_CORELANG['TXT_CORE_MAILTEMPLATE_WARNING_NONE']);
@@ -1115,18 +1089,9 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         }
         // Load *all* templates and languages
         self::init($section);
-
-        $langMenuEditUri = $uri_edit;
-        \Html::stripUriParam($langMenuEditUri, 'userFrontendLangId');
-        \Html::replaceUriParameter($langMenuEditUri, 'act='.$act);
         $i = 0;
         foreach ($arrTemplates as $arrTemplate) {
-            $langState = array();
-            foreach (array_keys($arrLanguageName) as $langId) {
-                if (isset(self::$arrTemplates[$langId][$arrTemplate['key']]) && self::$arrTemplates[$langId][$arrTemplate['key']]['available']) {
-                    $langState[$langId] = 'active';
-                }
-            }
+            $key = $arrTemplate['key'];
             $objTemplateLocal->setVariable(array(
                 'MAILTEMPLATE_ROWCLASS' => ++$i % 2 + 1,
                 'MAILTEMPLATE_PROTECTED' =>
@@ -1135,24 +1100,43 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                     Html::getCheckmark($arrTemplate['html']),
                 'MAILTEMPLATE_NAME' =>
                     '<a href="'.$uri_edit.
-                    '&amp;key='.urlencode($arrTemplate['key']).'">'.
+                    '&amp;key='.urlencode($key).'">'.
                       contrexx_raw2xhtml($arrTemplate['name']).
                     '</a>',
                 'MAILTEMPLATE_KEY' => $arrTemplate['key'],
-                'MAILTEMPLATE_LANGUAGES' => \Html::getLanguageIcons($langState, $langMenuEditUri.'&amp;key='.$arrTemplate['key'].'&amp;userFrontendLangId=%1$d'),
-                'MAILTEMPLATE_FUNCTIONS' => \Html::getBackendFunctions(
+                'MAILTEMPLATE_FUNCTIONS' => Html::getBackendFunctions(
                     array(
                         'copy'   => $uri_edit.'&amp;copy=1&amp;key='.$arrTemplate['key'],
                         'edit'   => $uri_edit.'&amp;key='.$arrTemplate['key'],
                         'delete' => ($arrTemplate['protected']
                           ? ''
-                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key'].'&amp;csrf='.CSRF::code()),
+                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key'].'&amp;csrf='.\CSRF::code()),
                     ),
                     array(
                         'delete' => $_CORELANG['TXT_CORE_MAILTEMPLATE_DELETE_CONFIRM'],
                     )
                 ),
             ));
+            foreach (array_keys($arrLanguageName) as $lang_id) {
+                $available =
+                    (   isset(self::$arrTemplates[$lang_id][$key])
+                     && self::$arrTemplates[$lang_id][$key]['available']);
+                $title = ($available
+                    ? $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT']
+                    : $_CORELANG['TXT_CORE_MAILTEMPLATE_NEW']);
+                $icon =
+                    '<a href="'.
+                        CONTREXX_DIRECTORY_INDEX.
+                        "?cmd=$section&amp;act=mailtemplate_edit".
+                        '&amp;key='.$key.
+                        '&amp;userFrontendLangId='.$lang_id.'"'.
+                    ' title="'.$title.'">'.
+                    '<img src="images/icons/'.
+                    ($available ? 'edit.gif' : 'add.png').'"'.
+                    ' width="16" height="16" alt="'.$title.'" border="0" /></a>';
+                $objTemplateLocal->setVariable('MAILTEMPLATE_LANGUAGE', $icon);
+                $objTemplateLocal->parse('core_mailtemplate_language_column');
+            }
             $objTemplateLocal->parse('core_mailtemplate_row');
         }
         return $objTemplateLocal;
@@ -1169,10 +1153,9 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      *                                  to be edited
      * @param   string    $key          The optional key of the mail template
      *                                  to be edited
-     * @param   string    $act          The action of the mail template
      * @return  \Cx\Core\Html\Sigma     The template object
      */
-    static function edit($section, $key='', $useDefaultActs = true,$act)
+    static function edit($section, $key='', $useDefaultActs = true)
     {
         global $_CORELANG;
 
@@ -1195,6 +1178,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         if (isset($_REQUEST['copy'])) $arrTemplate['key'] = '';
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        \CSRF::add_placeholder($objTemplate);
         if (!$objTemplate->loadTemplateFile('mailtemplate_edit.html'))
             die("Failed to load template mailtemplate_edit.html");
         $uri = Html::getRelativeUri_entities();
@@ -1202,12 +1186,11 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         $uriAppendix = '';
         if ($useDefaultActs) {
             Html::stripUriParam($uri, 'act');
-            $uriAppendix = '&amp;act='.$act;
+            $uriAppendix = '&amp;act=mailtemplate_overview';
         }
-        $tab_index = \Cx\Core\Setting\Controller\Setting::tab_index();
+        $tab_index = SettingDb::tab_index();
         Html::replaceUriParameter($uri, 'active_tab='.$tab_index);
         Html::replaceUriParameter($uri, 'userFrontendLangId='.FRONTEND_LANG_ID);
-        Html::replaceUriParameter($uri, 'act='.$act);
         $objTemplate->setGlobalVariable(
             $_CORELANG
           + array(
@@ -1218,7 +1201,6 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                 (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : ''),
             'CORE_MAILTEMPLATE_ACTIVE_TAB' => $tab_index,
             'URI_BASE' => $uri.$uriAppendix,
-            'CSRF'=>CSRF::code()
         ));
 
         $i = 0;
@@ -1262,7 +1244,7 @@ Use plain text areas instead.  See below.
                 $objTemplate->parse('core_mailtemplate_special');
                 $objTemplate->setVariable(array(
                     'MAILTEMPLATE_ROWCLASS' => (++$i % 2 + 1),
-                    'MAILTEMPLATE_SPECIAL' => new \Cx\Core\Wysiwyg\Wysiwyg($name, $value, 'full'),
+                    'MAILTEMPLATE_SPECIAL' => new \Cx\Core\Wysiwyg\Wysiwyg($name, $value, 'fullpage'),
                 ));
                 $objTemplate->touchBlock('core_mailtemplate_special');
                 $objTemplate->parse('core_mailtemplate_special');
@@ -1359,21 +1341,29 @@ Use plain text areas instead.  See below.
         }
         $to_test = contrexx_input2raw($_POST['to_test']);
         $objTemplate->setVariable('CORE_MAILTEMPLATE_TO_TEST', $to_test);
+        self::sendTestMail($section, $key, $to_test);
+        return $objTemplate;
+    }
+
+    static function sendTestMail($section, $key, $email) {
+        global $_CORELANG;
+
+        if (empty($email)) return;
+
         $sent = self::send(array(
             'section' => $section,
             'key' => $key,
-            'to' => $to_test,
+            'to' => $email,
             'do_not_strip_empty_placeholders' => true, ));
         if ($sent) {
             Message::ok(sprintf(
                 $_CORELANG['TXT_CORE_MAILTEMPLATE_KEY_SENT_SUCCESSFULLY_TO'],
-                $key, $to_test));
+                $key, $email));
         } else {
             Message::error(sprintf(
                 $_CORELANG['TXT_CORE_MAILTEMPLATE_ERROR_SENDING_KEY_TO'],
-                $key, $to_test));
+                $key, $email));
         }
-        return $objTemplate;
     }
 
 
@@ -1403,6 +1393,7 @@ Use plain text areas instead.  See below.
         if (self::store($section, $_POST)) {
 // Prevent this from being run twice
 //            unset($_POST['text_from_id']);
+            self::sendTestMail($section, $_POST['key'], contrexx_input2raw($_POST['to_test']));
             return Message::ok($_CORELANG['TXT_CORE_MAILTEMPLATE_STORED_SUCCESSFULLY']);
         }
 // Prevent this from being run twice

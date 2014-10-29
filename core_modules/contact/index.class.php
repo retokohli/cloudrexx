@@ -304,8 +304,10 @@ class Contact extends ContactLib
 
                     case 'select':
                         $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                        $inexOffset = 0;
                         if ($arrField['is_required']) {
                             $options = array_merge(array($_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']), $options);
+                            $inexOffset = 1;
                         }
                         foreach ($options as $index => $option) {
                             if (preg_match($userProfileRegExp, $option)) {
@@ -317,7 +319,7 @@ class Contact extends ContactLib
 
                             // pre-selection, based on $_POST value
                             if (!empty($_POST['contactFormField_'.$fieldId])) {
-                                if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))) {
+                                if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))+$inexOffset) {
                                     $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                                 }
                             // pre-selection, based on $_GET value
@@ -433,7 +435,7 @@ class Contact extends ContactLib
             }
         }
         $saveCrmContact = $this->arrForms[$_GET['cmd']]['saveDataInCRM'];
-
+        
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) { //form submitted
             $this->checkLegacyMode();
 
@@ -471,7 +473,7 @@ class Contact extends ContactLib
             }
             $this->setCaptcha($useCaptcha);
         }
-
+        
         $this->objTemplate->setVariable('CONTACT_JAVASCRIPT', $this->_getJsSourceCode($formId, $arrFields) . $uploaderCode);
         
         return $this->objTemplate->get();
@@ -483,16 +485,20 @@ class Contact extends ContactLib
      */
     protected function handleUniqueId() {
         global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
         
         $id = 0;
         if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
             $id = intval($_REQUEST['unique_id']);
         }
         else { //generate a new id
-            if(!isset($_SESSION['contact_last_id']))
-                $_SESSION['contact_last_id'] = 0;
-            $id = ++$_SESSION['contact_last_id'];
+            if(!isset($_SESSION['contact_last_id'])) {
+                $_SESSION['contact_last_id'] = 1;
+            } else {
+                $_SESSION['contact_last_id'] += 1;
+            }
+            
+            $id = $_SESSION['contact_last_id'];
         }
         $this->objTemplate->setVariable('CONTACT_UNIQUE_ID', $id);
         $this->submissionId = $id;
@@ -561,7 +567,7 @@ class Contact extends ContactLib
             <script type="text/javascript">
             cx.ready(function() {
                     var ef = new ExtendedFileInput({
-                            field:  jQuery('#contactFormFieldId_$fieldId'),
+                            field:  cx.jQuery('#contactFormFieldId_$fieldId'),
                             instance: '$uploaderInstanceName',
                             widget: '$uploaderWidgetName'
                     });
@@ -1585,10 +1591,10 @@ CODE;
     protected static function getTemporaryUploadPath($submissionId, $fieldId) {
         global $sessionObj;
 
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
         
-        $tempPath = $sessionObj->getTempPath();
-        $tempWebPath = $sessionObj->getWebTempPath();
+        $tempPath = $_SESSION->getTempPath();
+        $tempWebPath = $_SESSION->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new ContactException('could not get temporary session folder');
 

@@ -223,7 +223,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_ID' => $arrCategory['catId'],
                         $this->moduleLangVar.'_CATEGORY_ORDER' => $arrCategory['catOrder'],
                         $this->moduleLangVar.'_CATEGORY_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
-                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => contrexx_raw2xhtml($arrCategory['catDescription'][0]),
+                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => $arrCategory['catDescription'][0],
                         $this->moduleLangVar.'_CATEGORY_PICTURE' => $arrCategory['catPicture'],
                         $this->moduleLangVar.'_CATEGORY_NUM_ENTRIES' => $arrCategory['catNumEntries'],
                         $this->moduleLangVar.'_CATEGORY_ICON' => $spacer.$strCategoryIcon,
@@ -314,7 +314,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategory['catId'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$arrCategory['catId'].'">'.contrexx_raw2xhtml($arrCategory['catName'][0]).'</a>',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => contrexx_raw2xhtml($arrCategory['catDescription'][0]),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategory['catDescription'][0],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]).'" />',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategory['catNumEntries'],
@@ -428,7 +428,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]).'</a>',
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => contrexx_raw2xhtml($arrCategories[$intCategoryId]['catDescription'][0]),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategories[$intCategoryId]['catDescription'][0],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'.thumb" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
@@ -591,38 +591,15 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
             ");
 
             if($objUpdateAttributes !== false) {
-                $objDefaultLang = $objDatabase->Execute("
-                    SELECT
-                        `category_name` AS `name`,
-                        `category_description` AS `description`
-                    FROM
-                        ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names
-                    WHERE
-                        lang_id=".$_LANGID."
-                        AND `category_id` = '".$intId."'
-                    LIMIT
-                        1
-                ");
-
-                if ($objDefaultLang !== false) {
-                    $strOldDefaultName = $objDefaultLang->fields['name'];
-                    $strOldDefaultDescription = $objDefaultLang->fields['description'];
-                }
-
+                
                 $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names WHERE category_id='".$intId."'");
 
                 if($objInsertNames !== false) {
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                        if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']."]]";
+                        
                         $strName = $arrName[$arrLang['id']];
                         $strDescription = $arrDescription[$arrLang['id']];
-
-                        if($arrLang['id'] == $_LANGID) {
-                            if($arrName[0] != $strOldDefaultName) $strName = $arrName[0];
-                            if($arrName[$arrLang['id']] != $strOldDefaultName) $strName = $arrName[$arrLang['id']];
-
-                            if($arrDescription[0] != $strOldDefaultDescription) $strDescription = $arrDescription[0];
-                            if($arrDescription[$arrLang['id']] != $strOldDefaultDescription) $strDescription = $arrDescription[$arrLang['id']];
-                        }
 
                         if(empty($strName)) $strName = $arrName[0];
                         if(empty($strDescription)) $strDescription = $arrDescription[0];
@@ -698,13 +675,11 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                 $objSubCategoriesRS->MoveNext();
             };
         }
-
-        /*if(isset($intLevelId) && $intLevelId != 0) {
-            $whereLevel = "AND cat.entry_id == level.entry_id AND level.level_id ='$intLevelId'";
-        } else {
-            $whereLevel = '';
-        }*/
-		// TODO: what for was the assigement within the if condition just above
+        
+        $whereCategory = '';
+        if ($intCategoryId && $intCategoryId > 0) {
+            $whereCategory = " AND `rel_categories`.`category_id` = " . intval($intCategoryId);
+        }
         $objCountEntriesRS = $objDatabase->Execute("
                                                 SELECT COUNT(*) as c
                                                     FROM
@@ -716,6 +691,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                                                 WHERE
                                                     `entries`.`active` = 1
                                                 AND ((`entries`.`duration_type`=2 AND `entries`.`duration_start` <= ".time()." AND `entries`.`duration_end` >= ".time().") OR (`entries`.`duration_type`=1))
+                                                " . $whereCategory . "
                                                 GROUP BY
                                                     `rel_categories`.`category_id`");
 

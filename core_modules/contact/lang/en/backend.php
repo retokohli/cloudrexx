@@ -199,4 +199,5 @@ $_ARRAYLANG['TXT_CONTACT_FORM_CRM_FIELDS_MISSING']         = "To save data in cr
 $_ARRAYLANG['TXT_CONTACT_CSV_TOOLTIP'] = "CSV export in unicode<br /><i>(optimized for common spreadsheet programs)</i>";
 $_ARRAYLANG['TXT_CONTACT_XLS_TOOLTIP'] = "CSV export in ISO-8859-1<br /><i>(optimized for microsoft excel)</i>";
 $_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM'] = "The requests to this form are automatically transferd to the CRM as a new Contact.";
+$_ARRAYLANG['TXT_CONTACT_DATETIME'] = "Date & Time";
 ?>

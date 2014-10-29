@@ -42,7 +42,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // get current request`s parameters
-        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
+        $requestParams = $this->cx->getRequest()->getParamArray();
 
         // check whether the contrexx is in frontend mode, a content page exists and it is no pagePreview
         if (
@@ -54,20 +54,56 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // check permission
-        // if the user don't have permission to edit pages, disable the frontend editing
-        if ($this->cx->getUser()->objUser->getAdminStatus() ||
-            (
-                \Permission::checkAccess(6, 'static', true) &&
-                \Permission::checkAccess(35, 'static', true) &&
-                (
-                    !$this->cx->getPage()->isBackendProtected() ||
-                    \Permission::checkAccess($this->cx->getPage()->getId(), 'page_backend', true)
-                )
-            )
+        // if the user don't have permission to edit pages or edit blocks,
+        // disable the frontend editing
+        if ($this->userHasPermissionToEditPage() ||
+            $this->userHasPermissionToEditBlocks()
         ) {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Check the permission for editing pages
+     * 
+     * @return boolean TRUE if the user has permission to edit pages
+     */
+    protected function userHasPermissionToEditPage() {
+        return $this->cx->getUser()->objUser->getAdminStatus()  ||
+               (
+                   \Permission::checkAccess(6, 'static', true) &&
+                   \Permission::checkAccess(35, 'static', true) &&
+                   (
+                        !$this->cx->getPage()->isBackendProtected() ||
+                        \Permission::checkAccess($this->cx->getPage()->getId(), 'page_backend', true)
+                   )
+               );
+    }
+    
+    /**
+     * Check the permission to edit blocks
+     * 
+     * @return boolean TRUE if the user has permission to edit blocks
+     */
+    protected function userHasPermissionToEditBlocks() {
+        return $this->cx->getUser()->objUser->getAdminStatus() ||
+               \Permission::checkAccess(76, 'static', true);
+    }
+    
+    /**
+     * Make the block editable, add the necessary html containers
+     * for the frontend editing
+     * 
+     * @param integer $id the id of the block
+     * @param string $output the html output of the block
+     */
+    public function prepareBlock($id, &$output) {
+        if (!$this->frontendEditingIsActive() ||
+            !$this->userHasPermissionToEditBlocks()) {
+            return;
+        }
+        $output = '<div class="fe_block" id="fe_block_' . $id . '" data-id="' . $id . '" contenteditable="false">' . $output . '</div>';
     }
 
     /**
@@ -78,7 +114,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
         // Is frontend editing active?
-        if (!$this->frontendEditingIsActive()) {
+        if (!$this->frontendEditingIsActive() ||
+            !$this->userHasPermissionToEditPage()) {
             return;
         }
 

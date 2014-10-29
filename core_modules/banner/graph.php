@@ -63,7 +63,7 @@ class makeGraph
     public $graphColor = '#c8d7ee';
 
 
-    function makeGraph()
+    public function __construct()
     {
         if (isset($_GET['banner_id']) && !empty($_GET['banner_id'])) {
             $this->_makeRequestsYearsGraph(intval($_GET['banner_id']));

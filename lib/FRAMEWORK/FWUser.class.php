@@ -38,7 +38,13 @@ class FWUser extends User_Setting
      */
     public $objGroup;
 
-
+    /**
+     * Host names which are allowed to redirect on the login/logout function.
+     * eg : (http://example.com, http://www.example.com)
+     * @var array
+     */
+    public static $allowedHosts = array();
+            
     function __construct($backend = false)
     {
         parent::__construct();
@@ -83,7 +89,10 @@ class FWUser extends User_Setting
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
 
         if (isset($username) && isset($password)) {
-            if (empty($sessionObj)) $sessionObj = new cmsSession();
+            if (empty($sessionObj)) $sessionObj = cmsSession::getInstance();
+		    if (!isset($_SESSION['auth'])) {
+		        $_SESSION['auth'] = array();
+		    }
             if ($this->objUser->auth($username, $password, $this->isBackendMode(), FWCaptcha::getInstance()->check())) {
                 if ($this->isBackendMode()) {
                     $this->log();
@@ -94,8 +103,8 @@ class FWUser extends User_Setting
             $_SESSION['auth']['loginLastAuthFailed'] = 1;
             User::registerFailedLogin($username);
             $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
-            $sessionObj->cmsSessionUserUpdate();
-            $sessionObj->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
+            $_SESSION->cmsSessionUserUpdate();
+            $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         }
         return false;
     }
@@ -122,9 +131,9 @@ class FWUser extends User_Setting
      * @param mixed $objUser the user to be logged in
      */
     function loginUser($objUser) {
-        global $sessionObj, $objInit;
+        global $objInit;
 
-        $sessionObj->cmsSessionUserUpdate($objUser->getId());
+        $_SESSION->cmsSessionUserUpdate($objUser->getId());
         $objUser->registerSuccessfulLogin();
         unset($_SESSION['auth']['loginLastAuthFailed']);
         // Store frontend lang_id in cookie
@@ -148,22 +157,100 @@ class FWUser extends User_Setting
      * If no redirect parameter is present, the frontend login page is shown.
      */
     function logout()
-    {
-        $this->logoutAndDestroySession();
-
+    {        
+        
+         $this->logoutAndDestroySession();
+        
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;
+            
             CSRF::header('Location: '.(!empty($pathOffset)
                 ? $pathOffset
                 : '/'));
         } else {
-            CSRF::header('Location: '.(!empty($_REQUEST['redirect'])
-                ? urldecode($_REQUEST['redirect'])
+            $redirect = '';
+            if (!empty($_REQUEST['redirect'])) {
+                $redirect = self::getRedirectUrl($_REQUEST['redirect']);
+            }
+
+            CSRF::header('Location: '.(!empty($redirect)
+                ? $redirect
                 : CONTREXX_DIRECTORY_INDEX.'?section=login'));
         }
         exit;
     }
 
+    public static function getRedirectUrl($redirectUrl)
+    {
+        global $_CONFIG;
+        
+        $pathOffset = ASCMS_PATH_OFFSET;
+        
+        $redirect = $baseUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . (!empty($pathOffset) ? $pathOffset : '/');
+        $rawUrl   = trim(self::getRawUrL(urldecode($redirectUrl), $baseUrl));
+
+        if (
+                self::hostFromUri($baseUrl) == self::hostFromUri($rawUrl) 
+             || (!empty(self::$allowedHosts) && in_array(self::hostFromUri($rawUrl), array_map(array('FWUser', 'hostFromUri'), self::$allowedHosts)))
+           ) {            
+            $redirect = $rawUrl;
+        }
+
+        return $redirect;
+    }
+
+    /**
+     * Returns the host name from the given url
+     * www will be striped from the given url
+     * 
+     * @param string $uri url string
+     * @return string
+     */
+    public static function hostFromUri($uri)
+    {
+        extract(parse_url($uri));
+        
+        return str_ireplace('www.', '', $scheme.'://'.$host);
+    }
+
+    /**
+     * Return the Absolute URL associated of the given string.
+     *     
+     * @return string The URL     
+     */
+    public static function getRawUrL($url, $baseUrl)
+    {
+        /* return if already absolute URL */
+        if (parse_url($url, PHP_URL_SCHEME) != '') return $url;
+
+        /* queries and anchors */
+        if ($url[0]=='#' || $url[0]=='?') return $baseUrl.$url;
+
+        /* parse base URL and convert to local variables:
+           $scheme, $host, $path */
+        extract(parse_url($baseUrl));
+
+        /* remove non-directory element from path */
+        $path = preg_replace('#/[^/]*$#', '', $path);
+
+        /* destroy path if relative url points to root */
+        if ($url[0] == '/') $path = '';
+
+        /* dirty absolute URL // with port number if exists */
+        if (parse_url($baseUrl, PHP_URL_PORT) != ''){
+            $abs = "$host:".parse_url($baseUrl, PHP_URL_PORT)."$path/$url";
+        }else{
+            $abs = "$host$path/$url";
+        }
+        /* replace '//' or '/./' or '/foo/../' with '/' */
+        $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
+        for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
+
+        /* absolute URL is ready! */
+        return $scheme.'://'.$abs;        
+        
+    }
+    
     /**
      * Logs the user off and destroys the session.
      */
@@ -342,7 +429,7 @@ class FWUser extends User_Setting
 //        );
 // workaround code:
         $objUser = $this->objUser->getUsers(
-            array('email' => array('REGEXP' => '^(shop_customer_[0-9]+_[0-9]+_[0-9]-)?'.str_replace('.', '\.', $email).'$'), 'is_active' => true), null, null, null
+            array('email' => array('REGEXP' => '^(shop_customer_[0-9]+_[0-9]+_[0-9]-)?'.preg_quote($email).'$'), 'is_active' => true), null, null, null
         );
 // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         if ($objUser) {
@@ -378,9 +465,9 @@ class FWUser extends User_Setting
                 $objMail->Subject = $objUserMail->getSubject();
 
                 if ($this->isBackendMode()) {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=login&act=resetpw&email=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
                 } else {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&email=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
                 }
 
                 if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
@@ -534,7 +621,6 @@ class FWUser extends User_Setting
         global $_CORELANG;
 
         $userFilter = array(
-            'email'         => $username,
             'restore_key'      => $restoreKey,
             'restore_key_time' => array(
                 array (
@@ -544,6 +630,13 @@ class FWUser extends User_Setting
             ),
             'active'           => 1,
         );
+
+        $arrSettings = User_Setting::getSettings();
+        if ($arrSettings['use_usernames']['status']) {
+            $userFilter['username'] = $username;
+        } else {
+            $userFilter['email'] = $username;
+        }
 
         $objUser = $this->objUser->getUsers($userFilter, null, null, null, 1);
         if ($objUser) {

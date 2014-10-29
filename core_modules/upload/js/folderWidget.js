@@ -5,7 +5,7 @@ var FolderWidget = function(options) {
     var deleteUrl = options.deleteUrl; //the url used to send a delete request for a file
     var files = []; //the files in target folder
     var fieldId = options.fieldId;
-    var $ = jQuery; //jquery at $ locally
+    var $ = cx.jQuery; //jquery at $ locally
     var restrictUpload2SingleFile = Boolean(cx.variables.get('restrictUpload2SingleFile', 'upload/widget_' + id)); // whether one or mutli file upload is in use
 
     var refresh = function() {

@@ -141,7 +141,7 @@ class ImageManager
      * @param   int     $quality
      * @return  boolean
      */
-    function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90)
+    function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90, $thumb_name='')
     {
         $_objImage = new ImageManager();
         $file      = basename($file);
@@ -156,7 +156,9 @@ class ImageManager
         $thumbHeight = $tmpSize[1] * $factor;
         if (!$_objImage->loadImage($strPath.$file)) return false;
         if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
+        if (!(strlen($thumb_name) > 0)) {
         $thumb_name = self::getThumbnailFilename($file);
+        }
         if (!$_objImage->saveNewImage($strPath.$thumb_name)) return false;
         if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($strPath.$thumb_name)) return false;
         return true;
@@ -198,7 +200,10 @@ class ImageManager
         if (empty($fileNew))       $fileNew       = $file;
         if (empty($strPathNew))    $strPathNew    = $strPath;
         if (empty($strWebPathNew)) $strWebPathNew = $strWebPath;
-        $tmpSize = getimagesize($strPath.$file);
+        $tmpSize = $this->_getImageSize($strPath.$file);
+        if (!$tmpSize){
+            return false;
+        }
         // reset the ImageManager
         $this->imageCheck = 1;
         $width       = $tmpSize[0];
@@ -263,9 +268,9 @@ class ImageManager
         }
 		
         if (function_exists('imagecopyresampled')) { //resampled is gd2 only
-            imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
+            imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
         } else {
-            imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
+            imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
         }
 		
 		if ($this->newImage) {

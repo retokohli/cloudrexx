@@ -32,8 +32,8 @@ abstract class SigmaPageTree extends PageTree {
         $this->template = $template;
     }
     protected function preRender($lang) {
-        if ($this->template->placeholderExists('levels_full')) {
-            $this->rootNode = \Env::get('em')->getRepository('\Cx\Model\ContentManager\Node')->getRoot();
+        if ($this->template->placeholderExists('LEVELS_FULL') || $this->template->placeholderExists('levels_full')) {
+            $this->rootNode = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->getRoot();
         }
         $this->realPreRender($lang);
     }

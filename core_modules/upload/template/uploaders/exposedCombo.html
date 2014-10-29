@@ -6,8 +6,8 @@
 <script type="text/javascript">
 cx.ready(function() {
     var exposedCombo = new ExposedCombo({
-        starterElement: jQuery('#exposedComboUploaderStarter:first'),
-        uploaderDiv: jQuery('#exposedComboUploader_{UPLOAD_ID}:first'),
+        starterElement: cx.jQuery('#exposedComboUploaderStarter:first'),
+        uploaderDiv: cx.jQuery('#exposedComboUploader_{UPLOAD_ID}:first'),
         uploadId: {UPLOAD_ID},
         comboUploader: cx.instances.get('exposedCombo_comboUploader_{UPLOAD_ID}','uploader'),
         title: '{DIALOG_TITLE}'

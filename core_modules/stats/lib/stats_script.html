@@ -2,7 +2,7 @@
 <script type="text/javascript">
 // <![CDATA[
 (function() {//don't pollute global namespace
-	var referer = (document.referrer) ? escape(document.referrer) : '';
+	var referer = document.referrer ? encodeURI(document.referrer) : '';
 	var c = 0;
 	var v = navigator.appName;
 	if (v != 'Netscape') { c = screen.colorDepth; }
@@ -26,18 +26,16 @@
 				parameters: stats_data
 			});
 		});
-	}
-	else if (typeof jQuery != 'undefined') { // jQuery
-		jQuery(function(){
-			jQuery.get("[CORE_MODULE_URL]/stats/counter.php",
+	} else if (typeof cx != 'undefined' && typeof cx.jQuery != 'undefined') { // jQuery
+		cx.jQuery(function(){
+			cx.jQuery.get("[CORE_MODULE_URL]/stats/counter.php",
 				stats_data
 			);
 		});
-	}
-	else { // no known js framework
+	} else { // no known js framework
         var script_opener = '%3Cscript type="text/javascript" ';
         var script_closer = '%3C/script%3E';
-        document.write(unescape(script_opener) + ' src="[CORE_MODULE_URL]/stats/counter.php?mode=script&amp;referer='+referer+'&amp;pageId=[PAGEID]&amp;screen=' + screen.width + 'x' + screen.height + '&amp;color_depth=' + c + '[SEARCHTERM]" >' + unescape(script_closer));
+        document.write(decodeURI(script_opener) + ' src="[CORE_MODULE_URL]/stats/counter.php?mode=script&amp;referer=' + referer + '&amp;pageId=[PAGEID]&amp;screen=' + screen.width + 'x' + screen.height + '&amp;color_depth=' + c + '[SEARCHTERM]" >' + decodeURI(script_closer));
 	}
 })();
 // ]]>

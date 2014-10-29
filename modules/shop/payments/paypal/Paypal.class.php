@@ -101,7 +101,7 @@ class PayPal
                 'result' => '-1',
                 'order_id' => $order_id,
             ))->toString();
-        $retval = (\Cx\Core\Setting\Controller\Setting::getValue('paypal_active')
+        $retval = (SettingDb::getValue('paypal_active')
             ? '<script type="text/javascript">
 // <![CDATA[
 function go() { document.paypal.submit(); }
@@ -197,7 +197,7 @@ window.setTimeout("go()", 3000);
         }
 //DBG::log("Paypal::ipnCheck(): Made parameters: $encoded");
 // 20120530 cURL version
-        $host = (\Cx\Core\Setting\Controller\Setting::getValue('paypal_active')
+        $host = (SettingDb::getValue('paypal_active')
             ? 'www.paypal.com'
             : 'www.sandbox.paypal.com');
         $uri = 'https://'.$host.'/cgi-bin/webscr?'.$encoded;

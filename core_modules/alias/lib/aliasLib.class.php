@@ -48,14 +48,28 @@ class aliasLib
     }
 
     
-    function _getAliases($limit = null, $all = false, $legacyPages = false)
+    function _getAliases($limit = null, $all = false, $legacyPages = false, $slug = null)
     {
         $pos = !$all && isset($_GET['pos']) ? intval($_GET['pos']) : 0;
-
-        $aliases = $this->pageRepository->findBy(array(
-            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
-        ), true);
         
+        if(!$slug){
+            // show all entries
+            $aliases = $this->pageRepository->findBy(array(
+                'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
+            ), true);
+        } else {
+            // query builder for filtering entries
+            $qb = $this->pageRepository->createQueryBuilder('p');
+            $aliases = 
+                $qb->select('p')
+                ->add('where', $qb->expr()->andX(
+                    $qb->expr()->eq('p.type', ':type'),
+                    $qb->expr()->like('p.slug', ':slug')
+                ))->setParameters(array(
+                    'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
+                    'slug' => $slug,
+                ))->getQuery()->getResult();
+        }
         $i = 0;
         $pages = array();
         foreach ($aliases as $page) {
@@ -78,9 +92,9 @@ class aliasLib
     }
 
 
-    function _getAliasesCount($showLegacyPagealiases)
+    function _getAliasesCount($showLegacyPagealiases, $slug)
     {
-        return count($this->_getAliases(null, true, $showLegacyPagealiases));
+        return count($this->_getAliases(null, true, $showLegacyPagealiases, $slug));
     }
     
 
@@ -248,7 +262,6 @@ class aliasLib
         $this->em->remove($alias->getNode());
         $this->em->remove($alias);
         $this->em->flush();
-        $this->em->clear();
         return true;
     }
 }

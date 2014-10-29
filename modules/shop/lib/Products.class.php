@@ -212,8 +212,8 @@ class Products
             ($flagShowInactive
                 ? ''
                 : ' AND `product`.`active`=1
-                    AND `product`.`stock`>0
-                    AND `category`.`active`=1
+                    AND (`product`.`stock_visible`=0 OR `product`.`stock`>0)
+                    '.($category_id ? '' : 'AND `category`.`active`=1' )/*only check if active when not in category view*/.' 
                     AND (
                         `product`.`date_start` < CURRENT_DATE()
                      OR `product`.`date_start` = 0
@@ -223,9 +223,6 @@ class Products
                      OR `product`.`date_end` = 0
                     )'
             ).
-// TODO: Possibly use
-//                  AND (`product`.`stock_visible`=0 OR `product`.`stock`>0)
-// instead
             // Limit Products visible to resellers or non-resellers
             ($flagIsReseller === true
               ? ' AND `b2b`=1'
@@ -670,9 +667,9 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
                     ASCMS_SHOP_IMAGES_PATH.'/',
                     ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                     $imageName,
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'),
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality')
+                    SettingDb::getValue('thumbnail_max_width'),
+                    SettingDb::getValue('thumbnail_max_height'),
+                    SettingDb::getValue('thumbnail_quality')
                 );
                 $width  = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
@@ -1044,12 +1041,13 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
      *                                  inactive (false) Products only.
      *                                  Ignored if null.  Defaults to null
      * @param   string    $format       The optional sprintf() format
+     * @param   boolean   $showAllOptions Show all options and not only the selected
      * @return  array                   The HTML options string on success,
      *                                  null otherwise
      * @global  ADONewConnection
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getMenuoptions($selected=null, $active=null, $format='%2$s')
+    static function getMenuoptions($selected=null, $active=null, $format='%2$s', $showAllOptions = true)
     {
         global $_ARRAYLANG;
 
@@ -1057,6 +1055,12 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
             array(0 => $_ARRAYLANG['TXT_SHOP_PRODUCT_NONE']) +
             self::getNameArray($active, $format);
         if ($arrName === false) return null;
+
+        if ($selected && !$showAllOptions) {
+            $arrName = array();
+            $product = \Product::getById($selected);
+            $arrName[$product->id()] = $product->name();
+        }
         return Html::getOptions($arrName, $selected);
     }
 
@@ -1078,7 +1082,7 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
             3 => $_ARRAYLANG['TXT_SHOP_PRODUCT_SORTING_PRODUCTCODE'],
         );
         return Html::getOptions($arrAvailableOrder,
-            \Cx\Core\Setting\Controller\Setting::getValue('product_sorting'));
+            SettingDb::getValue('product_sorting'));
     }
 
 

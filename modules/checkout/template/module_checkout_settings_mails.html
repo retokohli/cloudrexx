@@ -11,14 +11,14 @@
 </style>
 <script type="text/javascript">
 /* <![CDATA[ */
-jQuery(document).ready(function() {
-    jQuery('.tabmenu a').click(function() {
-        jQuery('.tabmenu a').removeClass('active');
-        jQuery('.container').hide();
+cx.jQuery(document).ready(function() {
+    cx.jQuery('.tabmenu a').click(function() {
+        cx.jQuery('.tabmenu a').removeClass('active');
+        cx.jQuery('.container').hide();
 
-        className = jQuery(this).attr('class');
-        jQuery('.tabmenu a.'+className).addClass('active');
-        jQuery('.container.'+className).show();
+        className = cx.jQuery(this).attr('class');
+        cx.jQuery('.tabmenu a.'+className).addClass('active');
+        cx.jQuery('.container.'+className).show();
     });
 });
 /* ]]> */

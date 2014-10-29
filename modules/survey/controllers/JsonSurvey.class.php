@@ -49,14 +49,6 @@ class JsonSurvey implements JsonAdapter {
         return implode('<br />', $this->messages);
     }
     
-    /**
-     * Returns default permission as object
-     * @return Object
-     */
-    public function getDefaultPermissions() {
-        return null;
-    }
-    
     public function modifyQuestions() {        
         
         $objQuestion = new \SurveyQuestion();

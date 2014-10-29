@@ -198,6 +198,26 @@ class CalendarEvent extends CalendarLibrary
     public $description;
     
     /**
+     * Event location type 
+     * 1 => Manual Entry
+     * 2 => Refer to mediadir module
+     * 
+     * @access public
+     * @var integer
+     */
+    public $locationType;
+    
+    /**
+     * Event Host type 
+     * 1 => Manual Entry
+     * 2 => Refer to mediadir module
+     * 
+     * @access public
+     * @var integer
+     */
+    public $hostType;
+    
+    /**
      * Event place
      * 
      * @access public
@@ -474,16 +494,11 @@ class CalendarEvent extends CalendarLibrary
         
         parent::getSettings();
         
-        if($objInit->mode == 'backend') {
-            $lang_where = "";  
+        if($objInit->mode == 'backend' || $langId == null) {
+            $lang_where = "AND field.lang_id = '".intval($_LANGID)."' ";
         } else {
-            if($langId == null) {  
-                $lang_where = "AND field.lang_id = '".intval($_LANGID)."' ";   
-            } else {
-                $lang_where = "AND field.lang_id = '".intval($langId)."' ";   
-            }                                 
-        }                                                                  
-        
+            $lang_where = "AND field.lang_id = '".intval($langId)."' ";                             
+        }
 
         $query = "SELECT event.id AS id,
                          event.type AS type,
@@ -506,6 +521,7 @@ class CalendarEvent extends CalendarLibrary
                          event.pic AS pic,
                          event.attach AS attach,
                          event.place_mediadir_id AS place_mediadir_id,
+                         event.host_mediadir_id AS host_mediadir_id,
                          event.priority AS priority,
                          event.catid AS catid,
                          event.status AS status,
@@ -534,9 +550,11 @@ class CalendarEvent extends CalendarLibrary
                          event.series_pattern_type AS series_pattern_type,
                          event.series_pattern_dourance_type AS series_pattern_dourance_type,
                          event.series_pattern_end AS series_pattern_end,
+                         event.series_pattern_end_date AS series_pattern_end_date,
                          event.series_pattern_begin AS series_pattern_begin,
                          event.series_pattern_exceptions AS series_pattern_exceptions,
                          event.all_day,
+                         event.location_type AS location_type,
                          event.place AS place, 
                          event.place_street AS place_street, 
                          event.place_zip AS place_zip, 
@@ -544,10 +562,12 @@ class CalendarEvent extends CalendarLibrary
                          event.place_country AS place_country, 
                          event.place_link AS place_link, 
                          event.place_map AS place_map, 
+                         event.host_type AS host_type,
                          event.org_name AS org_name, 
                          event.org_street AS org_street, 
                          event.org_zip AS org_zip, 
                          event.org_city AS org_city, 
+                         event.org_country AS org_country, 
                          event.org_link AS org_link, 
                          event.org_email AS org_email, 
                          field.title AS title,
@@ -556,12 +576,12 @@ class CalendarEvent extends CalendarLibrary
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event,
                          ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field
                    WHERE event.id = '".intval($eventId)."'  
-                     AND (event.id = field.event_id ".$lang_where.")                                           
+                     AND (event.id = field.event_id ".$lang_where.")                                          
                    LIMIT 1";
-                                            
+
         
         $objResult = $objDatabase->Execute($query);  
-        
+
         if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 2) {
             if($objResult->RecordCount() == 0) {
                 
@@ -591,8 +611,8 @@ class CalendarEvent extends CalendarLibrary
                 $this->pic = htmlentities($objResult->fields['pic'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->attach = htmlentities($objResult->fields['attach'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->author = htmlentities($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET);
-                $this->startDate = intval($objResult->fields['startdate']);
-                $this->endDate = intval($objResult->fields['enddate']);
+                $this->startDate = strtotime($objResult->fields['startdate']);
+                $this->endDate = strtotime($objResult->fields['enddate']);
                 $this->useCustomDateDisplay = intval($objResult->fields['useCustomDateDisplay']);
                 $this->showStartDateList = intval($objResult->fields['showStartDateList']);
                 $this->showEndDateList = intval($objResult->fields['showEndDateList']);
@@ -607,13 +627,15 @@ class CalendarEvent extends CalendarLibrary
                 $this->all_day  = intval($objResult->fields['all_day']);
                 $this->confirmed = intval($objResult->fields['confirmed']);
                 $this->invitationSent = intval($objResult->fields['invitation_sent']);
-                $this->invitationTemplate = (int) $objResult->fields['invitation_email_template'];
+                $this->invitationTemplate = json_decode($objResult->fields['invitation_email_template'], true);
                 $this->access = intval($objResult->fields['access']);
                 $this->price = intval($objResult->fields['price']);
                 $this->link = htmlentities(stripslashes($objResult->fields['link']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->priority = intval($objResult->fields['priority']);
                 $this->description = $objResult->fields['description'];
                 
+                $this->locationType = (int) $objResult->fields['location_type'];                
+                $this->place_mediadir_id = (int) $objResult->fields['place_mediadir_id'];                
                 $this->place        = htmlentities(stripslashes($objResult->fields['place']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_street = htmlentities(stripslashes($objResult->fields['place_street']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_zip    = htmlentities(stripslashes($objResult->fields['place_zip']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -621,21 +643,16 @@ class CalendarEvent extends CalendarLibrary
                 $this->place_country = htmlentities(stripslashes($objResult->fields['place_country']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_link   = contrexx_raw2xhtml($objResult->fields['place_link']);
                 $this->place_map    = contrexx_raw2xhtml($objResult->fields['place_map']);
+                $this->hostType = (int) $objResult->fields['host_type'];
+                $this->host_mediadir_id = (int) $objResult->fields['host_mediadir_id'];
                 $this->org_name     = contrexx_raw2xhtml($objResult->fields['org_name']);
                 $this->org_street   = contrexx_raw2xhtml($objResult->fields['org_street']);
                 $this->org_zip      = contrexx_raw2xhtml($objResult->fields['org_zip']);
                 $this->org_city     = contrexx_raw2xhtml($objResult->fields['org_city']);
+                $this->org_country  = contrexx_raw2xhtml($objResult->fields['org_country']);
                 $this->org_link     = contrexx_raw2xhtml($objResult->fields['org_link']);
                 $this->org_email    = contrexx_raw2xhtml($objResult->fields['org_email']);
-                
-                /* if($this->arrSettings['placeData'] == 1) {
-                    $objMediadirEntry = new mediaDirectoryEntry();
-                    $objMediadirEntry->getEntries(intval($objResult->fields['place_mediadir_id'])); 
-                    $this->place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objResult->fields['place_mediadir_id']).'">'.$objMediadirEntry->arrEntries[$objResult->fields['place_mediadir_id']]['entryFields'][0].'</a>';   
-                } else { */
-                    //$this->place = htmlentities(stripslashes($objResult->fields['place']), ENT_QUOTES, CONTREXX_CHARSET);     
-                /* } */
-                
+                                
                 $this->showIn = htmlentities($objResult->fields['show_in'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->availableLang = intval($langId);
                 $this->status = intval($objResult->fields['status']);
@@ -654,8 +671,9 @@ class CalendarEvent extends CalendarLibrary
                     $this->seriesData['seriesPatternType'] = intval($objResult->fields['series_pattern_type']); 
                     $this->seriesData['seriesPatternDouranceType'] = intval($objResult->fields['series_pattern_dourance_type']); 
                     $this->seriesData['seriesPatternEnd'] = intval($objResult->fields['series_pattern_end']); 
+                    $this->seriesData['seriesPatternEndDate'] = strtotime($objResult->fields['series_pattern_end_date']); 
                     $this->seriesData['seriesPatternBegin'] = intval($objResult->fields['series_pattern_begin']); 
-                    $this->seriesData['seriesPatternExceptions'] = explode(",", $objResult->fields['series_pattern_exceptions']);
+                    $this->seriesData['seriesPatternExceptions'] = array_map('strtotime', (array) explode(",", $objResult->fields['series_pattern_exceptions']));
                 }    
                   
                 $this->invitedGroups = explode(',', $objResult->fields['invited_groups']);     
@@ -664,7 +682,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->registrationForm = intval($objResult->fields['registration_form']);  
                 $this->numSubscriber = intval($objResult->fields['registration_num']); 
                 $this->notificationTo = htmlentities($objResult->fields['registration_notification'], ENT_QUOTES, CONTREXX_CHARSET);
-                $this->emailTemplate = intval($objResult->fields['email_template']);
+                $this->emailTemplate = json_decode($objResult->fields['email_template'], true);
                 $this->ticketSales = intval($objResult->fields['ticket_sales']);
                 $this->arrNumSeating = json_decode($objResult->fields['num_seating']);
                 $this->numSeating = implode(',', $this->arrNumSeating);
@@ -696,7 +714,7 @@ class CalendarEvent extends CalendarLibrary
                         $objCountRegistration->MoveNext();
                     }
                 }
-
+                                
                 $queryRegistrations = '
                     SELECT `v`.`value` AS `reserved_seating`
                     FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
@@ -808,10 +826,10 @@ class CalendarEvent extends CalendarLibrary
         }
         
         //event data
-        $id            = isset($data['id']) ? intval($data['id']) : 0;
+        $id            = isset($data['copy']) && !empty($data['copy']) ? 0 : (isset($data['id']) ? intval($data['id']) : 0);
         $type          = isset($data['type']) ? intval($data['type']) : 0;
-        $startDate     = parent::getDateTimestamp($startDate, intval($startHour), intval($startMin));
-        $endDate       = parent::getDateTimestamp($endDate, intval($endHour), intval($endMin));
+        $startDate     = date("Y-m-d H:i:s", parent::getDateTimestamp($startDate, intval($startHour), intval($startMin)));
+        $endDate       = date("Y-m-d H:i:s", parent::getDateTimestamp($endDate, intval($endHour), intval($endMin)));
         $google        = isset($data['map'][$_LANGID]) ? intval($data['map'][$_LANGID]) : 0;
         $allDay        = isset($data['all_day']) ? 1 : 0;
         $convertBBCode = ($objInit->mode == 'frontend' && empty($id));
@@ -875,7 +893,8 @@ class CalendarEvent extends CalendarLibrary
                 
         $access                    = isset($data['access']) ? intval($data['access']) : 0;
         $priority                  = isset($data['priority']) ? intval($data['priority']) : 0;
-        $placeMediadir             = isset($data['placeMediadir'][$_LANGID]) ? intval($data['placeMediadir'][$_LANGID]) : 0;
+        $placeMediadir             = isset($data['placeMediadir']) ? intval($data['placeMediadir']) : 0;
+        $hostMediadir              = isset($data['hostMediadir']) ? intval($data['hostMediadir']) : 0;
         $price                     = isset($data['price']) ? contrexx_addslashes(contrexx_strip_tags($data['price'])) : 0;
         $link                      = isset($data['link']) ? contrexx_addslashes(contrexx_strip_tags($data['link'])) : '';
         $pic                       = isset($data['picture']) ? contrexx_addslashes(contrexx_strip_tags($data['picture'])) : '';
@@ -885,15 +904,17 @@ class CalendarEvent extends CalendarLibrary
         $invited_groups            = isset($data['selectedGroups']) ? join(',', $data['selectedGroups']) : ''; 
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';   
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;        
-        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? intval($data['invitationEmailTemplate']) : 0;
+        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? contrexx_input2db($data['invitationEmailTemplate']) : 0;        
         $registration              = isset($data['registration']) ? intval($data['registration']) : 0;      
         $registration_form         = isset($data['registrationForm']) ? intval($data['registrationForm']) : 0;      
         $registration_num          = isset($data['numSubscriber']) ? intval($data['numSubscriber']) : 0;      
         $registration_notification = isset($data['notificationTo']) ? contrexx_addslashes(contrexx_strip_tags($data['notificationTo'])) : '';
-        $email_template            = isset($data['emailTemplate']) ? intval($data['emailTemplate']) : 0;
+        $email_template            = isset($data['emailTemplate']) ? contrexx_input2db($data['emailTemplate']) : 0;
         $ticket_sales              = isset($data['ticketSales']) ? intval($data['ticketSales']) : 0;
         $num_seating               = isset($data['numSeating']) ? json_encode(explode(',', $data['numSeating'])) : '';
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
+        $locationType              = isset($data['eventLocationType']) ? (int) $data['eventLocationType'] : $this->arrSettings['placeData'];
+        $hostType                  = isset($data['eventHostType']) ? (int) $data['eventHostType'] : $this->arrSettings['placeDataHost'];
         $place                     = isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '';
         $street                    = isset($data['street']) ? contrexx_input2db(contrexx_strip_tags($data['street'])) : '';
         $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
@@ -925,6 +946,7 @@ class CalendarEvent extends CalendarLibrary
         $orgStreet = isset($data['organizerStreet']) ? contrexx_input2db($data['organizerStreet']) : '';
         $orgZip    = isset($data['organizerZip']) ? contrexx_input2db($data['organizerZip']) : '';
         $orgCity   = isset($data['organizerCity']) ? contrexx_input2db($data['organizerCity']) : '';
+        $orgCountry= isset($data['organizerCountry']) ? contrexx_input2db($data['organizerCountry']) : '';
         $orgLink   = isset($data['organizerLink']) ? contrexx_input2db($data['organizerLink']) : '';
         $orgEmail  = isset($data['organizerEmail']) ? contrexx_input2db($data['organizerEmail']) : '';
         if (!empty($orgLink)) {
@@ -989,9 +1011,9 @@ class CalendarEvent extends CalendarLibrary
         if($seriesStatus == 1) {
             if(!empty($data['seriesExeptions'])) {
                 $exeptions = array();
-                
+                                
                 foreach($data['seriesExeptions'] as $key => $exeptionDate)  {
-                    $exeptions[] = parent::getDateTimestamp($exeptionDate, 0, 0) ;  
+                    $exeptions[] = date("Y-m-d", parent::getDateTimestamp($exeptionDate, 23, 59));  
                 }  
                 
                 sort($exeptions);
@@ -1060,8 +1082,7 @@ class CalendarEvent extends CalendarLibrary
                 break;
             }
                 
-            $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
-            
+            $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;                        
             switch($seriesPatternDouranceType) {
                 case 1:
                     $seriesPatternEnd   = 0;
@@ -1070,7 +1091,7 @@ class CalendarEvent extends CalendarLibrary
                     $seriesPatternEnd   = isset($data['seriesDouranceEvents']) ? intval($data['seriesDouranceEvents']) : 0;
                 break;
                 case 3:
-                    $seriesPatternEnd   = parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0) ;    
+                    $seriesPatternEndDate = date("Y-m-d H:i:s", parent::getDateTimestamp($data['seriesDouranceDate'], 23, 59));    
                 break;
             }
         }
@@ -1099,15 +1120,16 @@ class CalendarEvent extends CalendarLibrary
             'catid'                         => $catId,
             'attach'                        => $attach,
             'place_mediadir_id'             => $placeMediadir,
+            'host_mediadir_id'              => $hostMediadir,            
             'show_in'                       => $showIn,
             'invited_groups'                => $invited_groups,             
             'invited_mails'                 => $invited_mails,
-            'invitation_email_template'     => $invitationTemplate,
+            'invitation_email_template'     => json_encode($invitationTemplate),
             'registration'                  => $registration, 
             'registration_form'             => $registration_form, 
             'registration_num'              => $registration_num, 
             'registration_notification'     => $registration_notification,
-            'email_template'                => $email_template,
+            'email_template'                => json_encode($email_template),
             'ticket_sales'                  => $ticket_sales,
             'num_seating'                   => $num_seating,            
             'series_status'                 => $seriesStatus,
@@ -1120,8 +1142,11 @@ class CalendarEvent extends CalendarLibrary
             'series_pattern_type'           => $seriesPatternType,
             'series_pattern_dourance_type'  => $seriesPatternDouranceType,
             'series_pattern_end'            => $seriesPatternEnd,
+            'series_pattern_end_date'       => $seriesPatternEndDate,
             'series_pattern_exceptions'     => $seriesExeptions,
             'all_day'                       => $allDay,
+            'location_type'                 => $locationType,
+            'host_type'                     => $hostType,
             'place'                         => $place,
             'place_id'                      => 0,
             'place_street'                  => $street,
@@ -1134,6 +1159,7 @@ class CalendarEvent extends CalendarLibrary
             'org_street'                    => $orgStreet,
             'org_zip'                       => $orgZip,
             'org_city'                      => $orgCity,
+            'org_country'                   => $orgCountry,
             'org_link'                      => $orgLink,
             'org_email'                     => $orgEmail,
             'invitation_sent'               => $update_invitation_sent ? 1 : 0,
@@ -1228,10 +1254,141 @@ class CalendarEvent extends CalendarLibrary
             
         if($send_invitation == 1) {    
              $objMailManager = new CalendarMailManager();    
-             $objMailManager->sendMail(intval($id), CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
+             foreach ($invitationTemplate as $templateId) {
+                 $objMailManager->sendMail(intval($id), CalendarMailManager::MAIL_INVITATION, null, $templateId);
+             }
         }
         
         return true;
+    }
+    
+    function loadEventFromPost($data)
+    {
+        list($startDate, $strStartTime) = explode(' ', $data['startDate']);
+        list($startHour, $startMin)     = explode(':', $strStartTime);
+        
+        list($endDate, $strEndTime)     = explode(' ', $data['endDate']);
+        list($endHour, $endMin)         = explode(':', $strEndTime);
+        
+        list($startHour, $startMin) = array(0, 0);
+        list($endHour, $endMin)     = array(0, 0);
+        
+        
+        //event data        
+        $startDate     = parent::getDateTimestamp($startDate, intval($startHour), intval($startMin));
+        $endDate       = parent::getDateTimestamp($endDate, intval($endHour), intval($endMin));
+        
+        $this->startDate = $startDate;
+        $this->endDate   = $endDate;
+        
+        //series pattern
+        $seriesStatus = isset($data['seriesStatus']) ? intval($data['seriesStatus']) : 0;
+        $seriesType   = isset($data['seriesType']) ? intval($data['seriesType']) : 0;
+        
+        $seriesPatternCount             = 0;
+        $seriesPatternWeekday           = 0;
+        $seriesPatternDay               = 0;
+        $seriesPatternWeek              = 0;
+        $seriesPatternMonth             = 0;
+        $seriesPatternType              = 0;
+        $seriesPatternDouranceType      = 0;
+        $seriesPatternEnd               = 0;
+        $seriesExeptions = '';
+        
+        if($seriesStatus == 1) {
+        
+            switch($seriesType) {
+                case 1;
+                    if ($seriesStatus == 1) {
+                        $seriesPatternType          = isset($data['seriesDaily']) ? intval($data['seriesDaily']) : 0;
+                        if($seriesPatternType == 1) {
+                            $seriesPatternWeekday   = 0;
+                            $seriesPatternDay       = isset($data['seriesDailyDays']) ? intval($data['seriesDailyDays']) : 0;
+                        } else {
+                            $seriesPatternWeekday   = "1111100";
+                            $seriesPatternDay       = 0;
+                        }
+
+                        $seriesPatternWeek          = 0;
+                        $seriesPatternMonth         = 0;
+                        $seriesPatternCount         = 0;
+                    }
+                break;
+                case 2;
+                    if ($seriesStatus == 1) {
+                        $seriesPatternWeek          = isset($data['seriesWeeklyWeeks']) ? intval($data['seriesWeeklyWeeks']) : 0;
+
+                        $weekdayPattern = '';
+                        for($i=1; $i <= 7; $i++) {
+                            if (isset($data['seriesWeeklyDays'][$i])) {
+                                $weekdayPattern .= "1";
+                            } else {
+                                $weekdayPattern .= "0";
+                            }
+                        }
+                        
+                        // To DO: not correct to set day to monday
+                        $seriesPatternWeekday       = (int) $weekdayPattern == 0 ? '1000000' : $weekdayPattern;
+
+                        $seriesPatternCount         = 0;
+                        $seriesPatternDay           = 0;
+                        $seriesPatternMonth         = 0;
+                        $seriesPatternType          = 0;
+                    }
+                break;
+                case 3;
+                    if ($seriesStatus == 1) {
+                        $seriesPatternType          = isset($data['seriesMonthly']) ? intval($data['seriesMonthly']) : 0;
+                        if($seriesPatternType == 1) {
+                            $seriesPatternMonth     = isset($data['seriesMonthlyMonth_1']) ? intval($data['seriesMonthlyMonth_1']) : 0;
+                            $seriesPatternDay       = isset($data['seriesMonthlyDay']) ? intval($data['seriesMonthlyDay']) : 0;
+                            $seriesPatternWeekday   = 0;
+                        } else {
+                            $seriesPatternCount     = isset($data['seriesMonthlyDayCount']) ? intval($data['seriesMonthlyDayCount']) : 0;
+                            $seriesPatternMonth     = isset($data['seriesMonthlyMonth_2']) ? intval($data['seriesMonthlyMonth_2']) : 0;
+                            
+                            if ($seriesPatternMonth < 1) {
+                                // the increment must be at least once a month, otherwise we will end up in a endless loop in the presence
+                                $seriesPatternMonth = 1;
+                            }
+                            $seriesPatternWeekday   = isset($data['seriesMonthlyWeekday']) ? $data['seriesMonthlyWeekday'] : '';
+                            $seriesPatternDay       = 0;
+                        }
+
+                        $seriesPatternWeek           = 0;
+                    }
+                break;
+            }
+                
+            $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
+            $seriesPatternEndDate = '';
+            switch($seriesPatternDouranceType) {
+                case 1:
+                    $seriesPatternEnd   = 0;
+                break;
+                case 2:
+                    $seriesPatternEnd   = isset($data['seriesDouranceEvents']) ? intval($data['seriesDouranceEvents']) : 0;
+                break;
+                case 3:
+                    $seriesPatternEndDate = parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0) ;    
+                break;
+            }
+        }
+        
+        $this->seriesData['seriesPatternCount'] = intval($seriesPatternCount); 
+        $this->seriesData['seriesType'] = intval($seriesType); 
+        $this->seriesData['seriesPatternCount'] = intval($seriesPatternCount); 
+        $this->seriesData['seriesPatternWeekday'] = htmlentities($seriesPatternWeekday, ENT_QUOTES, CONTREXX_CHARSET);     
+        $this->seriesData['seriesPatternDay'] = intval($seriesPatternDay); 
+        $this->seriesData['seriesPatternWeek'] = intval($seriesPatternWeek); 
+        $this->seriesData['seriesPatternMonth'] = intval($seriesPatternMonth); 
+        $this->seriesData['seriesPatternType'] = intval($seriesPatternType); 
+        $this->seriesData['seriesPatternDouranceType'] = intval($seriesPatternDouranceType); 
+        $this->seriesData['seriesPatternEnd'] = intval($seriesPatternEnd); 
+        $this->seriesData['seriesPatternEndDate'] = intval($seriesPatternEndDate); 
+        $this->seriesData['seriesPatternBegin'] = 0; 
+        $this->seriesData['seriesPatternExceptions'] = '';
+        
     }
     
     /**
@@ -1491,5 +1648,146 @@ class CalendarEvent extends CalendarLibrary
         
         return $query;
     }
+
+    /**
+     * Loads the location fields from the selected media directory entry
+     * 
+     * @param integer $intMediaDirId  media directory Entry id
+     * @param string  $type           place type 
+     *                                availble options are place or host
+     * @return null   it loads the place values based on the media directory Entry id and type
+     */    
+    function loadPlaceFromMediadir($intMediaDirId = 0, $type = 'place')
+    {
+        $place         = '';
+        $place_street  = '';
+        $place_zip     = '';
+        $place_city    = '';
+        $place_country = '';        
+                
+        if (!empty($intMediaDirId)) {
+            $objMediadirEntry = new mediaDirectoryEntry();
+            $objMediadirEntry->getEntries(intval($intMediaDirId)); 
+            //get inputfield object                    
+            $objInputfields = new mediaDirectoryInputfield($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'],false,$objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
+
+            foreach ($objInputfields->arrInputfields as $arrInputfield) {
+
+                $intInputfieldType = intval($arrInputfield['type']);
+                if ($intInputfieldType != 16 && $intInputfieldType != 17) {
+                    if(!empty($arrInputfield['type'])) {
+                        $strType = $arrInputfield['type_name'];
+                        $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
+                        try {
+                            $objInputfield = safeNew($strInputfieldClass);
+
+                            if(intval($arrInputfield['type_multi_lang']) == 1) {
+                                $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, $objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
+                            } else {
+                                $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, null);
+                            }
+
+                            switch ($arrInputfield['context_type']) {
+                                case 'title':
+                                    $place = end($arrInputfieldContent);
+                                    break;
+                                case 'address':
+                                    $place_street = end($arrInputfieldContent);
+                                    break;
+                                case 'zip':                                
+                                    $place_zip = end($arrInputfieldContent);
+                                    break;
+                                case 'city':
+                                    $place_city = end($arrInputfieldContent);
+                                    break;
+                                case 'country':
+                                    $place_country = end($arrInputfieldContent);
+                                    break;
+                            }
+
+                        } catch (Exception $error) {
+                            echo "Error: ".$error->getMessage();
+                        }
+                    }
+                }
+            }
+        }
+        
+        if ($type == 'place') {
+            $this->place         = $place;
+            $this->place_street  = $place_street;
+            $this->place_zip     = $place_zip;
+            $this->place_city    = $place_city;
+            $this->place_country = $place_country;
+            $this->place_map     = '';
+        } else {            
+            $this->org_name   = $place;
+            $this->org_street = $place_street;
+            $this->org_zip    = $place_zip;
+            $this->org_city   = $place_city;
+            $this->org_country= $place_country;
+            $this->org_email  = '';
+        }
+        
+    }
     
+    /**
+     * Return event place url and its source link     
+     * 
+     * @return array place url and its source link
+     */
+    function loadPlaceLinkFromMediadir($intMediaDirId = 0, $type = 'place')
+    {
+        global $_LANGID, $_CONFIG;
+        
+        $placeUrl       = '';
+        $placeUrlSource = '';
+        
+        if (!empty($intMediaDirId)) {
+            $objMediadirEntry = new mediaDirectoryEntry();
+            $objMediadirEntry->getEntries(intval($intMediaDirId)); 
+
+            $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $pages = $pageRepo->findBy(array(
+                'cmd'    => contrexx_addslashes('detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'])),
+                'lang'   => $_LANGID,
+                'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+                'module' => 'mediadir',
+            ));
+
+            if(count($pages)) {
+                $strDetailCmd = 'detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId']);
+            } else {
+                $strDetailCmd = 'detail';
+            }
+
+            $pages = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('mediadir', $strDetailCmd);
+
+            $arrActiveFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
+            if (isset($arrActiveFrontendLanguages[FRONTEND_LANG_ID]) && isset($pages[FRONTEND_LANG_ID])) {
+                $langId = FRONTEND_LANG_ID;
+            } else if (isset($arrActiveFrontendLanguages[BACKEND_LANG_ID]) && isset($pages[BACKEND_LANG_ID])) {
+                $langId = BACKEND_LANG_ID;
+            } else {
+                foreach ($arrActiveFrontendLanguages as $lang) {
+                    if (isset($pages[$lang['id']])) {
+                        $langId = $lang['id'];
+                        break;
+                    }
+                }
+            }
+
+            // no page for mediadir available
+            $url = '';
+            if (isset($pages[$langId])) {
+                $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$intMediaDirId}");
+            }
+
+            $place          = ($type = 'place') ? $this->place : $this->org_name;
+            $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($place) ? $place : $url) ."</a>";
+            $placeUrlSource = $url;
+        }
+        
+        return array($placeUrl, $placeUrlSource);
+    }
 }

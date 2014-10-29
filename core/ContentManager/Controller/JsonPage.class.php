@@ -90,14 +90,6 @@ class JsonPage implements JsonAdapter {
     }
 
     /**
-     * Returns default permission as object
-     * @return Object
-     */
-    public function getDefaultPermissions() {
-        return null;
-    }
-    
-    /**
      * Sends data to the client
      * @todo Clean up usage of $param
      * @param Array $params Client parameters
@@ -162,7 +154,8 @@ class JsonPage implements JsonAdapter {
      * @return type 
      */
     public function set($params) {
-        global $_CORELANG;
+        global $_CORELANG, $objCache;
+        $objCache->clearCache();
         
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
@@ -179,6 +172,12 @@ class JsonPage implements JsonAdapter {
         $pageId = !empty($pageArray['id'])    ? intval($pageArray['id'])   : (!empty($dataPost['pageId']) ? intval($dataPost['pageId']) : 0);
         $nodeId = !empty($pageArray['node'])  ? intval($pageArray['node']) : (!empty($dataPost['nodeId']) ? intval($dataPost['nodeId']) : 0);
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : '');
+
+        $activeLangs = \FWLanguage::getActiveFrontendLanguages();
+        if (count($activeLangs) == 1) {
+            $lang = current($activeLangs);
+            $lang = $lang['lang'];
+        }
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
         
         if (!empty($pageArray)) {
@@ -193,7 +192,7 @@ class JsonPage implements JsonAdapter {
         // UPDATE
         if (!empty($pageId)) {
             // If we got a page id, the page already exists and can be updated.
-            $page = $this->pageRepo->find($pageId);
+            $page = $this->pageRepo->find($pageId, 0, null, false);
             $node = $page->getNode();
             
         // TRANSLATE
@@ -223,6 +222,7 @@ class JsonPage implements JsonAdapter {
                     $parentNode = $this->nodeRepo->getRoot();
                 }
                 $node->setParent($parentNode);
+                $parentNode->addChildren($node);
                 
                 // add parent node to ID, so the node containing the new page is opened
                 if (!isset($_COOKIE['jstree_open'])) {
@@ -243,6 +243,7 @@ class JsonPage implements JsonAdapter {
             // CREATE
             } else {
                 $node->setParent($this->nodeRepo->getRoot());
+                $this->nodeRepo->getRoot()->addChildren($node);
 
                 $this->em->persist($node);
                 $this->em->flush();
@@ -250,6 +251,7 @@ class JsonPage implements JsonAdapter {
 
             $page = new \Cx\Core\ContentManager\Model\Entity\Page();
             $page->setNode($node);
+            $node->addPage($page);
             $page->setNodeIdShadowed($node->getId());
             $page->setLang(\FWLanguage::getLanguageIdByCode($lang));
             $page->setUpdatedBy(
@@ -348,7 +350,7 @@ class JsonPage implements JsonAdapter {
         }
         
         // Block associations are only updated in the editing mode.
-        if (!empty($pageArray)) {
+        if (!empty($pageArray) && empty($dataPost['ignoreBlocks'])) {
             if (!isset($dataPost['pageBlocks'])) {
                 $dataPost['pageBlocks'] = array();
             }
@@ -364,7 +366,7 @@ class JsonPage implements JsonAdapter {
             }
             
             if ($page->getEditingStatus() != '') {
-                $logEntries = $this->logRepo->getLogEntries($page);
+                $logEntries = $this->logRepo->getLogEntries($page, false);
                 $this->em->remove($logEntries[0]);
             }
             
@@ -395,7 +397,7 @@ class JsonPage implements JsonAdapter {
             // Gedmo hooks in on persist/flush, so we unfortunately need to flush our em in
             // order to get a clean set of logEntries.
             $this->em->flush();
-            $logEntries = $this->logRepo->getLogEntries($page);
+            $logEntries = $this->logRepo->getLogEntries($page, false);
 
             // Revert to the published version.
             $cachedEditingStatus = $page->getEditingStatus();
@@ -493,6 +495,26 @@ class JsonPage implements JsonAdapter {
         
         $this->em->flush();
         
+        // bug fix #2279
+        // could not save alias after running $this->em->clear()
+        // Aliases are only updated in the editing mode.
+        if (!empty($pageArray)) {
+            // Only users with publish rights can create aliases.
+            if (\Permission::checkAccess(115, 'static', true) && \Permission::checkAccess(78, 'static', true)) {
+                // Aliases are updated after persist.
+                $data = array();
+                $data['alias'] = $pageArray['alias'];
+                $aliases = $page->getAliases();
+                $page->updateFromArray($data);
+                if ($aliases != $page->getAliases()) {
+                    $reload = true;
+                }
+            } else {
+                // Users without permission shouldn't see the aliasses anyway
+                //$this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
+            }
+        }
+        
         // this fixes log version number skipping
         $this->em->clear();
         $logs = $this->logRepo->getLogEntries($page);
@@ -574,24 +596,6 @@ class JsonPage implements JsonAdapter {
             $this->em->flush();
         }
         
-        // Aliases are only updated in the editing mode.
-        if (!empty($pageArray)) {
-            // Only users with publish rights can create aliases.
-            if (\Permission::checkAccess(115, 'static', true) && \Permission::checkAccess(78, 'static', true)) {
-                // Aliases are updated after persist.
-                $data = array();
-                $data['alias'] = $pageArray['alias'];
-                $aliases = $page->getAliases();
-                $page->updateFromArray($data);
-                if ($aliases != $page->getAliases()) {
-                    $reload = true;
-                }
-            } else {
-                // Users without permission shouldn't see the aliasses anyway
-                //$this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
-            }
-        }
-
         // get version
         // if it is a draft, don't take the last one
         $version = $page->getVersion()->getVersion();
@@ -771,7 +775,9 @@ class JsonPage implements JsonAdapter {
             'slug' => array('type' => 'String'),
             'caching' => array('type' => 'boolean'),
             'skin' => array('type' => 'integer'),
+            'useSkinForAllChannels' => array('type' => 'integer'),
             'customContent' => array('type' => 'String'),
+            'useCustomContentForAllChannels' => array('type' => 'integer'),
             'cssName' => array('type' => 'String'),
             'cssNavName' => array('type' => 'String'),
         );
@@ -868,8 +874,16 @@ class JsonPage implements JsonAdapter {
         $tableRowId = 1;
         $i = 0;
         $first = true;
-
-        foreach ($logs as $log){
+        session_write_close();
+        foreach ($logs as $key => $log){
+            // check whether the current index is between the range which should be displayed
+            if ( $i >= ($numberOfEntries + $offset)){
+                break;
+            }
+            if ($i < $offset) {
+                $i++;
+                continue;
+            }
             $version = $log->getVersion();
             $this->logRepo->revert($page, $version);
 
@@ -889,12 +903,6 @@ class JsonPage implements JsonAdapter {
             // set flag to false
             $first = false;
 
-            // check whether the current index is between the range which should be displayed
-            if ($i < $offset || $i >= ($numberOfEntries + $offset)) {
-                $i++;
-                continue;
-            }
-            
             try {
                 $page->setUpdatedAt($log->getLoggedAt());
                 $user = json_decode($log->getUsername());
@@ -907,7 +915,7 @@ class JsonPage implements JsonAdapter {
             $i++;
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging($i, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging(count($logs), $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
@@ -1090,7 +1098,9 @@ class JsonPage implements JsonAdapter {
             'accessData' => $accessData,
             // Advanced Settings
             'skin' => $page->getSkin(),
+            'useSkinForAllChannels' => $page->getUseSkinForAllChannels(),
             'customContent' => $page->getCustomContent(),
+            'useCustomContentForAllChannels' => $page->getUseCustomContentForAllChannels(),
             'cssName' => $page->getCssName(),
             'cssNavName' => $page->getCssNavName(),
             'caching' => $page->getCaching(),

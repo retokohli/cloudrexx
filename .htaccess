@@ -3,7 +3,7 @@
     RewriteEngine On
 
     # This is ASCMS_PATH_OFFSET, i.e.
-    RewriteBase  /cloudrex
+    RewriteBase   /trunk
 
     # Resolve language specific sitemap.xml
     RewriteRule ^(\w+)\/sitemap.xml$ sitemap_$1.xml [L,NC]

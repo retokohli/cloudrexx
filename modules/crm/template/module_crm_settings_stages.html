@@ -19,7 +19,7 @@
     <script type="text/javascript">
         function htmlEncode(value) {
             if (value) {
-                return jQuery('<div />').text(value).html();
+                return cx.jQuery('<div />').text(value).html();
             } else {
                 return '';
             }
@@ -60,7 +60,7 @@
                     return
                 }
                 if ($J(this).val() == "delete") {
-                    if (confirm('Are you Sure Want to delete the Entry'))
+                    if (confirm('{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}'))
                         $J("#stage_entries").submit();
                     else
                         return;
@@ -132,27 +132,32 @@
                 $J('.okBox-new').fadeOut('slow');
             }, 6000);
         }
-        function checkValidations() {
+function checkValidations() {
             var errChk;
             $J("input , select").css("border","1px solid #0A50A1");
             if (document.getElementById('label').value.trim() == '') {
                 errChk = 1;
                 $J('#label').css('border', '1px solid red');
             }
+            
             if (document.getElementById('stage').value.trim() == '') {
                 errChk = 1;
+                $J('#stage').css('border', '1px solid red');
+            } else if (!/^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/.test($J("#stage").val())) {
+                errChk = 1;
+                $J("#stage").val("");
                 $J('#stage').css('border', '1px solid red');
             }
 
             if (errChk == 1) {
-                $J('#formerr').html("All mandatory fields have not been filled out.!");
+                $J('#formerr').html("{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}");
                 $J('#formerr').css('display', 'block');
                 return false;
             } else {
                 return true;
             }
         }
-    </script>
+        </script>
 
     <div id="stage_page">
     <div class="okBox-new" style="display:none;"></div>

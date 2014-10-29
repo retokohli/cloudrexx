@@ -110,14 +110,6 @@ class JsonNode implements JsonAdapter {
     }
 
     /**
-     * Returns default permission as object
-     * @return Object
-     */
-    public function getDefaultPermissions() {
-        return null;
-    }
-    
-    /**
      * Returns the Node tree rendered for JS
      * @return String JSON data 
      */
@@ -203,6 +195,7 @@ class JsonNode implements JsonAdapter {
         if ($arguments['post']['position']) {
             $this->nodeRepo->moveDown($moved_node, $arguments['post']['position'], true);
         }
+        \Env::get('cx')->getEvents()->triggerEvent('model/onFlush', array(new \Doctrine\ORM\Event\LifecycleEventArgs($moved_node, $this->em)));
 
         foreach ($moved_node->getPages() as $page) {
             $page->setupPath($page->getLang());
@@ -549,7 +542,7 @@ class JsonNode implements JsonAdapter {
             }
             
             $state = array();
-            if (!$node->getChildren()->isEmpty()) {
+            if (count($node->getChildren()) > 0) {
                 if ($toggled) {
                     $state = array('state' => 'open');
                 } else {

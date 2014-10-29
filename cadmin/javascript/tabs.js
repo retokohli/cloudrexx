@@ -11,9 +11,10 @@ function selectTab(tabName)
 {
 	if(document.getElementById(tabName).style.display != "block")
 	{
-        document.getElementById(tabName).style.display = "block";
+		document.getElementById(tabName).style.display = "block";
 		strClass = document.getElementById(tabName).className;
-        
+		document.getElementById(strClass+"_"+tabName).className = "active";
+		
 		arrTags = document.getElementsByTagName("*");
 		for (i=0;i<arrTags.length;i++)
 		{
@@ -25,27 +26,5 @@ function selectTab(tabName)
 				}
 			}
 		}
-        
-        document.getElementById(strClass+"_"+tabName).className = "active";
 	}
-}
-
-function hideDuplicateTab(tabName){
-     
-	document.getElementById(tabName).style.display = "block";
-		strClass = document.getElementById(tabName).className;
-        
-		arrTags = document.getElementsByTagName("*");
-		for (i=0;i<arrTags.length;i++)
-		{
-			if(arrTags[i].className == strClass && arrTags[i] != document.getElementById(tabName))
-			{
-				arrTags[i].style.display = "none";
-				if (document.getElementById(strClass+"_"+arrTags[i].getAttribute("id"))) {
-					document.getElementById(strClass+"_"+arrTags[i].getAttribute("id")).className = "";
-				}
-			}
-		}
-        
-        document.getElementById(strClass+"_"+tabName).className = "active";	 
 }
