@@ -1,0 +1,46 @@
+<form method="post" name="feedBackAndSupport" id="feedBackAndSupport">
+    <table class="adminlist" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <th colspan="2">{TXT_SUPPORT_FEEDBACK}</th>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+                {SUPPORT_FEEDBACK_FAQ}
+            </td>
+        </tr>
+        <tr>
+            <td width="250">
+                <label>{TXT_SUPPORT_FEEDBACK_TYPE}</label>
+            </td>
+            <td>
+                <select name="feedBackType" id="feedbackType" style="width: 457px;">
+                    <!-- BEGIN showFeedBackTypes -->
+                    <option value="{SUPPORT_FEEDBACK_ID}" {SUPPORT_FEEDBACK_SELECTED_TYPE}>{SUPPORT_FEEDBACK_TYPES}</option>
+                    <!-- END showFeedBackTypes -->
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td width="250">
+                <label>{TXT_SUPPORT_FEEDBACK_SUBJECT}</label>&nbsp;<font color="red">*</font>
+            </td>
+            <td>
+                <input type="text" class="{TXT_SUPPORT_ERROR_CLASS_SUBJECT}" name="feedBackSubject" value="{SUPPORT_FEEDBACK_SUBJECT}" style="width: 450px;">
+            </td>
+        </tr>
+        <tr class="row2">
+            <td>
+                <label>{TXT_SUPPORT_FEEDBACK_COMMENTS}</label>&nbsp;<font color="red">*</font>
+            </td>
+            <td>
+                <textarea class="{TXT_SUPPORT_ERROR_CLASS_COMMENT}" name="feedBackComment" style="width:450px; height: 150px; font-family: Arial; font-size: 12px;" >{SUPPORT_FEEDBACK_COMMENT}</textarea>
+                <input type="hidden" name="customerName" value="{SUPPORT_FEEDBACK_CUSTOMER_NAME}">
+                <input type="hidden" name="customerEmailId" value="{SUPPORT_FEEDBACK_CUSTOMER_EMAIL}">
+                <input type="hidden" name="feedBackUrl" value="{SUPPORT_FEEDBACK_URL}">
+            </td>
+        </tr>
+    </table>
+    <br />
+    <input type="submit" name="sendAndSave" value="{TXT_SAVE}"/>
+</form>
