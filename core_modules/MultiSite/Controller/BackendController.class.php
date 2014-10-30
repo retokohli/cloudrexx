@@ -345,7 +345,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function parseSectionWebsites(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
         if (isset($_GET['term']) && !empty($_GET['term'])) {
-            $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findWebsitesBySearchTerms($_GET['term']);
+            $term = contrexx_input2db($_GET['term']);
+            $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findWebsitesBySearchTerms($term);
         }  else {
             $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
             
@@ -811,3 +812,4 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return implode(",<br>", $domainArray);
     }
 }
+
