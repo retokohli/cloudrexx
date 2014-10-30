@@ -93,7 +93,7 @@
                         $.each(response.data.result, function(key, data) {
                             if (typeof data === 'object') {
                                 tbody += '<tr>';
-                                tbody += '<td>' + key + '</td><td><span class="'+ key + '">';
+                                tbody += '<td>' + key + '</td><td><span id="'+ key + '">';
                                 var uiDiv   = '' ;
                                 var uiTab   = '';
                                 var i = 1;
@@ -103,7 +103,7 @@
                                         uiTab += '<li><a href="#tabs-'+i+'">'+ index + '</a></li>';
                                         $.each(data, function(languageId, messages) {
                                             tbody += messages + '<br>';
-                                            uiDiv +='<div id="tabs-'+i+'" data-id ="'+languageId+'">';
+                                            uiDiv +='<div id="tabs-'+i+'" data-id ="'+languageId+'" data-lang ="'+index+'">';
                                             uiDiv += '<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
                                             uiDiv += '<tr><td><label>'+ key +'</label></td><td><textarea rows="4" cols="40" class = "'+ key +'" name ="'+ key +'">'+messages+'</textarea></td></tr>';
                                             uiDiv += '</table>';
@@ -154,7 +154,7 @@
             var licenseMessageObj = $(this).next().html();
             var liceneseTable ='';
             if ($.inArray(fieldLabel, licenseArray) !== -1) {
-                liceneseTable = '<div id="tabmenu">'+licenseMessageObj+'</div>';
+                liceneseTable = '<div id="tab_menu" class="tab-'+fieldLabel+'">'+licenseMessageObj+'</div>';
             } else {
                 liceneseTable = '<table id="editLicense" cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
                 liceneseTable += '<tr><td><label>'+ fieldLabel +'</label></td><td><textarea rows="4" cols="40" class = "'+ fieldLabel +'" name ="'+ fieldLabel +'">'+$(this).attr('data-value')+'</textarea></td></tr>';
@@ -174,18 +174,17 @@
                         cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
                         if ($.inArray(fieldLabel, licenseArray) !== -1) {
                             var fieldValue = [];
-                            $('#tabmenu div').each(function(){
+                            var messageText = '';
+                            var messageUiTab = [];
+                            $('#tab_menu div').each(function(){
+                                messageText += '<strong>'+$(this).attr('data-lang')+':</strong>&nbsp;';
+                                messageText += $(this).find('textarea.'+fieldLabel).val()+'<br>';
+                                messageUiTab.push[$(this).find('textarea.'+fieldLabel).val()];
                                 fieldValue[$(this).attr('data-id')] = {text : $(this).find('textarea.'+fieldLabel).val()};
                             });
                         } else {
                             var fieldValue = $('.licenceEdit').find('textarea.'+fieldLabel).val();
-
                         }
-//                        if($.isArray()) {
-//                            fieldValue = $.filter(fieldValue, function(data, index) {
-//                                            return data != 0
-//                                            });
-//                        }
                         $.ajax({
                             url: domainUrl,
                             type: "POST",
@@ -196,28 +195,36 @@
                                     cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
                                 }
                                 if (response.status == 'success' && response.data.status == 'success') {
-                                    $('span.'+fieldLabel).text(fieldValue);                                   
-                                    $('.editLicense_'+ fieldLabel).attr('data-value', fieldValue);
+                                    if ($.isArray(fieldValue)) {
+                                        $('#licenseMessage').html(messageText);
+                                        $.each(messageUiTab, function(index, data) {
+                                            $('#ui_'+fieldLabel+' #tabs-'+index).find('.'+fieldLabel).html(data);
+                                        });
+                                    } else {
+                                        $('span.'+fieldLabel).text(fieldValue);                                   
+                                        $('.editLicense_'+ fieldLabel).attr('data-value', fieldValue);
+                                    }
+                                    
                                     cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
                                 }
                             }
                         });
                         $('#editLicense').remove();
-                        $('#tabmenu').remove();
+                        $('#tab_menu').remove();
                         $(this).dialog("close");
                     },
                     "Cancel": function() {
                         $('#editLicense').remove();
-                        $('#tabmenu').remove();
+                        $('#tab_menu').remove();
                         $(this).dialog("close");
                     }
                 },
                 close: function() {
                     $('#editLicense').remove();
-                    $('#tabmenu').remove();
+                    $('#tab_menu').remove();
                 }
             });
-            $('#tabmenu').tabs();
+            $('#tab_menu').tabs();
         });
         
         // execute query on websites / service server's websites

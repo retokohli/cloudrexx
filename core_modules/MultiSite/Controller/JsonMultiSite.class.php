@@ -1176,9 +1176,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     if (isset($params['post']['dashboardMessages'])) {
                         $dashboardMessages = array();
-                        foreach ($params['post']['dashboardMessages'] as $lang => $value) {
-                            if (!empty($value)) {
-                                $dashboardMessages[] = new \Cx\Core_Modules\License\Message($lang, $value['text'], $value['type'], $value['link'], $value['linkTarget'], true);
+                        foreach ($params['post']['dashboardMessages'] as $key => $value) {
+                            if (!empty($value) && $value != 'undefined') {
+                                $lang = !is_string($key) ? \FWLanguage::getLanguageCodeById($key) : $key;
+                                $dashboardMessages[$lang] = new \Cx\Core_Modules\License\Message($lang, $value['text'], $value['type'], $value['link'], $value['linkTarget'], true);
                             }
                         }
                         $license->setDashboardMessages($dashboardMessages);
@@ -1192,18 +1193,20 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     if (isset($params['post']['licenseMessage'])) {
                         $licenseMessage = array();
-                        foreach ($params['post']['licenseMessage'] as $lang => $value) {
-                            if (!empty($value)) {
-                                $licenseMessage[] = new \Cx\Core_Modules\License\Message($lang, $value['text']);
+                        foreach ($params['post']['licenseMessage'] as $key => $value) {
+                            if (!empty($value) && $value != 'undefined') {
+                                $lang = !is_string($key) ? \FWLanguage::getLanguageCodeById($key) : $key;
+                                $licenseMessage[$lang] = new \Cx\Core_Modules\License\Message($lang, $value['text']);
                             }
                         }
                         $license->setMessages($licenseMessage);
                     }
                     if (isset($params['post']['licenseGrayzoneMessages'])) {
                         $licenseGrayzoneMessages = array();
-                        foreach ($params['post']['licenseGrayzoneMessages'] as $lang => $value) {
-                            if (!empty($value)) {
-                                $licenseGrayzoneMessages[] = new \Cx\Core_Modules\License\Message($lang, $value['text']);
+                        foreach ($params['post']['licenseGrayzoneMessages'] as $key => $value) {
+                            if (!empty($value) && $value != 'undefined') {
+                                $lang = !is_string($key) ? \FWLanguage::getLanguageCodeById($key) : $key;
+                                $licenseGrayzoneMessages[$lang] = new \Cx\Core_Modules\License\Message($lang, $value['text']);
                             }
                         }
                         $license->setGrayZoneMessages($licenseGrayzoneMessages);
@@ -2203,9 +2206,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     foreach (\FWLanguage::getActiveFrontendLanguages() as $languages) {
                         $lang_id = $languages['id'];
                         $lang_name = $languages['name'];
-                        $licenseMessage[$lang_name] = array($lang_id => $license->getMessage(false, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG)->getText());
-                        $dashboardMessages[$lang_name] = array($lang_id=> $license->getMessage(true, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG)->getText());
-                        $licenseGrayzoneMessages[$lang_name] = array($lang_id => $license->getGrayzoneMessage(\FWLanguage::getLanguageCodeById($lang_id), $_CORELANG)->getText());
+                        $licensemessageObj = $license->getMessage(false, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
+                        $dashboardMessagesObj = $license->getMessage(true, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
+                        $licenseGrayzoneMessagesObj = $license->getMessage(\FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
+                        $licenseMessage[$lang_name] = ($licensemessageObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array($lang_id => $licensemessageObj->getText()) : array($lang_id => '');
+                        $dashboardMessages[$lang_name] = ($dashboardMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array($lang_id => $dashboardMessagesObj->getText()) : array($lang_id => '');
+                        $licenseGrayzoneMessages[$lang_name] = ($licenseGrayzoneMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array($lang_id => $licenseGrayzoneMessagesObj->getText()) : array($lang_id => '');
                     }
                     $result = array(
                         'installationId'            => $license->getInstallationId(),
