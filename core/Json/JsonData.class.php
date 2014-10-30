@@ -167,15 +167,15 @@ class JsonData {
             return $this->getErrorData('No such method: ' . $method);
         }
         //permission checks
-        $objPermission = new \Cx\Core\Access\Model\Entity\Permission(null, null, true, null);
+        $objPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null);
         $defaultPermission = $adapter->getDefaultPermissions();
-        if (!empty($methods[$method]) && ($methods[$method] instanceof \Cx\Core\Access\Model\Entity\Permission)) {
+        if (!empty($methods[$method]) && ($methods[$method] instanceof \Cx\Core_Modules\Access\Model\Entity\Permission)) {
             $objPermission = $methods[$method];
-        } else if (!empty ($defaultPermission) && ($defaultPermission instanceof \Cx\Core\Access\Model\Entity\Permission)) {
+        } else if (!empty ($defaultPermission) && ($defaultPermission instanceof \Cx\Core_Modules\Access\Model\Entity\Permission)) {
             $objPermission = $defaultPermission;
         }
         
-        if ($objPermission && ($objPermission instanceof \Cx\Core\Access\Model\Entity\Permission)) {
+        if ($objPermission && ($objPermission instanceof \Cx\Core_Modules\Access\Model\Entity\Permission)) {
             if (!$objPermission->hasAccess($arguments)) {
                 $backend = \Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND;
                 if (!\FWUser::getFWUserObject()->objUser->login($backend)) {

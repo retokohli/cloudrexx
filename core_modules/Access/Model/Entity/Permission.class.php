@@ -8,7 +8,7 @@
  * @subpackage  core_access
  */
 
-namespace Cx\Core\Access\Model\Entity;
+namespace Cx\Core_Modules\Access\Model\Entity;
 
 /**
  * Permission
