@@ -4058,19 +4058,6 @@ CREATE TABLE `contrexx_module_shop_zones` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_support_feedback` (
-  `id` int(11) NOT NULL auto_increment,
-  `feedback_type` int(11) NOT NULL,
-  `subject` varchar(255) NOT NULL,
-  `comment` longtext NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `url` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_survey_addtionalfields` (
   `id` int(10) NOT NULL auto_increment,
   `survey_id` varchar(10) NOT NULL,
