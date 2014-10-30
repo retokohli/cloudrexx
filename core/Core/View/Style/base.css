@@ -183,6 +183,11 @@ a:active {
     background: url(../Media/profile_icon.png) no-repeat;
 }
 
+#metanavigation a.feedback {
+    padding-left: 21px;
+    background: url(../Media/question-circle.png) no-repeat;
+}
+
 #metanavigation a.logout {
     padding-left: 16px;
     background: url(../Media/logout_icon.png) no-repeat;

@@ -1601,6 +1601,7 @@ namespace Cx\Core\Core\Controller {
                 $this->template->setGlobalVariable(array(
                     'TXT_FRONTEND'              => $_CORELANG['TXT_FRONTEND'],
                     'TXT_UPGRADE'               => $_CORELANG['TXT_UPGRADE'],
+                    'TXT_FEEDBACK_AND_HELP'     => $_CORELANG['TXT_FEEDBACK_AND_HELP'],
                     'CONTREXX_VERSION'          => $formattedVersion,
                 ));
                 $this->template->setVariable(array(

@@ -44,6 +44,7 @@ $_ARRAYLANG['TXT_CORE_HTML_DESELECT_ALL'] = "Auswahl aufheben";
 $_ARRAYLANG['TXT_CORE_EDIT_PAGE_LAYOUT'] = "Seitenlayout editieren";
 $_ARRAYLANG['TXT_CORE_SHOW_FRONTEND_VIEW'] = "Frontend-Ansicht anzeigen";
 $_ARRAYLANG['TXT_FRONTEND'] = 'Webseite-Ansicht';
+$_ARRAYLANG['TXT_FEEDBACK_AND_HELP'] = 'Feedback & Hilfe';
 $_ARRAYLANG['TXT_CORE_GENERAL'] = "Allgemein";
 $_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = "Platzhalter";
 $_ARRAYLANG['TXT_ACTIVE'] = "Aktiv";
