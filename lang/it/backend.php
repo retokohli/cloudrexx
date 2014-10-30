@@ -43,6 +43,7 @@ $_ARRAYLANG['TXT_CORE_HTML_DESELECT_ALL'] = "Auswahl aufheben";
 $_ARRAYLANG['TXT_CORE_EDIT_PAGE_LAYOUT'] = "Edit page layout";
 $_ARRAYLANG['TXT_CORE_SHOW_FRONTEND_VIEW'] = "Show frontend view";
 $_ARRAYLANG['TXT_FRONTEND'] = 'Frontend';
+$_ARRAYLANG['TXT_FEEDBACK_AND_HELP'] = 'Feedback e aiuto';
 $_ARRAYLANG['TXT_CORE_GENERAL'] = "General";
 $_ARRAYLANG['TXT_CORE_PLACEHOLDERS'] = "Placeholders";
 $_ARRAYLANG['TXT_ACTIVE'] = "Attivo";

@@ -449,7 +449,7 @@ throw new MultiSiteException('Refactor this method!');
      * Fixes database errors.   
      *
      * @return  boolean                 False.  Always.
-     * @throws  \Cx\Lib\Update_DatabaseException
+     * @throws  MultiSiteException
      */
     static function errorHandler()
     {
@@ -468,7 +468,7 @@ throw new MultiSiteException('Refactor this method!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('mode',self::MODE_NONE, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::MODE_NONE.':'.self::MODE_NONE.','.self::MODE_MANAGER.':'.self::MODE_MANAGER.','.self::MODE_SERVICE.':'.self::MODE_SERVICE.','.self::MODE_HYBRID.':'.self::MODE_HYBRID, 'config')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Mode");
+                    throw new MultiSiteException("Failed to add Setting entry for Database Mode");
             }
             
             // server group
@@ -476,7 +476,7 @@ throw new MultiSiteException('Refactor this method!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteController','xampp', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'xampp:XAMPP,plesk:Plesk', 'server')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user website Controller");
+                    throw new MultiSiteException("Failed to add Setting entry for Database user website Controller");
             }
             
             // setup group
@@ -484,88 +484,88 @@ throw new MultiSiteException('Refactor this method!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('multiSiteProtocol','mixed', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'mixed:Allow insecure (HTTP) and secure (HTTPS) connections,http:Allow only insecure (HTTP) connections,https:Allow only secure (HTTPS) connections', 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Multisite Protocol");
+                    throw new MultiSiteException("Failed to add Setting entry for Multisite Protocol");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('multiSiteDomain',$_CONFIG['domainUrl'], 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database multiSite Domain");
+                    throw new MultiSiteException("Failed to add Setting entry for Database multiSite Domain");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('marketingWebsiteDomain',$_CONFIG['domainUrl'], 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Marketing Website Domain");
+                    throw new MultiSiteException("Failed to add Setting entry for Marketing Website Domain");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', 'http://'.$_CONFIG['domainUrl'].'/feed/news_headlines_de.xml', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
+                    throw new MultiSiteException("Failed to add Setting entry for dashboardNewsSrc");
             }
 // TODO: this should be an existing domain from Cx\Core\Net
             if (\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('customerPanelDomain',$_CONFIG['domainUrl'], 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Customer Panel Domain");
+                    throw new MultiSiteException("Failed to add Setting entry for Customer Panel Domain");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('unavailablePrefixes', 'account,admin,demo,dev,mail,media,my,staging,test,www', 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Unavailable website names");
+                    throw new MultiSiteException("Failed to add Setting entry for Unavailable website names");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMaxLength',80, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Maximal length of website names");
+                    throw new MultiSiteException("Failed to add Setting entry for Maximal length of website names");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMinLength',4, 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Minimal length of website names");
+                    throw new MultiSiteException("Failed to add Setting entry for Minimal length of website names");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('sendSetupError','0', 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for sendSetupError");
+                    throw new MultiSiteException("Failed to add Setting entry for sendSetupError");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('termsUrl') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('termsUrl','[[NODE_AGB]]', 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for URL to T&Cs");
+                    throw new MultiSiteException("Failed to add Setting entry for URL to T&Cs");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('createFtpAccountOnSetup', 0, 11,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Create FTP account during website setup");
+                    throw new MultiSiteException("Failed to add Setting entry for Create FTP account during website setup");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('passwordSetupMethod', 'auto', 12,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'auto:Automatically,auto-with-verification:Automatically (with email verification),interactive:Interactive', 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Password set method during website setup");
+                    throw new MultiSiteException("Failed to add Setting entry for Password set method during website setup");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('autoLogin', '0', 13,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Auto Login during website setup");
+                    throw new MultiSiteException("Failed to add Setting entry for Auto Login during website setup");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('ftpAccountFixPrefix', 'cx', 14,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for ftp account fix prefix during website setup");
+                    throw new MultiSiteException("Failed to add Setting entry for ftp account fix prefix during website setup");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('forceFtpAccountFixPrefix') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('forceFtpAccountFixPrefix', 0, 15,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for force ftp account fix prefix during website setup");
+                    throw new MultiSiteException("Failed to add Setting entry for force ftp account fix prefix during website setup");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('supportFaqUrl') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('supportFaqUrl', 'https://www.cloudrexx.com/FAQ', 16,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for support faq url during website setup");
+                    throw new MultiSiteException("Failed to add Setting entry for support faq url during website setup");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('supportRecipientMailAddress') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('supportRecipientMailAddress', $_CONFIG['coreAdminEmail'], 17,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for support recipient mail address during website setup");
+                    throw new MultiSiteException("Failed to add Setting entry for support recipient mail address during website setup");
             }
 
             // websiteSetup group
@@ -573,57 +573,57 @@ throw new MultiSiteException('Refactor this method!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('websitePath') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websitePath',\Env::get('cx')->getCodeBaseDocumentRootPath().'/websites', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for websites path");
+                    throw new MultiSiteException("Failed to add Setting entry for websites path");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultCodeBase','', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add SettingDb entry for Database Default code base");
+                    throw new MultiSiteException("Failed to add SettingDb entry for Database Default code base");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteDatabaseHost','localhost', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for website database host");
+                    throw new MultiSiteException("Failed to add Setting entry for website database host");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteDatabasePrefix','cloudrexx_', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database prefix for websites");
+                    throw new MultiSiteException("Failed to add Setting entry for Database prefix for websites");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteDatabaseUserPrefix','clx_', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user prefix for websites");
+                    throw new MultiSiteException("Failed to add Setting entry for Database user prefix for websites");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteIp', $_SERVER['SERVER_ADDR'], 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk IP");
+                    throw new MultiSiteException("Failed to add Setting entry for Database user plesk IP");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthMethod', '', 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'websiteSetup')){
-                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Method of Website");
+                    throw new MultiSiteException("Failed to add Setting entry for HTTP Authentication Method of Website");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthUsername', '', 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Username of Website");
+                    throw new MultiSiteException("Failed to add Setting entry for HTTP Authentication Username of Website");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthPassword', '', 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Password of Website");
+                    throw new MultiSiteException("Failed to add Setting entry for HTTP Authentication Password of Website");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('codeBaseRepository', \Env::get('cx')->getCodeBaseDocumentRootPath() . '/codeBases', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting Repository for Contrexx Code Bases");
+                    throw new MultiSiteException("Failed to add Setting Repository for Contrexx Code Bases");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteFtpPath', '', 11,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting Repository for website FTP path");
+                    throw new MultiSiteException("Failed to add Setting Repository for website FTP path");
             }
 
             // websiteManager group
@@ -631,32 +631,32 @@ throw new MultiSiteException('Refactor this method!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('managerHostname') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerHostname',$_CONFIG['domainUrl'], 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Manager Hostname");
+                    throw new MultiSiteException("Failed to add Setting entry for Database Manager Hostname");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerSecretKey','', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Manager Secret Key");
+                    throw new MultiSiteException("Failed to add Setting entry for Database Manager Secret Key");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerInstallationId','', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Manager Installation Id");
+                    throw new MultiSiteException("Failed to add Setting entry for Database Manager Installation Id");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerHttpAuthMethod','', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'websiteManager')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Manager HTTP Authentication Method");
+                    throw new MultiSiteException("Failed to add Setting entry for Database Manager HTTP Authentication Method");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerHttpAuthUsername','', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Manager HTTP Authentication Username");
+                    throw new MultiSiteException("Failed to add Setting entry for Database Manager HTTP Authentication Username");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerHttpAuthPassword','', 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Manager HTTP Authentication Password");
+                    throw new MultiSiteException("Failed to add Setting entry for Database Manager HTTP Authentication Password");
             }
             
             // plesk group
@@ -664,44 +664,44 @@ throw new MultiSiteException('Refactor this method!');
             if (\Cx\Core\Setting\Controller\Setting::getValue('pleskHost') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskHost','localhost', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk Host");
+                    throw new MultiSiteException("Failed to add Setting entry for Database user plesk Host");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('pleskLogin') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskLogin','', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk Login");
+                    throw new MultiSiteException("Failed to add Setting entry for Database user plesk Login");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('pleskPassword') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskPassword','', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_PASSWORD,'plesk')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk Password");
+                    throw new MultiSiteException("Failed to add Setting entry for Database user plesk Password");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskWebsitesSubscriptionId',0, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk Subscription Id");
+                    throw new MultiSiteException("Failed to add Setting entry for Database user plesk Subscription Id");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskMasterSubscriptionId',0, 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database ID of master subscription");
+                    throw new MultiSiteException("Failed to add Setting entry for Database ID of master subscription");
             }
             //manager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteServiceServer', 0, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteServiceServerList()}', 'manager') ) {
-                   throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Default Website Service Server");
+                   throw new MultiSiteException("Failed to add Setting entry for Default Website Service Server");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteTemplate', '0', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\Modules\Pim\Controller\BackendController::getWebsiteTemplateList()}', 'manager')) {
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for default Website Template");
+                    throw new MultiSiteException("Failed to add Setting entry for default Website Template");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct') === NULL 
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultPimProduct', '0', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
-                   throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Product List");
+                   throw new MultiSiteException("Failed to add Setting entry for Product List");
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());

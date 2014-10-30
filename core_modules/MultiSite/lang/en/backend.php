@@ -79,7 +79,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FTPACCOUNTFIXPREFIX'] = 'FTP account name
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FTPACCOUNTFIXPREFIX_TOOLTIP'] = 'Define a prefix that shall be used for the FTP account name in case the Website name is not a valid FTP account name. I.e.: cx';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FORCEFTPACCOUNTFIXPREFIX'] = 'Force FTP account name prefix';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FORCEFTPACCOUNTFIXPREFIX_TOOLTIP'] = 'Prefix all FTP account user names with the prefix defined by option '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FTPACCOUNTFIXPREFIX'];
-
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUPPORTFAQURL'] = 'URL to FAQ webpage';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUPPORTRECIPIENTMAILADDRESS'] = 'E-Mail recipient address for support requests';
 // settings status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTCODEBASE_SUCCESSFUL_CREATION']      = "Default Code Base has been set successfully";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_CHANGED_SUCCESSFUL']      = "Website state has been set successfully";

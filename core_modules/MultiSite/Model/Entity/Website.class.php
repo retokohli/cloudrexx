@@ -955,10 +955,10 @@ class Website extends \Cx\Model\Base\EntityBase {
         try {
             \Cx\Core\Setting\Controller\Setting::init('Support', 'setup', 'Yaml', $websiteConfigPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('faqUrl') && !\Cx\Core\Setting\Controller\Setting::add('faqUrl', $faqUrl, 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for faq url");
+                throw new WebsiteException("Failed to add Setting entry for faq url");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('recipientMailAddress') && !\Cx\Core\Setting\Controller\Setting::add('recipientMailAddress', $recipientMailAddress, 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')) {
-                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for recipient mail address");
+                throw new WebsiteException("Failed to add Setting entry for recipient mail address");
             }
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation

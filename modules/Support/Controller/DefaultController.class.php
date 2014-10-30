@@ -95,43 +95,16 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         if (isset($_POST['sendAndSave'])) {
             if (!empty($feedBackSubject) && !empty($feedBackComment)) {
                 $arrFields = array (
-                    'key'          => 'notifyAboutNewSupportFeedBack',
-                    'section'      => $this->moduleName,
-                    'lang_id'      => 1,
-                    'substitution' => array(
-                        'TXT_USER_CONTACT'      => $_ARRAYLANG['TXT_SUPPORT_CONTACT_TITLE'],
-                        'TXT_USER_NAME'         => $_ARRAYLANG['TXT_SUPPORT_USER_NAME'],
-                        'TXT_USER_EMAIL'        => $_ARRAYLANG['TXT_SUPPORT_USER_EMAIL'],
-                        'TXT_FEEDBACK_MAIL'     => $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_MAIL'],
-                        'TXT_FEEDBACK_TOPIC'    => $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC'],
-                        'TXT_FEEDBACK_URL'      => $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_URL'],
-                        'TXT_FEEDBACK_COMMENT'  => $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_COMMENTS'],
-                        'USER_NAME'             => contrexx_raw2xhtml($customerName),
-                        'USER_EMAIL'            => contrexx_raw2xhtml($customerEmailId),
-                        'FEEDBACK_TYPE'         => $feedBackType != 0 ? contrexx_raw2xhtml($feedBackTypes[$feedBackType]) : '',
-                        'FEEDBACK_URL'          => contrexx_raw2xhtml($feedBackUrl),
-                        'FEEDBACK_COMMENT'      => contrexx_raw2xhtml($feedBackComment),
-                        'FEEDBACK_FROM_EMAIL'   => contrexx_raw2xhtml($customerEmailId),
-                        'FEEDBACK_SENDER_NAME'  => contrexx_raw2xhtml($customerName),
-                        'FEEDBACK_SUBJECT'      => contrexx_raw2xhtml($feedBackSubject),
-                        'FEEDBACK_TO_EMAIL'     => 'info@comvation.com'
-                    )
+                    'name'         => contrexx_raw2xhtml($customerName),
+                    'fromEmail'    => contrexx_raw2xhtml($customerEmailId),
+                    'feedBackType' => $feedBackType != 0 ? contrexx_raw2xhtml($feedBackTypes[$feedBackType]) : '',
+                    'url'          => $faqUrl,
+                    'comments'     => contrexx_raw2xhtml($feedBackComment),
+                    'subject'      => contrexx_raw2xhtml($feedBackSubject),
+                    'toEmail'      => $recipientMailAddress
                 );
-                if (\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrFields)) {
-                    $objFeedBack = new \Cx\Modules\Support\Model\Entity\FeedBack();
-                    $objFeedBack->setFeedBackType($feedBackType);
-                    $objFeedBack->setSubject($feedBackSubject);
-                    $objFeedBack->setComment($feedBackComment);
-                    $objFeedBack->setName($customerName);
-                    $objFeedBack->setEmail($customerEmailId);
-                    $objFeedBack->setUrl($feedBackUrl);
-                    
-                    \Env::get('em')->persist($objFeedBack);
-                    \Env::get('em')->flush();
-                    \Message::ok($_ARRAYLANG['TXT_SUPPORT_FEEDBACK_EMAIL_SEND_SUCESSFULLY']);
-                } else {
-                    \Message::error($_ARRAYLANG['TXT_SUPPORT_FEEDBACK_EMAIL_SEND_FAILED']);
-                }
+                //send the feedBack mail
+                $this->sendMail($arrFields) ? \Message::ok($_ARRAYLANG['TXT_SUPPORT_FEEDBACK_EMAIL_SEND_SUCESSFULLY']) : \Message::error($_ARRAYLANG['TXT_SUPPORT_FEEDBACK_EMAIL_SEND_FAILED']);
             } else {
                 \Message::error($_ARRAYLANG['TXT_SUPPORT_ERROR_MSG_FIELDS_EMPTY']);
                 $this->template->setVariable(array(
@@ -156,8 +129,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         $this->template->setVariable(array(
             'SUPPORT_FEEDBACK_FAQ'                  => $faqLink,
             'SUPPORT_FEEDBACK_CUSTOMER_NAME'        => $objUser->objUser->getUsername(),
-            'SUPPORT_FEEDBACK_CUSTOMER_EMAIL'       => $objUser->objUser->getEmail(),
-            'SUPPORT_FEEDBACK_URL'                  => $recipientMailAddress
+            'SUPPORT_FEEDBACK_CUSTOMER_EMAIL'       => $objUser->objUser->getEmail()
         ));
         
         $this->template->setVariable(array(
@@ -166,5 +138,95 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
             'TXT_SUPPORT_FEEDBACK_COMMENTS'   => $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_COMMENTS']
         ));
     }
-    
+
+    /**
+     * Send the FeedBack mail
+     * 
+     * @param array $arrFields
+     * 
+     * @global array $_CONFIG
+     * @global array $_ARRAYLANG
+     * 
+     * @return boolean
+     */
+    function sendMail($arrFields = array()) {
+        global $_CONFIG, $_ARRAYLANG;
+
+        //plain text content
+        $arrFields['message'] = "{$_ARRAYLANG['TXT_SUPPORT_CONTACT_TITLE']}: \n
+                                       {$_ARRAYLANG['TXT_SUPPORT_USER_NAME']}: {$arrFields['name']}\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_USER_EMAIL']}: {$arrFields['fromEmail']}\n
+                                       \n\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_MAIL']}: \n\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC']}  : {$arrFields['feedBackType']} \n\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_URL']}        : {$arrFields['url']} \n\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_COMMENTS']}        : {$arrFields['comments']} \n\n.";
+        //html content
+        $arrFields['message_html'] = '<div style="width:600px; font-family: arial,helvetica,sans-serif; font-size: 13px;">
+
+    <p><strong>' . $_ARRAYLANG['TXT_SUPPORT_CONTACT_TITLE'] . '</strong></p>
+
+    <table cellpadding="0" cellspacing="0" style="width:100%; font-size: 13px;">
+        <tbody>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_NAME'] . '</td>
+                <td>&nbsp;: ' . $arrFields['name'] . '</td>
+            </tr>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_EMAIL'] . '</td>
+                <td>&nbsp;: ' . $arrFields['fromEmail'] . '</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <p><strong>' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_MAIL'] . '</strong></p>
+
+    <table cellpadding="0" cellspacing="0" style="width:100%; font-size: 13px;">
+        <tbody>
+            <tr>
+                <td valign="top" width="15%">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC'] . '</td>
+                <td>&nbsp;: ' . $arrFields['feedBackType'] . '</td>
+            </tr>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_URL'] . '</td>
+                <td>&nbsp;: ' . $arrFields['url'] . '</td>
+            </tr>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_COMMENTS'] . '</td>
+                <td>&nbsp;: ' . $arrFields['comments'] . '</td>
+            </tr>
+        </tbody>
+    </table>
+</div>';
+        
+        if (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php')) {
+            $objMail = new \PHPMailer();
+            
+            if (!empty($_CONFIG['coreSmtpServer']) && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH . '/SmtpSettings.class.php')) {
+                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    $objMail->IsSMTP();
+                    $objMail->SMTPAuth = true;
+                    $objMail->Host = $arrSmtp['hostname'];
+                    $objMail->Port = $arrSmtp['port'];
+                    $objMail->Username = $arrSmtp['username'];
+                    $objMail->Password = $arrSmtp['password'];
+                }
+            }
+
+            $objMail->FromName = $arrFields['name'];
+            $objMail->From = $arrFields['fromEmail'];
+            $objMail->Subject = 'Cloudrexx - ' . $arrFields['subject'];
+            $objMail->AddReplyTo($arrFields['fromEmail']);
+            $objMail->AddAddress($arrFields['toEmail']);
+            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail->IsHTML(true);
+            $objMail->Body = $arrFields['message_html'];
+            $objMail->AltBody = $arrFields['message'];
+            
+            return $objMail->Send();
+        }
+        return false;
+    }
+
 }
