@@ -192,7 +192,7 @@ class adminMenu
                     // ask: thomas.daeppen@comvation.com
                     $linkCmd = '';
                     $linkCmdSection = '';
-                    if (preg_match('/cmd=(.+?)(?:&amp;(.+))?$/', $link_data[2], $arrMatch)) {
+                    if (preg_match('/cmd=(.+?)(?:&amp;|&(.+))?$/', $link_data[2], $arrMatch)) {
                         $linkCmd = $arrMatch[1];
                         if (isset($arrMatch[2])) {
                             $linkCmdSection = $arrMatch[2];
