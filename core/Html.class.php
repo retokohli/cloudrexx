@@ -838,10 +838,14 @@ var _active_tab = '.
      */
     static function getLabel($for, $text, $attribute='')
     {
+        global $_ARRAYLANG;
+        
+        $text = isset($_ARRAYLANG[$text]) ? $_ARRAYLANG[$text] : contrexx_raw2xhtml($text);
+        
         return
             '<label for="'.$for.'"'.
             ($attribute ? ' '.$attribute : '').
-            '>'.contrexx_raw2xhtml($text)."</label>\n";
+            '>'. $text ."</label>\n";
     }
 
 

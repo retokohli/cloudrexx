@@ -1097,12 +1097,12 @@ class Config
             \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('systemStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('systemStatus','on', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Page Status");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('languageDetection')
                 && !\Cx\Core\Setting\Controller\Setting::add('languageDetection','on', 2,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Auto Detect Language");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreGlobalPageTitle')
@@ -1117,22 +1117,22 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceDomainUrl')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceDomainUrl','off', 5,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Home Page Url");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreListProtectedPages')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreListProtectedPages','off', 6,
-               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protected Pages");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('searchVisibleContentOnly')
                 && !\Cx\Core\Setting\Controller\Setting::add('searchVisibleContentOnly','on', 7,
-               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Visible Contents");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('advancedUploadFrontend')
                 && !\Cx\Core\Setting\Controller\Setting::add('advancedUploadFrontend','off', 8,
-               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'site')){
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Visible Contents");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceProtocolFrontend')
@@ -1145,17 +1145,17 @@ class Config
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNews')
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','on', 1,
-               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard News");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardStatistics')
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardStatistics','off', 2,
-               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard Statistics");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('advancedUploadBackend')
                 && !\Cx\Core\Setting\Controller\Setting::add('advancedUploadBackend','on', 3,
-               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'administrationArea')){
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for advanced Upload Tools");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('sessionLifeTime')
@@ -1191,12 +1191,12 @@ class Config
             \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreIdsStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreIdsStatus','off', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'security')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'security')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Security system notifications ");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('passwordComplexity')
                 && !\Cx\Core\Setting\Controller\Setting::add('passwordComplexity','off', 2,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'security')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'security')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Passwords must meet the complexity requirements");
             }
 
@@ -1257,18 +1257,18 @@ class Config
             \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('xmlSitemapStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('xmlSitemapStatus','on', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for XML Sitemap");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('frontendEditingStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('frontendEditingStatus','on', 2,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Frontend Editing");
             }
             if (in_array('SystemInfo', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('useCustomizings')
                     && !\Cx\Core\Setting\Controller\Setting::add('useCustomizings','off', 3,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'otherConfigurations')){
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'otherConfigurations')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Customizing");
                 }
             }
@@ -1315,7 +1315,7 @@ class Config
             \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('bannerStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('bannerStatus','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for bannerStatus");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('spamKeywords')
@@ -1325,17 +1325,17 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('newsTeasersStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('newsTeasersStatus','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for newsTeasersStatus");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('feedNewsMLStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('feedNewsMLStatus','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for feedNewsMLStatus");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('calendarheadlines')
                 && !\Cx\Core\Setting\Controller\Setting::add('calendarheadlines','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for calendarheadlines");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('calendarheadlinescount')
@@ -1355,42 +1355,42 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('blockStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('blockStatus','1', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for blockStatus");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('blockRandom')
                 && !\Cx\Core\Setting\Controller\Setting::add('blockRandom','1', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for blockRandom");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('directoryHomeContent')
                 && !\Cx\Core\Setting\Controller\Setting::add('directoryHomeContent','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for directoryHomeContent");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forumHomeContent')
                 && !\Cx\Core\Setting\Controller\Setting::add('forumHomeContent','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for forumHomeContent");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('podcastHomeContent')
                 && !\Cx\Core\Setting\Controller\Setting::add('podcastHomeContent','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for podcastHomeContent");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forumTagContent')
                 && !\Cx\Core\Setting\Controller\Setting::add('forumTagContent','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for forumTagContent");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dataUseModule')
                 && !\Cx\Core\Setting\Controller\Setting::add('dataUseModule','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dataUseModule");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('useKnowledgePlaceholders')
                 && !\Cx\Core\Setting\Controller\Setting::add('useKnowledgePlaceholders','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'component')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for useKnowledgePlaceholders");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc')
@@ -1521,7 +1521,7 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('isUpgradable')
                 && !\Cx\Core\Setting\Controller\Setting::add('isUpgradable','on', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'license')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for isUpgradable");
             }
 
@@ -1530,7 +1530,7 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::init('Config', 'cache','Yaml', $configPath);
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheEnabled')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheEnabled','off', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheEnabled");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheExpiration')
@@ -1540,27 +1540,27 @@ class Config
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheOpStatus')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheOpStatus','off', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOpStatus");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheDbStatus')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheDbStatus','off', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheDbStatus");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheVarnishStatus')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheVarnishStatus','off', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheVarnishStatus");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCache')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCache','off', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheUserCache");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheOPCache')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheOPCache','off', 1,
-                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:Activated,off:Deactivated', 'cache')){
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheOPCache");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheProxyCacheVarnishConfig')
