@@ -157,6 +157,7 @@ EOF;
                 }
 
                 $strCommentForm  = '<div class="'.$this->moduleNameLC.'CommentForm" id="commentForm_'.$intEnrtyId.'">';
+                $strCommentForm .= '<div style="display: none;" class="text-danger" id="'.$this->moduleNameLC.'ErrorMessage"><p>'.$_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'].'</p></div>';
                 $strCommentForm .= '<form action="'.$_SERVER['REQUEST_URI'].'" name="commentFormInputs_'.$intEnrtyId.'" id="commentFormInputs_'.$intEnrtyId.'" method="post" >';
                 $strCommentForm .= '<input name="commentPageSection" value="'.$_GET['section'].'" type="hidden" />';
                 $strCommentForm .= '<input name="commentPageCmd" value="'.$_GET['cmd'].'" type="hidden" />';
@@ -167,7 +168,6 @@ EOF;
                 $strCommentForm .= $strCaptchaCode;
                 $strCommentForm .= '<p><input class="'.$this->moduleNameLC.'ButtonComment" value="'.$_ARRAYLANG['TXT_MEDIADIR_ADD'].'" onclick="'.$this->moduleNameLC.'CheckCommentForm('.$intEnrtyId.');" name="add" type="button"></p>';
                 $strCommentForm .= '</form>';
-                $strCommentForm .= '<div style="display: none; color: rgb(255, 0, 0);" id="'.$this->moduleNameLC.'ErrorMessage"><p>'.$_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'].'</p></div>';
                 $strCommentForm .= '</div>';
 
                 $objTpl->setVariable(array(
