@@ -220,7 +220,7 @@ class adminMenu
                                     continue 2;
                                 }
                                 break;
-                            case 'stats':
+                            case 'Stats':
                                 $cssClass = 'inactive';
                                 if ($this->activeCmd == 'Stats') {
                                     if (!empty($_REQUEST['stat']) && !empty($linkCmdSection) && (strpos($linkCmdSection, $_REQUEST['stat']) !== false)) {
