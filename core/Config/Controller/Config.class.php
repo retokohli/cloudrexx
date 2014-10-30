@@ -407,7 +407,7 @@ class Config
      * @param string $protocol the protocol to check for access
      * @return bool true if the domain is accessable
      */
-    protected function checkAccessibility($protocol = 'http') {
+    public static function checkAccessibility($protocol = 'http') {
         global $_CONFIG;
         if (!in_array($protocol, array('http', 'https'))) {
             return false;

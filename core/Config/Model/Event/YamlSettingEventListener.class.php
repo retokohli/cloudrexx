@@ -37,7 +37,6 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
         try {
             $objSetting = $eventArgs->getEntity();
             $value = $objSetting->getValue();
-            $configObj = new \Cx\Core\Config\Controller\Config();
             
             switch ($objSetting->getName()) {
                 case 'timezone':
@@ -58,7 +57,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
 
                 case 'forceProtocolFrontend':
                     if ($_CONFIG['forceProtocolFrontend'] != $value) {
-                        if (!$configObj->checkAccessibility($value)) {
+                        if (!\Cx\Core\Config\Controller\Config::checkAccessibility($value)) {
                             $value = 'none';
                         }
                         $objSetting->setValue($value);
@@ -67,7 +66,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
 
                 case 'forceProtocolBackend':
                     if ($_CONFIG['forceProtocolBackend'] != $value) {
-                        if (!$configObj->checkAccessibility($value)) {
+                        if (!\Cx\Core\Config\Controller\Config::checkAccessibility($value)) {
                             $value = 'none';
                         }
                         $objSetting->setValue($value);
@@ -80,7 +79,7 @@ class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                     if ($useHttps == 'https') {
                         $protocol = 'https';
                     }
-                    $value = $configObj->checkAccessibility($protocol) ? $value : 'off';
+                    $value = \Cx\Core\Config\Controller\Config::checkAccessibility($protocol) ? $value : 'off';
                     $objSetting->setValue($value);
                     break;
             }
