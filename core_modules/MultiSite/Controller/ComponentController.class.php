@@ -92,8 +92,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // load language data of MultiSite component
-        $langData = $objInit->loadLanguageData('MultiSite');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        JsonMultiSite::loadLanguageData();
         
         // load application template
         $page = new \Cx\Core\ContentManager\Model\Entity\Page();

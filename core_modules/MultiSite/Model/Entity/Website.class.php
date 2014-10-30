@@ -704,10 +704,9 @@ class Website extends \Cx\Model\Base\EntityBase {
     }
 
     public static function validateName($name) {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG;
 
-        $langData = $objInit->loadLanguageData('MultiSite');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::loadLanguageData();
         $websiteName = $name;
 
         // verify that name is not a blocked word

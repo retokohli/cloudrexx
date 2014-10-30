@@ -147,7 +147,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         //check email validity
         if (!\FWValidator::isEmail($params['post']['multisite_email_address'])) {
-            $this->loadLanguageData();
+            self::loadLanguageData();
             throw new MultiSiteJsonException(array(
                 'object'    => 'email',
                 'type'      => 'danger',
@@ -156,7 +156,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         if (!\User::isUniqueEmail($params['post']['multisite_email_address'])) {
-            $this->loadLanguageData();
+            self::loadLanguageData();
 
 // TODO: set login url
             $loginUrl = '';
@@ -171,7 +171,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
 
-    protected function loadLanguageData() {
+    public static function loadLanguageData() {
         global $_ARRAYLANG, $objInit;
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
@@ -221,7 +221,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         try {
             // load text-variables of module MultiSite
-            $this->loadLanguageData();
+            self::loadLanguageData();
 
             // set website name and website theme
             $websiteName = contrexx_input2raw($params['post']['multisite_address']);
@@ -389,7 +389,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
 
 // TODO: what do we actually need the language data for? We should load the language data at the certain place where it is actually being used
-        $this->loadLanguageData('MultiSite');
+        self::loadLanguageData('MultiSite');
         
         $objFWUser   = \FWUser::getFWUserObject();
         $objUser     = $objFWUser->objUser->getUser(contrexx_input2raw($params['post']['userId']));
@@ -949,9 +949,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function updateDefaultCodeBase($params) 
     {
-        global $_ARRAYLANG,$objInit;
-        $langData = $objInit->loadLanguageData('MultiSite');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        global $_ARRAYLANG;
+        self::loadLanguageData();
         if (!empty($params['post'])) {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
             \Cx\Core\Setting\Controller\Setting::set('defaultCodeBase',$params['post']['defaultCodeBase']);
@@ -1096,10 +1095,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
      public function updateWebsiteState($params) {
          
-        global $_ARRAYLANG, $objInit;
-        
-        $langData = $objInit->loadLanguageData('MultiSite');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+
         if (!empty($params['post'])) {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
@@ -1797,12 +1795,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException
      */
     public function resetFtpPassword($params) {
-        // load text-variables of module MultiSite
-        global $_ARRAYLANG, $objInit;
-        
-        //load language file 
-        $langData = $objInit->loadLanguageData('MultiSite');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        global $_ARRAYLANG;
+        self::loadLanguageData();
         
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
@@ -2041,7 +2035,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $objDatabase, $_ARRAYLANG;
         
         //load the multisite language
-        $this->loadLanguageData('MultiSite');
+        self::loadLanguageData('MultiSite');
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
