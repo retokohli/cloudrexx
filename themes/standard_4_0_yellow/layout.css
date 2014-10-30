@@ -171,7 +171,7 @@ body a:hover {text-decoration: none;}
     padding-right: 0;
 }
 #metanavigation li a:hover {
-    color: #fff;
+    color: #ffdd00;
     text-decoration: none;
 }
 #metanavigation li#select-language:hover a, #metanavigation li#select-language.active:hover a.active {
@@ -284,7 +284,9 @@ body a:hover {text-decoration: none;}
     background: #FFFFFF;
     min-width: 200px;
 }
-.navigation li.level-2:hover,
+.navigation li.level-2:hover {
+    background: #e4e4e2;
+}
 .navigation li.level-2.active {
     background: #ffdd00;
 }
@@ -522,18 +524,20 @@ body a:hover {text-decoration: none;}
 }
 #subnavigation li.level-3 a {
     width: 100%;
-    padding: 10px 5px 10px 45px;
+    padding: 0 5px 1px 45px;
     font-size: 13px;
     border: 0;
     background-image: url('images/nav-3-inactive.png');
-    background-position: 30px 16px;
+    background-position: 30px 7px;
     word-wrap: break-word;
-    border-bottom: 1px solid #fff;
 }
 #subnavigation li.level-4 a {
     font-size: 12px;
     background-image: url('images/nav-3-inactive.png');
-    background-position: 30px 16px;
+    background-position: 30px 7px;
+}
+#menubuilder3 {
+    padding-top: 0;
 }
 #subnavigation li.level-4:last-child a {
     border-bottom: 0;
@@ -557,11 +561,13 @@ body a:hover {text-decoration: none;}
     float: left;
     padding: 5px 0 5px 0;
 }
-#subnavigation li a:hover,
+#subnavigation li a:hover {
+    background-color: #e4e4e2;
+    color: #000;
+}
 #subnavigation li a.active {
     color: #000;
 }
-#subnavigation li.level-2 a:hover,
 #subnavigation li.level-2 a.active {
     background-image: url('images/nav-2-inactive.png');
     background-position: 15px 15px;
@@ -573,7 +579,7 @@ body a:hover {text-decoration: none;}
 #subnavigation li.level-4 a:hover,
 #subnavigation li.level-4 a.active {
     background-image: url('images/nav-3-active.png');
-    background-position: 30px 16px;
+    background-position: 30px 7px;
 }
 .sidebar-block-title {
     float: left;
@@ -1054,7 +1060,10 @@ span.disconnected {
 }
 .modal-nav button:hover {
     background: none;
-    color: #fff;
+    color: #ffdd00;
+}
+#metanavigation li#select-language a:hover, #metanavigation li#select-language.active a.active:hover, #metanavigation li#select-language a:hover {
+    color: #ffdd00 !important;
 }
 /*modal*/
 .modal-body .left {
@@ -1372,7 +1381,6 @@ p#loginerror {
 #subnavigation li li ul {
     width: 100%;
     float: left;
-    padding: 0;
 }
 .login-content {
     float: left;
@@ -1426,8 +1434,9 @@ p#loginerror {
     margin-bottom: 9px;
 }
 #login p.login-error-msg {
-    margin-top: -25px;
+    margin-top: -15px;
     float: left;
+    margin-bottom: 5px;
 }
 #profilemain {
     margin: 0;
@@ -1513,26 +1522,6 @@ p#loginerror {
 .horizontal-list .fa.fa-facebook:hover {background-color: #4568B2;}
 .horizontal-list .fa.fa-google-plus:hover {background-color: #DD4B39;}
 .horizontal-list .fa.fa-rss:hover {background-color: #ec6621;}
-.checkbox:last-child, .radio:last-child {
-    margin-bottom: 0;
-}
-.checkbox:first-child, .radio:first-child {
-    margin-top: 0;
-}
-.contact.row hr {
-    padding: 0;
-    margin: 6px 0 0px 0;
-}
-input[type="file"]{height: auto;float: left;}
-.radio label, .checkbox label {
-    height: 20px;
-}
-.btn.btn-default, .btn.btn-primary {
-    font-size: 13px;
-}
-fieldset .checkbox, fieldset .radio {
-    padding-left: 0;
-}
 .newsContent {
     margin-top: 9px;
 }

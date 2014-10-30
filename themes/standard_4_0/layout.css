@@ -530,6 +530,9 @@ body a:hover {text-decoration: none;}
     background-image: url('images/nav-3-inactive.png');
     background-position: 31px 7px;
 }
+#menubuilder3 {
+    padding-top: 0;
+}
 #subnavigation li.level-1 > a {
     display: none;
 }
@@ -1423,8 +1426,9 @@ p#loginerror {
     margin-bottom: 9px;
 }
 #login p.login-error-msg {
-    margin-top: -25px;
+    margin-top: -15px;
     float: left;
+    margin-bottom: 5px;
 }
 #profilemain {
     margin: 0;
@@ -1510,26 +1514,6 @@ p#loginerror {
 .horizontal-list .fa.fa-facebook:hover {background-color: #4568B2;}
 .horizontal-list .fa.fa-google-plus:hover {background-color: #DD4B39;}
 .horizontal-list .fa.fa-rss:hover {background-color: #ec6621;}
-.checkbox:last-child, .radio:last-child {
-    margin-bottom: 0;
-}
-.checkbox:first-child, .radio:first-child {
-    margin-top: 0;
-}
-.contact.row hr {
-    padding: 0;
-    margin: 6px 0 0px 0;
-}
-input[type="file"]{height: auto;float: left;}
-.radio label, .checkbox label {
-    height: 20px;
-}
-.btn.btn-default, .btn.btn-primary {
-    font-size: 13px;
-}
-fieldset .checkbox, fieldset .radio {
-    padding-left: 0;
-}
 .newsContent {
     margin-top: 9px;
 }

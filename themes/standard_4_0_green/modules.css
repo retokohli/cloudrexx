@@ -3038,3 +3038,23 @@ input[type="checkbox"] {
 #registrationForm, #guestbook div.information, .resetForm {
     margin-top: 5px;
 }
+.checkbox:last-child, .radio:last-child {
+    margin-bottom: 0;
+}
+.checkbox:first-child, .radio:first-child {
+    margin-top: 0;
+}
+.contact.row hr {
+    padding: 0;
+    margin: 6px 0 0px 0;
+}
+input[type="file"]{height: auto;float: left;}
+.radio label, .checkbox label {
+    height: 20px;
+}
+.btn.btn-default, .btn.btn-primary {
+    font-size: 13px;
+}
+fieldset .checkbox, fieldset .radio {
+    padding-left: 0;
+}

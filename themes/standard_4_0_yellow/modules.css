@@ -1542,7 +1542,7 @@ form[name="registrationForm"] .row {
 }
 #shop button.details-button:hover,
 #shop button.add-to-cart:hover {
-    background-color: rgb(240, 208, 8);
+    background-color: #ffee00;
 }
 #shop form#card-tds-form .card-expiry-month {width: 50px}
 #shop form#card-tds-form .card-expiry-year {width: 75px}
@@ -2073,13 +2073,13 @@ dl.data_module img {
     color: black;
 }
 #downloads div.overview div.row div.category div.content a:hover {
-    color: #B8D30B;
+    color: #ffdd00;
 }
 #downloads div.overview div.row div.category div.content a.more {
     color: #8b9581;
 }
 #downloads div.overview div.row div.category div.content a.more:hover {
-    color: #B8D30B;
+    color: #ffdd00;
 }
 #downloads div.file_list {
     float: left;
@@ -3035,4 +3035,24 @@ input[type="checkbox"] {
 .jobs-category > div {margin-bottom: 15px;}
 #registrationForm, #guestbook div.information, .resetForm {
     margin-top: 5px;
+}
+.checkbox:last-child, .radio:last-child {
+    margin-bottom: 0;
+}
+.checkbox:first-child, .radio:first-child {
+    margin-top: 0;
+}
+.contact.row hr {
+    padding: 0;
+    margin: 6px 0 0px 0;
+}
+input[type="file"]{height: auto;float: left;}
+.radio label, .checkbox label {
+    height: 20px;
+}
+.btn.btn-default, .btn.btn-primary {
+    font-size: 13px;
+}
+fieldset .checkbox, fieldset .radio {
+    padding-left: 0;
 }
