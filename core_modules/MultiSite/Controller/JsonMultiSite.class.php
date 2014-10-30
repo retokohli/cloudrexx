@@ -110,6 +110,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'remoteLogin'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'editLicense'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'executeQueryBySession' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
+            'stopQueryExecution'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
+            
         );  
     }
 
@@ -2093,9 +2095,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                 if (!empty($objResult)) {
                                     $resultArray[] = $objResult;
                                 }
-                                $queryResult[$key] = $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_SUCCESSFULLY'];
+                                $queryResult[$key] = "okbox";
                             } else {
-                                $queryResult[$key] = $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_FAILED'];
+                                $queryResult[$key] = "alertbox";
                             }
                         }
                         $finalResult = array_combine($querys, $queryResult);
@@ -2148,7 +2150,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite (executeQueryBySession): failed to execute query' . $e->getMessage());
         }
     }
-
+    
+    /**
+     * Stoping the query execution
+     * 
+     * @return result array
+     */
+    public function stopQueryExecution() {
+        
+        if (isset($_SESSION['MultiSite']['executeSql'])) {
+            unset($_SESSION['MultiSite']['executeSql']);
+        }
+        return array('status' => 'success', 'message' => 'The Query Execution was Stopped');
+    }
     /**
      * Fetching License information
      * 
