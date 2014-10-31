@@ -19,7 +19,7 @@ body a:hover {text-decoration: none;}
     width: 100%;
     background: #f7f7f7;
 }
-.item h1 span {
+.item h1 span, .item h1 font {
     color: #000 !important;
 }
 .addir-search {
@@ -1568,4 +1568,9 @@ p#loginerror {
 .sidebar .navbar-nav{margin: 0;}
 #shop .product.detail .functions {
     padding-right: 0;
+}
+
+/* new style */
+.rssfeed img {
+ border: 0;
 }

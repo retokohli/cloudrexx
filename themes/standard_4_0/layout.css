@@ -1243,6 +1243,7 @@ section, footer, .wrapper {
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
     position: relative;
+    z-index: 9;
 }
 .news-submit {
     float: left;
