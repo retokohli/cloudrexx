@@ -1,0 +1,5 @@
+<Directory>
+  <Limit WRITE>
+    DenyAll
+  </Limit>
+</Directory>
