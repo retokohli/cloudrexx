@@ -505,8 +505,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 $domainRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('id' => $arrData['id']));
                                 $website = $domainRepo->getWebsite();
                                 if ($website) {
-                                    return ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN) ? $website->getFqdn() :
-                                            ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? $website->getIpAddress() : false);
+                                    return ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN) ? $website->getIpAddress() :
+                                            ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? $website->getFqdn()->getName() : false);
                                 }
                             } catch (\Exception $e) {}
                             return false;
