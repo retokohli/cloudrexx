@@ -1,0 +1,50 @@
+<div id="page-title">
+    <div class="container">
+        <div class="row">
+            <div class="span12 text-center">
+                <h2>{CONTENT_TITLE}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="content2">
+    <div class="container">
+        <div class="row">
+            <div class="span9">
+                <div class="blog-post margin-60">
+                    {CONTENT_TEXT}
+                </div>
+            </div>
+            <div class="span3">
+                <form class="margin-20" action="{NODE_SEARCH}" method="get">
+                    <input type="text" name="term" class="input-block-level" value="Search" onclick="this.value=''" onblur="this.value='Search'" />
+                </form>
+                {SUBNAVBAR_FILE}
+<!--            <h3>Adresse</h3>
+               <ul class="unstyled side-links">
+                    <li>{CONTACT_COMPANY}</li>
+                    <li>{CONTACT_ADDRESS}</li>
+                    <li>{CONTACT_ZIP} {CONTACT_PLACE}</li>
+                    <li>{CONTACT_COUNTRY}</li>
+					<br>
+                    <li>Tel:&nbsp;&nbsp;{CONTACT_PHONE}</li>
+                    <li>Fax:&nbsp;{CONTACT_FAX}</li>
+                    <li><a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a></li>
+                    <li><a href="{BASE_URL}" target="_blank">{DOMAIN_URL}</a></li>
+                </ul>
+                <br/>-->
+                {SHOPNAVBAR_FILE}
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12 text-left">
+                <div class="social-media">
+                    <ul>
+                        <li><a href="#">{GOOGLE_PLUSONE}</a></li>
+                        <li><a href="#">{FACEBOOK_LIKE_IFRAME}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<div class="row-fluid">
+    <!-- BEGIN headlines_row -->    
+    <div class="span6 text-left latest-article" style='min-height: 220px;letter-spacing:2px'>
+        {NEWS_TITLE}<br />
+        <br />
+        {NEWS_DATE}&nbsp;&nbsp;|&nbsp;&nbsp;{NEWS_TIME}&nbsp;&nbsp;|&nbsp;&nbsp;{NEWS_AUTHOR}
+<!--        <img alt="{NEWS_IMAGE_ALT}" src="{HEADLINE_IMAGE_PATH}"/>-->
+        <p class='text-left' style="letter-spacing: normal">{NEWS_TEASER}</p><br />
+<!--        <a class="more" href="{NODE_NEWS}"><i class="icon-chevron-sign-right icon-2x margin-20 black"></i></a>-->
+            <a class="more text-center" style="display:block;width: 100%; position:absolute;bottom:0px;" href="{NODE}/index.php?section=news&amp;cmd=details&amp;newsid={NEWS_ID}"><i class="icon-chevron-sign-right icon-2x margin-20 black"></i></a>  
+    </div>    
+    <!-- END headlines_row -->
+</div>
