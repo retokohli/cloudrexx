@@ -551,13 +551,17 @@ cx.fe.toolbar.hide = function() {
     // hide anchor boxes
     cx.fe.toolbar.hideBoxes();
     
-    var toolbarOffset = parseInt(cx.jQuery("#workbenchWarning").outerHeight());
+    if (cx.fe.toolbar_opened) {
+        var toolbarOffset = parseInt(cx.jQuery("#fe_toolbar").css("top"));
+    } else {
+        var toolbarOffset = parseInt(cx.jQuery("body").css("padding-top"));
+    }
     if (!toolbarOffset) {
         toolbarOffset = 0;
     }
 
     // do the css
-    cx.jQuery("#fe_toolbar").css("top", "-" + (parseInt(cx.jQuery("#fe_toolbar").height()) - toolbarOffset) + "px");
+    cx.jQuery("#fe_toolbar").css("top", (toolbarOffset - parseInt(cx.jQuery("#fe_toolbar").height())) + "px");
     cx.jQuery("body").css("padding-top", toolbarOffset + "px");
 
     // do the html
@@ -574,7 +578,7 @@ cx.fe.toolbar.hide = function() {
 cx.fe.toolbar.show = function() {
     // do the css
     
-    var toolbarOffset = parseInt(cx.jQuery("#workbenchWarning").outerHeight());
+    var toolbarOffset = parseInt(cx.jQuery("body").css("padding-top"));
     if (!toolbarOffset) {
         toolbarOffset = 0;
     }
