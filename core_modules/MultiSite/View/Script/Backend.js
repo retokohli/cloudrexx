@@ -92,36 +92,23 @@
                         var i = 1;
                         $.each(response.data.result, function(key, data) {
                             if (typeof data === 'object') {
+                                var jsonString = JSON.stringify(data);
                                 tbody += '<tr>';
-                                tbody += '<td>' + key + '</td><td><span id="'+ key + '">';
-                                var uiDiv   = '' ;
-                                var uiTab   = '';
-                                var i = 1;
-                                $.each(data, function(index, data) {
+                                tbody += '<td>' + key + '</td><td><span id="ui_'+key+'" style="display: none;">'+jsonString+'</span><span id="'+ key + '">';
+                                $.each(JSON.parse(jsonString), function(key, data) {
                                     if (typeof data === 'object') {
-                                        tbody += '<strong>' + index + ':</strong>&nbsp;';
-                                        uiTab += '<li><a href="#tabs-'+i+'">'+ index + '</a></li>';
-                                        $.each(data, function(languageId, messages) {
-                                            tbody += messages + '<br>';
-                                            uiDiv +='<div id="tabs-'+i+'" data-id ="'+languageId+'" data-lang ="'+index+'">';
-                                            uiDiv += '<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
-                                            uiDiv += '<tr><td><label>'+ key +'</label></td><td><textarea rows="4" cols="40" class = "'+ key +'" name ="'+ key +'">'+messages+'</textarea></td></tr>';
-                                            uiDiv += '</table>';
-                                            uiDiv +='</div>';
-                                        });
-                                        i++;
-                                        
+                                        tbody += '<strong>' + data.lang_name + ':</strong>&nbsp;';
+                                        tbody += data.message + '<br>';
                                     } else {
-                                        tbody += index + ' : ' + data + ', ';
+                                        tbody += key + ' : ' + data + ', ';
                                     }
                                 });
-                                tbody += '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-websiteid="'+ id +'"></a>';
-                                tbody += '<div id="ui_'+ key +'" style="display:none;"><ul>'+uiTab+'</ul>'+uiDiv+'</div>';
+                                tbody += '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-websiteid="'+ id +'" onclick="Multisite.editLicense(cx.jQuery(this))"></a>';
                                 tbody += '</td></tr>';
                             } else {
                                 tbody += '<tr>';
                                 tbody += '<td>' + key + '</td>';
-                                tbody += '<td><span class="'+ key + '">' + data + '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'"></a></td>';
+                                tbody += '<td><span class="'+ key + '">' + data + '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'" onclick="Multisite.editLicense(cx.jQuery(this))"></a></td>';
                                 tbody += '</tr>';
                             }
                         });
@@ -145,88 +132,6 @@
                 }
             });
         });
-        
-        $('.editLicense').live('click',function() {
-            var fieldLabel = $(this).attr('data-field');
-            var title      = $(this).attr('title');
-            var websiteId  = $(this).attr('data-websiteid');
-            var licenseArray = ['licenseMessage','dashboardMessages','licenseGrayzoneMessages'];
-            var licenseMessageObj = $(this).next().html();
-            var liceneseTable ='';
-            if ($.inArray(fieldLabel, licenseArray) !== -1) {
-                liceneseTable = '<div id="tab_menu" class="tab-'+fieldLabel+'">'+licenseMessageObj+'</div>';
-            } else {
-                liceneseTable = '<table id="editLicense" cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
-                liceneseTable += '<tr><td><label>'+ fieldLabel +'</label></td><td><textarea rows="4" cols="40" class = "'+ fieldLabel +'" name ="'+ fieldLabel +'">'+$(this).attr('data-value')+'</textarea></td></tr>';
-                liceneseTable += '</table>';
-            }
-            
-            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=editLicense";
-            cx.ui.dialog({
-                width: 500,
-                height: 250,
-                title: title,
-                content: liceneseTable,
-                autoOpen: true,
-                modal: true,
-                buttons: {
-                    "Save": function() {
-                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
-                        if ($.inArray(fieldLabel, licenseArray) !== -1) {
-                            var fieldValue = [];
-                            var messageText = '';
-                            var messageUiTab = [];
-                            $('#tab_menu div').each(function(){
-                                messageText += '<strong>'+$(this).attr('data-lang')+':</strong>&nbsp;';
-                                messageText += $(this).find('textarea.'+fieldLabel).val()+'<br>';
-                                messageUiTab.push[$(this).find('textarea.'+fieldLabel).val()];
-                                fieldValue[$(this).attr('data-id')] = {text : $(this).find('textarea.'+fieldLabel).val()};
-                            });
-                        } else {
-                            var fieldValue = $('.licenceEdit').find('textarea.'+fieldLabel).val();
-                        }
-                        $.ajax({
-                            url: domainUrl,
-                            type: "POST",
-                            data: {licenseLabel: fieldLabel,licenseValue: fieldValue,websiteId: websiteId},
-                            dataType: "json",
-                            success: function(response) {
-                                if (response.status == 'error' && response.data.status == 'error') {
-                                    cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
-                                }
-                                if (response.status == 'success' && response.data.status == 'success') {
-                                    if ($.isArray(fieldValue)) {
-                                        $('#licenseMessage').html(messageText);
-                                        $.each(messageUiTab, function(index, data) {
-                                            $('#ui_'+fieldLabel+' #tabs-'+index).find('.'+fieldLabel).html(data);
-                                        });
-                                    } else {
-                                        $('span.'+fieldLabel).text(fieldValue);                                   
-                                        $('.editLicense_'+ fieldLabel).attr('data-value', fieldValue);
-                                    }
-                                    
-                                    cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
-                                }
-                            }
-                        });
-                        $('#editLicense').remove();
-                        $('#tab_menu').remove();
-                        $(this).dialog("close");
-                    },
-                    "Cancel": function() {
-                        $('#editLicense').remove();
-                        $('#tab_menu').remove();
-                        $(this).dialog("close");
-                    }
-                },
-                close: function() {
-                    $('#editLicense').remove();
-                    $('#tab_menu').remove();
-                }
-            });
-            $('#tab_menu').tabs();
-        });
-        
         // execute query on websites / service server's websites
         $('.executeQuery').click(function() {
             $('#instance_table').append('<div id ="load-lock"></div>');
@@ -445,3 +350,97 @@
         };
     });
 })(jQuery);
+
+var Multisite = {
+    //Edit License data
+    editLicense: function($this) {
+        var fieldLabel = $this.attr('data-field');
+        var title = $this.attr('title');
+        var websiteId = $this.attr('data-websiteid');
+        var licenseArray = ['licenseMessage', 'dashboardMessages', 'licenseGrayzoneMessages'];
+        var liceneseTable = '';
+        var uiDiv = '';
+        var uiTab = '';
+        var i = 1;
+        if ($J.inArray(fieldLabel, licenseArray) !== -1) {
+            var jsonString = $J('#ui_' + fieldLabel).html();
+            $J.each(JSON.parse(jsonString), function(index, data) {
+                if (typeof data === 'object') {
+                    uiTab += '<li><a href="#tabs-' + i + '">' + data.lang_name + '</a></li>';
+                    uiDiv += '<div id="tabs-' + i + '" data-langId ="' + data.lang_id + '" data-langName ="' + data.lang_name + '">';
+                    uiDiv += '<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
+                    uiDiv += '<tr><td><label>' + fieldLabel + '</label></td><td><textarea rows="4" cols="40" class = "' + fieldLabel + '" name ="' + fieldLabel + '">' + data.message + '</textarea></td></tr>';
+                    uiDiv += '</table>';
+                    uiDiv += '</div>';
+                    i++;
+                }
+            });
+            liceneseTable = '<div id="tab_menu" class="tab-' + fieldLabel + '"><ul>' + uiTab + '</ul>' + uiDiv + '</div>';
+        } else {
+            liceneseTable = '<table id="editLicense" cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
+            liceneseTable += '<tr><td><label>' + fieldLabel + '</label></td><td><textarea rows="4" cols="40" class = "' + fieldLabel + '" name ="' + fieldLabel + '">' + $this.attr('data-value') + '</textarea></td></tr>';
+            liceneseTable += '</table>';
+        }
+        domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=editLicense";
+        cx.ui.dialog({
+            width: 500,
+            height: 250,
+            title: title,
+            content: liceneseTable,
+            autoOpen: true,
+            modal: true,
+            buttons: {
+                "Save": function() {
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+                    if ($J.inArray(fieldLabel, licenseArray) !== -1) {
+                        var fieldValue = [];
+                        var messageText = '';
+                        var messageUiTab = [];
+                        $J('#tab_menu.tab-' + fieldLabel + ' div').each(function() {
+                            messageText += '<strong>' + $J(this).attr('data-langName') + ':</strong>&nbsp;';
+                            messageText += ""+$J(this).find('textarea.' + fieldLabel).text() + '<br>';
+                            messageUiTab.push({lang_id: $J(this).attr('data-langId'), lang_name: $J(this).attr('data-langName'), message: $J(this).find('textarea.' + fieldLabel).val()});
+                            fieldValue[$J(this).attr('data-langId')] = {text: $J(this).find('textarea.' + fieldLabel).val()};
+                        });
+                    } else {
+                        var fieldValue = $J('.licenceEdit').find('textarea.' + fieldLabel).val();
+                    }
+                    $J.ajax({
+                        url: domainUrl,
+                        type: "POST",
+                        data: {licenseLabel: fieldLabel, licenseValue: fieldValue, websiteId: websiteId},
+                        dataType: "json",
+                        success: function(response) {
+                            if (response.data.status == 'error') {
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                            }
+                            if (response.status == 'success' && response.data.status == 'success') {
+                                if ($J.isArray(fieldValue)) {
+                                    $J('#'+fieldLabel).html(messageText);
+                                    $J('#ui_' + fieldLabel).html(JSON.stringify(messageUiTab));
+                                } else {
+                                    $J('span.' + fieldLabel).text(fieldValue);
+                                    $J('.editLicense_' + fieldLabel).attr('data-value', fieldValue);
+                                }
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                            }
+                        }
+                    });
+                    $J('#editLicense').remove();
+                    $J('#tab_menu').remove();
+                    $J(this).dialog("close");
+                },
+                "Cancel": function() {
+                    $J('#editLicense').remove();
+                    $J('#tab_menu').remove();
+                    $J(this).dialog("close");
+                }
+            },
+            close: function() {
+                $J('#editLicense').remove();
+                $J('#tab_menu').remove();
+            }
+        });
+        $J('#tab_menu').tabs();
+    }
+};

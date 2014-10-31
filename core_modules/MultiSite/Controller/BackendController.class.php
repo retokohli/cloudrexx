@@ -363,7 +363,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions = \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, false);
                                 }
-                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::showLicense($rowData, false);
                                 }
                                 if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {

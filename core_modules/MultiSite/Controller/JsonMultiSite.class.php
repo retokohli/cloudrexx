@@ -1162,7 +1162,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $licenseState = isset($params['post']['state']) ? $params['post']['state'] : (isset($params['post']['licenseState']) ? $params['post']['licenseState'] : '');
                     $licenseValidTo = isset($params['post']['validTo']) ? $params['post']['validTo'] : (isset($params['post']['licenseValidTo']) ? $params['post']['licenseValidTo'] : '');
                     $licenseUpdateInterval = isset($params['post']['updateInterval']) ? $params['post']['updateInterval'] : (isset($params['post']['licenseUpdateInterval']) ? $params['post']['licenseUpdateInterval'] : '');
-                    $licenseLegalComponents = isset($params['post']['legalComponents']) ? $params['post']['legalComponents'] : (isset($params['post']['availableComponents']) ? explode(', ', $params['post']['availableComponents']) : '');
+                    $licenseLegalComponents = isset($params['post']['legalComponents']) ? $params['post']['legalComponents'] : (isset($params['post']['availableComponents']) ? explode(',', str_replace(' ' , '' ,$params['post']['availableComponents'])) : '');
                     if (!empty($licenseState)) {
                         $license->setState($licenseState);
                     }
@@ -2173,7 +2173,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                case ComponentController::MODE_SERVICE:
                     if (!isset($params['post']['websiteId'])) {
                         throw new MultiSiteJsonException('JsonMultiSite::getLicense() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied: '.var_export($params, true));
                     }
@@ -2181,7 +2180,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website   = $webRepo->findOneById($params['post']['websiteId']);
                     $params    = array(
-                        'websiteId'   => $params['post']['websiteId']
+                        'websiteId'   => $params['post']['websiteId'],
+                        'activeLanguages'   => \FWLanguage::getActiveFrontendLanguages()
                     );
                     $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getLicense', $params, $website);
                     if ($resp && $resp->data->status == 'success') {
@@ -2197,15 +2197,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $dashboardMessages = array();
                     $licenseMessage = array();
                     $licenseGrayzoneMessages = array();
-                    foreach (\FWLanguage::getActiveFrontendLanguages() as $languages) {
+                    foreach ($params['post']['activeLanguages'] as $languages) {
                         $lang_id = $languages['id'];
                         $lang_name = $languages['name'];
                         $licensemessageObj = $license->getMessage(false, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
                         $dashboardMessagesObj = $license->getMessage(true, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
-                        $licenseGrayzoneMessagesObj = $license->getMessage(\FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
-                        $licenseMessage[$lang_name] = ($licensemessageObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array($lang_id => $licensemessageObj->getText()) : array($lang_id => '');
-                        $dashboardMessages[$lang_name] = ($dashboardMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array($lang_id => $dashboardMessagesObj->getText()) : array($lang_id => '');
-                        $licenseGrayzoneMessages[$lang_name] = ($licenseGrayzoneMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array($lang_id => $licenseGrayzoneMessagesObj->getText()) : array($lang_id => '');
+                        $licenseGrayzoneMessagesObj = $license->getGrayzoneMessage(\FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
+                        $licenseMessage[] = ($licensemessageObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id, 'lang_name' => $lang_name,'message'=> $licensemessageObj->getText()) : array('lang_id' => $lang_id , 'lang_name' => $lang_name, 'message' =>'');
+                        $dashboardMessages[] = ($dashboardMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id, 'lang_name' => $lang_name ,'message' => $dashboardMessagesObj->getText()) : array('lang_id' => $lang_id , 'lang_name' => $lang_name, 'message' =>'');
+                        $licenseGrayzoneMessages[] = ($licenseGrayzoneMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id , 'lang_name' => $lang_name, 'message' => $licenseGrayzoneMessagesObj->getText()) : array('lang_id' => $lang_id , 'lang_name' => $lang_name ,'message' =>'');
                     }
                     $result = array(
                         'installationId'            => $license->getInstallationId(),
