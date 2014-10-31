@@ -47,3 +47,8 @@ $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'] = 'Vielen Dank für Ih
 //Reset FTP password status message
 $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG'] = 'Die Rücksetzung Ihres FTP Kennworts schlug fehl. Bitte versuchen Sie es erneut.';
 $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_MSG'] = 'Ihr FTP Kennwort wurde erfolgreich zurück gesetzt.';
+
+// Account activation header bar
+$_ARRAYLANG['TXT_MULTISITE_ACCOUNT_ACTIVATION_REMINDER'] = 'Der Aktivierungslink wurde an %1$s gesendet. Bestätigen Sie Ihren Account bis am %2$s.';
+$_ARRAYLANG['TXT_MULTISITE_ACCOUNT_ACTIVATION_MAIL_RESENT'] = 'Prüfen Sie jetzt Ihre Mailbox %1$s. Ohne Bestätigung wird Ihr Konto am %2$s deaktiviert.';
+$_ARRAYLANG['TXT_MULTISITE_RESEND_ACTIVATION_CODE'] = 'Erneut zusenden';

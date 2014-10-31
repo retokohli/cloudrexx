@@ -923,4 +923,52 @@ throw new MultiSiteException('Refactor this method!');
         }
         return implode(',', $dropdownOptions);
     }
+
+    /**
+     * Add the warning banner
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
+     */
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        global $_ARRAYLANG;
+
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+        $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+        if (!$websiteUserId) {
+            return;
+        }
+
+        $websiteUser = \FWUser::getFWUserObject()->objUser->getUser(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId'));
+        if (!$websiteUser) {
+            return;
+        }
+
+        if ($websiteUser->isVerified()) {
+            return;
+        }
+
+        JsonMultiSite::loadLanguageData();
+        $objTemplate = $this->cx->getTemplate();
+        $warning = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Backend');
+        $warning->loadTemplateFile('AccountActivation.html');
+
+        $dueDate = '<span class="highlight">'.date(ASCMS_DATE_FORMAT_DATE, $websiteUser->getRestoreKeyTime()).'</span>';
+        $email = '<span class="highlight">'.contrexx_raw2xhtml($websiteUser->getEmail()).'</span>';
+        $reminderMsg = sprintf($_ARRAYLANG['TXT_MULTISITE_ACCOUNT_ACTIVATION_REMINDER'], $email, $dueDate);
+
+        $warning->setVariable(array(
+            'MULTISITE_ACCOUNT_ACTIVATION_REMINDER_MSG' => $reminderMsg,
+            'TXT_MULTISITE_RESEND_ACTIVATION_CODE'      => $_ARRAYLANG['TXT_MULTISITE_RESEND_ACTIVATION_CODE'],
+        ));
+
+        \JS::registerJS('core_modules/MultiSite/View/Script/AccountActivation.js');
+
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            \JS::registerCSS('core_modules/MultiSite/View/Style/AccountActivationBackend.css');
+            $objTemplate->_blocks['__global__'] = preg_replace('/<div id="container"[^>]*>/', '\\0' . $warning->get(), $objTemplate->_blocks['__global__']);
+        } else {
+            \JS::registerCSS('core_modules/MultiSite/View/Style/AccountActivationFrontend.css');
+            $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $warning->get(), $objTemplate->_blocks['__global__']);
+        }
+    }
 }
