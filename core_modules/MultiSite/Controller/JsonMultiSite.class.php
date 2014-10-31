@@ -1832,7 +1832,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
                     $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                     $password = \User::make_password(8, true);
-                    if ($hostingController->changeFtpAccountPassword($website->getName(), $password)) {
+                    if ($hostingController->changeFtpAccountPassword($website->getFtpUser(), $password)) {
                         return array(
                             'status'    => 'success',
                             'password'  => $password,
