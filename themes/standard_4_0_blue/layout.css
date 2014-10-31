@@ -1588,7 +1588,7 @@ button[name="recipient_save"] {
     background: #0372AB;
     color: #fff;
 }
-h1 span {
+.item h1 span, .item h1 font {
     color: #fff !important;
 }
 #metanavigation li#select-language a:hover, #metanavigation li#select-language.active a.active:hover, #metanavigation li#select-language a:hover {
@@ -1604,3 +1604,11 @@ h1 span {
     padding: 10px 0 9px 0;
     border-bottom: 1px solid #D6D6D6;
 }
+
+/* new style */
+
+.rssfeed img {
+ border: 0;
+}
+
+
