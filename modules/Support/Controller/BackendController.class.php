@@ -11,6 +11,11 @@
 namespace Cx\Modules\Support\Controller;
 
 /**
+ * Class SupportException
+ */
+class SupportException extends \Exception {}
+
+/**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
  * @copyright   Comvation AG
@@ -54,7 +59,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $this->template = $template;
         $act = $cmd[0];
         $this->submenuName = $this->getSubmenuName($cmd);
-        
+        //support configuration setting
+        self::errorHandler();
         $this->connectToController($act);
         
         \Message::show();
@@ -97,4 +103,34 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return null;
     }
     
+    /**
+     * Fixes database errors.   
+     * 
+     * @global array $_CONFIG
+     * 
+     * @return boolean
+     * @throws SupportException
+     */
+    static function errorHandler() {
+        global $_CONFIG;
+        
+        try {
+            \Cx\Core\Setting\Controller\Setting::init('Support', '', 'Yaml');
+            
+            //setup group
+            \Cx\Core\Setting\Controller\Setting::init('Support', 'setup', 'Yaml');
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('faqUrl') && !\Cx\Core\Setting\Controller\Setting::add('faqUrl', 'https://www.cloudrexx.com/FAQ', 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')) {
+                throw new SupportException("Failed to add Setting entry for faq url");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('recipientMailAddress') && !\Cx\Core\Setting\Controller\Setting::add('recipientMailAddress', $_CONFIG['coreAdminEmail'], 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')) {
+                throw new SupportException("Failed to add Setting entry for recipient mail address");
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
+        
+        // Always!
+        return false;
+    }
+
 }
