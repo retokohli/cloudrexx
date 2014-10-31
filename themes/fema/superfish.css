@@ -1,0 +1,97 @@
+/*** ESSENTIAL STYLES ***/
+.sf-menu, .sf-menu * {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.sf-menu li {
+    position: relative;
+}
+.sf-menu ul {
+    position: absolute;
+    display: none;
+    top: 100%;
+    left: 0;
+    z-index: 99;
+}
+.sf-menu > li {
+    float: left;
+}
+.sf-menu li:hover > ul,
+.sf-menu li.sfHover > ul {
+    display: block;
+}
+.sf-menu a {
+    display: block;
+    position: relative;
+	color: #545454;
+}
+.sf-menu a:hover {
+	color: #545454;
+}
+.sf-menu ul ul {
+    top: 0;
+    left: 100%;
+}
+/*** DEMO SKIN ***/
+.sf-menu {
+    float: left;
+    margin-bottom: 1em;
+}
+.sf-menu ul {
+    box-shadow: 2px 2px 6px rgba(0,0,0,.2);
+    min-width: 12em; /* allow long menu items to determine submenu width */
+    *width: 12em; /* no auto sub width for IE7, see white-space comment below */
+}
+.sf-menu a {    
+    padding: .75em 1em;
+    text-decoration: none;
+    zoom: 1; /* IE7 */
+}
+.sf-menu a {
+    color: #868686;
+    margin-bottom:-4px;
+}
+.sf-menu li {
+    background: transparent;
+    white-space: nowrap; /* no need for Supersubs plugin */
+    *white-space: normal; /* ...unless you support IE7 (let it wrap) */
+    -webkit-transition: background .2s;
+    transition: background .2s;
+}
+.sf-menu ul {
+    background-clip: padding-box;
+    background-color: #31363a;
+    color: #FFFFFF;
+    border: 0px solid rgba(0, 0, 0, 0.1);
+    border-radius: 2px 2px 2px 2px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    float: left;
+    left: 16px;
+    list-style: none outside none;
+    margin: 1px 4px 0px 0px;
+    min-width: 160px;
+    position: absolute;
+    top: 100%;
+    z-index: 1000;
+}
+.sf-menu ul ul li {
+    background: transparent;
+}
+.sf-menu li:hover,
+.sf-menu li.sfHover {
+    background: transparent;
+    /* only transition out, not in */
+    -webkit-transition: none;
+    transition: none;    
+}
+.sf-menu li ul li a:hover{
+    background-color: #ebebeb;
+}
+/*** arrows (for all except IE7) **/
+.sf-arrows .sf-with-ul {
+    padding-right: 2.5em;
+    *padding-right: 1em; /* no CSS arrows for IE7 (lack pseudo-elements) */
+}
+/*** SUBMENU ***/
+
