@@ -567,8 +567,8 @@ throw new MultiSiteException('Refactor this method!');
                     throw new MultiSiteException("Failed to add Setting entry for support recipient mail address during website setup");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('maxLengthFtpAccountName', 0, 18,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, 16, 'setup')){
+                && !\Cx\Core\Setting\Controller\Setting::add('maxLengthFtpAccountName', 16, 18,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for maximum length for the FTP account name");
             }
 
