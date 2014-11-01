@@ -1,47 +1,47 @@
 .clearfix:after{
-content: " ";
-display: block;
-clear: both;
+    content: " ";
+    display: block;
+    clear: both;
 }
 .fema-galleries-wrapper,
 .fema-galleries-wrapper *,
 .fema-galleries-wrapper *:before,
 .fema-galleries-wrapper *:after{
-box-sizing: border-box;
--moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 /*---------------------------------
 /* SHOW ALL GALLERIES
 /*----------------------------------------*/
 .fema-galleries-wrapper{
-position: relative;
-margin-top: 70px !important;
-padding-bottom: 30px !important;
-background-color: #f4f4f4;
+    position: relative;
+    margin-top: 70px !important;
+    padding-bottom: 30px !important;
+    background-color: #f4f4f4;
 }
 .fema-galleries{
-margin-bottom: 0;
-overflow: hidden;
+    margin-bottom: 0;
+    overflow: hidden;
 }
 /*paging: horizontal*/
 @media screen and (min-width:800px) {
-.fema-galleries-wrapper.layout-horizontal .fema-galleries-list{
-position: relative;
-transition: all 0.8s ease-in-out;
-}
-.fema-galleries-wrapper.layout-horizontal .fema-galleries-page{
-background: #eee;
-float: left;
-position: relative;
-}
+    .fema-galleries-wrapper.layout-horizontal .fema-galleries-list{
+        position: relative;
+        transition: all 0.8s ease-in-out;
+    }
+    .fema-galleries-wrapper.layout-horizontal .fema-galleries-page{
+        background: #eee;
+        float: left;
+        position: relative;
+    }
 }
 .fema-galleries-single{
-background: #fff;
-display: block;
-width: 50%;
-float: left;
-position: relative;
-overflow: hidden;
+    background: #fff;
+    display: block;
+    width: 50%;
+    float: left;
+    position: relative;
+    overflow: hidden;
 }
 /*single: horizontal*/
 @media screen and (min-width:800px) { .fema-galleries-wrapper.layout-horizontal .fema-galleries-single{ width: 25%; } }
@@ -49,633 +49,633 @@ overflow: hidden;
 @media screen and (min-width:800px) { .fema-galleries-wrapper.layout-grid .fema-galleries-single{ width: 33.33333%; } }
 @media screen and (min-width:1280px){ .fema-galleries-wrapper.layout-grid .fema-galleries-single{ width: 25%; } }
 .fema-galleries-single .image-container{
-background-color: #fff;
-background-repeat: no-repeat;
-background-position: center;
-background-size: cover;
-overflow: hidden;
-padding-bottom: 70%;
-position: relative;
-width: 100%;
-height: 0;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    overflow: hidden;
+    padding-bottom: 70%;
+    position: relative;
+    width: 100%;
+    height: 0;
 }
 /*image container: horizontal*/
 .fema-galleries-wrapper.layout-horizontal .image-container img{
-height: 300%;
-margin-top: -100%;
+    height: 300%;
+    margin-top: -100%;
 }
 @media screen and (min-width:800px) {
-.fema-galleries-wrapper.layout-horizontal .image-container{ padding-bottom: 210%; }
-.fema-galleries-wrapper.layout-horizontal .image-container img{
-height: 100%;
-margin-top: 0;
-}
+    .fema-galleries-wrapper.layout-horizontal .image-container{ padding-bottom: 210%; }
+    .fema-galleries-wrapper.layout-horizontal .image-container img{
+        height: 100%;
+        margin-top: 0;
+    }
 }
 /*image container: grid*/
 @media screen and (min-width:800px) {
-.fema-galleries-wrapper.layout-grid .image-container{ padding-bottom: 70%; }
+    .fema-galleries-wrapper.layout-grid .image-container{ padding-bottom: 70%; }
 }
 .fema-galleries-single .image-container{
-transition: all 0.3s;
+    transition: all 0.3s;
 }
 .fema-galleries-single .inner-container{
-background-color: rgba(0,0,0,0.65);
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-transition: all 0.3s;
+    background-color: rgba(0,0,0,0.65);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s;
 }
 .fema-galleries-single .data-container{
-text-align: center;
-display: table;
-overflow: hidden;
-padding: 0 16%;
-vertical-align: middle;
-width: 100%;
-height: 100%;
+    text-align: center;
+    display: table;
+    overflow: hidden;
+    padding: 0 16%;
+    vertical-align: middle;
+    width: 100%;
+    height: 100%;
 }
 .fema-galleries-single .data-container > div{
-display: table-cell;
-vertical-align: middle;
-color: #fff;
-position: relative;
-top: 0;
-transition: all 0.2s;
+    display: table-cell;
+    vertical-align: middle;
+    color: #fff;
+    position: relative;
+    top: 0;
+    transition: all 0.2s;
 }
 .fema-galleries-single .data-container > div .cat-name{
-font-size: 12px;
-font-weight: 100;
-text-transform: uppercase;
-letter-spacing: 0.2em;
-transition: all 0.3s;
-line-height: 1.8;
+    font-size: 12px;
+    font-weight: 100;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    transition: all 0.3s;
+    line-height: 1.8;
 }
 @media screen and (min-width:801px){
-.fema-galleries-single .data-container > div .cat-name{
-font-size: 14px;
-}
+    .fema-galleries-single .data-container > div .cat-name{
+        font-size: 14px;
+    }
 }
 @media screen and (min-width:1281px){
-.fema-galleries-single .data-container > div .cat-name{
-font-size: 16px;
-}
+    .fema-galleries-single .data-container > div .cat-name{
+        font-size: 16px;
+    }
 }
 .fema-galleries-single .cat-icons{
-color: #000;
-position: absolute;
-bottom: 0;
-left: 0;
-width: 100%;
-height: 45px;
-font-size: 12px;
-line-height: 45px;
-opacity: 0;
-padding: 0 10px;
-transition: all 0.4s;
-text-align: center;
+    color: #000;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 45px;
+    font-size: 12px;
+    line-height: 45px;
+    opacity: 0;
+    padding: 0 10px;
+    transition: all 0.4s;
+    text-align: center;
 }
 .fema-galleries-single .cat-icons:after{
-content: " ";
-display: block;
-clear: both;
+    content: " ";
+    display: block;
+    clear: both;
 }
 .fema-galleries-single .cat-icons > span{
-background-position: 7px 50%;
-background-repeat: no-repeat;
-padding: 3px 12px;
+    background-position: 7px 50%;
+    background-repeat: no-repeat;
+    padding: 3px 12px;
 }
 .fema-galleries-single .cat-icons .ci-likes{
-/*background-image: url(images/tagicon-heartclear.png);*/
-padding-left: 25px;
+    /*background-image: url(images/tagicon-heartclear.png);*/
+    padding-left: 25px;
 }
 .fema-galleries-single .cat-icons .ci-author{
-/*background-image: url(images/tagicon-user.png);*/
-padding-left: 25px;
+    /*background-image: url(images/tagicon-user.png);*/
+    padding-left: 25px;
 }
 @media screen and (min-width:800px){
-.fema-galleries-single:hover .image-container{
-transform: translateY(-45px);
--ms-transform: translateY(-45px);
--webkit-transform: translateY(-45px);
-}
-.fema-galleries-single:hover .inner-container{
-background-color: rgba(0,0,0,0);
-}
-.fema-galleries-single:hover .cat-icons{
-opacity: 1;
-}
-.fema-galleries-single:hover .cat-name{
-opacity: 0;
-}
+    .fema-galleries-single:hover .image-container{
+        transform: translateY(-45px);
+        -ms-transform: translateY(-45px);
+        -webkit-transform: translateY(-45px);
+    }
+    .fema-galleries-single:hover .inner-container{
+        background-color: rgba(0,0,0,0);
+    }
+    .fema-galleries-single:hover .cat-icons{
+        opacity: 1;
+    }
+    .fema-galleries-single:hover .cat-name{
+        opacity: 0;
+    }
 }
 .fema-galleries-navigation{
-height: 50px;
-margin-top: 50px;
+    height: 50px;
+    margin-top: 50px;
 }
 @media screen and (max-width:800px){
-.fema-galleries-paging{
-display: none;
+    .fema-galleries-paging{
+        display: none;
+    }
 }
-}
 .fema-galleries-paging{
-width: 100%;
-text-align: center;
-line-height: 0;
-margin-top: 50px;
+    width: 100%;
+    text-align: center;
+    line-height: 0;
+    margin-top: 50px;
 }
 .fema-galleries-paging > div{
-display: inline-block;
-font-size: 9px;
-line-height: 15px;
-opacity: 1;
-transition: opacity 0.3s;
+    display: inline-block;
+    font-size: 9px;
+    line-height: 15px;
+    opacity: 1;
+    transition: opacity 0.3s;
 }
 .fema-galleries-wrapper .fema-galleries-paging > div:hover{ opacity: 1; }
 .fema-galleries-paging > div > a{
-border: solid 1px #444;
-border-radius: 20px;
-cursor: pointer;
-display: block;
-float: left;
-height: 15px;
-padding: 4px;
-min-width: 15px;
-margin: 0 7px 0 6px;
+    border: solid 1px #444;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    float: left;
+    height: 15px;
+    padding: 4px;
+    min-width: 15px;
+    margin: 0 7px 0 6px;
 }
 .fema-galleries-paging > div > a:before{
-border-radius: 20px;
-content: " ";
-display: block;
-height: 100%;
-width: 100%;
-background: #999;
-opacity: 0;
-transition: all 0.3s;
+    border-radius: 20px;
+    content: " ";
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: #999;
+    opacity: 0;
+    transition: all 0.3s;
 }
 .fema-galleries-paging > div > a.active:before{
-opacity: 1;
+    opacity: 1;
 }
 .fema-galleries-paging .paging-show-all{
-padding: 0 10px;
+    padding: 0 10px;
 }
 /*---------------------------------
 /* INSIDE GALLERY
 /*----------------------------------------*/
 .fg-gallery-wrapper{
-background: #222;
-width: 100%;
-position: relative;
-overflow: hidden;
--webkit-touch-callout: none;
--webkit-user-select: none;
--khtml-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
+    background: #222;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .fg-loadingscreen{
-position: absolute;
-height: 100%;
-width: 100%;
-top: 0;
-left: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
 }
 /* loading screen */
 .loading-screen{
-background: #333;
+    background: #333;
 }
 .loading-screen-inner{
-background: grey;
-height: 50%;
-display: block;
-position: relative;
-margin: 0 auto;
-width: 0;
+    background: grey;
+    height: 50%;
+    display: block;
+    position: relative;
+    margin: 0 auto;
+    width: 0;
 }
 .loading-icon{
-position: absolute;
-bottom: -15px;
-left: -15px;
-background: url(images/loading.png) no-repeat center !important;
-width: 30px;
-height: 30px;
--webkit-animation-name: loadingrotate;
--webkit-animation-duration: 1.3s;
--webkit-animation-iteration-count: infinite;
--webkit-animation-timing-function: linear;
--moz-animation-name: loadingrotate;
--moz-animation-duration: 1.3s;
--moz-animation-iteration-count: infinite;
--moz-animation-timing-function: linear;
+    position: absolute;
+    bottom: -15px;
+    left: -15px;
+    background: url(images/loading.png) no-repeat center !important;
+    width: 30px;
+    height: 30px;
+    -webkit-animation-name: loadingrotate;
+    -webkit-animation-duration: 1.3s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: loadingrotate;
+    -moz-animation-duration: 1.3s;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
 }
 @-webkit-keyframes loadingrotate {
-from {-webkit-transform: rotate(0deg);}
+    from {-webkit-transform: rotate(0deg);}
 to {-webkit-transform: rotate(360deg);}
 }
 @-moz-keyframes loadingrotate {
-from {-moz-transform: rotate(0deg);}
+    from {-moz-transform: rotate(0deg);}
 to {-moz-transform: rotate(360deg);}
 }
 /*--------------------------------------*/
 /* GALLERIES LISTING */
 .fg-galleries-list{
-background: #fff;
-position: absolute;
-width: 100%;
-padding: 0 0 40px;
-top: 100%;
-left: 0;
-overflow: auto;
-z-index: 6;
-max-height: 100%;
+    background: #fff;
+    position: absolute;
+    width: 100%;
+    padding: 0 0 40px;
+    top: 100%;
+    left: 0;
+    overflow: auto;
+    z-index: 6;
+    max-height: 100%;
 }
 .fg-galleries-list.visible{
-top: auto;
-bottom: 0;
+    top: auto;
+    bottom: 0;
 }
 .fg-galleries-list .head{
-padding: 5px 0;
-position: relative;
+    padding: 5px 0;
+    position: relative;
 }
 .fg-galleries-list #header{
-padding: 0 30px;
+    padding: 0 30px;
 }
 .fg-galleries-list #nav{
-display: block !important;
+    display: block !important;
 }
 .fg-galleries-list .head #menu-item-galleries{
-display: none;
+    display: none;
 }
 .fg-showgalleries{
-cursor: pointer;
-padding: 29px 26px;
-position: absolute;
-right: 0;
-top: 0;
-width: 72px;
-height: 72px;
-z-index: 100;
+    cursor: pointer;
+    padding: 29px 26px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 72px;
+    height: 72px;
+    z-index: 100;
 }
 @media screen and (max-width:800px){
-.fg-showgalleries{
-padding: 18px 15px;
-width: 50px;
-height: 50px;
-}
+    .fg-showgalleries{
+        padding: 18px 15px;
+        width: 50px;
+        height: 50px;
+    }
 }
 @media screen and (min-width:801px){
-.fg-showgalleries{
-padding: 28px 25px;
-width: 70px;
-height: 70px;
-}
+    .fg-showgalleries{
+        padding: 28px 25px;
+        width: 70px;
+        height: 70px;
+    }
 }
 @media screen and (min-width:1025px){
-.fg-showgalleries{
-padding: 33px 30px;
-width: 80px;
-height: 80px;
-}
+    .fg-showgalleries{
+        padding: 33px 30px;
+        width: 80px;
+        height: 80px;
+    }
 }
 @media screen and (min-width:1281px){
-.fg-showgalleries{
-padding: 38px 35px;
-width: 90px;
-height: 90px;
-}
+    .fg-showgalleries{
+        padding: 38px 35px;
+        width: 90px;
+        height: 90px;
+    }
 }
 .fg-showgalleries div{
-height: 4px;
+    height: 4px;
 }
 .fg-showgalleries div:nth-child(odd){
-background: #000;
-height: 2px;
+    background: #000;
+    height: 2px;
 }
 .fg-hidegalleries{
-background: url(images/x-black.png) no-repeat center;
-border-left: solid 1px #ddd;
-display: inline-block;
-cursor: pointer;
-width: 65px;
-height: 65px;
-position: absolute;
-right: 0;
-top: 0;
+    background: url(images/x-black.png) no-repeat center;
+    border-left: solid 1px #ddd;
+    display: inline-block;
+    cursor: pointer;
+    width: 65px;
+    height: 65px;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 @media screen and (min-width:1281px){
-.fg-hidegalleries{
-width: 85px;
-height: 85px;
-}
+    .fg-hidegalleries{
+        width: 85px;
+        height: 85px;
+    }
 }
 /*-------------------------------------------------------*/
 /* CURRENT GALLERY */
 .fg-gallery{
-background: #222;
-height: 100%;
-width: 100%;
-position: relative;
-overflow: hidden;
+    background: #222;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
 }
 .fg-expand{
-border-radius: 2px;
-position: absolute;
-cursor: pointer;
-width: 25px;
-height: 25px;
-transition: height 0.2s;
-z-index: 7;
+    border-radius: 2px;
+    position: absolute;
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    transition: height 0.2s;
+    z-index: 7;
 }
 .fg-thumbnails-expand{
-background: #fff;
-right: 90px;
-top: -40px;
+    background: #fff;
+    right: 90px;
+    top: -40px;
 }
 .fg-galleryinfo-expand{
-background: #fff;
-right: 60px;
-top: -40px;
+    background: #fff;
+    right: 60px;
+    top: -40px;
 }
 .fg-thumbnails-collapse{
-background: #fff;
-right: 50px;
-top: 25px;
-cursor: pointer;
-width: 30px;
-height: 30px;
-position: absolute;
+    background: #fff;
+    right: 50px;
+    top: 25px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    position: absolute;
 }
 .fg-galleryinfo-collapse{
-right: 50px;
-cursor: pointer;
-top: 25px;
-width: 30px;
-height: 30px;
-position: absolute;
+    right: 50px;
+    cursor: pointer;
+    top: 25px;
+    width: 30px;
+    height: 30px;
+    position: absolute;
 }
 .fg-expandable{
-overflow: hidden;
+    overflow: hidden;
 }
 .fg-toggle-fullscreen{
-background: url(images/fullscreen.png) no-repeat center;
-cursor: pointer;
-position: absolute;
-top: 0px;
-right: 0px;
-width: 44px;
-height: 44px;
-z-index: 5;
-opacity: 1;
-transition: all 0.2s;
+    background: url(images/fullscreen.png) no-repeat center;
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 44px;
+    height: 44px;
+    z-index: 5;
+    opacity: 1;
+    transition: all 0.2s;
 }
 .fg-toggle-fullscreen.active{
-background: url(images/x-white.png) no-repeat center;
-opacity: 0.6;
+    background: url(images/x-white.png) no-repeat center;
+    opacity: 0.6;
 }
 .fg-toggle-fullscreen.active:hover{
-opacity: 1;
+    opacity: 1;
 }
 @media screen and (max-width:1023px){
-.fg-toggle-fullscreen{
-display: none;
-}
+    .fg-toggle-fullscreen{
+        display: none;
+    }
 }
 .collapsed{
-height: 0;
+    height: 0;
 }
 /* ITEMS */
 .fg-items{
-background: #222;
-position: absolute;
-left: 0;
-width: 100%;
-height: 100%;
-transition: left 0.5s;
+    background: #222;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: left 0.5s;
 }
 .fg-item{
-background: #666;
-display: none;
-font-size: 72px;
-height: 100%;
-width: 100%;
-position: absolute;
-left: 0;
-overflow: hidden;
-text-align: center;
-line-height: 300px;
-transition: background 0.3s;
+    background: #666;
+    display: none;
+    font-size: 72px;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    overflow: hidden;
+    text-align: center;
+    line-height: 300px;
+    transition: background 0.3s;
 }
 .fg-item:first-child{
-display: block;
+    display: block;
 }
 .fg-gallery.isfullscreen .fg-item{
-background: #000;
+    background: #000;
 }
 .fg-item img{
-width: auto;
-height: 100%;
+    width: auto;
+    height: 100%;
 }
 @media screen and (min-width:801px){
-.fg-item.autoplay img{
-transform: scale(1.1);
--webkit-transform: scale(1.1);
-transition: all 10s;
-}
+    .fg-item.autoplay img{
+        transform: scale(1.1);
+        -webkit-transform: scale(1.1);
+        transition: all 10s;
+    }
 }
 /* type: fullscreen */
 .fg-type-fullscreen .fg-item img{
-position: absolute;
+    position: absolute;
 }
 .fg-type-fullscreen .fg-item img.img-fullwidth{
-width: 100% !important;
-height: auto !important;
+    width: 100% !important;
+    height: auto !important;
 }
 /* type: fullheight */
 .fg-type-fullheight .fg-item img{
-position: absolute;
+    position: absolute;
 }
 /* type: floating */
 .fg-type-float .fg-item{
-float: left;
-position: static;
-width: auto;
-display: block;
-opacity: 0.1;
-transition: opacity 0.5s;
+    float: left;
+    position: static;
+    width: auto;
+    display: block;
+    opacity: 0.1;
+    transition: opacity 0.5s;
 }
 .fg-type-float .fg-item.current{
-opacity: 1;
-transition: opacity 0.5s;
+    opacity: 1;
+    transition: opacity 0.5s;
 }
 /* video */
 .embededvideo,
 .embededvideo iframe{
-width: 100% !important;
-height: 100% !important;
-background: #000;
+    width: 100% !important;
+    height: 100% !important;
+    background: #000;
 }
 /* ARROWS */
 .fg-navarrow{
-background-position: center;
-background-repeat: no-repeat;
-cursor: pointer;
-top: -100px;
-width: 130px;
-height: 400px;
-position: absolute;
--webkit-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
-z-index: 2;
-opacity: 0;
-transition: all 0.2s;
--webkit-transition: all 0.2s;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    top: -100px;
+    width: 130px;
+    height: 400px;
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    z-index: 2;
+    opacity: 0;
+    transition: all 0.2s;
+    -webkit-transition: all 0.2s;
 }
 .fg-navarrow:hover{
-opacity: 1;
+    opacity: 1;
 }
 .fg-goleft{
-background-image: url(images/arrowleft.png);
-left: 0;
+    background-image: url(images/arrowleft.png);
+    left: 0;
 }
 .fg-goright{
-background-image: url(images/arrowright.png);
-right: 0;
+    background-image: url(images/arrowright.png);
+    right: 0;
 }
 /* type: floating */
 .fg-type-float .fg-goleft,
 .fg-type-float .fg-goright{
-display: none;
+    display: none;
 }
 @media screen and (max-width:800px){
-.fg-navarrow{
-display: none;
-}
+    .fg-navarrow{
+        display: none;
+    }
 }
 @media screen and (max-width:1280px){
-/*arrows*/
-.fg-navarrow{
-background-size: 20%;
-}
+    /*arrows*/
+    .fg-navarrow{
+        background-size: 20%;
+    }
 }
 /* BOTTOM BAR */
 .fg-bottombar{
-background: #f8f8f8;
-position: absolute;
-bottom: 0;
-left: 0;
-width: 100%;
-height: auto;
-z-index: 6;
--webkit-touch-callout: none;
--webkit-user-select: none;
--khtml-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
+    background: #f8f8f8;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 6;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 @media screen and (max-width:800px){
-.fg-bottombar{
-overflow: hidden;
-}
+    .fg-bottombar{
+        overflow: hidden;
+    }
 }
 /* INFO */
 .fg-galleryinfo{
-height: 50px;
-overflow: hidden;
-margin-right: 50px;
+    height: 50px;
+    overflow: hidden;
+    margin-right: 50px;
 }
 .fg-galleryinfo:after{
-content: " ";
-display: block;
-clear: both;
+    content: " ";
+    display: block;
+    clear: both;
 }
 .fg-gi-col{
-background: #fff;
-padding: 8px 20px;
-display: block;
+    background: #fff;
+    padding: 8px 20px;
+    display: block;
 }
 .fg-gi-col-desc{
-display: none;
+    display: none;
 }
 @media screen and (min-width:801px){
-.fg-galleryinfo{
-height: 70px;
-margin-right: 70px;
-overflow: hidden;
-}
-.fg-gi-col{
-border-right: dotted 1px #ccc;
-float: left;
-width: 50%;
-height: 100%;
-padding: 7px 20px;
-}
-.fg-gi-col:first-child{
-}
+    .fg-galleryinfo{
+        height: 70px;
+        margin-right: 70px;
+        overflow: hidden;
+    }
+    .fg-gi-col{
+        border-right: dotted 1px #ccc;
+        float: left;
+        width: 50%;
+        height: 100%;
+        padding: 7px 20px;
+    }
+    .fg-gi-col:first-child{
+    }
 }
 @media screen and (min-width:1025px){
-.fg-galleryinfo{
-height: 80px;
-margin-right: 80px;
-}
-.fg-gi-col{
-width: 33.3%;
-padding: 12px 20px;
-}
-.fg-gi-col-desc{
-display: block;
-}
+    .fg-galleryinfo{
+        height: 80px;
+        margin-right: 80px;
+    }
+    .fg-gi-col{
+        width: 33.3%;
+        padding: 12px 20px;
+    }
+    .fg-gi-col-desc{
+        display: block;
+    }
 }
 @media screen and (min-width:1281px){
-.fg-gi-col{
-padding: 17px 25px;
-}
-.fg-galleryinfo{
-height: 90px;
-margin-right: 90px;
-}
+    .fg-gi-col{
+        padding: 17px 25px;
+    }
+    .fg-galleryinfo{
+        height: 90px;
+        margin-right: 90px;
+    }
 }
 .fg-gi-title{
-display: block;
-font-size: 17px;
-font-weight: normal;
-text-transform: uppercase;
-letter-spacing: 0.15em;
-line-height: 2.1;
-height: 100%;
-overflow: hidden;
+    display: block;
+    font-size: 17px;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    line-height: 2.1;
+    height: 100%;
+    overflow: hidden;
 }
 @media screen and (min-width:801px){
-.fg-gi-title{
-line-height: 1.7;
-}
+    .fg-gi-title{
+        line-height: 1.7;
+    }
 }
 .fg-gi-desc{
-font-size: 13px;
-display: block;
-max-height: 100%;
-overflow: hidden;
+    font-size: 13px;
+    display: block;
+    max-height: 100%;
+    overflow: hidden;
 }
 .fg-gi-col-tag:after{
-content: " ";
-display: block;
-clear: both;
+    content: " ";
+    display: block;
+    clear: both;
 }
 .fg-gi-col-tag > div{
-float: left;
-margin-bottom: 20px;
+    float: left;
+    margin-bottom: 20px;
 }
 .fg-gi-tag{
-//background-image: url(images/fg-tagicon.png);
-background-repeat: no-repeat;
-background-position: 0 50%;
-display: block;
-font-size: 13px;
-padding: 0 30px 0 20px;
+    //background-image: url(images/fg-tagicon.png);
+    background-repeat: no-repeat;
+    background-position: 0 50%;
+    display: block;
+    font-size: 13px;
+    padding: 0 30px 0 20px;
 }
 /*.fg-gi-tag-author { background-image: url(images/tagicon-user.png); }
 .fg-gi-tag-date { background-image: url(images/tagicon-calendar.png); }
@@ -683,103 +683,112 @@ padding: 0 30px 0 20px;
 .fg-gi-tag-likes { background-image: url(images/tagicon-heartclear.png); }*/
 /* THUMBNAILS */
 .fg-thumbnails{
-background: #000;
-text-align: center;
-width: 100%;
-z-index: 5;
--webkit-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
-line-height: 1;
-position: relative;
-height: 100px;
-overflow: hidden;
--webkit-touch-callout: none;
--webkit-user-select: none;
--khtml-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
+    background: #000;
+    text-align: center;
+    width: 100%;
+    z-index: 5;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    line-height: 1;
+    position: relative;
+    height: 100px;
+    overflow: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .fg-thumbnailslist{
-display: inline-block;
-position: relative;
-height: 100%;
-overflow: hidden;
+    display: inline-block;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
 }
 .fg-thumbnail{
-background: #000;
-cursor: pointer;
-display: inline-block;
-width: 140px;
-height: 100px;
-overflow: hidden;
-font-size: 0;
-position: relative;
+    background: #000;
+    cursor: pointer;
+    display: inline-block;
+    width: 140px;
+    height: 100px;
+    overflow: hidden;
+    font-size: 0;
+    position: relative;
 }
 .fg-thumbnail img{
-display: block;
-width: 100%;
-height: 100%;
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 .fg-thumbnail.current{
 }
 .fg-thumb-overlay{
-background: #000;
-position: absolute;
-top: 0;
-left: 0;
-opacity: 0.65;
-width: 100%;
-height: 100%;
-transition: all 0.3s;
--webkit-transition: all 0.3s;
+    background: #000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.65;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s;
+    -webkit-transition: all 0.3s;
 }
 .fg-thumbnail:hover .fg-thumb-overlay,
 .fg-thumbnail.current .fg-thumb-overlay{
-opacity: 0;
+    opacity: 0;
 }
 .fg-thumbnail-embededvideo .fg-thumb-overlay{
-background-image: url(images/play.png);
-background-repeat: no-repeat;
-background-position: center;
+    background-image: url(images/play.png);
+    background-repeat: no-repeat;
+    background-position: center;
 }
 /* type: floating */
 .fg-type-float .fg-thumbnails{
-display: none;
+    display: none;
 }
 @media screen and (max-width:800px){
-.fg-thumbnails{
-display: none;
-}
+    .fg-thumbnails{
+        display: none;
+    }
 }
 @media screen and (max-width:1280px){
-.fg-thumbnails{
-height: 80px;
-}
-.fg-thumbnail{
-width: 112px;
-height: 80px;
-}
+    .fg-thumbnails{
+        height: 80px;
+    }
+    .fg-thumbnail{
+        width: 112px;
+        height: 80px;
+    }
 }
 @media screen and (max-width:1024px){
-.fg-thumbnails{
-height: 70px;
-}
-.fg-thumbnail{
-width: 98px;
-height: 70px;
-}
+    .fg-thumbnails{
+        height: 70px;
+    }
+    .fg-thumbnail{
+        width: 98px;
+        height: 70px;
+    }
 }
 /* DOTS */
 /* type: floating */
 .fg-type-float .fg-dots{
-display: none;
+    display: none;
 }
 /* OTHERS
 /*------------------------------------------------*/
 .fg-gallery .mejs-container{
-height: 100% !important;
-width: 100% !important;
+    height: 100% !important;
+    width: 100% !important;
 } 
+/*Custom*/
+@media (max-width:480px){
+    input[type="submit"].contactFormClass_button {
+        margin-left: 0;
+    }
+}
+@media (max-width:767px){}
+@media (min-width:768px) and (max-width:979px){}
+@media (min-width:1200px){}
