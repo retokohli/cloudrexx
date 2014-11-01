@@ -458,7 +458,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $template->setVariable(array('SEARCH' => $_ARRAYLANG['TXT_MULTISITE_SEARCH'],
                                      'FILTER' => $_ARRAYLANG['TXT_MULTISITE_FILTER'],
                                      'SEARCH_TERM' => $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'],
-                                     'SEARCH_VALUE' => isset($_GET['term']) ? $_GET['term'] : '',
+                                     'SEARCH_VALUE' => isset($_GET['term']) ? contrexx_input2xhtml($_GET['term']) : '',
                                 ));
         if (isset($_GET['editid']) && !empty($_GET['editid'])) {
             $template->hideBlock("website_filter");
