@@ -1531,3 +1531,26 @@ p#loginerror {
 .rssfeed img {
  border: 0;
 }
+.shop_text span {
+    color: #ff0000;
+}
+.breadcrumb ul {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+.breadcrumb ul li {
+    background: none;
+    padding: 0;
+}
+.cal-sml-col {
+    width: 20%;
+    vertical-align: top;
+    white-space:  nowrap;
+    text-align: left;
+}
+.cal-lag-col {
+    width: 40%;
+    vertical-align: top;
+}
+
