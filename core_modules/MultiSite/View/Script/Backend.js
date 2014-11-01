@@ -172,6 +172,7 @@
                                     dataType: 'json',
                                     success: function(response) {
                                         cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
+                                        $('.ui-dialog-buttonpane button:contains("Stop Execution...") span').text('Execute').removeClass('stop-execution');
                                     }
                                 });
                                 
@@ -248,36 +249,47 @@
                     if (value.sqlResult) {
                         var cols = Object.keys(value.sqlResult).length;
                         $.each(value.sqlResult, function(key, data) {
-                            console.log(resultCount);
                             tbody += "<tr class =row1>";
                             if (col_count == 0) {
                                 thead += "<th colspan='2'>" + value.websiteName + "</th>";
                             }
-                            if (col_count < cols) { 
-                                tbody += "<td><div class='"+ data +"'>" + key + "</td>";
+                            if (col_count < cols) {
                                 if (value.selectQueryResult) {
                                     var count = 0;
                                     var tsbody = "";
                                     var tshead = "";
-                                    var no_cols = (value.selectQueryResult[resultCount]).length;
+                                    if (typeof value.selectQueryResult[resultCount] === 'object') {
+                                        tbody += "<td><div class='"+ data +"'>" + key + "</td>";
+                                        var no_cols = (value.selectQueryResult[resultCount]).length;
+                                        $.each(value.selectQueryResult[resultCount], function(key, data) {
+                                            tsbody += "<tr class =row1>";
 
-                                    $.each(value.selectQueryResult[resultCount], function(key, data) {
+                                                for (key in data) {
+                                                    if (count == 0) {
+                                                        tshead += "<th>";
+                                                        tshead += key;
+                                                        tshead += "</th>"
+                                                    }
+                                                    if (count < no_cols) {
+                                                        tsbody += "<td>";
+                                                        tsbody += data[key];
+                                                        tsbody += "</td>"
+                                                    }
+                                                }
+                                            count++;
+                                            tsbody += "</tr>";
+                                        });
+                                    } else {
+                                        tbody  += "<td><div class='"+ data +"'>" + key + "</td>";
                                         tsbody += "<tr class =row1>";
-                                        for (key in data) {
-                                            if (count == 0) {
-                                                tshead += "<th>";
-                                                tshead += key;
-                                                tshead += "</th>"
-                                            }
-                                            if (count < no_cols) {
-                                                tsbody += "<td>";
-                                                tsbody += data[key];
-                                                tsbody += "</td>"
-                                            }
+                                        if (value.selectQueryResult[resultCount]) {
+                                            tsbody += "<td>";
+                                            tsbody += value.selectQueryResult[resultCount] + " rows affected successfully";
+                                            tsbody += "</td>";
                                         }
-                                        count++;
                                         tsbody += "</tr>";
-                                    });
+                                    }
+                                    
                                     resultTable = theader + tshead + tsbody + "</table></br>";
                                 }
                                 tbody += "<td>" + resultTable + "</td>";

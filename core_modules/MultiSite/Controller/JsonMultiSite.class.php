@@ -2043,7 +2043,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (empty($params['post']['query'])) {
                         throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query, the sql query is empty');
                     }
-
                     $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     //execute sql query on website
                     if (isset($params['post']['mode']) && $params['post']['mode'] == 'website') {
@@ -2085,15 +2084,33 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_WEBSITE:
                     if (isset($params['post']['query']) && !empty($params['post']['query'])) {
                         $queryResult = array();
-                        $querys = array_filter(explode(";", $params['post']['query']));
+                        $querys   = $this->extractSqlQueries($params['post']['query']);
                         foreach ($querys as $key => $query) {
-                            $objResult = $objDatabase->GetAll($query);
-                            if ($objResult !== false) {
-                                if (!empty($objResult)) {
+                            if (preg_match('/^SELECT/', (strtoupper($query)), $matches) !== false) {
+                                $sqlQuery = 'select';
+                                $objResult = $objDatabase->GetAll($query);
+                            } 
+                            if (preg_match('/^UPDATE/', (strtoupper($query)), $matches) !== false) {
+                                $sqlQuery = 'update';
+                                $objResultUpdate =  $objDatabase->Execute($query);
+                            }
+                            if (preg_match('/^INSERT/', (strtoupper($query)), $matches) !== false) {
+                                $objResultDefault = $objDatabase->Execute($query);
+                            }
+                            if ($objResult !== false || $objResultUpdate !== false || $objResultDefault !== false) {
+                                if (!empty($objResult)) {                                    
                                     $resultArray[] = $objResult;
+                                }  else if($objResultUpdate){
+                                    $resultArray[] = $objDatabase->Affected_Rows();
+                                    $resultArray['updateStatus'] = true;
+                                } else {
+                                    $resultArray[] = true;
                                 }
+                                $resultArray['queryStatus']  = 'success';
                                 $queryResult[$key] = "okbox";
                             } else {
+                                $resultArray[] = false;
+                                $resultArray['queryStatus']  = 'error';
                                 $queryResult[$key] = "alertbox";
                             }
                         }
@@ -2101,7 +2118,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($finalResult), 'selectQueryResult' => contrexx_raw2xhtml($resultArray), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
                     } else {
                         return array('status' => false, 'error' => $_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY']);
-                    }
+                    } 
                     break;
 
                 default:
@@ -2113,6 +2130,49 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return false;
     }
 
+    /**
+    * split sql string
+    *
+    * split the sql string in sql queries
+    *
+    * @access private
+    * @param string $input
+    */
+    function extractSqlQueries($input)
+    {
+        $input = trim($input);
+        $queryStartPos = 0;
+        $stringDelimiter = '';
+        $isString = false;
+        $isComment = false;
+        $query = '';
+        $arrSqlQueries = array();
+        for ($charNr = 0; $charNr < strlen($input); $charNr++) {
+            if ($isComment) { // check if the loop is in a comment
+                if ($input[$charNr] == "\r" || $input[$charNr] == "\n") {
+                    $isComment = false;
+                    $queryStartPos = $charNr+1;
+                }
+            } elseif ($isString) { // check if the loop is in a string
+                if ($input[$charNr] == $stringDelimiter && ($input[$charNr-1] != "\\" || $input[$charNr-2] == "\\")) {
+                    $isString = false;
+                }
+            } elseif ($input[$charNr] == "#" || (!empty($input[$charNr+1]) && $input[$charNr].$input[$charNr+1] == "--")) {
+                $isComment = true;
+
+            } elseif ($input[$charNr] == '"' || $input[$charNr] == "'" || $input[$charNr] == "`") { // check if this is a string delimiter
+                $isString = true;
+                $stringDelimiter = $input[$charNr];
+            } elseif ($input[$charNr] == ";") { // end of query reached
+                $charNr++;
+                $query = ltrim(substr($input, $queryStartPos, $charNr-$queryStartPos));
+                array_push($arrSqlQueries, $query);
+                $queryStartPos = $charNr;
+            } 
+        }
+        return $arrSqlQueries;
+    }
+    
     /**
      * Execute the Queued Sql Query
      * 
@@ -2140,6 +2200,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             unset($_SESSION['MultiSite']['executeSql'][$websiteId]);
                             return array($resp->data);
                         }
+                        return array('status' => 'error');
                     }
                 break;    
             }
