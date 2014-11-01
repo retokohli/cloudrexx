@@ -4,7 +4,7 @@
     <p><label>{TXT_CALENDAR_CATEGORY}</label><select class="form-control" onchange="document.calendarSearch.submit();" name="catid">{CALENDAR_SEARCH_CATEGORIES}</select></p>
 </form>
 <br />
-<table cellspacing="0">
+<table>
     <tbody> 
         <tr>
             <td><h2>Wann</h2></td>
@@ -13,13 +13,13 @@
         </tr>
         <!-- BEGIN eventList -->
         <tr>
-            <td width="20%" align="left" valign="top" nowrap="nowrap">
+            <td class="cal-sml-col">
             <!-- BEGIN calendarDateList -->
             {CALENDAR_DATE_LIST}{CALENDAR_SEP_DATE_TIME_LIST}{CALENDAR_TIME_LIST}{TXT_CALENDAR_CLOCK_LIST}
             <!-- END calendarDateList -->
             </td>
-            <td width="40%" valign="top"><a href="{CALENDAR_EVENT_DETAIL_LINK}" target="{CALENDAR_EVENT_DETAIL_TARGET}">{CALENDAR_EVENT_TITLE}</a></td>
-            <td width="40%" valign="top">{CALENDAR_EVENT_PLACE}</td>
+            <td class="cal-lag-col"><a href="{CALENDAR_EVENT_DETAIL_LINK}" target="{CALENDAR_EVENT_DETAIL_TARGET}">{CALENDAR_EVENT_TITLE}</a></td>
+            <td class="cal-lag-col">{CALENDAR_EVENT_PLACE}</td>
         </tr>
         <!-- END eventList -->  
         <!-- BEGIN emptyEventList -->
