@@ -1781,3 +1781,9 @@ h3.submenu-title, .menu-break{display: none;}
     display: block;
     height: 70px;
 }
+/*Custom*/
+#content2 h2 {
+    color: #626C72;
+    padding: 18px 0 6px;
+}
+.text-center h2 {color: #626C72;}

@@ -1,3 +1,4 @@
+
 #fe_toolbar_tab {
     box-sizing: content-box;
     -moz-box-sizing: content-box;
@@ -300,67 +301,6 @@ body a:hover {text-decoration: none;}
     background: #f7f7f7;
     padding: 0 0 20px 0;
     padding-bottom: 88px;
-}
-#eyecatcher {
-    background: #FFFFFF;
-    height: 500px;
-    margin-bottom: 20px;
-}
-#cycle-wrapper {
-    position: relative;
-    height: 500px;
-    margin: 0 auto;
-    overflow: none;
-}
-#cycle,
-#cycle img,
-#cycle div {
-    float: left;
-    width: 100%;
-    height: auto;
-}
-#cycle h1 {
-    position: relative;
-    bottom: 200px;
-    left: 50px;
-    float: left;
-    font-size: 50px;
-}
-.cycle-button {
-    display: none;
-    position: absolute;
-    top: 47%;
-    width: 27px;
-    height: 27px;
-    float: left;
-    z-index: 5;
-    cursor: pointer;
-    background-image: url('images/cycle-buttons.png');
-}
-#cycle-prev {
-    left: -35px;
-    background-position: left center;
-}
-#cycle-next {
-    right: -35px;
-    background-position: right center;
-}
-#cycle-nav {
-    position: absolute;
-    bottom: 10px;
-    left: 47%;
-    z-index: 5;
-}
-#cycle-nav a {
-    float: left;
-    width: 11px;
-    height: 11px;
-    margin: 0 5px 0 0;
-    background: url('images/cycle-nav-active.png');
-}
-#cycle-nav a:hover,
-#cycle-nav a.activeSlide {
-    background: url('images/cycle-nav-inactive.png');
 }
 #home-page-wrapper {
     float: left;

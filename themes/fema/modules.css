@@ -143,10 +143,7 @@ div.row2 {
 /***************************************************/
 #captcha {
     float: left !important;
-    width: 100% !important;
-    clear: none !important;
-    margin: 0;
-    padding: 0;
+    width: 50%;
 }
 #captcha #coreCaptchaLabel {
     float: left;
@@ -1279,7 +1276,7 @@ div.row2 {
 #shop div.shop_options a {
     float: left;
     padding: 0 0 0 12px;
-    background: url('images/arrows.png') no-repeat 0 7px;
+    background: url('images/arrows.png') no-repeat 0 8px;
 }
 #shop div.shop_options a.active {
     background-position: 0 -8px;
@@ -1525,6 +1522,9 @@ div.row2 {
 #news-links ul {
     float: left;
     padding: 0 10px 0 10px;
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
 }
 #news-social-media {
     float: left;
@@ -1532,6 +1532,7 @@ div.row2 {
     padding: 0 0 5px 0;
     margin: 0 0 20px 0;
     border-bottom: 1px solid #D6D6D6;
+    list-style: none;
 }
 #news-social-media li {
     padding: 0 30px 0 0;
@@ -2534,10 +2535,21 @@ ul.event-list a:hover, .letter_index a:hover{color: #aaaaaa;}
 }
 /*Custom*/
 #feedbutton {
-    margin-top: 16px;
+    margin-top: 25px;
 }
-#content2 h2 {
-    color: #626C72;
+input[type="submit"].contactFormClass_button {
+    margin-left: 250px;
+}
+.blog-post #news h3 {
     padding: 18px 0 6px;
 }
-.text-center h2 {color: #626C72;}
+#shop > .row, #shop div.categories, .product > .row {
+    margin-left: -20px;
+}
+#news .container-fluid > .row, #shop .container-fluid > .row {
+    margin-left: 0;
+}
+#shop > .row .container-fluid {
+    padding-right: 0;
+}
+.product > .row {margin-right: 20px;}
