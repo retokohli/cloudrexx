@@ -86,7 +86,33 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
     }
     
     public function findWebsitesBySearchTerms($term) {
-        $query = \Env::get('em')->createQuery("SELECT website FROM Cx\Core_Modules\MultiSite\Model\Entity\Website website JOIN website.domains domain WHERE website.name LIKE '%$term%' OR website.ftpUser LIKE '%$term%' OR domain.name LIKE '%$term%'");
+        $filter = array(
+                    'email' => '%' . $term . '%'
+                  );
+        $ids = array();
+        if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter)) {
+            while (!$objUser->EOF) {
+                $ids[] = $objUser->getId();
+                $objUser->next();
+            }
+        }
+        $matchedUsersId = !empty($ids) ? 'website.ownerId IN (' . implode(',', $ids) . ') OR' : '';
+        $query = \Env::get('em')->createQuery("SELECT 
+                                                    website 
+                                                FROM 
+                                                    Cx\Core_Modules\MultiSite\Model\Entity\Website website 
+                                                JOIN 
+                                                    website.domains domain 
+                                                WHERE 
+                                                    " . $matchedUsersId . "
+                                                    website.name LIKE '%" . $term . "%'
+                                                OR 
+                                                    website.ftpUser LIKE '%" . $term . "%'
+                                                OR 
+                                                    domain.name LIKE '%" . $term . "%' 
+                                                GROUP BY 
+                                                    website.id"
+        );
         return $query->getResult();
     }
 }

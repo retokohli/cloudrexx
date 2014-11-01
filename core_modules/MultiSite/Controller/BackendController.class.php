@@ -347,10 +347,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (isset($_GET['term']) && !empty($_GET['term'])) {
             $term = contrexx_input2db($_GET['term']);
             $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findWebsitesBySearchTerms($term);
-        }  else {
+        } else {
             $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
-            
         }
+        
         $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
             'header' => 'Websites',
             'functions' => array(
@@ -457,9 +457,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         ));
         $template->setVariable(array('SEARCH' => $_ARRAYLANG['TXT_MULTISITE_SEARCH'],
                                      'FILTER' => $_ARRAYLANG['TXT_MULTISITE_FILTER'],
-                                     'SEARCH_TERM' => $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM']
+                                     'SEARCH_TERM' => $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'],
+                                     'SEARCH_VALUE' => isset($_GET['term']) ? $_GET['term'] : '',
                                 ));
-        $template->touchBlock("website_filter");
+        if (isset($_GET['editid']) && !empty($_GET['editid'])) {
+            $template->hideBlock("website_filter");
+        }
         $template->setVariable('TABLE', $view->render());
     }
     
