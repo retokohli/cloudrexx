@@ -24,7 +24,10 @@ jQuery(document).ready(function(){
             cx_multisite_options[option] = options[option];
         }
     }
-    jQuery.getScript('{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js');
+    jQuery.getScript("{MULTISITE_PATH}/lib/javascript/jquery/bootstrapvalidator/js/bootstrapValidator.min.js", function() {
+        jQuery.getScript('{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js');
+    });
+
 });
 
 var validateAdress = function (value, validator, $field) {
