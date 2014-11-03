@@ -2,8 +2,26 @@
 <script type="text/javascript">
     (function($) {
         cx.ready(function() {
-            $('#resetPassword').click(function() {
+            
+        /**
+         * Locks the password status in reset password to prevent user input
+         */
+        cx.lock = function() {
+            cx.jQuery("#load-lock").show();
+        };
+        /**
+         * Unlocks the password status in reset password to allow user input
+         */
+        cx.unlock = function() {
+            cx.jQuery("#load-lock").hide();
+        };
+        
+        $('#resetPassword').click(function() {
                 url = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=resetFtpPassword";
+                cx.bind("loadingStart", cx.lock, "resetPasswordFtp");
+                cx.bind("loadingEnd", cx.unlock, "resetPasswordFtp");
+                cx.trigger("loadingStart", "resetPasswordFtp", {});
+                cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
                 cx.jQuery.ajax({
                     dataType: "json",
                     url: url,
@@ -16,7 +34,11 @@
                                 $('#password').text(response.data.password);
                                 cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
                             }
+                            if (response.data.status == 'error') {
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                            }
                         }
+                        cx.trigger("loadingEnd", "resetPasswordFtp", {}); 
                     }
                 });
             });
@@ -28,7 +50,19 @@
     .ui-dialog.noTitle .ui-dialog-titlebar {
         display: none;
     }
+    #load-lock {
+        position: absolute;
+        opacity: 0.5;
+        background-color: white;
+        display: none;
+        z-index: 500;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+    }
 </style>
+<div id ="load-lock"></div>
 <form name="settings_ftp" method="post" action="index.php?cmd=Config&amp;act=Ftp">
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
         <tr>

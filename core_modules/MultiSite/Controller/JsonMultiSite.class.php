@@ -1842,7 +1842,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
 
-            return array('status' => 'failed', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG']);
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG']);
         } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Updating FTP password.' . $e->getMessage());
         }
