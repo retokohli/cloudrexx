@@ -802,7 +802,7 @@ div.row2 {
     color: #222222;
 }
 #blog div.entries h2 a:hover{
-    color: #95A105;
+    color: #aaa;
 }
 .posted a{
     color:#777777
@@ -1272,6 +1272,7 @@ div.row2 {
     float: left;
     width: 100%;
     padding: 20px 0 0 0;
+    display: none;
 }
 #shop div.shop_options a {
     float: left;
@@ -1403,7 +1404,7 @@ div.row2 {
 }
 #shop .cart-buttons {
     float: right;
-    padding: 10px 8px 0 0;
+    margin-right: -2px;
 }
 #shop button.details-button {
     float: right;    
@@ -2545,6 +2546,7 @@ input[type="submit"].contactFormClass_button {
 }
 #shop > .row, #shop div.categories, .product > .row {
     margin-left: -20px;
+    margin-right: 20px;
 }
 #news .container-fluid > .row, #shop .container-fluid > .row {
     margin-left: 0;
@@ -2552,4 +2554,16 @@ input[type="submit"].contactFormClass_button {
 #shop > .row .container-fluid {
     padding-right: 0;
 }
-.product > .row {margin-right: 20px;}
+.product > .row {margin-right: 0;}
+#shop table tr.row1, #shop table tr.row2 {
+    border-bottom: 1px solid #DDDDDD;
+}
+.table-responsive{width:100%;margin-bottom:10px;overflow-y:hidden;overflow-x:auto;-ms-overflow-style:-ms-autohiding-scrollbar;-webkit-overflow-scrolling:touch}
+.table-responsive>.table{margin-bottom:0}
+.table-responsive>.table-bordered{border:0}
+.table-responsive>.table-bordered>thead>tr>th:first-child,.table-responsive>.table-bordered>tbody>tr>th:first-child,.table-responsive>.table-bordered>tfoot>tr>th:first-child,.table-responsive>.table-bordered>thead>tr>td:first-child,.table-responsive>.table-bordered>tbody>tr>td:first-child,.table-responsive>.table-bordered>tfoot>tr>td:first-child{border-left:0}
+.table-responsive>.table-bordered>thead>tr>th:last-child,.table-responsive>.table-bordered>tbody>tr>th:last-child,.table-responsive>.table-bordered>tfoot>tr>th:last-child,.table-responsive>.table-bordered>thead>tr>td:last-child,.table-responsive>.table-bordered>tbody>tr>td:last-child,.table-responsive>.table-bordered>tfoot>tr>td:last-child{border-right:0}
+.table-responsive>.table-bordered>tbody>tr:last-child>th,.table-responsive>.table-bordered>tfoot>tr:last-child>th,.table-responsive>.table-bordered>tbody>tr:last-child>td,.table-responsive>.table-bordered>tfoot>tr:last-child>td{border-bottom:0}
+#shop .a_right select {
+    width: 150px !important;
+}

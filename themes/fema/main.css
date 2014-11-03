@@ -381,11 +381,13 @@ a:hover {
     padding-bottom: 120px;
 }
 #content2 {
-    //background: url(images/grid_noise.png) repeat;
+/*    //background: url(images/grid_noise.png) repeat;*/
     background-color: #f4f4f4;
     padding-top: 60px;
     padding-bottom: 60px;
+    color: #232323;
 }
+#content2 a:hover {color: #aaa;}
 #page-title {
     background: #ffffff;
     padding-top: 120px;
@@ -1786,4 +1788,4 @@ h3.submenu-title, .menu-break{display: none;}
     color: #626C72;
     padding: 18px 0 6px;
 }
-.text-center h2 {color: #626C72;}
+/*.text-center h2 {color: #626C72;}*/
