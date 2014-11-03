@@ -1162,7 +1162,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $licenseState = isset($params['post']['state']) ? $params['post']['state'] : (isset($params['post']['licenseState']) ? $params['post']['licenseState'] : '');
                     $licenseValidTo = isset($params['post']['validTo']) ? $params['post']['validTo'] : (isset($params['post']['licenseValidTo']) ? $params['post']['licenseValidTo'] : '');
                     $licenseUpdateInterval = isset($params['post']['updateInterval']) ? $params['post']['updateInterval'] : (isset($params['post']['licenseUpdateInterval']) ? $params['post']['licenseUpdateInterval'] : '');
-                    $licenseLegalComponents = isset($params['post']['legalComponents']) ? $params['post']['legalComponents'] : (isset($params['post']['availableComponents']) ? explode(',', str_replace(' ' , '' ,$params['post']['availableComponents'])) : '');
+                    $licenseLegalComponents = isset($params['post']['legalComponents']) ? $params['post']['legalComponents'] : (isset($params['post']['availableComponents']) ? array_map('trim', explode(',', $params['post']['availableComponents'])) : '');
                     if (!empty($licenseState)) {
                         $license->setState($licenseState);
                     }

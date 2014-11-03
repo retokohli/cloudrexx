@@ -94,21 +94,21 @@
                             if (typeof data === 'object') {
                                 var jsonString = JSON.stringify(data);
                                 tbody += '<tr>';
-                                tbody += '<td>' + key + '</td><td><span id="ui_'+key+'" style="display: none;">'+jsonString+'</span><span id="'+ key + '">';
+                                tbody += '<td>' + key + '</td><td><span id="ui_'+key+'" style="display: none;">'+jsonString+'</span><div id="'+ key + '" style="display:inline;">';
                                 $.each(JSON.parse(jsonString), function(key, data) {
                                     if (typeof data === 'object') {
-                                        tbody += '<strong>' + data.lang_name + ':</strong>&nbsp;';
-                                        tbody += data.message + '<br>';
+                                        tbody += '<span class="ui_license '+data.lang_name+'" style="font-weight: bold;">' + data.lang_name + '</span>:&nbsp;<span class="ui_licenseMsg '+data.lang_name+'">';
+                                        tbody += data.message + '</span><br>';
                                     } else {
                                         tbody += key + ' : ' + data + ', ';
                                     }
                                 });
-                                tbody += '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-websiteid="'+ id +'" onclick="Multisite.editLicense(cx.jQuery(this))"></a>';
+                                tbody += '</div><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-websiteid="'+ id +'" onclick="Multisite.editLicense(cx.jQuery(this))"></a>';
                                 tbody += '</td></tr>';
                             } else {
                                 tbody += '<tr>';
                                 tbody += '<td>' + key + '</td>';
-                                tbody += '<td><span class="'+ key + '">' + data + '</span><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'" onclick="Multisite.editLicense(cx.jQuery(this))"></a></td>';
+                                tbody += '<td><div id="'+ key + '" style="display:inline;">' + data + '</div><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'" onclick="Multisite.editLicense(cx.jQuery(this))"></a></td>';
                                 tbody += '</tr>';
                             }
                         });
@@ -253,7 +253,7 @@
                             if (col_count == 0) {
                                 thead += "<th colspan='2'>" + value.websiteName + "</th>";
                             }
-                            if (col_count < cols) {
+                            if (col_count < cols) { 
                                 if (value.selectQueryResult) {
                                     var count = 0;
                                     var tsbody = "";
@@ -264,18 +264,18 @@
                                         $.each(value.selectQueryResult[resultCount], function(key, data) {
                                             tsbody += "<tr class =row1>";
 
-                                                for (key in data) {
-                                                    if (count == 0) {
-                                                        tshead += "<th>";
-                                                        tshead += key;
-                                                        tshead += "</th>"
-                                                    }
-                                                    if (count < no_cols) {
-                                                        tsbody += "<td>";
-                                                        tsbody += data[key];
-                                                        tsbody += "</td>"
-                                                    }
+                                            for (key in data) {
+                                                if (count == 0) {
+                                                    tshead += "<th>";
+                                                    tshead += key;
+                                                    tshead += "</th>"
                                                 }
+                                                if (count < no_cols) {
+                                                    tsbody += "<td>";
+                                                    tsbody += data[key];
+                                                    tsbody += "</td>"
+                                                }
+                                            }
                                             count++;
                                             tsbody += "</tr>";
                                         });
@@ -406,11 +406,8 @@ var Multisite = {
                     cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
                     if ($J.inArray(fieldLabel, licenseArray) !== -1) {
                         var fieldValue = [];
-                        var messageText = '';
                         var messageUiTab = [];
                         $J('#tab_menu.tab-' + fieldLabel + ' div').each(function() {
-                            messageText += '<strong>' + $J(this).attr('data-langName') + ':</strong>&nbsp;';
-                            messageText += ""+$J(this).find('textarea.' + fieldLabel).text() + '<br>';
                             messageUiTab.push({lang_id: $J(this).attr('data-langId'), lang_name: $J(this).attr('data-langName'), message: $J(this).find('textarea.' + fieldLabel).val()});
                             fieldValue[$J(this).attr('data-langId')] = {text: $J(this).find('textarea.' + fieldLabel).val()};
                         });
@@ -428,7 +425,11 @@ var Multisite = {
                             }
                             if (response.status == 'success' && response.data.status == 'success') {
                                 if ($J.isArray(fieldValue)) {
-                                    $J('#'+fieldLabel).html(messageText);
+                                    $J.each(messageUiTab,function(key,data){
+                                        $J('#'+fieldLabel).find('span.ui_license.'+data.lang_name).html(data.lang_name);
+                                        $J('#'+fieldLabel).find('span.ui_licenseMsg.'+data.lang_name).text(data.message);
+                                    });
+                                    
                                     $J('#ui_' + fieldLabel).html(JSON.stringify(messageUiTab));
                                 } else {
                                     $J('span.' + fieldLabel).text(fieldValue);
