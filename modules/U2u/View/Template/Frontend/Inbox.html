@@ -22,13 +22,13 @@
             <div class="message_ok">{PRIVATE_MESSAGE_DELETE_SUCCESS}</div>
             <!-- BEGIN headSection --><!-- END headSection -->   
             <div class="table-responsive">
-                <table calss="table" cellspacing="0" cellpadding="0" >
+                <table class="table">
                     <tbody>
                         <tr>
-                            <th width="1%">#</th>
-                            <th width="50%">Betreff</th>
-                            <th width="30%">Absender</th>
-                            <th width="19%">Erhalten</th>
+                            <th style="width: 1%;">#</th>
+                            <th style="width: 50%;">Betreff</th>
+                            <th style="width: 30%;">Absender</th>
+                            <th style="width: 19%;">Erhalten</th>
                         </tr>
                         <!-- BEGIN noEntries -->
                         <tr>
@@ -40,7 +40,7 @@
                             <td><input type="checkbox" name="selectedEntriesId[]" value="{PRIVATE_MESSAGE_ID}" /></td>
                             <td><a href="index.php?section=U2u&amp;cmd=show&amp;msgID={PRIVATE_MESSAGE_ID}">{PRIVATE_MESSAGE_TITLE}</a></td>
                             <td>{MESSAGE_AUTHOR_NAME}</td>
-                            <td nowrap="nowrap">{MESSAGE_SENT_DATE}</td>
+                            <td style="white-space: nowrap;">{MESSAGE_SENT_DATE}</td>
                         </tr>
                         <!-- END privatemessage -->
                     </tbody>
@@ -53,7 +53,7 @@
                 <tbody>
                     <tr>
                         <td class="none">
-                            <img height="22" border="0" width="38" alt="{TXT_ENTRIES_MARKED}:" src="modules/U2u/View/Media/arrow.gif" />
+                            <img height="22" width="38" alt="{TXT_ENTRIES_MARKED}:" src="modules/U2u/View/Media/arrow.gif" />
                             <a onclick="changeCheckboxes('frmShowNotificationEntries', 'selectedEntriesId[]', true);
         return false;" href="#">{TXT_ENTRIES_SELECT_ALL}</a> / <a onclick="changeCheckboxes('frmShowNotificationEntries', 'selectedEntriesId[]', false);
         return false;" href="#">{TXT_ENTRIES_DESELECT_ALL}</a>&nbsp;

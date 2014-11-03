@@ -12,22 +12,22 @@
     </div>
     <!-- BEGIN access_members -->
     <div class="member_list">
-        <table class="table" border="0" cellpadding="0" cellspacing="0" class="bottomborder" width="100%">
+        <table class="table">
             <tbody>
                 <tr>
-                    <th colspan="4" width="100%">Suchergebnisse</th>
+                    <th colspan="4" style="width: 100%;">Suchergebnisse</th>
                 </tr>
                 <!-- BEGIN access_user -->
                 <tr class="row{ACCESS_USER_CLASS}">
-                    <td valign="middle" width="1%">
+                    <td style="vertical-align: middle; width: 1%;">
                         <a href="index.php?section=Access&amp;cmd=user&amp;id={ACCESS_USER_ID}" title="{ACCESS_USER_USERNAME}">
-                            <img class="img-thumbnail" alt="" border="0" class="member_{ACCESS_PROFILE_ATTRIBUTE_GENDER_VALUE}" src="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_THUMBNAIL_SRC}" />
+                            <img class="img-thumbnail" alt="" class="member_{ACCESS_PROFILE_ATTRIBUTE_GENDER_VALUE}" src="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_THUMBNAIL_SRC}" />
                         </a>
                     </td>
-                    <td style="color: #AFAFAF" valign="top" width="18%">Benutzername<br />
+                    <td style="color: #AFAFAF; vertical-align: top; width: 18%;">Benutzername<br />
                         Herkunft<br />
                         Geschlecht</td>
-                    <td valign="top" width="61%"><b>{ACCESS_USER_USERNAME}</b><br />
+                    <td style="vertical-align: top; width: 61%;"><b>{ACCESS_USER_USERNAME}</b><br />
                         <!-- BEGIN access_profile_attribute_contry -->
                         {ACCESS_PROFILE_ATTRIBUTE_COUNTRY}&nbsp;
                         <!-- END access_profile_attribute_contry -->
@@ -38,7 +38,7 @@
                         <img alt="{ACCESS_PROFILE_ATTRIBUTE_GENDER}" border="0" src="images/content/icons/{ACCESS_PROFILE_ATTRIBUTE_GENDER_VALUE}.gif" style="padding-top: 2px;" title="{ACCESS_PROFILE_ATTRIBUTE_GENDER}" />
                         <!-- END access_profile_attribute_gender -->
                     </td>
-                    <td nowrap="nowrap" valign="top" width="20%">
+                    <td style="white-space: nowrap; vertical-align: top; width: 20%;">
                         <a href="index.php?section=Access&amp;cmd=user&amp;id={ACCESS_USER_ID}" title="{ACCESS_USER_USERNAME}">Profil anzeigen</a><br />
                         <a href="index.php?section=U2u&amp;act=sendmsg&amp;id={ACCESS_USER_ID}" title="{TXT_ACCESS_SEND_MSG}">Mitteilung senden</a><br />
                         <!-- BEGIN u2u_addaddress -->
