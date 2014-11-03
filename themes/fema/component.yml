@@ -5,4 +5,3 @@ DlcInfo:
   publisher: 'Comvation AG'
   versions: { state: stable, number: 1.0.0, releaseDate: '' }
   dependencies: [{ name: jquery, type: lib, minimumVersionNumber: 1.6.1, maximumVersionNumber: 1.6.1 }]
-
