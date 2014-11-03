@@ -369,6 +369,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::remoteLogin($rowData, false);
                                 }
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                    $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::multiSiteConfig($rowData, false);
+                                }
                                 return $actions;
                             }
             ),
@@ -783,6 +786,30 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
         $websiteRemoteLogin = '<a href="javascript:void(0);" target = "_blank" class = "remoteWebsiteLogin" data-id = "'.$wesiteId.'" title = "'.$title.'" ></a>';
         return $websiteRemoteLogin; 
+    }
+    
+    /**
+     * Multisite Configuration of the selected website
+     * 
+     * @param array $rowData websiteData
+     * @return string
+     */
+    public function multiSiteConfig($rowData)
+    {
+        $wesiteId = $rowData['id'];
+        $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        if (!empty($wesiteId)) {
+            $website = $webRepo->findOneById($wesiteId);
+            if (!$website) {
+                return;
+            }
+            if (!$website->getFqdn()) {
+                return;
+            }
+            $title = 'Fetch MultiSite Configuration of a Website: ' . $website->getFqdn()->getName();
+        }
+        $websiteMultiSiteConfig = '<a href="javascript:void(0);"  class = "multiSiteWebsiteConfig" data-id = "' . $wesiteId . '" title = "' . $title . '" ></a>';
+        return $websiteMultiSiteConfig;
     }
     
     /**

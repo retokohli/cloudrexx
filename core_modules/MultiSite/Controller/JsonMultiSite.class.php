@@ -111,7 +111,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'editLicense'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'executeQueryBySession' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'stopQueryExecution'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
-            
+            'getMultisiteConfig'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
+  
         );  
     }
 
@@ -2431,4 +2432,44 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::editLicense() failed: to Update License Information of the This Website: ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Fetch Multisite Configuration of the selected Website
+     * 
+     * @param array $params websiteId
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    function getMultisiteConfig($params) 
+    {
+        $websiteId = $params['post']['websiteId'];
+        if (!$websiteId) {
+            throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::getMultisiteConfig.');
+        }
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                    $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website = $webRepo->findOneById($params['post']['websiteId']);
+                    $params = array(
+                        'websiteId' => $params['post']['websiteId'],
+                    );
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getMultisiteConfig', $params, $website);
+                    if (($resp->status == 'success') && ($resp->data->status == 'success')) {
+                        return array('status' => 'success', 'message' => 'Multisite Configuration Of The Website: ' . $website->getName() . '.!', 'result' => $resp->data->result);
+                    }
+                    return array('status' => 'error', 'message' => 'Failed To Fetch The Multisite Configuration Of The  ' . $website->getName() . '.!');
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
+                    $multisiteConfigArray = \Cx\Core\Setting\Controller\Setting::getArray('MultiSite');
+                    if ($multisiteConfigArray) {
+                        return array('status' => 'success', 'result' => $multisiteConfigArray);
+                    }
+            }
+        } catch (Exception $ex) {
+            throw new MultiSiteJsonException('JsonMultiSite::getMultisiteConfig() failed: to Fetch the Multisite Configuration of the This Website: ' . $e->getMessage());
+        }
+    }
+
 }

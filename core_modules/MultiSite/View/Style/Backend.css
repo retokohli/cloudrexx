@@ -63,6 +63,16 @@ a.remoteWebsiteLogin {
     cursor: pointer;
 }
 
+a.multiSiteWebsiteConfig {
+    background-image: url(../Media/Config.png);
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    margin-top: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
 a.editLicense {
     background-image: url(../Media/edit.gif);
     display: inline-block;

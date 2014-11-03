@@ -321,6 +321,54 @@
             });
         });
         
+        //Fetch multisite Website Configuration settings
+        $('.multiSiteWebsiteConfig').click(function() {
+            var title = $(this).attr('title');
+            var websiteId = $(this).attr('data-id');
+            cx.bind("loadingStart", cx.lock, "multiSiteWebsiteConfig");
+            cx.bind("loadingEnd", cx.unlock, "multiSiteWebsiteConfig");
+            cx.trigger("loadingStart", "multiSiteWebsiteConfig", {});
+            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getMultisiteConfig";
+            $.ajax({
+                url: domainUrl,
+                type: "POST",
+                data: {websiteId: websiteId},
+                dataType: "json",
+                success: function(response) {
+                    if (response.status == 'success' && response.data.status == 'success') {
+                        var table = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width = "100%">';
+                        var tableRow = '';
+                        $.each(response.data.result, function(key, data) {
+                            tableRow += '<tr><td><strong>' + data.name + '</strong></td>';
+                            tableRow += '<td><div style="display:inline"><span id="' + data.name + '">' + data.value + '</span>';
+                            tableRow += '<a href="javascript:void(0);" class="editMultisiteConfig ' + data.name + '" title="Edit Multisite Configuration of ' + data.name + '" data-field="' + data.name + '" data-websiteId ="' + websiteId + '" onclick="Multisite.editMultisiteConfig(cx.jQuery(this))"></a>';
+                            tableRow += '</div><span style="display: none;" class="editMultisiteConfig_ ' + data.name + '">' + JSON.stringify(data) + '</span></td></td>';
+                        });
+                        html = table + tableRow + '</table>';
+                        cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                    }
+                    if (response.status == 'error' && response.data.status == 'error') {
+                        cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                    }
+                    cx.ui.dialog({
+                        width: 820,
+                        height: 400,
+                        title: title,
+                        content: html,
+                        autoOpen: true,
+                        modal: true,
+                        buttons: {
+                            "Close": function() {
+                                $(this).dialog("close");
+                            }
+                        }
+                    });
+                    cx.trigger("loadingEnd", "multiSiteWebsiteConfig", {});
+                }
+            });
+        });
+        
         /**
          * Execute the queued Sql Query in corresponding website
          */
