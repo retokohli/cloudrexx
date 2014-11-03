@@ -152,3 +152,4 @@ $_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY'] = 'JsonMultiSite (executeSql): sql q
 $_ARRAYLANG['TXT_MULTISITE_SEARCH'] = 'Search';
 $_ARRAYLANG['TXT_MULTISITE_FILTER'] = 'Filter';
 $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'] = 'Enter your search term';
+$_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'] = " rows affected successfully";
