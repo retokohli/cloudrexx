@@ -244,63 +244,52 @@
                     var col_count = 0;
                     var tbody = "";
                     var thead = "";
-                    var resultCount = 0;
-
-                    if (value.sqlResult) {
-                        var cols = Object.keys(value.sqlResult).length;
-                        $.each(value.sqlResult, function(key, data) {
+                    if(value.resultSet) {
+                        var cols = Object.keys(value.resultSet).length;
+                        $.each(value.resultSet, function(resultSetkey, resultSetData) {
                             tbody += "<tr class =row1>";
                             if (col_count == 0) {
                                 thead += "<th colspan='2'>" + value.websiteName + "</th>";
                             }
-                            if (col_count < cols) { 
-                                if (value.selectQueryResult) {
-                                    var count = 0;
-                                    var tsbody = "";
-                                    var tshead = "";
-                                    if (typeof value.selectQueryResult[resultCount] === 'object') {
-                                        tbody += "<td><div class='"+ data +"'>" + key + "</td>";
-                                        var no_cols = (value.selectQueryResult[resultCount]).length;
-                                        $.each(value.selectQueryResult[resultCount], function(key, data) {
-                                            tsbody += "<tr class =row1>";
-
-                                            for (key in data) {
-                                                if (count == 0) {
-                                                    tshead += "<th>";
-                                                    tshead += key;
-                                                    tshead += "</th>"
-                                                }
-                                                if (count < no_cols) {
-                                                    tsbody += "<td>";
-                                                    tsbody += data[key];
-                                                    tsbody += "</td>"
-                                                }
-                                            }
-                                            count++;
-                                            tsbody += "</tr>";
-                                        });
-                                    } else {
-                                        tbody  += "<td><div class='"+ data +"'>" + key + "</td>";
+                            if (col_count < cols) {
+                                var count = 0;
+                                var tsbody = "";
+                                var tshead = "";
+                                tbody += "<td><div class='" + resultSetData.queryStatus + "'>" + resultSetData.query + "</td>";
+                                if (typeof resultSetData.resultValue === 'object') {
+                                    var no_cols = Object.keys(resultSetData.resultValue).length;
+                                    $.each(resultSetData.resultValue, function(resultValueKey, resultValueData) {
                                         tsbody += "<tr class =row1>";
-                                        if (value.selectQueryResult[resultCount]) {
-                                            tsbody += "<td>";
-                                            tsbody += value.selectQueryResult[resultCount] + " rows affected successfully";
-                                            tsbody += "</td>";
+                                        for (resultValueKey in resultValueData) {
+                                            if (count == 0) {
+                                                tshead += "<th>";
+                                                tshead += resultValueKey;
+                                                tshead += "</th>"
+                                            }
+                                            if (count < no_cols) {
+                                                tsbody += "<td>";
+                                                tsbody += resultValueData[resultValueKey];
+                                                tsbody += "</td>"
+                                            }
                                         }
+                                        count++;
                                         tsbody += "</tr>";
-                                    }
-                                    
-                                    resultTable = theader + tshead + tsbody + "</table></br>";
+                                    });
+                                } else if (resultSetData.resultValue) {
+                                    tsbody += "<tr class =row1>";
+                                    tsbody += "<td>";
+                                    tsbody += resultSetData.resultValue;
+                                    tsbody += "</td>";
+                                    tsbody += "</tr>";
                                 }
-                                tbody += "<td>" + resultTable + "</td>";
+                                resultingTable = theader + tshead + tsbody + "</table></br>";
+                                tbody += "<td>" + resultingTable + "</td>";
                             }
-                            resultCount++;
                             col_count++;
                             tbody += "</tr>";
-                            
                         });
                         html +=  theader + thead + tbody + "</table></br>";
-                    }
+                    } 
                 }
             });
             return html;

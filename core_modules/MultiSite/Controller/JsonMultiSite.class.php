@@ -2083,39 +2083,34 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
                 case ComponentController::MODE_WEBSITE:
                     if (isset($params['post']['query']) && !empty($params['post']['query'])) {
-                        $queryResult = array();
+                        $resultSet = array();
                         $querys   = $this->extractSqlQueries($params['post']['query']);
                         foreach ($querys as $key => $query) {
-                            if (preg_match('/^SELECT/', (strtoupper($query)), $matches) !== false) {
-                                $sqlQuery = 'select';
-                                $objResult = $objDatabase->GetAll($query);
-                            } 
-                            if (preg_match('/^UPDATE/', (strtoupper($query)), $matches) !== false) {
-                                $sqlQuery = 'update';
-                                $objResultUpdate =  $objDatabase->Execute($query);
+                            switch(true) {
+                                case preg_match('/^SELECT/', (strtoupper($query))):
+                                    $objResult = $objDatabase->GetAll($query);
+                                    $resultSet[$key]['query'] = $query;
+                                    $resultSet[$key]['resultValue'] = $objResult;
+                                    break;
+                                case preg_match('/^UPDATE/', (strtoupper($query))):
+                                case preg_match('/^DELETE/', (strtoupper($query))):
+                                    $objResult = $objDatabase->Execute($query);
+                                    $resultSet[$key]['query'] = $query;
+                                    $resultSet[$key]['resultValue'] =  $objDatabase->Affected_Rows() . $_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'];
+                                    break;
+                                default :
+                                    $objResult = $objDatabase->Execute($query);
+                                    $resultSet[$key]['query'] = $query;
+                                    $resultSet[$key]['resultValue'] =  '';
+                                    break;
                             }
-                            if (preg_match('/^INSERT/', (strtoupper($query)), $matches) !== false) {
-                                $objResultDefault = $objDatabase->Execute($query);
-                            }
-                            if ($objResult !== false || $objResultUpdate !== false || $objResultDefault !== false) {
-                                if (!empty($objResult)) {                                    
-                                    $resultArray[] = $objResult;
-                                }  else if($objResultUpdate){
-                                    $resultArray[] = $objDatabase->Affected_Rows();
-                                    $resultArray['updateStatus'] = true;
-                                } else {
-                                    $resultArray[] = true;
-                                }
-                                $resultArray['queryStatus']  = 'success';
-                                $queryResult[$key] = "okbox";
+                            if ($objResult !== false) {
+                                $resultSet[$key]['queryStatus'] = "okbox";
                             } else {
-                                $resultArray[] = false;
-                                $resultArray['queryStatus']  = 'error';
-                                $queryResult[$key] = "alertbox";
+                                $resultSet[$key]['queryStatus'] = "alertbox";
                             }
                         }
-                        $finalResult = array_combine($querys, $queryResult);
-                        return array('status' => true, 'sqlResult' => contrexx_raw2xhtml($finalResult), 'selectQueryResult' => contrexx_raw2xhtml($resultArray), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
+                        return array('status' => true,'resultSet'=>  contrexx_raw2xhtml($resultSet), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
                     } else {
                         return array('status' => false, 'error' => $_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY']);
                     } 
@@ -2168,7 +2163,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $query = ltrim(substr($input, $queryStartPos, $charNr-$queryStartPos));
                 array_push($arrSqlQueries, $query);
                 $queryStartPos = $charNr;
-            } 
+            }
         }
         return $arrSqlQueries;
     }
