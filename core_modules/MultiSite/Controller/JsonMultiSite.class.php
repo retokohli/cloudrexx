@@ -2419,7 +2419,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try{
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     $paramsArray = array($licenseOption => $licenseValue,'websiteId' => $websiteId);
                     $webRepo     = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website     = $webRepo->findOneById($websiteId);
