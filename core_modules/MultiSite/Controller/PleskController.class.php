@@ -172,8 +172,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
                 $error = (isset($systemError) ? $systemError : $resultNode->errtext);
                 throw new ApiRequestException("Error in removing database user:{$error} ");
             }
-
-            return $respArr['result'];
+            return $respArr;
         }
         
         return false;
@@ -292,7 +291,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }      
         
         if (!empty($respArr)) {
-            foreach($respArr['result'] as $result) {
+            foreach($respArr as $result) {
                 if ($result['login'] == $name) {
                     return $result['id'];
                 }
