@@ -329,6 +329,11 @@ class adminMenu
                                     $cssClass = 'inactive';
                                 }
                                 break;
+                            case 'ComponentManager':
+                                if ($link_data[1] == $_CORELANG['TXT_COMPONENTMANAGER_ADD_NEW_APPLICATION']) {
+                                    $cssClass = 'inactive';
+                                }
+                                break;
                             default:
                                 break;
                         }
