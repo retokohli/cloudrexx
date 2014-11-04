@@ -111,7 +111,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'editLicense'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'executeQueryBySession' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'stopQueryExecution'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
-            'getMultisiteConfig'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
+            'modifyMultisiteConfig' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
   
         );  
     }
@@ -2434,42 +2434,78 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
     
     /**
-     * Fetch Multisite Configuration of the selected Website
+     * Fetch and Update Multisite Configuration of the selected Website
      * 
      * @param array $params websiteId
      * @return array
      * @throws MultiSiteJsonException
      */
-    function getMultisiteConfig($params) 
+    function modifyMultisiteConfig($params) 
     {
-        $websiteId = $params['post']['websiteId'];
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
+        $websiteId = isset($params['post']['websiteId']) ? $params['post']['websiteId'] : '';
+        $configGroup = isset($params['post']['configGroup']) ? $params['post']['configGroup'] : '';
+        $configValue = isset($params['post']['configValue']) ? $params['post']['configValue'] : '';
+        $configName = isset($params['post']['configOption']) ? $params['post']['configOption'] : '';
+
         if (!$websiteId) {
-            throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::getMultisiteConfig.');
+            throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::modifyMultisiteConfig.');
         }
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website = $webRepo->findOneById($params['post']['websiteId']);
-                    $params = array(
-                        'websiteId' => $params['post']['websiteId'],
-                    );
-                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getMultisiteConfig', $params, $website);
-                    if (($resp->status == 'success') && ($resp->data->status == 'success')) {
-                        return array('status' => 'success', 'message' => 'Multisite Configuration Of The Website: ' . $website->getName() . '.!', 'result' => $resp->data->result);
+                    $website = $webRepo->findOneById($websiteId);
+                    $params = !empty($configName) ? array('websiteId' => $websiteId, 'configGroup' => $configGroup, 'configName' => $configName, 'configValue' => $configValue) : array('websiteId' => $websiteId);
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('modifyMultisiteConfig', $params, $website);
+
+                    if ($resp->status == 'success' && $resp->data->status == 'success') {
+                        switch ($resp->data->multisiteConfig) {
+                            case 'fetch':
+                                return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL'], $website->getFqdn()->getName()), 'result' => $resp->data->result);
+                                break;
+                            case 'update':
+                                return array('status' => 'success', 'message' => $resp->data->message);
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        switch ($resp->data->multisiteConfig) {
+                            case 'fetch':
+                                return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED'], $website->getFqdn()->getName()));
+                                break;
+                            case 'update':
+                                return array('status' => 'error', 'message' => $resp->data->message);
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                    return array('status' => 'error', 'message' => 'Failed To Fetch The Multisite Configuration Of The  ' . $website->getName() . '.!');
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    if (!empty($params['post']['configName']) && !empty($params['post']['configGroup'])) {
+                        \Cx\Core\Setting\Controller\Setting::set($params['post']['configName'], $params['post']['configValue']);
+                        
+                        if (\Cx\Core\Setting\Controller\Setting::update($params['post']['configName'])) {
+                            return array('status' => 'success', 'multisiteConfig' => 'update', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_SUCCESSFUL'] . $params['post']['configName']);
+                        }
+                        return array('status' => 'error', 'multisiteConfig' => 'update', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_FAILED'] . $params['post']['configName']);
+                    }
                     \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
                     $multisiteConfigArray = \Cx\Core\Setting\Controller\Setting::getArray('MultiSite');
+                    
                     if ($multisiteConfigArray) {
-                        return array('status' => 'success', 'result' => $multisiteConfigArray);
+                        return array('status' => 'success', 'result' => $multisiteConfigArray, 'multisiteConfig' => 'fetch');
                     }
+                default:
+                    break;
             }
         } catch (Exception $ex) {
-            throw new MultiSiteJsonException('JsonMultiSite::getMultisiteConfig() failed: to Fetch the Multisite Configuration of the This Website: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::modifyMultisiteConfig() failed: to Fetch the Multisite Configuration of the This Website: ' . $e->getMessage());
         }
     }
-
+    
 }

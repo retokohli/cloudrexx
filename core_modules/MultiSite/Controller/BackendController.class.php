@@ -799,6 +799,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function multiSiteConfig($rowData)
     {
+        global $_ARRAYLANG;
+        
         $wesiteId = $rowData['id'];
         $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
         if (!empty($wesiteId)) {
@@ -811,7 +813,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             $title = 'Fetch MultiSite Configuration of a Website: ' . $website->getFqdn()->getName();
         }
-        $websiteMultiSiteConfig = '<a href="javascript:void(0);"  class = "multiSiteWebsiteConfig" data-id = "' . $wesiteId . '" title = "' . $title . '" ></a>';
+        $websiteMultiSiteConfig = '<a href="javascript:void(0);"  class = "multiSiteWebsiteConfig" data-id = "' . $wesiteId . '" title = "' . $title . '" data-title ="'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_TITLE'].$website->getFqdn()->getName().'" ></a>';
         return $websiteMultiSiteConfig;
     }
     

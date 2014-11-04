@@ -87,6 +87,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXLENGTHFTPACCOUNTNAME'] = 'Max. length 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTCODEBASE_SUCCESSFUL_CREATION']      = "Default Code Base has been set successfully";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_CHANGED_SUCCESSFUL']      = "Website state has been set successfully";
 
+
 // Here come the ACTs:
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_DEFAULT'] = 'Websites';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_STATISTICS'] = 'Statistics';
@@ -154,3 +155,10 @@ $_ARRAYLANG['TXT_MULTISITE_SEARCH'] = 'Search';
 $_ARRAYLANG['TXT_MULTISITE_FILTER'] = 'Filter';
 $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'] = 'Enter your search term';
 $_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'] = " rows affected successfully";
+
+//Multisite website Config status message
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_TITLE']             = "Multisite Configuration data of a website ";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL']  = "Multisite Configuration Of The Website:%s !.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED']      = "Failed To Fetch The Multisite Configuration Of The Website:%s !.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_SUCCESSFUL'] = "Successfully Updated the Multisite Configuration Option:";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_FAILED']     = "Failed to Update the Multisite Configuration Option:";

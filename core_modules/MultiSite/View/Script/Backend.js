@@ -327,13 +327,13 @@
         
         //Fetch multisite Website Configuration settings
         $('.multiSiteWebsiteConfig').click(function() {
-            var title = $(this).attr('title');
-            var websiteId = $(this).attr('data-id');
+            var title = $(this).data('title'),
+                websiteId = $(this).attr('data-id');
             cx.bind("loadingStart", cx.lock, "multiSiteWebsiteConfig");
             cx.bind("loadingEnd", cx.unlock, "multiSiteWebsiteConfig");
             cx.trigger("loadingStart", "multiSiteWebsiteConfig", {});
             cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
-            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getMultisiteConfig";
+            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=modifyMultisiteConfig";
             $.ajax({
                 url: domainUrl,
                 type: "POST",
@@ -341,15 +341,48 @@
                 dataType: "json",
                 success: function(response) {
                     if (response.status == 'success' && response.data.status == 'success') {
-                        var table = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width = "100%">';
-                        var tableRow = '';
+                        var $table = $('<table style="width: 100% !important;position: static;margin: .5em 1em;padding:0;"/>')
+                                         .attr({cellspacing : "0", cellpadding: "3", border: "0"})
+                                         .addClass('adminlist');
+                        
                         $.each(response.data.result, function(key, data) {
-                            tableRow += '<tr><td><strong>' + data.name + '</strong></td>';
-                            tableRow += '<td><div style="display:inline"><span id="' + data.name + '">' + data.value + '</span>';
-                            tableRow += '<a href="javascript:void(0);" class="editMultisiteConfig ' + data.name + '" title="Edit Multisite Configuration of ' + data.name + '" data-field="' + data.name + '" data-websiteId ="' + websiteId + '" onclick="Multisite.editMultisiteConfig(cx.jQuery(this))"></a>';
-                            tableRow += '</div><span style="display: none;" class="editMultisiteConfig_ ' + data.name + '">' + JSON.stringify(data) + '</span></td></td>';
+                            $tr = $('<tr />');
+                            
+                            $('<td />')
+                                .html('<strong>' + data.name + '</strong>')
+                                .appendTo($tr);                            
+                            
+                            container = $('<span />');
+                            
+                            $('<span />')
+                                .attr('id', data.name)
+                                .html(data.value)
+                                .appendTo(container);
+                            
+                            $('<a href="javascript:void(0);" />')
+                                .addClass('editMultisiteConfig '+ data.name)
+                                .attr('title', 'Edit Multisite Configuration of ' + data.name)
+                                .data('field', data.name)
+                                .data('websiteId', websiteId)
+                                .click(function(){
+                                    Multisite.editMultisiteConfig($(this));
+                                })
+                                .appendTo(container);
+                            
+                            
+                            $td = $('<td />')
+                                    .append(container);
+                            $('<span />')
+                                .attr('id', 'editMultisiteConfig_' + data.name)
+                                .html(JSON.stringify(data))
+                                .hide()
+                                .appendTo($td);
+                            
+                            $tr.append($td);
+                            
+                            $table.append($tr);
                         });
-                        html = table + tableRow + '</table>';
+                                                
                         cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
                     }
                     if (response.status == 'error' && response.data.status == 'error') {
@@ -359,7 +392,7 @@
                         width: 820,
                         height: 400,
                         title: title,
-                        content: html,
+                        content: $table,
                         autoOpen: true,
                         modal: true,
                         buttons: {
@@ -496,5 +529,87 @@ var Multisite = {
             }
         });
         $J('#tab_menu').tabs();
+    },
+    
+    //Edit Multisite Configuration Option
+    editMultisiteConfig: function($this) {
+        var configOption = $this.data('field'),
+                websiteId = $this.data('websiteId'),
+                title = $this.attr('title'),
+                configData = JSON.parse($J("#editMultisiteConfig_" + configOption).text()),
+                configGroup = configData.group,
+                $table = $J('<table style="width: 100% !important;position: static;margin: .5em 1em;padding:0;"/>')
+                            .attr({cellspacing: "0", cellpadding: "3", border: "0", id: "editMultisiteConfig"})
+                            .addClass('adminlist'),
+                $tr = $J('<tr />'),
+                $td = $J('<td />').css("border", "none");
+        $J('<td />')
+                .html('<strong>' + configOption + '</strong>').css("border", "none")
+                .appendTo($tr);
+
+        if (configData.type == 'dropdown' && configData.values != 'null') {
+            var selectOptions = [],
+                    selected = '',
+                    $selectBox = $J('<select />').attr({name: "editConfig_" + configOption, id: "editConfig_" + configOption});
+
+            selectOptions = configData.values.replace(/\s+/g, '').split(',');
+            $J.each(selectOptions, function(key, data) {
+                $option = $J('<option />').html(data.substr(0, data.indexOf(':')));
+                if (data.substr(0, data.indexOf(':')) == configData.value) {
+                    $option.attr('selected', 'selected');
+                }
+                $selectBox.append($option);
+            });
+            $td.append($selectBox);
+            $tr.append($td);
+            $table.append($tr);
+        } else {
+            $J('<input />').attr({id: "editConfig_" + configOption, name: "editConfig_" + configOption, type: "text"})
+                    .val(configData.value)
+                    .appendTo($td);
+            $tr.append($td);
+            $table.append($tr);
+        }
+        domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=modifyMultisiteConfig";
+        cx.ui.dialog({
+            width: 450,
+            height: 180,
+            title: title,
+            content: $table,
+            autoOpen: true,
+            modal: true,
+            buttons: {
+                "Save": function() {
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+                    var configValue = $J('#editConfig_' + configOption).val();
+                    $J.ajax({
+                        url: domainUrl,
+                        type: "POST",
+                        data: {configGroup: configGroup, configOption: configOption, configValue: configValue, websiteId: websiteId},
+                        dataType: "json",
+                        success: function(response) {
+                            if (response.data.status == 'error') {
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                            }
+                            if (response.status == 'success' && response.data.status == 'success') {
+                                configData.value = configValue;
+                                $J('span#' + configOption).text(configValue);
+                                $J('span#editMultisiteConfig_' + configOption).text(JSON.stringify(configData));
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                            }
+                        }
+                    });
+                    $J('#editMultisiteConfig').remove();
+                    $J(this).dialog("close");
+                },
+                "Cancel": function() {
+                    $J('#editMultisiteConfig').remove();
+                    $J(this).dialog("close");
+                }
+            },
+            close: function() {
+                $J('#editMultisiteConfig').remove();
+            }
+        });
     }
 };
