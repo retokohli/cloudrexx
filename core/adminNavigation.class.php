@@ -136,7 +136,7 @@ class adminMenu
      */
     private function getMenu()
     {
-        global $_CORELANG, $objTemplate, $_CONFIG;
+        global $_CORELANG, $objTemplate, $_CONFIG, $_ARRAYLANG;
 
         $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'BackendNavigation.html');
 
@@ -177,6 +177,9 @@ class adminMenu
             if($group_id == 2) {  //modules group
                 //(2/3) sort entries by captions
                 array_multisort($arrMatchingItemCaptions, $arrMatchingItems);
+                if (\Permission::checkAccess(23, 'static', true)) {
+                    array_unshift($arrMatchingItems, array(2, $_ARRAYLANG['TXT_COMPONENTMANAGER_ADD_NEW_APPLICATION'], 'index.php?cmd=ComponentManager', '_self', 'ComponentManager', 1));
+                }
             }
 
             //(3/3) display a nice ordered menu.
