@@ -1550,7 +1550,7 @@ button[name="recipient_save"] {
 .rssfeed img {
  border: 0;
 }
-.shop_text span {
+.shop_text span, #guestbook .star-red {
     color: #ff0000;
 }
 .breadcrumb ul {
