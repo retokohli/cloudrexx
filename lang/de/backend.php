@@ -1395,3 +1395,5 @@ $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Die Einstellungen wurden gespeichert.';
 $_ARRAYLANG['TXT_ACTIVATED'] = "Aktiviert";
 $_ARRAYLANG['TXT_DEACTIVATED'] = "Deaktiviert";
 $_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Ihre Sitzung ist abgelaufen.<br /><a href="./index.php" target="_blank">Klicken Sie hier um sich erneut anzumelden.</a>';
+
+$_ARRAYLANG['TXT_COMPONENTMANAGER_ADD_NEW_APPLICATION'] = "Neue hinzufügen...";
