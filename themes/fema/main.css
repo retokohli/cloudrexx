@@ -813,8 +813,9 @@ ul.social-icons-signup li a:hover {
     //background: url(images/grid_noise.png) repeat;
     background-color: #ffffff;
 }
-.section-title > h2{
+.text-center .section-title > h2 {
     margin: 0px !important;
+    color: #232323;
 }
 .fullwidth {
     clear:both;
@@ -1788,4 +1789,4 @@ h3.submenu-title, .menu-break{display: none;}
     color: #626C72;
     padding: 18px 0 6px;
 }
-/*.text-center h2 {color: #626C72;}*/
+.text-center h2 {color: #626C72;}
