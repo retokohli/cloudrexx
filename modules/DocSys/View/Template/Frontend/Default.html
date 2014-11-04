@@ -9,18 +9,18 @@
     </div>
     <div class="doc_list">
         <!-- BEGIN table -->
-        <table class="table" cellspacing="0">
+        <table class="table">
             <tbody>
                 <tr>
-                    <th width="5%" nowrap="nowrap">Datum</th>
-                    <th width="100%">Titel</th>
-                    <th nowrap="nowrap">Kategorie</th>
+                    <th style="width: 5%; white-space: nowrap;">Datum</th>
+                    <th style="width: 100%;">Titel</th>
+                    <th style="white-space: nowrap;">Kategorie</th>
                 </tr>
                 <!-- BEGIN row -->
                 <tr>
-                    <td nowrap="nowrap">{DOCSYS_DATE}</td>
-                    <td width="100%">{DOCSYS_LINK}</td>
-                    <td nowrap="nowrap">{DOCSYS_CATEGORY}</td>
+                    <td  style="white-space: nowrap;">{DOCSYS_DATE}</td>
+                    <td style="width: 100%;">{DOCSYS_LINK}</td>
+                    <td  style="white-space: nowrap;">{DOCSYS_CATEGORY}</td>
                 </tr>
                 <!-- END row -->
             </tbody>
@@ -30,5 +30,5 @@
         {TXT_NO_DOCUMENTS_FOUND}
         <!-- END nothing_found -->
     </div>
-    <div calss="paging">{DOCSYS_PAGING}</div>
+    <div class="paging">{DOCSYS_PAGING}</div>
 </div>

@@ -1,12 +1,12 @@
 <div id="guestbook">
     <!-- BEGIN guestbookForm -->
     <div class="text-danger">{ERROR}</div>
-    <div class="information text-muted">Sie können sich hier ins Gästebuch eintragen.<br />Damit das Eintragen funktioniert, müssen alle mit einem <font color="red">*</font> markierten Felder ausgefüllt sein.</div>
+    <div class="information text-muted">Sie können sich hier ins Gästebuch eintragen.<br />Damit das Eintragen funktioniert, müssen alle mit einem <span class="star-red">*</span> markierten Felder ausgefüllt sein.</div>
     <div class="form">
         <form method="post" action="index.php?section=GuestBook&cmd=post" name="GuestbookForm">
-            <p><label for="forename">Vorname<font color="red"> *</font></label><input type="text" value="{FORENAME}" name="forename" id="forename" size="60" maxlength="255" /></p>
-            <p><label for="name">Nachname<font color="red"> *</font></label><input type="text" value="{NAME}" name="name" id="name"  maxlength="255" /></p>
-            <p><label for="comment">Kommentar<font color="red"> *</font></label><textarea cols="1" id="comment" name="comment">{COMMENT}</textarea></p>
+            <p><label for="forename">Vorname<span class="star-red"> *</span></label><input type="text" value="{FORENAME}" name="forename" id="forename" size="60" maxlength="255" /></p>
+            <p><label for="name">Nachname<span class="star-red"> *</span></label><input type="text" value="{NAME}" name="name" id="name"  maxlength="255" /></p>
+            <p><label for="comment">Kommentar<span class="star-red"> *</span></label><textarea cols="1" id="comment" name="comment">{COMMENT}</textarea></p>
             <p>
 <label>Geschlecht</label>
 <span class="radio">
@@ -19,8 +19,8 @@
 <label class="description" for="male"><input type="radio" id="male" name="malefemale" value="M" {MALE_CHECKED}/> Männlich</label>
 </span>
 </p>
-            <p><label for="location">Wohnort<font color="red"> *</font></label><input type="text" value="{LOCATION}" id="location" name="location" maxlength="255" /></p>
-            <p><label for="email">E-Mail<font color="red"> *</font></label><input type="text" value="{EMAIL}" id="email" name="email" maxlength="255" /></p>
+            <p><label for="location">Wohnort<span class="star-red"> *</span></label><input type="text" value="{LOCATION}" id="location" name="location" maxlength="255" /></p>
+            <p><label for="email">E-Mail<span class="star-red"> *</span></label><input type="text" value="{EMAIL}" id="email" name="email" maxlength="255" /></p>
             <p><label for="url">Homepage</label><input type="text" maxlength="255" value="{HOMEPAGE}" id="url" name="url"/></p>
             <!-- BEGIN guestbook_captcha -->
             <p><label for="coreCaptchaCode">{TXT_GUESTBOOK_CAPTCHA}</label>{GUESTBOOK_CAPTCHA_CODE}</p>

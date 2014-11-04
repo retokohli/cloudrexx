@@ -5,20 +5,20 @@
     <div class="latest">
         <h2>{TXT_FORUM_LATEST_ENTRIES}</h2>
         <div class="table-responsive">
-            <table cellspacing="0" class="table">
+            <table class="table">
                 <tr>
-                    <th width="60%">{TXT_FORUM_THREAD}</th>
-                    <th width="22%" nowrap="nowrap" align="left">{TXT_FORUM_THREAD_STRATER}</th>		
-                    <th width="8%" nowrap="nowrap" align="center">{TXT_FORUM_POST_COUNT}</th>		
-                    <th width="10%" nowrap="nowrap" align="center">{TXT_FORUM_THREAD_CREATE_DATE}</th>
+                    <th style="width: 60%;">{TXT_FORUM_THREAD}</th>
+                    <th style="white-space: nowrap; text-align: left; wdith: 22%;">{TXT_FORUM_THREAD_STRATER}</th>		
+                    <th style="white-space: nowrap; text-align: center; width: 8%;">{TXT_FORUM_POST_COUNT}</th>		
+                    <th style="white-space: nowrap; text-align: center; width: 10%;">{TXT_FORUM_THREAD_CREATE_DATE}</th>
                 </tr>
                 <!-- BEGIN latestPosts -->
                 <tr class="row{FORUM_ROWCLASS}">
                     <td>
                         <b>{FORUM_THREAD}<b></td>
-                                <td nowrap="nowrap" align="left" class="smallfont">{FORUM_THREAD_STARTER}</td>
-                                <td nowrap="nowrap" align="center">{FORUM_POST_COUNT}</td>
-                                <td nowrap="nowrap" align="center">{FORUM_THREAD_CREATE_DATE}</td>
+                                <td style="white-space: nowrap; text-align: left;" class="smallfont">{FORUM_THREAD_STARTER}</td>
+                                <td style="white-space: nowrap; text-align: center;">{FORUM_POST_COUNT}</td>
+                                <td style="white-space: nowrap; text-align: center;">{FORUM_THREAD_CREATE_DATE}</td>
                                 </tr>	
                                 <!-- END latestPosts -->	
                                 </table>
@@ -29,21 +29,21 @@
                                     <h2>{FORUM_MAINCATEGORY_NAME_TITLE}</h2>{FORUM_MAINCATEGORY_NAME_DESCRIPTION}
                                     <div class="table-responsive">
                                         <div style="display: block;" id="maincat_{FORUM_MAINCATEGORY_ID}">
-                                            <table class="table" cellspacing="0">
+                                            <table class="table">
                                                 <tr>
-                                                    <th width="50%">{TXT_FORUM}</th>
-                                                    <th width="49%" nowrap="nowrap">{TXT_LASTPOST}</th>		
-                                                    <th width="1%" nowrap="nowrap" align="center">{TXT_THREADS}</th>		
+                                                    <th style="width: 50%;">{TXT_FORUM}</th>
+                                                    <th style="width: 49%; white-space: nowrap;">{TXT_LASTPOST}</th>		
+                                                    <th style="white-space: nowrap; text-align: center; width: 1%;">{TXT_THREADS}</th>		
                                                 </tr>
                                                 <!-- BEGIN forumSubCategory -->
                                                 <tr class="row{FORUM_SUBCATEGORY_ROWCLASS}">
-                                                    <td valign="top">
+                                                    <td style="vertical-align: top;">
                                                         <div style="padding-left: {FORUM_SUBCATEGORY_SPACER}px;" title="{FORUM_SUBCATEGORY_DESC}">
                                                             <a title="{FORUM_SUBCATEGORY_NAME}" href="index.php?section=Forum&amp;cmd=board&amp;id={FORUM_SUBCATEGORY_ID}"><b>{FORUM_SUBCATEGORY_NAME}</b></a><br />{FORUM_SUBCATEGORY_DESC}
                                                         </div>
                                                     </td>
-                                                    <td nowrap="nowrap" valign="top">{FORUM_SUBCATEGORY_LASTPOST_TITLE} - {FORUM_SUBCATEGORY_LASTPOST_DATE}</td>
-                                                    <td nowrap="nowrap" align="center" valign="top">{FORUM_SUBCATEGORY_THREADS}</td>
+                                                    <td style="white-space: nowrap; vertical-align: top;">{FORUM_SUBCATEGORY_LASTPOST_TITLE} - {FORUM_SUBCATEGORY_LASTPOST_DATE}</td>
+                                                    <td style="white-space: nowrap; text-align: center; vertical-align: top;">{FORUM_SUBCATEGORY_THREADS}</td>
                                                 </tr>	
                                                 <!-- END forumSubCategory -->
                                             </table>
