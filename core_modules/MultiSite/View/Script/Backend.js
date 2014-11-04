@@ -71,16 +71,20 @@
             cx.bind("loadingStart", cx.lock, "showLicense");
             cx.bind("loadingEnd", cx.unlock, "showLicense");
             cx.trigger("loadingStart", "showLicense", {});
-            var className = $(this).attr('class');
-            var id = parseInt(className.match(/[0-9]+/)[0], 10);
-            var title = $(this).attr('title');
-            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
-            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getLicense";
+            
+            var className = $(this).attr('class'),
+                id        = parseInt(className.match(/[0-9]+/)[0], 10),
+                title     = cx.variables.get('getLicenseTitle', "multisite/lang") + $(this).data('websitename');
+            
+            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getLicense";                        
             $.ajax({
                 url: domainUrl,
                 type: "POST",
                 data: {command: 'getLicense', websiteId: id},
                 dataType: "json",
+                beforeSend : function() {
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
+                },
                 success: function(response) {
                     cx.trigger("loadingEnd", "showLicense", {});
                     if (response.status == 'error') {

@@ -756,9 +756,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $title = $_ARRAYLANG['TXT_MULTISITE_FETCH_LICENSE_INFO'] . $website->getFqdn()->getName();
         }
         $cxjs = \ContrexxJavascript::getInstance();
-        $cxjs->setVariable(array('licenseInfo' => $_ARRAYLANG['TXT_MULTISITE_LICENSE_INFO'],), 'multisite/lang');
+        $cxjs->setVariable(array(
+            'licenseInfo'     => $_ARRAYLANG['TXT_MULTISITE_LICENSE_INFO'],
+            'getLicenseTitle' => $_ARRAYLANG['TXT_MULTISITE_LICENSE_DATA_TITLE']
+        ), 'multisite/lang');
         $className = 'showLicense_' . $websiteId;
-        $showLicense = '<a href="javascript:void(0);" class="showLicense ' . $className . '" title="' . $title . '">';
+        $showLicense = '<a href="javascript:void(0);" data-websitename="'. $website->getFqdn()->getName() .'" class="showLicense ' . $className . '" title="' . $title . '">';
 
         return $showLicense;
     }

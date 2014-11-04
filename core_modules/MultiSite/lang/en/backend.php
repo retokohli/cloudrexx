@@ -144,6 +144,7 @@ $_ARRAYLANG['TXT_MULTISITE_PLEASE_INSERT_QUERY'] = 'Please insert a query..!';
 $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_SUCCESSFULLY'] = 'Query executed successfully.';
 $_ARRAYLANG['TXT_MULTISITE_SQL_QUERY_EXECUTED_FAILED'] = 'Query execution failed.';
 $_ARRAYLANG['TXT_MULTISITE_FETCH_LICENSE_INFO'] = 'Fetch license information of website:';
+$_ARRAYLANG['TXT_MULTISITE_LICENSE_DATA_TITLE'] = 'License data of website ';
 $_ARRAYLANG['TXT_MULTISITE_SHOW_LICENSE'] = 'Show License';
 $_ARRAYLANG['TXT_MULTISITE_LICENSE_INFO'] = 'License information for the selected website';
 $_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY'] = 'JsonMultiSite (executeSql): sql query is empty..';
