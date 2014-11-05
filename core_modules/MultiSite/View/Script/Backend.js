@@ -141,6 +141,8 @@
                                     .data('field', key)
                                     .data('websiteid', id)
                                     .data('value', licenseContent)
+                                    .data('options',data.values)
+                                    .data('editContentType',data.type)
                                     .click(function(){
                                         Multisite.editLicense($(this));
                                     })
@@ -479,6 +481,7 @@ var Multisite = {
         var fieldLabel = $this.data('field'),
             title = $this.attr('title'),
             websiteId = $this.data('websiteid'),
+            editContentType = $this.data('editContentType'),
             licenseArray = ['licenseMessage', 'dashboardMessages', 'licenseGrayzoneMessages'],
             liceneseTable = $J('<div />');
             
@@ -537,14 +540,82 @@ var Multisite = {
                     $J('<label>').html(fieldLabel)
                 )
                 .appendTo($tr);
-            $J('<td>')
-                .html(
-                    $J('<textarea rows="4" cols="40">')
-                        .addClass(fieldLabel)
-                        .attr('name', fieldLabel)
-                        .html($this.data('value'))
-                )
-                .appendTo($tr);
+        
+            switch (editContentType) {
+                case 'text':
+                    $J('<td>')
+                            .html(
+                                    $J('<input type="text"/>')
+                                    .addClass(fieldLabel)
+                                    .attr('name', fieldLabel)
+                                    .val($this.data('value'))
+                                    )
+                            .appendTo($tr);
+                    break;
+                case 'radio':
+                    $J.each($this.data('options'), function(key, value) {
+                        valueAndLabel = value.split(':');
+                        isChecked = valueAndLabel['0'] == $this.data('value') ? 'checked' : '';
+                        $J('<td>')
+                                .html(
+                                        $J('<input type="radio"/>')
+                                        .addClass(fieldLabel)
+                                        .attr('name', fieldLabel)
+                                        .val(valueAndLabel['0'])
+                                        .attr('checked', isChecked)
+                                        )
+                                .appendTo($tr);
+                        $J('<td>')
+                                .html($J('<label>')
+                                        .html(valueAndLabel['1']))
+                                .appendTo($tr);
+                    });
+                    break;
+                case 'textarea':
+                    $J('<td>')
+                            .html(
+                                    $J('<textarea rows="4" cols="40">')
+                                    .addClass(fieldLabel)
+                                    .attr('name', fieldLabel)
+                                    .html($this.data('value'))
+                                    )
+                            .appendTo($tr);
+                    break;
+                case 'dropdown':
+                    select = '<select name="'+fieldLabel+'" class ="'+fieldLabel+'" ></select>';
+                    $J.each($this.data('options'), function(key, value) {
+                        valueAndLabel = value.split(':');
+                        isSelected = valueAndLabel['0'] == $this.data('value') ? 'selected' : '';
+                        dropdown = $J(select)
+                                .append($J("<option></option>")
+                                        .attr("value", valueAndLabel['0'])
+                                        .text(valueAndLabel['1'])
+                                        .attr('selected', isSelected));
+                    });
+                    $J('<td>')
+                            .html(dropdown)
+                            .appendTo($tr);
+                    break;
+                case 'checkbox':
+                    $J.each($this.data('options'), function(key, value) {
+                        valueAndLabel = value.split(':');
+                        isChecked = valueAndLabel['0'] == $this.data('value') ? 'checked' : '';
+                        $J('<td>')
+                                .html(
+                                        $J('<input type="checkbox"/>')
+                                        .addClass(fieldLabel)
+                                        .attr('name', fieldLabel)
+                                        .val(valueAndLabel['0'])
+                                        .attr('checked', isChecked)
+                                        )
+                                .appendTo($tr);
+                        $J('<td>')
+                                .html($J('<label>')
+                                        .html(valueAndLabel['1']))
+                                .appendTo($tr);
+                    });
+                    break;    
+            }
             $uiTable.append($tr);
             
             $uiTable.appendTo(liceneseTable);
@@ -568,7 +639,7 @@ var Multisite = {
                             fieldValue[$J(this).data('langId')] = {text: $J(this).find('textarea.' + fieldLabel).val()};
                         });
                     } else {
-                        var fieldValue = $J('.licenceEdit').find('textarea.' + fieldLabel).val();
+                        var fieldValue = $J('.licenceEdit').find('.' + fieldLabel).val();
                     }                    
                     $J.ajax({
                         url: domainUrl,
