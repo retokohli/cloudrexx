@@ -64,7 +64,6 @@ class FileSystem extends Engine{
         try {
             $file = new \Cx\Lib\FileSystem\File(self::$filename);
             $file->touch();
-            $file->makeWritable();
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new \Cx\Core\Setting\Controller\SettingException($e->getMessage());
         }
