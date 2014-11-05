@@ -178,7 +178,7 @@ class adminMenu
                 //(2/3) sort entries by captions
                 array_multisort($arrMatchingItemCaptions, $arrMatchingItems);
                 if (\Permission::checkAccess(23, 'static', true)) {
-                    array_unshift($arrMatchingItems, array(2, $_CORELANG['TXT_COMPONENTMANAGER_ADD_NEW_APPLICATION'], 'index.php?cmd=ComponentManager', '_self', 'ComponentManager', 1));
+                    array_push($arrMatchingItems, array(2, $_CORELANG['TXT_COMPONENTMANAGER_ADD_NEW_APPLICATION'], 'index.php?cmd=ComponentManager', '_self', 'ComponentManager', 1));
                 }
             }
 
