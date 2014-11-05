@@ -2217,6 +2217,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         return array('status' => 'success', 'message' => 'The Query Execution was Stopped');
     }
+    
     /**
      * Fetching License information
      * 
@@ -2254,6 +2255,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $dashboardMessages = array();
                     $licenseMessage = array();
                     $licenseGrayzoneMessages = array();
+                    $result = array();
                     foreach ($params['post']['activeLanguages'] as $languages) {
                         $lang_id = $languages['id'];
                         $lang_name = $languages['name'];
@@ -2264,53 +2266,89 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $dashboardMessages[] = ($dashboardMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id, 'lang_name' => $lang_name ,'message' => $dashboardMessagesObj->getText()) : array('lang_id' => $lang_id , 'lang_name' => $lang_name, 'message' =>'');
                         $licenseGrayzoneMessages[] = ($licenseGrayzoneMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id , 'lang_name' => $lang_name, 'message' => $licenseGrayzoneMessagesObj->getText()) : array('lang_id' => $lang_id , 'lang_name' => $lang_name ,'message' =>'');
                     }
-                    $result = array(
-                        'installationId'            => $license->getInstallationId(),
-                        'licenseKey'                => $license->getLicenseKey(), 
-                        'licenseState'              => $license->getState(),
-                        'licenseValidTo'            => $license->getValidToDate(),
-                        'licenseMessage'            => $licenseMessage,
-                        'licensePartnerTitle'       => $license->getPartner()->getTitle(),
-                        'licensePartnerLastname'    => $license->getPartner()->getLastname(),
-                        'licensePartnerFirstname'   => $license->getPartner()->getFirstname(),
-                        'licensePartnerCompanyname' => $license->getPartner()->getCompanyName(),
-                        'licensePartnerAddress'     => $license->getPartner()->getAddress(),
-                        'licensePartnerZip'         => $license->getPartner()->getZip(),
-                        'licensePartnerCity'        => $license->getPartner()->getCity(),
-                        'licensePartnerCountry'     => $license->getPartner()->getCountry(),
-                        'licensePartnerPhone'       => $license->getPartner()->getPhone(),
-                        'licensePartnerUrl'         => $license->getPartner()->getUrl(),
-                        'licensePartnerMail'        => $license->getPartner()->getMail(),
-                        'licenseCustomerTitle'      => $license->getCustomer()->getTitle(),
-                        'licenseCustomerLastname'   => $license->getCustomer()->getLastname(),
-                        'licenseCustomerFirstname'  => $license->getCustomer()->getFirstname(),
-                        'licenseCustomerCompanyname'=> $license->getCustomer()->getCompanyName(),
-                        'licenseCustomerAddress'    => $license->getCustomer()->getAddress(),
-                        'licenseCustomerZip'        => $license->getCustomer()->getZip(),
-                        'licenseCustomerCity'       => $license->getCustomer()->getCity(),
-                        'licenseCustomerCountry'    => $license->getCustomer()->getCountry(),
-                        'licenseCustomerPhone'      => $license->getCustomer()->getPhone(),
-                        'licenseCustomerUrl'        => $license->getCustomer()->getUrl(),
-                        'licenseCustomerMail'       => $license->getCustomer()->getMail(),
-                        'upgradeUrl'                => $license->getUpgradeUrl(),
-                        'licenseCreatedAt'          => $license->getCreatedAtDate(),
-                        'licenseDomains'            => implode(', ',$license->getRegisteredDomains()),
-                        'availableComponents'       => implode(', ', $license->getLegalComponentsList()), 
-                        'dashboardMessages'         => $dashboardMessages,
-                        'isUpgradable'              => $license->getIsUpgradable(),
-                        'licenseGrayzoneMessages'   => $licenseGrayzoneMessages,
-                        'licenseGrayzoneTime'       => $license->getGrayzoneTime(),
-                        'licenseLockTime'           => $license->getFrontendLockTime(),
-                        'licenseUpdateInterval'     => $license->getRequestInterval(),
-                        'licenseFailedUpdate'       => $license->getFirstFailedUpdateTime(),
-                        'licenseSuccessfulUpdate'   => $license->getLastSuccessfulUpdateTime(),
-                        'coreCmsEdition'            => $license->getEditionName(),
-                        'coreCmsVersion'            => $license->getVersion()->getNumber(),
-                        'coreCmsCodeName'           => $license->getVersion()->getCodeName(),
-                        'coreCmsStatus'             => $license->getVersion()->getState(),
-                        'coreCmsReleaseDate'        => $license->getVersion()->getReleaseDate(),
-                        'coreCmsName'               => $license->getVersion()->getName(),
-                    );
+                    \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
+                    $configCoreSetting = \Cx\Core\Setting\Controller\Setting::getArray('Config', 'core');
+                    if ($configCoreSetting) {
+                        $result['installationId'] = array("type" => $configCoreSetting['installationId']['type'], "values" => $configCoreSetting['installationId']['values'], "content" => $configCoreSetting['installationId']['value']);
+                    }
+                    
+                    $licenseConfig = array('license', 'release');
+                    foreach ($licenseConfig as $value) {
+                        foreach (\Cx\Core\Setting\Controller\Setting::getArray('Config', $value) as $key => $value) {
+                            if (in_array($key, array('licensePartner','licenseCustomer'))) {
+                                switch ($key) {
+                                    case 'licensePartner':
+                                        $result['licensePartnerTitle'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getTitle());
+                                        $result['licensePartnerLastname'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getLastname());
+                                        $result['licensePartnerFirstname'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getFirstname());
+                                        $result['licensePartnerCompanyname'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getCompanyName());
+                                        $result['licensePartnerAddress'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getAddress());
+                                        $result['licensePartnerZip'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getZip());
+                                        $result['licensePartnerCity'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getCity());
+                                        $result['licensePartnerCountry'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getCountry());
+                                        $result['licensePartnerPhone'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getPhone());
+                                        $result['licensePartnerUrl'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getUrl());
+                                        $result['licensePartnerMail'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getMail());
+                                        break;
+                                    case 'licenseCustomer':
+                                        $result['licenseCustomerTitle'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getTitle());
+                                        $result['licenseCustomerLastname'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getLastname());
+                                        $result['licenseCustomerFirstname'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getFirstname());
+                                        $result['licenseCustomerCompanyname'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getCompanyName());
+                                        $result['licenseCustomerAddress'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getAddress());
+                                        $result['licenseCustomerZip'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getZip());
+                                        $result['licenseCustomerCity'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getCity());
+                                        $result['licenseCustomerCountry'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getCountry());
+                                        $result['licenseCustomerPhone'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getPhone());
+                                        $result['licenseCustomerUrl'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getUrl());
+                                        $result['licenseCustomerMail'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getCustomer()->getMail());
+                                        break;
+                                    default: 
+                                        break;
+                                }
+                            } else {
+                                $result[$key] = array("type" => $value['type'], "values" => $value['values']);
+                            }
+                            switch ($key) {
+                                case 'licenseKey':
+                                case 'licenseState':
+                                case 'licenseValidTo':
+                                case 'upgradeUrl':
+                                case 'licenseCreatedAt':
+                                case 'isUpgradable':
+                                case 'licenseGrayzoneTime':
+                                case 'licenseLockTime':
+                                case 'licenseUpdateInterval':
+                                case 'licenseFailedUpdate':
+                                case 'licenseSuccessfulUpdate':
+                                case 'coreCmsEdition':
+                                case 'coreCmsVersion':
+                                case 'coreCmsCodeName':
+                                case 'coreCmsStatus':
+                                case 'coreCmsReleaseDate':
+                                case 'coreCmsName':
+                                    $result[$key]['content'] = $value['value'];
+                                    break;
+                                case 'licenseMessage':
+                                    $result[$key]['content'] = $licenseMessage;
+                                    break;
+                                case 'licenseDomains':
+                                    $result[$key]['content'] = implode(', ', $license->getRegisteredDomains());
+                                    break;
+                                case 'availableComponents':
+                                    $result[$key]['content'] = implode(', ', $license->getLegalComponentsList());
+                                    break;
+                                case 'dashboardMessages':
+                                    $result[$key]['content'] = $dashboardMessages;
+                                    break;
+                                case 'licenseGrayzoneMessages':
+                                    $result[$key]['content'] = $licenseGrayzoneMessages;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                     if ($result) {
                         return array(
                             'status' => true,
