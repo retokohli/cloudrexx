@@ -337,7 +337,7 @@ a:hover {
     background-color: transparent;
     border: 0px solid;
     border-radius: 0px;
-    //font-size: 22px;
+    /*//font-size: 22px;*/
     font-weight: bold;
     height: 40px;
     margin-top: 50px;
@@ -381,7 +381,7 @@ a:hover {
     padding-bottom: 120px;
 }
 #content2 {
-/*    //background: url(images/grid_noise.png) repeat;*/
+    /*    //background: url(images/grid_noise.png) repeat;*/
     background-color: #f4f4f4;
     padding-top: 60px;
     padding-bottom: 60px;
@@ -1790,3 +1790,16 @@ h3.submenu-title, .menu-break{display: none;}
     padding: 18px 0 6px;
 }
 .text-center h2 {color: #626C72;}
+body .navbar {border: 0;}
+.navbar-inverse .navbar-inner {border-width: 0;}
+.collapse {display: block;}
+.carousel .carousel-control{text-shadow: none;position:absolute;top:40%;left:15px;width:40px;height:40px;margin-top:-20px;font-size:60px;font-weight:100;line-height:30px;color:#ffffff;text-align:center;background:transparent;-webkit-border-radius:23px;-moz-border-radius:23px;border-radius:23px;opacity:1}
+.carousel .carousel-control.left, .carousel .carousel-control.right {background-image: none;}
+body .container {
+    padding-left: 0;
+    padding-right: 0;
+}
+a:hover, a:focus {
+    color: #3a4044;
+    text-decoration: none;
+}
