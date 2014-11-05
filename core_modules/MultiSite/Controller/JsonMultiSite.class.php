@@ -2144,26 +2144,30 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $query = '';
         $arrSqlQueries = array();
         for ($charNr = 0; $charNr < strlen($input); $charNr++) {
-            if ($isComment) { // check if the loop is in a comment
-                if ($input[$charNr] == "\r" || $input[$charNr] == "\n") {
-                    $isComment = false;
-                    $queryStartPos = $charNr+1;
-                }
-            } elseif ($isString) { // check if the loop is in a string
-                if ($input[$charNr] == $stringDelimiter && ($input[$charNr-1] != "\\" || $input[$charNr-2] == "\\")) {
-                    $isString = false;
-                }
-            } elseif ($input[$charNr] == "#" || (!empty($input[$charNr+1]) && $input[$charNr].$input[$charNr+1] == "--")) {
-                $isComment = true;
-
-            } elseif ($input[$charNr] == '"' || $input[$charNr] == "'" || $input[$charNr] == "`") { // check if this is a string delimiter
-                $isString = true;
-                $stringDelimiter = $input[$charNr];
-            } elseif ($input[$charNr] == ";") { // end of query reached
-                $charNr++;
-                $query = ltrim(substr($input, $queryStartPos, $charNr-$queryStartPos));
-                array_push($arrSqlQueries, $query);
-                $queryStartPos = $charNr;
+            switch (true) {
+                case ($isComment): // check if the loop is in a comment
+                    if ($input[$charNr] == "\r" || $input[$charNr] == "\n") {
+                        $isComment = false;
+                        $queryStartPos = $charNr + 1;
+                    }
+                    break;
+                case $isString: // check if the loop is in a string
+                    if ($input[$charNr] == $stringDelimiter && ($input[$charNr - 1] != "\\" || $input[$charNr - 2] == "\\")) {
+                        $isString = false;
+                    }
+                    break;
+                case ($input[$charNr] == "#" || (!empty($input[$charNr + 1]) && $input[$charNr] . $input[$charNr + 1] == "--")):
+                    $isComment = true;
+                    break;
+                case ($input[$charNr] == '"' || $input[$charNr] == "'" || $input[$charNr] == "`"): // check if this is a string delimiter
+                    $isString = true;
+                    $stringDelimiter = $input[$charNr];
+                case ($input[$charNr] == ";" || ($input[$charNr] != ";" && $charNr == strlen($input) - 1)): // end of query reached
+                    $charNr++;
+                    $query = ltrim(substr($input, $queryStartPos, $charNr - $queryStartPos));
+                    array_push($arrSqlQueries, $query);
+                    $queryStartPos = $charNr;
+                    break;
             }
         }
         return $arrSqlQueries;
