@@ -112,7 +112,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'executeQueryBySession' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'stopQueryExecution'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'modifyMultisiteConfig' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
-  
+            'sendAccountActivation' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkSendAccountActivation')),
         );  
     }
 
@@ -1917,7 +1917,28 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         return false;
     }
-
+    /**
+     * check authentication access for send account activation email
+     * 
+     * @return boolean
+     */
+    public function checkSendAccountActivation($params) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case ComponentController::MODE_MANAGER:
+            case ComponentController::MODE_SERVICE:
+                if ($this->auth($params)) {
+                    return true;
+                }
+                break;
+            case ComponentController::MODE_WEBSITE:
+                if ($this->checkPermission()) {
+                    return true;
+                }
+                break;
+        }
+        return false;
+    }
+    
     /*
      * Updating setup data in servers
      * 
@@ -2475,6 +2496,77 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
+   /**
+    * sending account activation email to the user.
+    * 
+    * @return type
+    * @throws MultiSiteJsonException
+    */
+    function sendAccountActivation($params) {
+        global $_ARRAYLANG;
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                    if (empty($params['post']['ownerEmail']) || empty($params['post']['websiteName'])) {
+                        throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                    }
+                    $websiteUserId = \FWUser::getFWUserObject()->objUser->getUser(array('email' => $params['post']['ownerEmail'])); 
+                    $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website = $websiteRepository->findBy(array('ownerId' => $websiteUserId, 'name' => $params['post']['websiteName']));
+                    
+                    if (!$website) {
+                        throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Unknown Website-User-Id: ' . $websiteUserId);
+                    }
+                    
+                    $websiteVerificationUrl = \FWUser::getVerificationLink(true, $website->getOwner(), $website->getBaseDn()->getName());
+                    // write mail
+                    \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+                    \DBG::msg('Website: send Account Activation Email > ADMIN');
+                    $info = array(
+                        'section'      => 'Multisite',
+                        'key'          => 'accountActivation',
+                        'to'           => $website->getOwner()->getEmail(),
+                        'substitution' => array(
+                            'WEBSITE_ACCOUNT_VERIFICATION_URL' => $websiteVerificationUrl,
+                            'WEBSITE_ACCOUNT_VERIFICATION_DUE_DATE' => date(ASCMS_DATE_FORMAT_DATE, $website->getOwner()->getRestoreKeyTime()),
+                        )
+                    );
+                    if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($info)) {
+                        throw new MultiSiteJsonException(__METHOD__ . ': Unable to send account activation e-mail to user');
+                    }
+                    \DBG::msg('Website: Sent Account Activation Email > SUCCESS');
+                    return array('status' => 'success', 'date' => date(ASCMS_DATE_FORMAT_DATE, $website->getOwner()->getRestoreKeyTime()));
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    if (empty($params['post']['ownerEmail']) || empty($params['post']['websiteName'])) {
+                        throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                    }
+                    
+                    $response = self::executeCommandOnManager('sendAccountActivation', array('ownerEmail' => $params['post']['ownerEmail'], 'websiteName' => $params['post']['websiteName']));
+                    if ($response->status == 'success' && $response->data->status == 'success') {
+                        return array('status' => 'success', 'date' => $response->data->date);
+                    }
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                    $ownerEmail = \FWUser::getFWUserObject()->objUser->getUser(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId'))->getEmail();
+                    if (!empty($ownerEmail) && !empty($websiteName)) {
+                        $resp = self::executeCommandOnMyServiceServer('sendAccountActivation', array('ownerEmail' => $ownerEmail, 'websiteName' => $websiteName));
+                        self::loadLanguageData();
+                        if ($resp->status == 'success' && $resp->data->status == 'success') {
+                           return array('status' => $resp->data->status, 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ACTIVATION_STATUS_MESSAGE'], $ownerEmail, $resp->data->date));
+                        }
+                    }
+                    break;
+                default :
+                    break;
+            }
+            return array('status' => 'error', 'message' => 'JsonMultiSite::sendAccountActivation() failed: to Send Account Activation Mail of this Website.');
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: to Send Account Activation Mail of this Website: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Fetch and Update Multisite Configuration of the selected Website
      * 

@@ -23,5 +23,17 @@ console.log('set body top to ' + (parseInt(cx.jQuery("#MultiSiteAccountActivatio
         top: toolbarOffset + "px"
     });
 console.log('new body top is ' + cx.jQuery("body").css("padding-top"));
+    cx.jQuery('.AccountActivation').click(function() {
+        domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=sendAccountActivation";
+        cx.jQuery.ajax({
+            url: domainUrl,
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                cx.jQuery('#MultiSiteAccountActivationMessage').html('<strong>' + response.data.message + '</strong>');
+                
+            }
+        });
+    });
 
 });
