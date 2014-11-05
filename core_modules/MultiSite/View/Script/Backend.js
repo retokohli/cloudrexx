@@ -91,40 +91,76 @@
                         cx.tools.StatusMessage.showMessage(response.message, null, 4000);
                     }
                     if (response.status == 'success') {
-                        var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%">';
-                        var tbody = '';
-                        var i = 1;
-                        $.each(response.data.result, function(key, data) {
-                            if (typeof data === 'object') {
-                                var jsonString = JSON.stringify(data);
-                                tbody += '<tr>';
-                                tbody += '<td>' + key + '</td><td><span id="ui_'+key+'" style="display: none;">'+jsonString+'</span><div id="'+ key + '" style="display:inline;">';
-                                $.each(JSON.parse(jsonString), function(key, data) {
-                                    if (typeof data === 'object') {
-                                        tbody += '<span class="ui_license '+data.lang_name+'" style="font-weight: bold;">' + data.lang_name + '</span>:&nbsp;<span class="ui_licenseMsg '+data.lang_name+'">';
-                                        tbody += data.message + '</span><br>';
-                                    } else {
-                                        tbody += key + ' : ' + data + ', ';
-                                    }
-                                });
-                                tbody += '</div><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-websiteid="'+ id +'" onclick="Multisite.editLicense(cx.jQuery(this))"></a>';
-                                tbody += '</td></tr>';
-                            } else {
-                                tbody += '<tr>';
-                                tbody += '<td>' + key + '</td>';
-                                tbody += '<td><div id="'+ key + '" style="display:inline;">' + data + '</div><a href="javascript:void(0);" class="editLicense editLicenseData editLicense_'+ key +'" title="Edit License Information" data-field="'+ key +'" data-value="'+ data +'" data-websiteid="'+ id +'" onclick="Multisite.editLicense(cx.jQuery(this))"></a></td>';
-                                tbody += '</tr>';
-                            }
-                        });
-                        var tfooter = '</table>';
-                        html = theader + tbody + tfooter;
+                        if (response.data.result != 'undefined') {
+                            $table = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
+                            $.each(response.data.result, function(key, data) {
+                                $tr = $('<tr />');
+                                $('<td />')
+                                    .html(key)
+                                    .appendTo($tr);
+                                
+                                container = $('<div />')
+                                                .attr('id', key);
+                                licenseContent = data.content;
+                                if (typeof licenseContent === 'object') {
+                                    jsonString = JSON.stringify(licenseContent);                                    
+                                    $('<span />')
+                                        .attr('id', 'ui_'+key)
+                                        .html(jsonString)
+                                        .hide()
+                                        .appendTo(container);
+                                    textContent = $('<span />');
+                                    
+                                    $.each(licenseContent, function(key, data) {
+                                        if (typeof data === 'object') {
+                                            $('<span />')
+                                                .addClass('ui_license '+data.lang_name)
+                                                .css('font-weight', 'bold')
+                                                .html(data.lang_name)
+                                                .appendTo(textContent);
+                                            textContent.append(':&nbsp;');
+                                            $('<span />')
+                                                .addClass('ui_licenseMsg '+data.lang_name)
+                                                .html(data.message)
+                                                .appendTo(textContent);
+                                            textContent.append('<br />');
+                                        } else {
+                                            textContent.append(key + ' : ' + data + ', ')
+                                        }
+                                    });
+                                    container.append(textContent);
+                                } else {
+                                    $('<span >')                                        
+                                        .html(licenseContent)
+                                        .appendTo(container);                                    
+                                }
+                                $('<a >')
+                                    .attr('href', 'javascript:void(0);')
+                                    .attr('title', 'Edit License Information')
+                                    .addClass('editLicense editLicenseData editLicense_'+ key)
+                                    .data('field', key)
+                                    .data('websiteid', id)
+                                    .data('value', licenseContent)
+                                    .click(function(){
+                                        Multisite.editLicense($(this));
+                                    })
+                                    .appendTo(container);
+                                $('<td />')
+                                    .append(container)
+                                    .appendTo($tr);
+                            
+                                $table.append($tr);
+                            });
+                        } else {
+                            $table = $('<span>').html('No data found!');
+                        }
                     }
                     cx.tools.StatusMessage.showMessage(cx.variables.get('licenseInfo', "multisite/lang"), null, 3000);
                     cx.ui.dialog({
                         width: 820,
                         height: 400,
                         title: title,
-                        content: html,
+                        content: $('<div />').append($table),
                         autoOpen: true,
                         modal: true,
                         buttons: {
@@ -440,32 +476,78 @@
 var Multisite = {
     //Edit License data
     editLicense: function($this) {
-        var fieldLabel = $this.attr('data-field');
-        var title = $this.attr('title');
-        var websiteId = $this.attr('data-websiteid');
-        var licenseArray = ['licenseMessage', 'dashboardMessages', 'licenseGrayzoneMessages'];
-        var liceneseTable = '';
-        var uiDiv = '';
-        var uiTab = '';
-        var i = 1;
+        var fieldLabel = $this.data('field'),
+            title = $this.attr('title'),
+            websiteId = $this.data('websiteid'),
+            licenseArray = ['licenseMessage', 'dashboardMessages', 'licenseGrayzoneMessages'],
+            liceneseTable = $J('<div />');
+            
         if ($J.inArray(fieldLabel, licenseArray) !== -1) {
-            var jsonString = $J('#ui_' + fieldLabel).html();
+            var jsonString = $J('#ui_' + fieldLabel).html(),
+                uiDiv = $J('<div>')
+                            .addClass('tab-' + fieldLabel)
+                            .attr('id', 'tab_menu'),
+                uiTab = $J('<ul />'),
+                i = 1;
             $J.each(JSON.parse(jsonString), function(index, data) {
                 if (typeof data === 'object') {
-                    uiTab += '<li><a href="#tabs-' + i + '">' + data.lang_name + '</a></li>';
-                    uiDiv += '<div id="tabs-' + i + '" data-langId ="' + data.lang_id + '" data-langName ="' + data.lang_name + '">';
-                    uiDiv += '<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
-                    uiDiv += '<tr><td><label>' + fieldLabel + '</label></td><td><textarea rows="4" cols="40" class = "' + fieldLabel + '" name ="' + fieldLabel + '">' + data.message + '</textarea></td></tr>';
-                    uiDiv += '</table>';
-                    uiDiv += '</div>';
+                    $J('<li>')
+                        .append(
+                            $J('<a>')
+                                .attr('href', '#tabs-' + i)
+                                .html(data.lang_name)
+                        )
+                        .appendTo(uiTab);
+                
+                    $uiTable = $J('<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">');
+                    $tr = $J('<tr />');
+                    $J('<td>')
+                        .html(
+                            $J('<label>').html(fieldLabel)
+                        )
+                        .appendTo($tr);
+                    $J('<td>')
+                        .html(
+                            $J('<textarea rows="4" cols="40">')
+                                .addClass(fieldLabel)
+                                .attr('name', fieldLabel)
+                                .html(data.message)
+                        )
+                        .appendTo($tr);
+                    $uiTable.append($tr);
+                    
+                    $J('<div>')
+                        .attr('id', 'tabs-' + i)
+                        .data('langId', data.lang_id)
+                        .data('langName', data.lang_name)
+                        .append($uiTable)
+                        .appendTo(uiDiv);
+                
                     i++;
                 }
             });
-            liceneseTable = '<div id="tab_menu" class="tab-' + fieldLabel + '"><ul>' + uiTab + '</ul>' + uiDiv + '</div>';
+            uiTab.prependTo(uiDiv);
+            
+            uiDiv.appendTo(liceneseTable);
         } else {
-            liceneseTable = '<table id="editLicense" cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
-            liceneseTable += '<tr><td><label>' + fieldLabel + '</label></td><td><textarea rows="4" cols="40" class = "' + fieldLabel + '" name ="' + fieldLabel + '">' + $this.attr('data-value') + '</textarea></td></tr>';
-            liceneseTable += '</table>';
+            $uiTable = $J('<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">');
+            $tr = $J('<tr />');
+            $J('<td>')
+                .html(
+                    $J('<label>').html(fieldLabel)
+                )
+                .appendTo($tr);
+            $J('<td>')
+                .html(
+                    $J('<textarea rows="4" cols="40">')
+                        .addClass(fieldLabel)
+                        .attr('name', fieldLabel)
+                        .html($this.data('value'))
+                )
+                .appendTo($tr);
+            $uiTable.append($tr);
+            
+            $uiTable.appendTo(liceneseTable);
         }
         domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=editLicense";
         cx.ui.dialog({
@@ -482,12 +564,12 @@ var Multisite = {
                         var fieldValue = [];
                         var messageUiTab = [];
                         $J('#tab_menu.tab-' + fieldLabel + ' div').each(function() {
-                            messageUiTab.push({lang_id: $J(this).attr('data-langId'), lang_name: $J(this).attr('data-langName'), message: $J(this).find('textarea.' + fieldLabel).val()});
-                            fieldValue[$J(this).attr('data-langId')] = {text: $J(this).find('textarea.' + fieldLabel).val()};
+                            messageUiTab.push({lang_id: $J(this).data('langId'), lang_name: $J(this).data('langName'), message: $J(this).find('textarea.' + fieldLabel).val()});
+                            fieldValue[$J(this).data('langId')] = {text: $J(this).find('textarea.' + fieldLabel).val()};
                         });
                     } else {
                         var fieldValue = $J('.licenceEdit').find('textarea.' + fieldLabel).val();
-                    }
+                    }                    
                     $J.ajax({
                         url: domainUrl,
                         type: "POST",
@@ -506,8 +588,8 @@ var Multisite = {
                                     
                                     $J('#ui_' + fieldLabel).html(JSON.stringify(messageUiTab));
                                 } else {
-                                    $J('span.' + fieldLabel).text(fieldValue);
-                                    $J('.editLicense_' + fieldLabel).attr('data-value', fieldValue);
+                                    $J('#'+fieldLabel+' span').text(fieldValue);
+                                    $J('.editLicense_' + fieldLabel).data('value', fieldValue);
                                 }
                                 cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
                             }
