@@ -26,7 +26,7 @@
             <p>
                 <span class="radio">
                     <label class="description" for="male">
-                        <input type="radio" onclick="recommendUpdate();" value="male" margin-left:="" name="gender" id="male" />
+                        <input type="radio" onclick="recommendUpdate();" value="male" name="gender" id="male" />
                         {RECOM_TXT_MALE}
                     </label>
                 </span>
@@ -46,11 +46,12 @@
             <p>
                 <!-- BEGIN recommend_captcha -->
                 <label for="captchaCode">{RECOM_TXT_CAPTCHA}</label>
+            </p>
             <div id="contactFormCaptcha">
                 {RECOM_CAPTCHA_CODE}
             </div>
             <!-- END recommend_captcha -->
-            </p>
+            
             <p><input class="btn btn-default" type="submit" value="Senden" /> 
                 <input class="btn btn-default" type="reset" value="L&ouml;schen" />
             </p>
