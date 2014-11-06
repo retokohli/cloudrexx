@@ -2554,7 +2554,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $resp = self::executeCommandOnMyServiceServer('sendAccountActivation', array('ownerEmail' => $ownerEmail, 'websiteName' => $websiteName));
                         self::loadLanguageData();
                         if ($resp->status == 'success' && $resp->data->status == 'success') {
-                           return array('status' => $resp->data->status, 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ACTIVATION_STATUS_MESSAGE'], $ownerEmail, $resp->data->date));
+                           return array('status' => $resp->data->status, 'message' => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCOUNT_ACTIVATION_MAIL_RESENT'], $ownerEmail, $resp->data->date));
                         }
                     }
                     break;

@@ -52,6 +52,3 @@ $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_MSG'] = 'Ihr FTP Kennwort wurde erfolg
 $_ARRAYLANG['TXT_MULTISITE_ACCOUNT_ACTIVATION_REMINDER'] = 'Der Aktivierungslink wurde an %1$s gesendet. Bestätigen Sie Ihren Account bis am %2$s.';
 $_ARRAYLANG['TXT_MULTISITE_ACCOUNT_ACTIVATION_MAIL_RESENT'] = 'Prüfen Sie jetzt Ihre Mailbox %1$s. Ohne Bestätigung wird Ihr Konto am %2$s deaktiviert.';
 $_ARRAYLANG['TXT_MULTISITE_RESEND_ACTIVATION_CODE'] = 'Erneut zusenden';
-
-//MultiSite website Activation/verification status message
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ACTIVATION_STATUS_MESSAGE'] = "Prüfen Sie jetzt Ihre Mailbox %s. Ohne Bestätigung wird Ihr Konto am %s deaktiviert.";
