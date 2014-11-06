@@ -2332,7 +2332,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                         break;
                                 }
                             } else {
-                                //$result[$key] = array("type" => $value['type'], "values" => explode(',', $value['values']));
+                                $result[$key] = array("type" => $value['type'], "values" => explode(',', $value['values']));
                             }
                             switch ($key) {
                                 case 'licenseKey':
