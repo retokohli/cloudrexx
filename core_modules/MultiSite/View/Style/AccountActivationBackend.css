@@ -3,16 +3,19 @@
     width: 100%;
     text-align:center;
     marquee-style: scroll;
-    padding: 15px;
+    padding-top: 15px;
     position: fixed;
     font-size: 12px;
     border: 1px solid transparent;
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
-    min-height: 25px;
+    min-height: 57px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
-
+#MultiSiteAccountActivationMessage {line-height: 25px;}
 #MultiSiteAccountActivation .highlight {
     color: #0a85c8;
 }
