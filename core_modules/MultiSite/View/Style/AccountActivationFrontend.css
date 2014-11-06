@@ -10,6 +10,7 @@
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
+    min-height: 25px;
 }
 
 #MultiSiteAccountActivation .highlight {

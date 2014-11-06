@@ -24,7 +24,7 @@ console.log('set body top to ' + (parseInt(cx.jQuery("#MultiSiteAccountActivatio
     });
 console.log('new body top is ' + cx.jQuery("body").css("padding-top"));
     cx.jQuery('.AccountActivation').click(function() {
-        domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=sendAccountActivation";
+        domainUrl = cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=sendAccountActivation";
         cx.jQuery.ajax({
             url: domainUrl,
             type: 'POST',
