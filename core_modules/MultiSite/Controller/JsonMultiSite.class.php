@@ -2582,8 +2582,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $websiteId = isset($params['post']['websiteId']) ? $params['post']['websiteId'] : '';
         $configGroup = isset($params['post']['configGroup']) ? $params['post']['configGroup'] : '';
         $configValue = isset($params['post']['configValue']) ? $params['post']['configValue'] : '';
+        $configValues = isset($params['post']['configValues']) ? $params['post']['configValues'] : '';
         $configName = isset($params['post']['configOption']) ? $params['post']['configOption'] : '';
-
+        $configType = isset($params['post']['configType']) ? $params['post']['configType'] : '';
+        $operation  = isset($params['post']['operation']) ? $params['post']['operation'] : 'fetch';
         if (!$websiteId) {
             throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::modifyMultisiteConfig.');
         }
@@ -2592,48 +2594,90 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website = $webRepo->findOneById($websiteId);
-                    $params = !empty($configName) ? array('websiteId' => $websiteId, 'configGroup' => $configGroup, 'configName' => $configName, 'configValue' => $configValue) : array('websiteId' => $websiteId);
+                    $inputTypes = array(
+                                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT,
+                                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA,
+                                    \Cx\Core\Setting\Controller\Setting::TYPE_PASSWORD,
+                                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+                                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO
+                                );
+                    $params = !empty($configName) ? array(
+                                                        'websiteId' => $websiteId, 
+                                                        'configGroup' => $configGroup, 
+                                                        'configOption' => $configName, 
+                                                        'configValue' => $configValue,
+                                                        'configType' => $configType,
+                                                        'configValues' => $configValues,
+                                                        'operation' => $operation
+                                                       ) : array('websiteId' => $websiteId);
+                   
                     $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('modifyMultisiteConfig', $params, $website);
 
                     if ($resp->status == 'success' && $resp->data->status == 'success') {
                         switch ($resp->data->multisiteConfig) {
-                            case 'fetch':
-                                return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL'], $website->getFqdn()->getName()), 'result' => $resp->data->result);
-                                break;
-                            case 'update':
+                            case 'add':
+                            case 'edit':
+                            case 'delete':
                                 return array('status' => 'success', 'message' => $resp->data->message);
                                 break;
+                            case 'fetch':
                             default:
+                                return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL'], $website->getFqdn()->getName()), 'result' => $resp->data->result,'inputTypes' => $inputTypes);
                                 break;
                         }
                     } else {
                         switch ($resp->data->multisiteConfig) {
-                            case 'fetch':
-                                return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED'], $website->getFqdn()->getName()));
-                                break;
-                            case 'update':
+                            case 'add':
+                            case 'edit':
+                            case 'delete':
                                 return array('status' => 'error', 'message' => $resp->data->message);
                                 break;
+                            case 'fetch':
                             default:
+                                return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED'], $website->getFqdn()->getName()));
                                 break;
                         }
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    if (!empty($params['post']['configName']) && !empty($params['post']['configGroup'])) {
-                        \Cx\Core\Setting\Controller\Setting::set($params['post']['configName'], $params['post']['configValue']);
-                        
-                        if (\Cx\Core\Setting\Controller\Setting::update($params['post']['configName'])) {
-                            return array('status' => 'success', 'multisiteConfig' => 'update', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_SUCCESSFUL'] . $params['post']['configName']);
-                        }
-                        return array('status' => 'error', 'multisiteConfig' => 'update', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_FAILED'] . $params['post']['configName']);
+                    switch ($operation) {
+                        case 'add':
+                            if (!empty($configName) && !empty($configType)) {
+                                if (!\Cx\Core\Setting\Controller\Setting::isDefined($configName) 
+                                        && !\Cx\Core\Setting\Controller\Setting::add($configName, $configValue, 1, $configType, $configValues, $configGroup)) {
+                                    throw new MultiSiteException("Failed to add Setting entry for".$configName);
+                                }
+                                return array('status' => "success", 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_SUCCESSFUL'].$configName);
+                            }
+                            return array('status' => "error",'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_FAILED']);
+                            break;
+                        case 'edit':
+                            if (!empty($configName)) {
+                                \Cx\Core\Setting\Controller\Setting::set($configName, $configValue);
+                                if (\Cx\Core\Setting\Controller\Setting::update($configName)) {
+                                    return array('status' => 'success', 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_SUCCESSFUL'] . $configName);
+                                }
+                            }
+                            return array('status' => 'error', 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_FAILED'] . $configName);
+                            break;
+                        case 'delete':
+                            if (!empty($configName)) {
+                                if (\Cx\Core\Setting\Controller\Setting::delete($configName, $configGroup)) {
+                                    return array('status' => 'success', 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_SUCCESSFUL'] . $configName);
+                                }  
+                            }
+                            return array('status' => 'error', 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_FAILED'] . $configName);
+                            break;
+                        case 'fetch':
+                        default:
+                            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
+                            $multisiteConfigArray = \Cx\Core\Setting\Controller\Setting::getArray('MultiSite');
+                            if ($multisiteConfigArray) {
+                                return array('status' => 'success', 'result' => $multisiteConfigArray, 'multisiteConfig' => $operation);
+                            }
+                            break;
                     }
-                    \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
-                    $multisiteConfigArray = \Cx\Core\Setting\Controller\Setting::getArray('MultiSite');
                     
-                    if ($multisiteConfigArray) {
-                        return array('status' => 'success', 'result' => $multisiteConfigArray, 'multisiteConfig' => 'fetch');
-                    }
                 default:
                     break;
             }

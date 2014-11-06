@@ -162,3 +162,10 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL']  = "Mul
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED']      = "Failed To Fetch The Multisite Configuration Of The Website:%s !.";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_SUCCESSFUL'] = "Successfully Updated the Multisite Configuration Option:";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_FAILED']     = "Failed to Update the Multisite Configuration Option:";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG'] = 'Add New Multisite Configuration Option: ';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_SUCCESSFUL'] = 'Successfully Added the Multisite Configuration Option: ';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_FAILED'] = 'Failed To Add Configuration Option Due to Empty Option Values!';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_OPTION_TOOLTIP'] = 'Option Values must be comma seperated values <br />. Each Option Mustbe optionValue:optionName.<br/>.For Example Activated => on:Activated';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_CONFIG_OPTION'] = 'Do you really want to delete this Config Option?.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_SUCCESSFUL'] = 'Successfully Deleted the Multisite Configuration Option: ';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_FAILED'] = 'Failed To Delete the Multisite Configuration Option: ';

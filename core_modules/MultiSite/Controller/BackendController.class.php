@@ -813,6 +813,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             $title = 'Fetch MultiSite Configuration of a Website: ' . $website->getFqdn()->getName();
         }
+        $cxjs = \ContrexxJavascript::getInstance();
+        $cxjs->setVariable(array(
+            'addNewConfig'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG'],
+            'configOptionTooltip' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_OPTION_TOOLTIP'],
+            'deleteConfirm'       => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_CONFIG_OPTION']
+        ), 'multisite/lang');
         $websiteMultiSiteConfig = '<a href="javascript:void(0);"  class = "multiSiteWebsiteConfig" data-id = "' . $wesiteId . '" title = "' . $title . '" data-title ="'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_TITLE'].$website->getFqdn()->getName().'" ></a>';
         return $websiteMultiSiteConfig;
     }
