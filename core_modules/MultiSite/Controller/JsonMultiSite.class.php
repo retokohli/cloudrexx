@@ -2510,12 +2510,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (empty($params['post']['ownerEmail']) || empty($params['post']['websiteName'])) {
                         throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Insufficient arguments supplied: ' . var_export($params, true));
                     }
-                    $websiteUserId = \FWUser::getFWUserObject()->objUser->getUser(array('email' => $params['post']['ownerEmail'])); 
+                    $objOwner = \FWUser::getFWUserObject()->objUser->getUser(array('email' => $params['post']['ownerEmail'])); 
                     $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website = $websiteRepository->findBy(array('ownerId' => $websiteUserId, 'name' => $params['post']['websiteName']));
+                    $website = $websiteRepository->findOneBy(array('ownerId' => $objOwner->getId(), 'name' => $params['post']['websiteName']));
                     
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Unknown Website-User-Id: ' . $websiteUserId);
+                        throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Unknown Website-User-Id: ' . $objOwner->getId());
                     }
                     
                     $websiteVerificationUrl = \FWUser::getVerificationLink(true, $website->getOwner(), $website->getBaseDn()->getName());
