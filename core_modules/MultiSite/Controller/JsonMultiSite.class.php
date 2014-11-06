@@ -2484,7 +2484,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $resp        = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $paramsArray, $website);
                     
                     if (($resp->status == 'success') && ($resp->data->status == 'success')) {
-                        return array('status' => 'success','message' => 'The license Option "'.$licenseOption.'" was successfully updated!.');
+                        return array('status' => 'success', 'data' => $licenseValue, 'message' => 'The license Option "'.$licenseOption.'" was successfully updated!.');
                     }
                     return array('status' => 'error','message' => 'Failed to Update The license Option "'.$licenseOption.'" !.');
                     break;
