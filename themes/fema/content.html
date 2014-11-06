@@ -13,14 +13,16 @@
 <div id="content2">
     <div class="container">
         <div class="row">
-            <div class="span8">
-                <div class="blog-post margin-60">
-                    {CONTENT_TEXT}
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="blog-post margin-60">
+                        {CONTENT_TEXT}
+                    </div>
                 </div>
             </div>
             <div class="span pull-right">
                 <form class="margin-20" action="{NODE_SEARCH}" method="get">
-                    <input type="text" name="term" class="input-block-level" value="Search" onclick="this.value=''" onblur="this.value='Search'" />
+                    <input type="text" name="term" class="input-block-level" value="Search" onclick="this.value = ''" onblur="this.value = 'Search'" />
                 </form>              
                 {SUBNAVBAR_FILE}              
                 <h3>Adresse</h3>
@@ -29,7 +31,7 @@
                     <li>{CONTACT_ADDRESS}</li>
                     <li>{CONTACT_ZIP} {CONTACT_PLACE}</li>
                     <li>{CONTACT_COUNTRY}</li>
-					<br>
+                    <br>
                     <li>Tel:&nbsp;&nbsp;{CONTACT_PHONE}</li>
                     <li>Fax:&nbsp;{CONTACT_FAX}</li>
                     <li><a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a></li>
