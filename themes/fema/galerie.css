@@ -808,6 +808,13 @@ to {-moz-transform: rotate(360deg);}
         padding-left: 0;
         margin-left: -20px;
     }
+    .navbar .brand {
+        margin: 0 0 0 -5px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 7px;
+        padding-bottom: 3px;
+    }
 }
 @media (min-width:980px) and (max-width:1199px){
     .newsletter input[name="recipient_save"] {
@@ -818,4 +825,7 @@ to {-moz-transform: rotate(360deg);}
     .newsletter input[name="recipient_save"] {
         margin-left: 30%;
     } 
+    .row-fluid .col-md-6 {
+        width: 48.717948717948715%;
+    }
 }
