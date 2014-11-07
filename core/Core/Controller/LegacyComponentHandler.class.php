@@ -2415,6 +2415,15 @@ class LegacyComponentHandler {
                         \CSRF::add_placeholder($objTemplate);
                     },
                 ),
+                'preFinalize' => array(
+                    'Csrf' => function() {
+                        global $objTemplate;
+                        //This is a ugly hack.
+                        $objTemplate->_variables['ADMIN_CONTENT'] = preg_replace('/(&amp;)csrf=[a-zA-Z0-9__]+/i', '',
+                            preg_replace('/\?csrf=[a-zA-Z0-9__]+/i', '',
+                                preg_replace('/\?csrf=[a-zA-Z0-9__]+(&amp\;|&)/i', '?', $objTemplate->_variables['ADMIN_CONTENT'])));
+                    },
+                )
             ),
         );
     }
