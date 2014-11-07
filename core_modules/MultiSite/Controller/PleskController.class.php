@@ -964,10 +964,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in getting Ftp Accounts : {$error} ");
         }      
-            
+
         if (!empty($respArr)) {
-            $resultArr = array();
-            foreach ($respArr['result'] as $result) {
+            $resultArr   = array();
+            $responseArr = (count($respArr['result']) == count($respArr['result'], COUNT_RECURSIVE)) ? $respArr : $respArr['result'];
+            foreach ($responseArr as $result) {
                 $resultArr[$result['id']] = $result['name'];
             }
         }
