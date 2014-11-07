@@ -787,7 +787,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             $title = 'Remote Login to '  . $website->getFqdn()->getName();
         }
-        $websiteRemoteLogin = '<a href="javascript:void(0);" target = "_blank" class = "remoteWebsiteLogin" data-id = "'.$wesiteId.'" title = "'.$title.'" ></a>';
+        $websiteRemoteLogin = '<a href="javascript:void(0);" class = "remoteWebsiteLogin" data-id = "'.$wesiteId.'" title = "'.$title.'" ></a>';
         return $websiteRemoteLogin; 
     }
     
