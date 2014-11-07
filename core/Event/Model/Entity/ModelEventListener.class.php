@@ -33,11 +33,11 @@ class ModelEventListener implements EventListener {
     }
     
     public function onEvent($eventName, array $eventArgs) {
-        $eventArgs = current($eventArgs);
+        $em = current($eventArgs);
         if (
-            $eventArgs instanceof \Doctrine\ORM\Event\LifecycleEventArgs &&
-            get_class($eventArgs->getEntity()) != $this->entityClass &&
-            get_class($eventArgs->getEntity()) != 'Cx\\Model\\Proxies\\' . str_replace('\\', '', $this->entityClass) . 'Proxy'
+            $em instanceof \Doctrine\ORM\Event\LifecycleEventArgs &&
+            get_class($em->getEntity()) != $this->entityClass &&
+            get_class($em->getEntity()) != 'Cx\\Model\\Proxies\\' . str_replace('\\', '', $this->entityClass) . 'Proxy'
             // Important: the above two get_class() conditions could also be replace by the following:
             // !($eventArgs->getEntity() instanceof $this->entityClass)
             //
@@ -52,9 +52,9 @@ class ModelEventListener implements EventListener {
         $eventName = substr($eventName, 6);
         if (is_callable($this->listener)) {
             $listener = $this->listener;
-            $listener($eventName, array($eventArgs));
+            $listener($eventName, $eventArgs);
         } else {
-            $this->listener->onEvent($eventName, array($eventArgs));
+            $this->listener->onEvent($eventName, $eventArgs);
         }
     }
 }
