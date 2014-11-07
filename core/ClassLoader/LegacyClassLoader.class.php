@@ -247,7 +247,7 @@ class LegacyClassLoader {
 
             
             //if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)?[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
-            if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:[ \n\r\t])(?:[a-zA-Z0-9\\\\_ \n\r\t])*\{/', $fcontent, $matches)) {
+            if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:[ \n\r\t])?(?:[a-zA-Z0-9\\\\_ \n\r\t])*\{/', $fcontent, $matches)) {
                 if (isset($matches[0]) && (!isset($matches[1]) || $matches[1] == $namespace)) {
                     return $file;
                 }
