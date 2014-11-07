@@ -122,10 +122,11 @@
                                                 .appendTo(textContent);
                                             textContent.append(':&nbsp;');
                                             $('<span />')
-                                                .addClass('ui_licenseMsg '+data.lang_id)
+                                                .addClass('ui_licenseMsg langId_'+data.lang_id)
                                                 .html(data.message)
                                                 .appendTo(textContent);
                                             textContent.append('<br />');
+                                            Multisite.availableLanguages[data.lang_id] = data.lang_name;
                                         } else {
                                             textContent.append(key + ' : ' + data + ', ')
                                         }
@@ -442,15 +443,18 @@
 })(jQuery);
 
 var Multisite = {
+    availableLanguages : [],
     //Edit License data
     editLicense: function($this) {
         var fieldLabel = $this.data('field'),
-            title = $this.attr('title'),
-            websiteId = $this.data('websiteid'),
-            editType = $this.data('editType'),
-            licenseArray = ['licenseMessage', 'dashboardMessages', 'licenseGrayzoneMessages'],
-            liceneseTable = $J('<div />');
-            
+                title = $this.attr('title'),
+                websiteId = $this.data('websiteid'),
+                editType = $this.data('editType'),
+                licenseArray = ['licenseMessage', 'dashboardMessages', 'licenseGrayzoneMessages'],
+                liceneseTable = $J('<div />');
+        var tableFormat = '<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">';
+        $form = $J('<form>')
+                .addClass('saveLicense');
         if ($J.inArray(fieldLabel, licenseArray) !== -1) {
             var jsonString = $J('#ui_' + fieldLabel).html(),
                 uiDiv = $J('<div>')
@@ -467,10 +471,7 @@ var Multisite = {
                                 .html(data.lang_name)
                         )
                         .appendTo(uiTab);
-                
-                    $uiTable = $J('<form>')
-                        .addClass('saveLicense')
-                        .append($J('<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">'));
+                    $uiTable = ($J(tableFormat));
                     $tr = $J('<tr />');
                     $J('<td>')
                         .html(
@@ -496,16 +497,13 @@ var Multisite = {
                         .data('langName', data.lang_name)
                         .append($uiTable)
                         .appendTo(uiDiv);
-                
                     i++;
                 }
             });
             uiTab.prependTo(uiDiv);
-            uiDiv.appendTo(liceneseTable);
+            uiDiv.appendTo($form);
         } else {
-            $uiTable = $J('<form>')
-                        .addClass('saveLicense')
-                        .append($J('<table  cellspacing="0" cellpadding="3" border="0" class="adminlist licenceEdit" width="100%">'));
+            $uiTable = $J(tableFormat);
             $tr = $J('<tr />');
             $J('<td>')
                 .html(
@@ -521,8 +519,9 @@ var Multisite = {
                        .attr('name','licenseLabel')
                        .val(fieldLabel)
                        );
-            $uiTable.appendTo(liceneseTable);
+            $uiTable.appendTo($form);
         }
+        $form.appendTo(liceneseTable);
         domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=editLicense";
         cx.ui.dialog({
             width: 500,
@@ -547,10 +546,9 @@ var Multisite = {
                             if (response.status == 'success' && response.data.status == 'success') {
                                 if (typeof response.data.data === 'object') {
                                     var uiTabContent = [];
-                                console.log(response.data.data);
-                                    $J.each(response.data.data,function(key,data){
-                                        $J('#'+fieldLabel).find('span.ui_licenseMsg.'+key).text(data.text);
-                                        uiTabContent.push({lang_id: key, message:data.text });
+                                    $J.each(response.data.data, function(key, data) {
+                                        $J('#' + fieldLabel).find('span.ui_licenseMsg.langId_' + key).text(data.text);
+                                        uiTabContent.push({lang_id: key, lang_name: Multisite.availableLanguages[key], message: data.text});
                                     });
                                     $J('#ui_' + fieldLabel).html(JSON.stringify(uiTabContent));
                                 } else {
@@ -874,15 +872,11 @@ var Multisite = {
     }
 };
 
+/**
+ * Generate user input area for the given type 
+ */
 function getEditOption(type, name, fieldLabel, editValue, editOptions) {
-    switch (type) {
-        case 'text':
-            htmlResult = $J('<input type="text"/>')
-                    .addClass(fieldLabel)
-                    .attr('name', name)
-                    .val(editValue);
-            break;
-
+     switch (type) {
         case 'radio':
             htmlResult = $J('<div />');
             $J.each(editOptions, function(key, value) {
@@ -894,9 +888,10 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
                 if (valueAndLabel['0'] == editValue) {
                     radio.attr('checked', 'checked');
                 }
-                label = $J('<label>').html(valueAndLabel['1']);
+                label = $J('<label>').append(radio)
+                            .append(valueAndLabel['1']+'&nbsp;');
 
-                htmlResult.append(radio).append(label);
+                htmlResult.append(label);
             });
             break;
 
@@ -908,18 +903,18 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
             break;
 
         case 'dropdown':
-            htmlResult = $J('<select')
-                            .addClas(fieldLabel)
+            htmlResult = $J('<select />')
+                            .addClass(fieldLabel)
                             .attr('name', name);
             $J.each(editOptions, function(key, value) {
                 valueAndLabel = value.split(':');
-                $J(htmlResult)
-                        .append($J("<option></option>")
-                        .attr("value", valueAndLabel['0'])
-                        .text(valueAndLabel['1']));
+                Options = $J('<option />')
+                                .attr("value", valueAndLabel['0'])
+                                .text(valueAndLabel['1'])
                 if (valueAndLabel['0'] == editValue) {
-                    htmlResult.attr('selected', 'selected');
+                    Options.attr('selected', 'selected');
                 }
+                htmlResult.append(Options);
             });
             
             break;
@@ -943,6 +938,14 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
             });
 
             break;
+            case 'text':
+            default:
+            htmlResult = $J('<input type="text"/>')
+                    .addClass(fieldLabel)
+                    .attr('name', name)
+                    .val(editValue);
+            break;
+
     }
     return htmlResult;
 }
