@@ -299,8 +299,8 @@ class YamlRepository {
         $this->addedEntities = array();
         $this->updatedEntities = array();
         $this->removedEntities = array();
-
-        \Env::get('cx')->getEvents()->triggerEvent('model/postFlush', array(new \Doctrine\ORM\Event\OnFlushEventArgs(\Env::get('em'))));
+        
+        \Env::get('cx')->getEvents()->triggerEvent('model/postFlush', array(new \Doctrine\ORM\Event\OnFlushEventArgs(\Env::get('em')), $this->repositoryPath));
     }
 
     /**
