@@ -69,7 +69,6 @@
         };
         // show license
         $('.showLicense').click(function() {
-            $('#instance_table').append('<div id ="load-lock"></div>');
             cx.bind("loadingStart", cx.lock, "showLicense");
             cx.bind("loadingEnd", cx.unlock, "showLicense");
             cx.trigger("loadingStart", "showLicense", {});
@@ -369,7 +368,9 @@
         //Fetch multisite Website Configuration settings
         $('.multiSiteWebsiteConfig').click(function() {
             var title = $(this).data('title'),
-                websiteId = $(this).attr('data-id');
+                websiteId = $(this).attr('data-id'),
+                buttons = new Object();
+
             cx.bind("loadingStart", cx.lock, "multiSiteWebsiteConfig");
             cx.bind("loadingEnd", cx.unlock, "multiSiteWebsiteConfig");
             cx.trigger("loadingStart", "multiSiteWebsiteConfig", {});
@@ -381,7 +382,7 @@
                 data: {websiteId: websiteId},
                 dataType: "json",
                 success: function(response) {
-                    if (response.status == 'success' && response.data.status == 'success') {
+                    if (response.data.status == 'success') {
                         var $table = $('<table />')
                                          .attr({cellspacing : "0", cellpadding: "3", border: "0",id: "MultisiteConfigTable",width:"100%"})
                                          .addClass('adminlist');
@@ -389,23 +390,32 @@
                             $html = Multisite.getConfigHtmlData(response.data.result, $table, websiteId);
                         }       
                         cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
-                    }
-                    if (response.status == 'error' && response.data.status == 'error') {
+                    } else {
                         cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                        cx.trigger("loadingEnd", "multiSiteWebsiteConfig", {});
                     }
+
+                    buttons[cx.variables.get('addNewConfig', 'multisite/lang')] = function() {            
+                                Multisite.MultisiteConfig(response.data.inputTypes,"add");
+                            };
+
+                    buttons["Close"] = function() {
+                        $(this).dialog("close");
+
+                    };
                     cx.ui.dialog({
                         width: 820,
                         height: 400,
                         title: title,
-                        content: $('<div />').attr('id','MultisiteConfigDiv').html('<div id ="MultisiteConfigload-lock"></div>').append($html),
+                        content: $('<div />').attr('id','MultisiteConfigDiv').append($html.after('<div id ="MultisiteConfigload-lock"></div>')),
                         autoOpen: true,
                         modal: true,
-                        buttons: {
-                            "Add New Configuration": function() {
-                                Multisite.MultisiteConfig(response.data.inputTypes,"add");
-                            }
+                        buttons: buttons,
+                        close: function() { 
+                            $('#MultisiteConfigTable').remove();
                         }
                     });
+                    $J("#MultisiteConfigload-lock").css('height',$J("#MultisiteConfigTable").innerHeight());
                     cx.trigger("loadingEnd", "multiSiteWebsiteConfig", {});
                 }
             });
@@ -579,24 +589,24 @@ var Multisite = {
     
     //Add/Edit/Delete Multisite Configuration Option
     MultisiteConfig: function($data,$operation) {
-            var $table = $J('<table />')
+            var table = $J('<table />')
                             .attr({cellspacing: "0", cellpadding: "3", border: "0", id: $operation+"MultisiteConfig",width: "100%"})
                             .addClass('adminlist'),
-                $tr = $J('<tr />'),
-                $td = $J('<td />'),
+                tr   = $J('<tr />'),
+                td   = $J('<td />'),
                 width = 450,
+                websiteId = $J('.editMultisiteConfig').data('websiteId'),
                 title = '';
         domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=modifyMultisiteConfig";
-
+        
         switch($operation) {
             case "add":
                 var selectOptions = [],
-                    title = cx.variables.get('addNewConfig', 'multisite/lang'),
+                    title = cx.variables.get('addNewConfigTitle', 'multisite/lang'),
                     width       = 520,
-                    websiteId = $J('.editMultisiteConfig')
-                                    .data('websiteId'),
                     $selectBox = $J('<select />')
-                                    .attr({name: "addConfigType", id: "configType"}),
+                                    .attr({name: "addConfigType", id: "configType"})
+                                    .addClass('configType'),
                     $row2      = $J('<tr />'),
                     $row3      = $J('<tr />');
             
@@ -606,98 +616,53 @@ var Multisite = {
                 
                 $J('<td />')
                         .html('<strong>Name</strong>')
-                        .appendTo($tr);
-                
-                $inputBox1 = $J('<input />')
-                                .attr({id: "configName",name: "configName", type: "text"});
-                        
-                $hiddenInput = $J('<input />')
-                                .attr({id: "addNew",name: "websiteId", type: "hidden",value: websiteId});
-                        
-                $td.append($inputBox1);
-                $td.append($hiddenInput);
-                $td.appendTo($tr);
+                        .appendTo(tr);
+                td.append(getEditOption('text', 'configName', 'configName', '', ''));
+                td.appendTo(tr);
                 
                 $J('<td />')
                     .html('<strong>Type</strong>')
                     .appendTo($row2);
-            
+                    
                 $J.each(selectOptions, function(key, data) {
-                    $option = $J('<option />')
+                    $selectBox.append($J('<option />')
                                 .attr('value',data)
-                                .html(data);
-                    $selectBox.append($option);
+                                .html(data));
                 });
                 
                 $J('<td />').append($selectBox)
                             .appendTo($row2);
                 $J('<td />').html('<strong>Value</strong>')
                             .appendTo($row3);
-                $inputBox2 = $J('<input />')
-                               .attr({id: "configValue",name: "configValue", type: "text"});
                 $J('<td />')
-                        .append($inputBox2)
-                        .appendTo($row3);
-                $table.append($tr);
-                $table.append($row2);
-                $table.append($row3);
+                      .append(getEditOption('text', 'configValue', 'configValue', '', ''))
+                      .appendTo($row3);
+                table.append(tr);
+                table.append($row2);
+                table.append($row3);
                 break;
             case "edit":
                 var configOption = $data.data('field'),
-                    websiteId = $data.data('websiteId'),
                     title = $data.attr('title'),
                     configData = JSON.parse($J("#editMultisiteConfig_" + configOption).text()),
+                    configValues = (configData.values) ? configData.values.replace(/\s+/g, '').split(',') : '',
+                    configType   = configData.type,
                     configGroup = configData.group;
+            
                 $J('<td />')
                         .html('<strong>' + configOption + '</strong>')
-                        .appendTo($tr);
-                switch(configData.type) {
-                    case 'dropdown':
-                        var selectOptions = configData.values.replace(/\s+/g, '').split(',');
-                        $selectBox = $J('<select />')
-                                            .attr({name: "editConfig_" + configOption, id: "editConfig_" + configOption});
-                        $J.each(selectOptions, function(key, value) {
-                            var Options = value.split(':');
-                            $option = $J('<option />')
-                                         .attr('value', Options['1'])
-                                         .html(Options['0']);
-                            if (Options['1'] == configData.value) {
-                                $option.attr('selected', 'selected');
-                            }
-                            $selectBox.append($option);
-                        });
-                        $td.append($selectBox);
-                        $tr.append($td);
-                    break;
-                    case 'radio':
-                        var radioOptions = configData.values.replace(/\s+/g, '').split(',');
-                        $J.each(radioOptions, function(key, value) {
-                            valueAndLabel = value.split(':');
-                            isChecked = valueAndLabel['0'] == configData.value ? 'checked' : '';
-                            $J('<label>')
-                                .html($J('<input type="radio"/>')
-                                            .addClass(configOption)
-                                            .attr({name: "editConfig_" + configOption, id: "editConfig_" + configOption,checked: isChecked})
-                                            .val(valueAndLabel['0']))
-                                .append(valueAndLabel['1']+'&nbsp;')
-                                .appendTo($td);
-                        });
-                        
-                        break;
-                    default:
-                        $J('<input />').attr({id: "editConfig_" + configOption, name: "editConfig_" + configOption, type: "text"})
-                            .val(configData.value)
-                            .appendTo($td);
-                        break;  
-                }
-                $tr.append($td);
-                $table.append($tr);
+                        .appendTo(tr);
+                
+                $J('<td />').append(getEditOption(configData.type, configOption, 'editConfig_'+configOption, configData.value, configValues))
+                            .appendTo(tr);
+                    
+                table.append(tr);
                 break;
             case "delete":
                 if(confirm(cx.variables.get('deleteConfirm', 'multisite/lang'))) {
-                    cx.bind("loadingStart", cx.lock, "multisiteConfigWebsite");
-                    cx.bind("loadingEnd", cx.unlock, "multisiteConfigWebsite");
-                    cx.trigger("loadingStart", "multisiteConfigWebsite", {});
+                    cx.bind("loadingStart", cx.lock, "multisiteConfigWebsite".$operation);
+                    cx.bind("loadingEnd", cx.unlock, "multisiteConfigWebsite".$operation);
+                    cx.trigger("loadingStart", "multisiteConfigWebsite".$operation, {});
                     cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
                     $J.ajax({
                         url: domainUrl,
@@ -708,11 +673,11 @@ var Multisite = {
                             if (response.data.status == 'error') {
                                 cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
                             }
-                            if (response.status == 'success' && response.data.status == 'success') {
+                            if (response.data.status == 'success') {
                                 $data.closest('tr').remove();
                                 cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
                             }
-                            cx.trigger("loadingEnd", "multisiteConfigWebsite", {});
+                            cx.trigger("loadingEnd", "multisiteConfigWebsite".$operation, {});
                         }
                     });
                 }
@@ -725,21 +690,26 @@ var Multisite = {
             width: width,
             height: 200,
             title: title,
-            content: $J('<div />').append($table),
+            content: $J('<form />')
+                        .append(table),
             autoOpen: true,
             modal: true,
             buttons: {
                 "Save": function() {
-                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
-                    var configValue = $J('#editConfig_' + configOption).val(),
-                        configValues = null,
-                        configType   = '',
-                        configNewArray = [];
+                    var configValue = '',
+                       configNewArray = [];
+               
+                    if (configType == 'radio') {
+                        configValue = $J('input:radio[name='+configOption+']:checked').val();
+                    } else {
+                        configValue = $J('.editConfig_'+configOption).val();
+                    }
+                    
                     if ($operation == 'add') {
-                        configOption = $J("#configName").val();
-                        configValue  = $J("#configValue").val();
-                        configValues = $J("#configValues").val();
-                        configType   = $J("#configType").val();
+                        configOption = $J(".configName").val();
+                        configValue  = $J(".configValue").val();
+                        configValues = $J(".configValues").val();
+                        configType   = $J(".configType").val();
                         configGroup  = 'website';
                         configNewArray.push({name: configOption,section: "Multisite",group: configGroup,value: configValue,type:configType,values:configValues});
                     }
@@ -782,41 +752,53 @@ var Multisite = {
             }
         });
         
-        $J("#configType").change(function(){
-            var $tr = $J('<tr />'),
-                $td = $J('<td />'),
-                $inputBox = $J('<input />').attr({id: "configValue",name: "configValue", type: "text"});
+        $J(".configType").change(function(){
+            var tr = $J('<tr />'),
+                td = $J('<td />'),
+                inputBox = $J(this).val() == 'textarea' ? getEditOption('textarea', 'configValue', 'configValue', '', '') :
+                                                       getEditOption('text', 'configValue', 'configValue', '', '');
+                $J('.selectOptions').remove();
             switch($J(this).val()) {
                 case 'textarea':
-                    $J("#configValue").remove();
-                    var $textarea = $J("#configValue").closest('td');
-                    $J('<textarea />')
-                            .addClass("addOptions")
-                            .attr({id: "configValue", rows: "4", cols: "50", name: "configValue"})
-                            .appendTo($textarea);
+                    var textarea = $J(".configValue").closest('td');
+                    $J('.configValue').remove();
+                    textarea.html(inputBox);
                     break;
                 case 'radio':
                 case 'dropdown':
-                    if ($J("#configValue.addOptions").length) {
-                        $J("#configValue.addOptions").remove();
-                        $J(this).closest('tr').next('tr').find('td:last-child').append($inputBox);
+                    if ($J(".configValue").length) {
+                        $J(".configValue").remove();
+                        $J(this).closest('tr')
+                                .next('tr')
+                                .find('td:last-child')
+                                .append(inputBox);
                     }
-                    $J('<td />').html('<strong>Option Values</strong>').appendTo($tr);
-                    $toolTip = '<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'+cx.variables.get('configOptionTooltip', "multisite/lang")+'</span>';
-                    $J('<input />')
-                            .attr({id: "configValues", width: "100", name: "configValues"})
-                            .appendTo($td);
-                    $td.append($toolTip);
-                    $tr.append($td)
-                       .addClass("selectOptions");
-                    $J(this).closest("tr").after($tr);
+                    $J('<td />')
+                            .html('<strong>Option Values</strong>')
+                            .appendTo(tr);
+                    
+                    td.append(getEditOption('text', 'configValues', 'configValues', '', ''));
+                    
+                    $J('<span />')
+                            .addClass('icon-info tooltip-trigger')
+                            .appendTo(td);
+                    $J('<span />')
+                            .addClass('tooltip-message')
+                            .html(cx.variables.get('configOptionTooltip', "multisite/lang"))
+                            .appendTo(td);
+                    tr.append(td)
+                      .addClass("selectOptions");
+                    $J(this).closest("tr")
+                            .after(tr);
                     break;
                 case 'password':
                 case 'text':
-                    $J("#configValue").remove();
-                    if ($J("#configValue.addOptions").length) {
-                        $J("#configValue.addOptions").remove();
-                        $J(this).closest('tr').next('tr').find('td:last-child').append($inputBox);
+                    if ($J(".configValue").length) {
+                        $J(".configValue").remove();
+                        $J(this).closest('tr')
+                                .next('tr')
+                                .find('td:last-child')
+                                .append(inputBox);
                     }
                 default:
                     break;
@@ -827,13 +809,12 @@ var Multisite = {
     },
     getConfigHtmlData:function($arrayData,$table,$websiteId) {
         $J.each($arrayData, function(key, data) {
-            $tr = $J('<tr />');
+            var tr = $J('<tr />'),
+                container = $J('<span />');
 
             $J('<td />')
                     .html('<strong>' + data.name + '</strong>')
-                    .appendTo($tr);
-
-            container = $J('<span />');
+                    .appendTo(tr);
 
             $J('<span />')
                     .attr('id', data.name)
@@ -857,16 +838,16 @@ var Multisite = {
                     }).appendTo(container);
 
 
-            $td = $J('<td />')
-                    .append(container);
+            var td = $J('<td />')
+                        .append(container);
             $J('<span />')
                     .attr('id', 'editMultisiteConfig_' + data.name)
                     .html(JSON.stringify(data))
                     .hide()
-                    .appendTo($td);
+                    .appendTo(td);
 
-            $tr.append($td);
-                $table.append($tr);
+            tr.append(td);
+                $table.append(tr);
         });
         return $table;
     }

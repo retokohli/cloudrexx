@@ -2568,9 +2568,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
-     * Fetch and Update Multisite Configuration of the selected Website
+     * Fetch delete and Update Multisite Configuration of the selected Website
      * 
-     * @param array $params websiteId
+     * @param array $params websiteConfigArray
+     * 
      * @return array
      * @throws MultiSiteJsonException
      */
@@ -2622,7 +2623,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                 break;
                             case 'fetch':
                             default:
-                                return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL'], $website->getFqdn()->getName()), 'result' => $resp->data->result,'inputTypes' => $inputTypes);
+                                return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL'], $website->getFqdn()->getName()), 'result' => $resp->data->result, 'inputTypes' => $inputTypes);
                                 break;
                         }
                     } else {

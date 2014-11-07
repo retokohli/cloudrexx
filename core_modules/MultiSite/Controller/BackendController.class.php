@@ -816,6 +816,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $cxjs = \ContrexxJavascript::getInstance();
         $cxjs->setVariable(array(
             'addNewConfig'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG'],
+            'addNewConfigTitle'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_TITLE'],
             'configOptionTooltip' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_OPTION_TOOLTIP'],
             'deleteConfirm'       => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_CONFIG_OPTION']
         ), 'multisite/lang');
