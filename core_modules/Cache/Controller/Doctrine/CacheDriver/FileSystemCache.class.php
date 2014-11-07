@@ -41,25 +41,29 @@ class FilesystemCache extends \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDr
             return false;
         }
 
-        $resource = fopen($filename, "r");
+//        $resource = fopen($filename, "r");
+//
+//        if (false !== ($line = fgets($resource))) {
+//            $lifetime = (integer) $line;
+//        }
+//
+//        if ($lifetime != 0 && $lifetime < time()) {
+//            fclose($resource);
+//
+//            return false;
+//        }
+//
+//        while (false !== ($line = fgets($resource))) {
+//            $data .= $line;
+//        }
+//
+//        fclose($resource);
 
-        if (false !== ($line = fgets($resource))) {
-            $lifetime = (integer) $line;
-        }
+        list( $lifetime, $data ) = preg_split("/\r?\n/", file_get_contents( $filename ), 2);
 
-        if ($lifetime != 0 && $lifetime < time()) {
-            fclose($resource);
-
-            return false;
-        }
-
-        while (false !== ($line = fgets($resource))) {
-            $data .= $line;
-        }
-
-        fclose($resource);
-
-        return unserialize($data);
+        $ret = unserialize($data);
+        
+        return $ret;
     }
 
     /**

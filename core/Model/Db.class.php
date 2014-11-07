@@ -235,8 +235,8 @@ namespace Cx\Core\Model {
                     break;
             }
             \Env::set('cache', $cache);
-            $config->setResultCacheImpl($cache);
-            $config->setMetadataCacheImpl($arrayCache);
+            //$config->setResultCacheImpl($cache);
+            $config->setMetadataCacheImpl($cache);
             $config->setQueryCacheImpl($cache);
 
             $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
