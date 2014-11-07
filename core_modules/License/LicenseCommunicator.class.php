@@ -230,7 +230,7 @@ class LicenseCommunicator {
             'sendTemplate' => $forceTemplate,
         );
         
-        if (false) {
+        if (true) {
             try {
                 $objFile = new \Cx\Lib\FileSystem\File(ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/config/License.lic');
                 $rawData = $objFile->getData();

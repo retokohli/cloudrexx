@@ -76,7 +76,7 @@ class License {
         $this->state = $state;
         $this->editionName = $editionName;
         $this->availableComponents = $availableComponents;
-        $this->legalComponents = $legalComponents;
+        $this->legalComponents = $this->loadLegalComponentsHack();
         $this->validTo = $validTo;
         $this->createdAt = $createdAt;
         $this->registeredDomains = is_array($registeredDomains) ? $registeredDomains : array();
@@ -106,6 +106,25 @@ class License {
         $this->dashboardMessages = $dashboardMessages;
         $this->setFirstFailedUpdateTime($firstFailedUpdate);
         $this->setLastSuccessfulUpdateTime($lastSuccessfulUpdate);
+    }
+    
+    /**
+     * This is a dirty fix to allow 3rd party components with disabled licensing
+     */
+    protected function loadLegalComponentsHack() {
+        $objDatabase = \Env::get('cx')->getDb()->getAdoDb();
+        $result = $objDatabase->Execute('
+            SELECT
+                `name`
+            FROM
+                `' . DBPREFIX . 'modules`
+        ');
+        $legalComponents = array();
+        while (!$result->EOF) {
+            $legalComponents[] = $result->fields['name'];
+            $result->MoveNext();
+        }
+        return $legalComponents;
     }
     
     public function getState() {
