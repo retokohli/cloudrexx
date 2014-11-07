@@ -2011,6 +2011,8 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 $this->type,
                 $this->updatedAt,
                 $this->updatedBy,
+                $this->metadesc,
+                $this->metakeys
             )
         );
     }
@@ -2050,5 +2052,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->type = $unserialized[31];
         $this->updatedAt = $unserialized[32];
         $this->updatedBy = $unserialized[33];
+        $this->metadesc = $unserialized[34];
+        $this->metakeys = $unserialized[35];
     }
 }
