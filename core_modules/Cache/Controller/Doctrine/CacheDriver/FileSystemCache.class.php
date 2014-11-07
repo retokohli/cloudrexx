@@ -47,7 +47,7 @@ class FilesystemCache extends \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDr
             $lifetime = (integer) $line;
         }
 
-        if ($lifetime !== 0 && $lifetime < time()) {
+        if ($lifetime != 0 && $lifetime < time()) {
             fclose($resource);
 
             return false;
@@ -93,7 +93,6 @@ class FilesystemCache extends \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDr
         if ($lifeTime > 0) {
             $lifeTime = time() + $lifeTime;
         }
-
         $data       = serialize($data);
         $filename   = $this->getFilename($id);
         $filepath   = pathinfo($filename, PATHINFO_DIRNAME);
@@ -102,7 +101,7 @@ class FilesystemCache extends \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDr
             mkdir($filepath, 0777, true);
         }
 
-        return file_put_contents($filename, $lifeTime . PHP_EOL . $data) !== false;
+        return file_put_contents($filename, intval($lifeTime) . PHP_EOL . $data) !== false;
     }
     
     /**
