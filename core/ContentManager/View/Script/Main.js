@@ -2372,6 +2372,7 @@ cx.cm.resetEditView = function() {
     cx.jQuery("#scheduled_publishing_container").hide();
     // reset theme
     cx.jQuery("select#page_skin").val("");
+    cx.jQuery("select#page_custom_content").val("");
     // reset multiselects
     var options = cx.jQuery("select#frontendGroupsms2side__dx").html();
     cx.jQuery("select#frontendGroupsms2side__sx").html(options);
