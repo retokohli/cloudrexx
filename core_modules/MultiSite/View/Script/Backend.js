@@ -877,6 +877,7 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
             break;
 
         case 'textarea':
+        case 'wysiwyg':
             htmlResult = $J('<textarea rows="4" cols="40">')
                             .addClass(fieldLabel)
                             .attr('name', name)
@@ -919,8 +920,29 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
             });
 
             break;
-            case 'text':
-            default:
+        case 'password':
+        htmlResult = $J('<input type="password"/>')
+                    .addClass(fieldLabel)
+                    .attr('name', name)
+                    .val(editValue);
+            break;
+        case 'date':
+        case 'datetime':
+            userInputField = $J('<input type="text"/>')
+                    .addClass(fieldLabel)
+                    .attr('name', name)
+                    .val(editValue)
+                    .attr('tabindex', -1);
+            if (type == 'date') {
+                htmlResult = userInputField.datepicker({dateFormat: cx.variables.get('dateFormat', 'Multisite'),});
+            }
+            if (type == 'datetime') {
+                htmlResult = userInputField.datetimepicker({ });
+            }
+            break;
+        case 'email':
+        case 'text':
+        default:
             htmlResult = $J('<input type="text"/>')
                     .addClass(fieldLabel)
                     .attr('name', name)
