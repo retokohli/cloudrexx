@@ -10,6 +10,7 @@
  */
 
 namespace Cx\Core_Modules\Uploader\Controller;
+use Cx\Core\Core\Controller\Cx;
 
 /**
  * UploaderExceptions thrown by uploader
@@ -78,6 +79,8 @@ class UploaderController {
      * 
      */
     static function handleRequest($conf = array()) {
+
+        $cx = Cx::instanciate();
         // 5 minutes execution time
         @set_time_limit(5 * 60);
 
@@ -160,28 +163,8 @@ class UploaderController {
                 $new_path = $conf['target_dir'] . $fileName;
                 \Cx\Lib\FileSystem\FileSystem::move($tmp_path, $new_path, true);
 
-
-                //TODO: if return value = 'error' => react
-                /* \Cx\Lib\FileSystem\FileSystem::move($tempWebPath . $f, $pathWeb . $f, true);
-                 *             $im = new \ImageManager();
-                  if ($im->_isImage($path . $f)) {
-                  $im->_createThumb($path, $pathWeb, $f);
-                  } */
-
-                //delete the folder
-                //\Cx\Lib\FileSystem\FileSystem::delete_folder($tmp_path, true);
-
-                /* $im = new \ImageManager();
-                  if ($im->_isImage($new_path)) {
-                  $im->_createThumb($new_path, '', $pathWeb, $f);
-
-
-
-                  // function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90, $thumb_name='')
-
-                  } */
-                $rootPath = ASCMS_DOCUMENT_ROOT . $conf['target_dir'];
-                $rootPathFull = ASCMS_DOCUMENT_ROOT . $new_path;
+                $rootPath = $cx->getCodeBaseDocumentRootPath() . $conf['target_dir'];
+                $rootPathFull = $cx->getCodeBaseDocumentRootPath() . $new_path;
                 $filePathinfo = pathinfo($rootPathFull);
                 $fileExtension = $filePathinfo['extension'];
                 $fileNamePlain = $filePathinfo['filename'];

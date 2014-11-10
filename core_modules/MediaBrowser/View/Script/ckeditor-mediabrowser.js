@@ -4,7 +4,6 @@ CKEDITOR.plugins.add( 'mediabrowser', {
         editor.addCommand( 'addImage', {
             exec: function( editor ) {
                 jQuery('#ckeditor_image_button').trigger('click');
-
             }
         });
         editor.ui.addButton( 'mediabrowser.image', {
@@ -15,39 +14,36 @@ CKEDITOR.plugins.add( 'mediabrowser', {
         });
     }
 });
+
 window.ckeditor_image_callback = function(callback){
+    if (callback.type == 'close'){
+        return;
+    }
+    $J.ajax({
+        type: "GET",
+        url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file="+callback.data[0].datainfo.filepath
+    });
+    var dialog = MediaBrowserjQuery(cx.variables.get('thumbnails_template', 'mediabrowser'));
+    var image = dialog.find('.image');
+    image.attr('src',callback.data[0].datainfo.filepath );
     bootbox.dialog({
-            title: "This is a form in a modal.",
-            message: '<div class="row">  ' +
-            '<div class="col-md-12"> ' +
-            '<form class="form-horizontal"> ' +
-            '<div class="form-group"> ' +
-            '<label class="col-md-4 control-label" for="name">Name</label> ' +
-            '<div class="col-md-4"> ' +
-            '<input id="name" name="name" type="text" placeholder="Your name" class="form-control input-md"> ' +
-            '<span class="help-block">Here goes your name</span> </div> ' +
-            '</div> ' +
-            '<div class="form-group"> ' +
-            '<label class="col-md-4 control-label" for="awesomeness">How awesome is this?</label> ' +
-            '<div class="col-md-4"> <div class="radio"> <label for="awesomeness-0"> ' +
-            '<input type="radio" name="awesomeness" id="awesomeness-0" value="Really awesome" checked="checked"> ' +
-            'Really awesome </label> ' +
-            '</div><div class="radio"> <label for="awesomeness-1"> ' +
-            '<input type="radio" name="awesomeness" id="awesomeness-1" value="Super awesome"> Super awesome </label> ' +
-            '</div> ' +
-            '</div> </div>' +
-            '</form> </div>  </div>',
+            title:  cx.variables.get('TXT_FILEBROWSER_SELECT_THUMBNAIL', 'mediabrowser'),
+            message: dialog.html(),
             buttons: {
                 success: {
-                    label: "Save",
+                    label: cx.variables.get('TXT_FILEBROWSER_SELECT_THUMBNAIL', 'mediabrowser'),
                     className: "btn-success",
                     callback: function () {
-                        var name = $('#name').val();
-                        var answer = $("input[name='awesomeness']:checked").val()
-                        CKEDITOR.instances.cm_ckeditor.insertHtml('<img src="'+callback.data[0].datainfo.filepath+'" />');
+                        var image, thumbnail = $J("[name='size']").val();
+                        if (thumbnail == 0){
+                            image = callback.data[0].datainfo.filepath;
+                        }
+                        else {
+                            image = callback.data[0].datainfo.thumbnail[thumbnail];
+                        }
+                        CKEDITOR.instances.cm_ckeditor.insertHtml('<img class="img-responsive" src="'+image+'" />')
                     }
                 }
             }
-        }
-    );
+    });
 };

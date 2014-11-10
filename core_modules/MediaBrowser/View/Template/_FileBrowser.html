@@ -8,7 +8,8 @@
     </div>
     <div class="fileOptions">
         <input type="search" id="fileSearch" placeholder="Search.. " data-ng-model="searchFile" >
-        <label for="FileSearchIsRegex" id="FileSearchIsRegexLabel" >
+        <label for="FileSearchIsRegex" id="FileSearchIsRegexLabel" data-tooltip-placement="bottom" data-tooltip="{{
+            'TXT_FILEBROWSER_EXTENDED_FILE_SEARCH_EXPLANATION' | translate }}">
         <input type="checkbox" data-ng-model="isRegex" id="FileSearchIsRegex" />
             {{
             'TXT_FILEBROWSER_EXTENDED_FILE_SEARCH' | translate }}
@@ -50,7 +51,7 @@
                 <tr data-ng-repeat="file in files | orderAndSearchFiles: sorting: reverse: searchFile: isRegex"
                     data-ng-class="{active: true === file.datainfo.active}"
                     data-ng-if="file.datainfo.cleansize > 0"
-                    class="data-row files">
+                    class="data-row files animation">
                     <td width="2%" class="col_1"><i class="icon-fileType icon-fileType{{file.datainfo.extension}}"></i>
                     </td>
                     <td width="50%" class="col_2">
@@ -85,8 +86,8 @@
         <button type="submit" class="btn btn-primary" ng-disabled="noFileSelected" data-ng-click="choosePictures()">
             Bild auswählen
         </button>
-        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal" data-ng-click="closeModal()">
-            Abbrechen
+        <button type="submit" class="btn btn-primary" data-ng-click="cancel()">
+            {{ 'TXT_FILEBROWSER_CANCEL' | translate }}
         </button>
     </div>
 </div>

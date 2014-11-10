@@ -11,10 +11,12 @@
 namespace Cx\Core_Modules\MediaBrowser\Model;
 
 
+use Cx\Core\Core\Controller\Cx;
 use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 
-class ThumbnailGenerator {
+class ThumbnailGenerator
+{
 
     const THUMBNAIL_GENERATOR_SUCCESS = 'green';
     const THUMBNAIL_GENERATOR_FAIL = 'red';
@@ -23,7 +25,7 @@ class ThumbnailGenerator {
     /**
      * Create all the thumbnails for a picture.
      *
-     * @param string        $path          Path to the file. This can be a virtual path or a absolute path.
+     * @param string        $path Path to the file. This can be a virtual path or a absolute path.
      * @param string        $fileNamePlain Plain file name without extension
      * @param string        $fileExtension Extension of the file
      * @param \ImageManager $imageManager
@@ -47,9 +49,16 @@ class ThumbnailGenerator {
     )
     {
         $success = Array();
-        foreach (UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail) {
-            if (FileSystem::fileExists($path, $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension)) {
-                $success[$thumbnail['value']] = self::THUMBNAIL_GENERATOR_NEUTRAL;
+        foreach (
+            UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail
+        ) {
+            if (FileSystem::fileExists(
+                $path,
+                $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
+            )
+            ) {
+                $success[$thumbnail['value']]
+                    = self::THUMBNAIL_GENERATOR_NEUTRAL;
                 continue;
             }
             if ($imageManager->_createThumb(
@@ -61,12 +70,24 @@ class ThumbnailGenerator {
                 $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
             )
             ) {
-                $success[$thumbnail['value']] = self::THUMBNAIL_GENERATOR_SUCCESS;
+                $success[$thumbnail['value']]
+                    = self::THUMBNAIL_GENERATOR_SUCCESS;
                 continue;
             }
             $success[$thumbnail['value']] = self::THUMBNAIL_GENERATOR_FAIL;
         }
         return $success;
+    }
+
+    public static function createThumbnailFromPath($filePath)
+    {
+        $cx = Cx::instanciate();
+        $fileInfo = pathinfo($cx->getCodeBaseDocumentRootPath() . $filePath);
+        return self::createThumbnail(
+            $fileInfo['dirname'] . '/',
+            preg_replace('/\.thumb_[a-z]+/i', '', $fileInfo['filename']),
+            $fileInfo['extension'], new \ImageManager()
+        );
     }
 
 

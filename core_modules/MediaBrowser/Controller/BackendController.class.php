@@ -19,16 +19,18 @@ use Cx\Core_Modules\Uploader\Model\Uploader;
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage coremodule_mediabrowser
+ * @subpackage  coremodule_mediabrowser
  */
-class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
+class BackendController extends
+    \Cx\Core\Core\Model\Entity\SystemComponentBackendController
+{
 
     /**
      * Act param for the URL Reguest;
-     * 
+     *
      * @var string $act
      */
-    protected  $act = '';
+    protected $act = '';
 
     /**
      * @var \Cx\Core\Html\Sigma
@@ -42,47 +44,57 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
     /**
      * Returns a list of available commands (?act=XY)
+     *
      * @return array List of acts
      */
-    public function getCommands() {
+    public function getCommands()
+    {
         return array(
-            'Browser' => array(
-                'View1',
-                'View2'
-            )
+
         );
     }
 
     /**
      * Use this to parse your backend page
-     * 
+     *
      * You will get the template located in /View/Template/{CMD}.html
      * You can access Cx class using $this->cx
      * To show messages, use \Message class
+     *
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
-     * @param array $cmd CMD separated by slashes
+     * @param array               $cmd      CMD separated by slashes
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
-        $this->cx;
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
+    {
         $this->template = $template;
 
         $uploader = new Uploader();
-        $uploader->setFinishedCallback('\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback');
+        $uploader->setFinishedCallback(
+            '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
+        );
         $uploader->setOptions(array('data-on-file-uploaded' => 'callback3'));
-        $template->setVariable('UPLOADER_CODE', $uploader->getXHtml('Open Uploader 1'));
+        $template->setVariable(
+            'UPLOADER_CODE', $uploader->getXHtml('Open Uploader 1')
+        );
 
         $uploader2 = new Uploader();
-        $uploader2->setFinishedCallback('\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback');
+        $uploader2->setFinishedCallback(
+            '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
+        );
         $uploader2->setOptions(array('data-on-file-uploaded' => 'callback2'));
-        $template->setVariable('UPLOADER_CODE2', $uploader2->getXHtml('Open Uploader 2'));
-
+        $template->setVariable(
+            'UPLOADER_CODE2', $uploader2->getXHtml('Open Uploader 2')
+        );
 
         $mediaBrowser = new MediaBrowser();
         $mediaBrowser->setCallback('callback');
-        $template->setVariable('MEDIABROWSER_CODE1', $mediaBrowser->getXHtml('MediaBrowser'));
-        $template->setVariable('MEDIABROWSER_CODE1_RAW',  htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser')));
-
-
+        $template->setVariable(
+            'MEDIABROWSER_CODE1', $mediaBrowser->getXHtml('MediaBrowser')
+        );
+        $template->setVariable(
+            'MEDIABROWSER_CODE1_RAW',
+            htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser'))
+        );
 
 
         // get the act
@@ -98,42 +110,51 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // Trigger the specific controller
         $this->routeToController($act);
     }
-    
-  
+
+
     /**
      * Trigger a controller according the act param from the url
-     * 
+     *
      * @param   string $act
      */
-    public function routeToController($act){
+    public function routeToController($act)
+    {
         $act = ucfirst($act);
-        if(!empty($act)){
-            $controllerName = __NAMESPACE__.'\\'.$act.'Controller';
+        if (!empty($act)) {
+            $controllerName = __NAMESPACE__ . '\\' . $act . 'Controller';
             if (!$controllerName && !class_exists($controllerName)) {
                 return;
-            }else{
+            } else {
 
             }
             //  instantiate the view specific controller
-            new $controllerName($this->getSystemComponentController(), $this->cx, $this->template, $this->submenuName);
-        }else{
+            new $controllerName(
+                $this->getSystemComponentController(), $this->cx,
+                $this->template, $this->submenuName
+            );
+        } else {
             // instantiate the default View Controller
-            new \Cx\Core_Modules\MediaBrowser\Controller\DefaultController($this->getSystemComponentController(), $this->cx, $this->template);
+            new \Cx\Core_Modules\MediaBrowser\Controller\DefaultController(
+                $this->getSystemComponentController(), $this->cx,
+                $this->template
+            );
         }
-        
+
     }
-    
+
     /**
      * Returns the sub menu page if the url contains any
-     * 
-     * @param   array   $cmd
+     *
+     * @param   array $cmd
+     *
      * @return  string
      */
-    protected  function getSubmenuName($cmd){
-        if(count($cmd) > 1){
+    protected function getSubmenuName($cmd)
+    {
+        if (count($cmd) > 1) {
             $submenu = ucfirst($cmd[1]);
             return $submenu;
         }
         return null;
-    }        
+    }
 }
