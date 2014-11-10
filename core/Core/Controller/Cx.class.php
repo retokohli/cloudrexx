@@ -40,6 +40,8 @@ namespace Cx\Core\Core\Controller {
      * @todo Remove all instances of "global" or at least move them to a single place
      */
     class Cx {
+        const FOLDER_NAME_IMAGES = '/images';
+        const FOLDER_NAME_MEDIA = '/media';
         /**
          * Commandline interface mode
          * 
@@ -251,6 +253,12 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         const FOLDER_NAME_MODULE = '/modules';
+
+        /**
+         * The folder name used for the themes (/themes).
+         * @var string
+         */
+        const FOLDER_NAME_THEMES = '/themes';
         
         /**
          * The webserver's DocumentRoot path.
@@ -458,6 +466,41 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $websiteFeedPath = null;
+
+
+        protected $websiteImagesContentPath;
+        protected $websiteImagesAttachPath;
+        protected $websiteImagesShopPath;
+        protected $websiteImagesGalleryPath;
+        protected $websiteImagesAccessPath;
+        protected $websiteImagesMediaDirPath;
+        protected $websiteImagesDownloadsPath;
+        protected $websiteImagesCalendarPath;
+        protected $websiteImagesPodcastPath;
+        protected $websiteImagesBlogPath;
+        protected $websiteMediaarchive1Path;
+        protected $websiteMediaarchive2Path;
+        protected $websiteMediaarchive4Path;
+        protected $websiteMediaarchive3Path;
+        protected $websiteMediaarchive5Path;
+        protected $websiteImagesContentWebPath;
+        protected $websiteImagesAttachWebPath;
+        protected $websiteImagesShopWebPath;
+        protected $websiteImagesGalleryWebPath;
+        protected $websiteImagesAccessWebPath;
+        protected $websiteImagesMediaDirWebPath;
+        protected $websiteImagesDownloadsWebPath;
+        protected $websiteImagesCalendarWebPath;
+        protected $websiteImagesPodcastWebPath;
+        protected $websiteImagesBlogWebPath;
+        protected $websiteMediaarchive1WebPath;
+        protected $websiteMediaarchive2WebPath;
+        protected $websiteMediaarchive3WebPath;
+        protected $websiteMediaarchive4WebPath;
+        protected $websiteMediaarchive5WebPath;
+
+        protected $websiteImagesPath;
+        protected $websiteImagesWebPath;
 
         /**
          * This creates instances of this class
@@ -2129,7 +2172,7 @@ namespace Cx\Core\Core\Controller {
             $this->codeBaseModelPath            = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_MODEL;
             $this->codeBaseModulePath           = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_MODULE;
             $this->codeBaseModuleWebPath        = $this->codeBaseOffsetPath . self::FOLDER_NAME_MODULE;
-            $this->codeBaseThemesPath           = $this->codeBaseDocumentRootPath . '/themes';
+            $this->codeBaseThemesPath           = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_THEMES;
         }
 
         /**
@@ -2288,22 +2331,129 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Set the path to the location of the website's data repository in the file system.
-         * @param string The absolute path to the website's data repository.
-         * @param string The offset path from the website's data repository to the
+         * @param string $websitePath The absolute path to the website's data repository.
+         * @param string $websiteOffsetPath The offset path from the website's data repository to the
          *               location of the Contrexx installation if it is run in a subdirectory.
          */
         public function setWebsiteRepository($websitePath, $websiteOffsetPath) {
-            $this->websitePath                  = $websitePath;
-            $this->websiteOffsetPath            = $websiteOffsetPath;
-            $this->websiteDocumentRootPath      = $this->websitePath . $this->websiteOffsetPath;
-            $this->websiteConfigPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_CONFIG;
-            $this->websiteCustomizingPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_CUSTOMIZING;
-            $this->websiteCustomizingWebPath    = $this->websiteOffsetPath . self::FOLDER_NAME_CUSTOMIZING;
-            $this->websiteTempPath              = $this->websiteDocumentRootPath . self::FOLDER_NAME_TEMP;
-            $this->websiteTempWebPath           = $this->websiteOffsetPath . self::FOLDER_NAME_TEMP;
-            $this->websiteThemesPath            = $this->websiteDocumentRootPath . '/themes';
-            $this->websiteThemesWebPath         = $this->websiteOffsetPath . '/themes';
-            $this->websiteFeedPath              = $this->websiteDocumentRootPath . '/feed';
+            $this->websitePath = $websitePath;
+            $this->websiteOffsetPath = $websiteOffsetPath;
+            $this->websiteDocumentRootPath
+                = $this->websitePath . $this->websiteOffsetPath;
+            $this->websiteConfigPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_CONFIG;
+            $this->websiteCustomizingPath
+                =
+                $this->websiteDocumentRootPath . self::FOLDER_NAME_CUSTOMIZING;
+            $this->websiteCustomizingWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_CUSTOMIZING;
+            $this->websiteTempPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_TEMP;
+            $this->websiteTempWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_TEMP;
+            $this->websiteThemesPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_THEMES;
+            $this->websiteThemesWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_THEMES;
+            $this->websiteFeedPath = $this->websiteDocumentRootPath . '/feed';
+
+            $this->websiteImagesPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES;
+            $this->websiteImagesWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES;
+
+            $this->websiteImagesContentPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/content';
+            $this->websiteImagesAttachPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/attach';
+            $this->websiteImagesShopPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/Shop';
+            $this->websiteImagesGalleryPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/Gallery';
+            $this->websiteImagesAccessPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/Access';
+            $this->websiteImagesMediaDirPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/MediaDir';
+            $this->websiteImagesDownloadsPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/Downloads';
+            $this->websiteImagesCalendarPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/Calendar';
+            $this->websiteImagesPodcastPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/Podcast';
+            $this->websiteImagesBlogPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
+                . '/Blog';
+            $this->websiteMediaarchive1Path
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
+                . '/archive1';
+            $this->websiteMediaarchive2Path
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
+                . '/archive2';
+            $this->websiteMediaarchive3Path
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
+                . '/archive3';
+            $this->websiteMediaarchive4Path
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
+                . '/archive4';
+            $this->websiteMediaarchive5Path
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
+                . '/archive5';
+
+            $this->websiteImagesContentWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/content';
+            $this->websiteImagesAttachWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/attach';
+            $this->websiteImagesShopWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/Shop';
+            $this->websiteImagesGalleryWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/Gallery';
+            $this->websiteImagesAccessWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/Access';
+            $this->websiteImagesMediaDirWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/MediaDir';
+            $this->websiteImagesDownloadsWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/Downloads';
+            $this->websiteImagesCalendarWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/Calendar';
+            $this->websiteImagesPodcastWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/Podcast';
+            $this->websiteImagesBlogWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
+                . '/Blog';
+            $this->websiteMediaarchive1WebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
+                . '/archive1';
+            $this->websiteMediaarchive2WebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
+                . '/archive2';
+            $this->websiteMediaarchive3WebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
+                . '/archive3';
+            $this->websiteMediaarchive4WebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
+                . '/archive4';
+            $this->websiteMediaarchive5WebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
+                . '/archive5';
+
         }
 
         /**
@@ -2417,6 +2567,262 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteFeedPath() {
             return $this->websiteFeedPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesContentPath()
+        {
+            return $this->websiteImagesContentPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesContentWebPath()
+        {
+            return $this->websiteImagesContentWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesAccessPath()
+        {
+            return $this->websiteImagesAccessPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesAccessWebPath()
+        {
+            return $this->websiteImagesAccessWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesAttachPath()
+        {
+            return $this->websiteImagesAttachPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesAttachWebPath()
+        {
+            return $this->websiteImagesAttachWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesBlogPath()
+        {
+            return $this->websiteImagesBlogPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesBlogWebPath()
+        {
+            return $this->websiteImagesBlogWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesCalendarPath()
+        {
+            return $this->websiteImagesCalendarPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesCalendarWebPath()
+        {
+            return $this->websiteImagesCalendarWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesDownloadsPath()
+        {
+            return $this->websiteImagesDownloadsPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesDownloadsWebPath()
+        {
+            return $this->websiteImagesDownloadsWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesGalleryPath()
+        {
+            return $this->websiteImagesGalleryPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesGalleryWebPath()
+        {
+            return $this->websiteImagesGalleryWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesMediaDirPath()
+        {
+            return $this->websiteImagesMediaDirPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesMediaDirWebPath()
+        {
+            return $this->websiteImagesMediaDirWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesPodcastPath()
+        {
+            return $this->websiteImagesPodcastPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesPodcastWebPath()
+        {
+            return $this->websiteImagesPodcastWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesShopPath()
+        {
+            return $this->websiteImagesShopPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesShopWebPath()
+        {
+            return $this->websiteImagesShopWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive1Path()
+        {
+            return $this->websiteMediaarchive1Path;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive1WebPath()
+        {
+            return $this->websiteMediaarchive1WebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive2Path()
+        {
+            return $this->websiteMediaarchive2Path;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive2WebPath()
+        {
+            return $this->websiteMediaarchive2WebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive3Path()
+        {
+            return $this->websiteMediaarchive3Path;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive3WebPath()
+        {
+            return $this->websiteMediaarchive3WebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive4Path()
+        {
+            return $this->websiteMediaarchive4Path;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive4WebPath()
+        {
+            return $this->websiteMediaarchive4WebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive5Path()
+        {
+            return $this->websiteMediaarchive5Path;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaarchive5WebPath()
+        {
+            return $this->websiteMediaarchive5WebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesPath()
+        {
+            return $this->websiteImagesPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesWebPath()
+        {
+            return $this->websiteImagesWebPath;
         }
     }
 }
