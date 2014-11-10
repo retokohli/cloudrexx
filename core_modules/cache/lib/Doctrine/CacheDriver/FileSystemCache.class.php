@@ -41,25 +41,11 @@ class FilesystemCache extends FileCache
             return false;
         }
 
-        $resource = fopen($filename, "r");
+        list( $lifetime, $data ) = preg_split("/\r?\n/", file_get_contents( $filename ), 2);
 
-        if (false !== ($line = fgets($resource))) {
-            $lifetime = (integer) $line;
-        }
-
-        if ($lifetime !== 0 && $lifetime < time()) {
-            fclose($resource);
-
-            return false;
-        }
-
-        while (false !== ($line = fgets($resource))) {
-            $data .= $line;
-        }
-
-        fclose($resource);
-
-        return unserialize($data);
+        $ret = unserialize($data);
+        
+        return $ret;
     }
 
     /**

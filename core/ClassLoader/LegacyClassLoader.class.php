@@ -258,6 +258,9 @@ class LegacyClassLoader {
         } else {
             require_once ASCMS_DOCUMENT_ROOT . '/' . $path;
         }
+        if ( ! class_exists($name, false) ) {
+            return false;
+        }
         $bytes = memory_get_peak_usage()-$bytes;
         $this->tab--;
         $ownBytes = '';
