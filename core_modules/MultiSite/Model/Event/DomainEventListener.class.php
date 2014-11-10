@@ -38,15 +38,6 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
             $domain  = $eventArgs->getEntity();
             $em = $eventArgs->getEntityManager();
-            //update the domain cache file
-            switch ($mode) {
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
-                    $this->updateDomainRepositoryCache($em);
-                    break;
-                default:
-                    break;
-            }
             if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
@@ -56,6 +47,8 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                         $this->domainMapping($domain, $mode, 'unMapDomain');
+                        //update the domain cache file
+                        $this->updateDomainRepositoryCache($em);
                         break;
 
                     default:
