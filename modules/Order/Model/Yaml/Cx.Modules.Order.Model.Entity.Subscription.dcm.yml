@@ -20,7 +20,8 @@ Cx\Modules\Order\Model\Entity\Subscription:
       type: decimal
       column: payment_amount
     paymentState:
-      type: boolean
+      type: string
+      length: 12
       column: payment_state
     renewalUnit:
       type: string
