@@ -1,32 +1,59 @@
 <div id="uploader">
-    <div class="tabMediaBrowserBreadcrumbs" >
+    <div class="tabMediaBrowserBreadcrumbs">
         <ul>
             <li data-ng-repeat="pathpart in path">
                 <a data-ng-click="clickPath($index)" href="#uploader">{{pathpart.name}}</a>
             </li>
         </ul>
-
     </div>
     <div class="tabMediaBrowserContent">
         <div class="mediaUploaderListCtrl">
             <div class="uploadPlatform uploadStart">
                 <i class="icon-dropzone"></i>
+
                 <div class="dropzoneText1">Datei hierher ziehen</div>
                 <div class="dropzoneText2">- oder -</div>
-                <button type="submit" id="selectFileFromComputer" class="btn btn-default">Bild vom Computer auswählen</button>
+                <button type="submit" id="selectFileFromComputer" class="btn btn-default">Bild vom Computer auswählen
+                </button>
             </div>
-            <div style="display: none;" class="uploadPlatform uploadFilesAdded" >
+            <div class="uploadlist">
+                <table class="table">
+                    <tr>
+                        <td colspan="3">
+                            Name
+                        </td>
+                    </tr>
+                    <tr data-ng-repeat="file in uploaderData.filesToUpload">
+                        <td>
+                            {{ file.name }}
+                        </td>
+                        <td class="table-progress">
+                            <progressbar value="file.percent" type="{{file.percent}}" data-ng-class="file.percent != 100 ? 'active' : ''">
+
+                            </progressbar>
+                        </td>
+                        <td class="text-right table-action">
+                            <a href="#" data-ng-click="removeFile(file)" data-ng-show="file.percent != 100">
+                                {{ 'TXT_FILEBROWSER_FILE_REMOVE' | translate }}
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="display: none;" class="uploadPlatform uploadFilesAdded">
+                <img src="../core_modules/MediaBrowser/View/Media/ajax_loader_gray_128.gif" alt=""/>
                 <div class="dropzoneText2">Contrexx lädt die Dateien für Sie hoch...</div><br />
-                <div class="progress progress-striped active">
-                    <div class="progress-bar"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-                        
-                    </div>
-                </div>
-                <button type="submit" id="uploadInterrupt" class="btn btn-default">Upload abbrechen</button>
+                <!--<button type="submit" id="uploadInterrupt" class="btn btn-default">Upload abbrechen</button>-->
+            </div>
+            <div class="successfulUpload" data-ng-show="finishedUpload">
+                <div>Contrexx hat alle Dateien hochgeladen.</div><br />
             </div>
         </div>
     </div>
     <div class="tabMediaBrowserFooter">
-        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal">Abbrechen</button>
+        <button type="submit" class="btn btn-primary" data-ng-click="cancel()"> {{ 'TXT_FILEBROWSER_CANCEL' | translate }}</button>
+        <button  data-ng-show="!finishedUpload" type="submit" class="btn btn-primary" data-ng-click="startUpload()"
+                data-ng-class="uploaderData.filesToUpload.length > 0 ? 'visible' : 'hidden'">Upload starten
+        </button>
     </div>
 </div>

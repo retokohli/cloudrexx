@@ -9,6 +9,7 @@
 namespace Cx\Core_Modules\Uploader\Model;
 
 
+use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Html\Sigma;
 use Cx\Lib\FileSystem\File;
 use Cx\Model\Base\EntityBase;
@@ -28,8 +29,14 @@ class Uploader extends EntityBase
      */
     protected $options = array();
 
+    /**
+     * @var Cx
+     */
+    protected $cx;
+
     function __construct()
     {
+        $this->cx = Cx::instanciate();
         $this->getComponentController()->addUploader($this);
         if (!isset($_SESSION['uploader'])) {
             $_SESSION['uploader'] = array();
@@ -100,7 +107,7 @@ class Uploader extends EntityBase
 
     function getXHtml($buttonName = "Upload")
     {
-        $path = ASCMS_CORE_MODULE_PATH . '/Uploader/View/Template/Backend/Uploader.html';
+        $path = $this->cx->getCodeBaseCoreModulePath() . '/Uploader/View/Template/Backend/Uploader.html';
         $objFile = new File($path);
         return '<button ' . $this->getOptionsString() . ' >' . $buttonName . '</button>' . str_replace(
             '{UPLOADER_ID}', $this->id, $objFile->getData()

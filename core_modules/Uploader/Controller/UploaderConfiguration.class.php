@@ -57,7 +57,7 @@ class UploaderConfiguration
          */
         $pdo              = $this->cx->getDb()->getPdoConnection();
         $sth              = $pdo->query(
-                'SELECT name, size,  100 as quality, CONCAT(".thumb_",name) as value FROM  `' . DBPREFIX
+                'SELECT id,name, size,  100 as quality, CONCAT(".thumb_",name) as value FROM  `' . DBPREFIX
                 . 'settings_thumbnail`'
         );
         \DBG::log($sth->errorCode());

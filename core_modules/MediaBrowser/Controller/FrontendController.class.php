@@ -18,7 +18,9 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
  * @package     contrexx
  * @subpackage  modules_skeleton
  */
-class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController {
+class FrontendController extends
+    \Cx\Core\Core\Model\Entity\SystemComponentFrontendController
+{
 
     /**
      * Use this to parse your frontend page
@@ -26,18 +28,20 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * You will get a template based on the content of the resolved page
      * You can access Cx class using $this->cx
      * To show messages, use \Message class
+     *
      * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
-     * @param $cmd
+     * @param                     $cmd
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, $cmd) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
+    {
         // this class inherits from Controller, therefore you can get access to
         // Cx like this:
         $this->cx;
-        
+
         // Controller routes all calls to undeclared methods to your
         // ComponentController. So you can do things like
         $this->getName();
-        
-        
+
+
     }
 }

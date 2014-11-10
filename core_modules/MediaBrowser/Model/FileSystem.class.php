@@ -152,7 +152,6 @@ class FileSystem
         $filePathinfo  = pathinfo($absolutePath . '/' . $file);
         $fileExtension = isset($filePathinfo['extension']) ? $filePathinfo['extension'] : '';
         foreach (UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail) {
-            var_dump($absolutePath, $filePathinfo['filename'] . $thumbnail['value'] . '.' . $fileExtension);
             if (FileSystem::fileExists($absolutePath, $filePathinfo['filename'] . $thumbnail['value'] . '.' . $fileExtension)) {
                 if (!\Cx\Lib\FileSystem\FileSystem::delete_file($absolutePath . '/' . $filePathinfo['filename'] . $thumbnail['value'] . '.' . $fileExtension)) {
 //                    throw new RemoveFileException("Couldn't remove File.".$absolutePath . '/' . $file . $thumbnail['value'] . '.' . $fileExtension);
@@ -263,6 +262,17 @@ class RemoveDirectoryException extends \Exception
  * @subpackage  coremodule_mediabrowser
  */
 class CreateDirectoryException extends \Exception
+{
+
+}
+
+/**
+ * Class NotVirtualPathException
+ *
+ * @package     contrexx
+ * @subpackage  coremodule_mediabrowser
+ */
+class NotVirtualPathException extends \Exception
 {
 
 }

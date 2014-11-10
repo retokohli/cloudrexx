@@ -10,7 +10,8 @@
 namespace Cx\Core_Modules\Uploader\Model;
 
 
-class DefaultUploadCallback implements UploadCallbackInterface {
+class DefaultUploadCallback implements UploadCallbackInterface
+{
 
     /**
      * @var \Cx\Core\Core\Controller\Cx
@@ -31,14 +32,19 @@ class DefaultUploadCallback implements UploadCallbackInterface {
      * @param $data        String Data given to setData() when creating the uploader.
      * @param $uploadId    integer Per-session unique id for the current upload.
      * @param $fileInfos   array('originalFileNames' => array( 'theCurrentAndCleanedFilename.txt' => 'raw!Source#Filename.txt' ) )
-     * @param $response    \Cx\Core_Modules\Upload\Controller\UploadResponse object
+     *
      *
      * @return mixed The return value can be an array as shown in the example or null.
      *               When returning an array, all files left in the temporary directory are moved accordingly.
      *               When returning null, all left files are deleted.
      */
-    function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    function uploadFinished(
+        $tempPath, $tempWebPath, $data, $uploadId, $fileInfos
+    )
     {
-        return array(ASCMS_CONTENT_IMAGE_PATH, ASCMS_CONTENT_IMAGE_WEB_PATH);
+        return array(
+            $this->cx->getWebsiteImagesContentPath(),
+            $this->cx->getWebsiteImagesContentWebPath()
+        );
     }
 }
