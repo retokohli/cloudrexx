@@ -1586,5 +1586,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
             throw new WebsiteException('Unable to generate account password: '.$e->getMessage());
         }  
     }
+    
+    /**
+     * Magic function to get the website name
+     * 
+     * @return string Website's name
+     */
+    public function __toString() {
+        return $this->name;
+    }
 
 }

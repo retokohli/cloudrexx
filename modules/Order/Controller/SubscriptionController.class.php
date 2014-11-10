@@ -75,7 +75,34 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
-                )
+                ),
+            'fields' => array(
+                'productEntityId' => array(
+                    'table' => array(
+                        'parse' => function($value, $rowData) {
+                            $subscription  = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
+                            $productEntity = $subscription->getProductEntity();
+                            if(!$productEntity) {
+                                return;
+                            }
+                            return $productEntity;
+                        }
+                    )
+                ),
+                'product'  => array(
+                    'table' => array(
+                        'parse' => function($value, $rowData) {
+                            $subscription  = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
+                            $product       = $subscription->getProduct();
+                            if (!$product) {
+                                return;
+                            }
+                            return $product->getName();
+                        }
+                    )
+                ),
+                
+            ),
             ));
         $this->template->setVariable('SUBSCRIPTIONS_CONTENT', $view->render());
     }
