@@ -224,12 +224,8 @@ namespace Cx\Core\Model {
                     break;
             }
             \Env::set('cache', $cache);
-            if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-                $config->setResultCacheImpl($arrayCache);
-            } else {
-                $config->setResultCacheImpl($cache);
-            }
-            $config->setMetadataCacheImpl($arrayCache);
+//			As in Doctrine documentation and issue reports said, in 2.0 the resultcache implementation was incorrect, so better not to use
+            $config->setMetadataCacheImpl($cache);
             $config->setQueryCacheImpl($cache);
 
             $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
