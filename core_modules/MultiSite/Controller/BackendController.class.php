@@ -839,7 +839,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'addNewConfig'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG'],
             'addNewConfigTitle'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_TITLE'],
             'configOptionTooltip' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_OPTION_TOOLTIP'],
-            'deleteConfirm'       => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_CONFIG_OPTION']
+            'deleteConfirm'       => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_CONFIG_OPTION'],
+            'configAlertMessage'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_ALERT_MESSAGE']
         ), 'multisite/lang');
         $websiteMultiSiteConfig = '<a href="javascript:void(0);"  class = "multiSiteWebsiteConfig" data-id = "' . $wesiteId . '" title = "' . $title . '" data-title ="'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_TITLE'].$website->getFqdn()->getName().'" ></a>';
         return $websiteMultiSiteConfig;

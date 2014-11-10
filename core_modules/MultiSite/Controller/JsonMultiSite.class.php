@@ -2602,14 +2602,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                     \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
                                     \Cx\Core\Setting\Controller\Setting::TYPE_RADIO
                                 );
-                    $params = !empty($configName) ? array(
-                                                        'websiteId' => $websiteId, 
-                                                        'configGroup' => $configGroup, 
-                                                        'configOption' => $configName, 
-                                                        'configValue' => $configValue,
-                                                        'configType' => $configType,
-                                                        'configValues' => $configValues,
-                                                        'operation' => $operation
+                    $params = ($operation !="fetch") ? array(
+                                                            'websiteId' => $websiteId,
+                                                            'configGroup' => $configGroup,
+                                                            'configOption' => $configName,
+                                                            'configValue' => $configValue,
+                                                            'configType' => $configType,
+                                                            'configValues' => $configValues,
+                                                            'operation' => $operation
                                                        ) : array('websiteId' => $websiteId);
                    
                     $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('modifyMultisiteConfig', $params, $website);
@@ -2678,7 +2678,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             }
                             break;
                     }
-                    
+                    break;
                 default:
                     break;
             }

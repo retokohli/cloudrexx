@@ -178,7 +178,6 @@
         });
         // execute query on websites / service server's websites
         $('.executeQuery').click(function() {
-            $('#instance_table').append('<div id ="load-lock"></div>');
             cx.bind('loadingStart', executeQueryLock, 'executeSql');
             cx.bind('loadingEnd', executeQueryUnlock, 'executeSql');
             var title = $(this).attr('title');
@@ -407,7 +406,15 @@
                         width: 820,
                         height: 400,
                         title: title,
-                        content: $('<div />').attr('id','MultisiteConfigDiv').append($html.after('<div id ="MultisiteConfigload-lock"></div>')),
+                        content: $('<div />')
+                                    .attr('id', 'MultisiteConfigDiv')
+                                    .append($J('<div /> ')
+                                            .addClass('alertbox')
+                                            .html(cx.variables.get('configAlertMessage', 'multisite/lang'))
+                                            )
+                                    .append($html
+                                            .after('<div id ="MultisiteConfigload-lock"></div>')
+                                            ),
                         autoOpen: true,
                         modal: true,
                         buttons: buttons,
@@ -726,7 +733,7 @@ var Multisite = {
                             if (response.data.status == 'error') {
                                 cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
                             }
-                            if (response.status == 'success' && response.data.status == 'success') {
+                            if (response.data.status == 'success') {
                                 if ($operation == 'edit') {
                                     configData.value = configValue;
                                     $J('span#' + configOption).text(configValue);
