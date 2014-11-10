@@ -84,7 +84,7 @@
                     label: "Abbrechen",
                     className: "btn-danger",
                     callback: function () {
-
+                        clearInterval(refreshId);
                     }
                 }
             }
@@ -95,21 +95,21 @@
             $.get('/tmp/public/progress'+key+'.txt', function(progress)
             {
                 $('.progress-bar').css('width',progress+'%');
+
+                cx.jQuery('.thumbnails-generator .progress-bar').text( parseInt(progress)+'%');
                 if(progress >= 100)
                 {
-                    console.log('finished');
                     cx.jQuery('.thumbnails-generator').removeClass('active');
                     cx.jQuery('.thumbnails-generator').removeClass('progress-striped');
                     cx.jQuery('.thumbnails-generator .progress-bar').text('Complete');
-                    clearInterval(refreshId);
+                    clearTimeout(refreshId);
                 }
                 else {
-                    setTimeout(refreshId, 1000);
+                    setTimeout(refreshId, 500);
                 }
             });
-        }()
-
-
+        };
+        setTimeout(refreshId, 500);
     }
 
     function editThumbnail(entryId, name, size) {
@@ -142,7 +142,6 @@
         });
 
         cx.jQuery(dialog).modal('show');
-        console.log(dialog);
     }
 </script>
 
