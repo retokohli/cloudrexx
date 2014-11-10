@@ -4175,7 +4175,7 @@ $WhereStatement = '';
                 $arrLists = array();
 
                 if (isset($_POST['newsletter_recipient_associated_list'])) {
-                    foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
+                    foreach (explode(',', $_POST['newsletter_recipient_associated_list']) as $listId) {
                         array_push($arrLists, intval($listId));             
                     }                
                 }
@@ -4193,7 +4193,7 @@ $WhereStatement = '';
                     }
 
                     $arrRecipient['email'] = trim($arrRecipient['email']);
-                    if (!FWValidator::isEmail($arrRecipient['email'])) {
+                    if (!\FWValidator::isEmail($arrRecipient['email'])) {
                         array_push($arrBadEmails, $arrRecipient['email']);
                     } else {
                         $EmailCount++;
@@ -4348,7 +4348,7 @@ $WhereStatement = '';
                     $arrLists = array();
                 
                     if (isset($_POST['newsletter_recipient_associated_list'])) {
-                        foreach (explode(',', $_POST['newsletter_recipient_associated_list']) as $listId) {                    
+                        foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {
                             array_push($arrLists, intval($listId));
                         }                
                     }
