@@ -16,6 +16,7 @@ namespace Cx\Core\Config\Controller;
 /**
  * @ignore
  */
+use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Csrf\Controller\Csrf;
 use Cx\Core\Html\Sigma;
 use Cx\Core\Setting\Controller\Setting;
@@ -887,8 +888,8 @@ class Config
         $thumbnails = $sth->fetchAll();
 
         $newThumbnailTemplate
-            = new \Cx\Core\Html\Sigma(ASCMS_PATH);
-        $newThumbnailTemplate->loadTemplateFile(ASCMS_CORE_FOLDER.'/Config/View/Template/Backend/settings_image_edit.html');
+            = new \Cx\Core\Html\Sigma($cx->getCodeBasePath());
+        $newThumbnailTemplate->loadTemplateFile($cx->getCodeBaseCorePath() .'/Config/View/Template/Backend/settings_image_edit.html');
         $newThumbnailTemplate->removeUnknownVariables = false;
         $newThumbnailTemplate->setVariable(
             array(
@@ -1639,9 +1640,10 @@ class Config
     protected  function generateThumbnail($post)
     {
         global $objDatabase, $objTemplate, $_ARRAYLANG;
+        $cx = Cx::instanciate();
 
         $recursiveIteratorIterator
-            = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(ASCMS_CONTENT_IMAGE_PATH.'/'), \RecursiveIteratorIterator::SELF_FIRST);
+            = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($cx->getWebsiteImagesPath().'/'), \RecursiveIteratorIterator::SELF_FIRST);
         $jsonFileArray = array();
 
         $thumbnailList = UploaderConfiguration::getInstance()->getThumbnails();
@@ -1668,7 +1670,7 @@ class Config
             $preview = 'none';
 
             $fileInfos = array(
-                'filepath'  => mb_strcut($file->getPath() . '/' . $file->getFilename(), mb_strlen(ASCMS_PATH)),
+                'filepath'  => mb_strcut($file->getPath() . '/' . $file->getFilename(), mb_strlen($cx->getCodeBasePath())),
                 // preselect in mediabrowser or mark a folder
                 'name'      => $file->getFilename(),
                 'cleansize' => $file->getSize(),
@@ -1696,7 +1698,11 @@ class Config
         }
 
 
-        $processFile = ASCMS_TEMP_PATH . '/public/progress' . $_GET['key'] . '.txt';
+        $key = $_GET['key'];
+        if (!preg_match("/[A-Z0-9]{5}/i", $key)){
+            die;
+        }
+        $processFile = $cx->getWebsiteTempPath() . '/public/progress' . $key . '.txt';
         if (FileSystem::exists($processFile)) {
             die;
         }
@@ -1736,7 +1742,7 @@ class Config
             $filePathinfo  = pathinfo($file->getRealPath());
             $fileExtension = isset($filePathinfo['extension']) ? $filePathinfo['extension'] : '';
 
-            $preview = ASCMS_PATH_OFFSET . str_replace(ASCMS_DOCUMENT_ROOT, '', $file->getRealPath());
+            $preview = $cx->getCodeBaseOffsetPath() . str_replace($cx->getCodeBaseDocumentRootPath(), '', $file->getRealPath());
 
             $previewList = array();
             foreach ($thumbnailList as $thumbnail) {
@@ -1764,8 +1770,11 @@ class Config
             file_put_contents($processFile, $fileCounter / $imageFilesCount * 100);
 
         }
+
+        session_write_close();
         file_put_contents($processFile, 100);
-        sleep(4);
+        sleep(1);
+
         FileSystem::delete_file($processFile);
         die;
     }
