@@ -3575,7 +3575,7 @@ CREATE TABLE `contrexx_module_order_subscription` (
   `expiration_date` timestamp NULL default NULL,
   `product_entity_id` int(11) default NULL,
   `payment_amount` decimal(10,0) NOT NULL,
-  `payment_state` tinyint(1) NOT NULL,
+  `payment_state` varchar(12) NOT NULL,
   `renewal_unit` varchar(5) default NULL,
   `renewal_quantifier` int(10) unsigned default NULL,
   `renewal_date` timestamp NULL default NULL,
