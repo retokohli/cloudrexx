@@ -68,6 +68,8 @@ class Setting{
     const TYPE_CHECKBOXGROUP = 'checkboxgroup';
     // 20120508
     const TYPE_RADIO = 'radio';
+    const TYPE_DATE  = 'date';
+    const TYPE_DATETIME  = 'datetime';
     // Not implemented
     //const TYPE_SUBMIT = 'submit';
 
