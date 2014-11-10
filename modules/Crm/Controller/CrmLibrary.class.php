@@ -3074,6 +3074,20 @@ CODE;
     }
 
     /**
+     * Checks whether the crm customer is connected with a user account
+     *
+     * @return int|null user_account of crm user
+     */  
+    public static function getUserIdByCrmUserId($crmId) {
+        $db = \Env::get('cx')->getDb()->getAdoDb();
+        $result = $db->SelectLimit("SELECT `user_account` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `id` = " . intval($crmId));
+        if ($result->RecordCount() == 0) {
+            return null;
+        }
+        return $result->fields['user_account'];
+    }
+
+    /**
      * Get username
      *
      * @param Integer $userId

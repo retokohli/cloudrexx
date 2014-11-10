@@ -87,8 +87,34 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
-                )
-            ));
+            ),
+            'fields' => array(
+                'contactId' => array(
+                    'header' => 'contactId',
+                    'table' => array(
+                        'parse' => function($value) {
+                            $userId   = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($value);
+                            $userName = \FWUser::getParsedUserTitle($userId);
+                            $url = '<a href=​index.php?cmd=Access&act=user&tpl=modify&id='. $userId .'>' . $userName . '</a>';
+                            return $url;
+                        },
+                    ),
+                ),
+                'subscriptions' => array(
+                    'header' => 'subscriptions',
+                    'table'  => array(
+                        'parse' => function ($value, $arrayData) {
+                            $subscription  = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Subscription')->findOneBy(array('id' => $arrayData['id']));
+                            $productEntity = $subscription->getProductEntity();
+                            if(!$productEntity) {
+                                return;
+                            }
+                            return $productEntity;
+                        }
+                    )
+                ),
+            ),
+        ));
         $this->template->setVariable('ORDERS_CONTENT', $view->render());
     }
 }
