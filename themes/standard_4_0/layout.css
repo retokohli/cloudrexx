@@ -462,10 +462,7 @@ body a:hover {text-decoration: none;}
     word-wrap: break-word;
 }
 #subnavigation li.level-4 a {
-    width: 190px;
-    padding: 0 5px 0 45px;
     font-size: 12px;
-    line-height: 1.7;
     background-image: url('images/nav-3-inactive.png');
     background-position: 31px 7px;
 }
@@ -508,7 +505,7 @@ body a:hover {text-decoration: none;}
 #subnavigation li.level-2 a.active {
     background-image: url('images/nav-2-active.png');
     background-position: 15px 15px;
-    text-decoration: none;a
+    text-decoration: none;
 }
 #subnavigation li.level-3 a:hover,
 #subnavigation li.level-3 a.active,

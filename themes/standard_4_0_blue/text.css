@@ -82,14 +82,6 @@ body a:hover,body .btn-link:hover,body .btn-link:focus {
     text-decoration: none;
     outline: 0 none;
 }
-body a:focus {
-    text-decoration: none;
-    outline: 0 none;
-    color: #fff;  
-}
-a:hover, a:focus {
-    color: #323f55;
-}
 body p {
     margin: 0 0 0px;
     padding: 0 0 10px 0;
@@ -380,7 +372,16 @@ modal-footer {
 }
 
 /* new */
-button, input[type="submit"], input[type="reset"], input[type="button"] {
+body a:focus {
+    text-decoration: none;
+    outline: 0 none;
+    color: #fff;  
+}
+button, input[type="submit"], input[type="reset"], input[type="button"], button[name="recipient_save"] {
 color: #fff;
 background: #0372ab;
+}
+.btn.btn-default {
+    color: #fff;
+    background-color: #0372AB;
 }

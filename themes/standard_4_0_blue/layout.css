@@ -1,4 +1,3 @@
-
 #fe_toolbar_tab {
     box-sizing: content-box;
     -moz-box-sizing: content-box;
@@ -12,6 +11,11 @@ body > iframe {display: none;}
 html, body {
     height: 100%;
 }
+.addir-search {
+    float: left;
+    width: 100%;
+    padding-top: 20px;
+}
 body a:hover {text-decoration: none;}
 .wrapper {
     position: relative;
@@ -19,11 +23,6 @@ body a:hover {text-decoration: none;}
     float: left;
     width: 100%;
     background: #f7f7f7;
-}
-.addir-search {
-    float: left;
-    width: 100%;
-    padding-top: 20px;
 }
 .login {
     display: none;
@@ -172,10 +171,6 @@ body a:hover {text-decoration: none;}
     color: #0372AB;
     text-decoration: none;
 }
-#metanavigation li#select-language:hover a, #metanavigation li#select-language.active:hover a.active {
-    color: #000;
-}
-#metanavigation li#select-language:hover a.active {color: #fff;}
 #metanavigation li#select-language {
     z-index: 6;
     padding: 0;
@@ -487,6 +482,12 @@ body a:hover {text-decoration: none;}
     padding: 0;
     width: 100%;
 }
+#subnavigation li.active.level-2 > ul {
+    float: left;
+    width: 100%;
+    padding: 10px 0 9px 0;
+    border-bottom: 1px solid #D6D6D6;
+}
 #subnavigation li.active.level-3 > ul {
     float: left;
     padding: 5px 0 5px 0;
@@ -739,10 +740,10 @@ body a:hover {text-decoration: none;}
     float: left;
     width: 100%;
     background: #0372ab;
-    color: #fff;
     position: absolute;
     bottom: 0;
     padding-bottom: 7px;
+    color: #fff;
 }
 #footer .inner > div {
     font-family: 'Ubuntu';
@@ -963,11 +964,11 @@ span.disconnected {
     position: absolute;
     left: 50px;
     bottom: 127px;
-    font-size: 50px;
-    color: #fff;
+    font-size: 50px;   
     background: #0372ab;
     padding-left: 10px;
     padding-right: 10px;
+    color: #fff;
 }
 .home-box.col-md-6 {
     width: 48.8%;
@@ -1309,9 +1310,6 @@ p#loginerror {
     width: 100%;
     float: left;
 }
-#menubuilder3 {
-    padding-top: 0;
-}
 .login-content {
     float: left;
     width: 100%;
@@ -1451,26 +1449,6 @@ p#loginerror {
 .horizontal-list .fa.fa-facebook:hover {background-color: #4568B2;}
 .horizontal-list .fa.fa-google-plus:hover {background-color: #DD4B39;}
 .horizontal-list .fa.fa-rss:hover {background-color: #ec6621;}
-.checkbox:last-child, .radio:last-child {
-    margin-bottom: 0;
-}
-.checkbox:first-child, .radio:first-child {
-    margin-top: 0;
-}
-.contact.row hr {
-    padding: 0;
-    margin: 6px 0 0px 0;
-}
-input[type="file"]{height: auto;float: left;}
-.radio label, .checkbox label {
-    height: 20px;
-}
-.btn.btn-default, .btn.btn-primary {
-    font-size: 13px;
-}
-fieldset .checkbox, fieldset .radio {
-    padding-left: 0;
-}
 .newsContent {
     margin-top: 9px;
 }
@@ -1519,32 +1497,6 @@ fieldset .checkbox, fieldset .radio {
     padding-right: 0;
 }
 
-/*new*/
-button[name="recipient_save"] {
-    background: #0372ab;
-    color: #fff;
-}
-.navigation li a:hover {
-    background: #0372AB;
-    color: #fff;
-}
-.item h1 span, .item h1 font {
-    color: #fff !important;
-}
-#metanavigation li#select-language a:hover, #metanavigation li#select-language.active a.active:hover, #metanavigation li#select-language a:hover {
-    color: #0372AB !important;
-}
-.btn.btn-default {
-    color: #fff;
-    background-color: #0372AB;
-}
-#subnavigation li.active.level-2 > ul {
-    float: left;
-    width: 100%;
-    padding: 10px 0 9px 0;
-    border-bottom: 1px solid #D6D6D6;
-}
-
 /* new style */
 
 .rssfeed img {
@@ -1573,3 +1525,19 @@ button[name="recipient_save"] {
     vertical-align: top;
 }
 
+/*new*/
+.navigation li a:hover {
+    background: #0372AB;
+    color: #fff;
+}
+.item h1 span, .item h1 font {
+    color: #fff !important;
+}
+#metanavigation li#select-language a:hover, #metanavigation li#select-language.active a.active:hover, #metanavigation li#select-language a:hover {
+    color: #0372AB !important;
+}
+
+#metanavigation li#select-language:hover a.active {color: #fff;}
+#menubuilder3 {
+    padding-top: 0;
+}

@@ -82,10 +82,6 @@ body a:hover,body .btn-link:hover,body .btn-link:focus,body a:focus {
     text-decoration: none;
     outline: 0 none;
 }
-body a:focus {
-    text-decoration: none;
-    outline: 0 none;
-}
 body p {
     margin: 0 0 0px;
     padding: 0 0 10px 0;
@@ -190,10 +186,6 @@ body input:focus, body select:focus, body textarea:focus, .form-control:focus {
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(91, 161, 28, 0.6);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(91, 161, 28, 0.6);
 }
-body button,body input[type="submit"],body input[type="reset"],body input[type="button"] {
-    color: #fff;
-    background: #5BA11C;
-}
 input[type=submit],
 input[type=button],
 input[type=reset],
@@ -201,15 +193,6 @@ input[type=radio],
 input[type=checkbox],
 button {
     width: auto;
-}
-.btn-default {
-    color: #fff;
-    background-color: #5BA11C;
-}
-.btn-default:hover {
-    background-color: #e6e6e6;
-    border-color: #adadad;
-    color: #000;
 }
 input[type=radio] {
     float: left;
@@ -386,4 +369,22 @@ modal-footer {
 }
 .carousel-indicators {
     bottom: 0;
+}
+/*new*/
+body a:focus {
+    text-decoration: none;
+    outline: 0 none;
+}
+body button,body input[type="submit"],body input[type="reset"],body input[type="button"] {
+    color: #fff;
+    background: #5BA11C;
+}
+.btn-default {
+    color: #fff;
+    background-color: #5BA11C;
+}
+.btn-default:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+    color: #000;
 }

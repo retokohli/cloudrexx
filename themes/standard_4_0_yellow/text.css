@@ -77,12 +77,8 @@ body a, body .btn-link {
     text-decoration: none;
     outline: 0 none;
 }
-body a:hover,body .btn-link:hover,body .btn-link:focus {
+body a:hover,body .btn-link:hover,body .btn-link:focus, body a:focus {
     color: #000;
-    text-decoration: none;
-    outline: 0 none;
-}
-body a:focus {
     text-decoration: none;
     outline: 0 none;
 }

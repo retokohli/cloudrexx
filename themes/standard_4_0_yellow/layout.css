@@ -11,6 +11,11 @@ body > iframe {display: none;}
 html, body {
     height: 100%;
 }
+.addir-search {
+    float: left;
+    width: 100%;
+    padding-top: 20px;
+}
 body a:hover {text-decoration: none;}
 .wrapper {
     position: relative;
@@ -18,14 +23,6 @@ body a:hover {text-decoration: none;}
     float: left;
     width: 100%;
     background: #f7f7f7;
-}
-.item h1 span, .item h1 font {
-    color: #000 !important;
-}
-.addir-search {
-    float: left;
-    width: 100%;
-    padding-top: 20px;
 }
 .login {
     display: none;
@@ -174,10 +171,6 @@ body a:hover {text-decoration: none;}
     color: #ffdd00;
     text-decoration: none;
 }
-#metanavigation li#select-language:hover a, #metanavigation li#select-language.active:hover a.active {
-    color: #000;
-}
-#metanavigation li#select-language:hover a.active {color: #fff;}
 #metanavigation li#select-language {
     z-index: 6;
     padding: 0;
@@ -478,9 +471,6 @@ body a:hover {text-decoration: none;}
 #menubuilder3 {
     padding-top: 0;
 }
-#subnavigation li.level-4:last-child a {
-    border-bottom: 0;
-}
 #subnavigation li.level-1 > a {
     display: none;
 }
@@ -495,6 +485,12 @@ body a:hover {text-decoration: none;}
     margin: 0;
     padding: 0;
     width: 100%;
+}
+#subnavigation li.active.level-2 > ul {
+    float: left;
+    width: 100%;
+    padding: 10px 0 9px 0;
+    border-bottom: 1px solid #D6D6D6;
 }
 #subnavigation li.active.level-3 > ul {
     float: left;
@@ -889,8 +885,8 @@ span.disconnected {
     padding-top: 12px;
     float: left;
 }
-.navigation > li > a:hover {
-    color: #fff;
+.navigation >li>a:hover {
+    color: #ffdd00;
     text-decoration: none;
 }
 #home-block a:hover {
@@ -1000,9 +996,6 @@ span.disconnected {
 .modal-nav button:hover {
     background: none;
     color: #ffdd00;
-}
-#metanavigation li#select-language a:hover, #metanavigation li#select-language.active a.active:hover, #metanavigation li#select-language a:hover {
-    color: #ffdd00 !important;
 }
 /*modal*/
 .modal-body .left {
@@ -1535,4 +1528,17 @@ p#loginerror {
     width: 40%;
     vertical-align: top;
 }
-
+/*new*/
+.item h1 span, .item h1 font {
+    color: #000 !important;
+}
+#metanavigation li#select-language:hover a, #metanavigation li#select-language.active:hover a.active {
+    color: #000;
+}
+#metanavigation li#select-language:hover a.active {color: #fff;}
+#subnavigation li.level-4:last-child a {
+    border-bottom: 0;
+}
+#metanavigation li#select-language a:hover, #metanavigation li#select-language.active a.active:hover, #metanavigation li#select-language a:hover {
+    color: #ffdd00 !important;
+}
