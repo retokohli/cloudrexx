@@ -1,0 +1,28 @@
+<form name="settings_image" method="post" action="index.php?cmd=Config&amp;act=thumbnail">
+    <table width="100%" class="modal-table">
+        <tr>
+            <td width="40%">
+
+                <input type="hidden" value="{IMAGE_THUMBNAILS_ID}" name="id"/>
+                {TXT_IMAGE_THUMBNAILS_NAME}
+            </td>
+            <td colspan="2">
+                <input class="form-control" type="text" name="name" value="{IMAGE_THUMBNAILS_NAME}"/></td>
+
+        </tr>
+
+        <tr>
+            <td>
+
+                {TXT_IMAGE_THUMBNAILS_MAX_SIZE}
+            </td>
+            <td>
+
+                <input class="form-control" name="size" type="text" value="{IMAGE_THUMBNAILS_SIZE}"/>
+            </td>
+            <td>  &nbsp; px</td>
+        </tr>
+    </table>
+
+
+</form>

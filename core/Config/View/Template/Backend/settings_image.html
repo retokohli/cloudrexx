@@ -1,17 +1,168 @@
 <!-- START settings_image.html -->
+<style>
+    .button {
+        background: #dadada url(../Media/button_bg.png) repeat-x scroll left top;
+        border: 1px solid #BBBBBB;
+        color: #444444;
+        margin-bottom: 2px;
+        padding: 2px 10px;
+        text-shadow: 1px 1px #FFFFFF;
+        font-size: 13px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .button:hover, .button:focus {
+        text-decoration: none;
+    }
+
+    body #content #thumbnail-generator-button {
+        text-shadow: none;
+        color: #000;
+        -webkit-transition: 0.5s all;
+        -moz-transition: 0.5s all;
+        -ms-transition: 0.5s all;
+        -o-transition: 0.5s all;
+        transition: 0.5s all;
+        padding: 20px 35px;
+        font-size: 16px;
+        background: #e7e7e7 url('../core_modules/MediaBrowser/View/Media/Icons/refreshFolder.png') no-repeat 10px 50% ;
+        background-size: 20px;
+    }
+
+    body #content #thumbnail-generator-button:hover {
+        background-color: #cfcfcf;
+    }
+</style>
+
+<script>
+    var template = '{CONFIG_THUMBNAIL_NEW_TEMPLATE}';
+
+    function deleteThumbnail(entryId) {
+        bootbox.confirm("{TXT_IMAGE_THUMBNAILS_DELETE}", function (result) {
+            if (result) {
+                window.location.replace("index.php?cmd=Config&{TXT_IMAGE_CSRF}&act=thumbnail&deleteid=" + entryId);
+            }
+        });
+    }
+
+    function regenerateThumbnails() {
+
+        var refreshId;
+        var key = Math.random().toString(36).substr(2, 5);
+        $.get('index.php?cmd=Config&act=generateThumbnail&key=' + key, function (progress) {
+            $('.progress-bar').css('width','100%');
+            clearInterval(refreshId);
+
+            cx.jQuery(refreshModal).modal('hide');
+            bootbox.dialog({
+                title: "Generierung fertig.",
+                message: "Alle Vorschaubilder wurden generiert.",
+                buttons: {
+                    success: {
+                        label: "Okay",
+                        className: "btn-success",
+                        callback: function () {
+
+                        }
+                    }
+                },
+                onEscape : function(){
+                    cx.jQuery(refreshModal).modal('hide');
+                }
+            });
+        });
+
+        var refreshModal =  bootbox.dialog({
+            title: "Vorschaubilder neu generieren",
+            message: '<div class="progress  thumbnails-generator">' +
+                     '<div class="progress-bar progress-bar-striped active" style="width: 0%;">' +
+                     '<span class="sr-only">60% Complete</span>' +
+                     '</div></div>',
+            buttons: {
+                danger: {
+                    label: "Abbrechen",
+                    className: "btn-danger",
+                    callback: function () {
+
+                    }
+                }
+            }
+        });
+
+        refreshId = function()
+        {
+            $.get('/tmp/public/progress'+key+'.txt', function(progress)
+            {
+                $('.progress-bar').css('width',progress+'%');
+                if(progress >= 100)
+                {
+                    console.log('finished');
+                    cx.jQuery('.thumbnails-generator').removeClass('active');
+                    cx.jQuery('.thumbnails-generator').removeClass('progress-striped');
+                    cx.jQuery('.thumbnails-generator .progress-bar').text('Complete');
+                    clearInterval(refreshId);
+                }
+                else {
+                    setTimeout(refreshId, 1000);
+                }
+            });
+        }()
+
+
+    }
+
+    function editThumbnail(entryId, name, size) {
+        var dialog = bootbox.dialog({
+            title: "{TXT_IMAGE_THUMBNAILS_NEW}",
+            message: template,
+            className: "edit-thumbnail-modal",
+            buttons: {
+                success: {
+                    label: "{TXT_SAVE}",
+                    className: "btn-success",
+                    callback: function () {
+                        cx.jQuery('.edit-thumbnail-modal form[name=settings_image]').submit();
+                    }
+                },
+                danger: {
+                    label: "Abbrechen",
+                    className: "btn-danger",
+                    callback: function () {
+
+                    }
+                }
+            },
+            show: false
+        });
+        cx.jQuery(dialog).on('show.bs.modal', function (e) {
+            cx.jQuery('.edit-thumbnail-modal input[name=id]').val(entryId);
+            cx.jQuery('.edit-thumbnail-modal input[name=name]').val(name);
+            cx.jQuery('.edit-thumbnail-modal input[name=size]').val(size);
+        });
+
+        cx.jQuery(dialog).modal('show');
+        console.log(dialog);
+    }
+</script>
+
 <form name="settings_image" method="post" action="index.php?cmd=Config&amp;act=image">
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
         <tr>
             <th colspan="2">{TXT_IMAGE_TITLE}</th>
         </tr>
-        <tr class="row2">
-            <td width="20%">{TXT_IMAGE_CUT_WIDTH}</td>
-            <td width="80%"><input type="text" name="image_cut_width" value="{SETTINGS_IMAGE_CUT_WIDTH}" size="5" maxlength="250" />&nbsp;px</td>
-        </tr>
-        <tr class="row2">
-            <td width="20%">{TXT_IMAGE_CUT_HEIGHT}</td>
-            <td width="80%"><input type="text" name="image_cut_height" value="{SETTINGS_IMAGE_CUT_HEIGHT}" size="5" maxlength="250" />&nbsp;px</td>
-        </tr>
+        <!--<tr class="row2">-->
+            <!--<td width="20%">{TXT_IMAGE_CUT_WIDTH}</td>-->
+            <!--<td width="80%"><input type="text" name="image_cut_width" value="{SETTINGS_IMAGE_CUT_WIDTH}" size="5"-->
+                                   <!--maxlength="250"/>&nbsp;px-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="row2">-->
+            <!--<td width="20%">{TXT_IMAGE_CUT_HEIGHT}</td>-->
+            <!--<td width="80%"><input type="text" name="image_cut_height" value="{SETTINGS_IMAGE_CUT_HEIGHT}" size="5"-->
+                                   <!--maxlength="250"/>&nbsp;px-->
+            <!--</td>-->
+        <!--</tr>-->
         <!-- <tr class="row2">
             <td width="20%">{TXT_IMAGE_SCALE_WIDTH}</td>
             <td width="80%"><input type="text" name="image_scale_width" value="{SETTINGS_IMAGE_SCALE_WIDTH}" size="5" maxlength="250" />&nbsp;px</td>
@@ -20,18 +171,67 @@
             <td width="20%">{TXT_IMAGE_SCALE_HEIGHT}</td>
             <td width="80%"><input type="text" name="image_scale_height" value="{SETTINGS_IMAGE_SCALE_HEIGHT}" size="5" maxlength="250" />&nbsp;px</td>
         </tr> -->
-        <tr class="row2">
+        <tr class="row2"  style="display: none">
             <td width="20%">{TXT_IMAGE_COMPRESSION}</td>
             <td width="80%">
                 <select name="image_compression" style="width: 53px; margin: 2px;">
                     <!-- BEGIN settings_image_compression_options -->
-                    <option value="{IMAGE_COMPRESSION_VALUE}" {OPTION_SELECTED}>{IMAGE_COMPRESSION_NAME}</option>
+                    <option value="{IMAGE_COMPRESSION_VALUE}"
+                    {OPTION_SELECTED}>{IMAGE_COMPRESSION_NAME}</option>
                     <!-- END settings_image_compression_options -->
                 </select>&nbsp;%
             </td>
         </tr>
     </table>
-    <br />
-    <input type="submit" name="submit" value="{TXT_SAVE}" />
+    <br/>
+
+
+    <!--<input type="submit" value="{TXT_SAVE}" name="submit"/>-->
+    <a class="button" onclick="javascript:regenerateThumbnails()" id="thumbnail-generator-button">{TXT_IMAGE_THUMBNAILS_RELOAD}</a>
+
+    <br/>
+    <br/>
 </form>
+<table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="display: none">
+    <tbody>
+    <tr>
+        <th colspan="5">{TXT_IMAGE_THUMBNAILS}</th>
+    </tr>
+
+    <tr class="row3">
+        <td width="1%">{TXT_IMAGE_THUMBNAILS_ID}</td>
+        <td width="10%"> {TXT_IMAGE_THUMBNAILS_NAME}</td>
+        <td width="30%">{TXT_IMAGE_THUMBNAILS_SIZE}</td>
+        <td style="text-align:right;" width="15%">{TXT_SETTINGS_FUNCTIONS}</td>
+    </tr>
+
+    <!-- BEGIN settings_image_thumbnails_list -->
+
+    <tr class="row2">
+        <td>{IMAGE_THUMBNAIL_ID}</td>
+        <td>{IMAGE_THUMBNAIL_NAME}</td>
+        <td>Maximal {IMAGE_THUMBNAIL_SIZE}px</td>
+        <td nowrap="nowrap">
+            <div align="right" style="padding-right:5px;">
+                <a target="_self" title=""
+                   onclick="javascript:editThumbnail({IMAGE_THUMBNAIL_ID}, '{IMAGE_THUMBNAIL_NAME}', {IMAGE_THUMBNAIL_SIZE})">
+                    <img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="" title="bearbeiten">
+                </a>
+                <a target="_self" title="" onclick="javascript:deleteThumbnail({IMAGE_THUMBNAIL_ID})">
+                    <img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="" title="löschen">
+                </a>
+            </div>
+        </td>
+    </tr>
+
+    <!-- END settings_image_thumbnails_list -->
+
+    </tbody>
+</table>
+
+
+<!--<br/>-->
+<!--<a class="button" onclick="javascript:editThumbnail('', '', 0)">{TXT_IMAGE_THUMBNAILS_NEW}</a>-->
+
+
 <!-- END settings_image.html -->

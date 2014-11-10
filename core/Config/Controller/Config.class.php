@@ -1765,7 +1765,7 @@ class Config
 
         }
         file_put_contents($processFile, 100);
-        sleep(3);
+        sleep(4);
         FileSystem::delete_file($processFile);
         die;
     }
