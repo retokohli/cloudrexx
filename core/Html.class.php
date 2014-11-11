@@ -1328,7 +1328,41 @@ cx.jQuery(function() {
 ');
         return self::getInputText($name, $date, $id, $attribute);
     }
-
+    
+    /**
+     * Returns a datetimepicker element
+     * 
+     * @staticvar integer $index integer value
+     * @param     string $name textbox name for datetimepicker
+     * @param     array  $options datetimepicker options Ex.dateFormat
+     * @param     string $attribute 
+     * @param     string $id To initialize the datatime picker
+     * 
+     * @return    string The datetimepicker element HTML code
+     */
+    static function getDatetimepicker($name, $options = null, $attribute = null, &$id = null) {
+        static $index = 0;
+        DateTimeTools::addDatepickerJs();
+        if (empty($id))
+            $id = ($name ? $name : 'datetimepicker-' . ++$index);
+        $date = '';
+        $strOptions = '';
+        foreach ($options as $option => $value) {
+            $strOptions .=
+                    ($strOptions ? ', ' : '') .
+                    $option . ': ' .
+                    (is_numeric($value) ? $value : (is_bool($value) ? ($value ? 'true' : 'false') : '"' . $value . '"'));
+            if ($option == 'defaultDate') {
+                $date = $value;
+            }
+        }
+        JS::registerCode('
+cx.jQuery(function() {
+  cx.jQuery("#' . $id . '").datetimepicker({' . $strOptions . '});
+});
+');
+        return self::getInputText($name, $date, $id, $attribute);
+    }
 
     /**
      * Returns HMTL code for displaying two adjacent menus
