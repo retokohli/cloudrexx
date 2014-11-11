@@ -110,7 +110,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                             if(!$productEntity) {
                                 return;
                             }
-                            return $productEntityName . '(' . $productEntity . ')';
+                            return $productEntityName . ' (' . $productEntity . ')';
                         }
                     )
                 ),
