@@ -137,7 +137,7 @@ body a:hover {text-decoration: none;}
     transition: all .3s ease-in-out;
 }
 #search-form #search-icon {
-    background: url('images/search-glass.png') no-repeat 0/16px;
+    background-image: url('images/search-glass.png');
     float: left;
     width: 8px;
     height: 17px;
@@ -421,7 +421,7 @@ body a:hover {text-decoration: none;}
 #subnavigation {
     float: left;
     width: 100%;
-    padding: 0;
+    padding: 5px 0;
     margin: 0 0 20px 0;
     background: #FFFFFF;
 }
@@ -462,10 +462,12 @@ body a:hover {text-decoration: none;}
     word-wrap: break-word;    
 }
 #subnavigation li.level-4 a {
-    padding: 0 5px 0 45px;
     font-size: 12px;
     background-image: url('images/nav-3-inactive.png');
-    background-position: 31px 7px;
+    background-position: 30px 7px;
+}
+#menubuilder3 {
+    padding-top: 0;
 }
 #subnavigation li.level-1 > a {
     display: none;
@@ -496,6 +498,9 @@ body a:hover {text-decoration: none;}
 #subnavigation li a.active {
     color: #000;
 }
+#subnavigation li.level-2 a.active {
+    font-weight: bold;
+}
 #subnavigation li.level-2 a:hover,
 #subnavigation li.level-2 a.active {
     background-image: url('images/nav-2-active.png');
@@ -509,7 +514,7 @@ body a:hover {text-decoration: none;}
 #subnavigation li.level-4 a:hover,
 #subnavigation li.level-4 a.active {
     background-image: url('images/nav-3-active.png');
-    background-position: 30px 6px;
+    background-position: 30px 7px;
 }
 .sidebar-block-title {
     float: left;
@@ -711,6 +716,7 @@ body a:hover {text-decoration: none;}
     width: 100%;
     padding: 5px 10px 5px 10px;
     margin: 0 0 5px 0;
+    color: #fff;
     font-size: 15px;
     font-weight: bold;
     font-family: Arial;
@@ -881,9 +887,10 @@ span.disconnected {
     padding-top: 12px;
     float: left;
 }
-.navigation > li > a:hover {
-    color: #fff;
+.navigation li a:hover {
+    color: #fff;    
     text-decoration: none;
+    background: #0372AB;
 }
 #home-block a:hover {
     background-color: #e6e6e6;
@@ -1307,6 +1314,7 @@ p#loginerror {
     display: none;
 }
 #subnavigation li li ul {
+    border-bottom: 1px solid #D6D6D6;
     width: 100%;
     float: left;
 }
@@ -1362,7 +1370,7 @@ p#loginerror {
     margin-bottom: 9px;
 }
 #login p.login-error-msg {
-    margin-top: -25px;
+    margin: -15px 0 5px 0;
     float: left;
 }
 #profilemain {
@@ -1498,7 +1506,6 @@ p#loginerror {
 }
 
 /* new style */
-
 .rssfeed img {
  border: 0;
 }
@@ -1524,20 +1531,11 @@ p#loginerror {
     width: 40%;
     vertical-align: top;
 }
-
 /*new*/
-.navigation li a:hover {
-    background: #0372AB;
-    color: #fff;
-}
 .item h1 span, .item h1 font {
     color: #fff !important;
 }
 #metanavigation li#select-language a:hover, #metanavigation li#select-language.active a.active:hover, #metanavigation li#select-language a:hover {
     color: #0372AB !important;
 }
-
 #metanavigation li#select-language:hover a.active {color: #fff;}
-#menubuilder3 {
-    padding-top: 0;
-}

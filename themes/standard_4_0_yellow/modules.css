@@ -1486,6 +1486,7 @@ form[name="registrationForm"] .row {
     font-size: 15px;
     text-align: center;
     background: #ffdd00;
+    color: #000;
 }
 .menu input {
     margin-right: 15px;

@@ -370,3 +370,12 @@ modal-footer {
 .carousel-indicators {
     bottom: 0;
 }
+/*new*/
+body button, body input[type="submit"], body input[type="reset"], body input[type="button"] {
+    color: #414141;
+    background: #fff;
+}
+.btn-default {
+    color: #414141;
+    background-color: #fff;
+}

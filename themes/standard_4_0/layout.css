@@ -1363,9 +1363,8 @@ p#loginerror {
     margin-bottom: 9px;
 }
 #login p.login-error-msg {
-    margin-top: -15px;
+    margin: -15px 0 5px 0;
     float: left;
-    margin-bottom: 5px;
 }
 #profilemain {
     margin: 0;
@@ -1500,7 +1499,6 @@ p#loginerror {
 }
 
 /* new style */
-
 .rssfeed img {
  border: 0;
 }
