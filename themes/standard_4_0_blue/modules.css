@@ -1483,10 +1483,10 @@ form[name="registrationForm"] .row {
     width: 100%;
     padding: 4px 5% 6px 5%;
     margin: 0;
-    font-size: 15px;
-    color: #FFFFFF;
+    font-size: 15px;    
     text-align: center;
     background: #0372ab;
+    color: #FFFFFF;
 }
 .menu input {
     margin-right: 15px;

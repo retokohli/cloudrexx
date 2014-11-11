@@ -227,11 +227,10 @@ table {
 }
 table th {
     padding: 6px 8px 6px 8px;
-    color: #000;
+    color: #fff;
     text-align: left;
     font-weight: bold;
     background-color: #5BA11C;
-    color: #fff;
 }
 table th a {
     color: #fff;

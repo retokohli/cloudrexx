@@ -371,20 +371,11 @@ modal-footer {
     bottom: 0;
 }
 /*new*/
-body a:focus {
-    text-decoration: none;
-    outline: 0 none;
-}
-body button,body input[type="submit"],body input[type="reset"],body input[type="button"] {
+body button, body input[type="submit"], body input[type="reset"], body input[type="button"] {
     color: #fff;
     background: #5BA11C;
 }
 .btn-default {
     color: #fff;
     background-color: #5BA11C;
-}
-.btn-default:hover {
-    background-color: #e6e6e6;
-    border-color: #adadad;
-    color: #000;
 }

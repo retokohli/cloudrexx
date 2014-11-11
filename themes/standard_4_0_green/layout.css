@@ -148,7 +148,6 @@ body a:hover {text-decoration: none;}
     background-size: 16px;
     background-position: 0;
     background-repeat: no-repeat;
-    background-color: transparent;
 }
 #search-form #search-icon:hover {
     background-color: transparent;
@@ -280,8 +279,7 @@ body a:hover {text-decoration: none;}
 }
 .navigation li.level-2:hover,
 .navigation li.level-2.active a {
-    background: #5BA11C;
-    color: #fff;
+    background: #eeeeee;    
 }
 .navigation li.level-2 a {
     padding: 11px 15px 16px 15px;
@@ -295,7 +293,7 @@ body a:hover {text-decoration: none;}
 #content-wrapper {
     float: left;
     width: 100%;
-    background-color: #f7f7f7;
+    background: #f7f7f7;
     padding: 0 0 20px 0;
     padding-bottom: 88px;
 }
@@ -434,6 +432,7 @@ body a:hover {text-decoration: none;}
 #subnavigation li {
     float: left;
     padding: 0;
+     background: #fff;
     width: 100%;
 }
 #subnavigation li a {
@@ -445,8 +444,7 @@ body a:hover {text-decoration: none;}
     background-image: url('images/nav-2-inactive.png');
     background-position: 15px 15.5px;
     background-repeat: no-repeat;
-    outline: 0 none;
-    background-color: #fff;
+    outline: 0 none;   
 }
 #subnavigation li a.no-border {
     border: 0;
@@ -466,10 +464,10 @@ body a:hover {text-decoration: none;}
 #subnavigation li.level-4 a {
     font-size: 12px;
     background-image: url('images/nav-3-inactive.png');
-    background-position: 31px 7px;
+    background-position: 30px 7px;
 }
-#subnavigation li.level-4:last-child a {
-    border-bottom: 0;
+#menubuilder3 {
+    padding-top: 0;
 }
 #subnavigation li.level-1 > a {
     display: none;
@@ -516,7 +514,7 @@ body a:hover {text-decoration: none;}
 #subnavigation li.level-4 a:hover,
 #subnavigation li.level-4 a.active {
     background-image: url('images/nav-3-active.png');
-    background-position: 30px 6px;
+    background-position: 30px 7px;
 }
 .sidebar-block-title {
     float: left;
@@ -562,9 +560,7 @@ body a:hover {text-decoration: none;}
     background: url('images/contact-us-button.jpg') no-repeat;
     background-size: 100%;
     text-align: center;
-    background-position: center;
-    border: 1px solid #fff;
-    border-radius: 4px;
+    background-position: center;    
 }
 .contact-company,
 .contact-address,
@@ -928,7 +924,6 @@ span.disconnected {
     margin-top: -14px;
     margin-bottom: 9px;
     background-position: 70% 100%;
-    background-size: cover;
 }
 .right > form {
     float: left;
@@ -1375,9 +1370,8 @@ p#loginerror {
     margin-bottom: 9px;
 }
 #login p.login-error-msg {
-    margin-top: -15px;
-    float: left;
-    margin-bottom: 5px;
+    margin: -15px 0 5px 0;
+    float: left;    
 }
 #profilemain {
     margin: 0;
@@ -1537,22 +1531,11 @@ p#loginerror {
     width: 40%;
     vertical-align: top;
 }
-
 /*new*/
 .item h1 span, .item h1 font {
     color: #fff !important;
 }
-#metanavigation li#select-language:hover a, #metanavigation li#select-language.active:hover a.active {
-    color: #000;
-}
 #metanavigation li#select-language a:hover, #metanavigation li#select-language.active a.active:hover, #metanavigation li#select-language a:hover {
     color: #5BA11C !important;
 }
-#metanavigation li#select-language.active a.active {
-    color: #323f55;
-}
 #metanavigation li#select-language:hover a.active {color: #fff;}
-#menubuilder3 {
-    padding-top: 0;
-}
-
