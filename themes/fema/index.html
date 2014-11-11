@@ -19,7 +19,6 @@
         <link rel="apple-touch-icon-precomposed" href="themes/fema/images/apple-touch-icon-57-precomposed.png"/>
         <link type="images/x-icon" rel="icon" href="themes/fema/images/favicon.ico">        
         <!--<link type="text/css" rel="stylesheet" href="themes/fema/bootstrap.css" />-->
-        
         <link type="text/css" rel="stylesheet" href="themes/fema/animate.css" />
         <link type="text/css" rel="stylesheet" href="themes/fema/font-awesome.css" />
         <link type="text/css" rel="stylesheet" href="themes/fema/modules.css" />        
@@ -27,13 +26,13 @@
         <link type="text/css" rel="stylesheet" href="themes/fema/galerie.css" />
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'/>        
         {JAVASCRIPT}
+        <script type="text/javascript">
+            $J19 = jQuery.noConflict(true);
+        </script>
         {STYLE_FILE}
         {LOGIN_INCLUDE}
         <link type="text/css" rel="stylesheet" href="themes/fema/main.css" />
-        <script type="text/javascript" src= "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type="text/javascript">
-            //$J19 = jQuery.noConflict(true);
-        </script>      
+        <!--<script type="text/javascript" src= "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
         <script type="text/javascript" src= "/themes/fema/js/bootstrap.js"></script>
         <script type="text/javascript" src= "/themes/fema/js/modernizr.js"></script>
         <script type="text/javascript" src= "/themes/fema/js/superfish.js"></script>
@@ -63,24 +62,42 @@
         <![endif]-->
     </head>
     <body>
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </a>
-                    <a class="brand" href="{NODE_HOME}"><img style="height: 30px; width: auto;" src="/themes/fema/images/Logo.png" alt="logo"></a>
-                    <div class="nav-collapse collapse">
-                        {NAVBAR_FILE}
+        <!--        <div class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </a>
+                            <a class="brand" href="{NODE_HOME}"><img style="height: 30px; width: auto;" src="/themes/fema/images/Logo.png" alt="logo"></a>
+                            <div class="nav-collapse collapse">
+                                {NAVBAR_FILE}
+                            </div>
+                        </div>
                     </div>
+                </div>-->
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{NODE_HOME}">
+                        <img style="height: 30px; width: auto;" src="/themes/fema/images/Logo.png" alt="logo">
+                    </a>
+                </div>
+                <a class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    {NAVBAR_FILE}
                 </div>
             </div>
         </div>
         {CONTENT_FILE}
         <div class="footer-wrapper">
-            
+
             <footer id="footer">
                 <div class="to-top-wrapper">
                     <a class="to-top-link more" href="javascript:void(0);"><div id="to-top" class="visible"></div></a>
@@ -88,7 +105,7 @@
 
                 <div class="s-container">
 
-                                                
+
                     <div id="social-bottom">
                         <div class="social-profiles">
                             <a target="_blank" href="http://twitter.com/contrexx" class="tw"></a>
@@ -113,11 +130,11 @@
         {COUNTER}
         <!-- SMOOTH SCROLLING START -->
         <script  type="text/javascript">
-           $J('a.to-top-link.more').click(function() {
+            $J('a.to-top-link.more').click(function() {
                 $J('html,body').animate({
-                scrollTop: 0
+                    scrollTop: 0
                 }, 1500);
-           });
+            });
         </script>
         <!-- SMOOTH SCROLLING END -->
     </body>

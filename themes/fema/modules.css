@@ -144,7 +144,6 @@ div.row2 {
 /***************************************************/
 #captcha {
     float: left !important;
-    width: 100%;
 }
 #captcha #coreCaptchaLabel {
     float: left;
