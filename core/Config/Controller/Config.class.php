@@ -1424,7 +1424,7 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsReleaseDate')
                 && !\Cx\Core\Setting\Controller\Setting::add('coreCmsReleaseDate','1348783200', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'release')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for coreCmsReleaseDate");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsName')
@@ -1447,7 +1447,7 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseValidTo')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseValidTo','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DATETIME, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseValidTo");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseMessage')
@@ -1497,12 +1497,12 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseSuccessfulUpdate')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseSuccessfulUpdate','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseSuccessfulUpdate");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCreatedAt')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt','', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseCreatedAt");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseDomains')

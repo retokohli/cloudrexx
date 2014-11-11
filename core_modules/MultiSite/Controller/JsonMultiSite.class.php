@@ -2337,22 +2337,26 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             switch ($key) {
                                 case 'licenseKey':
                                 case 'licenseState':
-                                case 'licenseValidTo':
                                 case 'upgradeUrl':
-                                case 'licenseCreatedAt':
                                 case 'isUpgradable':
                                 case 'licenseGrayzoneTime':
                                 case 'licenseLockTime':
                                 case 'licenseUpdateInterval':
                                 case 'licenseFailedUpdate':
-                                case 'licenseSuccessfulUpdate':
                                 case 'coreCmsEdition':
                                 case 'coreCmsVersion':
                                 case 'coreCmsCodeName':
                                 case 'coreCmsStatus':
-                                case 'coreCmsReleaseDate':
                                 case 'coreCmsName':
                                     $result[$key]['content'] = $value['value'];
+                                    break;
+                                case 'licenseCreatedAt':
+                                case 'coreCmsReleaseDate':
+                                case 'licenseSuccessfulUpdate':
+                                    $result[$key]['content'] = date('d.m.Y', $value['value']);
+                                    break;
+                                case 'licenseValidTo':
+                                    $result[$key]['content'] = date('d.m.Y h:i:s', $value['value']);;
                                     break;
                                 case 'licenseMessage':
                                     $result[$key]['content'] = $licenseMessage;
@@ -2478,7 +2482,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try{
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                    $paramsArray = array($licenseOption => $licenseValue,'websiteId' => $websiteId);
+                    $dateFormatArr = array("coreCmsReleaseDate", "licenseSuccessfulUpdate", "licenseValidTo", "licenseCreatedAt");
+                    $paramsArray = array(
+                        $licenseOption => in_array($licenseOption, $dateFormatArr) ? strtotime($licenseValue) : $licenseValue,
+                        'websiteId' => $websiteId
+                    );
                     $webRepo     = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website     = $webRepo->findOneById($websiteId);
                     $resp        = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $paramsArray, $website);

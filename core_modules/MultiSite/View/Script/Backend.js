@@ -941,10 +941,10 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
                     .val(editValue)
                     .attr('tabindex', -1);
             if (type == 'date') {
-                htmlResult = userInputField.datepicker({dateFormat: cx.variables.get('dateFormat', 'Multisite'),});
+                htmlResult = userInputField.datepicker({defaultDate:editValue});
             }
             if (type == 'datetime') {
-                htmlResult = userInputField.datetimepicker({ });
+                htmlResult = userInputField.datetimepicker({defaultDate:editValue});
             }
             break;
         case 'email':

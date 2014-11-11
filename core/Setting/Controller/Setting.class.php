@@ -605,15 +605,21 @@ class Setting{
                     \Html::getRadioGroup($name, $values, $checked, '', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
                 break;
 
-// More...
-//              case self::TYPE_:
-//                break;
                 case self::TYPE_PASSWORD:
                 $element =
                     \Html::getInputPassword($name, $value, 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
                 break;
                 
-              // Default to text input fields
+                //datepicker
+                case self::TYPE_DATE:
+                    $element = \Html::getDatepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
+                    break;
+                //datetimepicker    
+                case self::TYPE_DATETIME:
+                    $element = \Html::getDatetimepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
+                    break;
+
+                // Default to text input fields
               case self::TYPE_TEXT:
               case self::TYPE_EMAIL:
               default:

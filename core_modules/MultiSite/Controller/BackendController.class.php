@@ -350,28 +350,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         } else {
             $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
         }
-        // dateFormat for date picker option
-        switch (ASCMS_DATE_FORMAT_DATE) {
-            case 'd.m.Y':
-                $dateFormat = 'dd.mm.yy';
-                break;
-            case 'd/m/Y':
-                $dateFormat = 'dd/mm/yy';
-                break;
-            case 'Y.m.d':
-                $dateFormat = 'yy.mm.dd';
-                break;
-            case 'm/d/Y':
-                $dateFormat = 'mm/dd/yy';
-                break;
-            case 'Y-m-d':
-                $dateFormat = 'yy-mm-dd';
-                break;
-        }
-        $cxjs = \ContrexxJavascript::getInstance();
-        $cxjs->setVariable(array(
-            'dateFormat' => $dateFormat,
-                ), 'Multisite');
         $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
             'header' => 'Websites',
             'functions' => array(
