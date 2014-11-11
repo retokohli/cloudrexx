@@ -106,10 +106,11 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                         'parse' => function ($value, $arrayData) {
                             $subscription  = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Subscription')->findOneBy(array('id' => $arrayData['id']));
                             $productEntity = $subscription->getProductEntity();
+                            $productEntityName = $subscription->getProduct()->getName();
                             if(!$productEntity) {
                                 return;
                             }
-                            return $productEntity;
+                            return $productEntityName . '(' . $productEntity . ')';
                         }
                     )
                 ),
