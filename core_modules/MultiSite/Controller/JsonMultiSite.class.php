@@ -2622,7 +2622,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                    
                     $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('modifyMultisiteConfig', $params, $website);
 
-                    if ($resp->status == 'success' && $resp->data->status == 'success') {
+                    if ($resp->data->success && $resp->data->status == 'success') {
                         switch ($resp->data->multisiteConfig) {
                             case 'add':
                             case 'edit':
@@ -2652,37 +2652,43 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     switch ($operation) {
                         case 'add':
                             if (!empty($configName) && !empty($configType)) {
-                                if (!\Cx\Core\Setting\Controller\Setting::isDefined($configName) 
-                                        && !\Cx\Core\Setting\Controller\Setting::add($configName, $configValue, 1, $configType, $configValues, $configGroup)) {
-                                    throw new MultiSiteException("Failed to add Setting entry for".$configName);
+                                if (($configType == \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN || $configType == \Cx\Core\Setting\Controller\Setting::TYPE_RADIO)
+                                        && empty($configValues)) {
+                                    return array('status' => "success", "success"=> false, 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_FAILED']);
                                 }
-                                return array('status' => "success", 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_SUCCESSFUL'].$configName);
+                                
+                                if (!\Cx\Core\Setting\Controller\Setting::isDefined($configName) 
+                                        && \Cx\Core\Setting\Controller\Setting::add($configName, $configValue, 1, $configType, $configValues, $configGroup)) {
+                                    return array('status' => "success", "success"=> true, 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_SUCCESSFUL'].$configName);
+                                }
+                                
+                                return array('status' => "success", "success"=> false, 'multisiteConfig' => $operation, 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_EXISTS'], $configName));
                             }
-                            return array('status' => "error",'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_FAILED']);
+                            return array('status' => "success", "success"=> false, 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_FAILED']);
                             break;
                         case 'edit':
                             if (!empty($configName)) {
                                 \Cx\Core\Setting\Controller\Setting::set($configName, $configValue);
                                 if (\Cx\Core\Setting\Controller\Setting::update($configName)) {
-                                    return array('status' => 'success', 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_SUCCESSFUL'] . $configName);
+                                    return array('status' => 'success', "success"=> true, 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_SUCCESSFUL'] . $configName);
                                 }
                             }
-                            return array('status' => 'error', 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_FAILED'] . $configName);
+                            return array('status' => 'success', "success"=> false, 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_FAILED'] . $configName);
                             break;
                         case 'delete':
                             if (!empty($configName)) {
                                 if (\Cx\Core\Setting\Controller\Setting::delete($configName, $configGroup)) {
-                                    return array('status' => 'success', 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_SUCCESSFUL'] . $configName);
+                                    return array('status' => 'success', "success"=> true, 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_SUCCESSFUL'] . $configName);
                                 }  
                             }
-                            return array('status' => 'error', 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_FAILED'] . $configName);
+                            return array('status' => 'success', "success"=> false, 'multisiteConfig' => $operation, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_FAILED'] . $configName);
                             break;
                         case 'fetch':
                         default:
                             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
                             $multisiteConfigArray = \Cx\Core\Setting\Controller\Setting::getArray('MultiSite');
                             if ($multisiteConfigArray) {
-                                return array('status' => 'success', 'result' => $multisiteConfigArray, 'multisiteConfig' => $operation);
+                                return array('status' => 'success', "success"=> true,'result' => $multisiteConfigArray, 'multisiteConfig' => $operation);
                             }
                             break;
                     }

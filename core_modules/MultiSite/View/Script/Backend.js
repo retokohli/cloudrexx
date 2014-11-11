@@ -387,11 +387,10 @@
                                          .addClass('adminlist');
                         if (typeof response.data.result == 'object') {
                             $html = Multisite.getConfigHtmlData(response.data.result, $table, websiteId);
-                        }       
+                        }
                         cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
                     } else {
                         cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
-                        cx.trigger("loadingEnd", "multiSiteWebsiteConfig", {});
                     }
 
                     buttons[cx.variables.get('addNewConfig', 'multisite/lang')] = function() {            
@@ -422,8 +421,8 @@
                             $('#MultisiteConfigTable').remove();
                         }
                     });
-                    $J("#MultisiteConfigload-lock").css('height',$J("#MultisiteConfigTable").innerHeight());
                     cx.trigger("loadingEnd", "multiSiteWebsiteConfig", {});
+                    $J("#MultisiteConfigload-lock").css('height',$J("#MultisiteConfigTable").innerHeight());
                 }
             });
         });
@@ -741,9 +740,9 @@ var Multisite = {
                                 } else {
                                     Multisite.getConfigHtmlData(configNewArray, $J("#MultisiteConfigTable"), websiteId);
                                 }
-                                cx.trigger("loadingEnd", "multisiteConfigWebsite".$operation, {});
                                 cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
                             }
+                        cx.trigger("loadingEnd", "multisiteConfigWebsite".$operation, {});
                         }
                     });
                     $J('#'+$operation+'MultisiteConfig').remove();
@@ -869,6 +868,10 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
             htmlResult = $J('<div />');
             $J.each(editOptions, function(key, value) {
                 valueAndLabel = value.split(':');
+                if (valueAndLabel.length < 2) {
+                    valueAndLabel['0'] = key;
+                    valueAndLabel['1'] = value;
+                }
                 radio = $J('<input type="radio"/>')
                         .addClass(fieldLabel)
                         .attr('name', name)
@@ -897,6 +900,12 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
                             .attr('name', name);
             $J.each(editOptions, function(key, value) {
                 valueAndLabel = value.split(':');
+                
+                if (valueAndLabel.length < 2) {
+                    valueAndLabel['0'] = key;
+                    valueAndLabel['1'] = value;
+                }
+                
                 Options = $J('<option />')
                                 .attr("value", valueAndLabel['0'])
                                 .text(valueAndLabel['1'])
