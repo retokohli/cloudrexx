@@ -808,6 +808,10 @@ to {-moz-transform: rotate(360deg);}
         padding-left: 0;
         margin-left: -20px;
     }
+    .container .navbar-toggle {
+        display: block;
+        z-index: 1;
+    }
     .navbar .brand {
         margin: 0 0 0 -5px;
         padding-left: 10px;
@@ -820,6 +824,20 @@ to {-moz-transform: rotate(360deg);}
     .newsletter input[name="recipient_save"] {
         margin-left: 37%;
     } 
+    .container .navbar-toggle {
+        display: block;
+        z-index: 1;
+    }
+    #navigation {
+        clear:both;
+    }
+    .container .navbar-collapse.collapse {
+        height: 0 !important;
+        overflow: hidden;
+    }
+/*    .navbar-header {width: 94.9%;}
+    .container .navbar-collapse.collapse {height: 1px !important;float: left; clear: both; width: 100%;}
+    .container .navbar-collapse.collapse.in {height: auto !important;float: left; clear: both; width: 100%;}*/
 }
 @media (min-width:1200px){
     .newsletter input[name="recipient_save"] {
