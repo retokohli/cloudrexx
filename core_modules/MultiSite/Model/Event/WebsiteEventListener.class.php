@@ -108,8 +108,26 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         $subscription = $eventArgs->getEntity();
         $website      = $subscription->getProductEntity();
         $entityAttributes = $subscription->getProduct()->getEntityAttributes();
-        if ($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-            return $website->setup($entityAttributes);
+        // abort in case the event has been triggered by a Subscription that is not based on a Website product
+        if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+            return;
+        }
+
+        switch ($website->getStatus()) {
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
+                return $website->setup($entityAttributes);
+                break;
+
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
+// TODO: maybe add notification message to dashboard about extended subscription or send email about extended subscription
+                break;
+
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
+// TODO: reactivate website
+                break;
+
+            default:
+                break;
         }
     }
 
