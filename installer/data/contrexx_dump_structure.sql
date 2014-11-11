@@ -3554,6 +3554,7 @@ CREATE TABLE `contrexx_module_order_invoiceitem` (
   `price` decimal(10,0) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `IDX_ED28B9B52989F1FD` (`invoice_id`),
+  CONSTRAINT `contrexx_module_order_invoiceitem_ibfk_2` FOREIGN KEY (`invoice_id`) REFERENCES `contrexx_module_order_invoice` (`id`),
   CONSTRAINT `contrexx_module_order_invoiceitem_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `contrexx_module_order_invoice` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
