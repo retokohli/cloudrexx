@@ -141,5 +141,50 @@ class Order extends \Cx\Model\Base\EntityBase {
             $subscription->payComplete();
         }
     }
+    /**
+     * Add Invoice to the subscriptions
+     * 
+     */
+    public function billSubscriptions() {
+        $subscriptions = array();
+        foreach ($this->subscriptions as $subscription) {
+            if ($subscription->getPaymentState() == $subscription::PAYMENT_OPEN || 
+                ($subscription->getPaymentState() == $subscription::PAYMENT_RENEWAL && $subscription->getRenewalDate() <= strtotime('now'))) {
+                $subscriptions[] = $subscription;
+            }
+        }
+        if(empty($subscriptions)) {
+            return;
+        }
+        //Create New Invoice
+        $invoice = new Invoice();
+        
+        foreach ($subscriptions as $subscription) {
+            //Create New Invoice Item
+            $invoiceItem = new InvoiceItem();
+            //Add InvoiceItem::$description to Subscription::getProductEntity()
+            $invoiceItem->setDescription($subscription->getProductEntity());
+            //Add InvoiceItem::$price to Subscription::getPaymentAmount()
+            $invoiceItem->setPrice($subscription->getPaymentAmount());
+            //Attached to the created invoice
+            $invoice->setInvoice($invoiceItem);
+        }
+        //Attached to the order
+        $this->setInvoices(array($invoice));
+    }
+    /**
+     * 
+     * @return array all associated Invoices that have attribute \Cx\Modules\Order\Model\Entity\Invoice::$paid set to false.
+     */
+    public function getUnpaidInvoices() {
+        $invoices = array();
+        foreach ($this->invoices as $invoice) {
+            if(!$invoice->getPaid()) {
+                $invoices[] = $invoice; 
+            }
+        }
+        return $invoices;
+        
+    }
 }
 

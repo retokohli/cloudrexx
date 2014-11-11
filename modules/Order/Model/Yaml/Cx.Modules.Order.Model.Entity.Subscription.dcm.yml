@@ -10,6 +10,9 @@ Cx\Modules\Order\Model\Entity\Subscription:
         strategy: AUTO
 
   fields:
+    subscriptionDate:
+      type: datetime
+      column: subscription_date 
     expirationDate:
       type: datetime
       column: expiration_date

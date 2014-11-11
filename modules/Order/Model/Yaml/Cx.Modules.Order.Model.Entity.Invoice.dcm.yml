@@ -11,11 +11,19 @@ Cx\Modules\Order\Model\Entity\Invoice:
 
   fields:
 
+  paid:
+      type: boolean
+      
   oneToMany: # inverse side
     payments:
       targetEntity: Cx\Modules\Order\Model\Entity\Payment
       mappedBy: invoice
 
+  oneToMany: # inverse side
+    invoiceItems:
+      targetEntity: Cx\Modules\Order\Model\Entity\InvoiceItem
+      mappedBy: invoice
+      
   manyToOne: # owning side
     order:
       targetEntity: Cx\Modules\Order\Model\Entity\Order
