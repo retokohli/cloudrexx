@@ -3547,6 +3547,18 @@ CREATE TABLE `contrexx_module_order_invoice` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_order_invoiceitem` (
+  `id` int(11) NOT NULL auto_increment,
+  `invoice_id` int(11) default NULL,
+  `description` varchar(255) NOT NULL,
+  `price` decimal(10,0) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `IDX_ED28B9B52989F1FD` (`invoice_id`),
+  CONSTRAINT `contrexx_module_order_invoiceitem_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `contrexx_module_order_invoice` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_order_order` (
   `id` int(11) NOT NULL auto_increment,
   `contact_id` int(10) unsigned NOT NULL,
@@ -3572,6 +3584,7 @@ CREATE TABLE `contrexx_module_order_subscription` (
   `id` int(11) NOT NULL auto_increment,
   `order_id` int(11) default NULL,
   `product_id` int(11) default NULL,
+  `subscription_date` timestamp NULL default NULL,
   `expiration_date` timestamp NULL default NULL,
   `product_entity_id` int(11) default NULL,
   `payment_amount` decimal(10,0) NOT NULL,
