@@ -41,12 +41,17 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                         $this->manipulateDnsRecord($domain, 'remove', 'postRemove', $eventArgs);
                         break;
 
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                         $this->domainMapping($domain, $mode, 'unMapDomain');
+                        //update the domain cache file
+                        $this->updateDomainRepositoryCache($em);
+                        break;
+                    
+                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                        $this->manipulateDnsRecord($domain, 'remove', 'postRemove', $eventArgs);
                         //update the domain cache file
                         $this->updateDomainRepositoryCache($em);
                         break;
