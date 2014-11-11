@@ -34,6 +34,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
      */
     protected $product;
 
+    protected $subscriptionDate = null;
     protected $expirationDate = null;
     protected $productEntityId = null;
     protected $productEntity = null;
@@ -59,6 +60,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         if (!$product) {
             return;
         }
+        $this->subscriptionDate = strtotime('now');
         $this->product = $product;
         $this->setProductEntity($product->getNewEntityForSale($options));
         $this->paymentAmount = $product->getPrice();
@@ -206,5 +208,21 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         }
 
         \Env::get('cx')->getEvents()->triggerEvent('model/payComplete', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+    }
+    /**
+     * Get the date time object of subscription date
+     * 
+     * @return object date time object of subscription date
+     */
+    public function getSubscriptionDate() {
+        return $this->subscriptionDate;
+    }
+    /**
+     * Set the date time object of subscription date
+     * 
+     * @param object date time object of subscription date
+     */
+    public function setSubscriptionDate($subscriptionDate) {
+        $this->subscriptionDate = $subscriptionDate;
     }
 }

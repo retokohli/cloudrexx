@@ -1,0 +1,25 @@
+Cx\Modules\Order\Model\Entity\InvoiceItem:
+  type: entity
+  repositoryClass: Cx\Modules\Order\Model\Repository\InvoiceItemRepository
+  table: module_order_invoiceitem
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    description:
+      type: string
+    price:
+      type: decimal
+  
+  manyToOne: # owning side
+    invoice:
+      targetEntity: Cx\Modules\Order\Model\Entity\Invoice
+      inversedBy: invoiceItems
+      joinColumn:
+        name: invoice_id
+        referencedColumnName: id
+        cascade: [remove]
