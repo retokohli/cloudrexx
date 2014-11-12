@@ -51,6 +51,18 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::getName();
     }
 
+    public function setCreationDate($creationDate)
+    {
+        $this->_load();
+        return parent::setCreationDate($creationDate);
+    }
+
+    public function getCreationDate()
+    {
+        $this->_load();
+        return parent::getCreationDate();
+    }
+
     public function setCodeBase($codeBase)
     {
         $this->_load();
@@ -153,6 +165,18 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::getOwnerId();
     }
 
+    public function setThemeId($themeId)
+    {
+        $this->_load();
+        return parent::setThemeId($themeId);
+    }
+
+    public function getThemeId()
+    {
+        $this->_load();
+        return parent::getThemeId();
+    }
+
     public function setInstallationId($installationId)
     {
         $this->_load();
@@ -165,10 +189,22 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::getInstallationId();
     }
 
-    public function setup()
+    public function setFtpUser($ftpUser)
     {
         $this->_load();
-        return parent::setup();
+        return parent::setFtpUser($ftpUser);
+    }
+
+    public function getFtpUser()
+    {
+        $this->_load();
+        return parent::getFtpUser();
+    }
+
+    public function setup($options)
+    {
+        $this->_load();
+        return parent::setup($options);
     }
 
     public function validate()
@@ -183,10 +219,10 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::cleanup();
     }
 
-    public function removeWebsite($websiteName, $silent = false)
+    public function destroy()
     {
         $this->_load();
-        return parent::removeWebsite($websiteName, $silent);
+        return parent::destroy();
     }
 
     public function generateInstalationId()
@@ -237,10 +273,76 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::mapDomain($domain);
     }
 
-    public function unmapDomain($name)
+    public function unMapDomain($domain)
     {
         $this->_load();
-        return parent::unmapDomain($name);
+        return parent::unMapDomain($domain);
+    }
+
+    public function setupLicense($options)
+    {
+        $this->_load();
+        return parent::setupLicense($options);
+    }
+
+    public function initializeLanguage()
+    {
+        $this->_load();
+        return parent::initializeLanguage();
+    }
+
+    public function setupTheme($websiteThemeId)
+    {
+        $this->_load();
+        return parent::setupTheme($websiteThemeId);
+    }
+
+    public function setupFtpAccount($websiteName)
+    {
+        $this->_load();
+        return parent::setupFtpAccount($websiteName);
+    }
+
+    public function generatePasswordRestoreUrl()
+    {
+        $this->_load();
+        return parent::generatePasswordRestoreUrl();
+    }
+
+    public function generateVerificationUrl()
+    {
+        $this->_load();
+        return parent::generateVerificationUrl();
+    }
+
+    public function generateAuthToken()
+    {
+        $this->_load();
+        return parent::generateAuthToken();
+    }
+
+    public function generateAccountPassword()
+    {
+        $this->_load();
+        return parent::generateAccountPassword();
+    }
+
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
+    }
+
+    public function __get($name)
+    {
+        $this->_load();
+        return parent::__get($name);
+    }
+
+    public function getComponentController()
+    {
+        $this->_load();
+        return parent::getComponentController();
     }
 
     public function setVirtual($virtual)
@@ -255,16 +357,10 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::isVirtual();
     }
 
-    public function __toString()
-    {
-        $this->_load();
-        return parent::__toString();
-    }
-
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'ownerId', 'installationId', 'domains', 'websiteServiceServer');
+        return array('__isInitialized__', 'id', 'name', 'creationDate', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'ownerId', 'themeId', 'installationId', 'ftpUser', 'websiteServiceServer', 'domains');
     }
 
     public function __clone()

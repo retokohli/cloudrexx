@@ -38,6 +38,11 @@ class Website extends \Cx\Model\Base\EntityBase {
     protected $name;
 
     /**
+     * @var \DateTime $creationDate
+     */
+    private $creationDate;
+
+    /**
      * @var string $codeBase
      */
     protected $codeBase;
@@ -122,6 +127,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     public function __construct($basepath, $name, $websiteServiceServer = null, \User $userObj=null, $lazyLoad = true, $themeId = 0) {
         $this->basepath = $basepath;
         $this->name = $name;
+        $this->creationDate = new \DateTime();
 
         if ($lazyLoad) {
             return true;
@@ -222,6 +228,22 @@ class Website extends \Cx\Model\Base\EntityBase {
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @param \DateTime $creationDate
+     */
+    public function setCreationDate($creationDate)
+    {
+        $this->creationDate = $creationDate;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
     }
 
     /**
