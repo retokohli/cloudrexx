@@ -1653,6 +1653,9 @@ namespace Cx\Core\Core\Controller {
                     'CONTAINER_BACKEND_CLASS'   => 'backend',
                     'CONTREXX_CHARSET'          => CONTREXX_CHARSET,
                 ));
+                //show Feedback and help block
+                (\Permission::checkAccess(192, 'static', true)) ? $this->template->touchBlock('feedback_help') : $this->template->hideBlock('feedback_help');
+                
                 return;
             }
             
