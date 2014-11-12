@@ -17,6 +17,8 @@ Cx\Modules\Order\Model\Entity\Payment:
     transactionReference:
       type: string
       column: transaction_reference
+    handler:
+      type: string
 
   manyToOne: # owning side
     invoice:

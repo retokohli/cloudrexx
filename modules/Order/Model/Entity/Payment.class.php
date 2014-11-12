@@ -50,10 +50,21 @@ class Payment extends \Cx\Model\Base\EntityBase {
     protected $transactionReference;
     
     /**
+     *
+     * @var string $handler
+     */
+    protected $handler;
+    
+    const HANDLER_CASH = 'cash';
+    const HANDLER_PAYREXX = 'payrexx';
+
+
+    /**
      * Constructor
      */
     public function __construct() {
         $this->date = new \DateTime();
+        $this->handler = self::HANDLER_CASH;
     }
     
     /**
@@ -137,5 +148,23 @@ class Payment extends \Cx\Model\Base\EntityBase {
      */
     public function setInvoice(Invoice $invoice) {
         $this->invoice = $invoice;
+    }
+    
+    /**
+     * Get the handler
+     * 
+     * @return string $handler
+     */
+    public function getHandler() {
+        return $this->handler;
+    }
+    
+    /**
+     * Set the handler
+     * 
+     * @param string $handler
+     */
+    public function setHandler($handler) {
+        $this->handler = $handler;
     }
 }
