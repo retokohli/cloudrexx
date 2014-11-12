@@ -19,6 +19,7 @@
         <link rel="apple-touch-icon-precomposed" href="themes/fema/images/apple-touch-icon-57-precomposed.png"/>
         <link type="images/x-icon" rel="icon" href="themes/fema/images/favicon.ico">        
         <!--<link type="text/css" rel="stylesheet" href="themes/fema/bootstrap.css" />-->
+        <link type="text/css" rel="stylesheet" href="themes/fema/main.css" />
         <link type="text/css" rel="stylesheet" href="themes/fema/animate.css" />
         <link type="text/css" rel="stylesheet" href="themes/fema/font-awesome.css" />
         <link type="text/css" rel="stylesheet" href="themes/fema/modules.css" />        
@@ -28,38 +29,15 @@
         {JAVASCRIPT}
         <script type="text/javascript">
             $J19 = jQuery.noConflict(true);
-        </script>
+        </script>  
         {STYLE_FILE}
         {LOGIN_INCLUDE}
-        <link type="text/css" rel="stylesheet" href="themes/fema/main.css" />
-        <!--<script type="text/javascript" src= "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
-        <script type="text/javascript" src= "/themes/fema/js/bootstrap.js"></script>
+        <script type="text/javascript" src= "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+        <!--<script type="text/javascript" src= "/themes/fema/js/bootstrap.js"></script>-->
         <script type="text/javascript" src= "/themes/fema/js/modernizr.js"></script>
         <script type="text/javascript" src= "/themes/fema/js/superfish.js"></script>
         <script type="text/javascript" src= "/themes/fema/js/javascript.js"></script>
-        <!--[if IE 6]>
-        <script type="text/javascript" src="themes/fema/js/DD_belatedPNG.js"></script>
-        <script type="text/javascript">
-            $J(document).ready(function () {
-                DD_belatedPNG.fix('img, .png-bg');
-            });
-        </script>
-        <![endif]-->
-        <!--[if lt IE 10]>
-        <script type="text/javascript" src="themes/fema/js/PIE.js"></script>
-        <script type="text/javascript">
-            $J(document).ready(function () {
-                if (window.PIE) {
-                    $J("body").each(function () {
-                        PIE.attach(this);
-                    });
-                    $J("body .container").each(function () {
-                        PIE.attach(this);
-                    });
-                }
-            });
-        </script>
-        <![endif]-->
     </head>
     <body>
         <!--        <div class="navbar navbar-inverse navbar-fixed-top">
@@ -79,20 +57,21 @@
                 </div>-->
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="{NODE_HOME}">
-                        <img style="height: 30px; width: auto;" src="/themes/fema/images/Logo.png" alt="logo">
+                <div class="mobile-header">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="{NODE_HOME}">
+                            <img style="height: 30px; width: auto;" src="/themes/fema/images/Logo.png" alt="logo">
+                        </a>
+                    </div>
+                    <a class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
                     </a>
                 </div>
-                <a class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    {NAVBAR_FILE}
-                </div>
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        {NAVBAR_FILE}
+                    </div>
             </div>
         </div>
         {CONTENT_FILE}
