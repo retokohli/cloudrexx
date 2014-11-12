@@ -101,7 +101,7 @@ class Invoice extends \Cx\Model\Base\EntityBase {
      */
     public function addPayment(Payment $payment) {
         $payment->setInvoice($this);
-        $this->setPayments($payment);
+        $this->payments[] = $payment;
         
         if($payment->getAmount() == $this->getAmount()) {
             $this->paid = true;
@@ -127,7 +127,35 @@ class Invoice extends \Cx\Model\Base\EntityBase {
      * @param object $payments
      */
     public function setPayments($payments) {
-        $this->payments[] = $payments;
+        $this->payments = $payments;
+    }
+    
+    /**
+     * Get the invoiceItems
+     * 
+     * @return \Cx\Modules\Order\Model\Entity\InvoiceItem $invoiceItems
+     */
+    public function getInvoiceItems() {
+        return $this->invoiceItems;
+    }
+    
+    /**
+     * Set the invoiceItems
+     * 
+     * @param object $invoiceItems
+     */
+    public function setInvoiceItems($invoiceItems) {
+        $this->invoiceItems = $invoiceItems;
+    }
+    
+    /**
+     * Add the invoiceItem
+     * 
+     * @param \Cx\Modules\Order\Model\Entity\InvoiceItem $invoiceItem
+     */
+    public function addInvoiceItem(InvoiceItem $invoiceItem) {
+        $invoiceItem->setInvoice($this);
+        $this->setInvoiceItems($invoiceItem);
     }
     
     /**

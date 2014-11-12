@@ -60,7 +60,8 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         if (!$product) {
             return;
         }
-        $this->subscriptionDate = strtotime('now');
+        
+        $this->subscriptionDate = new \DateTime();
         $this->product = $product;
         $this->setProductEntity($product->getNewEntityForSale($options));
         $this->paymentAmount = $product->getPrice();
