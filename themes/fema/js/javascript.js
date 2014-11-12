@@ -1,6 +1,6 @@
 //(function ($) {    
 $J19(document).ready(function() {
-    $J19('ul.sf-menu').superfish({
+    $('ul.sf-menu').superfish({
         delay: 100
     });
     $(".starter_active").addClass("active");
