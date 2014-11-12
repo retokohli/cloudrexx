@@ -1497,7 +1497,7 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseSuccessfulUpdate')
                 && !\Cx\Core\Setting\Controller\Setting::add('licenseSuccessfulUpdate','0', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'license')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseSuccessfulUpdate");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCreatedAt')

@@ -451,7 +451,7 @@ class License {
         }
 
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseValidTo')) {
-            \Cx\Core\Setting\Controller\Setting::add('licenseValidTo', $this->getValidToDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license');
+            \Cx\Core\Setting\Controller\Setting::add('licenseValidTo', $this->getValidToDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_DATETIME, null, 'license');
         } else {
             \Cx\Core\Setting\Controller\Setting::set('licenseValidTo', $this->getValidToDate());
         }
@@ -484,7 +484,7 @@ class License {
         }
 
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCreatedAt')) {
-            \Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt', $this->getCreatedAtDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license');
+            \Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt', $this->getCreatedAtDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'license');
         } else {
             \Cx\Core\Setting\Controller\Setting::set('licenseCreatedAt', $this->getCreatedAtDate());
         }
@@ -575,7 +575,7 @@ class License {
         }
 
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsReleaseDate')) {
-            \Cx\Core\Setting\Controller\Setting::add('coreCmsReleaseDate', $this->getVersion()->getReleaseDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release');
+            \Cx\Core\Setting\Controller\Setting::add('coreCmsReleaseDate', $this->getVersion()->getReleaseDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'release');
         } else {
             \Cx\Core\Setting\Controller\Setting::set('coreCmsReleaseDate', $this->getVersion()->getReleaseDate());
         }
