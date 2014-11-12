@@ -2183,6 +2183,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ($input[$charNr] == '"' || $input[$charNr] == "'" || $input[$charNr] == "`"): // check if this is a string delimiter
                     $isString = true;
                     $stringDelimiter = $input[$charNr];
+                    break;
                 case ($input[$charNr] == ";" || ($input[$charNr] != ";" && $charNr == strlen($input) - 1)): // end of query reached
                     $charNr++;
                     $query = ltrim(substr($input, $queryStartPos, $charNr - $queryStartPos));

@@ -198,7 +198,6 @@
                         $(this).dialog('close');
                     },
                     'Execute': function() {
-                        $('.resultSet').html('');
                         cx.trigger('loadingStart', 'executeSql', {});
                         cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
                         var query = $('.queryContent').val();
@@ -220,6 +219,7 @@
                                 });
                                 
                             } else {
+                                $('.resultSet').html('');
                                 $('.ui-dialog-buttonpane button:contains("Stop Execution...") span').addClass('stop-execution');
                                 domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql";
                                 $.ajax({
