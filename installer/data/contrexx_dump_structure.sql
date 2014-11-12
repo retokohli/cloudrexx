@@ -384,6 +384,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_website` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(200) NOT NULL,
+  `creationDate` datetime NOT NULL,
   `codeBase` varchar(50) NOT NULL,
   `language` varchar(50) NOT NULL,
   `status` varchar(15) NOT NULL,
@@ -395,7 +396,7 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `installationId` varchar(40) NOT NULL,
   `ftpUser` varchar(200) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `name_index` (`name`)
+  UNIQUE KEY `name_index` (`name`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
