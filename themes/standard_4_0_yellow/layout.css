@@ -148,6 +148,7 @@ body a:hover {text-decoration: none;}
     background-size: 16px;
     background-position: 0;
     background-repeat: no-repeat;
+    background-color: #fff;
 }
 #search-form #search-icon:hover {
     background-color: transparent;
@@ -277,9 +278,13 @@ body a:hover {text-decoration: none;}
     background: #FFFFFF;
     min-width: 200px;
 }
-.navigation li.level-2:hover,
+.navigation li.level-2:hover {
+     background: #e4e4e2;
+     color: #000;
+}
 .navigation li.level-2.active {
-    background: #e4e4e2;
+    background: #ffdd00;
+    color: #000;
 }
 .navigation li.level-2 a {
     padding: 11px 15px 16px 15px;
@@ -1539,3 +1544,6 @@ p#loginerror {
     color: #ffdd00 !important;
 }
 #metanavigation li#select-language:hover a.active {color: #fff;}
+#metanavigation li#select-language:hover a, #metanavigation li#select-language.active:hover a.active {
+    color: #000;
+}
