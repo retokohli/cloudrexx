@@ -592,7 +592,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         
         $recordType = $xmldoc->createElement('type',$type);
         $addRec->appendChild($recordType);
-        
+
         // In case the record is a subdomain of the DNS-zone, then
         // we'll have to strip the DNS-zone part from the record.
         // I.e.:
