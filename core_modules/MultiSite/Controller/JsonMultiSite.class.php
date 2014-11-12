@@ -2349,11 +2349,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                 case 'coreCmsCodeName':
                                 case 'coreCmsStatus':
                                 case 'coreCmsName':
+                                case 'licenseSuccessfulUpdate':
                                     $result[$key]['content'] = $value['value'];
                                     break;
                                 case 'licenseCreatedAt':
                                 case 'coreCmsReleaseDate':
-                                case 'licenseSuccessfulUpdate':
                                     $result[$key]['content'] = date('d.m.Y', $value['value']);
                                     break;
                                 case 'licenseValidTo':
@@ -2483,7 +2483,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try{
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                    $dateFormatArr = array("coreCmsReleaseDate", "licenseSuccessfulUpdate", "licenseValidTo", "licenseCreatedAt");
+                    $dateFormatArr = array("coreCmsReleaseDate", "licenseValidTo", "licenseCreatedAt");
                     $paramsArray = array(
                         $licenseOption => in_array($licenseOption, $dateFormatArr) ? strtotime($licenseValue) : $licenseValue,
                         'websiteId' => $websiteId
