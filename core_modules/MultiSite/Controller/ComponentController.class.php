@@ -867,7 +867,12 @@ throw new MultiSiteException('Refactor this method!');
             $cx->checkSystemState(true);
 
             $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$website->getName().'/config/configuration.php';
-            \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...");
+            $requestInfo =    isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'JsonData'
+                           && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
+                           && isset($_REQUEST['act'])
+                                ? '(API-call: '.$_REQUEST['act'].')'
+                                : '';
+            \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
             // set SERVER_NAME to BaseDN of Website
             $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile, true);
@@ -884,7 +889,12 @@ throw new MultiSiteException('Refactor this method!');
         }
 
         // no website found. Abort website-deployment and let Contrexx process with the regular system initialization (i.e. most likely with the Website Service Website)
-        \DBG::msg("MultiSite: Loading Website Service...");
+        $requestInfo =    isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'JsonData'
+                       && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
+                       && isset($_REQUEST['act'])
+                            ? '(API-call: '.$_REQUEST['act'].')'
+                            : '';
+        \DBG::msg("MultiSite: Loading Website Service...".$requestInfo);
         return false;
     }
     
