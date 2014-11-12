@@ -170,7 +170,9 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
                         foreach ($websiteServiceServers as $serviceServer) {
                             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('removeUser', array('userId' => $objUser->getId()), $serviceServer);
-                            if ($resp->status == 'error' || $resp->data->status == 'error') {
+                            if (   (isset($resp->status) && $resp->status == 'error')
+                                || (isset($resp->data->status) && $resp->data->status == 'error')
+                            ) {
                                 throw new \Exception('Failed to delete this user');
                             }
                         }
