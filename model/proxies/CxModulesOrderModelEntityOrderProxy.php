@@ -93,6 +93,18 @@ class CxModulesOrderModelEntityOrderProxy extends \Cx\Modules\Order\Model\Entity
         return parent::complete();
     }
 
+    public function billSubscriptions()
+    {
+        $this->_load();
+        return parent::billSubscriptions();
+    }
+
+    public function getUnpaidInvoices()
+    {
+        $this->_load();
+        return parent::getUnpaidInvoices();
+    }
+
     public function __get($name)
     {
         $this->_load();
