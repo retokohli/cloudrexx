@@ -1,7 +1,7 @@
 Cx\Modules\Order\Model\Entity\InvoiceItem:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\InvoiceItemRepository
-  table: module_order_invoiceitem
+  table: module_order_invoice_item
 
   id:
     id:

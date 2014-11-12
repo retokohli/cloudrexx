@@ -135,6 +135,14 @@ class Order extends \Cx\Model\Base\EntityBase {
     public function setInvoices($invoices) {
         $this->invoices = $invoices;
     }
+    
+    /**
+     * 
+     * @param \Cx\Modules\Order\Model\Entity\Invoice $invoice
+     */
+    public function addInvoice(Invoice $invoice) {
+        $this->invoices[] = $invoice;
+    }
 
     public function complete() {
         foreach ($this->subscriptions as $subscription) {
@@ -149,7 +157,7 @@ class Order extends \Cx\Model\Base\EntityBase {
         $subscriptions = array();
         foreach ($this->subscriptions as $subscription) {
             if ($subscription->getPaymentState() == $subscription::PAYMENT_OPEN || 
-                ($subscription->getPaymentState() == $subscription::PAYMENT_RENEWAL && $subscription->getRenewalDate() <= strtotime('now'))) {
+                ($subscription->getPaymentState() == $subscription::PAYMENT_RENEWAL && $subscription->getRenewalDate()->getTimestamp() <= time())) {
                 $subscriptions[] = $subscription;
             }
         }
@@ -163,14 +171,16 @@ class Order extends \Cx\Model\Base\EntityBase {
             //Create New Invoice Item
             $invoiceItem = new InvoiceItem();
             //Add InvoiceItem::$description to Subscription::getProductEntity()
-            $invoiceItem->setDescription($subscription->getProductEntity());
+            $invoiceItem->setDescription($subscription->getProduct()->getName() . ' (' . $subscription->getProductEntity() . ')');
             //Add InvoiceItem::$price to Subscription::getPaymentAmount()
             $invoiceItem->setPrice($subscription->getPaymentAmount());
             //Attached to the created invoice
-            $invoice->setInvoice($invoiceItem);
+            $invoice->addInvoiceItem($invoiceItem);
         }
+        $invoice->setOrder($this);
+        \Env::get('em')->persist($invoice);
         //Attached to the order
-        $this->setInvoices(array($invoice));
+        $this->addInvoice($invoice);
     }
     /**
      * 
