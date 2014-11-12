@@ -15,14 +15,13 @@ cx.ready(function() {
     if (!toolbarOffset) {
         toolbarOffset = 0;
     }
-console.log('my height (MAA): ' + parseInt(cx.jQuery("#MultiSiteAccountActivation").outerHeight())); 
-console.log('set body top to ' + (parseInt(cx.jQuery("#MultiSiteAccountActivation").outerHeight()) + toolbarOffset) + "px");
+
     // position the body and the account-activation-bar
     cx.jQuery("body").css("padding-top", (parseInt(cx.jQuery("#MultiSiteAccountActivation").outerHeight()) + toolbarOffset) + "px");
     cx.jQuery("#MultiSiteAccountActivation").css({
         top: toolbarOffset + "px"
     });
-console.log('new body top is ' + cx.jQuery("body").css("padding-top"));
+
     cx.jQuery('.AccountActivation').click(function() {
         domainUrl = cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=sendAccountActivation";
         cx.jQuery.ajax({
