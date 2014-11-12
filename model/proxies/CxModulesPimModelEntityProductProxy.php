@@ -213,6 +213,66 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setSubscriptions($subscriptions);
     }
 
+    public function getNoteEntity()
+    {
+        $this->_load();
+        return parent::getNoteEntity();
+    }
+
+    public function setNoteEntity($noteEntity)
+    {
+        $this->_load();
+        return parent::setNoteEntity($noteEntity);
+    }
+
+    public function getNoteRenewal()
+    {
+        $this->_load();
+        return parent::getNoteRenewal();
+    }
+
+    public function setNoteRenewal($noteRenewal)
+    {
+        $this->_load();
+        return parent::setNoteRenewal($noteRenewal);
+    }
+
+    public function getNoteUpgrade()
+    {
+        $this->_load();
+        return parent::getNoteUpgrade();
+    }
+
+    public function setNoteUpgrade($noteUpgrade)
+    {
+        $this->_load();
+        return parent::setNoteUpgrade($noteUpgrade);
+    }
+
+    public function getNoteExpiration()
+    {
+        $this->_load();
+        return parent::getNoteExpiration();
+    }
+
+    public function setNoteExpiration($noteExpiration)
+    {
+        $this->_load();
+        return parent::setNoteExpiration($noteExpiration);
+    }
+
+    public function getNotePrice()
+    {
+        $this->_load();
+        return parent::getNotePrice();
+    }
+
+    public function setNotePrice($notePrice)
+    {
+        $this->_load();
+        return parent::setNotePrice($notePrice);
+    }
+
     public function getNewEntityForSale($saleOptions)
     {
         $this->_load();
@@ -243,6 +303,18 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getRenewalDefinition($unit, $quantifier);
     }
 
+    public function __get($name)
+    {
+        $this->_load();
+        return parent::__get($name);
+    }
+
+    public function getComponentController()
+    {
+        $this->_load();
+        return parent::getComponentController();
+    }
+
     public function setVirtual($virtual)
     {
         $this->_load();
@@ -270,7 +342,7 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'price', 'subscriptions');
+        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'price', 'noteEntity', 'noteRenewal', 'noteUpgrade', 'noteExpiration', 'notePrice', 'subscriptions');
     }
 
     public function __clone()
