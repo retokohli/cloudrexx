@@ -223,6 +223,15 @@ class adminMenu
                                     continue 2;
                                 }
                                 break;
+                            case 'Order';
+                                if ( $this->activeCmd == 'Order'
+                                    && (empty($_REQUEST['act']) && !empty($linkCmdSection)
+                                        || !empty($_REQUEST['act']) && empty($linkCmdSection))
+                                ) {
+
+                                    $linkCmd = '';
+                                }
+                                break;
                             case 'Stats':
                                 $cssClass = 'inactive';
                                 if ($this->activeCmd == 'Stats') {
