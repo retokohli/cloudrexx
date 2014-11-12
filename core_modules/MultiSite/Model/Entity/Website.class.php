@@ -40,7 +40,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     /**
      * @var \DateTime $creationDate
      */
-    private $creationDate;
+    protected $creationDate;
 
     /**
      * @var string $codeBase
