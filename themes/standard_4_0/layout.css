@@ -148,6 +148,7 @@ body a:hover {text-decoration: none;}
     background-size: 16px;
     background-position: 0;
     background-repeat: no-repeat;
+    background-color: #fff;
 }
 #search-form #search-icon:hover {
     background-color: transparent;
