@@ -384,7 +384,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_website` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(200) NOT NULL,
-  `creationDate` datetime NOT NULL,
+  `creationDate` timestamp NOT NULL,
   `codeBase` varchar(50) NOT NULL,
   `language` varchar(50) NOT NULL,
   `status` varchar(15) NOT NULL,
