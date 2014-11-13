@@ -67,7 +67,8 @@ class InitCMS
      * @var   string
      */
     public $mode;
-
+    
+    private $themeRepository;
 
     /**
      * Constructor
@@ -114,6 +115,7 @@ class InitCMS
         }
 
         $this->loadModulePaths();
+        $this->themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
     }
 
 
@@ -609,18 +611,14 @@ class InitCMS
         if ($themeId == 0)
             $themeId = $this->currentThemesId;
 
-        $objResult = $objDatabase->Execute("
-            SELECT foldername
-            FROM ".DBPREFIX."skins
-            WHERE id=$themeId
-            LIMIT 1"
-        );
-        if (!$objResult)
+        $customTemplateForTheme = $this->themeRepository->findOneBy(array('id', $themeId));
+        
+        if (!$customTemplateForTheme)
             return array();
 
         $result = array();
         $templateFiles = array();
-        $folder = $objResult->fields['foldername'];
+        $folder = $customTemplateForTheme->getFoldername();
         if (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder)) {
             $templateFiles = scandir(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder);
         }
@@ -809,14 +807,14 @@ class InitCMS
 
         // set custom content template
         $this->customContentTemplate = $customContent;
-
+        
         //only set customized theme if not in printview AND no mobile devic
         if ($useThemeForAllChannels || (!isset($_GET['printview']) && !$this->isInMobileView())) {
             $themesId=intval($themesId);
             if ($themesId>0){
-                $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE id = $themesId");
-                if ($objResult !== false) {
-                    $this->currentThemesId=intval($objResult->fields['id']);
+                $customizedTheme = $this->themeRepository->findById($themesId);
+                if ($customizedTheme !== false) {
+                    $this->currentThemesId=intval($customizedTheme->getId());
                 }
             }
         }

@@ -1,0 +1,906 @@
+<script type="text/javascript">
+
+    cx.ready(function() {
+        $J("#tabs").tabs({
+            show : function (event, ui) {
+                $J('#selectedTab').val($J( "#tabs" ).tabs('option', 'selected'));
+                $J(window).trigger('resize');
+            },
+            select: function(event, ui) {
+                window.location.hash = ui.tab.hash;                
+            }
+        });
+        var activateDialog = cx.ui.dialog({
+            width: 520,
+            title: '{TXT_THEME_ACTIVATE_THEME}',
+            content: $J(".activateThemeContainer"),
+            autoOpen: false,
+            buttons: {
+                "{TXT_THEME_CANCEL}": function() {
+                    $J(this).dialog("close");
+                },
+                "{TXT_THEME_ACTIVATE}": function() {
+                    ajaxActivateTheme(false);
+                    $J(this).dialog("close");
+                }
+            }
+        });
+
+        //Activate Button click
+        $J(".themesActivate").click(function() {
+            var themeId = $J(this).attr('data-themeId');
+            if ({THEMES_LANG_ACTIVE_COUNT} > 1) {
+                $J( ".active_language_checkbox_container" ).html(' ');                
+                $J.ajax({
+                    url     : 'index.php?cmd=JsonData&object=ViewManager&act=activateLanguages',
+                    data    : {
+                                themeId : themeId,
+                                themeType : $J('#selectedTab').val()
+                              },                    
+                    type    : "post",
+                    dataType: "json",
+                    success: function(response) {
+                        $J(response.data).each(function(index, val) {
+                            $J( ".active_language_checkbox_container" ).append( '<label><input type="checkbox"  name="themesLangId['+val.lang_id+']" value="'+val.lang_id+'" id ="'+val.lang_name+'">'+ val.lang_name +' </label><br>' );
+                        });
+                        $J("#multipleFormThemeId").val(themeId);
+                        $J('#activateThemeForm input[type=checkbox]').attr('checked', 'checked');
+                        
+                        activateDialog.open();
+                    }
+                });
+
+                return false;
+            } else {
+                ajaxActivateTheme(themeId);
+                return false;
+            }
+        });
+        $J(window).trigger('resize');
+    });
+
+    //Activate Theme
+    function ajaxActivateTheme(themeId) {
+        if (themeId) {
+            data = {themeId : themeId};
+        } else {
+            data = $J('#activateThemeForm').serialize();
+        }
+
+        $J.ajax({
+            url     : "index.php?cmd=JsonData&object=ViewManager&act=activateTheme",
+            type    : "post",
+            data    : data,
+            dataType: "json",
+            success: function(response) {
+                if (response.status == 'success') {                    
+                    window.location.reload();
+                } else {
+                    cx.tools.StatusMessage.showMessage(response.message, "error", 1000);
+                }
+            }
+        });
+    }
+    
+    function checkThemeExistsByThemeId(themeId) {
+
+        $J.ajax({
+            url  : "index.php?cmd=JsonData&object=ViewManager&act=checkThemeExistsByThemeId&themeId="+themeId ,
+            type : "post",
+            dataType : "json",
+            success: function(response) {
+
+                if (response.data.isTrue) {
+                    btn = {"{TXT_THEME_CANCEL}": function() { $J( this ).dialog( "close" ); }}
+                    $J(".deleteThemeContainer").html('<div><strong>'+ response.data.Content +'</strong></div>');
+                } else {
+                    $J(".deleteThemeContainer").html('<div><strong>'+ response.data.Content +'</strong></div>');
+                    btn = {"{TXT_THEME_CANCEL}": function() {
+                            $J(this).dialog("close");
+                        },
+                        "{TXT_DELETE}": function() {
+                            ajaxDeleteTheme(themeId);
+                            $J(this).dialog("close");
+                        }}
+                }
+                var deleteDialog = cx.ui.dialog({
+                    width    :520,
+                    title    :'{TXT_THEME_DELETE_DIALOG_TITLE}',
+                    content  : $J(".deleteThemeContainer"),
+                    autoOpen : false,
+                    buttons: btn
+                });
+                deleteDialog.open();
+            }
+        });
+
+    }
+
+    function ajaxDeleteTheme(delThemeId) {
+        $J.ajax({
+            url : "index.php?cmd=JsonData&object=ViewManager&act=deleteThemeById&delThemeId="+delThemeId ,
+            type : "post",
+            dataType : "json",
+            success : function(response) {
+                if (response.data.status == 'success') {
+                    window.location.reload();
+                } else {
+                    cx.tools.StatusMessage.showMessage(response.data.message, "error", 1000);
+                }
+
+            }
+        });
+    }
+
+    $J(window).resize(function(){
+        
+        $J(window.location.hash + ' .newthemeWrapper').show();
+        
+        newthemeWrapperHeight =   $J(window.location.hash + ' .themeWrapper:not(.newthemeWrapper):first').length 
+                                ? $J(window.location.hash + ' .themeWrapper:not(.newthemeWrapper):first').height() 
+                                : $J(window.location.hash + ' .newthemeWrapper').width(); 
+        
+        $J(window.location.hash + ' .newthemeWrapper')
+            .height(newthemeWrapperHeight + 'px')
+            .show();
+    });
+</script>
+<style type="text/css">
+    @media (min-width: 480px) and (max-width: 1599px) { 
+        .themeWrapper {
+            width: 49%;
+            margin-left: 2%;
+        }
+        .themeWrapper:nth-child(2n+1) {
+            margin-left: 0;
+        }
+        
+    }
+    @media (min-width: 1600px) and (max-width: 1919px) {
+        .themeWrapper {
+            width: 32.333333333%;
+            margin-left: 1.5%;
+        }
+        .themeWrapper:nth-child(3n+1) {
+            margin-left: 0;
+        }
+    }
+    @media (min-width: 1920px) and (max-width: 2559px) {
+        .themeWrapper {
+            width: 24%;
+            margin-left: 1.333333333%;
+        }
+        .themeWrapper:nth-child(4n+1) {
+            margin-left: 0;
+        }
+    }
+    @media (min-width: 2560px) { 
+        .themeWrapper {
+            width: 19%;
+            margin-left: 1.25%;
+        }
+        .themeWrapper:nth-child(5n+1) {
+            margin-left: 0;
+        }
+    }
+    @media (min-width: 320px) and (max-width: 720px) {
+        .themesOverview .themeWrapper:hover .themeFooter .themeAction, .themesOverview .themeWrapper:hover .preview-overlay {
+            display: none;
+        }
+        .themesOverview .themeWrapper:hover .preview-overlay-small {
+            display: block;
+        }
+        .themesOverview .themeWrapper.newthemeWrapper .addThemeText {
+            display: none;
+        }
+        .themesOverview .themeWrapper.newthemeWrapper .add-icon img {
+            width: 100%;
+        }
+        .themesOverview .themeWrapper:hover .themeFooter {
+            background: rgba(0,0,0,0.6);
+        }
+    }
+
+    .newthemeWrapper .themesPreviewContainer, .newthemeWrapper .themesPreviewContainer a {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+    .newthemeWrapper .themesPreviewContainer a {
+        position: relative;
+        z-index: 3;        
+    }
+    .themesPreviewContainer {
+        position: relative;
+    }    
+    .newthemeWrapper:hover {
+        background: #0071bc;        
+    }
+    .themeWrapper.newthemeWrapper {
+        display: none;
+    }
+    .themeAction {
+        float: right;
+        padding-left: 13px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+
+    }
+    .themeIcons{
+        bottom: 0;
+        position: absolute;
+        right: 0;
+        width: 50px;
+    }
+    #content input[type='submit']:disabled {
+        color: transparent;
+        background: transparent;
+        border: none;
+    }
+    
+    .themeWrapper .default_active .themeDelete, .themeWrapper .default_active .disabled {
+        display: none !important;
+    }
+    
+    .themeFooter .themeAction {
+        display: none;
+    }
+
+    .lang-menu span {
+        padding-right: 10px;
+    }
+    .themeWrapper:before {
+        content: ' ';
+        border: 1px solid #e5e5e5;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        margin-left: -1px;
+        margin-top: -1px;
+    }
+    .themeWrapper {
+        position: relative;
+        float: left;
+        margin-bottom: 46px;
+    }
+    .themeDetail{
+        float: left;
+        padding-left: 13px;
+
+    }
+    .themeFooter.default_active{
+        background: #1F2022;
+        color: #fff;
+
+    }
+    .themeFooter{
+        width: 100%;
+        background: #ECECEC;
+        padding-top: 13px;
+        min-height: 37px;        
+        color: #000;
+        float :left;
+        position: relative;
+        z-index: 2;
+    }
+    .themesOverview {
+        margin-top: 20px;
+        float: left;
+        width: 100%;
+    }
+
+    .themeAction a.themeCopy, a.themeEdit, a.themeExport{
+        color: #fff;
+        padding: 4px 6px 4px 6px;
+        background: #0071BD;
+        font-size: 14px;
+        margin-right: 12px;
+        float: left;
+        cursor: pointer;
+    }
+    .themeDelete {
+        float: right;
+        color: red !important;
+        font-size: 14px;
+        padding-right: 10px;
+        padding-top: 3px;
+        cursor: pointer;
+    }
+    .themePreview input {
+        padding: 4px 6px 4px 6px !important;
+        margin: 0 !important;
+        border: 0 none;
+        height: 25px;
+        line-height: 1;
+        cursor: pointer;
+    }
+    
+    .themeWrapper:hover .themeFooter .themeAction{
+        width: 100%;
+        float: left !important;
+    }
+    .themeWrapper:hover  .themeDetail div {
+        position: absolute;
+        top: 35%;
+        font-size: 24px !important;
+        color: #fff;
+        text-align: center;
+        width: 92%;
+    }
+
+    .themeWrapper .themesActivate {
+        position: absolute;
+        top: 48%;
+        font-size: 18px !important;
+        display: block;
+        width: 40%;
+        left: 30%;
+        border: 0 none !important;
+        text-shadow: none !important;
+        text-align: center;
+        color: #fff !important;
+        background: #499111 !important;
+        padding: 11px 14px !important;
+        cursor: pointer;
+    }
+    .themeWrapper:hover .themeFooter .themeAction, .themeWrapper:hover .preview-overlay {
+        display: block;
+    }
+    .themeWrapper:hover .theme-name {
+        display: none;
+    }
+    .ui-dialog.noTitle .ui-dialog-titlebar {
+        display: none;
+    }
+    .themesPreviewContainer .preview-image img {
+        width: 100%;
+        text-align: center;
+        height: auto;
+    }    
+    .themeWrapper .preview-overlay-small .action-small-screen {
+        position: static;
+        font-size: 12px !important;
+        width: 98%;
+        margin: 1%;     
+        border: 0 none !important;
+        text-shadow: none !important;
+        text-align: center;
+        color: #fff !important;        
+        padding: 4% 0px !important;
+        cursor: pointer;
+        display: block;
+        float: none;
+    }
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themesActivate {
+        background: #499111;
+    }
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeEdit,
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeCopy,
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeExport {
+        background: #0071BD;
+    }
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themePreview {
+        background: white;
+        color: black !important;
+    }    
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeDelete {
+        color: red !important;
+    }
+    .preview-overlay, .preview-overlay-small {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        z-index: 1000;
+    }
+    .preview-overlay .actions {
+        display: table-cell;
+        vertical-align: middle;
+    }
+    div.theme-lang {
+        float: right;
+        display: inline-block;
+    }
+    span.theme-lang-code {
+        background-color: #9DCB3B;
+        padding: 3px 0px 3px 5px;
+        font-size: 10px;
+        height: 18px;
+        width: 21px;
+        line-height: 18px;
+        margin: 2px 3px 2px 0px;
+        text-align: center;
+    }
+    
+    // reset tabmenu        
+    .tabs-wraper .ui-widget-content {
+        border: 0;
+        background: #ffffff;
+        color: #444444;
+    }
+    .tabs-wraper .ui-state-active a,
+    .tabs-wraper .ui-state-active a:hover,
+    .tabs-wraper .ui-state-active a:link,
+    .tabs-wraper .ui-state-active a:visited {
+        color: #444;
+    }    
+    .tabs-wraper .ui-state-default a:hover{
+        color: #0b4c7a;
+    }
+    .tabs-wraper #tab-menu li.ui-state-default.ui-corner-top.ui-tabs-selected.ui-state-active {
+        border: 1px solid #ddd;
+        border-radius: 0 !important;
+        font-weight: normal !important;
+        color: #444;
+    }
+    .tabs-wraper #tab-menu li {
+        border: 0;
+        background: #fff;
+        display: inline;
+    }
+    .tabs-wraper #tab-menu li a {
+        float: left;
+        padding: 0.2em 0.5em;
+        text-decoration: none;
+        border-radius: 0 !important;
+        font-weight: normal;
+    }
+    .tabs-wraper {
+        border: 0 !important;
+        margin: 0;
+        padding: 1em 0;
+        background: #fff;
+    }
+    .tabs-wraper.ui-tabs .ui-tabs-panel {
+        margin: 0;
+        padding: 1em 0;
+    }
+    .tabs-wraper .ui-widget-header {
+        border: 0;
+        border-bottom: 1px solid #dddddd;
+        background: transparent !important;
+        color: #444444;
+        font-weight: bold;
+    }
+    .newthemeWrapper .addThemeText {
+        display: block;
+        text-align: center;
+        font-size: 18px;
+        line-height: 36px;
+    }
+    .themeWrapper.newthemeWrapper .add-icon img {
+        width: auto;
+    }
+    .add-icon {        
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    .newthemeWrapper:hover .addThemeText {
+        color: #ffffff;
+    }
+    .table {
+        display: table;
+        width: 100%;
+        height: 100%;
+    }
+    .table-row {
+        display: table-row;
+    }
+    .table-td {
+        display: table-cell;
+        vertical-align: middle;
+    }
+</style>
+<div style="clear: both"></div>
+
+<div id="tabs" class="tabs-wraper">
+    <ul id="tab-menu">
+        <li><a href="#tab-standard">{TXT_ACTIVE_TEMPLATE}</a></li>
+        <li><a href="#tab-mobile">{TXT_ACTIVE_MOBILE_TEMPLATE}</a></li>
+        <li><a href="#tab-print">{TXT_ACTIVE_PRINT_TEMPLATE}</a></li>
+        <li><a href="#tab-pdf">{TXT_ACTIVE_PDF_TEMPLATE}</a></li>
+        <li><a href="#tab-app">{TXT_APP}</a></li>
+    </ul>
+    <!-- starting standard -->
+    <div id="tab-standard">
+        <div class="themesOverview">
+            <!-- BEGIN themesStandard -->
+            <div class="themeWrapper">
+                <div  class="themesPreviewContainer">
+                    <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
+                    <div class="preview-overlay">
+                        <table width="100%" height="100%">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" > 
+                                        <div style="font-size:18px">{THEME_NAME}</div>
+                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
+                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
+                        {THEME_NAME}
+                        <div class="theme-lang">
+                            <!-- BEGIN activatedLangCodeStandard -->
+                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
+                            <!-- END activatedLangCodeStandard -->
+                        </div>
+
+                    </span>
+                    <div class="themeAction">
+                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
+                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">
+                            <input type="button" name="themesPreview" value="{TXT_THEME_PREVIEW}" />
+                        </a>
+
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+            </div>
+
+            <!-- END themesStandard -->
+            <div class="themeWrapper newthemeWrapper">
+                <div  class="themesPreviewContainer addTheme">
+                    <a href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=newDir" title="{TXT_THEME_ADD_NEW}">
+                        <span class="table">
+                            <span class="table-row">
+                                <span class="table-td">
+                                    <span class="add-icon">
+                                        <img src="../core/ViewManager/View/Media/add_new.png" alt="Add new" />
+                                    </span>
+                                    <span class="add-icon addThemeText">
+                                        {TXT_THEME_ADD_NEW}
+                                    </span>
+                                </span>
+                            </span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end standard -->
+    
+    <!-- starting mobile -->
+    <div id="tab-mobile" style="display: none;">
+        <div class="themesOverview">
+            <!-- BEGIN themesMobile -->
+            <div class="themeWrapper">
+                <div  class="themesPreviewContainer">
+                    <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
+                    <div class="preview-overlay">
+                        <table width="100%" height="100%">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" > 
+                                        <div style="font-size:18px">{THEME_NAME}</div>
+                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
+                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
+                        {THEME_NAME}
+                        <div class="theme-lang">
+                            <!-- BEGIN activatedLangCodeMobile -->
+                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
+                            <!-- END activatedLangCodeMobile -->
+                        </div>
+
+                    </span>
+                    <div class="themeAction">
+                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
+                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">
+                            <input type="button" name="themesPreview" value="{TXT_THEME_PREVIEW}" />
+                        </a>
+
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+            </div>
+
+            <!-- END themesMobile -->
+            <div class="themeWrapper newthemeWrapper">
+                <div  class="themesPreviewContainer addTheme">
+                    <a href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=newDir" title="{TXT_THEME_ADD_NEW}">
+                        <span class="table">
+                            <span class="table-row">
+                                <span class="table-td">
+                                    <span class="add-icon">
+                                        <img src="../core/ViewManager/View/Media/add_new.png" alt="Add new" />
+                                    </span>
+                                    <span class="add-icon addThemeText">
+                                        {TXT_THEME_ADD_NEW}
+                                    </span>
+                                </span>
+                            </span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ending mobile -->
+    
+    <!-- starting print -->
+    <div id="tab-print" style="display: none;">
+        <div class="themesOverview">
+            <!-- BEGIN themesPrint -->
+            <div class="themeWrapper">
+                <div  class="themesPreviewContainer">
+                    <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
+                    <div class="preview-overlay">
+                        <table width="100%" height="100%">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" > 
+                                        <div style="font-size:18px">{THEME_NAME}</div>
+                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
+                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
+                        {THEME_NAME}
+                        <div class="theme-lang">
+                            <!-- BEGIN activatedLangCodePrint -->
+                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
+                            <!-- END activatedLangCodePrint -->
+                        </div>
+
+                    </span>
+                    <div class="themeAction">
+                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
+                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">
+                            <input type="button" name="themesPreview" value="{TXT_THEME_PREVIEW}" />
+                        </a>
+
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+            </div>
+
+            <!-- END themesPrint -->
+            <div class="themeWrapper newthemeWrapper">
+                <div  class="themesPreviewContainer addTheme">
+                    <a href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=newDir" title="{TXT_THEME_ADD_NEW}">
+                        <span class="table">
+                            <span class="table-row">
+                                <span class="table-td">
+                                    <span class="add-icon">
+                                        <img src="../core/ViewManager/View/Media/add_new.png" alt="Add new" />
+                                    </span>
+                                    <span class="add-icon addThemeText">
+                                        {TXT_THEME_ADD_NEW}
+                                    </span>
+                                </span>
+                            </span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ending mobile -->
+    
+    <!-- starting pdf -->
+    <div id="tab-pdf" style="display: none;">
+        <div class="themesOverview">
+            <!-- BEGIN themesPdf -->
+            <div class="themeWrapper">
+                <div  class="themesPreviewContainer">
+                    <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
+                    <div class="preview-overlay">
+                        <table width="100%" height="100%">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" > 
+                                        <div style="font-size:18px">{THEME_NAME}</div>
+                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
+                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
+                        {THEME_NAME}
+                        <div class="theme-lang">
+                            <!-- BEGIN activatedLangCodePdf -->
+                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
+                            <!-- END activatedLangCodePdf -->
+                        </div>
+
+                    </span>
+                    <div class="themeAction">
+                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
+                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">
+                            <input type="button" name="themesPreview" value="{TXT_THEME_PREVIEW}" />
+                        </a>
+
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+            </div>
+
+            <!-- END themesPdf -->
+            <div class="themeWrapper newthemeWrapper">
+                <div  class="themesPreviewContainer addTheme">
+                    <a href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=newDir" title="{TXT_THEME_ADD_NEW}">
+                        <span class="table">
+                            <span class="table-row">
+                                <span class="table-td">
+                                    <span class="add-icon">
+                                        <img src="../core/ViewManager/View/Media/add_new.png" alt="Add new" />
+                                    </span>
+                                    <span class="add-icon addThemeText">
+                                        {TXT_THEME_ADD_NEW}
+                                    </span>
+                                </span>
+                            </span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ending pdf -->
+    
+    <!-- starting app -->
+    <div id="tab-app" style="display: none;">
+        <div class="themesOverview">
+            <!-- BEGIN themesApp -->
+            <div class="themeWrapper">
+                <div  class="themesPreviewContainer">
+                    <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
+                    <div class="preview-overlay">
+                        <table width="100%" height="100%">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" > 
+                                        <div style="font-size:18px">{THEME_NAME}</div>
+                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
+                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
+                        {THEME_NAME}
+                        <div class="theme-lang">
+                            <!-- BEGIN activatedLangCodeApp -->
+                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
+                            <!-- END activatedLangCodeApp -->
+                        </div>
+
+                    </span>
+                    <div class="themeAction">
+                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
+                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
+                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=templates&themes={THEME_FOLDER_NAME}">{TXT_EDIT}</a>
+                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_NAME}" >{TXT_THEME_EXPORT}</a>
+                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">
+                            <input type="button" name="themesPreview" value="{TXT_THEME_PREVIEW}" />
+                        </a>
+
+                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>                
+                    </div>
+                </div>
+            </div>
+
+            <!-- END themesApp -->
+            <div class="themeWrapper newthemeWrapper">
+                <div  class="themesPreviewContainer addTheme">
+                    <a href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=newDir" title="{TXT_THEME_ADD_NEW}">
+                        <span class="table">
+                            <span class="table-row">
+                                <span class="table-td">
+                                    <span class="add-icon">
+                                        <img src="../core/ViewManager/View/Media/add_new.png" alt="Add new" />
+                                    </span>
+                                    <span class="add-icon addThemeText">
+                                        {TXT_THEME_ADD_NEW}
+                                    </span>
+                                </span>
+                            </span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ending app -->
+    
+</div>
+
+
+
+<div class="activateThemeContainer" style="display: none;">
+    <form id="activateThemeForm">
+        <input type="hidden" value="" name="themeType" id="selectedTab" />
+        <input type="hidden" value="" name="themeId" id="multipleFormThemeId" />
+        <label>{TXT_THEME_ACTIVATION_LABEL}</label>
+        <div class="active_language_checkbox_container"></div>
+    </form>
+</div>
+
+<div id="delete_dialog" title="{TXT_THEME_DELETE_DIALOG_TITLE}">
+    <div class="deleteThemeContainer">
+
+    </div>
+</div>

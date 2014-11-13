@@ -288,6 +288,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             ),
             'dependencies' => array('jquery', 'jquery-cookie'),
         ),
+        'ace' => array(
+            'jsfiles'  => array(
+                'lib/ace/ace.js',
+            ),
+            'dependencies' => array('jquery'),
+        ),
 
         // jQ UI input select enhancer. used in Content Manager 2
         'chosen' => array(

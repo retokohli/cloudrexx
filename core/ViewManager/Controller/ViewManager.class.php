@@ -100,8 +100,10 @@ class ViewManager
     public $getPath;                          // $_GET['path']
     public $path;                             // current path
     public $webPath;                          // current web path
-    public $codeBaseThemesPath;               // code base path
-    public $websiteThemesPath;                // website path
+    public $codeBasePath;                     // code base path
+    public $websitePath;                      // website path
+    public $codeBaseThemesPath;               // code base themes path
+    public $websiteThemesPath;                // website themes path
     public $codeBaseThemesFilePath;           // default codebase current themes path
     public $websiteThemesFilePath;            // website current themes path
     public $tableExists;                      // Table exists
@@ -119,7 +121,9 @@ class ViewManager
         //get path variables
         $this->path = \Env::get('cx')->getWebsiteThemesPath() . '/';
         $this->arrWebPaths  = array(\Env::get('cx')->getWebsiteThemesWebPath() . '/');
+        $this->codeBasePath = \Env::get('cx')->getCodeBaseDocumentRootPath() . '/';
         $this->codeBaseThemesPath = \Env::get('cx')->getCodeBaseThemesPath() . '/';
+        $this->websitePath  = \Env::get('cx')->getWebsiteDocumentRootPath() . '/';
         $this->websiteThemesPath  = \Env::get('cx')->getWebsiteThemesPath() . '/';
         $this->themeZipPath = '/themezips/';
         $this->_archiveTempWebPath = \Env::get('cx')->getWebsiteTempWebPath() . $this->themeZipPath;
@@ -164,10 +168,10 @@ class ViewManager
         $objTemplate->setVariable("CONTENT_NAVIGATION","
             <a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>
             <a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_TEMPLATES']."</a>
-            <a href='index.php?cmd=Media&amp;archive=themes'>".$_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=examples' class='".($this->act == 'examples' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CORE_PLACEHOLDERS']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=manage' class='".($this->act == 'manage' ? 'active' : '')."'>".$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT']."</a>");
-        }
+            <a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>"
+        );
+
+    }
 
     /**
      * Gets the requested page
@@ -183,16 +187,10 @@ class ViewManager
         }
         switch($_GET['act']){
             case "templates":
-                $this->newfile();
-                $this->delfile();
-                $this->deldir();
                 $this->overview();
                 break;
-            case "examples":
-                $this->examples();
-                break;
-            case "manage":
-                $this->manage();
+            case "settings":
+                $this->settings();
                 break;
             case "upload":
                 $this->upload();
@@ -208,8 +206,11 @@ class ViewManager
             case "createDir":
                 $this->createdir();
                 break;
+            case 'import':
+                $this->import();
+                break;
             default:
-                $this->_activate();
+                $this->viewManager();
         }
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'             => $this->pageTitle,
@@ -219,7 +220,169 @@ class ViewManager
         $this->act = (isset ($_REQUEST['act']) ? $_REQUEST['act'] : '');
         $this->setNavigation();
     }
+    
+    
+    /**
+     * Overview page of the view manager
+     * 
+     * @global array $_ARRAYLANG
+     * @global type $objTemplate
+     * @global type $objDatabase
+     */
+    function viewManager() {
+       global $_ARRAYLANG, $objTemplate, $objDatabase; 
+       
+       \Permission::checkAccess(47, 'static');
+       
+       $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_overview', 'skins_overview.html');
+              
+       $themes = $this->themeRepository->findAll();
+       
+       $themesCollection = array();
+       
+       foreach ($themes as $theme) {           
+           $themesCollection[$theme->getId()] = $theme;  
+       }
+       
+       //sort the themes by its release date
+       uasort($themesCollection, array($this,'sortThemesByReleaseDate'));
+       
+       /* $frontEndActiveTemplates = array();
+       foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+           $tempTheme = $this->themeRepository->getDefaultTheme(null, $lang['id']);
+           if ($tempTheme) {
+               $frontEndActiveTemplates[$tempTheme->getId()] = $tempTheme;
+           }           
+       }
+       
+       //First display the standard themes based on the active frontend languages
+       foreach ($frontEndActiveTemplates as $frontEndActiveTemplate) {
+           $this->parseThemesData($frontEndActiveTemplate);
+           unset($themesCollection[$frontEndActiveTemplate->getId()]);
+       } */
 
+       //Display the themes by its release date
+       foreach ($themesCollection as $theme) {
+           $this->parseThemesData($theme);
+       }
+       
+       $objTemplate->setGlobalVariable(array(
+            'TXT_DELETE'                         => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_EDIT'                           => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
+            'TXT_THEME_PREVIEW'                  => $_ARRAYLANG['TXT_THEME_PREVIEW'],
+            'TXT_THEME_ACTIVATE'                 => $_ARRAYLANG['TXT_THEME_ACTIVATE'],
+            'TXT_THEME_CANCEL'                   => $_ARRAYLANG['TXT_THEME_CANCEL'],
+            'TXT_THEME_ACTIVATE_THEME'           => $_ARRAYLANG['TXT_THEME_ACTIVATE_THEME'],
+            'TXT_THEME_DELETE_DIALOG_TITLE'      => $_ARRAYLANG['TXT_THEME_DELETE_DIALOG_TITLE'],
+            'TXT_THEME_ACTIVATION_LABEL'         => $_ARRAYLANG['TXT_THEME_ACTIVATION_LABEL'],
+            'TXT_COPY'                           => $_ARRAYLANG['TXT_COPY'],
+            'TXT_THEME_ADD_NEW'                  => $_ARRAYLANG['TXT_THEME_ADD_NEW'],
+            'TXT_THEME_EXPORT'                   => $_ARRAYLANG['TXT_THEME_EXPORT'],
+            'TXT_ACTIVE_TEMPLATE'                => $_ARRAYLANG['TXT_ACTIVE_TEMPLATE'],
+            'TXT_ACTIVE_MOBILE_TEMPLATE'         => $_ARRAYLANG['TXT_ACTIVE_MOBILE_TEMPLATE'],
+            'TXT_ACTIVE_PRINT_TEMPLATE'          => $_ARRAYLANG['TXT_ACTIVE_PRINT_TEMPLATE'],
+            'TXT_ACTIVE_PDF_TEMPLATE'            => $_ARRAYLANG['TXT_ACTIVE_PDF_TEMPLATE'],
+            'TXT_APP'                            => $_ARRAYLANG['TXT_APP'],
+            'CONTREXX_BASE_URL'                  => \Env::get('cx')->getWebsiteOffsetPath() . '/',
+            'THEMES_LANG_ACTIVE_COUNT'           => count(\FWLanguage::getActiveFrontendLanguages()),
+            'CONTREXX_BACKEND_URL_LINK'          => \Env::get('cx')->getWebsiteBackendPath() . '/', 
+       ));
+    }
+    
+    /**
+     * 
+     * @global type $objTemplate
+     * @param type $theme
+     */
+    private function parseThemesData($theme) {
+        global $objTemplate;
+        
+        $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
+        
+        $subTypeArray = array(
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_STANDARD, 
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,  
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT,  
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF,  
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP  
+        );
+
+        if ($theme->getSubType() && in_array($theme->getSubType(), $subTypeArray)) {
+            $subTypeArray = array($theme->getSubType());
+        }
+
+        foreach ($subTypeArray as $subType) {
+            $activeLanguages   = $theme->getLanguagesByType($subType);
+            foreach ($activeLanguages  as $activeLanguage) {
+                $activatedLanguageCode = \FWLanguage::getLanguageCodeById($activeLanguage);
+                $objTemplate->setVariable(array(
+                    'THEME_ACTIVATED_LANG_CODE' => contrexx_raw2xhtml(strtoupper($activatedLanguageCode))
+                ));
+                $objTemplate->parse('activatedLangCode'. ucfirst($subType));
+
+                $objTemplate->setVariable(array(
+                    "TXT_THEME_STANDARD_DISPLAY"      => "default_active"
+                ));
+            }
+
+            $objTemplate->setVariable(array(
+                'THEME_PREVIEW'                      => $theme->getPreviewImage(),
+                'THEME_ID'                           => $theme->getId(),
+                'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
+                'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
+                'THEME_NAME'                         => contrexx_raw2xhtml($theme->getThemesname()),
+
+            ));
+            
+            $objTemplate->parse('themes'. ucfirst($subType));
+        }
+                
+    }
+
+    /**
+     * sorting the theme by its releaseDate
+     * 
+     * @param string $a
+     * @param string $b
+     * @return string 
+     */
+    function sortThemesByReleaseDate($a,$b) {
+        $aDate = ($a->getReleasedDate()) ? $a->getReleasedDate()->getTimeStamp() : 0;
+        $bDate = ($b->getReleasedDate()) ? $b->getReleasedDate()->getTimeStamp() : 0;
+        
+        return $bDate - $aDate;
+    }
+
+    /**
+     * Settings section
+     * 
+     * @global array $_ARRAYLANG
+     * @global type $objTemplate
+     */     
+    function settings() {
+        global $_ARRAYLANG, $objTemplate;
+        
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_settings', 'skins_settings.html');
+        
+        switch ($_REQUEST['tpl']) {
+            case 'examples':
+                $this->examples();
+                break;
+            case 'manage':
+                $this->manage();
+                break;
+            default :
+                $this->_activate();   
+        }
+        
+        $this->pageTitle = $_ARRAYLANG['TXT_DESIGN_SETTINGS'];
+        $objTemplate->setVariable(array(
+            'TXT_OVERVIEW'                         => $_ARRAYLANG['TXT_OVERVIEW'],
+            'TXT_CORE_PLACEHOLDERS'                => $_ARRAYLANG['TXT_CORE_PLACEHOLDERS'],
+            'TXT_THEME_IMPORT_EXPORT'              => $_ARRAYLANG['TXT_THEME_IMPORT_EXPORT']
+        ));
+    }
+    
     /**
      * show the overview page
      * @access   public
@@ -230,7 +393,41 @@ class ViewManager
 
         \Permission::checkAccess(47, 'static');
         \JS::activate('jstree');
-         \JS::activate('chosen');
+        \JS::activate("cx");
+        \JS::activate("jqueryui");
+        \JS::registerJS("lib/javascript/jquery.ui.tabs.js");
+        \JS::registerJS('core/ViewManager/View/Script/Main.js');
+        $themeTab = isset($_POST['selectedTab']) ? intval($_POST['selectedTab']) : 0;
+        
+        $jsCode = <<<CODE
+\$J(function(){
+// Tab initialization
+var tabs = \$J('#tabs').tabs({ selected: 0 });
+tabs.tabs('option', 'selected', $themeTab);
+\$J('#selectedTab').val($themeTab);
+  if ($themeTab == 2) {
+    \$J('#file-operation').hide();
+  }              
+});
+CODE;
+                    
+        \JS::registerCode($jsCode);
+        $cxjs = \ContrexxJavascript::getInstance();
+        $cxjs->setVariable(array('confirmDeleteFile'     => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FILE'], 
+                                 'fileName'              => $_ARRAYLANG['TXT_THEME_FILE_NAME'],
+                                 'txtName'               => $_ARRAYLANG['TXT_NAME'],
+                                 'fileExContent'         => $_ARRAYLANG['TXT_THEME_FILE_NAME_EX_CONTENT'],
+                                 'folderExContent'       => $_ARRAYLANG['TXT_THEME_FOLDER_NAME_EX_CONTENT'],
+                                 'newFileOperation'      => $_ARRAYLANG['TXT_THEME_CREATE_NEW_FILE'],
+                                 'newFolderOperation'    => $_ARRAYLANG['TXT_THEME_CREATE_NEW_FOLDER'],
+                                 'renameFileOperation'   => $_ARRAYLANG['TXT_THEME_RENAME_FILE_OPERATION'],
+                                 'renameFolderOperation' => $_ARRAYLANG['TXT_THEME_RENAME_FOLDER_OPERATION'],
+                                 'cancel'                => $_ARRAYLANG['TXT_THEME_CANCEL'],
+                                 'create'                => $_ARRAYLANG['TXT_THEME_CREATE'],
+                                 'save'                  => $_ARRAYLANG['TXT_SAVE'],
+                                 'rename'                => $_ARRAYLANG['TXT_THEME_RENAME']
+                                  ), 'viewmanager/lang');
+
         // initialize variables
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_content', 'skins_content.html');
         $this->pageTitle = $_ARRAYLANG['TXT_DESIGN_TEMPLATES'];
@@ -253,6 +450,21 @@ class ViewManager
             'TXT_MODE'                        => $_ARRAYLANG['TXT_MODE'],
             'TXT_THEMES_EDIT'                 => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
             'TXT_THEMES_CREATE'               => $_ARRAYLANG['TXT_CREATE'],
+            'TXT_THEME_IMPORT'                => $_ARRAYLANG['TXT_THEME_IMPORT'],
+            'TXT_THEME_FILE_FOLDER_NAME'      => $_ARRAYLANG['TXT_THEME_FILE_FOLDER_NAME'],
+            'TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT' => $_ARRAYLANG['TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT'],
+            'TXT_THEME_TEMPLATE'                    => $_ARRAYLANG['TXT_THEME_TEMPLATE'],
+            'TXT_THEME_EDIT_FILE'                    => $_ARRAYLANG['TXT_THEME_EDIT_FILE'],
+            'TXT_EDIT'                         => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_THEME_NEW_FILE'               => $_ARRAYLANG['TXT_THEME_NEW_FILE'],
+            'TXT_THEME_NEW_FOLDER'             => $_ARRAYLANG['TXT_THEME_NEW_FOLDER'],
+            'TXT_THEME_NEW_THEME'              => $_ARRAYLANG['TXT_THEME_NEW_THEME'],
+            'TXT_THEME_PREVIEW'                => $_ARRAYLANG['TXT_THEME_PREVIEW'],
+            'TXT_THEME_FULLSCREEN'             => $_ARRAYLANG['TXT_THEME_FULLSCREEN'],
+            'TXT_THEME_FULLSCREEN_INFO'        => $_ARRAYLANG['TXT_THEME_FULLSCREEN_INFO'],
+            'TXT_FILES'                        => $_ARRAYLANG['TXT_FILES'],
+            'TXT_THEME_CREATE_OVERRIDES'       => $_ARRAYLANG['TXT_THEME_CREATE_OVERRIDES'],
+            'TXT_THEMES_LIBRARIES'             => $_ARRAYLANG['TXT_THEMES_LIBRARIES'],
         ));
         $this->getDropdownContent();
 
@@ -274,18 +486,53 @@ class ViewManager
     }
 
     /**
+     * set up Import page
+     * call specific function depending on $_GET
+     * @access private
+     */
+    private function import()
+    {
+        global $_ARRAYLANG, $objTemplate;
+        
+        \Permission::checkAccess(102, 'static');
+       
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_import', 'skins_import.html');
+        $this->pageTitle = $_ARRAYLANG['TXT_THEME_IMPORT'];
+        
+        if (!empty($_GET['import'])) {
+            $this->importFile();
+        }
+        
+        $objTemplate->setVariable(array(
+            'TXT_THEMES_EDIT'       => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
+            'TXT_THEMES_CREATE'     => $_ARRAYLANG['TXT_CREATE'],
+            'TXT_THEME_IMPORT'      => $_ARRAYLANG['TXT_THEME_IMPORT'],
+            
+            'TXT_THEME_LOCAL_FILE'          => $_ARRAYLANG['TXT_THEME_LOCAL_FILE'],
+            'TXT_THEME_SPECIFY_URL'         => $_ARRAYLANG['TXT_THEME_SPECIFY_URL'],
+            'TXT_THEME_IMPORT_INFO'         => $_ARRAYLANG['TXT_THEME_IMPORT_INFO'],
+            'TXT_THEME_IMPORT_INFO_BODY'    => $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'],
+            'TXT_THEME_NO_URL_SPECIFIED'    => $_ARRAYLANG['TXT_THEME_NO_URL_SPECIFIED'],
+            'TXT_THEME_NO_FILE_SPECIFIED'   => $_ARRAYLANG['TXT_THEME_NO_FILE_SPECIFIED'],
+            'TXT_THEME_FILESYSTEM'          => $_ARRAYLANG['TXT_THEME_FILESYSTEM'],
+            'TXT_THEME_DISPLAY_NAME'        => $_ARRAYLANG['TXT_DB_NAME'],
+            'TXT_THEME_EXISTING_DIR_NAME'   => $_ARRAYLANG['TXT_EXISTING_DIR_NAME'],
+            'TXT_SELECT_DIR'                => $_ARRAYLANG['TXT_SELECT_DIR'],
+            'TXT_THEME_PATH'                => $this->webPath,
+            'THEMES_MENU'                   => $this->getDropdownNotInDb(),
+        ));
+        
+    }
+    
+    /**
      * set up Import/Export page
      * call specific function depending on $_GET
      * @access private
      */
     private function manage()
-    {
-        global $_ARRAYLANG, $objDatabase, $_CONFIG, $objTemplate;
-        
+    {        
         \Permission::checkAccess(102, 'static');
        
-        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_manage', 'skins_manage.html');
-        $this->pageTitle = $_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'];
         //check GETs for action
         if (!empty($_GET['export'])){
             $archiveURL=$this->_exportFile();
@@ -296,79 +543,7 @@ class ViewManager
             $objHTTPDownload->send('application/force-download');
             exit;
         }
-        if (!empty($_GET['import'])){
-            $this->importFile();
-        }
-        if (!empty($_GET['activate'])){
-            $this->activateDefault(intval($_GET['activate']));
-        }
-        if (!empty($_GET['delete'])){
-            $this->deldir(true);
-            $objTemplate->setVariable('THEMES_MENU', $this->getThemesDropdown());
-        }
-        //set template variables
-        $objTemplate->setGlobalVariable(array('TXT_THEME_THEMES'              => $_ARRAYLANG['TXT_THEME_THEMES'],
-                                              'TXT_THEME_PREVIEW'             => $_ARRAYLANG['TXT_THEME_PREVIEW'],
-                                              'TXT_THEME_IMPORT_EXPORT'       => $_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'],
-                                              'TXT_THEME_NAME'                => $_ARRAYLANG['TXT_THEME_NAME'],
-                                              'TXT_THEME_IMPORT'              => $_ARRAYLANG['TXT_THEME_IMPORT'],
-                                              'TXT_THEME_EXPORT'              => $_ARRAYLANG['TXT_THEME_EXPORT'],
-                                              'TXT_THEME_PREVIEW_NEW_WINDOW'  => $_ARRAYLANG['TXT_THEME_PREVIEW_NEW_WINDOW'],
-                                              'TXT_THEME_DIRECTORY_NAME'      => $_ARRAYLANG['TXT_THEME_DIRECTORY_NAME'],
-                                              'TXT_THEME_SEND_ARCHIVE'        => $_ARRAYLANG['TXT_THEME_SEND_ARCHIVE'],
-                                              'TXT_THEME_IMPORT_ARCHIVE'      => $_ARRAYLANG['TXT_THEME_IMPORT_ARCHIVE'],
-                                              'TXT_THEME_LOCAL_FILE'          => $_ARRAYLANG['TXT_THEME_LOCAL_FILE'],
-                                              'TXT_THEME_SPECIFY_URL'         => $_ARRAYLANG['TXT_THEME_SPECIFY_URL'],
-                                              'TXT_THEME_CONFIRM_DELETE'      => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE'],
-                                              'TXT_FUNCTIONS'                 => $_ARRAYLANG['TXT_FUNCTIONS'],
-                                              'TXT_NAME'                      => $_ARRAYLANG['TXT_NAME'],
-                                              'TXT_THEME_SHOW_PRINT_THEME'    => $_ARRAYLANG['TXT_THEME_SHOW_PRINT_THEME'],
-                                              'TXT_THEME_NO_URL_SPECIFIED'    => $_ARRAYLANG['TXT_THEME_NO_URL_SPECIFIED'],
-                                              'TXT_THEME_NO_FILE_SPECIFIED'   => $_ARRAYLANG['TXT_THEME_NO_FILE_SPECIFIED'],
-                                              'TXT_THEME_DETAILS'             => $_ARRAYLANG['TXT_THEME_DETAILS'],
-                                              'TXT_THEME_IMPORT_INFO'         => $_ARRAYLANG['TXT_THEME_IMPORT_INFO'],
-                                              'TXT_THEME_IMPORT_INFO_BODY'    => $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'],
-                                              'TXT_SKINS_PREVIEW'             => $_ARRAYLANG['TXT_SKINS_PREVIEW'],
-                                              'TXT_THEME_PREVIEW_IMAGE'       => $_ARRAYLANG['TXT_THEME_PREVIEW_IMAGE'],
-                                              'TXT_THEME_PREVIEW_URL'         => $_ARRAYLANG['TXT_THEME_PREVIEW_URL'],
-                                              'TXT_THEME_INFORMATION'         => $_ARRAYLANG['TXT_THEME_INFORMATION'],
-                                              'TXT_LANGUAGES'                 => $_ARRAYLANG['TXT_LANGUAGES'],
-                                              'TXT_NAME'                      => $_ARRAYLANG['TXT_NAME'],
-                                              'TXT_AUTHOR'                    => $_ARRAYLANG['TXT_AUTHOR'],
-                                              'TXT_VERSION'                   => $_ARRAYLANG['TXT_VERSION'],
-                                              'TXT_DESCRIPTION'               => $_ARRAYLANG['TXT_DESCRIPTION'],
-                                              'THEMES_MENU'                   => $this->getThemesDropdown(),
-                                              'CONTREXX_BASE_URL'             =>  \Env::get('cx')->getWebsiteOffsetPath() . '/',
-        ));
-        //create themelist
-        $themes = $this->themeRepository->findAll();
-        $rowclass = 0;
-        foreach ($themes as $theme) {
-            $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme->getThemesname(), ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=ViewManager&amp;act=manage&amp;delete='.urlencode($theme->getFoldername()).'" title="'.$_ARRAYLANG['TXT_DELETE'].'"> <img border="0" src="../core/Core/View/Media/icons/delete.gif" alt="" /> </a>';
-            $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=ViewManager&amp;act=manage&amp;activate='.$theme->getId().'" title="'.$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'].'"> <img border="0" src="../core/Core/View/Media/icons/check.gif" alt="" /> </a>';
-
-            $version = $theme->getVersionNumber();
-            if (!$version) {
-                $version = '-';
-            }
-            $objTemplate->setVariable(array('THEME_NAME'            => contrexx_raw2xhtml($theme->getThemesname()),
-                                            'THEME_LANGUAGES'       => $theme->getLanguages(),
-                                            'THEME_PREVIEW'         => $theme->getPreviewImage(),
-                                            'TXT_THEME_EXPORT'      => $_ARRAYLANG['TXT_THEME_EXPORT'],
-                                            'TXT_DELETE'            => $_ARRAYLANG['TXT_DELETE'],
-                                            'THEME_DELETE_LINK'     => !$theme->isDefault() ? $htmlDeleteLink : '',
-                                            'THEME_ACTIVATE_LINK'   => !$theme->isDefault() ? $htmlActivateLink : '',
-                                            'THEME_ID'              => $theme->getId(),
-                                            'TXT_ACTIVATE_DESIGN'   => $_ARRAYLANG['TXT_ACTIVATE_DESIGN'],
-                                            'ROW_CLASS'             => $theme->isDefault() ? 'active' : (($rowclass++ % 2) ? 'row1' : 'row2'),
-                                            'THEME_AUTHOR'          => contrexx_raw2xhtml($theme->getPublisher()),
-                                            'THEME_VERSION'         => $version,
-                                            'THEME_DESCRIPTION'     => contrexx_raw2xhtml($theme->getDescription()),
-
-
-            ));
-            $objTemplate->parse('themeRow');
-        }
+        
     }
 
 
@@ -616,12 +791,24 @@ class ViewManager
 
                 //extract archive files
                 $this->extractArchive($archive, $themeDirectory, $themeDirectoryFromArchive);
-
+                
                 //create database entry
                 $this->validateThemeName($themeName);
                 $this->replaceThemeName($themeDirectoryFromArchive, $themeDirectory, $this->websiteThemesPath . $arrDirectories[0]);
                 $this->insertSkinIntoDb($themeName, $themeDirectory);
                 $this->strOkMessage = contrexx_raw2xhtml($themeName).' ('.$themeDirectory.') '.$_ARRAYLANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
+                break;
+            case 'filesystem':
+                $themeName = !empty($_POST['display_name']) ? contrexx_input2raw($_POST['display_name']) : null;        
+                $existingThemeInFilesystem = !empty($_POST['existingdirName']) ? contrexx_input2raw($_POST['existingdirName']) : null;
+                
+                if (empty($themeName) || empty($existingThemeInFilesystem)) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS'];
+                    return false;
+                }
+                
+                $this->insertSkinIntoDb($themeName, $existingThemeInFilesystem);
+                $this->strOkMessage  = contrexx_raw2xhtml($themeName).' '.$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
                 break;
             //everything else should never be the case
             default:
@@ -729,74 +916,6 @@ class ViewManager
     }
 
     /**
-     * get the themes files from codeBaseThemesFilePath and websiteThemesFilePath
-     *
-     * @return  array
-     */
-    function getThemesFiles() {
-        
-        $codeBaseFiles = array();
-        $websiteThemesFiles = array();
-        if (file_exists($this->codeBaseThemesFilePath)) {
-            $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
-            $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
-        }
-        if (file_exists($this->websiteThemesFilePath)) {
-            $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
-            $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
-        }
-
-        $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
-        $this->sortFilesFolders($codeBaseFiles);
-        return $codeBaseFiles;
-    }
-
-    /**
-     * activates the theme for the current default language
-     *
-     * @access  private
-     * @global  ADONewConnection
-     * @global  array   $_ARRAYLANG
-     * @return  boolean
-     */
-    private function activateDefault()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $newThemeId = intval($_GET['activate']);
-        if (empty($newThemeId)){
-            $this->strErrMessage = "GET value error. Must be numeric ID.";
-        }
-
-        $objResult = $objDatabase->Execute('SELECT `id`, `themesid` FROM `'.DBPREFIX.'languages` WHERE `is_default` = "true" LIMIT 1');
-        if ($objResult->RecordCount() > 0){
-            $langId = $objResult->fields['id'];
-            $oldThemeId = $objResult->fields['themesid'];
-            
-            $objDatabase->Execute('UPDATE `'.DBPREFIX.'languages` SET `themesid` = "'.$newThemeId.'" WHERE `id` = '.$langId);
-
-            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $pages = $pageRepo->findBy(array(
-                'skin' => intval($oldThemeId),
-            ));
-            foreach ($pages as $page) {
-                if ($page->getSkin() != 0) {
-                    $page->setSkin($newThemeId);
-                    \Env::get('em')->persist($page);
-                }
-            }
-            \Env::get('em')->flush();
-
-            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-        } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-            return false;
-        }
-        return true;
-    }
-
-
-    /**
      * Gets the themes assigning page
      * @access   private
      * @global   ADONewConnection
@@ -810,7 +929,7 @@ class ViewManager
 
         \Permission::checkAccess(46, 'static');
 
-        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_active', 'skins_activate.html');
+        $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_activate', 'skins_activate.html');
         $this->pageTitle = $_ARRAYLANG['TXT_OVERVIEW'];
         $objTemplate->setVariable(array(
             'TXT_ACTIVATE_DESIGN'          => $_ARRAYLANG['TXT_ACTIVATE_DESIGN'],
@@ -894,7 +1013,7 @@ class ViewManager
         \Permission::checkAccess(47, 'static');
 
         // initialize variables
-        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_examples', 'skins_examples.html');
+        $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_examples', 'skins_examples.html');
         $this->pageTitle = $_ARRAYLANG['TXT_DESIGN_VARIABLES_LIST'];
         $objTemplate->setVariable(array(
             'TXT_STANDARD_TEMPLATE_STRUCTURE'       => $_ARRAYLANG['TXT_STANDARD_TEMPLATE_STRUCTURE'],
@@ -924,6 +1043,12 @@ class ViewManager
         \Permission::checkAccess(47, 'static');
 
         $this->webPath = $this->arrWebPaths[0];
+        
+        $selectedTheme = null;
+        if (isset($_GET['copy'])) {
+            $selectedTheme = $this->themeRepository->findOneBy(array('foldername' => contrexx_input2raw($_GET['copy'])));
+        }
+        
         // initialize variables
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_create', 'skins_create.html');
         $this->pageTitle = $_ARRAYLANG['TXT_NEW_DIRECTORY'];
@@ -937,11 +1062,12 @@ class ViewManager
             'TXT_SELECT_DIR'          => $_ARRAYLANG['TXT_SELECT_DIR'],
             'TXT_CREATE'              => $_ARRAYLANG['TXT_CREATE'],
             'TXT_FROM_TEMPLATE'       => $_ARRAYLANG['TXT_FROM_TEMPLATE'],
-            'THEMES_TEMPLATE_MENU'    => $this->getThemesDropdown(null, false),
+            'THEMES_TEMPLATE_MENU'    => $this->getThemesDropdown($selectedTheme, false),
             'TXT_THEMES_EDIT'         => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
             'TXT_THEMES_CREATE'       => $_ARRAYLANG['TXT_CREATE'],
+            'TXT_THEME_IMPORT'        => $_ARRAYLANG['TXT_THEME_IMPORT'],
         ));
-        $objTemplate->setVariable('THEMES_MENU', $this->getDropdownNotInDb());
+        
         $this->checkTable($this->oldTable);
 //      $this->newdir();
     }
@@ -968,8 +1094,7 @@ class ViewManager
         \Permission::checkAccess(47, 'static');
 
         $themeName = !empty($_POST['dbName']) ? contrexx_input2raw($_POST['dbName']) : null;
-        $copyFromTheme = !empty($_POST['fromTheme']) && !stristr($_POST['fromTheme'], '..') ? contrexx_input2raw($_POST['fromTheme']) : null;
-        $existingThemeInFilesystem = !empty($_POST['existingdirName']) && !stristr($_POST['existingdirName'], '..') ? contrexx_input2raw($_POST['existingdirName']) : null;
+        $copyFromTheme = !empty($_POST['fromTheme']) && !stristr($_POST['fromTheme'], '..') ? contrexx_input2raw($_POST['fromTheme']) : null;        
         $createFromDatabase = !empty($_POST['fromDB']) ? contrexx_input2raw($_POST['fromDB']) : null;
         $dirName = !empty($_POST['dirName']) && !stristr($_POST['dirName'], '..') ? contrexx_input2raw($_POST['dirName']) : null;
         $dirName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($dirName);
@@ -979,10 +1104,10 @@ class ViewManager
             $this->newdir();
             return;
         }
-
+        
         $this->validateThemeName($themeName);
 
-        if (!empty($dirName) && empty($existingThemeInFilesystem)) {
+        if (!empty($dirName)) {
 
             // ensure that we're creating a new directory and not trying to overwrite an existing one
             $suffix = '';
@@ -1034,11 +1159,6 @@ class ViewManager
                 }
                 $this->newdir();
             }
-        } elseif (empty($dirName) && !empty($existingThemeInFilesystem)) {
-            $this->insertSkinIntoDb($themeName, $existingThemeInFilesystem);
-            $this->strOkMessage  = contrexx_raw2xhtml($themeName).' '.$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-            $_POST['themes'] = $existingThemeInFilesystem;
-            $this->overview();
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_STATUS_CHECK_INPUTS'];
             $this->newdir();
@@ -1158,6 +1278,9 @@ class ViewManager
         $pageContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,$pageContent);
         
         try {
+            if (self::isFileTypeComponent($themesPage)) {
+                $themesPage = self::getComponentFilePath($themesPage, false);
+            }
             if (!file_exists($this->websiteThemesPath.$themes.'/'.$themesPage)) {
                 $dir = str_replace(basename($themesPage),"", $themesPage);
                 \Cx\Lib\FileSystem\FileSystem::make_folder($this->websiteThemesPath.$themes.'/'.$dir, true);
@@ -1165,7 +1288,7 @@ class ViewManager
             $objFile = new \Cx\Lib\FileSystem\File($this->websiteThemesPath.$themes.'/'.$themesPage);
             if(!file_exists($this->websiteThemesPath.$themes.'/'.$themesPage)){
                $objFile->touch(); 
-            }
+            }            
             $objFile->write($pageContent);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
@@ -1223,149 +1346,100 @@ class ViewManager
     }
 
     /**
-     * add new skin file
-     * @access   public
+     * Get the file's full path
+     * 
+     * @param string  $filePath        Relative path of file
+     * @param boolean $isComponentFile load from component directory or not
+     * 
+     * @return string full of a file
      */
-    private function newfile()
+    function getFileFullPath($filePath, $isComponentFile)
     {
-        global $_ARRAYLANG;
-
-        \Permission::checkAccess(47, 'static');
-
-        $themes = !empty($_POST['themes']) && !stristr($_POST['themes'], '..') ? contrexx_input2raw($_POST['themes']) : null;
-        $themesFile = !empty($_POST['themesNewFileName']) && !stristr($_POST['themesNewFileName'], '..') ? \Cx\Lib\FileSystem\FileSystem::replaceCharacters($_POST['themesNewFileName']) : null;
-        if (empty($themesFile) || empty($themes)) {
-            return false;
-        }
-        if (!\FWValidator::is_file_ending_harmless($themesFile)) {
-            return false;
-        }
-
-        try {
-            $objFile = new \Cx\Lib\FileSystem\File($this->path.$themes.'/'.$themesFile);
-            $objFile->touch();
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            \DBG::msg($e->getMessage());
-            return false;
-        }
-
-        $this->strOkMessage = $themesFile." ".$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-    }
-
-    /**
-     * del skin file
-     * @access   public
-     */
-    function delfile()
-    {
-        global $_ARRAYLANG;
-
-        \Permission::checkAccess(47, 'static');
-
-        $themesFile = isset($_POST['themesDelFileName']) ? $_POST['themesDelFileName'] : '';
-        $themes = isset($_POST['themes']) ? $_POST['themes'] : '';
-
-        if (empty($themesFile) || empty($themes)) {
-            return;
-        }
-
-        $directory = new \RecursiveDirectoryIterator($this->path.$themes);
-        $iterator = new \RecursiveIteratorIterator($directory);
-        $objects = new \RegexIterator($iterator, '/^.+'.$themesFile.'$/i', \RecursiveRegexIterator::GET_MATCH);
-
-        // iterate through all objects in the folder and search for matching files
-        foreach ($objects as $object) {
-            if (\Cx\Lib\FileSystem\FileSystem::delete_file(current($object))) {
-                $this->strOkMessage = $themesFile.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
-                }
-             }
-        }
-
-    /**
-     * del skin folder and all files in it
-     * @param    bool    $nockeck
-     * @access   public
-     * @global   ADONewConnection
-     * @global   array
-     */
-    function deldir($nocheck = false)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        \Permission::checkAccess(47, 'static');
-
-        $themes = isset($_POST['themesDelName']) ? contrexx_input2raw($_POST['themesDelName']) : '';
-        if ($themes == '' && !empty($_GET['delete'])){
-            $themes = contrexx_input2raw($_GET['delete']);
-        }
-
-        $themes = str_replace(array('..','/'), '', $themes);
-        if ($themes == '') {
-            return;
-        }
-
-        $_POST['themes'] = !empty($_POST['themes']) ? contrexx_input2raw($_POST['themes']) : '';
-        if ($nocheck && $_POST['themes'] == $themes) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_STATUS_FILE_CURRENTLY_OPEN'];
-            return false;
-        }
-
-        $dir = ($this->path.$themes);
-        // delete whole folder with subfolders in case it exists
-        if (   file_exists($dir)
-            && !\Cx\Lib\FileSystem\FileSystem::delete_folder($this->path.$themes, true)
-        ) {
-            $this->strErrMessage = $themes.": ".$_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'];
-            return false;
-        }
-
-        $theme = $this->themeRepository->findOneBy(array('foldername' => $themes));
-        if (!$theme) {
-            $this->strErrMessage = $themes.": ".$_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'];
-            return false;
-        }
-
-        if (!$objResult->EOF) {
-            $themesId = $objResult->fields['id'];
-
-            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $pages = $pageRepo->findBy(array(
-                'skin' => intval($themesId),
-            ));
-            foreach ($pages as $page) {
-                $page->setSkin(0);
-                \Env::get('em')->persist($page);
-            }
-            \Env::get('em')->flush();
+        if (empty($filePath)) {
+            return '';
         }
         
-        if ($this->themeRepository->remove($theme)) {
-            $this->strOkMessage = $themes.": ".$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
-            return true;
+        $fileTypeComponent = false;
+        if (!empty($filePath)) {
+            $fileTypeComponent = self::isFileTypeComponent($filePath);
         }
-
-        $this->strErrMessage = $themes.": ".$_ARRAYLANG['TXT_STATUS_CANNOT_DELETE'];
-        return false;
+        
+        $websitePath  = $this->websiteThemesFilePath;
+        $codebasePath = $this->codeBaseThemesFilePath;
+        
+        if ($fileTypeComponent && $isComponentFile) { // selected from create overrides
+            $websitePath  = $this->websitePath;
+            $codebasePath = $this->codeBasePath;
+        }
+        
+        $relativeFilePath = $filePath;
+        if ($fileTypeComponent) {
+            $relativeFilePath = self::getComponentFilePath($filePath, $isComponentFile);
+        }
+        
+        $websiteFilePath  = $websitePath . $relativeFilePath;
+        $codeBaseFilePath = $codebasePath . $relativeFilePath;
+        
+        $filePath         = file_exists($websiteFilePath) 
+                            ? $websiteFilePath
+                            : ( file_exists($codeBaseFilePath)
+                                ? $codeBaseFilePath
+                                : ''
+                              );
+        
+        return $filePath;
+        
     }
-
+    
     /**
      * Gets the dropdown menus content
+     * 
      * @access public
      */
     function getDropdownContent()
     {
         global $objTemplate;
         
-        $themes = !empty($_REQUEST['themes']) && !stristr($_REQUEST['themes'], '..') ? contrexx_input2raw($_REQUEST['themes']) : '';
-        $themesPage = !empty($_POST['themesPage']) && !stristr($_REQUEST['themes'], '..') ? contrexx_addslashes($_POST['themesPage']) : '';
+        $themes          = !empty($_REQUEST['themes']) && !stristr($_REQUEST['themes'], '..') ? contrexx_input2raw($_REQUEST['themes']) : '';
+        $themeTab        = isset($_POST['selectedTab']) ? intval($_POST['selectedTab']) : 0;
+        $themesPage      = isset($_POST['themesPage']) ? contrexx_input2raw($_POST['themesPage']) : '';
+        $isComponentFile = ($themeTab == 1);
+
         $theme = $this->themeRepository->findOneBy(array('foldername' => $themes));
+        if (!$theme) {
+            $theme = $this->themeRepository->getDefaultTheme();
+        }
+        
+        $this->codeBaseThemesFilePath = $this->codeBaseThemesPath.$theme->getFoldername();
+        $this->websiteThemesFilePath  = $this->websiteThemesPath.$theme->getFoldername();
+        
+        $filePath = '';
+        if (!empty($themesPage)) {
+            $filePath = $this->getFileFullPath($themesPage, $isComponentFile);
+        }
+        
+        if (!is_file($filePath)) {
+            $filePath   = $this->websiteThemesFilePath . '/index.html';
+            $themesPage = '/index.html';
+        }
+        
         $objTemplate->setVariable(array(
-            'THEMES_PAGES_MENU'     => $this->getFilesDropdown($theme, $themesPage),
             'THEMES_MENU'           => $this->getThemesDropdown($theme),
-            'THEMES_PAGE_VALUE'     => $this->getFilesContent($theme, $themesPage),
-            'THEMES_PAGE_DEL_VALUE' => $this->getFilesDropdownDel($theme),
+            'THEMES_PAGES_MENU'     => $this->getFilesDropdown($theme, $themesPage, $isComponentFile),
+            'THEMES_PAGE_VALUE'     => $this->getFilesContent($filePath),
             'THEMES_MENU_DEL'       => $this->_getThemesDropdownDelete(),
+            'THEME_ID'              => $theme->getId(),
+            'THEME_SELECTED_THEME'  => $theme->getFoldername(),
+            'CONTREXX_BASE_URL'     => \Env::get('cx')->getWebsiteOffsetPath() . '/',
+            'THEMES_SELECTED_PAGENAME' => $themesPage,
+            'THEME_EDIT_PATH'          => (!$isComponentFile ? '/'.$theme->getFoldername() : '') . $themesPage,
         ));
+        
+        if (empty($themesPage)) {
+            $objTemplate->hideBlock('theme_editor');
+        } else {
+            $objTemplate->touchBlock('theme_editor');
+        }
     }
     
     /**
@@ -1618,99 +1692,65 @@ class ViewManager
         }
         return $dirs;
     }
-     /**
-      * Read the all files within the selected theme in themes folder
-      *
-      * @param type $path
-      * @param type $addFile
-      * @param type $displayFolders
-      * @return string
-      */
-    function readDirs($path, $folder) {
-        $result['data'] .= "<ul>";
-        
-        // Loop through the dirs
-        foreach (glob("$path/*") as $filePath) {
-            if (is_dir($filePath)) {
-                $folderName  = str_replace($path . '/', '', $filePath);
-                $icon        = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($path . '/', '', $filePath) . '.png';
-                
-                $result['data']     .= '<li><img height="16" width="16" alt="icon" src="' . $icon . '" class="icon"><a href="javascript:void(0);" >' . $folderName . '</a>' . PHP_EOL;
-                $result['data']     .= $this->readDirs($filePath, str_replace($this->_parentPath, '', $path)."/".$folderName);
-                $result['filePath'] .=  $filePath.'<br>';
-                $result['data']     .= '</li>' . PHP_EOL;
-            } else {
-                $fileName = str_replace($path . '/', '', $filePath);
-                if (!in_array(pathinfo($fileName, PATHINFO_EXTENSION), array("yml"))) {
-                    $icon     = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($path . '/' . $fileName) . '.png';
-                    $cssId     = ($_POST['themesPage'] == $folder . '/' . $fileName) ? 'activeFile' : '';
-                    $result['filePath'] .= $filePath.'<br>';
-                    $result['data']  .= "<li><img height='16' width='16' alt='icon' src='" . $icon . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage'  id = '$cssId' data-rel='" . $folder . '/' . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL;
-                }
-            }
-        }
-       
-        $result['data'] .= "</ul>";
-        return $result;
-    }
-    
     
     /**
-     * Gets the themes pages dropdown menu
-     * @access   public
-     * @param    string   $themes
-     * @param    string   $themesPage (optional)
-     * @return   string   $fdm
+     * Sets the drop down content for the files and create overrides tab
+     * 
+     * @param object  $theme           active theme's object (\Cx\Core\View\Model\Entity\Theme)
+     * @param string  $themesPage      Currently active themes page
+     * @param boolean $isComponentFile request made for type component file or theme file
      */
-    function getFilesDropdown($themes = null, $themesPage="")
+    function getFilesDropdown($theme, $themesPage, $isComponentFile)
     {
         global $_ARRAYLANG, $objTemplate;
 
-        if (!$themes) {
-            $themes = $this->themeRepository->getDefaultTheme();
+        //Get the components Frontend templates
+        $cx = \Env::get('cx');
+        $em = $cx->getDb()->getEntityManager();
+        $objSystemComponent = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
+        $components = $objSystemComponent->findAll();
+        $componentFiles = array();
+        foreach ($components as $component) {
+           $componentDirectory = $component->getDirectory() . '/View/Template/Frontend';
+            if (file_exists($componentDirectory)) {
+                foreach (glob("$componentDirectory/*") as $componentFile) {
+                   $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
+                }
+            }
         }
-        $themes = $themes->getFoldername();
-        if (!isset($themesPage)) {
-            $themesPage = "index.html";
-        }
+        
+        $themeFolder = $theme->getFoldername();
         $codeBaseFiles = array();
         $websiteThemesFiles = array();
-        if ($themes != "") {
-            $this->codeBaseThemesFilePath = $this->codeBaseThemesPath.$themes;
-            $this->websiteThemesFilePath  = $this->websiteThemesPath.$themes;
-            $mergedFiles = $this->getThemesFiles();
-            foreach($mergedFiles as $folderName => $fileName) {
-               $folderIcon = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
+        if ($themeFolder != "") {            
+            if (file_exists($this->codeBaseThemesFilePath)) {
+                $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
+                $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
+            }
+            if (file_exists($this->websiteThemesFilePath)) {
+                $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
+                $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
+            }
 
-                if (is_array($fileName)) {
-                        $result = $this->getUlLi($fileName, $folderName.'/');
-                        $cssId  = preg_match('#^'.$folderName.'/# i', $_POST['themesPage']) ? 'activeFolder' : '';
-                        $objTemplate->setVariable(array(
-                            'THEMES_FOLDERS' => '<li>'.$folderIcon.'<a href="javascript:void(0);" id="'.$cssId.'" >' . $folderName . '</a>' . PHP_EOL.$result.'</li>', 
-                        ));
-                        $objTemplate->parse('themeFolders');
-
-                } else {
-                    $filePath = (file_exists($this->websiteThemesFilePath . '/' . $fileName)) ? $this->websiteThemesFilePath . '/' . $fileName : $this->codeBaseThemesFilePath . '/'. $fileName;
-                    $icon     = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
-                    $cssId    = ($_POST['themesPage'] ==  $fileName) ? 'activeFile' : '';
-                    $objTemplate->setVariable(array(
-                       'THEMES_FILES' => "<li><img height='16' width='16' alt='icon' src='" . $icon . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage' id = '$cssId' data-rel='" . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL, 
-                    ));
-                    $objTemplate->parse('themeFiles');
-                }
-                
-                $objTemplate->setVariable(array(
+            $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
+            $this->sortFilesFolders($codeBaseFiles);
+            $mergedFiles = $codeBaseFiles;
+            
+            $objTemplate->setVariable(array(
+                    'THEME_FILES_TAB'                            => $this->getUlLi($mergedFiles, '', 'theme', !$isComponentFile ? $themesPage : ''),
+                    'THEME_OVERRIDE_TAB'                         => $this->getUlLi($componentFiles, '', 'applicationTheme', $isComponentFile ? $themesPage : ''),
                     'TXT_DESIGN_LAYOUT'                          => $_ARRAYLANG['TXT_DESIGN_LAYOUT'],
                     'TXT_DESIGN_APPLICATION_TEMPLATE'            => $_ARRAYLANG['TXT_DESIGN_APPLICATION_TEMPLATE'],
                     'TXT_DESIGN_CONTENT_TEMPLATE'                => $_ARRAYLANG['TXT_DESIGN_CONTENT_TEMPLATE'],
                     'TXT_DESIGN_HOME_TEMPLATE'                   => $_ARRAYLANG['TXT_DESIGN_HOME_TEMPLATE'],
-                    'THEME_FOLDER_ICON'                          => $folderIcon,
+                    'TXT_THEME_NEW_WITHIN'                       => $_ARRAYLANG['TXT_THEME_NEW_WITHIN'],
+                    'TXT_THEME_COPY'                             => $_ARRAYLANG['TXT_THEME_COPY'],
+                    'TXT_THEME_RENAME'                           => $_ARRAYLANG['TXT_THEME_RENAME'],
+                    'TXT_THEME_DELETE'                           => $_ARRAYLANG['TXT_THEME_DELETE'],
+                    'TXT_THEME_ACTIONS'                          => $_ARRAYLANG['TXT_THEME_ACTIONS'],
                 ));
-                
-            }
         }
-        return $result;
+        
     }
     
     /**
@@ -1743,29 +1783,52 @@ class ViewManager
     }
     
     /**
-     * Getting the files and folders in a ul li format
+     * Getting the files and folders in a ul li format for the js tree
      * 
-     * @param type $folder - folders and files
-     * @param string $path - path of the file
+     * @param array  $folder     array of files and folders
+     * @param string $path       current path of the $folder array
+     * @param string $block      type of the folder array (theme or applicationTheme)
+     * @param string $themesPage selected file in the ul li
      * 
-     * @return string $result
+     * @return string formatted ul and li for the js tree
      */
-    function getUlLi($folder, $path) {
-        $imgPath = $path;
+    function getUlLi($folder, $path, $block, $themesPage) {        
+        $imgPath = $path;        
         $result .= '<ul>';
+        $virtualFolder = array('View', 'Template', 'Frontend');
         foreach ($folder as $folderName => $fileName) {
             if (is_array($fileName)) {
-                $path   .= $folderName .'/';
-                $cssId   = preg_match('#^'.$path.'# i', $_POST['themesPage']) ? 'activeFolder' : '';
-                $icon    = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
-                $result .= '<li>'.$icon.'<a href="javascript:void(0);" id="'.$cssId.'" >' . $folderName . '</a>' . PHP_EOL;
-                $result .= $this->getUlLi($fileName, $imgPath.$folderName .'/');
-                $result .= '</li>' . PHP_EOL;
-            } else {
-                $filePath = (file_exists($this->websiteThemesFilePath . '/' . $imgPath . $fileName)) ? $this->websiteThemesFilePath . '/' . $imgPath .$fileName : $this->codeBaseThemesFilePath . '/'. $imgPath .$fileName;
-                $iconDisp = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
-                $cssId   = ($_POST['themesPage'] == $imgPath . $fileName) ? 'activeFile' : '';
-                $result .= "<li><img height='16' width='16' alt='icon' src='" . $iconDisp . "' class='icon'><a href= 'javascript:void(0);' class='loadThemesPage'  id = '$cssId' data-rel='" . $imgPath . $fileName . "'>" . $fileName . "</a></li>" . PHP_EOL;
+                if (   $block == 'applicationTheme'
+                    || (
+                           $block == 'theme' 
+                        && !in_array($folderName, $virtualFolder)
+                       )
+                   ) {                    
+                    $path         = $imgPath . '/' . $folderName;
+                    $icon         = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
+                    $activeFolder = preg_match('#^'.$path.'# i', $themesPage) ? "id='activeFolder'" : '';
+                    
+                    $result .= '<li><a  href="javascript:void(0);"' .$activeFolder. ' data-rel="'.$path.'" class="folder naming">' . $icon . $folderName . '</a>';
+                }
+                $result .= $this->getUlLi($fileName, $imgPath .(!in_array($folderName, $virtualFolder) ? '/'. $folderName : ''), $block, $themesPage);
+                $result .= '</li>';
+            } else {                
+                if ($block == 'applicationTheme') {
+                    $filePath = (file_exists($this->websitePath . '/' . $imgPath .'/'. $fileName)) ? $this->websitePath . '/' . $imgPath . '/Template/Frontend' .'/'. $fileName : $this->codeBasePath . '/' . $imgPath . '/Template/Frontend' .'/'. $fileName;                    
+                } else {
+                    $filePath = (file_exists($this->websiteThemesFilePath . '/' . $imgPath .'/'. $fileName)) ? $this->websiteThemesFilePath . '/' . $imgPath .'/'. $fileName : $this->codeBaseThemesFilePath . '/'. $imgPath .'/'. $fileName;
+                }  
+                
+                if (in_array($fileName, $this->filenames)) {
+                    $iconSrc = '../core/ViewManager/View/Media/Config.png';
+                } else {
+                    $iconSrc = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
+                }
+                
+                $icon    = "<img height='16' width='16' alt='icon' src='" . $iconSrc . "' class='icon'>";
+                $activeFile = ($themesPage == $imgPath .'/'. $fileName) ? "id = 'activeFile'" : '';
+                
+                $result .= "<li><a  href= 'javascript:void(0);' class='loadThemesPage naming' $activeFile data-rel='" . $imgPath .'/'. $fileName . "'>" . $icon . $fileName . "</a></li>" . PHP_EOL;
             }
         }
         $result .= '</ul>';
@@ -1781,13 +1844,31 @@ class ViewManager
      */
     function directoryIteratorToArray(\DirectoryIterator $it) {
         $result = array();
-        foreach ($it as $key => $child) {
+        $virtualFolder = array('View', 'Template', 'Frontend');
+        
+        foreach ($it as $child) {
             if ($child->isDot()) {
                 continue;
             }
             $name = $child->getBasename();
             if ($child->isDir()) {
+                switch (true) {
+                    case $name == preg_replace('#^/#', '', \Env::get('cx')->getCoreModuleFolderName()):
+                        $name = 'core_module';
+                        break;
+                    case $name == preg_replace('#^/#', '', \Env::get('cx')->getModuleFolderName()):
+                        $name = 'module';
+                        break;
+                    case $name == preg_replace('#^/#', '', \Env::get('cx')->getCoreFolderName()):
+                        $name = 'core';
+                        break;
+                    default:
+                        break;
+                }
                 $subit = new \DirectoryIterator($child->getPathname());
+                if (in_array($name, $virtualFolder)) {
+                    return $this->directoryIteratorToArray($subit);
+                }
                 $result[$name] = $this->directoryIteratorToArray($subit);
             } else {
                 $result[] = $name;
@@ -1822,105 +1903,225 @@ class ViewManager
     }
     
     /**
-     * Gets the themes pages dropdown menu del
-     * @access   public
-     * @return   string   $fdmd
-     */
-    function getFilesDropdownDel($themes = null)
-    {
-        global $_ARRAYLANG;
-        if (!$themes) {
-            $themes = $this->themeRepository->getDefaultTheme();
-        }
-        $themes = $themes->getFoldername();
-        $fdmd = "";
-
-        if ($themes != "") {
-            $file = $this->path.$themes;
-            if (file_exists($file)) {
-                $directory = new \RecursiveDirectoryIterator($file);
-                $objects = new \RecursiveIteratorIterator($directory);
-
-                foreach ($objects as $name => $object) {
-                    $fileName = $object->getFileName();
-                    $extension = preg_split("/\./", $fileName);
-                    $x = count($extension)-1;
-                    if (in_array($extension[$x], $this->fileextensions)) {
-                        if (($fileName != ".") && ($fileName != "..") && (!in_array($fileName, $this->filenames))) {
-                            $fdmd .="<option value='".$fileName."'>".$fileName."</option>\n";
-                        }
-                    }
-                }
-        } else {
-                $fdmd .="<option value='1'>".$_ARRAYLANG['TXT_CHOOSE_DESIGN']."</option>\n";
-             }
-        }
-        return $fdmd;
-    }
-
-    /**
      * Gets the themes pages file content
      * @access   public
      * @param    string   $themes
      * @param    string   $themesPage
      * @return   string   $fileContent
      */
-    function getFilesContent($themes = null, $themesPage="")
+    function getFilesContent($filePath)
     {
-        global $objDatabase, $objTemplate;
-        if (!$themes) {
-            $themes = $this->themeRepository->getDefaultTheme();
-        }
-        $themes = $themes->getFoldername();
-        if (!isset($themesPage)) {
-            $themesPage = "index.html";
-        }    
-        if ($themes != "" && $themesPage != ""){
-            $websiteFile = $this->websiteThemesPath.$themes.'/'.$themesPage;       
-            $codebaseFile = $this->codeBaseThemesPath.$themes.'/'.$themesPage;       
-            $file = file_exists($websiteFile) ? $websiteFile :  $codebaseFile; 
-           
-            if (file_exists($file)) {
-                $fileIsImage = \ImageManager::_isImage($file);                
-                $contenthtml = '';
-                if (!$fileIsImage) {
-                    $contenthtml = file_get_contents($file);
-                    $contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $contenthtml);
-                    $contenthtml = htmlspecialchars($contenthtml);
-                }                
-// TODO: Pointless!
-//                $objResult = $objDatabase->Execute("SELECT id,expert FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
-//                if ($objResult !== false) {
-//                    while (!$objResult->EOF) {
-//                        $expert = $objResult->fields['expert'];
-//                        $objResult->MoveNext();
-//                    }
-//                }                
-                $objTemplate->setVariable(array(
-                    'THEMES_SELECTED_THEME'    => $themes,
-                    'THEMES_SELECTED_PAGENAME' => $themesPage,
-                    'THEMES_FULL_PATH'         => $this->webPath.$themes.'/'.$themesPage,
-                    'CONTENT_HTML'             => $contenthtml,                    
-                ));                
-                if ($fileIsImage) {
-                    $objTemplate->touchBlock('template_image');
-                    $objTemplate->hideBlock('template_content');
-                    $objTemplate->hideBlock('file_actions_top');
-                    $objTemplate->hideBlock('file_actions_bottom');
-                } else {
-                    $objTemplate->touchBlock('file_actions_top');
-                    $objTemplate->touchBlock('file_actions_bottom');
-                    $objTemplate->touchBlock('template_content');
-                    $objTemplate->hideBlock('template_image');
-                }
-                //return $fileContent;
+        global $objTemplate, $_ARRAYLANG;
+        
+        if (file_exists($filePath)) {
+            $fileIsImage = \ImageManager::_isImage($filePath);                
+            $contenthtml = '';
+            if (!$fileIsImage) {
+                $contenthtml = file_get_contents($filePath);
+                $contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $contenthtml);
+                $contenthtml = htmlspecialchars($contenthtml);
             }
+
+            $objTemplate->setVariable(array(
+                'CONTENT_HTML'             => $contenthtml,                
+            ));
+            if ($fileIsImage) {
+                $objTemplate->setVariable(array(
+                    'THEMES_CONTENT_IMAGE_PATH' => preg_replace('#' . \Env::get('cx')->getWebsitePath() . '#', '', $filePath),
+                ));
+                $objTemplate->touchBlock('template_image');
+                $objTemplate->hideBlock('template_content');
+                $objTemplate->hideBlock('file_actions_bottom');
+                $objTemplate->hideBlock('file_editor_fullscreen');
+            } else {
+                \JS::activate('ace');
+
+                $pathInfo =  pathinfo($filePath, PATHINFO_EXTENSION);
+                $mode = 'html';
+
+                switch($pathInfo) {
+                    case 'html':
+                    case 'css':                                                    
+                        $mode = $pathInfo;
+                    break;
+                    case 'js':
+                        $mode = 'javascript';
+                    break;
+                    case 'yml':
+                    case 'yaml':
+                        $mode = 'yaml';
+                    break;
+                }
+
+                $jsCode = <<<CODE
+var editor;                        
+\$J(function(){         
+if (\$J("#editor").length) {
+    editor = ace.edit("editor");
+    editor.getSession().setMode("ace/mode/$mode");
+    editor.setShowPrintMargin(false);
+    editor.commands.addCommand({
+            name: "fullscreen",
+            bindKey: "F11",
+            exec: function(editor) {
+                    if (\$J('body').hasClass('fullScreen')) {
+                        \$J('body').removeClass('fullScreen');
+                        \$J(editor.container).removeClass('fullScreen-editor');
+                        cx.tools.StatusMessage.removeAllDialogs();
+                    } else {
+                        \$J('body').addClass('fullScreen');
+                        \$J(editor.container).addClass('fullScreen-editor');
+                        cx.tools.StatusMessage.showMessage(
+                            "<div style='text-align: center;'><span style='cursor: pointer;' onClick=\"editor.execCommand('fullscreen');\">{$_ARRAYLANG['TXT_THEME_EXIT_FULLSCREEN']}</span></div>",
+                            null,
+                            null,
+                            null,
+                            {closeOnEscape: false}
+                        );
+                    }
+                    editor.resize();
+            }
+    });
+    \$J('.fullscreen').click(function(){
+        editor.execCommand('fullscreen');
+    });
+}
+
+\$J('#theme_content').submit(function(){
+    \$J('#editorContent').val(editor.getSession().getValue());
+});
+
+\$J('.select_all').click(function() {
+    editor.selectAll();
+});
+
+\$J('input:reset').click(function() {
+    editor.setValue(\$J('#editorContent').val(), -1);
+});
+
+});
+CODE;
+
+                \JS::registerCode($jsCode);
+
+                $objTemplate->touchBlock('file_editor_fullscreen');
+                $objTemplate->touchBlock('file_actions_bottom');
+                $objTemplate->touchBlock('template_content');
+                $objTemplate->hideBlock('template_image');
+            }            
         } else {
-            $objTemplate->hideBlock('file_actions_top');
-            $objTemplate->hideBlock('file_actions_bottom');
+            //TO-DO : 
         }
+        
     }
 
+    /**
+     * check the given path is component file
+     * 
+     * @param string $path
+     * 
+     * @return boolean
+     */
+    public static function isFileTypeComponent($path) {
+        if (empty($path)) {
+            return false;
+        }        
+        //Check for Core Modules
+        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'#i', $path)) {
+            return true;
+        }
+        
+        //Check for Modules
+        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'#i', $path)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public static function replaceComponentFolderByItsType($path) {
+        if (empty($path)) {
+            return false;
+        }        
+        //Check for Core Modules
+        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'#i', $path)) {
+            return preg_replace('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'#i', \Env::get('cx')->getCoreModuleFolderName(), $path);
+        }
+        
+        //Check for Modules
+        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'#i', $path)) {
+            return preg_replace('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'#i', \Env::get('cx')->getModuleFolderName(), $path);
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get the component's file path
+     * 
+     * @param string $path
+     * 
+     * @return boolean | string
+     */
+    public static function getComponentFilePath($path, $loadFromComponentDir = true) {
+        if (empty($path)) {
+            return false;
+        }
+        $arrPath = explode('/', $path);        
+        $moduleName = $arrPath[2];
+        
+        if (count($arrPath) > 3) { // file name not exits
+            $fileName   = $arrPath[count($arrPath) - 1];
+        } else {
+            return false;
+        }
+        
+        //get the Core Modules File path
+        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'#i', $path)) {
+            return \Env::get('cx')->getCoreModuleFolderName() .'/'.$moduleName . ($loadFromComponentDir ? '/View' : '') .'/Template/Frontend/' . $fileName;
+        }
+        
+        //get the Modules File path
+        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'#i', $path)) {
+            return \Env::get('cx')->getModuleFolderName() .'/'. $moduleName . ($loadFromComponentDir ? '/View' : '') .'/Template/Frontend/' . $fileName;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Get the relative path of a file
+     * 
+     * @param string $path absolute path of a file
+     * 
+     * @return string relative path to the file
+     */
+    public static function getThemeRelativePath($path) {
+        if (empty($path)) {
+            return $path;
+        }
+        $arrPath    = explode('/', $path);
+        $moduleName = $arrPath[2];
+        
+        if (count($arrPath) > 3) { // file name not exits
+            $fileName   = $arrPath[count($arrPath) - 1];
+        } else {
+            return $path;
+        }
+        
+        //get the Core Modules File path
+        if (preg_match('#^'. \Env::get('cx')->getCoreModuleFolderName() .'#i', $path)) {            
+            return '/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'/'. $moduleName . '/' . $fileName;
+        }
+        
+        //get the Modules File path
+        if (preg_match('#^'. \Env::get('cx')->getModuleFolderName() .'#i', $path)) {            
+            return '/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'/'. $moduleName . '/' . $fileName;
+        }
+        
+        return $path;
+    }
+    
     /**
      * create default themepages
      * @todo    add proper error handling

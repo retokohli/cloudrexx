@@ -44,7 +44,7 @@ class JsonData {
         ),
         '\\Cx\\Modules\\Crm\\Controller' => array(
             'JsonCrm',
-        ),
+        )
     );
     
     /**

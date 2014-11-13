@@ -40,6 +40,7 @@ $_ARRAYLANG['TXT_MEDIA_OVERVIEW'] = "Media Overview";
 $_ARRAYLANG['TXT_MEDIA_MSG_SEVERAL_NEW_FILE'] = "Several files could not been uploaded!";
 $_ARRAYLANG['TXT_MEDIA_SELECT_ACTION'] = "Select action:";
 $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'] = "Design files administration";
+$_ARRAYLANG['TXT_MEDIA_LAYOUT'] = "Layout";
 $_ARRAYLANG['TXT_MEDIA_MAKE_SELECTION'] = "Please Make A Selection!";
 $_ARRAYLANG['TXT_MEDIA_EDIT_FILE'] = "Edit media";
 $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'] = "An Error Occured!";

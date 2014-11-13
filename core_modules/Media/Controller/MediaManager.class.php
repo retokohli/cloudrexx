@@ -160,18 +160,17 @@ class MediaManager extends MediaLibrary
             case 'themes':
                 \Permission::checkAccess(21, 'static');
                 $objTemplate->setVariable("CONTENT_NAVIGATION",
-                   "<a href='index.php?cmd=ViewManager'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>
-                    <a href='index.php?cmd=ViewManager&amp;act=templates'>".$_ARRAYLANG['TXT_DESIGN_TEMPLATES']."</a>
-                    <a href='index.php?cmd=Media&amp;archive=themes' class='active'>".$_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION']."</a>
-                    <a href='index.php?cmd=ViewManager&amp;act=examples'>".$_ARRAYLANG['TXT_CORE_PLACEHOLDERS']."</a>
-                    <a href='index.php?cmd=ViewManager&amp;act=manage'>".$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT']."</a>");
+                   "<a href='index.php?cmd=Media&amp;archive=content'>". $_ARRAYLANG['TXT_IMAGE_CONTENT'] ."</a>
+                    <a href='index.php?cmd=Media&amp;archive=attach'>". $_ARRAYLANG['TXT_MODULE'] ."</a>
+                    <a href='index.php?cmd=Media&amp;archive=themes' class='active'>".$_ARRAYLANG['TXT_MEDIA_LAYOUT']."</a>");
                 break;
 
             case 'content':
                 \Permission::checkAccess(32, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content" class="active">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
-                    <a href="index.php?cmd=Media&amp;archive=attach">'. $_ARRAYLANG['TXT_MODULE'] .'</a>'
+                    <a href="index.php?cmd=Media&amp;archive=attach">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>'
                 );
                 break;
             case 'Contact':
@@ -194,6 +193,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>
                 ');
                 break;
             case 'Access':
@@ -201,6 +201,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>    
                 ');
                 break;
             case 'Blog':
@@ -208,6 +209,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>
                 ');
                 break;
             case 'Calendar':
@@ -215,6 +217,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>
                 ');
                 break;
             case 'Downloads':
@@ -222,6 +225,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>
                 ');
                 break;
             case 'Gallery':
@@ -229,6 +233,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>
                 ');
                 break;
             case 'MediaDir':
@@ -236,6 +241,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>
                 ');
                 break;
             case 'Podcast':
@@ -243,6 +249,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>
                 ');
                 break;
             case 'Shop':
@@ -250,6 +257,7 @@ class MediaManager extends MediaLibrary
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=Media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                    <a href="index.php?cmd=Media&amp;archive=themes">'. $_ARRAYLANG['TXT_MEDIA_LAYOUT'] .'</a>
                 ');
                 break; 
             default:
@@ -399,7 +407,7 @@ class MediaManager extends MediaLibrary
 
         switch ($this->archive) {
             case 'themes':
-                $this->pageTitle = $_ARRAYLANG['TXT_DESIGN_FILES_ADMINISTRATION'];
+                $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_LAYOUT'];
                 break;
             case 'content':
                 $this->pageTitle = $_ARRAYLANG['TXT_IMAGE_ADMINISTRATION'];

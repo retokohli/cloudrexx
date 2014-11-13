@@ -286,6 +286,7 @@ class ThemeRepository
                 'description' => $this->xmlDocument['THEME']['DESCRIPTION']['cdata'],
                 'type' => 'template',
                 'publisher' => $this->xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
+                'subtype' => null,
                 'versions' => array(
                     'state' => 'stable',
                     'number' => $this->xmlDocument['THEME']['VERSION']['cdata'],
@@ -300,6 +301,7 @@ class ThemeRepository
                 'description' => '',
                 'type' => 'template',
                 'publisher' => 'Comvation AG',
+                'subtype' => null,
                 'versions' => array(
                     'state' => 'stable',
                     'number' => '1.0.0',
