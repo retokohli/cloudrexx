@@ -104,7 +104,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                     'subject'      => contrexx_raw2xhtml($feedBackSubject),
                     'firstName'    => $objUser->objUser->getProfileAttribute('firstname'),
                     'lastName'     => $objUser->objUser->getProfileAttribute('lastname'),
-                    'phone'        => empty($objUser->objUser->getProfileAttribute('phone_office')) ? $objUser->objUser->getProfileAttribute('phone_mobile') : $objUser->objUser->getProfileAttribute('phone_office'),
+                    'phone'        => !$objUser->objUser->getProfileAttribute('phone_office') ? $objUser->objUser->getProfileAttribute('phone_mobile') : $objUser->objUser->getProfileAttribute('phone_office'),
                     'company'      => $objUser->objUser->getProfileAttribute('company'),
                     'toEmail'      => $recipientMailAddress
                 );
