@@ -68,7 +68,7 @@ class InitCMS
      */
     public $mode;
     
-    private $themeRepository;
+    protected $themeRepository;
 
     /**
      * Constructor
