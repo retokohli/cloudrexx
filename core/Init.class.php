@@ -529,7 +529,11 @@ class InitCMS
         
         $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();        
         if ($page->getUseCustomContentForAllChannels()) {
-            $themeFolder = $themeRepository->findById($page->getSkin())->getFoldername();
+            $themeId = $page->getSkin();
+            if ($themeId === 0) {
+                $themeId = $this->channelThemeId;
+            }
+            $themeFolder = $themeRepository->findById($themeId)->getFoldername();
             if (file_exists(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent())) {
                 $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent());
                 return true;
