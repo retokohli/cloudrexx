@@ -105,7 +105,7 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
     public function activateLanguages() {
         
         $themeTypes = array(
-          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_STANDARD, 
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB, 
           \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,  
           \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT,  
           \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF,  
