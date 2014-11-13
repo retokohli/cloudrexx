@@ -73,23 +73,32 @@ form .formUploadedFiles .deleteIcon {
 form label {
     float: left;
     width: 250px;
+    font-weight: normal;
 }
 form input[type="submit"] {
     margin-right: 10px;
     float: left;
 }
-#login form input.remember_me,
+/*#login form input.remember_me,
 #login form label.remember_me {
     margin-left: 0;
     margin-top: 7px;
     padding: 15px 0 0px 0;
     border: 0 none;
     margin-bottom: -10px;
-}
+}*/
 #login form input.remember_me {
     margin-top: 4px;
 }
-
+form p label.remember_me {
+    margin-left: 0;
+    margin-top: 10px;
+    margin-top: 12px;
+}
+.login-bottom .col-md-offset-6 {
+    margin-left: 0;
+    padding-left: 10px;
+}
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABLES IN MODULES    */
 /***************************************************/
@@ -2576,6 +2585,9 @@ input[type="submit"].contactFormClass_button {
 .login-bottom {
     width: auto;
     padding-left: 31.5%;
+    float: left;
+    margin-top: -5px;
+}
 }
 .login-bottom a {
     color: #3a4044;
@@ -2586,7 +2598,6 @@ input[type="submit"].contactFormClass_button {
     background-image: url('../core_modules/Login/View/Media/register_small.gif');
     background-position: left center;
     background-repeat: no-repeat;
-    margin-bottom: 10px;
 }
 .login-bottom a.lostpw {
     padding-left: 18px;
@@ -2594,3 +2605,8 @@ input[type="submit"].contactFormClass_button {
     background-position: left center;
     background-repeat: no-repeat;
 }
+body .login-bottom .btn {
+    padding: 0 20px;
+    margin-bottom: 20px;
+}
+/*custom*/
