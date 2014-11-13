@@ -38,13 +38,13 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
      */
     public function getAccessableMethods() {
         return array(
-            'activateTheme'             => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkActivatePermission')),
-            'activateLanguages'         => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkActivatePermission')),
-            'checkThemeExistsByThemeId' => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkDeletePermission')),
-            'deleteThemeById'           => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkDeletePermission')),
-            'delete'                    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),            
-            'rename'                    => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),
-            'newWithin'                 => new \Cx\Core\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),            
+            'activateTheme'             => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkActivatePermission')),
+            'activateLanguages'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkActivatePermission')),
+            'checkThemeExistsByThemeId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkDeletePermission')),
+            'deleteThemeById'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkDeletePermission')),
+            'delete'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),            
+            'rename'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),
+            'newWithin'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),            
             );
     }
 
