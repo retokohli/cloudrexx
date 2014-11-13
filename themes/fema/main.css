@@ -57,10 +57,10 @@ body h4 {
 p.lead {
     color: #ff2828;
 }
-a {
+body a {
     color: #3a4044;
 }
-a:hover {
+body a:hover {
     transition: all 0.35s ease-in-out;
     color: #3a4044;
     text-decoration: none;
@@ -448,7 +448,7 @@ body .navbar .nav > li > a:hover, #navigation li.level-1.active > a.active {
     color: #a5b2b9;
     font-weight: 600;
 }
-.side-links li a:hover {
+#content2 .side-links li a:hover {
     color: #454a4d;
 }
 /* ==========================================================================
@@ -1050,7 +1050,7 @@ ul.social-icons li a:hover {
     font-size: 14px;
     margin-bottom: 0px;
 }
-.footerBlock a {
+body .footerBlock a, body .footerBlock a:hover {
     color: #586166;
     text-decoration: none;
     font-weight: 700;
@@ -1817,4 +1817,7 @@ label, input, button, select, textarea {
 .more.text-center {
     box-sizing: border-box;
     width: 97.3% !important;
+}
+.navbar-inverse .nav .active>a, .navbar-inverse .nav .active>a:hover, .navbar-inverse .nav .active>a:focus {
+    color: #ffffff;
 }
