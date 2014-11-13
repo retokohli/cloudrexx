@@ -1,0 +1,187 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+    <!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE}</title>
+
+        <meta http-equiv="X-UA-Compatible" content="IE=11,IE=10,IE=9" />
+        <meta name="generator" content="{VERSION}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="description" content="{METADESC}" />
+        <meta charset="{CHARSET}" />
+
+        <meta property="og:site_name" content="{GLOBAL_TITLE}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta property="og:title" content="{METATITLE}" />
+        <meta property="og:description" content="{METADESC}" />
+        <meta property="og:url" content="http://{DOMAIN_URL}{CURRENT_URL}" />
+
+        <meta name="twitter:title" content="{METATITLE}" />
+        <meta name="twitter:description" content="{METADESC}" />
+        <link type="images/x-icon" rel="icon" href="themes/business/images/favicon.png" />
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+        <link type="text/css" rel="stylesheet" href="themes/business/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/business/text.css" />
+        <link type="text/css" rel="stylesheet" href="themes/business/modules.css" />
+        <link type="text/css" rel="stylesheet" href="themes/business/responsiveslides.css" />
+        <link type="text/css" rel="stylesheet" href="themes/business/responsive.css" />
+        <link type="text/css" rel="stylesheet" href="themes/business/mobile_mainnavigation.css" />
+        
+        <link rel="stylesheet" href="themes/business/default.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="themes/business/slider.css" type="text/css" media="screen" />
+        <link type="text/css" rel="stylesheet" href="themes/business/gmap.css" />
+        
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+
+        <script type="text/javascript">
+			
+            var cssName = '{CSS_NAME}';
+            if (cssName.length > 0) {               
+                $J.ajax({
+                    url: '{PATH_OFFSET}/themes/business/images/titelbilder/titelbild_' + cssName + '.jpg',
+                    complete: function(jqXHR) {
+                       
+                        var contentType = jqXHR.getResponseHeader('Content-Type');
+                        if ($J.type(contentType) == 'string' && contentType.substring(0, 5) == 'image') {
+                            $J('#page').prepend('<img id="page-header" class="img-responsive" src="{PATH_OFFSET}/themes/business/images/titelbilder/titelbild_' + cssName + '.jpg" alt="Titelbild" />');
+                        }
+                    }
+                });
+            }
+        </script>
+
+        <script type="text/javascript" src="themes/business/js/modernizr.js"></script>
+        <script type="text/javascript" src="themes/business/js/responsiveslides.min.js"></script>
+        <script type="text/javascript" src="themes/business/js/jquery.sidr.min.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+        <script type="text/javascript">
+            var map = null;
+            function initialize() {
+                myLatlng = showAddress('{CONTACT_COUNTRY}, {CONTACT_ZIP} {CONTACT_PLACE} {CONTACT_ADDRESS}');
+            }
+            function initializeMap(coordinates) {
+                var mapOptions = {
+                    zoom: 18,
+                    center: coordinates
+                }
+                map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+                var marker = new google.maps.Marker({
+                    position: coordinates,
+                    map: map,
+                    title:"{CONTACT_COMPANY}",
+                });
+            }
+
+                //google.maps.event.addDomListener(window, 'load', initialize);
+        </script>
+
+        <script type="text/javascript" src= "themes/business/js/javascript.js"></script>
+	<script type="text/javascript" src= "themes/business/js/script.js"></script>
+        <!--[if IE 6]>
+        <script type="text/javascript" src="themes/business/js/DD_belatedPNG.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/business/js/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    var elements = '#search-input';
+                    $J(elements).each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
+        </script>
+        <![endif]-->
+    </head>
+
+    <body>
+        <div id="wholePage-content">
+            <header id="header">
+                <div class="wrapper">
+                    <div id="header_container" class="full-width">
+           
+                        <!-- logo block start -->
+                        
+                        <div id="logo"><a href="[[NODE_HOME]]"><img alt="logo" src="themes/business/images/Logo.png" /></a></div>
+                        
+                        <!-- logo block end -->
+                        
+                        <div id="right-nav" class="grid10">
+                            {NAVBAR_FILE}
+                        </div>
+                        <div class="open_navigation" id="sidr-menu"><span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span></div>
+                    </div>
+                </div>
+            </header>
+            <section id="content-wrapper">
+                <div class="wrapper header_image {NAVTITLE}"><img class="img-responsive" src="themes/business/images/titelbild_informationen.jpg" /></div>
+                {CONTENT_FILE}
+            </section>
+            <footer id="footer">
+                <div class="wrapper">
+                    
+                    <!-- footer block start -->
+                    
+                    <div id="footer_container">
+                        <hr>
+                        <div class="contact">  
+                            <div class="imprint">  
+                                <div class="col two grid4">
+                                    <div class="copyright">
+                                            <ul>
+                                                <li>&copy; {DATE_YEAR} <em>{CONTACT_COMPANY}</em></li>
+                                                <li><a href="/Rechtliche-Hinweise">Rechtliche Hinweise</a></li>
+                                                <li><a href="/Impressum">Impressum</a></li>
+                                            </ul>
+                                    </div>
+                                </div>
+                                <div class="col two grid4">
+                                    <div class="social_media">
+                                        <a target="_blank" href="https://www.facebook.com/contrexxsoftware" class="social facebook"><!-- --></a> <a target="_blank" href="http://twitter.com/contrexx" class="social twitter"><!-- --></a> <a target="_blank" href="http://www.contrexx.com/feed/news_headlines_de.xml" class="social rss"><!-- --></a> <a target="_blank" href="http://www.xing.com/companies/comvationag" class="social xing"><!-- --></a> 
+                                   </div>
+                                </div>  
+                            </div>
+                        </div>   
+                    </div>
+                </div>
+            </footer>
+            <!-- footer block end -->
+        </div>
+        <div id="sidr" class="navigation2">
+        {NAVBAR2_FILE}
+        <form id="search-form2" action="[[NODE_SEARCH]]" method="get">
+                <input id="search-input" type="text" name="term" value="Suchen..." onclick="this.value=''" onblur="this.value='Suchen'" />
+        </form>
+        </div>
+{COUNTER}
+{GOOGLE_ANALYTICS}
+        <script type="text/javascript" src = "//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"> </script>
+        <script type="text/javascript" src = "themes/business/js/jquery.nivo.slider.js"></script>
+        <script type="text/javascript">
+            $J19 = $.noConflict(true);
+            $J19(document).ready(function($){
+
+                $("#nivoslider").nivoSlider();
+
+            });
+        </script>
+
+    </body>
+</html>
