@@ -166,7 +166,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                                        \n\n
                                        {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_MAIL']}: \n\n
                                        {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC']}  : {$arrFields['feedBackType']} \n\n
-                                       {$_ARRAYLANG['TXT_SUPPORT_EMAIL_REGARD']}        : {$arrFields['subject']} \n\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_SUBJECT']}        : {$arrFields['subject']} \n\n
                                        {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_COMMENTS']}        : {$arrFields['comments']} \n\n.";
         //html content
         $arrFields['message_html'] = '<div style="width:600px; font-family: arial,helvetica,sans-serif; font-size: 13px;">
@@ -208,12 +208,12 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                 <td>&nbsp;: ' . $arrFields['feedBackType'] . '</td>
             </tr>
             <tr>
-                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_EMAIL_REGARD'] . '</td>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_SUBJECT'] . '</td>
                 <td>&nbsp;: ' . $arrFields['subject'] . '</td>
             </tr>
             <tr>
                 <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_COMMENTS'] . '</td>
-                <td>&nbsp;: ' . $arrFields['comments'] . '</td>
+                <td>&nbsp;: ' . nl2br($arrFields['comments']) . '</td>
             </tr>
         </tbody>
     </table>
