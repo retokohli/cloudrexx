@@ -72,6 +72,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
+        $objUser = \FWUser::getFWUserObject();
         //feed back types
         $feedBackTypes = array(
             $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_SELECT_FEEDBACK'],
@@ -101,6 +102,10 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                     'url'          => $faqUrl,
                     'comments'     => contrexx_raw2xhtml($feedBackComment),
                     'subject'      => contrexx_raw2xhtml($feedBackSubject),
+                    'firstName'    => $objUser->objUser->getProfileAttribute('firstname'),
+                    'lastName'     => $objUser->objUser->getProfileAttribute('lastname'),
+                    'phone'        => empty($objUser->objUser->getProfileAttribute('phone_office')) ? $objUser->objUser->getProfileAttribute('phone_mobile') : $objUser->objUser->getProfileAttribute('phone_office'),
+                    'company'      => $objUser->objUser->getProfileAttribute('company'),
                     'toEmail'      => $recipientMailAddress
                 );
                 //send the feedBack mail
@@ -125,7 +130,6 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
             $this->template->parse('showFeedBackTypes');
         }
         
-        $objUser = \FWUser::getFWUserObject();
         $this->template->setVariable(array(
             'SUPPORT_FEEDBACK_FAQ'                  => $faqLink,
             'SUPPORT_FEEDBACK_CUSTOMER_NAME'        => $objUser->objUser->getUsername(),
@@ -151,15 +155,18 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
      */
     function sendMail($arrFields = array()) {
         global $_CONFIG, $_ARRAYLANG;
-
+        
         //plain text content
         $arrFields['message'] = "{$_ARRAYLANG['TXT_SUPPORT_CONTACT_TITLE']}: \n
-                                       {$_ARRAYLANG['TXT_SUPPORT_USER_NAME']}: {$arrFields['name']}\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_USER_FIRST_NAME']}: {$arrFields['firstName']}\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_USER_LAST_NAME']}: {$arrFields['lastName']}\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_USER_COMPANY']}: {$arrFields['company']}\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_USER_PHONE']}: {$arrFields['phone']}\n
                                        {$_ARRAYLANG['TXT_SUPPORT_USER_EMAIL']}: {$arrFields['fromEmail']}\n
                                        \n\n
                                        {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_MAIL']}: \n\n
                                        {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC']}  : {$arrFields['feedBackType']} \n\n
-                                       {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_URL']}        : {$arrFields['url']} \n\n
+                                       {$_ARRAYLANG['TXT_SUPPORT_EMAIL_REGARD']}        : {$arrFields['subject']} \n\n
                                        {$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_COMMENTS']}        : {$arrFields['comments']} \n\n.";
         //html content
         $arrFields['message_html'] = '<div style="width:600px; font-family: arial,helvetica,sans-serif; font-size: 13px;">
@@ -169,8 +176,20 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     <table cellpadding="0" cellspacing="0" style="width:100%; font-size: 13px;">
         <tbody>
             <tr>
-                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_NAME'] . '</td>
-                <td>&nbsp;: ' . $arrFields['name'] . '</td>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_FIRST_NAME'] . '</td>
+                <td>&nbsp;: ' . $arrFields['firstName'] . '</td>
+            </tr>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_LAST_NAME'] . '</td>
+                <td>&nbsp;: ' . $arrFields['lastName'] . '</td>
+            </tr>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_COMPANY'] . '</td>
+                <td>&nbsp;: ' . $arrFields['company'] . '</td>
+            </tr>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_PHONE'] . '</td>
+                <td>&nbsp;: ' . $arrFields['phone'] . '</td>
             </tr>
             <tr>
                 <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_USER_EMAIL'] . '</td>
@@ -189,8 +208,8 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                 <td>&nbsp;: ' . $arrFields['feedBackType'] . '</td>
             </tr>
             <tr>
-                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_URL'] . '</td>
-                <td>&nbsp;: ' . $arrFields['url'] . '</td>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_EMAIL_REGARD'] . '</td>
+                <td>&nbsp;: ' . $arrFields['subject'] . '</td>
             </tr>
             <tr>
                 <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_COMMENTS'] . '</td>
@@ -216,7 +235,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
 
             $objMail->FromName = $arrFields['name'];
             $objMail->From = $arrFields['fromEmail'];
-            $objMail->Subject = 'Cloudrexx - ' . $arrFields['subject'];
+            $objMail->Subject = 'Cloudrexx - ' . $_ARRAYLANG['TXT_SUPPORT_EMAIL_MESSAGE_SUBJECT'];
             $objMail->AddReplyTo($arrFields['fromEmail']);
             $objMail->AddAddress($arrFields['toEmail']);
             $objMail->CharSet = CONTREXX_CHARSET;
