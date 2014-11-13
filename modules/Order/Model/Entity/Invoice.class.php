@@ -155,7 +155,7 @@ class Invoice extends \Cx\Model\Base\EntityBase {
      */
     public function addInvoiceItem(InvoiceItem $invoiceItem) {
         $invoiceItem->setInvoice($this);
-        $this->setInvoiceItems($invoiceItem);
+        $this->invoiceItems[] = $invoiceItem;
     }
     
     /**
