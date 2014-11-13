@@ -37,6 +37,7 @@ class Theme extends \Cx\Model\Base\EntityBase
     const THEME_TYPE_MOBILE = 'mobile';
     const THEME_TYPE_APP = 'app';
     const THEME_TYPE_PDF = 'pdf';
+    const THEME_TYPE_STANDARD = 'standard';
     
     public function __construct($id = null, $themesname = null, $foldername = null, $expert = 1) {
         $this->db = \Env::get('db');
@@ -81,6 +82,49 @@ class Theme extends \Cx\Model\Base\EntityBase
         }
         return $this->componentData['description'];
     }
+    /**
+     * @return string the release date of template
+     */
+    public function getReleasedDate() {
+        if (empty($this->componentData['versions'])) {
+            return null;
+        }
+        $versionInformation = current($this->componentData['versions']);
+        $releaseDate = $versionInformation['releaseDate'];
+        
+        if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1]).(0[1-9]|1[0-2]).[0-9]{4}$/", $releaseDate)) {
+            $releaseDate = $this->getDateTimestamp($releaseDate);            
+        }
+        
+        $objReleaseDate = new \DateTime(date('Y-m-d', $releaseDate));
+
+        return $objReleaseDate;
+    }
+    
+    /**
+     * @return string the subtype of the theme
+     */
+    public function getSubtype() {
+        if (empty($this->componentData['subtype'])) {
+            return null;
+        }
+        return $this->componentData['subtype'];
+    }
+    
+    function getDateTimestamp($date) {
+        //date format is dd.mm.yyyy
+        $date = str_replace(".", "", $date); 
+        $posYear = 4;
+        $posMonth = 2;  
+        $posDay = 0;
+        
+        $year = substr($date, $posYear,4);
+        $month = substr($date, $posMonth,2);
+        $day = substr($date, $posDay,2);      
+        
+        $timestamp = mktime(0,0,0,$month,$day,$year); 
+        return $timestamp;
+    }
     
     /**
      * @return string the preview image source web path
@@ -110,6 +154,51 @@ class Theme extends \Cx\Model\Base\EntityBase
             return ' ('.$_CORELANG['TXT_APP_VIEW'].')';
         }
         return null;
+    }
+    
+    /**
+     * Returns the array of active languages of theme by given type
+     * 
+     * @param string $type the type of output device
+     * 
+     * @return array array of languages active for this theme
+     */
+    public function getLanguagesByType($type) {
+        switch ($type) {
+            case self::THEME_TYPE_PRINT:
+                $dbField = 'print_themes_id';
+                break;
+            case self::THEME_TYPE_MOBILE:
+                $dbField = 'mobile_themes_id';
+                break;
+            case self::THEME_TYPE_APP:
+                $dbField = 'app_themes_id';
+                break;
+            case self::THEME_TYPE_PDF:
+                $dbField = 'pdf_themes_id';
+                break;
+            default:
+                $dbField = 'themesid';
+                break;
+        }
+        
+        $languagesWithThisTheme = array();
+        $query = 'SELECT `id`
+                    FROM `'.DBPREFIX.'languages`
+                  WHERE
+                    `frontend` = 1
+                    AND 
+                    `'. $dbField .'` = "'. $this->id .'"';
+        
+        $result = $this->db->Execute($query);
+        if ($result !== false) {
+            while(!$result->EOF){
+                $languagesWithThisTheme[] = $result->fields['id'];
+                $result->MoveNext();
+            }
+        }
+        
+        return $languagesWithThisTheme;
     }
     
     /**
@@ -218,7 +307,7 @@ class Theme extends \Cx\Model\Base\EntityBase
     public function getFoldername() {
         return $this->foldername;
     }
-
+    
     public function getExpert() {
         return $this->expert;
     }

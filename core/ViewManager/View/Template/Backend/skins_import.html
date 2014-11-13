@@ -1,0 +1,148 @@
+<style type="text/css">
+<!--
+    .noborder{
+        border: 0px;
+        background-color: #F4F7FF;
+    }
+
+// -->
+</style>
+<script type="text/javascript">
+// <![CDATA[
+var init = function() {	
+    form 	=	document.getElementById("manageform");
+    dweb 	=	document.getElementById("web");
+    dlocal 	= 	document.getElementById("local");
+    dfilesystem = 	document.getElementById("filesystem");
+    ilocal 	= 	document.getElementById("localarchive");
+    iremote     = 	document.getElementById("remotearchive");
+    ifilesystem =       document.getElementById("existingdirName");
+    document.getElementById("radiolocal").className = 'noborder';
+    document.getElementById("radioremote").className = 'noborder';
+}
+
+var importArchive = function() {
+    if (dlocal.style.display == "block") {
+        if (ilocal.value != "") {
+            form.action = "index.php?cmd=ViewManager&act=import&import=local";
+        } else {
+            alert("{TXT_THEME_NO_FILE_SPECIFIED}!");
+            return false;
+        }
+    } else if (dweb.style.display == "block") {
+        if (iremote.value != 'http://' && iremote.value != '' ) {
+            form.action = "index.php?cmd=ViewManager&act=import&import=remote";
+        } else {
+            alert("{TXT_THEME_NO_URL_SPECIFIED}!");
+            return false;
+        }
+    } else {
+        if (ifilesystem.value != '') {
+            form.action = "index.php?cmd=ViewManager&act=import&import=filesystem";
+        } else {
+            alert("No dir selected");
+            return false;
+        }
+    }
+    return true;
+}
+
+var importSelect = function(div) {
+    switch(div) {
+        case 'local':
+            dlocal.style.display = "block";
+            dweb.style.display = "none";
+            dfilesystem.style.display = "none";
+            break;
+        case 'web':
+            dlocal.style.display = "none";
+            dweb.style.display = "block";
+            dfilesystem.style.display = "none";
+            break;
+        case 'filesystem':
+            dlocal.style.display = "none";
+            dweb.style.display = "none";
+            dfilesystem.style.display = "block";
+            break;
+    }    
+}
+
+$J(document).ready(function() {
+    init();
+    $J('#existingdirName').change(function(){
+        $J('#display_name').val($J(this).val());
+    });
+});
+
+// ]]>
+</script>
+<div id="subnavbar_level2">
+    <ul>
+        <li><a href="index.php?cmd=ViewManager&amp;act=templates" title="{TXT_THEMES_EDIT}">{TXT_THEMES_EDIT}</a></li>
+        <li><a href="index.php?cmd=ViewManager&amp;act=newDir" title="{TXT_THEMES_CREATE}">{TXT_THEMES_CREATE}</a></li>
+        <li><a class="active" href="index.php?cmd=ViewManager&amp;act=import" title="{TXT_THEME_IMPORT}">{TXT_THEME_IMPORT}</a></li>
+    </ul>
+</div>
+
+<form name="themesForm" id="manageform" action="index.php?cmd=ViewManager&amp;act=settings&amp;tpl=manage" method="post" enctype="multipart/form-data">
+    <table summary="" style="width:100%" border="0" cellspacing="0" cellpadding="3"  class="adminlist">
+        <tr style="white-space: nowrap;">
+            <th>
+                {TXT_THEME_IMPORT}
+            </th>
+        </tr>
+        <tr class="row1">
+            <td width="250">
+                <div style="vertical-align: top;">
+                    <div>
+                        <label>
+                            <input id="radiolocal" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="local" checked="checked" />
+                            {TXT_THEME_LOCAL_FILE}
+                        </label>
+                        <label>
+                            <input id="radioremote" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="web" /> 
+                            {TXT_THEME_SPECIFY_URL}
+                        </label>
+                        <label>
+                            <input id="radiofilesystem" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="filesystem" />
+                            {TXT_THEME_FILESYSTEM}
+                        </label>                        
+                    </div>
+                    <div id="local" style="display: block; float: left;">
+                        <input type="file" id="localarchive" name="importlocal" accept="application/zip" value="{TXT_SELECT_FILE}" />
+                        <span class="tooltip-trigger icon-info" style="margin: 11px 0 0 5px;"></span><span class="tooltip-message">{TXT_THEME_IMPORT_INFO_BODY}</span>
+                    </div>
+                    <div id="web" style="display: none; float: left;">
+                        <input type="text" id="remotearchive" name="importremote" size="30" value="http://" />
+                        <span class="tooltip-trigger icon-info" style="margin: 11px 0 0 5px;"></span><span class="tooltip-message">{TXT_THEME_IMPORT_INFO_BODY}</span>
+                    </div>
+                    <div id="filesystem" style="display: none; float: none;">
+                        <table style="width:100%" border="0" cellspacing="0" cellpadding="3">
+                            <tr>
+                                <td width="127px">{TXT_THEME_EXISTING_DIR_NAME}</td>
+                                <td>
+                                    {TXT_THEME_PATH} 
+                                    <select name="existingdirName" id="existingdirName" style="width: 250px;">
+                                        <option value="" selected="selected" >--- {TXT_SELECT_DIR} -----------</option>
+                                        {THEMES_MENU}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border-bottom: none;">
+                                    {TXT_THEME_DISPLAY_NAME}
+                                </td>
+                                <td style="border-bottom: none;">
+                                    <input type="text" id="display_name" name="display_name" style="padding-left: 3px; padding-right: 3px; width: 285px;" />
+                                </td>
+                            </tr>
+                        </table>
+                        
+                    </div>
+                    
+                </div>
+            </td>
+        </tr>
+    </table>
+    <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_IMPORT}" style="float: left;" />
+</form>

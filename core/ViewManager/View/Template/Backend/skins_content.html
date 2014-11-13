@@ -1,211 +1,468 @@
 <!-- START themes_content.html -->
 <script language="JavaScript" type="text/javascript">
     <!-- // confirm delete page
-    function reloadThemesPage() {
-        document.themesForm.submit();
-    }
 
     $J(document).ready(function() {
-        $J('.loadThemesPage').bind('click', function() {
-            $J('#themesPage').val($J(this).attr('data-rel'));
-            reloadThemesPage();
-        });
-        $J(".chosen-select").chosen({width: "100%"});
-
-        $J("#jstree").jstree({
-            "ui": {
-                "initially_select": ["activeFolder"]
-            },
-            "core": {
-                "animation": 1,
-                "initially_open": ["activeFolder"]
+        $J("#tabs").tabs({
+            show : function (event, ui) {
+                $J('#selectedTab').val($J( "#tabs" ).tabs('option', 'selected'));
+                if ($J("#tabs").tabs('option', 'selected') == 2) {
+                    $J('#file-operation').hide();
+                } else {
+                    $J('#file-operation').show();
+                }
             }
-
-
-        }).delegate(".jstree-open>a", "click.jstree", function(event) {
-            $J.jstree._reference(this).close_node(this, false, false);
-        }).delegate(".jstree-closed>a", "click.jstree", function(event) {
-            $J.jstree._reference(this).open_node(this, false, false);
         });
+    
+        $J('.js-tree li a').bind('click', function(event) {
+            var target = $J( event.target );
+            if (target.is("img.theme_action_img")) {
+                return false;
+            }
+            
+            if (!$J(this).hasClass('folder')) { // reload the theme page when user clicks the file
+                $J('#themesPage').val($J(this).attr('data-rel'));
+                cx.vm.reloadThemesPage();
+            }            
+        });        
+        $J(".js-tree")
+            .bind("loaded.jstree", function (event, data) {
+                $J('.js-tree li > ins.jstree-icon').each(function(index, node) {
+                    if (!$J(node).closest('li').find('> .jstree-wrapper').length) {
+                        $wrap = $J('<div class="jstree-wrapper" />');
+                        $J(node).before($wrap);
+                    }
+                });
+                if ($J(event.currentTarget).hasClass('theme-files')) {
+                    
+                    $J(event.currentTarget).find('li a').each(function(key, val) {
+                        var editImg;
+                        
+                        if ($J.inArray( $J.trim($J(this).text()), ['module', 'core', 'core_module'] ) === -1) {
+                            editImg = $J('<span/>')
+                                        .addClass('theme_action rename')
+                                        .html("<img class='theme_action_img' src='../core/Core/View/Media/icons/edit.gif' />")
+                                        .click(function(){
+                                            cx.vm.renameFile($J(this));
+                                        });
+                        }
+
+                        var deleteImg = $J('<span/>')
+                                        .addClass('theme_action delete')
+                                        .html("<img class='theme_action_img' src='../core/Core/View/Media/icons/delete.gif' />")
+                                        .click(function() {
+                                            cx.vm.deleteFiles($J(this));
+                                        });
+                        $J(this).append(editImg);
+                        $J(this).append(deleteImg);
+                        $J(this).hover(
+                            function() {
+                                $J(this).closest('li').find('> .jstree-wrapper').addClass('hover');
+                                $J(this).find('.theme_action').show();
+                            }, function() {
+                                $J(this).closest('li').find('> .jstree-wrapper').removeClass('hover');
+                                $J(this).find('.theme_action').hide();
+                            }
+                        );
+                    });
+                }
+            })
+            .jstree({
+                "ui": {
+                    "initially_select": ["activeFolder"]
+                },
+                "core": {
+                    "animation": 1,
+                    "initially_open": ["activeFolder"]
+                }
+            }).delegate(".jstree-open>a", "click.jstree", function(event) {
+                $J.jstree._reference(this).close_node(this, false, false);
+            }).delegate(".jstree-closed>a", "click.jstree", function(event) {
+                $J.jstree._reference(this).open_node(this, false, false);
+            }); 
+            $J(window).trigger('resize');
+    });
+    $J(window).resize(function(){
+        otherElmHeight = 440;
+        if (($J('body').height() - otherElmHeight) > 300) {
+            $J('.js-tree').css('height', ($J('body').height() - otherElmHeight) + 'px');
+            $J('#editor').css('height', (($J('body').height() - otherElmHeight) + 77) + 'px');
+        } else {
+            $J('.js-tree').css('height', '300px');
+            $J('#editor').css('height', '377px');
+        }
     });
     // -->
 </script>
 <style>
-    #jstree {
-        height: 400px;
-        overflow: auto;
-        width: 253px;
+    input{
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
     }
-    /*    #jstree, .jstree a {
-            float: none;
-        }*/
+    .jstree-container .jstree ins {
+        width: 11px;        
+    }
+    .jstree-container .jstree ul li > ins {
+        display: none;
+    }
+    .jstree-container .jstree-leaf a > ins {
+        background-position: -39px 0;
+    }    
+    .js-tree {
+        height: 300px;
+        overflow: auto;
+        width: auto;
+    }
+    .jstree li {
+        float: none;
+        display: block;
+        line-height: 31px;
+        white-space: nowrap;
+        margin-left: 18px;        
+    }
+    .jstree-container .js-tree > ul {
+        position: relative;        
+    }
+    
     li.jstree-open > ul {
         display: block;
+        clear: both;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        width: 100%;
+        margin-top: 0;
     }
     .jstree ul, .jstree li {
         display: block;
         list-style-type: none;
-        margin: 0;
-        padding: 0;
-        margin-left: 10px;
+        padding: 0;        
     }
-    #jstree .jstree-icon {
+    .js-tree .jstree-icon {
         clear: none;
         cursor: pointer;
         float: left;
-        margin-top: 6px;
         position: relative;
+        margin-top: 6px;
+    }
+    .jstree-closed a .jstree-icon {
+        display: block;
     }
     .jstree-default a .jstree-icon {
-        background-position: -36px 0;
+        background-position: -59px 0;        
+    }
+    li.jstree-closed, li.jstree-leaf {
+        height: 25px;
     }
     .jstree a {
-        width: 0px;
+        display: block;
+        float: none;        
+        padding-left: 0;
+        text-indent: 5px;
+        height: 24px;
     }
-    .jstree #activeFile{
+    .js-tree .jstree-wrapper.hover {
+        background-color: #FFFFD6;
+    }
+    .jstree #activeFile, #activeFolder{
         color: #1a74bd;
         cursor: pointer;
         font-weight: bold;
     }
+    div#file-operation {
+        padding-left: 11px;
+    }
     .icon{
-        margin-top: 8px;
+        margin-top: 6px;
+        float: left;
+    }    
+    #themes_list {
+        width: 350px;
+        float: left;
+        border-collapse: inherit;
     }
-    .themesContentHeading{
+    #themes_list td {
+        padding: 0;
+    }
+    
+    .theme_action.rename {
+        right: 18px;
+    }
+    .theme_action{
         float: right;
-    }
-    li.jstree-closed, li.jstree-leaf{
-        height: 28px;
+        position: absolute;
+        top: 8px;
+        right: 0;
+        display: none;
     }
 
+    .js-tree ul {
+        margin: 0;
+    }
+    .js-tree .jstree-wrapper {
+        position: absolute;
+        right: 0;
+        height: 30px;
+        z-index: auto;                
+        width: 100%;
+    }
+    .ui-dialog.noTitle .ui-dialog-titlebar {
+        display: none;
+    }
+    .ui-dialog #loading {
+        float: none;
+        margin: 0 auto;
+        width: 95px !important;
+        height: 16px !important;
+    }
+    .ui-dialog #loading span {
+        margin: 0 0 0 5px;
+        line-height: 16px;
+        float: left;
+    }
+    .ui-dialog #loading img {
+        float: left;
+    }
+    #instance_table{
+        position: relative;
+        float: left;
+        width: 100%;
+        height: 100%;
+    }
+    #load-lock {
+        position: absolute;
+        opacity: 0.5;
+        background-color: white;
+        display: none;
+        z-index: 500;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+    }
+    #tabs {
+        border: 0 !important;
+        margin: 0;
+        padding: 1em 0;
+        background: #fff;
+    }
+    #tabs > div {
+        margin: 0;
+        padding: 1em 0;
+    }
+    #tabs .ui-widget-header {
+        border: 0;
+    border-bottom: 1px solid #dddddd;
+    background: transparent !important;
+    color: #444444;
+    font-weight: bold;
+    }
+    #tabs .ui-widget-content {
+        border: 0;
+        background: #ffffff;
+        color: #444444;
+    }
+    .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+        color: #444;
+    }
+    #tab-menu li.ui-state-default.ui-corner-top.ui-tabs-selected.ui-state-active {
+        border: 1px solid #ddd;
+        border-radius: 0 !important;
+        font-weight: normal !important;
+        color: #444;
+    }
+    #tab-menu li {
+        border: 0;
+        background: #fff;
+    }
+    #tab-menu li a {
+        float: left;
+        padding: 0.2em 0.5em;
+        text-decoration: none;
+        border-radius: 0 !important;
+        font-weight: normal;
+    }
+    table.adminlist td .file-action a,table.adminlist td .file-action a:hover{
+        color: #000000;
+    }
+    .file-action {
+        font-weight: bold;
+    }
+    #theme_content {
+        margin-bottom: 20px;
+    }
+    #editor.fullScreen-editor {
+        margin-top: 0;
+    }
+    #editor, .content_image {
+        margin-top: 15px;
+        font-size: 13px;
+    }
+    table.adminlist tr td.editor-area {
+        padding: 0 0 0 15px;
+    }
+      
+    .ace_editor {
+        border: 1px solid lightgray;
+        margin: auto;
+        height: 200px;
+        width: 80%;
+        position: relative !important
+    }
+
+    .fullScreen .fullScreen-editor{ 
+        height: auto!important;
+        width: auto!important;
+        border: 0;
+        margin: 0;
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1001
+    }
+
+    .fullScreen {
+        overflow: hidden
+    }
 </style>
 
 <div id="subnavbar_level2">
     <ul>
         <li><a class="active" href="index.php?cmd=ViewManager&amp;act=templates" title="{TXT_THEMES_EDIT}">{TXT_THEMES_EDIT}</a></li>
         <li><a href="index.php?cmd=ViewManager&amp;act=newDir" title="{TXT_THEMES_CREATE}">{TXT_THEMES_CREATE}</a></li>
+        <li><a href="index.php?cmd=ViewManager&amp;act=import" title="{TXT_THEME_IMPORT}">{TXT_THEME_IMPORT}</a></li>
     </ul>
 </div>
-
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<div id="instance_table"><div id="tabid"></div>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" >
     <tr>
-        <td width="253" valign="top" nowrap>
+        <td  valign="top" nowrap >
 
             <form name="themesForm" action="index.php?cmd=ViewManager&amp;act=templates"  method="post">
-                <input type="hidden" name="themes" value="{THEMES_SELECTED_THEME}" />
-                <table summary="" width="253" border="0" cellspacing="0" cellpadding="3" class="adminlist">
+                <input type="hidden" class="selectedTheme" name="themes" value="{THEME_SELECTED_THEME}" />
+
+                <table summary=""  cellspacing="0" cellpadding="3" class="adminlist" id="themes_list">
                     <tr>
-                        <th width="253" nowrap="nowrap">{TXT_DESIGN_FOLDER}</th>
+                        <th width="350" nowrap="nowrap">{TXT_THEME_TEMPLATE}:{THEME_SELECTED_THEME}</th>
                     </tr>
-                    <tr valign="top" class="row1">
-                        <td>
-                            <select name="themes" size="9" onChange="reloadThemesPage()" style="width: 253px;" class="chosen-select">
+                    <tr valign="top">
+                        <td style="border:0">
+                            <select name="themes" size="0" onChange="cx.vm.reloadThemesPage()" style="width: 350px;background: white;margin-top: 15px;"> 
                                 {THEMES_MENU}
                             </select>
                         </td>
                     </tr>
-                    <tr valign="top" class="row1">
-                        <th width="180" nowrap="nowrap">{TXT_TEMPLATE_FILES}</th>
-                    </tr>
-                    <tr valign="top" class="row1">
-                        <td>
-                            <div id="jstree">
-
-                                <ul>
-
-                                    <!-- BEGIN themeFolders -->    
-                                    {THEMES_FOLDERS}
-                                    <!-- END themeFolders -->
-
-                                    <!-- BEGIN themeFiles -->
-                                    {THEMES_FILES}
-                                    <!-- END themeFiles -->
-
+                    <tr valign="top" class="row1" >
+                        <td nowrap="nowrap" style="border:0">
+                            <div id="tabs">
+                                <ul id="tab-menu">
+                                    <li><a href="#tab-files">{TXT_FILES}</a></li>
+                                    <li><a href="#tabs-application-files">{TXT_THEME_CREATE_OVERRIDES}</a></li>
+                                    <li><a href="#tabs-lib-files">{TXT_THEMES_LIBRARIES}</a></li>
                                 </ul>
+
+                                <div id="tab-files">
+                                    <div class="jstree-container">
+                                        <div class="js-tree theme-files">
+                                            {THEME_FILES_TAB}                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="tabs-application-files" style="display: none;">
+                                    <div class="jstree-container" >
+                                        <div class="js-tree">
+                                            {THEME_OVERRIDE_TAB}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="tabs-lib-files" style="display: none;">
+                                    <!-- BEGIN theme_libraries -->
+                                    <!-- BEGIN theme_library -->
+                                    <select name="libraryVersion[{THEME_LIBRARY_NAME}]" style="width: 350px;background: #fff;margin-bottom: 10px;">
+                                        <option value="">{THEME_LIBRARY_NAME} {TXT_THEME_LIBRARY_NOT_USED}</option>
+                                        <!-- BEGIN theme_library_version -->
+                                        <option value="{THEME_LIBRARY_VERSION}" {THEME_LIBRARY_VERSION_SELECTED}>{THEME_LIBRARY_NAME} {THEME_LIBRARY_VERSION}</option>
+                                        <!-- END theme_library_version -->
+                                    </select><br />
+                                    <!-- END theme_library -->
+                                    <input type="submit" value="{TXT_SAVE}" />
+                                    <!-- END theme_libraries -->  
+                                </div>
                             </div>
 
                         </td>
                     </tr>
-                    <tr>
-                        <th nowrap="nowrap">{TXT_MANAGE_FILES}</th>
-                    </tr>
-                    <tr valign="top" class="row1">
-                        <td>
-                            <select name="themesDelFileName" style="width: 100%">
-                                <option value="" selected>--- {TXT_SELECT_FILE} ---</option>
-                                {THEMES_PAGE_DEL_VALUE}
-                            </select><br />
-                            <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
-                            <br />
-                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 240px;" /><br />
-                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" />
+                    <tr valign="top"><td width="350" style="border:0">
+                            <div id="file-operation">
+                                <div class="file-action new_file file">
+                                    <a href="javascript:void(0);" class="file" title="{TXT_THEME_NEW_FILE}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_FILE}"/>&nbsp;{TXT_THEME_NEW_FILE}</a> 
+                                </div>
+                                <div class="file-action new_file folder">
+                                    <a href="javascript:void(0);" class="folder" title="{TXT_THEME_NEW_FOLDER}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_FOLDER}"/>&nbsp;{TXT_THEME_NEW_FOLDER}</a>
+                                </div>
+                                <div class="file-action">
+                                    <a href="index.php?cmd=ViewManager&amp;act=newDir" title="{TXT_THEME_NEW_THEME}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_THEME}"/>&nbsp;{TXT_THEME_NEW_THEME}</a>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </table>
-                <input type="hidden" name="themesPage" id="themesPage"/>
-            </form>
-            <form name="themeLibrary" action="index.php?cmd=ViewManager&amp;act=templates"  method="post">
-                <table summary="" width="253" border="0" cellspacing="0" cellpadding="3" class="adminlist">
-                <input type="hidden" name="themes" value="{THEMES_SELECTED_THEME}" />
-                    <!-- BEGIN theme_libraries -->
-                    <tr>
-                        <th colspan="2" nowrap="nowrap">{TXT_TEMPLATE_USED_LIBRARIES}</th>
-                    </tr>
-                    <tr valign="top" class="row1">
-                        <td width="240">
-                            <!-- BEGIN theme_library -->
-                            <select name="libraryVersion[{THEME_LIBRARY_NAME}]" style="width: 100%">
-                                <option value="">{THEME_LIBRARY_NAME} {TXT_THEME_LIBRARY_NOT_USED}</option>
-                                <!-- BEGIN theme_library_version -->
-                                <option value="{THEME_LIBRARY_VERSION}" {THEME_LIBRARY_VERSION_SELECTED}>{THEME_LIBRARY_NAME} {THEME_LIBRARY_VERSION}</option>
-                                <!-- END theme_library_version -->
-                            </select><br />
-                            <!-- END theme_library -->
-                            <input type="submit" value="{TXT_SAVE}" />
-                        </td>
-                    </tr>
-                    <!-- END theme_libraries --> 
-                </table>
+                <input type="hidden" name="themesPage" id="themesPage" value="{THEMES_SELECTED_PAGENAME}"/>
+                <input type="hidden" name="newFileName" id="newFileName"/>
+                <input type="hidden" name="isFolder" id="isFolder"/>
+                <input type="hidden" name="selectedTab" id="selectedTab" />
+                
             </form>
         </td>
+        <!-- BEGIN theme_editor -->
         <td width="100%" valign="top" >
 
-            <form name="themesForm2" method="post" action="index.php?cmd=ViewManager&amp;act=update">
+            <form name="themesForm2" id="theme_content" method="post" action="index.php?cmd=ViewManager&amp;act=update">
                 <table summary="" width="100%" border="0" cellspacing="0" cellpadding="3"  class="adminlist">
                     <tr>
-                        <th width="100%"><!--{TXT_FILE_EDITOR}--><b>{THEMES_FULL_PATH}</b>
-                            <span class="themesContentHeading">
-                                <!-- BEGIN file_actions_top -->
-                            <input onClick="javascript:this.form.content.focus(); this.form.content.select();" type=button value='{TXT_SELECT_ALL}' />
-                                <input type="reset" value='{TXT_RESET}' name="Reset" />
-                                <input type="submit" value='{TXT_STORE}' name="Submit" />	
-                                <!-- END file_actions_top -->
-                            </span>
+                        <th>
+                            <b>{TXT_THEME_EDIT_FILE} : {THEME_EDIT_PATH}</b>
+                        </th>
+                        <th valign="middle" style="text-align: right;">
+                            <!-- BEGIN file_editor_fullscreen -->
+                            <input type="button" title="{TXT_THEME_FULLSCREEN_INFO}" class="fullscreen" value="{TXT_THEME_FULLSCREEN}" style="margin-bottom: 0; "/>
+                            <!-- END file_editor_fullscreen -->
                         </th>
                     </tr>
-                    <tr class="row1">
-                        <td colspan="2" style="padding-right: 19px;">
+                    <tr>
+                        <td class="editor-area" colspan="2">
                             <input type="hidden" name="themes" value="{THEMES_SELECTED_THEME}" />
                             <input type="hidden" name="themesPage" value="{THEMES_SELECTED_PAGENAME}" />
-                            <!-- BEGIN template_content -->                             
-                            <textarea name="content" style="height: 650px; width:100%;">{CONTENT_HTML}</textarea>
+                            <textarea id="editorContent" name="content" style="display: none;" >{CONTENT_HTML}</textarea>
+                            
+                            <!-- BEGIN template_content -->
+                            <pre id="editor" style="height: 377px; width:100%;">{CONTENT_HTML}</pre>
                             <!-- END template_content -->
+                            
                             <!-- BEGIN template_image -->
-                            <img src="{THEMES_FULL_PATH}" alt="image" />
+                            <div class="content_image"><img src="{THEMES_CONTENT_IMAGE_PATH}" alt="image" /></div>
                             <!-- END template_image --> 
                         </td>
                     </tr>
                 </table>
-                <div align="right">
+                <div align="left">
                     <!-- BEGIN file_actions_bottom -->
                     <br />
-                    <input onClick="javascript:this.form.content.focus(); this.form.content.select();" type=button value='{TXT_SELECT_ALL}' />
                     <input type="reset" value='{TXT_RESET}' name="Reset" />
+                    <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">
+                        <input type="button" name="themesPreview" value="{TXT_THEME_PREVIEW}" />
+                    </a>
+                    <input  type=button value='{TXT_SELECT_ALL}' class="select_all"/>                    
                     <input type="submit" value='{TXT_STORE}' name="Submit" />
                     <!-- END file_actions_bottom -->
                 </div>
             </form>
-        </td>
 
+        </td>
+        <!-- END theme_editor -->
     </tr>
 </table>
 <!-- END themes_content.html -->
+</div>
