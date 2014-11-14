@@ -129,10 +129,18 @@ class Theme extends \Cx\Model\Base\EntityBase
      * @return string the preview image source web path
      */
     public function getPreviewImage() {
-        if (file_exists(ASCMS_THEMES_PATH . '/' . $this->foldername . '/images/preview.gif')) {
-            return ASCMS_THEMES_WEB_PATH . '/' . $this->foldername . '/images/preview.gif';
+        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->foldername . '/images/preview.gif';
+        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->foldername . '/images/preview.gif';
+        $filePath         = file_exists($websiteFilePath) 
+                            ? $websiteFilePath
+                            : ( file_exists($codeBaseFilePath)
+                                ? $codeBaseFilePath
+                                : ''
+                              );
+        if ($filePath && file_exists($filePath)) {
+            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->foldername . '/images/preview.gif';
         }
-        return ASCMS_PATH_OFFSET.'/core/Core/View/Media/preview.gif';
+        return \Env::get('cx')->getCodeBaseOffsetPath().'/core/Core/View/Media/preview.gif';
     }
     
     /**
