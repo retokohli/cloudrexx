@@ -923,6 +923,66 @@ to {-moz-transform: rotate(360deg);}
         padding-left: 0;
         margin-left: 0;
     }
+    .survey td {
+        float: left;
+        width: 100% !important;
+    }
+    .questionBlock_button .btn.btn-default {
+        margin-left: 0 !important;
+    }
+    .search .searchbox {
+        margin-bottom: 10px;
+        float: left;
+        width: 100%;
+    }
+    #gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img {
+        width: 100%;
+    }
+    #checkout form select, #checkout form {width: 100% !important}
+    #shop div.message p label {width: 100%;}
+    #shop figure a .categorie-image-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        padding: 10%;
+        width: 100%;
+        height: auto;
+        float: left;
+    }
+    .page-right {
+        float: left;
+        width: 100%;
+    }
+    button, html input[type="button"], input[type="reset"], input[type="submit"] {margin-bottom: 10px;}
+    body input[type="text"], body input[type="password"], body input[type="number"], body select, body select.form-control, body textarea {width: 100%;}
+    #shop figure a .categorie-image-wrapper {
+        height: auto;
+    }
+    input[type="text"], input[type="password"], input[type="number"], select, textarea {width: 100%;margin-bottom: 10px;}
+    input[type="text"], input[type="password"], input[type="number"], select, textarea {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    #access .regForm, .regdivider span {
+        padding-left: 15px;
+    }
+    #downloads div.image img {
+        width: 100%;
+        height: auto;
+    }
+    #content2 a {
+        white-space: normal;
+        margin-left: -1px;
+    }
+    .login-bottom .col-md-offset-6 {
+        padding-left: 0;
+    }
+    form p label.remember_me {
+        margin-left: -20px !important;
+        float: left !important;
+    }
+    form .contactFormGroup {
+        width: 100%;
+    }
     body .navbar-inverse .navbar-collapse,body .navbar-inverse .navbar-form {border-color: transparent;}
     body .container>.navbar-header,body .container-fluid>.navbar-header,body .container>.navbar-collapse,body .container-fluid>.navbar-collapse {margin: 0;}
     .navbar-collapse {
@@ -967,6 +1027,10 @@ to {-moz-transform: rotate(360deg);}
     #fieldlast {
         clear: both;
     }
+    .member_list td {
+        width: 100% !important;
+        float: left;
+    }
     body .container>.navbar-header,body .container-fluid>.navbar-header,body .container>.navbar-collapse,body .container-fluid>.navbar-collapse {max-height: 100%;}
 }
 @media (min-width:768px) and (max-width:979px){
@@ -975,7 +1039,36 @@ to {-moz-transform: rotate(360deg);}
         padding-left: 0;
         margin-left: -20px;
     }
-     #fieldlast {
+    #gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img {
+        width: 100%;
+    }
+    #shop div.message p {
+        left: 0;
+    }
+    .table-responsive>.table {
+        margin-bottom: 0;
+    }
+    .table-responsive {
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-y: hidden;
+        overflow-x: auto;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+        border: 1px solid #ddd;
+        -webkit-overflow-scrolling: touch;
+    }
+    #shop figure a .categorie-image-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        padding: 10%;
+        width: 100%;
+        height: auto;
+        float: left;
+    }
+    #shop figure a .categorie-image-wrapper {
+        height: auto;
+    }
+    #fieldlast {
         clear: both;
     }
     .span-right.pull-right {
@@ -1045,6 +1138,9 @@ to {-moz-transform: rotate(360deg);}
         display: block;
         z-index: 1;
     }
+    #gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img {
+        width: 100%;
+    }
     body .navbar-inverse .navbar-toggle {
         padding: 6px 10px 0px 10px;
         margin-right: 5px;
@@ -1105,6 +1201,9 @@ to {-moz-transform: rotate(360deg);}
 @media (min-width: 992px) and (max-width : 1199px) {
     .navbar-collapse {
         background: #f7f7f7;
+    }
+    .login-bottom {
+        padding-left: 38.5%;
     }
     #navigation {
         clear: both;
