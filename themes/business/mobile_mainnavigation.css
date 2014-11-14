@@ -67,4 +67,5 @@
     -webkit-box-shadow: inset 0 0 15px 3px #EBEBEB;
     -moz-box-shadow: inset 0 0 15px 3px #EBEBEB;
     box-shadow: inset 0 0 15px 3px #EBEBEB;
+    text-decoration: none;
 }

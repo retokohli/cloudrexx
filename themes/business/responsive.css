@@ -567,6 +567,9 @@ padding-bottom: 20px;
        -moz-box-sizing: border-box;
         box-sizing: border-box;
     }
+    #checkout .left {
+        width: 100%;
+    }
 
     .grid12,
     .full-width .grid12 {
@@ -625,6 +628,9 @@ padding-bottom: 20px;
 }
       #captcha {
          width: 100%;
+      }
+       input {
+          width: 100% !important;
       }
 }
 @media(max-width: 480px){
@@ -711,11 +717,11 @@ padding-bottom: 20px;
       }
       #captcha {
          width: 100%;
-      }
+      }      
  #logo img {
 max-width: 85%;
 height: auto;}
-
+ 
 }
 
 @media(max-width: 340px){
