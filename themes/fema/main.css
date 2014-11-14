@@ -372,7 +372,7 @@ body .navbar .nav > li > a:hover, #navigation li.level-1.active > a.active {
     padding-bottom: 60px;
     color: #232323;
 }
-#content2 a:hover {color: #aaa;}
+#content2 a:hover {color: #aaa;text-decoration: none;}
 #page-title {
     background: #ffffff;
     padding-top: 120px;
@@ -1475,7 +1475,7 @@ body .footerBlock a, body .footerBlock a:hover {
     }
     /*sub-page styles*/
     form p {
-        width: auto !important;
+        width: 100% !important;
         padding-left: 0 !important;
     }
     form p label {
@@ -1541,8 +1541,8 @@ body .footerBlock a, body .footerBlock a:hover {
 form select{
     width: 280px;
 }
-input[type="text"], input[type="password"], input[type="number"], select, textarea {
-    width: 300px;
+body input[type="text"],body input[type="password"],body input[type="number"],body select, body select.form-control, body textarea {
+    width: 100%;
     padding: 7px 12px 8px 12px;
     height: auto !important;
     margin: 0;
@@ -1618,7 +1618,7 @@ input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hove
 .total b {
     border-bottom: 1px solid #aaaaaa !important;
 }
-.shop-box li a:hover, .shop-box li, .shop-box a:hover{color: #31363A;}
+#content2 .shop-box li a:hover,#content2 .shop-box li,#content2 .shop-box a:hover{color: #31363A;}
 input.input-block-level[type="text"]{width: 100%;}
 #fe_PreviewContent a:hover{color: #aaaaaa;}
 ul{
@@ -1820,4 +1820,15 @@ label, input, button, select, textarea {
 }
 .navbar-inverse .nav .active>a, .navbar-inverse .nav .active>a:hover, .navbar-inverse .nav .active>a:focus {
     color: #ffffff;
+}
+#access .regForm {
+    width: 100%;
+    clear: both;
+    padding-left: 0;
+}
+#fileshare form p, input[type="file"] {
+    width: 100%;
+}
+form[name="shopSearch"] select {
+    width: 280px;
 }
