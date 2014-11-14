@@ -308,13 +308,17 @@ class InitCMS
     {
         $arrLanguages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
         $arrAcceptedLanguages = array();
+        $q = 1;
         foreach ($arrLanguages as $languageString) {
             $arrLanguage = explode(';q=', trim($languageString));
             $language = trim($arrLanguage[0]);
-            $quality = isset($arrLanguage[1]) ? trim($arrLanguage[1]) : 1;
+            $quality = isset($arrLanguage[1]) ? trim($arrLanguage[1]) : $q;
+            isset($arrLanguage[1]) ? $q = trim($arrLanguage[1]) : '';
+            $q -= 0.1;
             $arrAcceptedLanguages[$language] = (float) $quality;
         }
         arsort($arrAcceptedLanguages, SORT_NUMERIC);
+        
         return $arrAcceptedLanguages;
     }
 
