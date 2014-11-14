@@ -415,9 +415,7 @@ CODE;
         $cxjs = \ContrexxJavascript::getInstance();
         $cxjs->setVariable(array('confirmDeleteFile'     => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FILE'], 
                                  'fileName'              => $_ARRAYLANG['TXT_THEME_FILE_NAME'],
-                                 'txtName'               => $_ARRAYLANG['TXT_NAME'],
-                                 'fileExContent'         => $_ARRAYLANG['TXT_THEME_FILE_NAME_EX_CONTENT'],
-                                 'folderExContent'       => $_ARRAYLANG['TXT_THEME_FOLDER_NAME_EX_CONTENT'],
+                                 'txtName'               => $_ARRAYLANG['TXT_NAME'],                                 
                                  'newFileOperation'      => $_ARRAYLANG['TXT_THEME_CREATE_NEW_FILE'],
                                  'newFolderOperation'    => $_ARRAYLANG['TXT_THEME_CREATE_NEW_FOLDER'],
                                  'renameFileOperation'   => $_ARRAYLANG['TXT_THEME_RENAME_FILE_OPERATION'],
@@ -1419,7 +1417,9 @@ CODE;
         }
         
         if (!is_file($filePath)) {
-            $filePath   = $this->websiteThemesFilePath . '/index.html';
+            $filePath   = file_exists($this->websiteThemesFilePath . '/index.html') 
+                          ? $this->websiteThemesFilePath . '/index.html'
+                          : $this->codeBaseThemesFilePath . '/index.html';
             $themesPage = '/index.html';
         }
         
@@ -1793,8 +1793,8 @@ CODE;
      * @return string formatted ul and li for the js tree
      */
     function getUlLi($folder, $path, $block, $themesPage) {        
-        $imgPath = $path;        
-        $result .= '<ul>';
+        $imgPath = $path;
+        $result  = '<ul>';
         $virtualFolder = array('View', 'Template', 'Frontend');
         foreach ($folder as $folderName => $fileName) {
             if (is_array($fileName)) {
