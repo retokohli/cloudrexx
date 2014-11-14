@@ -415,6 +415,10 @@ padding:5px 0 0;
 #contactForm #contactFrame div {
   padding: 0 0 5px 0;
 }
+#contactForm #contactFrame div.row {
+    margin-right: 0;
+    margin-left: 0;
+}
 #contactForm #contactFrame div label{
   width: 28%;
   font-family: MyriadPro;
@@ -435,7 +439,7 @@ padding:5px 0 0;
 }
 
 #contactFormFieldId_77 {
-    width: 71.6% !important;
+/*    width: 71.6% !important;*/
 }
 
 #contactForm #contactFrame div:last-child {

@@ -117,12 +117,12 @@ $(window).load(function() {
             speed: 1000
         });
 
-       $J('#sidr-menu').sidr({
+       jQuery('#sidr-menu').sidr({
             name: 'sidr',
             side: 'right'
         });
 
-        $J('#sidr-menu').click(function() {
+        jQuery('#sidr-menu').click(function() {
             $J('body').css('overflow-y', 'hidden');
         });
 

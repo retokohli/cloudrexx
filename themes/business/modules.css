@@ -10,12 +10,11 @@ form > fieldset > div {
 
 /* Start old contact form structure */
 form p {
-    width: 400px;
-    padding-left: 250px;
+    padding-left: 29%;
 }
 
 form p label {
-    margin: 0 0 0 -250px;
+    margin: 0 0 0 -40%;
 }
 
 form p label.description {
@@ -38,7 +37,7 @@ form .contactFormGroup input[type=checkbox] {
 }
 
 form #uploadFormField_uploadWidget {
-    padding: 0 0 0 250px;
+    padding: 0 0 0 40%;
 }
 
 form .contactFormUpload,
@@ -85,7 +84,7 @@ form .formUploadedFiles .deleteIcon {
 
 form label {
     float: left;
-    width: 250px;
+    width: 40%;
 }
 
 form input[type="submit"] {
@@ -160,7 +159,9 @@ form fieldset .ui-tabs .row .cke{
     padding: 0 0 21px 0;
     border: 0 none;
 }
-
+#login form .checkbox lavble {
+    width: 60%;
+}
 #login form input.remember_me {
     margin-top: 9px;
 }
@@ -243,6 +244,8 @@ div.row2 {
 #captcha .row {
     clear: both;
     display: block;
+    margin-left: 0;
+    margin-right: 0;
 }
 #captcha #coreCaptchaCode {
     float: left;
@@ -2469,7 +2472,7 @@ dl.data_module img {
     width: 100%;
     padding: 0 0 20px 0;
 }
-#mediadir .mediadirButtonSearch {
+#mediadir .mediadirButtonSearch, #access input[name="access_submit_search"] {
     float: none;
     margin: 0 0 0 5px;
 }
@@ -2603,7 +2606,7 @@ dl.data_module img {
 /* CSS DEFINITIONS FOR CHECKOUT MODULE */
 /***************************************/
 #checkout .left {
-    width: 470px;
+    width: 54%;
     padding: 0;
 }
 
@@ -2622,7 +2625,7 @@ dl.data_module img {
 }
 
 #checkout form {
-    width: 442px;
+    width: 90%;
 }
 
 #checkout #ok_message {
@@ -2642,7 +2645,7 @@ dl.data_module img {
 
 #checkout form p {
     padding-left: 0;
-    width: auto;
+    width: 100%;
 }
 
 #checkout form legend {
@@ -2658,7 +2661,7 @@ dl.data_module img {
 }
 
 #checkout form select {
-    width: 420px;
+    width: 100%;
 }
 
 #checkout form input.label,
@@ -2710,4 +2713,10 @@ dl.data_module img {
 /***************************/
 #deployJavaPlugin {
     display: none;
+}
+/*new*/
+select[name="catId"] {
+float: left;
+width: 40%;
+margin-right: 15px;
 }
