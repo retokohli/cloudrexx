@@ -32,7 +32,7 @@ class Theme extends \Cx\Model\Base\EntityBase
     
     private $configurableLibraries;
     
-    const THEME_TYPE_WEB = 'standard';
+    const THEME_TYPE_WEB = 'web';
     const THEME_TYPE_PRINT = 'print';
     const THEME_TYPE_MOBILE = 'mobile';
     const THEME_TYPE_APP = 'app';
