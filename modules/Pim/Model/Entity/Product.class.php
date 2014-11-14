@@ -226,7 +226,7 @@ class Product extends \Cx\Model\Base\EntityBase {
 
     public function getExpirationDate() {
         if (!$this->expirable) {
-            throw new \ProductException('Product is not expirable.');
+            throw new ProductException('Product is not expirable.');
         }
         $expirationDate = new \DateTime();
         $expirationDate->modify("+$this->expirationQuantifier $this->expirationUnit");
@@ -235,10 +235,10 @@ class Product extends \Cx\Model\Base\EntityBase {
 
     public function getRenewalDate($unit, $quantifier) {
         if (!$this->renewable) {
-            throw new \ProductException('Product is not renewable.');
+            throw new ProductException('Product is not renewable.');
         }
         if (!$this->isValidRenewalDefinition($unit, $quantifier)) {
-            throw new \ProductException("Invalid renewal definition supplied: $quantifier $unit");
+            throw new ProductException("Invalid renewal definition supplied: $quantifier $unit");
         }
 
         $renewalDate = new \DateTime();
