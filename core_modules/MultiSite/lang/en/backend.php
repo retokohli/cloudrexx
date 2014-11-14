@@ -82,6 +82,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FORCEFTPACCOUNTFIXPREFIX_TOOLTIP'] = 'Pre
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUPPORTFAQURL'] = 'URL to FAQ webpage';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUPPORTRECIPIENTMAILADDRESS'] = 'E-Mail recipient address for support requests';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXLENGTHFTPACCOUNTNAME'] = 'Max. length of FTP account name';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYREXXFORMURL'] = 'URL to Payrexx form';
 
 // settings status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTCODEBASE_SUCCESSFUL_CREATION']      = "Default Code Base has been set successfully";
@@ -109,6 +110,7 @@ $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON']='Create Site';
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS']='I confirm that I have read, understand and agree to the %s.';
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME']='Terms & Conditions';
 $_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO']='We\'ll send you an email to this address to activate your account.';
+$_ARRAYLANG['TXT_MULTISITE_ORDER_BUTTON']='Order now';
 
 // Sign up status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'The name %s has been taken already. Please choose an other name for your own site.';

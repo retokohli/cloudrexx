@@ -133,6 +133,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'TXT_MULTISITE_SITE_ADDRESS'         => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
                             'TXT_MULTISITE_SITE_ADDRESS_SCHEME'  => sprintf($_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME'], $websiteNameMinLength, $websiteNameMaxLength),
                             'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
+                            'TXT_MULTISITE_ORDER_NOW'       => $_ARRAYLANG['TXT_MULTISITE_ORDER_BUTTON'],
                             'MULTISITE_PATH'                => ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getWebsiteOffsetPath(),
                             'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
                             'POST_URL'                      => '',
@@ -163,12 +164,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
                             $product = $productRepository->findOneBy(array('id' => $productId));
 
+                            $productPrice = $product->getPrice();
+                            if (!empty($productPrice)) {
+                                $additionalParameters = array(
+                                    'invoice_amount'    => number_format($productPrice, 2),
+                                    'invoice_currency'  => 'CHF',
+                                    'invoice_number'    =>  $product->getName(),
+                                    'contact_email'     => ''
+                                );
+                                $i = 1;
+                                foreach ($additionalParameters as $key => $val) {
+                                    $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
+                                    $i++;
+                                }
+                                $delimiter = preg_match('#\?#', \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl')) ? '&' : '?';
+                                $objTemplate->setVariable(array(
+                                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml(\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl').$delimiter.$params),
+                                ));
+                            }
                             $objTemplate->setVariable(array(
                                 'PRODUCT_NOTE_ENTITY'     => $product->getNoteEntity(),
                                 'PRODUCT_NOTE_RENEWAL'    => $product->getNoteRenewal(),
                                 'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
                                 'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
                                 'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
+                                'PRODUCT_NAME'            => $product->getName(),
                                 'PRODUCT_ID'              => $product->getId()
                             ));
                         }
@@ -570,6 +590,11 @@ throw new MultiSiteException('Refactor this method!');
                 && !\Cx\Core\Setting\Controller\Setting::add('maxLengthFtpAccountName', 16, 18,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for maximum length for the FTP account name");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormUrl', '', 19,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new MultiSiteException("Failed to add Setting entry for URL to Payrexx form");
             }
 
             // websiteSetup group

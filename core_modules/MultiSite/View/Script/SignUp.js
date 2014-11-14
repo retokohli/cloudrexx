@@ -28,6 +28,33 @@
         objTerms.bind('change', verifyTerms);
 
         objModal.find('.multisite_submit').on('click', submitForm);
+        objModal.find('.multisite_pay').on('click', setPaymentUrl);
+
+        jQuery(('.multisite_pay')).payrexxModal({
+            show: function(e) {
+                //signup form validation
+                jQuery("#multisite_signup_form").data('bootstrapValidator').validate();
+                if (!isFormValid() || !jQuery("#multisite_signup_form").data('bootstrapValidator').isValid()) {
+                    return e.preventDefault();
+                }
+                
+                return true;
+            },
+            hidden: function(transaction) {
+                switch (transaction.status) {
+                    case 'confirmed':
+                        setFormButtonState('pay', true);
+                        callSignUp();
+                        break;
+                    case 'waiting':
+                    case 'cancelled':    
+                    default:    
+                        setFormButtonState('pay', false);
+                        setFormButtonState('submit', true, true);
+                        break;
+                }
+            }
+        });
 
         init();
     }
@@ -70,7 +97,14 @@
 
         setFormButtonState('close', false);
         setFormButtonState('cancel', true, true);
-        setFormButtonState('submit', true, true);
+        
+        if (jQuery('.multisite_pay').data('href')) {
+            setFormButtonState('submit', false);
+            setFormButtonState('pay', true, true);
+        } else {
+            setFormButtonState('pay', false);
+            setFormButtonState('submit', true, true);
+        }
 
         jQuery("#multisite_signup_form").data('bootstrapValidator').updateStatus('agb', 'NOT_VALIDATED');
         jQuery("#multisite_signup_form").data('bootstrapValidator').updateStatus('multisite_email_address', 'NOT_VALIDATED');
@@ -112,6 +146,25 @@
         }
     }
 
+    function setPaymentUrl() {
+        var email = jQuery("#multisite_email_address").val();
+        var productName = jQuery("#product_name").val();
+        var websiteName = jQuery("#multisite_address").val();
+        var domainName = jQuery("#multisite_domain").val();
+        var href = jQuery(".multisite_pay").data('href');
+        var hrefVal = href.split('&');
+        hrefVal = jQuery.map(hrefVal, function(v) {
+            if (v.search('contact_email') !== -1 || v.search('invoice_number') !== -1) {
+                var modifyValue = v.split('=');
+                return (modifyValue[0] === 'contact_email') ? 'contact_email=' + email :
+                        (modifyValue[0] === 'invoice_number' ? 'invoice_number=' + productName + ' - ' + websiteName + '.' + domainName : '');
+            }
+            return v;
+        });
+
+        jQuery('.multisite_pay').data('href', hrefVal.join('&'));
+    }
+    
     function verifyForm() {
         isFormValid();
     }

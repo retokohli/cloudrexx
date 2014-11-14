@@ -83,6 +83,8 @@ var validateEmail = function (value, validator, $field) {
                 {PRODUCT_NOTE_ENTITY}
             </div>
             <input type="hidden" name="product_id" value="{PRODUCT_ID}">
+            <input type="hidden" id="product_name" value="{PRODUCT_NAME}">
+            <input type="hidden" id="multisite_domain" value="{MULTISITE_DOMAIN}">
             <div class="form-group">
                 <input  data-bv-callback="true" data-bv-callback-callback="validateEmail"  data-bv-notempty="true"
                         data-bv-notempty-message="{TXT_MULTISITE_EMAIL_INFO}"
@@ -118,4 +120,5 @@ var validateEmail = function (value, validator, $field) {
         <button type="button" class="btn btn-default multisite_close" data-dismiss="modal">{TXT_MULTISITE_CLOSE}</button>
         <button type="button" class="btn btn-default multisite_cancel" data-dismiss="modal">Abbrechen{TXT_MULTISITE_CANCEL}</button>
         <button type="button" class="btn btn-primary multisite_submit">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+        <button type="button" class="btn btn-primary multisite_pay" data-href="{MULTISITE_OPTION_PAYREXXFORMURL}">{TXT_MULTISITE_ORDER_NOW}</button>
     </div>
