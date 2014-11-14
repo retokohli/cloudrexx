@@ -158,8 +158,17 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         
         if (isset($themeId)) {
             $theme = $themeRepository->findById($themeId);
+            if ($theme) {
+                $activeLanguages = $theme->getLanguages();
+            } else {
+                return array(
+                    'isTrue'  => true,
+                    'Content' => 'Theme does not exist!'
+                );
+            }
+            
             //Check whether the theme is selected for any of the active languages
-            if (!empty($theme->getLanguages())) {
+            if (!empty($activeLanguages)) {
                 $result = array(
                     "isTrue"  => true,
                     "Content" => $_ARRAYLANG['TXT_THEME_DELETE_CURRENT_ACTIVE_ALERT']
@@ -209,8 +218,8 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             $themeFolderPath = (\Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername());
             
             //Check whether the selected theme is selected for any of the active languages
-            
-            if(!empty($theme->getLanguages()) && file_exists($themeFolderPath)) {
+            $activeLanguages = $theme->getLanguages();
+            if(!empty($activeLanguages) && file_exists($themeFolderPath)) {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_STATUS_CANNOT_DELETE']);
             }
             
