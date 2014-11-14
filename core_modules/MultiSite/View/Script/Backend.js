@@ -335,6 +335,7 @@
                     } 
                 }
             });
+            html = $('<div />').append(html);
             return html;
         };
         
@@ -444,14 +445,20 @@
                         return;
                     }
                     if (response.data.status == 'error') {
-                        cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
+                        cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);                                                
                         cx.trigger('loadingEnd', 'executeSql', {});
                         return;
                     }
                     if (response.status == 'success') {
-                        $('.resultSet').append(parseQueryResult(response));
+                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "<span> ( " +response.data.websitesDone+ " / " + response.data.totalWebsites +" ) </span></div>",null, 3000);
+                        $('.resultSet').append(parseQueryResult(response));                         
+                        offset = 0;
+                        $(".resultSet > div:not(:last)").each(function(i, e){
+                            offset += $(e).height(); 
+                        });
+                        $('.ui-dialog-content').animate({scrollTop: offset},'slow');
                         executeSql();
-                    }
+                    }                    
                 }
             });
         };

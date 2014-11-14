@@ -2094,11 +2094,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             $_SESSION['MultiSite']['executeSql'] = array();
                         }
                         
+                        $totalWebsiteCount = 0;
                         foreach ($websites as $website) {
                             if ($website) {
                                 $_SESSION['MultiSite']['executeSql'][$website->getId()] = $params['post']['query'];
+                                $totalWebsiteCount++;
                             }
                         }
+                        $_SESSION['MultiSite']['totalWebsites'] = $totalWebsiteCount;
                         return array('status' => 'success');
                     }
                     break;
@@ -2215,12 +2218,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
 
                     $websiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    
                     foreach ($_SESSION['MultiSite']['executeSql'] as $websiteId => $query) {
                         $website = $websiteRepo->findOneBy(array('id' => $websiteId));
-                        $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $website->getFqdn()->getName()), $website);
+                        $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $website->getFqdn()->getName()), $website);                        
                         if ($resp && $resp->status == 'success') {
                             unset($_SESSION['MultiSite']['executeSql'][$websiteId]);
-                            return array($resp->data);
+                            $websitesDone = $_SESSION['MultiSite']['totalWebsites'] - count($_SESSION['MultiSite']['executeSql']);
+                            return array($resp->data,'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'],'websitesDone' => $websitesDone );
                         }
                         return array('status' => 'error');
                     }

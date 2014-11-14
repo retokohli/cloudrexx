@@ -2,18 +2,15 @@
     display: none;
 }
 .ui-dialog #loading {
-    float: none;
-    margin: 0 auto;
-    width: 95px !important;
-    height: 16px !important;
+    width: 100%;
+    text-align: center;
+    height: 20px !important;
 }
 .ui-dialog #loading span {
     margin: 0 0 0 5px;
     line-height: 16px;
-    float: left;
-}
-.ui-dialog #loading img {
-    float: left;
+    position: relative;
+    top: -3px;
 }
 #instance_table{
     position: relative;
