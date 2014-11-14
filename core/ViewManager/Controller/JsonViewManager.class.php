@@ -243,7 +243,7 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             
             //Remove theme details from the database.
             if ($themeRepository->remove($theme)) {
-                return array('status' => 'success', 'message' => $theme.": ".$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_DELETE']);
+                return array('status' => 'success', 'message' => $theme->getThemesname().": ".$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_DELETE']);
             }
         }
         
