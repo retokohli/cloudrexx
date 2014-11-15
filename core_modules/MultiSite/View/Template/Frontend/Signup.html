@@ -25,7 +25,9 @@ jQuery(document).ready(function(){
         }
     }
     jQuery.getScript("{MULTISITE_PATH}/lib/javascript/jquery/bootstrapvalidator/js/bootstrapValidator.min.js", function() {
-        jQuery.getScript('{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js');
+        jQuery.getScript('https://media.payrexx.com/modal/v1/modal.js', function() {
+            jQuery.getScript('{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js');
+        });        
     });
 
 });

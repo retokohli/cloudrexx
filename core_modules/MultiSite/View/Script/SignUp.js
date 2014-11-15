@@ -29,12 +29,11 @@
 
         objModal.find('.multisite_submit').on('click', submitForm);
         objModal.find('.multisite_pay').on('click', setPaymentUrl);
-
-        jQuery(('.multisite_pay')).payrexxModal({
+        
+        jQuery('.multisite_pay').payrexxModal({
             show: function(e) {
                 //signup form validation
-                jQuery("#multisite_signup_form").data('bootstrapValidator').validate();
-                if (!isFormValid() || !jQuery("#multisite_signup_form").data('bootstrapValidator').isValid()) {
+                if (!formValidation()) {
                     return e.preventDefault();
                 }
                 
@@ -43,7 +42,7 @@
             hidden: function(transaction) {
                 switch (transaction.status) {
                     case 'confirmed':
-                        setFormButtonState('pay', true);
+                        setFormButtonState('pay', false);
                         callSignUp();
                         break;
                     case 'waiting':
@@ -146,6 +145,15 @@
         }
     }
 
+    function formValidation() {
+        jQuery("#multisite_signup_form").data('bootstrapValidator').validate();
+        if (!isFormValid() || !jQuery("#multisite_signup_form").data('bootstrapValidator').isValid()) {
+            return false;
+        }
+
+        return true;
+    }
+    
     function setPaymentUrl() {
         var email = jQuery("#multisite_email_address").val();
         var productName = jQuery("#product_name").val();
@@ -171,8 +179,8 @@
 
     function submitForm() {
         try {
-            jQuery("#multisite_signup_form").data('bootstrapValidator').validate();
-            if (!isFormValid() || !jQuery("#multisite_signup_form").data('bootstrapValidator').isValid()) {
+            
+            if (!formValidation()) {
                 return;
             }
 
