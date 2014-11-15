@@ -1,7 +1,7 @@
 (function($) {
     $(document).ready(function() {
         
-        var count = $("#mediadir  .reference").size();
+    /*    var count = $("#mediadir  .reference").size();
         for (var i = count; i < 12; i++) {
             $(".reference").last().after('<div class="reference grid3 graybox_entry"></div>');
         }
@@ -26,7 +26,7 @@ $(window).load(function() {
     $J("#mediadir .reference.graybox_entry").css("height",Image_height);
     $J("#mediadir .reference.graybox_entry").show();
 }
-});
+}); */
 
         /* add div for every three child in mediadirectory overview page  */
         var entries = $J("#mediadir").children('.reference');

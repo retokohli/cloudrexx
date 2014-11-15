@@ -418,6 +418,7 @@ padding:5px 0 0;
 #contactForm #contactFrame div.row {
     margin-right: 0;
     margin-left: 0;
+    margin-bottom: 0;
 }
 #contactForm #contactFrame div label{
   width: 28%;
@@ -429,17 +430,13 @@ padding:5px 0 0;
 }
 #contactForm #contactFrame input[type="text"],#contactForm #contactFrame div textarea,
 #contactForm #contactFrame div select {
-  width: 68.6%;
+  width: 71.6%;
   border: 1px solid #b1b1b1;
   background: #FFFFFF;
   padding: 5px 12px;
   font-family: MyriadPro;
   color: #999;
   font-size: 16px;
-}
-
-#contactFormFieldId_77 {
-/*    width: 71.6% !important;*/
 }
 
 #contactForm #contactFrame div:last-child {
