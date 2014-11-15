@@ -1349,12 +1349,12 @@ CODE;
      * @param string  $filePath        Relative path of file
      * @param boolean $isComponentFile load from component directory or not
      * 
-     * @return string full of a file
+     * @return array full and relative path of a file
      */
     function getFileFullPath($filePath, $isComponentFile)
     {
         if (empty($filePath)) {
-            return '';
+            return array('', '');
         }
         
         $fileTypeComponent = false;
@@ -1378,14 +1378,17 @@ CODE;
         $websiteFilePath  = $websitePath . $relativeFilePath;
         $codeBaseFilePath = $codebasePath . $relativeFilePath;
         
-        $filePath         = file_exists($websiteFilePath) 
-                            ? $websiteFilePath
-                            : ( file_exists($codeBaseFilePath)
-                                ? $codeBaseFilePath
-                                : ''
-                              );
+        if (file_exists($websiteFilePath)) {
+            $filePath = $websiteFilePath;
+            $relativeFilePath = preg_replace('#' . \Env::get('cx')->getWebsitePath() . '#', '', $websiteFilePath);
+        } elseif (file_exists($codeBaseFilePath)) {
+            $filePath = $codeBaseFilePath;
+            $relativeFilePath = preg_replace('#' . \Env::get('cx')->getCodeBasePath() . '#', '', $codeBaseFilePath);
+        } else {
+            $filePath = $relativeFilePath = '';
+        }
         
-        return $filePath;
+        return array($filePath, $relativeFilePath);
         
     }
     
@@ -1412,21 +1415,23 @@ CODE;
         $this->websiteThemesFilePath  = $this->websiteThemesPath.$theme->getFoldername();
         
         $filePath = '';
+        $relativeFilePath = '';
         if (!empty($themesPage)) {
-            $filePath = $this->getFileFullPath($themesPage, $isComponentFile);
+            list($filePath, $relativeFilePath) = $this->getFileFullPath($themesPage, $isComponentFile);
         }
         
         if (!is_file($filePath)) {
             $filePath   = file_exists($this->websiteThemesFilePath . '/index.html') 
                           ? $this->websiteThemesFilePath . '/index.html'
                           : $this->codeBaseThemesFilePath . '/index.html';
+            $relativeFilePath = '/index.html';
             $themesPage = '/index.html';
         }
         
         $objTemplate->setVariable(array(
             'THEMES_MENU'           => $this->getThemesDropdown($theme),
             'THEMES_PAGES_MENU'     => $this->getFilesDropdown($theme, $themesPage, $isComponentFile),
-            'THEMES_PAGE_VALUE'     => $this->getFilesContent($filePath),
+            'THEMES_PAGE_VALUE'     => $this->getFilesContent($filePath, $relativeFilePath),
             'THEMES_MENU_DEL'       => $this->_getThemesDropdownDelete(),
             'THEME_ID'              => $theme->getId(),
             'THEME_SELECTED_THEME'  => $theme->getFoldername(),
@@ -1905,11 +1910,12 @@ CODE;
     /**
      * Gets the themes pages file content
      * @access   public
-     * @param    string   $themes
-     * @param    string   $themesPage
+     * @param    string   $filePath
+     * @param    string   $relativeFilePath
+     * 
      * @return   string   $fileContent
      */
-    function getFilesContent($filePath)
+    function getFilesContent($filePath, $relativeFilePath)
     {
         global $objTemplate, $_ARRAYLANG;
         
@@ -1925,9 +1931,9 @@ CODE;
             $objTemplate->setVariable(array(
                 'CONTENT_HTML'             => $contenthtml,                
             ));
-            if ($fileIsImage) {
+            if ($fileIsImage) {                
                 $objTemplate->setVariable(array(
-                    'THEMES_CONTENT_IMAGE_PATH' => preg_replace('#' . \Env::get('cx')->getWebsitePath() . '#', '', $filePath),
+                    'THEMES_CONTENT_IMAGE_PATH' => $relativeFilePath,
                 ));
                 $objTemplate->touchBlock('template_image');
                 $objTemplate->hideBlock('template_content');
