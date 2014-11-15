@@ -156,16 +156,18 @@
     
     function setPaymentUrl() {
         var email = jQuery("#multisite_email_address").val();
+        var productId = jQuery("#product_id").val();
         var productName = jQuery("#product_name").val();
         var websiteName = jQuery("#multisite_address").val();
         var domainName = jQuery("#multisite_domain").val();
         var href = jQuery(".multisite_pay").data('href');
         var hrefVal = href.split('&');
         hrefVal = jQuery.map(hrefVal, function(v) {
-            if (v.search('contact_email') !== -1 || v.search('invoice_number') !== -1) {
+            if (v.search('contact_email') !== -1 || v.search('invoice_number') !== -1 || v.search('referenceId') !== -1) {
                 var modifyValue = v.split('=');
                 return (modifyValue[0] === 'contact_email') ? 'contact_email=' + email :
-                        (modifyValue[0] === 'invoice_number' ? 'invoice_number=' + productName + ' - ' + websiteName + '.' + domainName : '');
+                        (modifyValue[0] === 'invoice_number' ? 'invoice_number=' + productName + ' - ' + websiteName + '.' + domainName : 
+                        (modifyValue[0] === 'referenceId') ? 'referenceId=' + productId + '-' + websiteName : '');
             }
             return v;
         });

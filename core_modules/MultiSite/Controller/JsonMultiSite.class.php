@@ -284,9 +284,28 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $order->createSubscription($product, $subscriptionOptions);
 
+            $order->billSubscriptions();
+            $invoices = $order->getInvoices();
+            if (!empty($invoices)) {
+                $paymentRepo = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Payment');
+                foreach ($invoices as $invoice) {
+                    if (!$invoice->getPaid()) {
+                        $referenceId = $product->getId() . '-' . $websiteName;
+                        $payment     = $paymentRepo->findOneBy(array('amount' => $invoice->getAmount(), 'transactionReference' => $referenceId));
+                        if ($payment) {
+                            $invoice->addPayment($payment);
+                            $payment->setInvoice($invoice);
+                            \Env::get('em')->persist($invoice);
+                            \Env::get('em')->persist($payment);
+                            break;
+                        }
+                    }
+                }
+            }
+
             \Env::get('em')->persist($order);
             \Env::get('em')->flush();
-
+            
             // create the website in the payComplete event
             $order->complete();
 
