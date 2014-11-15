@@ -70,7 +70,9 @@ a {
 color:#4b4b4b;
 text-decoration:none;
 }
-
+.login-bottom a {
+    color:#4b4b4b;
+}
 a:hover {
 color:#528AA2;
 text-decoration:underline;
@@ -150,9 +152,18 @@ outline:0;
 margin:0;
 padding:7px 12px 8px;
 }
-
-select {
-width:326px;
+#checkout button, #checkout select, #checkout textarea {
+color:#7D7D7D;
+font-family:Arial;
+outline:0;
+margin:0;
+padding: 6px 6px 7px;
+border: 1px solid #BBB;
+background: #FCFCFC;
+font-size: normal;
+}
+select, select[name="catid"] {
+width:300px;
 padding:6px 6px 7px;
 }
 

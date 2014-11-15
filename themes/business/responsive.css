@@ -629,8 +629,11 @@ padding-bottom: 20px;
       #captcha {
          width: 100%;
       }
-       input {
+      #login #USERNAME,#login #PASSWORD, input#file_upload, select[name="catId"], select[name="catid"] {
           width: 100% !important;
+      }
+      #shop div.details {
+          margin-top: 130px;
       }
 }
 @media(max-width: 480px){
@@ -721,6 +724,13 @@ padding-bottom: 20px;
  #logo img {
 max-width: 85%;
 height: auto;}
+ #blog div.search_date {
+     width: 100%;
+     padding: 0;
+ }
+#shop div.details {
+          margin-top: 170px;
+      }
  
 }
 

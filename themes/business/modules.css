@@ -360,7 +360,6 @@ div.row2 {
     height:auto !important;
 }
 #gallery div.category_images div.image {
-    width: 33%;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     text-align:left;
@@ -2490,16 +2489,13 @@ dl.data_module img {
 }
 #mediadir .employee-left {
     float: left;
-    width: 25%;
 }
 #mediadir .employee-left img {
     float: left;
-    max-width: 90%;
     max-height: 200px;
 }
 #mediadir .employee-middle {
     float: left;
-    width: 30%;
 }
 #mediadir .employee-title {
     float: left;
@@ -2512,7 +2508,6 @@ dl.data_module img {
 }
 #mediadir .employee-right {
     float: left;
-    width: 45%;
 }
 #mediadir .employee-more {
     float: left;
@@ -2716,7 +2711,6 @@ dl.data_module img {
 }
 /*new*/
 select[name="catId"] {
-float: left;
 width: 40%;
-margin-right: 15px;
+display: inline-block;
 }
