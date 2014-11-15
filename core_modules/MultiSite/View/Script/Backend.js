@@ -240,8 +240,13 @@
                                             cx.trigger('loadingEnd', 'executeSql', {});
                                         }
                                         if (response.status == 'success' && argName == 'website') {
-                                            $('.resultSet').html(parseQueryResult(response));
-                                            cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
+                                            if (response.data.queryResult == null) {
+                                                $('.resultSet').html('<div><table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%"><tbody><tr><th>' + response.data.websiteName + '</th></tr><tr class="row1"><td><div class="alertbox">' + cx.variables.get('errorMsg', 'multisite/lang') + '</div></td></tr></tbody></table></div>');
+                                                cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', 'multisite/lang'), null, 3000);
+                                            } else {
+                                                $('.resultSet').html(parseQueryResult(response.data.queryResult));
+                                                cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
+                                            }
                                             cx.trigger('loadingEnd', 'executeSql', {});
                                         }
                                         if (response.status == 'success' && argName == 'service') {
@@ -281,60 +286,58 @@
         var parseQueryResult = function(response) {
             var html = '';
             var resultTable = '';
-            $.each(response.data, function(key, value) {
-                if (value.status) {
-                    var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist">';
-                    var col_count = 0;
-                    var tbody = "";
-                    var thead = "";
-                    if(value.resultSet) {
-                        var cols = Object.keys(value.resultSet).length;
-                        $.each(value.resultSet, function(resultSetkey, resultSetData) {
-                            tbody += "<tr class =row1>";
-                            if (col_count == 0) {
-                                thead += "<th colspan='2'>" + value.websiteName + "</th>";
-                            }
-                            if (col_count < cols) {
-                                var count = 0;
-                                var tsbody = "";
-                                var tshead = "";
-                                tbody += "<td><div class='" + resultSetData.queryStatus + "'>" + resultSetData.query + "</td>";
-                                if (typeof resultSetData.resultValue === 'object') {
-                                    var no_cols = Object.keys(resultSetData.resultValue).length;
-                                    $.each(resultSetData.resultValue, function(resultValueKey, resultValueData) {
-                                        tsbody += "<tr class =row1>";
-                                        for (resultValueKey in resultValueData) {
-                                            if (count == 0) {
-                                                tshead += "<th>";
-                                                tshead += resultValueKey;
-                                                tshead += "</th>"
-                                            }
-                                            if (count < no_cols) {
-                                                tsbody += "<td>";
-                                                tsbody += resultValueData[resultValueKey];
-                                                tsbody += "</td>"
-                                            }
-                                        }
-                                        count++;
-                                        tsbody += "</tr>";
-                                    });
-                                } else if (resultSetData.resultValue) {
+            if (response.status) {
+                var theader = '<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%">';
+                var col_count = 0;
+                var tbody = "";
+                var thead = "";
+                if(response.resultSet) {
+                    var cols = Object.keys(response.resultSet).length;
+                    $.each(response.resultSet, function(resultSetkey, resultSetData) {
+                        tbody += "<tr class =row1>";
+                        if (col_count == 0) {
+                            thead += "<th colspan='2'>" + response.websiteName + "</th>";
+                        }
+                        if (col_count < cols) {
+                            var count = 0;
+                            var tsbody = "";
+                            var tshead = "";
+                            tbody += "<td><div class='" + resultSetData.queryStatus + "'>" + resultSetData.query + "</td>";
+                            if (typeof resultSetData.resultValue === 'object') {
+                                var no_cols = Object.keys(resultSetData.resultValue).length;
+                                $.each(resultSetData.resultValue, function(resultValueKey, resultValueData) {
                                     tsbody += "<tr class =row1>";
-                                    tsbody += "<td>";
-                                    tsbody += resultSetData.resultValue;
-                                    tsbody += "</td>";
+                                    for (resultValueKey in resultValueData) {
+                                        if (count == 0) {
+                                            tshead += "<th>";
+                                            tshead += resultValueKey;
+                                            tshead += "</th>"
+                                        }
+                                        if (count < no_cols) {
+                                            tsbody += "<td>";
+                                            tsbody += resultValueData[resultValueKey];
+                                            tsbody += "</td>"
+                                        }
+                                    }
+                                    count++;
                                     tsbody += "</tr>";
-                                }
-                                resultingTable = theader + tshead + tsbody + "</table></br>";
-                                tbody += "<td>" + resultingTable + "</td>";
+                                });
+                            } else if (resultSetData.resultValue) {
+                                tsbody += "<tr class =row1>";
+                                tsbody += "<td>";
+                                tsbody += resultSetData.resultValue;
+                                tsbody += "</td>";
+                                tsbody += "</tr>";
                             }
-                            col_count++;
-                            tbody += "</tr>";
-                        });
-                        html +=  theader + thead + tbody + "</table></br>";
-                    } 
-                }
-            });
+                            resultTable = theader + tshead + tsbody + "</table></br>";
+                            tbody += "<td>" + resultTable + "</td>";
+                        }
+                        col_count++;
+                        tbody += "</tr>";
+                    });
+                    html +=  theader + thead + tbody + "</table>";
+                } 
+            }
             html = $('<div />').append(html);
             return html;
         };
@@ -450,11 +453,17 @@
                         return;
                     }
                     if (response.status == 'success') {
-                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "<span> ( " +response.data.websitesDone+ " / " + response.data.totalWebsites +" ) </span></div>",null, 3000);
-                        $('.resultSet').append(parseQueryResult(response));                         
-                        offset = 0;
+                        offset = 0;                        
+                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "<span> ( " +response.data.websitesDone+ " / " + response.data.totalWebsites +" ) </span></div>");
+                        
+                        if (response.data.queryResult == null) {
+                            $('.resultSet').append('<div><table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%"><tbody><tr><th>'+ response.data.websiteName +'</th></tr><tr class="row1"><td><div class="alertbox">'+cx.variables.get('errorMsg', 'multisite/lang')+'</div></td></tr></tbody></table></div>');
+                        } else {
+                            $('.resultSet').append(parseQueryResult(response.data.queryResult));  
+                        }
+                       
                         $(".resultSet > div:not(:last)").each(function(i, e){
-                            offset += $(e).height(); 
+                            offset += $(e).outerHeight(true); 
                         });
                         $('.ui-dialog-content').animate({scrollTop: offset},'slow');
                         executeSql();

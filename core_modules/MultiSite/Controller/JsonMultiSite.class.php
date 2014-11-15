@@ -2072,12 +2072,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         if (empty($website)) {
                             throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to find the website.');
                         }
-                        $params['post']['websiteName'] = $website->getFqdn()->getName();
+                        $websiteName = $website->getFqdn()->getName();
+                        $params['post']['websiteName'] = $websiteName;
                         $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
                         if ($resp && $resp->status) {
-                            $result[] = $resp->data;
+                            $result = $resp->data;
                         }
-                        return $result;
+                        return array('queryResult' => $result, 'websiteName' => $websiteName);
                     }
                     //execute sql query on all websites running on service server 
                     if (isset($params['post']['mode']) && $params['post']['mode'] == 'service') {
@@ -2221,13 +2222,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     
                     foreach ($_SESSION['MultiSite']['executeSql'] as $websiteId => $query) {
                         $website = $websiteRepo->findOneBy(array('id' => $websiteId));
-                        $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $website->getFqdn()->getName()), $website);                        
-                        if ($resp && $resp->status == 'success') {
-                            unset($_SESSION['MultiSite']['executeSql'][$websiteId]);
-                            $websitesDone = $_SESSION['MultiSite']['totalWebsites'] - count($_SESSION['MultiSite']['executeSql']);
-                            return array($resp->data,'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'],'websitesDone' => $websitesDone );
-                        }
-                        return array('status' => 'error');
+                        $websiteName = $website->getFqdn()->getName();
+                        $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $websiteName), $website);                        
+                        unset($_SESSION['MultiSite']['executeSql'][$websiteId]);
+                        $websitesDone = $_SESSION['MultiSite']['totalWebsites'] - count($_SESSION['MultiSite']['executeSql']);
+                        return array('queryResult' => $resp->data, 'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'], 'websitesDone' => $websitesDone, 'websiteName' => $websiteName);
                     }
                 break;    
             }

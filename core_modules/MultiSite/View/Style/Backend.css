@@ -92,3 +92,8 @@ a.deleteMultisiteConfig {
 .queueStatus {
     font-weight: bold;
 }
+
+.resultSet > div {
+    margin-bottom: 10px;
+    width: 100%;
+} 
