@@ -134,7 +134,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", '
             <a href="index.php?cmd=Contact" title="'.$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].'" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].'</a>
-            <a hreF="index.php?cmd=Media&amp;archive=contact" title="'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a>
+            <a hreF="index.php?cmd=Media&amp;archive=Contact" title="'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a>
             <a href="index.php?cmd=Contact&amp;act=settings" title="'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'</a>
         ');
     }

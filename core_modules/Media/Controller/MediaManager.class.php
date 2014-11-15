@@ -177,7 +177,7 @@ class MediaManager extends MediaLibrary
                 \Permission::checkAccess(84, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=Contact" title="'.$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].'">'.$_ARRAYLANG['TXT_FORMS'].'</a>
-                    <a hreF="index.php?cmd=Media&amp;archive=contact" title="'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'" class="active">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a>
+                    <a hreF="index.php?cmd=Media&amp;archive=Contact" title="'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'" class="active">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a>
                     <a href="index.php?cmd=Contact&amp;act=settings" title="'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'">'.$_ARRAYLANG['TXT_CONTACT_SETTINGS'].'</a>
                 ');
                 break;
