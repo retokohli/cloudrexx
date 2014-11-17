@@ -8,10 +8,6 @@ form > fieldset > div {
     padding: 0 0 10px 0;
 }
 /* Start old contact form structure */
-/*form p {
-    width: 400px;
-    padding-left: 250px;
-}*/
 form p label {
     margin: 0 0 0 -250px;
 }
@@ -79,14 +75,6 @@ form input[type="submit"] {
     margin-right: 10px;
     float: left;
 }
-/*#login form input.remember_me,
-#login form label.remember_me {
-    margin-left: 0;
-    margin-top: 7px;
-    padding: 15px 0 0px 0;
-    border: 0 none;
-    margin-bottom: -10px;
-}*/
 #login form input.remember_me {
     margin-top: 4px;
 }
@@ -2509,7 +2497,6 @@ dl.data_module img {
 #content2 .overview h2 {
     margin-top: 0;
 }
-/*form .row{margin: 0 !important;}*/
 #downloads .overview .row .category .title a:hover{color: #aaaaaa;}
 #calendar .search input[name="startDate"], #calendar .search input[name="endDate"]{width: 80px !important;}
 #calendar .search input[name="keyword"]{width: 120px !important;}
@@ -2529,7 +2516,6 @@ ul.event-list a:hover, .letter_index a:hover{color: #aaaaaa;}
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
 }
-
 #shop-product-added-info-box {
     position: fixed;
     top: 40%;
@@ -2558,9 +2544,6 @@ input[type="submit"].contactFormClass_button {
     margin-left: -30px;
     margin-right: 20px;
 }
-/*#news .container-fluid > .row, #shop .container-fluid > .row {
-    margin-left: 0;
-}*/
 #shop > .row .container-fluid {
     padding-right: 0;
     margin-left: 15px;

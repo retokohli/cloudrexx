@@ -164,7 +164,6 @@ body a:hover {
 /* ==========================================================================
    Navigation styles
    ========================================================================== */
-
 .navbar-inverse .navbar-inner {
     background-attachment: scroll;
     background-clip: border-box;
@@ -187,11 +186,7 @@ body a:hover {
     margin-right: auto;
     top: 0;
     width: 1170px;
-    /*    //border-bottom-left-radius: 10px;
-        //border-bottom-right-radius: 10px;
-        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#aaaaaa', endColorstr='#aaaaaa', GradientType=0)*/
 }
-
 .navbar .brand {
     padding-left: 35px;
     padding-top: 0px;
@@ -209,7 +204,6 @@ body a:hover {
 }
 .brand {
     margin-top: 5px;
-
 }
 body .navbar .nav > li > a {
     color: #232323;
@@ -312,17 +306,14 @@ body .navbar .nav > li > a:hover, #navigation li.level-1.active > a.active {
     position: relative;
     z-index: 9;
 }
-
 .carousel-caption {
     display:none;             /* Turned off main picture H1 Texts */
 }
-
 .carousel-control {
     background: none repeat scroll 0 0;
     background-color: transparent;
     border: 0px solid;
     border-radius: 0px;
-    /*//font-size: 22px;*/
     font-weight: bold;
     height: 40px;
     margin-top: 50px;
@@ -366,7 +357,6 @@ body .navbar .nav > li > a:hover, #navigation li.level-1.active > a.active {
     padding-bottom: 120px;
 }
 #content2 {
-    /*    //background: url(images/grid_noise.png) repeat;*/
     background-color: #f4f4f4;
     padding-top: 60px;
     padding-bottom: 60px;
@@ -819,7 +809,6 @@ ul.social-icons-signup li a:hover {
     float: left;
     overflow: hidden;
     position: relative;
-    /*//margin-bottom: 30px;*/
 }
 .thumbs img {
     width: 100%;
@@ -920,7 +909,6 @@ ul.icons li {
 .latest-article:nth-child(n+3) {
     display: none;
 }
-
 /* ==========================================================================
    Twitter Feed styles
    ========================================================================== */
@@ -1034,11 +1022,6 @@ ul.social-icons li a:hover {
 }
 #footer a {
     color: #aaa;
-}
-#footer ul, #footer, li {
-    /*    list-style-image: none;
-        list-style-position: outside;
-        list-style-type: none;*/
 }
 .footerBlock {
     padding-top:5px;
@@ -1492,7 +1475,6 @@ body .footerBlock a, body .footerBlock a:hover {
         clear: both;
     }
 }
-
 /*new style*/
 .social-media li{
     float: left;
@@ -1513,11 +1495,6 @@ body .footerBlock a, body .footerBlock a:hover {
 #subnavigation li > ul li a.active:hover, #subnavigation li a.active:hover{color: #f4f4f4;}
 #subnavigation li a:hover, #subnavigation li > ul li a:hover{
     color: #31363A;
-}
-#subnavigation li{list-style-type: none;}
-#subnavigation li.level-1 > a,
-#subnavigation li ul {
-    /*//display: none;*/
 }
 #subnavigation li.level-1 > ul,
 #subnavigation li.active > ul {
@@ -1623,11 +1600,9 @@ input.input-block-level[type="text"]{width: 100%;}
 #fe_PreviewContent a:hover{color: #aaaaaa;}
 ul{
     margin-left: 20px;
-    /*//list-style-type: none;*/
     list-style-type: bullet; 
 }
 li {
-
 }
 #subnavigation li.active > a.active, #subnavigation li.active > a.active:hover{color:#31363A;}
 #subnavigation li.level-3{padding-left: 15px;}
@@ -1650,7 +1625,6 @@ h2 span#fe_PreviewTitle{color: #626C72;}
 }
 h3.submenu-title, .menu-break{display: none;}
 #fe_PreviewContent h2, #fe_PreviewContent h3{padding: 18px 0 6px;}
-
 .pageAnchorDivider {
     display: block;
     height: 70px;
@@ -1696,10 +1670,6 @@ body .navbar > .container {padding-right: 0}
 .navbar-inverse .navbar-inner {border-width: 0;}
 .carousel .carousel-control{text-shadow: none;position:absolute;top:40%;left:15px;width:40px;height:40px;margin-top:39px;font-size:60px;font-weight:100;line-height:30px;color:#ffffff;text-align:center;background:transparent;-webkit-border-radius:23px;-moz-border-radius:23px;border-radius:23px;opacity:1}
 .carousel .carousel-control.left, .carousel .carousel-control.right {background-image: none; right: 15px;}
-/*body .container {
-    padding-left: 0;
-    padding-right: 0;
-}*/
 a:hover, a:focus {
     color: #3a4044;
     text-decoration: none;
@@ -1891,7 +1861,6 @@ form[name="shopSearch"] select {
     height: 100px;
     text-align: center;
     margin-top: 20px;
-
 }
 #content2 #mediadir form p label {
     width: 100%;
