@@ -585,6 +585,9 @@ class MediaManager extends MediaLibrary
                 for($x = 0; $x < count($dirTree[$key]['icon']); $x++)
                 {
                     $fileName = $dirTree[$key]['name'][$x];
+                    if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $fileName)) {
+                        continue;
+                    }
                     // colors
                     $class = ($i % 2) ? 'row2' : 'row1';
                     if(in_array($fileName, $this->highlightName)) // highlight
@@ -792,10 +795,10 @@ class MediaManager extends MediaLibrary
             if (!file_exists($this->path . $this->getFile)) $check = false;
         }
 
-        if ($check == false) { // file doesn't exist
+        if ($check == false || preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $this->getFile)) { // file doesn't exist
             $this->_objTpl->setVariable(array(  // ERROR
                 'TXT_MEDIA_ERROR_OCCURED'    => $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'],
-                'TXT_MEDIA_FILE_DONT_EXISTS' => $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS']
+                'TXT_MEDIA_FILE_DONT_EXISTS' => preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $this->getFile) ? $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'] : $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS']
             ));
             $this->_objTpl->parse('mediaErrorFile');
         } else if ($check == true) { // file exists
