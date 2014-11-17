@@ -1,0 +1,169 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+    <!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+
+        <meta name="generator" content="{VERSION}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="description" content="{METADESC}" />
+        <meta charset="{CHARSET}" />
+
+        <meta property="og:site_name" content="{GLOBAL_TITLE}" />
+        <meta property="og:title" content="{METATITLE}" />
+        <meta property="og:description" content="{METADESC}" />
+        <meta property="og:url" content="http://{DOMAIN_URL}{CURRENT_URL}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link type="images/x-icon" rel="icon" href="favicon.ico" />
+        <link rel="apple-touch-icon" href="/themes/astrum/images/logo_apple_touch.png" />
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+        
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        <link type="text/css" rel="stylesheet" href="themes/astrum/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/astrum/jquery.sidr.light.min.css" />
+        <link type="text/css" rel="stylesheet" href="themes/astrum/text.css" />
+        <link type="text/css" rel="stylesheet" href="themes/astrum/modules.css" />
+		<link type="text/css" rel="stylesheet" href="themes/astrum/responsive.css" />
+		<link type="text/css" rel="stylesheet" href="themes/astrum/jcarousel.css" />
+        {LOGIN_INCLUDE}
+        <script type="text/javascript">
+            var cssName = '{CSS_NAME}';
+            if (cssName.length > 0) {
+                $J.ajax({
+                    url: '{PATH_OFFSET}/themes/astrum/images/titelbilder/titelbild_' + cssName + '.jpg',
+                    complete: function(jqXHR) {
+                        var contentType = jqXHR.getResponseHeader('Content-Type');
+                        if ($J.type(contentType) == 'string' && contentType.substring(0, 5) == 'image') {
+                            $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/themes/astrum/images/titelbilder/titelbild_' + cssName + '.jpg" alt="Titelbild" />');
+                        }
+                    }
+                });
+            }
+        </script>		
+<script type="text/javascript" src= "themes/astrum/modernizr.js"></script>        
+<script type="text/javascript" src= "themes/astrum/jquery.js"></script>
+<!--<script type="text/javascript" src= "themes/astrum/jquery.flexslider.js"></script>-->
+<script type="text/javascript" src= "themes/astrum/responsiveslides.min.js"></script>
+<script type="text/javascript" src= "themes/astrum/jquery.cycle.js"></script>
+<script type="text/javascript" src= "themes/astrum/jquery.jcarousel.min.js"></script>
+<script type="text/javascript" src= "themes/astrum/jcarousel.responsive.js"></script>
+<script type="text/javascript" src= "themes/astrum/jquery.sidr.min.js"></script>
+<script type="text/javascript" src= "themes/astrum/javascript.js"></script>
+
+        <!--[if IE 6]>
+        <script type="text/javascript" src="themes/astrum/DD_belatedPNG.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/astrum/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    var elements = '#search-input';
+                    $J(elements).each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
+        </script>
+        <![endif]-->
+    </head>
+
+    <body>
+        <div id="whole-page">
+            <div class="fullpage">
+                <header>
+                    <div id="header" class="container">
+                    <div class="responsive_navi">
+                            <a id="simple-menu" href="#sidr"></a><!--to open mobile Navigation-->
+                    </div>
+                    <div id="sidr">
+                        {NAVBAR2_FILE}
+                    </div>
+                        <div id="logo" title="Astrum"><a href="{NODE_HOME}"><img alt="image" height="23" src="themes/astrum/images/logo.png" width="123" /></a></div>
+                         {BLOCK_33}
+                        <div id="header-right">
+                            <div id="main-nav">
+                                {NAVBAR_FILE}
+                            </div>
+                            <div id="search">
+                                <form method="GET" id="search-form" action="{NODE_SEARCH}">
+                                    <input type="text" class="search-box" name="term">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            </div>
+            <div id="content-wrapper">
+                    {CONTENT_FILE}
+            </div>
+            <div id="info-blog">
+                <div id="info-blog-width" class="container">
+                    <div id="info-about" class="four columns">
+                        <h2>Über uns</h2>
+                        <p>Dank dem modular aufgebauten Contrexx Web Content Management System wird das Verwalten von anwendungsreichen Webseiten stark vereinfacht.</p>
+                    </div>
+                  	<!--{BLOCK_38}-->
+                    <div id="info-news" class="four columns">
+                        <h2>News</h2>
+                        {HEADLINES_FILE}
+                    </div>
+                    <div id="info-address" class="four columns">
+                        <h2>Kontakt</h2>
+                        <ul>
+                            <li><i class="icon-map-marker"></i><strong>Adresse:</strong>  {CONTACT_ADDRESS}</li>
+                            <li><i class="icon-phone"></i><strong>Telefon:</strong>  {CONTACT_PHONE}</li>
+                            <li><i class="icon-envelope"></i><strong>E-Mail:</strong>  {CONTACT_EMAIL}</li>
+                        </ul>
+                    </div>
+                    <div id="info-newsletter" class="four columns">
+                        <div id="newsletter_block">
+                            <h2>Newsletter abbonieren</h2>
+                            <p>Bitte E-Mail Adresse f&uuml;r Newsletter-Anmeldung angeben.&nbsp;</p>
+
+                            <form action="{NODE_NEWSLETTER_SUBSCRIBE}" method="post" name="newsletter">
+                                <input name="list[2]" type="hidden" value="1" /> <input id="email" maxlength="255" name="email" onfocus="this.value = ''" type="text" value="E-Mail Adresse" />
+                                <button id="newsletter_link" name="recipient_save"><span style="color:white;"><span style="font-family: sans-serif, Arial, Verdana, 'Trebuchet MS'; font-size: 13px; line-height: 1.6em;">Anmelden</span></span><br />
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <footer id="footer" class="inner">
+                <div id="footer-width" class="container">
+					<div id="footer-left" class="eight columns alpha">
+                        <p>&copy;&nbsp;Copyrights {DATE_YEAR} by your company.</p>
+                    </div>
+                   	<!--{BLOCK_39}-->
+                    	<div id="footer-right" class="eight columns omega">
+                        <ul class="footer-right horizontal-list no-bg">
+                            <li><a target="_blank" href="http://twitter.com/contrexx" title="Twitter" class="masterTooltip twitter"><i class="icon-twitter"></i></a></li>
+                            <li><a target="_blank" href="http://www.facebook.com/contrexxsoftware" title="Facebook" class="masterTooltip facebook"><i class="icon-facebook"></i></a></li>
+                            <li><a target="_blank" href="#" title="Dribbble" class="masterTooltip dribbble"><i class="fa fa-dribbble"></i></a></li>
+                            <li><a target="_blank" href="#" title="Linkedin" class="masterTooltip linkedin"><i class="icon-linkedin-sign"></i></a></li>                            
+                            <li class="last"><a target="_blank" href="/feed/news_de.xml" title="RSS" class="masterTooltip rss"><i class="icon-rss"></i></a></li>
+                        </ul>
+                    </div>
+                           	<!--{BLOCK_40} -->
+                </div>
+            </footer>
+
+
+        </div>
+    </body>
+</html>
