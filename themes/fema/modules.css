@@ -1041,6 +1041,7 @@ div.row2 {
     margin: 0 0 5px 0;
     border-bottom: 1px solid #F1F1F1;
     background: none;
+    list-style: none;
 }
 #sitemap ul li.sitemap_level_1 {
     font-weight: bold;
@@ -2508,7 +2509,7 @@ dl.data_module img {
 #content2 .overview h2 {
     margin-top: 0;
 }
-form .row{margin: 0 !important;}
+/*form .row{margin: 0 !important;}*/
 #downloads .overview .row .category .title a:hover{color: #aaaaaa;}
 #calendar .search input[name="startDate"], #calendar .search input[name="endDate"]{width: 80px !important;}
 #calendar .search input[name="keyword"]{width: 120px !important;}

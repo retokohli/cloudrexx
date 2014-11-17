@@ -679,7 +679,7 @@ body .navbar .nav > li > a:hover, #navigation li.level-1.active > a.active {
     overflow: hidden;
     width: 100%;
 }
-textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+input, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
     background-color: #ffffff;
     border: 0 solid #CCCCCC;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.035) inset;
@@ -1541,7 +1541,7 @@ body .footerBlock a, body .footerBlock a:hover {
 form select{
     width: 280px;
 }
-body input[type="text"],body input[type="password"],body input[type="number"],body select, body select.form-control, body textarea {
+body input, body input[type="text"],body input[type="password"],body input[type="number"],body select, body select.form-control, body textarea {
     width: 100%;
     padding: 7px 12px 8px 12px;
     height: auto !important;
@@ -1566,7 +1566,7 @@ input.form-control[type="text"]{
     box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.05) !important;
     border-bottom: 1px solid #DDD !important;
 }
-input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+input, input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
     background-color: rgba(255,255,255, 0.8);
 }
 form input[type="radio"], form input[type="checkbox"]{float: left;margin-right: 5px;}
@@ -1789,13 +1789,20 @@ body .navbar-inverse .navbar-toggle:hover {
     background: #fff;
 }
 .list-unstyled {margin: 0;}
-textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus {
+input:focus , textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus {
     border-color: rgba(82, 168, 236, 0.8);
     outline: 0;
     outline: thin dotted 9;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
     -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border linear .2s, box-shadow linear .2s;
+    -moz-transition: border linear .2s, box-shadow linear .2s;
+    -o-transition: border linear .2s, box-shadow linear .2s;
+    transition: border linear .2s, box-shadow linear .2s;
 }
 select {
     width: 220px;
@@ -1832,3 +1839,90 @@ label, input, button, select, textarea {
 form[name="shopSearch"] select {
     width: 280px;
 }
+.selectorCenter, .mediadirSelectorCenter {
+    padding: 60px 10px 0px;
+    float: left;
+    height: 100px;
+    text-align: center;
+}
+.selectorCenter .btn.btn-default {
+    font-size: 13px;
+    padding: 6px 11px;
+}
+.form .radio {
+    padding: 0;
+    margin: 0;
+    clear: both;
+}
+.form p label {
+    margin: 0;
+}
+#memberForm input, #memberForm select {
+    margin-bottom: 10px;
+}
+.char_list a {
+    word-wrap: break-word;
+}
+#content2 .searchbox, .directorySearch input[name='term'], #regkey, #podcast_category_menu {
+    width: 68%;
+    float: left;
+    margin-right: 10px;
+}
+#content2 form p label {
+    margin: 0;
+}
+#mediadir .form_search .mediadirButtonSearch {
+    margin: 10px 0 0 0px;
+}
+.adv-search {
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+}
+#mediadir table td {
+    vertical-align: middle;
+}
+.mediadirSelector .col-md-offset-3 {
+    margin: 0;
+}
+#mediadir .mediadirSelectorCenter {
+    padding: 0;
+    float: left;
+    height: 100px;
+    text-align: center;
+    margin-top: 20px;
+
+}
+#content2 #mediadir form p label {
+    width: 100%;
+}
+#market form p .radio, .ecardContainer .radio {
+    clear: both;
+    padding: 0;
+    margin: 0;
+}
+#market form .checkbox {
+    padding-left: 0;
+    margin: 0;
+}
+.ecardColumn1, .ecardPreviewMessage, .ecardPreviewData,body .livecamSearch input {
+    margin-bottom: 10px;
+}
+#livecam a img {
+    width: 90%;
+    height: auto;
+}
+#sitemap ul {
+    margin-left: 0;
+}
+.regForm .checkbox {
+    padding-left: 0;
+}
+.addir-search {
+    float: left;
+    width: 100%;
+    padding-top: 20px;
+}
+body legend {padding-bottom: 10px;}
+#mobile-navigation {float: right;}
+.radio, .checkbox {padding-left: 0;}

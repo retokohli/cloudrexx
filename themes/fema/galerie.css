@@ -923,6 +923,10 @@ to {-moz-transform: rotate(360deg);}
         padding-left: 0;
         margin-left: 0;
     }
+    .radio, .checkbox {padding-left: 0;}
+    .directorySearch input[name='term'] {
+        margin-bottom: 10px;
+    }
     .survey td {
         float: left;
         width: 100% !important;
@@ -934,6 +938,9 @@ to {-moz-transform: rotate(360deg);}
         margin-bottom: 10px;
         float: left;
         width: 100%;
+    }
+    #podcast_category_menu {
+        margin-bottom: 10px;
     }
     #gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img {
         width: 100%;
@@ -1024,8 +1031,42 @@ to {-moz-transform: rotate(360deg);}
     #blog div.search_date {
         padding: 0px 0px 0px 40px;
     }
+    .selectorCenter.col-md-2 {
+        float: left;
+        text-align: center;
+        padding: 20px 0 5px 0;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    .categorySelect > .row div {
+        float: left;
+        width: 100%;
+    }
+    #forum div.notification_center {
+        float:left;
+        width: 100%;
+        text-align:center;
+        margin: 0;
+        padding: 0;
+        height: auto;
+    }
     #fieldlast {
         clear: both;
+    }
+    #mediadir .mediadirSelectorCenter {
+        width: 100%;
+        padding: 0 !important;
+    }
+    #mediadir .mediadirSelector, #mediadir .mediadirGoogleMap {
+        clear: both;
+        float: left;
+        width: 100%;
+        padding: 0;
+    }
+    #mediadir .mediadirButtonSearch {
+        float: none;
+        margin: 0;
+        margin-top: 10px;
     }
     .member_list td {
         width: 100% !important;
@@ -1038,6 +1079,40 @@ to {-moz-transform: rotate(360deg);}
         width: auto;
         padding-left: 0;
         margin-left: -20px;
+    }
+    .selectorCenter.col-md-2 {
+        float: left;
+        text-align: center;
+        padding: 20px 0 5px 0;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    #mediadir .mediadirButtonSearch {
+        float: none;
+        margin: 0;
+        margin-top: 10px;
+    }
+    #mediadir .mediadirSelectorCenter {
+        width: 100%;
+        padding: 0 !important;
+    }
+    #mediadir .mediadirSelector, #mediadir .mediadirGoogleMap {
+        clear: both;
+        float: left;
+        width: 100%;
+        padding: 0;
+    }
+    .categorySelect > .row div {
+        float: left;
+        width: 100%;
+    }
+    #forum div.notification_center {
+        float:left;
+        width: 100%;
+        text-align:center;
+        margin: 0;
+        padding: 0;
+        height: auto;
     }
     #gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img {
         width: 100%;

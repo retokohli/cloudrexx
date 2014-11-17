@@ -20,14 +20,14 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="selectorCenter col-md-2">
+                        <div class="selectorCenter col-md-2 col-sm-12">
                             <input class="btn btn-default" type="button" value="&gt;&gt;" name="addCat" onclick="move(document.addForm.elements['notSelectedCat[]'], document.addForm.elements['selectedCat[]'], addCat, removeCat);" />
                             <br />
                             <input class="btn btn-default" type="button" value="&lt;&lt;" name="removeCat" onclick="move(document.addForm.elements['selectedCat[]'], document.addForm.elements['notSelectedCat[]'], removeCat, addCat);" />
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-sm-12">
                             <div class="row">
-                                <select name="selectedCat[]" size="12" class="from-control" multiple="multiple">
+                                <select name="selectedCat[]" size="12" class="form-control" multiple="multiple">
                                     {DIRECTORY_CATEGORY_SELECTED}
                                 </select>
                             </div>

@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="notification container-fluid">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-sm-12">
                             <h3>Verf&uuml;gbare Foren/Kategorien</h3>
                             <select name="unsubscribed[]" size="32" class="form-control" multiple="multiple">
                                 {FORUM_NOTIFICATION_UNSUBSCRIBED}
@@ -21,7 +21,7 @@
                             <input class="btn btn-default" type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.getElementById('frmForumNotification').elements['unsubscribed[]'], document.getElementById('frmForumNotification').elements['subscribed[]'], adduser, removeuser);" /><br />
                             <input class="btn btn-default" type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.getElementById('frmForumNotification').elements['unsubscribed[]'], document.getElementById('frmForumNotification').elements['subscribed[]'], adduser, removeuser);" />
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-sm-12">
                             <h3>Abonnierte Foren/Kategorien</h3>
                             <select name="subscribed[]" size="32" class="form-control" multiple="multiple">
                                 {FORUM_NOTIFICATION_SUBSCRIBED}
