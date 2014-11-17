@@ -1688,7 +1688,7 @@ body .navbar {
     margin-left: auto;
     margin-right: auto;
     top: 0;
-    width: 100%;
+    width: 1170px;
     min-height: 57px;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#aaaaaa', endColorstr='#aaaaaa', GradientType=0);
 }
@@ -1926,3 +1926,4 @@ form[name="shopSearch"] select {
 body legend {padding-bottom: 10px;}
 #mobile-navigation {float: right;}
 .radio, .checkbox {padding-left: 0;}
+.navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {margin-left: 0;}
