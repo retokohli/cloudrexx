@@ -102,6 +102,9 @@ class MediaLibrary
      */
     function _downloadMedia()
     {
+        global $_ARRAYLANG;
+        
+        if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $this->getFile)) { die($_ARRAYLANG['TXT_MEDIA_FILE_DONT_DOWNLOAD']);}
         // The file is already checked (media paths only)
         $file = $this->path.$this->getFile;
         //First, see if the file exists
@@ -299,6 +302,9 @@ class MediaLibrary
     {
         global $_ARRAYLANG;
 
+        if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $file)) {
+            return $_ARRAYLANG['TXT_MEDIA_FILE_DONT_DELETE'];
+        }
         $obj_file = new \File();
         if (is_dir($this->path.$file)) {
             $this->dirLog=$obj_file->delDir($this->path, $this->webPath, $file);
@@ -1194,6 +1200,17 @@ END;
                     @unlink($file);
                     continue;
                 }
+                
+                if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $file)) {
+                    $response->addMessage(
+                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
+                        "You are not able to create the requested file.",
+                        $file
+                    );
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
+                    continue;
+                }
+                
                 //skip . and ..           
                 if($file == '.' || $file == '..')
                     continue;

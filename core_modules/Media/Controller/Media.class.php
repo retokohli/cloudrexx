@@ -188,6 +188,9 @@ class Media extends MediaLibrary
         foreach (array_keys($dirTree) as $key) {
             if (is_array($dirTree[$key]['icon'])) {
                 for ($x = 0; $x < count($dirTree[$key]['icon']); $x++) {
+                    if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $dirTree[$key]['name'][$x])) {
+                        continue;
+                    }
                     $class = ($i % 2) ? 'row2' : 'row1';
                      // highlight
                     if (in_array($dirTree[$key]['name'][$x], $this->highlightName)) {
@@ -468,6 +471,11 @@ class Media extends MediaLibrary
         $fileName = !empty($_FILES[$inputField]['name']) ? contrexx_stripslashes($_FILES[$inputField]['name']) : '';
         $fileTmpName = !empty($_FILES[$inputField]['tmp_name']) ? $_FILES[$inputField]['tmp_name'] : '';
 
+        if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $fileName)) {
+            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_CREATE'];
+            return false;
+        }
+        
         switch ($_FILES[$inputField]['error']) {
             case UPLOAD_ERR_INI_SIZE:
                 $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_SIZE_EXCEEDS_LIMIT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET), $this->getFormatedFileSize(\FWSystem::getMaxUploadFileSize()));
@@ -533,6 +541,12 @@ class Media extends MediaLibrary
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
             return false;
         }
+        
+        if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $this->getFile)) {
+            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'];
+            return false;
+        }
+        
         if (isset($_GET['newfile']) && file_exists($this->path.$this->getFile)) {
             $newFile = trim(preg_replace('/[^a-z0-9_\-\. ]/i', '_', $_GET['newfile']));
             if ($newFile != "") {
@@ -569,6 +583,11 @@ class Media extends MediaLibrary
             return false;
         }
 
+        if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $this->getFile)) {
+            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_DELETE'];
+            return false;
+        }
+        
         if (isset($_GET['path'])) {
             if (isset($_GET['file'])) {
                 $filePath = $this->path.$this->getFile;

@@ -111,4 +111,7 @@ $_ARRAYLANG['TXT_MEDIA_PREVIEW'] = "Preview";
 $_ARRAYLANG['TXT_MEDIA_CANNOT_SAVE_IMAGE'] = "The image could'nt be saved.";
 $_ARRAYLANG['TXT_MAIL_SUBJECT'] = "Mail subject";
 $_ARRAYLANG['TXT_MAIL_CONTENT'] = "Mail content";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'] = "You are not able to edit the requested file.";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_DELETE'] = "You are not able to delete the requested file.";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_DOWNLOAD'] = "You are not able to download the requested file.";
 ?>

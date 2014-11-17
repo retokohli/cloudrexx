@@ -46,4 +46,8 @@ $_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Specified file %s not found";
 $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "File Name cannot be Empty!";
 $_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Folder successfully deleted!";
 $_ARRAYLANG['TXT_MEDIA_DELETE'] = "Delete";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_CREATE'] = "You are not able to create the requested file.";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'] = "You are not able to edit the requested file.";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_DELETE'] = "You are not able to delete the requested file.";
+$_ARRAYLANG['TXT_MEDIA_FILE_DONT_DOWNLOAD'] = "You are not able to download the requested file.";
 ?>
