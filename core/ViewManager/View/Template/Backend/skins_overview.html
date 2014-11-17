@@ -55,8 +55,7 @@
                 ajaxActivateTheme(themeId);
                 return false;
             }
-        });
-        $J(window).trigger('resize');
+        });        
     });
 
     //Activate Theme
@@ -131,9 +130,14 @@
             }
         });
     }
-
+    $J(window).load(function(){
+       $J(window).trigger('resize'); 
+    });
     $J(window).resize(function(){
-        
+        $J('.themesPreviewContainer').each(function(i, e){
+           $J(e).height($J(e).width() - 50);
+        });
+
         $J(window.location.hash + ' .newthemeWrapper').show();
         
         newthemeWrapperHeight =   $J(window.location.hash + ' .themeWrapper:not(.newthemeWrapper):first').length 
@@ -355,10 +359,15 @@
         display: none;
     }
     .themesPreviewContainer .preview-image img {
-        width: 100%;
-        text-align: center;
-        height: auto;
-    }    
+        bottom: 0;
+        left: 0;
+        top: 0;
+        right: 0;
+        margin: auto;
+        position: absolute;
+        max-width: 100%; 
+        max-height: 100%; 
+    }
     .themeWrapper .preview-overlay-small .action-small-screen {
         position: static;
         font-size: 12px !important;
