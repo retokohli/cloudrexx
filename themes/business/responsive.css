@@ -635,6 +635,9 @@ padding-bottom: 20px;
       #shop div.details {
           margin-top: 130px;
       }
+      .form-control {
+          width: 100%;
+      }
 }
 @media(max-width: 480px){
     #search-form {
@@ -731,7 +734,9 @@ height: auto;}
 #shop div.details {
           margin-top: 170px;
       }
- 
+ .login-bottom a {
+    white-space: normal;
+}
 }
 
 @media(max-width: 340px){
@@ -822,6 +827,9 @@ height: auto;}
 h1.first {
 word-wrap: break-word;
 }
+#shop div.details {
+          margin-top: 215px;
+      }
 }
 
 @media (max-width: 241px){
