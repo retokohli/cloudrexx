@@ -188,7 +188,7 @@ class Media extends MediaLibrary
         foreach (array_keys($dirTree) as $key) {
             if (is_array($dirTree[$key]['icon'])) {
                 for ($x = 0; $x < count($dirTree[$key]['icon']); $x++) {
-                    if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $dirTree[$key]['name'][$x])) {
+                    if ($this->checkFileName($dirTree[$key]['name'][$x])) {
                         continue;
                     }
                     $class = ($i % 2) ? 'row2' : 'row1';
@@ -471,7 +471,7 @@ class Media extends MediaLibrary
         $fileName = !empty($_FILES[$inputField]['name']) ? contrexx_stripslashes($_FILES[$inputField]['name']) : '';
         $fileTmpName = !empty($_FILES[$inputField]['tmp_name']) ? $_FILES[$inputField]['tmp_name'] : '';
 
-        if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $fileName)) {
+        if ($this->checkFileName($fileName)) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_CREATE'];
             return false;
         }
@@ -542,7 +542,7 @@ class Media extends MediaLibrary
             return false;
         }
         
-        if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $this->getFile)) {
+        if ($this->checkFileName($this->getFile)) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'];
             return false;
         }
@@ -583,7 +583,7 @@ class Media extends MediaLibrary
             return false;
         }
 
-        if (preg_match('#^(.htaccess|.ftpaccess|.passwd)# i', $this->getFile)) {
+        if ($this->checkFileName($this->getFile)) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_DELETE'];
             return false;
         }
