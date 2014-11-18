@@ -2843,7 +2843,7 @@ li.category-nav:first-child a, .category-list li:first-child a{
 /* CSS DEFINITIONS FOR CHECKOUT MODULE */
 /***************************************/
 #checkout .left {
-    width: 470px;
+    width: 55%;
     padding: 0;
 }
 
@@ -2862,7 +2862,7 @@ li.category-nav:first-child a, .category-list li:first-child a{
 }
 
 #checkout form {
-    width: 442px;
+    width: 100%;
 }
 
 #checkout #ok_message {

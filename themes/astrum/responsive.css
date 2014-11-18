@@ -255,6 +255,7 @@
 		}
 		#checkout .left, #checkout .right{float: left; width: 100% !important;}
                 .container .client-arrows.one.column{width: 30px !important;}
+                .login-bottom a {white-space: normal;}
     }
 
 
