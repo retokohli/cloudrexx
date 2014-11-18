@@ -2091,13 +2091,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         if (empty($website)) {
                             throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to find the website.');
                         }
-                        $websiteName = $website->getFqdn()->getName();
-                        $params['post']['websiteName'] = $websiteName;
-                        $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
-                        if ($resp && $resp->status) {
-                            $result = $resp->data;
+                        $params['post']['websiteName'] = $website->getFqdn()->getName();
+                        if($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                            $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
+                            if ($resp && $resp->status) {
+                                return array('status' => 'success', 'queryResult' => $resp->data);
+                            }
+                            return array('status' => 'error', 'message' => $resp->data->error);
                         }
-                        return array('queryResult' => $result, 'websiteName' => $websiteName);
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_EXECUTED_QUERY_FAILED']);
                     }
                     //execute sql query on all websites running on service server 
                     if (isset($params['post']['mode']) && $params['post']['mode'] == 'service') {
@@ -2155,7 +2157,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                 $resultSet[$key]['queryStatus'] = "alertbox";
                             }
                         }
-                        return array('status' => true,'resultSet'=>  contrexx_raw2xhtml($resultSet), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
+                        return array('status' => true, 'resultSet'=>  contrexx_raw2xhtml($resultSet), 'websiteName' => contrexx_raw2xhtml($params['post']['websiteName']));
                     } else {
                         return array('status' => false, 'error' => $_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY']);
                     } 
@@ -2242,10 +2244,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     foreach ($_SESSION['MultiSite']['executeSql'] as $websiteId => $query) {
                         $website = $websiteRepo->findOneBy(array('id' => $websiteId));
                         $websiteName = $website->getFqdn()->getName();
-                        $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $websiteName), $website);                        
+                        if($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                            $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $websiteName), $website);   
+                        }                   
                         unset($_SESSION['MultiSite']['executeSql'][$websiteId]);
                         $websitesDone = $_SESSION['MultiSite']['totalWebsites'] - count($_SESSION['MultiSite']['executeSql']);
-                        return array('queryResult' => $resp->data, 'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'], 'websitesDone' => $websitesDone, 'websiteName' => $websiteName);
+                        return array('status' => 'success', 'queryResult' => $resp->data, 'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'], 'websitesDone' => $websitesDone, 'websiteName' => $websiteName);
                     }
                 break;    
             }
@@ -2275,7 +2279,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException
      */
     public function getLicense($params) {
-        global $_CORELANG;
+        global $_CORELANG, $_ARRAYLANG;
+        
+        self::loadLanguageData();
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
@@ -2290,10 +2296,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         'websiteId'   => $params['post']['websiteId'],
                         'activeLanguages'   => \FWLanguage::getActiveFrontendLanguages()
                     );
-                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getLicense', $params, $website);
-                    if ($resp && $resp->data->status == 'success') {
-                        return $resp->data;
+                    if($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getLicense', $params, $website);
+                        if ($resp && $resp->data->status == 'success') {
+                            return $resp->data;
+                        } 
                     }
+                    return array("status" => "error", "message" => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FETCH_LICENSE_FAILED'], $website->getFqdn()->getName()));
                     break;
 
                 case ComponentController::MODE_WEBSITE:
@@ -2311,9 +2320,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $licensemessageObj = $license->getMessage(false, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
                         $dashboardMessagesObj = $license->getMessage(true, \FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
                         $licenseGrayzoneMessagesObj = $license->getGrayzoneMessage(\FWLanguage::getLanguageCodeById($lang_id), $_CORELANG);
-                        $licenseMessage[] = ($licensemessageObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id, 'lang_name' => $lang_name,'message'=> $licensemessageObj->getText()) : array('lang_id' => $lang_id , 'lang_name' => $lang_name, 'message' =>'');
-                        $dashboardMessages[] = ($dashboardMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id, 'lang_name' => $lang_name ,'message' => $dashboardMessagesObj->getText()) : array('lang_id' => $lang_id , 'lang_name' => $lang_name, 'message' =>'');
-                        $licenseGrayzoneMessages[] = ($licenseGrayzoneMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id , 'lang_name' => $lang_name, 'message' => $licenseGrayzoneMessagesObj->getText()) : array('lang_id' => $lang_id , 'lang_name' => $lang_name ,'message' =>'');
+                        $licenseMessage[] = ($licensemessageObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id, 'lang_name' => $lang_name,'message'=> $licensemessageObj->getText()) : array('lang_id' => $lang_id, 'lang_name' => $lang_name, 'message' =>'');
+                        $dashboardMessages[] = ($dashboardMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id, 'lang_name' => $lang_name, 'message' => $dashboardMessagesObj->getText()) : array('lang_id' => $lang_id, 'lang_name' => $lang_name, 'message' =>'');
+                        $licenseGrayzoneMessages[] = ($licenseGrayzoneMessagesObj->getLangCode() == \FWLanguage::getLanguageCodeById($lang_id)) ? array('lang_id' => $lang_id, 'lang_name' => $lang_name, 'message' => $licenseGrayzoneMessagesObj->getText()) : array('lang_id' => $lang_id, 'lang_name' => $lang_name, 'message' =>'');
                     }
                     \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
                     $configCoreSetting = \Cx\Core\Setting\Controller\Setting::getArray('Config', 'core');
@@ -2324,7 +2333,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $licenseConfig = array('license', 'release');
                     foreach ($licenseConfig as $value) {
                         foreach (\Cx\Core\Setting\Controller\Setting::getArray('Config', $value) as $key => $value) {
-                            if (in_array($key, array('licensePartner','licenseCustomer'))) {
+                            if (in_array($key, array('licensePartner', 'licenseCustomer'))) {
                                 switch ($key) {
                                     case 'licensePartner':
                                         $result['licensePartnerTitle'] = array("type" => $value['type'], "values" => $value['values'], "content" => $license->getPartner()->getTitle());
@@ -2404,7 +2413,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     if ($result) {
                         return array(
-                            'status' => true,
+                            'status' => "success",
                             'result' => contrexx_raw2xhtml($result),
                         );
                     }
@@ -2463,6 +2472,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function remoteLogin($params)
     {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
         if (empty($params['post']['websiteId'])) {
             return false;
         }
@@ -2473,12 +2485,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $website   = $websiteRepository->findOneBy(array('id' => $params['post']['websiteId']));
                     $authToken = null;
                     $websiteLoginUrl = null;
-                    if ($website) {
+                    $websiteName = $website->getBaseDn()->getName();
+                    if ($website && ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE)) {
                         list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
-                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $website->getBaseDn()->getName() . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
+                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
                         return array('status' => 'success', 'message' => 'Successfully Login to website!','webSiteLoginUrl' => $websiteLoginUrl->toString());
                     }
-                    return array('status' => 'error','message' => 'This website doesnot exists!');
+                    return array('status' => 'error','message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_FAILED'], $websiteName));
                     break;
                 default:
                     break;
@@ -2497,6 +2510,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function editLicense($params)
     {
+        global $_ARRAYLANG;
+        
+        self::loadLanguageData();
         $websiteId = $params['post']['websiteId'];
         $licenseOption = $params['post']['licenseLabel'];
         $licenseValue = $params['post']['licenseValue'];
@@ -2513,12 +2529,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     );
                     $webRepo     = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website     = $webRepo->findOneById($websiteId);
-                    $resp        = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $paramsArray, $website);
                     
-                    if (($resp->status == 'success') && ($resp->data->status == 'success')) {
-                        return array('status' => 'success', 'data' => $licenseValue, 'message' => 'The license Option "'.$licenseOption.'" was successfully updated!.');
+                    if ($website && ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE)) {
+                        $resp        = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $paramsArray, $website);
+                        if (($resp->status == 'success') && ($resp->data->status == 'success')) {
+                            return array('status' => 'success', 'data' => $licenseValue, 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_SUCCESS'], $licenseOption));
+                        }
                     }
-                    return array('status' => 'error','message' => 'Failed to Update The license Option "'.$licenseOption.'" !.');
+                    
+                    return array('status' => 'error','message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_FAILED'], $licenseOption));
                     break;
                 default:
                     break;
@@ -2643,34 +2662,35 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                                             'configValues' => $configValues,
                                                             'operation' => $operation
                                                        ) : array('websiteId' => $websiteId);
-                   
-                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('modifyMultisiteConfig', $params, $website);
-
-                    if ($resp->data->success && $resp->data->status == 'success') {
-                        switch ($resp->data->multisiteConfig) {
-                            case 'add':
-                            case 'edit':
-                            case 'delete':
-                                return array('status' => 'success', 'message' => $resp->data->message);
-                                break;
-                            case 'fetch':
-                            default:
-                                return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL'], $website->getFqdn()->getName()), 'result' => $resp->data->result, 'inputTypes' => $inputTypes);
-                                break;
-                        }
-                    } else {
-                        switch ($resp->data->multisiteConfig) {
-                            case 'add':
-                            case 'edit':
-                            case 'delete':
-                                return array('status' => 'error', 'message' => $resp->data->message);
-                                break;
-                            case 'fetch':
-                            default:
-                                return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED'], $website->getFqdn()->getName()));
-                                break;
+                    if($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('modifyMultisiteConfig', $params, $website);
+                        if ($resp->data->success && $resp->data->status == 'success') {
+                            switch ($resp->data->multisiteConfig) {
+                                case 'add':
+                                case 'edit':
+                                case 'delete':
+                                    return array('status' => 'success', 'message' => $resp->data->message);
+                                    break;
+                                case 'fetch':
+                                default:
+                                    return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL'], $website->getFqdn()->getName()), 'result' => $resp->data->result, 'inputTypes' => $inputTypes);
+                                    break;
+                            }
+                        } else {
+                            switch ($resp->data->multisiteConfig) {
+                                case 'add':
+                                case 'edit':
+                                case 'delete':
+                                    return array('status' => 'error', 'message' => $resp->data->message);
+                                    break;
+                                case 'fetch':
+                                default:
+                                    return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED'], $website->getFqdn()->getName()));
+                                    break;
+                            }
                         }
                     }
+                    return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED'], $operation, $website->getFqdn()->getName()));
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     switch ($operation) {

@@ -150,7 +150,7 @@ $_ARRAYLANG['TXT_MULTISITE_FETCH_LICENSE_INFO'] = 'Fetch license information of 
 $_ARRAYLANG['TXT_MULTISITE_LICENSE_DATA_TITLE'] = 'License data of website ';
 $_ARRAYLANG['TXT_MULTISITE_SHOW_LICENSE'] = 'Show License';
 $_ARRAYLANG['TXT_MULTISITE_LICENSE_INFO'] = 'License information for the selected website';
-$_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY'] = 'JsonMultiSite (executeSql): sql query is empty..';
+$_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY'] = 'JsonMultiSite : sql query is empty..';
 
 //filter
 $_ARRAYLANG['TXT_MULTISITE_SEARCH'] = 'Search';
@@ -158,10 +158,10 @@ $_ARRAYLANG['TXT_MULTISITE_FILTER'] = 'Filter';
 $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'] = 'Enter your search term';
 $_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'] = " rows affected successfully";
 
-//Multisite website Config status message
+//Multisite website status message
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_TITLE']             = "Multisite configuration data of a website ";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_SUCCESSFUL']  = "Multisite configuration Of the website:%s !.";
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED']      = "Failed to fetch The multisite configuration of the website:%s !.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_FETCH_FAILED']      = "Failed to %s The multisite configuration of the website: %s !.";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_SUCCESSFUL'] = "Successfully updated the multisite configuration option:";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_UPDATE_FAILED']     = "Failed to update the multisite configuration option:";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_TITLE'] = 'Add new multisite configuration option: ';
@@ -174,3 +174,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_SUCCESSFUL'] = 'Suc
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_FAILED'] = 'Failed to delete the multisite configuration option: ';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_ALERT_MESSAGE'] = 'Making a change on the website configuration might break this selected website! You must not alter the configuration unless you know exactly what you are doing!';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_EXISTS'] = 'Failed to add configuration : %s .Option already exists!.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FETCH_LICENSE_FAILED'] = 'Failed to get license information of website: %s !.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_FAILED']  = 'Failed to remotelogin to this website: %s !.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_SUCCESS'] = 'The license Option  "%s"  was successfully updated!.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_FAILED'] = 'Failed to Update The license Option "%s"  !.';

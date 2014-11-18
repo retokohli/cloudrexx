@@ -88,91 +88,100 @@
                 },
                 success: function(response) {
                     cx.trigger("loadingEnd", "showLicense", {});
-                    if (response.status == 'error') {
+                    if (response.status == 'success') {
+                        switch (response.data.status) {
+                            case 'success':
+                                if (response.data.result != 'undefined') {
+                                    $table = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
+                                    $.each(response.data.result, function(key, data) {
+                                        $tr = $('<tr />');
+                                        $('<td />')
+                                                .html(key)
+                                                .appendTo($tr);
+
+                                        container = $('<div />')
+                                                .attr('id', key);
+                                        licenseContent = data.content;
+                                        if (typeof licenseContent === 'object') {
+                                            jsonString = JSON.stringify(licenseContent);
+                                            $('<span />')
+                                                    .attr('id', 'ui_' + key)
+                                                    .html(jsonString)
+                                                    .hide()
+                                                    .appendTo(container);
+                                            textContent = $('<span />');
+
+                                            $.each(licenseContent, function(key, data) {
+                                                if (typeof data === 'object') {
+                                                    $('<span />')
+                                                            .addClass('ui_license ' + data.lang_name)
+                                                            .css('font-weight', 'bold')
+                                                            .html(data.lang_name)
+                                                            .appendTo(textContent);
+                                                    textContent.append(':&nbsp;');
+                                                    $('<span />')
+                                                            .addClass('ui_licenseMsg langId_' + data.lang_id)
+                                                            .html(data.message)
+                                                            .appendTo(textContent);
+                                                    textContent.append('<br />');
+                                                    Multisite.availableLanguages[data.lang_id] = data.lang_name;
+                                                } else {
+                                                    textContent.append(key + ' : ' + data + ', ')
+                                                }
+                                            });
+                                            container.append(textContent);
+                                        } else {
+                                            $('<span >')
+                                                    .html(licenseContent)
+                                                    .appendTo(container);
+                                        }
+                                        $('<a >')
+                                                .attr('href', 'javascript:void(0);')
+                                                .attr('title', 'Edit License Information')
+                                                .addClass('editLicense editLicenseData editLicense_' + key)
+                                                .data('field', key)
+                                                .data('websiteid', id)
+                                                .data('value', licenseContent)
+                                                .data('options', data.values)
+                                                .data('editType', data.type)
+                                                .click(function() {
+                                                    Multisite.editLicense($(this));
+                                                })
+                                                .appendTo(container);
+                                        $('<td />')
+                                                .append(container)
+                                                .appendTo($tr);
+
+                                        $table.append($tr);
+                                    });
+
+                                } else {
+                                    $table = $('<span>').html('No data found!');
+                                }
+                                cx.tools.StatusMessage.showMessage(cx.variables.get('licenseInfo', "multisite/lang"), null, 3000);
+                                cx.ui.dialog({
+                                    width: 820,
+                                    height: 400,
+                                    title: title,
+                                    content: $('<div />').append($table),
+                                    autoOpen: true,
+                                    modal: true,
+                                    buttons: {
+                                        "Close": function() {
+                                            $(this).dialog("close");
+                                        }
+                                    }
+                                });
+                                break;
+                            case 'error':
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
                         cx.tools.StatusMessage.showMessage(response.message, null, 4000);
                     }
-                    if (response.status == 'success') {
-                        if (response.data.result != 'undefined') {
-                            $table = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
-                            $.each(response.data.result, function(key, data) {
-                                $tr = $('<tr />');
-                                $('<td />')
-                                    .html(key)
-                                    .appendTo($tr);
-                                
-                                container = $('<div />')
-                                                .attr('id', key);
-                                licenseContent = data.content;
-                                if (typeof licenseContent === 'object') {
-                                    jsonString = JSON.stringify(licenseContent);                                    
-                                    $('<span />')
-                                        .attr('id', 'ui_'+key)
-                                        .html(jsonString)
-                                        .hide()
-                                        .appendTo(container);
-                                    textContent = $('<span />');
-                                    
-                                    $.each(licenseContent, function(key, data) {
-                                        if (typeof data === 'object') {
-                                            $('<span />')
-                                                .addClass('ui_license '+data.lang_name)
-                                                .css('font-weight', 'bold')
-                                                .html(data.lang_name)
-                                                .appendTo(textContent);
-                                            textContent.append(':&nbsp;');
-                                            $('<span />')
-                                                .addClass('ui_licenseMsg langId_'+data.lang_id)
-                                                .html(data.message)
-                                                .appendTo(textContent);
-                                            textContent.append('<br />');
-                                            Multisite.availableLanguages[data.lang_id] = data.lang_name;
-                                        } else {
-                                            textContent.append(key + ' : ' + data + ', ')
-                                        }
-                                    });
-                                    container.append(textContent);
-                                } else {
-                                    $('<span >')                                        
-                                        .html(licenseContent)
-                                        .appendTo(container);                                    
-                                }
-                                $('<a >')
-                                    .attr('href', 'javascript:void(0);')
-                                    .attr('title', 'Edit License Information')
-                                    .addClass('editLicense editLicenseData editLicense_'+ key)
-                                    .data('field', key)
-                                    .data('websiteid', id)
-                                    .data('value', licenseContent)
-                                    .data('options',data.values)
-                                    .data('editType',data.type)
-                                    .click(function(){
-                                        Multisite.editLicense($(this));
-                                    })
-                                    .appendTo(container);
-                                $('<td />')
-                                    .append(container)
-                                    .appendTo($tr);
-                            
-                                $table.append($tr);
-                            });
-                        } else {
-                            $table = $('<span>').html('No data found!');
-                        }
-                    }
-                    cx.tools.StatusMessage.showMessage(cx.variables.get('licenseInfo', "multisite/lang"), null, 3000);
-                    cx.ui.dialog({
-                        width: 820,
-                        height: 400,
-                        title: title,
-                        content: $('<div />').append($table),
-                        autoOpen: true,
-                        modal: true,
-                        buttons: {
-                            "Close": function() {
-                                $(this).dialog("close");
-                            }
-                        }
-                    });
                 }
             });
         });
@@ -201,7 +210,7 @@
                         cx.trigger('loadingStart', 'executeSql', {});
                         cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
                         var query = $('.queryContent').val();
-                        if (query == '') {
+                        if ($.trim(query) == '') {
                             cx.tools.StatusMessage.showMessage(cx.variables.get('plsInsertQuery', "multisite/lang"), null, 3000);
                             cx.trigger('loadingEnd', 'executeSql', {});
                             return false;
@@ -233,25 +242,27 @@
                                         },
                                     dataType: 'json',
                                     success: function(response) {
-                                        if (response.status == 'error') {
-                                            cx.trigger('loadingEnd', 'executeSql', {});
-                                            cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', 'multisite/lang'), null, 3000);
-                                            $('#statusMsg').text(response.message);
-                                            cx.trigger('loadingEnd', 'executeSql', {});
-                                        }
-                                        if (response.status == 'success' && argName == 'website') {
-                                            if (response.data.queryResult == null) {
-                                                $('.resultSet').html('<div><table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%"><tbody><tr><th>' + response.data.websiteName + '</th></tr><tr class="row1"><td><div class="alertbox">' + cx.variables.get('errorMsg', 'multisite/lang') + '</div></td></tr></tbody></table></div>');
-                                                cx.tools.StatusMessage.showMessage(cx.variables.get('errorMsg', 'multisite/lang'), null, 3000);
+                                        if (response.status == 'success') {
+                                            if (response.data.status == 'success') {
+                                                switch (argName) {
+                                                    case 'website':
+                                                        $('.resultSet').html(parseQueryResult(response.data.queryResult));
+                                                        cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
+                                                        break;
+                                                    case 'service':
+                                                        executeSql();
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
                                             } else {
-                                                $('.resultSet').html(parseQueryResult(response.data.queryResult));
-                                                cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
+                                                $('#statusMsg').text(response.data.message);
+                                                cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
                                             }
-                                            cx.trigger('loadingEnd', 'executeSql', {});
+                                        } else {
+                                            cx.tools.StatusMessage.showMessage(response.message, null, 3000);
                                         }
-                                        if (response.status == 'success' && argName == 'service') {
-                                            executeSql();
-                                        }
+                                        cx.trigger('loadingEnd', 'executeSql', {});
                                     }
                                 });
                             }
@@ -355,15 +366,22 @@
                 data: {websiteId: $(this).attr('data-id')},
                 dataType: "json",
                 success: function(response) {
-                    if (response.status == 'error' && response.data.status == 'error') {
-                        cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
-                        cx.trigger("loadingEnd", "remoteLogin", {});
+                    if (response.status == 'success') {
+                        switch(response.data.status) {
+                            case 'success':
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                                window.open(response.data.webSiteLoginUrl, '_blank');
+                                break;
+                            case 'error':
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        cx.tools.StatusMessage.showMessage(response.message, null, 4000);
                     }
-                    if (response.status == 'success' && response.data.status == 'success') {
-                        cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
-                        cx.trigger("loadingEnd", "remoteLogin", {});
-                        window.open(response.data.webSiteLoginUrl, '_blank');
-                    }
+                    cx.trigger("loadingEnd", "remoteLogin", {});
                 }
             });
         });
@@ -385,48 +403,53 @@
                 data: {websiteId: websiteId},
                 dataType: "json",
                 success: function(response) {
-                    if (response.data.status == 'success') {
-                        var $table = $('<table />')
-                                         .attr({cellspacing : "0", cellpadding: "3", border: "0",id: "MultisiteConfigTable",width:"100%"})
-                                         .addClass('adminlist');
-                        if (typeof response.data.result == 'object') {
-                            $html = Multisite.getConfigHtmlData(response.data.result, $table, websiteId);
+                    if (response.status == 'success') {
+                        switch (response.data.status) {
+                            case 'success':
+                                var $table = $('<table />')
+                                        .attr({cellspacing: "0", cellpadding: "3", border: "0", id: "MultisiteConfigTable", width: "100%"})
+                                        .addClass('adminlist');
+                                $html = Multisite.getConfigHtmlData(response.data.result, $table, websiteId);
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                                buttons[cx.variables.get('addNewConfig', 'multisite/lang')] = function() {
+                                    Multisite.MultisiteConfig(response.data.inputTypes, "add");
+                                };
+                                buttons["Close"] = function() {
+                                    $(this).dialog("close");
+
+                                };
+                                cx.ui.dialog({
+                                    width: 820,
+                                    height: 400,
+                                    title: title,
+                                    content: $('<div />')
+                                            .attr('id', 'MultisiteConfigDiv')
+                                            .append($J('<div /> ')
+                                                    .addClass('alertbox')
+                                                    .html(cx.variables.get('configAlertMessage', 'multisite/lang'))
+                                                    )
+                                            .append($html
+                                                    .after('<div id ="MultisiteConfigload-lock"></div>')
+                                                    ),
+                                    autoOpen: true,
+                                    modal: true,
+                                    buttons: buttons,
+                                    close: function() {
+                                        $('#MultisiteConfigTable').remove();
+                                    }
+                                });
+                                $J("#MultisiteConfigload-lock").css('height', $J("#MultisiteConfigTable").innerHeight());
+                                break;
+                            case 'error':
+                                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                                break;
+                            default:
+                                break;
                         }
-                        cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
                     } else {
-                        cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                        cx.tools.StatusMessage.showMessage(response.message, null, 4000);
                     }
-
-                    buttons[cx.variables.get('addNewConfig', 'multisite/lang')] = function() {            
-                                Multisite.MultisiteConfig(response.data.inputTypes,"add");
-                            };
-
-                    buttons["Close"] = function() {
-                        $(this).dialog("close");
-
-                    };
-                    cx.ui.dialog({
-                        width: 820,
-                        height: 400,
-                        title: title,
-                        content: $('<div />')
-                                    .attr('id', 'MultisiteConfigDiv')
-                                    .append($J('<div /> ')
-                                            .addClass('alertbox')
-                                            .html(cx.variables.get('configAlertMessage', 'multisite/lang'))
-                                            )
-                                    .append($html
-                                            .after('<div id ="MultisiteConfigload-lock"></div>')
-                                            ),
-                        autoOpen: true,
-                        modal: true,
-                        buttons: buttons,
-                        close: function() { 
-                            $('#MultisiteConfigTable').remove();
-                        }
-                    });
                     cx.trigger("loadingEnd", "multiSiteWebsiteConfig", {});
-                    $J("#MultisiteConfigload-lock").css('height',$J("#MultisiteConfigTable").innerHeight());
                 }
             });
         });
@@ -442,32 +465,36 @@
                 type: 'POST',
                 dataType: 'json',
                 success: function(response) {
-                    if (response.status == 'error') {
-                        cx.tools.StatusMessage.showMessage(response.message, null, 3000);
-                        cx.trigger('loadingEnd', 'executeSql', {});
-                        return;
-                    }
-                    if (response.data.status == 'error') {
-                        cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);                                                
-                        cx.trigger('loadingEnd', 'executeSql', {});
-                        return;
-                    }
                     if (response.status == 'success') {
-                        offset = 0;                        
-                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "<span> ( " +response.data.websitesDone+ " / " + response.data.totalWebsites +" ) </span></div>");
-                        
-                        if (response.data.queryResult == null) {
-                            $('.resultSet').append('<div><table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%"><tbody><tr><th>'+ response.data.websiteName +'</th></tr><tr class="row1"><td><div class="alertbox">'+cx.variables.get('errorMsg', 'multisite/lang')+'</div></td></tr></tbody></table></div>');
-                        } else {
-                            $('.resultSet').append(parseQueryResult(response.data.queryResult));  
+                        switch (response.data.status) {
+                            case 'success':
+                                offset = 0;
+                                cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "<span> ( " + response.data.websitesDone + " / " + response.data.totalWebsites + " ) </span></div>");
+
+                                if (response.data.queryResult == null) {
+                                    $('.resultSet').append('<div><table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%"><tbody><tr><th>' + response.data.websiteName + '</th></tr><tr class="row1"><td><div class="alertbox">' + cx.variables.get('errorMsg', 'multisite/lang') + '</div></td></tr></tbody></table></div>');
+                                } else {
+                                    $('.resultSet').append(parseQueryResult(response.data.queryResult));
+                                }
+
+                                $(".resultSet > div:not(:last)").each(function(i, e) {
+                                    offset += $(e).outerHeight(true);
+                                });
+                                $('.ui-dialog-content').animate({scrollTop: offset}, 'slow');
+                                executeSql();
+                                break;
+                            case 'error':
+                                cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);                                                
+                                cx.trigger('loadingEnd', 'executeSql', {});
+                                return;
+                                break;
+                            default:
+                                break;
                         }
-                       
-                        $(".resultSet > div:not(:last)").each(function(i, e){
-                            offset += $(e).outerHeight(true); 
-                        });
-                        $('.ui-dialog-content').animate({scrollTop: offset},'slow');
-                        executeSql();
-                    }                    
+                    } else {
+                        cx.tools.StatusMessage.showMessage(response.message, null, 3000);
+                    }
+                    cx.trigger('loadingEnd', 'executeSql', {});
                 }
             });
         };
@@ -572,22 +599,31 @@ var Multisite = {
                         data: formValues +"&websiteId="+ websiteId,
                         dataType: "json",
                         success: function(response) {
-                            if (response.data.status == 'error') {
-                                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
-                            }
-                            if (response.status == 'success' && response.data.status == 'success') {
-                                if (typeof response.data.data === 'object') {
-                                    var uiTabContent = [];
-                                    $J.each(response.data.data, function(key, data) {
-                                        $J('#' + fieldLabel).find('span.ui_licenseMsg.langId_' + key).text(data.text);
-                                        uiTabContent.push({lang_id: key, lang_name: Multisite.availableLanguages[key], message: data.text});
-                                    });
-                                    $J('#ui_' + fieldLabel).html(JSON.stringify(uiTabContent));
-                                } else {
-                                    $J('#'+fieldLabel+' span').text(response.data.data);
-                                    $J('.editLicense_' + fieldLabel).data('value', response.data.data);
+                            if (response.status == 'success') {
+                                switch (response.data.status) {
+                                    case 'success':
+                                        if (typeof response.data.data === 'object') {
+                                            var uiTabContent = [];
+                                            $J.each(response.data.data, function(key, data) {
+                                                $J('#' + fieldLabel).find('span.ui_licenseMsg.langId_' + key).text(data.text);
+                                                uiTabContent.push({lang_id: key, lang_name: Multisite.availableLanguages[key], message: data.text});
+                                            });
+                                            $J('#ui_' + fieldLabel).html(JSON.stringify(uiTabContent));
+                                        } else {
+                                            $J('#' + fieldLabel + ' span').text(response.data.data);
+                                            $J('.editLicense_' + fieldLabel).data('value', response.data.data);
+                                        }
+                                        cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                                        break;
+                                    case 'error':
+                                        cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                                        break;
+                                    default:
+                                        break;
+
                                 }
-                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                            } else {
+                                cx.tools.StatusMessage.showMessage(response.message, null, 4000);
                             }
                         }
                     });
@@ -682,9 +718,9 @@ var Multisite = {
                 break;
             case "delete":
                 if(confirm(cx.variables.get('deleteConfirm', 'multisite/lang'))) {
-                    cx.bind("loadingStart", cx.lock, "multisiteConfigWebsite".$operation);
-                    cx.bind("loadingEnd", cx.unlock, "multisiteConfigWebsite".$operation);
-                    cx.trigger("loadingStart", "multisiteConfigWebsite".$operation, {});
+                    cx.bind("loadingStart", cx.lock, "multisiteConfigWebsite_".$operation);
+                    cx.bind("loadingEnd", cx.unlock, "multisiteConfigWebsite_".$operation);
+                    cx.trigger("loadingStart", "multisiteConfigWebsite_".$operation, {});
                     cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
                     $J.ajax({
                         url: domainUrl,
@@ -692,14 +728,23 @@ var Multisite = {
                         data: {configGroup: $data.data('group'), configOption: $data.data('field'),websiteId: $data.data('websiteId'),operation: $operation},
                         dataType: "json",
                         success: function(response) {
-                            if (response.data.status == 'error') {
-                                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                            if (response.status == 'success') {
+                                switch (response.data.status) {
+                                    case 'success':
+                                        $data.closest('tr').remove();
+                                        cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                                        break;
+                                    case 'error':
+                                        cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                                        break;
+                                    default:
+                                        break;
+
+                                }
+                            } else {
+                                cx.tools.StatusMessage.showMessage(response.message, null, 4000);
                             }
-                            if (response.data.status == 'success') {
-                                $data.closest('tr').remove();
-                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
-                            }
-                            cx.trigger("loadingEnd", "multisiteConfigWebsite".$operation, {});
+                            cx.trigger("loadingEnd", "multisiteConfigWebsite_".$operation, {});
                         }
                     });
                 }
@@ -745,20 +790,28 @@ var Multisite = {
                         data: {configGroup: configGroup, configOption: configOption, configValue: configValue, websiteId: websiteId, configType: configType , configValues: configValues, operation: $operation},
                         dataType: "json",
                         success: function(response) {
-                            if (response.data.status == 'error') {
-                                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
-                            }
-                            if (response.data.status == 'success') {
-                                if ($operation == 'edit') {
-                                    configData.value = configValue;
-                                    $J('span#' + configOption).text(configValue);
-                                    $J('span#editMultisiteConfig_' + configOption).text(JSON.stringify(configData));
-                                } else {
-                                    Multisite.getConfigHtmlData(configNewArray, $J("#MultisiteConfigTable"), websiteId);
+                            if (response.status == 'success') {
+                                switch (response.data.status) {
+                                    case 'success':
+                                        if ($operation == 'edit') {
+                                            configData.value = configValue;
+                                            $J('span#' + configOption).text(configValue);
+                                            $J('span#editMultisiteConfig_' + configOption).text(JSON.stringify(configData));
+                                        } else {
+                                            Multisite.getConfigHtmlData(configNewArray, $J("#MultisiteConfigTable"), websiteId);
+                                        }
+                                        cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                                        break;
+                                    case 'error':
+                                        cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                                        break;
+                                    default:
+                                        break;
                                 }
-                                cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                            } else {
+                                cx.tools.StatusMessage.showMessage(response.message, null, 4000);
                             }
-                        cx.trigger("loadingEnd", "multisiteConfigWebsite".$operation, {});
+                            cx.trigger("loadingEnd", "multisiteConfigWebsite".$operation, {});
                         }
                     });
                     $J('#'+$operation+'MultisiteConfig').remove();
