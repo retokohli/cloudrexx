@@ -1091,7 +1091,6 @@ div.row2 {
     height: 27px;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
-    width: 60%;
 }
 #guestbook div.title h3{
     padding: 0px 0px 5px 0px;
@@ -1102,7 +1101,6 @@ div.row2 {
     height: 22px;
     padding: 5px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
-    width: 20%;
     font-style:italic;
 }
 #guestbook div.date {
@@ -1110,7 +1108,6 @@ div.row2 {
     height: 22px;
     padding: 5px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
-    width: 20%;
     text-align:right;
 }
 #guestbook div.message,
@@ -2415,7 +2412,7 @@ dl.data_module img {
     padding-left: 180px;
 }
 .mediadirSelectorCenter{
-    padding: 60px 5px 0 !important;
+    padding: 60px 25px 60px !important;
 }
 #mediadir .map{
     margin-top: 10px;
@@ -2729,3 +2726,12 @@ select[name="catId"] {
 .form-control {
     width: 300px;
 }
+#directory .form-control {width: 100%;}
+select#deselectedCategories, select#selectedCategories, select#deselectedLevels, select#selectedLevels {
+    width: 100%;
+}
+form p .checkbox label {
+    margin: 0;
+    width: 100%;
+}
+#feed .news {float: left;}
