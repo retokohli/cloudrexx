@@ -660,7 +660,7 @@ class Customer extends \User
         $table_name_old = DBPREFIX."module_shop_customers";
         // If the old Customer table is missing, the migration has completed
         // successfully already
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+        if (!\Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
             return false;
         }
 
@@ -733,11 +733,11 @@ class Customer extends \User
         // For the migration, a temporary flag is needed in the orders table
         // in order to prevent mixing up old and new customer_id values.
         $table_order_name = DBPREFIX."module_shop_orders";
-        if (!Cx\Lib\UpdateUtil::column_exist($table_order_name, 'migrated')) {
+        if (!\Cx\Lib\UpdateUtil::column_exist($table_order_name, 'migrated')) {
             $query = "
                 ALTER TABLE `$table_order_name`
                   ADD `migrated` TINYINT(1) unsigned NOT NULL default 0";
-            Cx\Lib\UpdateUtil::sql($query);
+            \Cx\Lib\UpdateUtil::sql($query);
         }
 
         // Create missing UserGroups for customers and resellers
@@ -824,7 +824,7 @@ class Customer extends \User
                    `customer`.`group_id`
               FROM `$table_name_old` AS `customer`
              ORDER BY `customer`.`customerid` ASC";
-        $objResult = Cx\Lib\UpdateUtil::sql($query);
+        $objResult = \Cx\Lib\UpdateUtil::sql($query);
         while (!$objResult->EOF) {
             $old_customer_id = $objResult->fields['customerid'];
             if (empty($objResult->fields['email'])) {
@@ -916,12 +916,12 @@ class Customer extends \User
                        `migrated`=1
                  WHERE `customer_id`=$old_customer_id
                    AND `migrated`=0";
-            Cx\Lib\UpdateUtil::sql($query);
+            \Cx\Lib\UpdateUtil::sql($query);
             // Drop migrated
             $query = "
                 DELETE FROM `$table_name_old`
                  WHERE `customerid`=$old_customer_id";
-            Cx\Lib\UpdateUtil::sql($query);
+            \Cx\Lib\UpdateUtil::sql($query);
             $objResult->MoveNext();
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 return false;
@@ -935,9 +935,9 @@ class Customer extends \User
         $query = "
             ALTER TABLE `$table_order_name`
              DROP `migrated`";
-        Cx\Lib\UpdateUtil::sql($query);
+        \Cx\Lib\UpdateUtil::sql($query);
 
-        Cx\Lib\UpdateUtil::drop_table($table_name_old);
+        \Cx\Lib\UpdateUtil::drop_table($table_name_old);
 
 //DBG::log("Updated Customer table and related stuff");
         // Always

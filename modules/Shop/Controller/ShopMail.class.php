@@ -126,7 +126,7 @@ class ShopMail
 // Mail
         \Cx\Core\MailTemplate\Controller\MailTemplate::errorHandler();
 
-        if (Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
+        if (\Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
             // Make sure there are no bodies lying around
             \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_NAME);
             \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_FROM);
@@ -147,7 +147,7 @@ class ShopMail
             throw new Cx\Lib\Update_DatabaseException(
                "Failed to get frontend language IDs");
         }
-        if (Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_shop_mail')) {
+        if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_shop_mail')) {
             // Migrate existing templates from the shop to the MailTemplate,
             // appending "_backup_by_update" to the respective keys.
             // Make them unprotected.
@@ -241,8 +241,8 @@ class ShopMail
                 }
             }
             // Drop old Mail tables after successful migration
-            Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_mail_content');
-            Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_mail');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_mail_content');
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_mail');
         }
         // Add the new default templates with the new keys
         // and have the user migrate changes herself!

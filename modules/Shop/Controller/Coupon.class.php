@@ -1456,7 +1456,7 @@ class Coupon
             'discount_rate' => array('type' => 'decimal(3,0)', 'unsigned' => true, 'default' => '0'),
         );
         $table_index = array();
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop_rel_customer_coupon';
         $table_structure = array(
@@ -1467,7 +1467,7 @@ class Coupon
             'amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00'),
         );
         $table_index = array();
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

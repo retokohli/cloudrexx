@@ -897,7 +897,7 @@ die("Obsolete method Text::getIdArrayBySearch() called");
     static function errorHandler()
     {
         $table_name = DBPREFIX."core_text";
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
+        if (!\Cx\Lib\UpdateUtil::table_exist($table_name)) {
             $query = "
                 CREATE TABLE `".DBPREFIX."core_text` (
                   `id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
@@ -908,7 +908,7 @@ die("Obsolete method Text::getIdArrayBySearch() called");
                   PRIMARY KEY `id` (`id`, `lang_id`, `section`, `key`(32)),
                   FULLTEXT `text` (`text`)
                 ) ENGINE=MyISAM";
-            $objResult = Cx\Lib\UpdateUtil::sql($query);
+            $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new \Cx\Lib\Update_DatabaseException(
                    'Failed to create Text table', $query);

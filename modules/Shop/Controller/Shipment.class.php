@@ -880,13 +880,13 @@ class Shipment
         );
         $table_index = array();
         $default_lang_id = \FWLanguage::getDefaultLangId();
-        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 \Text::deleteByKey('Shop', self::TEXT_NAME);
                 $query = "
                     SELECT `id`, `name`
                       FROM `$table_name`";
-                $objResult = Cx\Lib\UpdateUtil::sql($query);
+                $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query names", $query);
@@ -903,7 +903,7 @@ class Shipment
                 }
             }
         }
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop_shipment_cost';
         $table_structure = array(
@@ -914,7 +914,7 @@ class Shipment
             'free_from' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'price_free'),
         );
         $table_index = array();
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always!
         return false;

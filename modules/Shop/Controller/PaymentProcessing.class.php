@@ -767,8 +767,8 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
 // PaymentProcessing
         $table_name_old = DBPREFIX.'module_shop_processors';
         $table_name_new = DBPREFIX.'module_shop_payment_processors';
-        if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
-            Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new);
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+            \Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new);
         }
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
@@ -779,7 +779,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
             'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => 1),
             'picture' => array('type' => 'VARCHAR(255)', 'default' => ''),
         );
-        Cx\Lib\UpdateUtil::table($table_name_new, $table_structure);
+        \Cx\Lib\UpdateUtil::table($table_name_new, $table_structure);
         $arrPsp = array(
             array(1, 'external', 'saferpay',
                 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
@@ -812,14 +812,14 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 ?, ?, ?, ?, ?, ?, ?
             )";
         foreach ($arrPsp as $psp) {
-            Cx\Lib\UpdateUtil::sql($query_template, $psp);
+            \Cx\Lib\UpdateUtil::sql($query_template, $psp);
         }
-        if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
-            Cx\Lib\UpdateUtil::drop_table($table_name_old);
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
+            \Cx\Lib\UpdateUtil::drop_table($table_name_old);
         }
 
         // Drop obsolete PSPs -- see Payment::errorHandler()
-        Cx\Lib\UpdateUtil::sql("
+        \Cx\Lib\UpdateUtil::sql("
             DELETE FROM `".DBPREFIX."module_shop_payment_processors`
              WHERE `id` IN (5, 6, 7, 8)");
 

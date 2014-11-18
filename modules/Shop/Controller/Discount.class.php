@@ -811,16 +811,16 @@ class Discount
         );
         $table_index = array();
 //\DBG::activate(DBG_DB);
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        if (!\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
         $default_lang_id = \FWLanguage::getDefaultLangId();
-        if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             \Text::deleteByKey('Shop', self::TEXT_NAME_GROUP_ARTICLE);
             $query = "
                 SELECT `id`, `name`
                   FROM `$table_name`";
-            $objResult = Cx\Lib\UpdateUtil::sql($query);
+            $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Cx\Lib\Update_DatabaseException(
                    "Failed to query article group names", $query);
@@ -835,7 +835,7 @@ class Discount
                 }
                 $objResult->MoveNext();
             }
-            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+            \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
         $table_name = DBPREFIX.'module_shop_customer_group';
@@ -843,15 +843,15 @@ class Discount
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        if (!\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
-        if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             \Text::deleteByKey('Shop', self::TEXT_NAME_GROUP_CUSTOMER);
             $query = "
                 SELECT `id`, `name`
                   FROM `$table_name`";
-            $objResult = Cx\Lib\UpdateUtil::sql($query);
+            $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Cx\Lib\Update_DatabaseException(
                    "Failed to query customer group names", $query);
@@ -866,7 +866,7 @@ class Discount
                 }
                 $objResult->MoveNext();
             }
-            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+            \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
         $table_name = DBPREFIX.'module_shop_rel_discount_group';
@@ -876,8 +876,8 @@ class Discount
             'rate' => array('type' => 'decimal(9,2)', 'notnull' => true, 'default' => '0.00'),
         );
         $table_index = array();
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        if (!\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
         $table_name = DBPREFIX.'module_shop_discountgroup_count_name';
@@ -885,16 +885,16 @@ class Discount
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
         );
         $table_index = array();
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        if (!\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
-        if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             \Text::deleteByKey('Shop', self::TEXT_NAME_GROUP_COUNT);
             \Text::deleteByKey('Shop', self::TEXT_UNIT_GROUP_COUNT);
             $query = "
                 SELECT `id`, `name`, `unit`
                   FROM `$table_name`";
-            $objResult = Cx\Lib\UpdateUtil::sql($query);
+            $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Cx\Lib\Update_DatabaseException(
                    "Failed to query count group names", $query);
@@ -915,7 +915,7 @@ class Discount
                 }
                 $objResult->MoveNext();
             }
-            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+            \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
         }
 
         $table_name = DBPREFIX.'module_shop_discountgroup_count_rate';
@@ -925,7 +925,7 @@ class Discount
             'rate' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.00'),
         );
         $table_index = array();
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

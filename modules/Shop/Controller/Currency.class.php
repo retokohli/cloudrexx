@@ -938,14 +938,14 @@ class Currency
         $table_index = array();
 
         $default_lang_id = \FWLanguage::getDefaultLangId();
-        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 // Migrate all Currency names to the Text table first
                 \Text::deleteByKey('Shop', self::TEXT_NAME);
                 $query = "
                     SELECT `id`, `code`, `name`
                       FROM `$table_name`";
-                $objResult = Cx\Lib\UpdateUtil::sql($query);
+                $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Cx\Lib\Update_DatabaseException(
                        "Failed to query Currency names", $query);
@@ -961,7 +961,7 @@ class Currency
                     $objResult->MoveNext();
                 }
             }
-            Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+            \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
             return false;
         }
 
@@ -976,7 +976,7 @@ class Currency
             'United States Dollars' => array('USD', '$', 0.880000, '0.01', 3, 1, 0),
         );
         // There is no previous version of this table!
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure);
         // And there aren't even records to migrate, so
         foreach ($arrCurrencies as $name => $arrCurrency) {
             $query = "
@@ -986,7 +986,7 @@ class Currency
                 ) VALUES (
                     '".join("','", $arrCurrency)."'
                 )";
-            $objResult = Cx\Lib\UpdateUtil::sql($query);
+            $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Cx\Lib\Update_DatabaseException(
                     "Failed to insert default Currencies");

@@ -2138,10 +2138,10 @@ class Order
         );
         $table_index = array(
             'order' => array('fields' => array('order_id')));
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop_order_attributes';
-        if (!Cx\Lib\UpdateUtil::table_exist($table_name)) {
+        if (!\Cx\Lib\UpdateUtil::table_exist($table_name)) {
             $table_name_old = DBPREFIX.'module_shop_order_items_attributes';
             $table_structure = array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'orders_items_attributes_id'),
@@ -2152,8 +2152,8 @@ class Order
             );
             $table_index = array(
                 'item_id' => array('fields' => array('item_id')));
-            Cx\Lib\UpdateUtil::table($table_name_old, $table_structure, $table_index);
-            Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name);
+            \Cx\Lib\UpdateUtil::table($table_name_old, $table_structure, $table_index);
+            \Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name);
         }
 
         // LSV
@@ -2165,7 +2165,7 @@ class Order
             'blz' => array('type' => 'tinytext', 'default' => ''),
         );
         $table_index = array();
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop_orders';
         $table_structure = array(
@@ -2211,7 +2211,7 @@ class Order
         );
         $table_index = array(
             'status' => array('fields' => array('status')));
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
 // TODO: TEST
 // Migrate present Customer addresses to the new billing address fields.
@@ -2220,7 +2220,7 @@ class Order
 // Customer table in one way -- if it doesn't exist, all Orders and Customers
 // have been successfully migrated already.
         $table_name_customer = DBPREFIX."module_shop_customers";
-        if (Cx\Lib\UpdateUtil::table_exist($table_name_customer)) {
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name_customer)) {
 // On the other hand, there may have been an error somewhere in between
 // altering the Orders table and moving Customers to the Users table.
 // So, to be on the safe side, we will only update Orders where the billing
@@ -2228,7 +2228,7 @@ class Order
 // of the Orders table above.
 // Also note that any inconsistencies involving missing Customer records will
 // be left over as-is and may later be handled in the backend.
-            $objResult = Cx\Lib\UpdateUtil::sql("
+            $objResult = \Cx\Lib\UpdateUtil::sql("
                 SELECT DISTINCT `customer_id`,
                        `customer`.`prefix`,
                        `customer`.`firstname`, `customer`.`lastname`,
@@ -2261,7 +2261,7 @@ class Order
                     $objResult->fields['prefix'])) {
                     $gender = 'gender_male';
                 }
-                Cx\Lib\UpdateUtil::sql("
+                \Cx\Lib\UpdateUtil::sql("
                     UPDATE `$table_name`
                        SET `billing_gender`='".addslashes($gender)."',
                            `billing_company`='".addslashes($objResult->fields['company'])."',
@@ -2292,7 +2292,7 @@ class Order
 
         // Finally, update the migrated Order records with the proper gender
         // strings as used in the User class hierarchy as well
-        $objResult = Cx\Lib\UpdateUtil::sql("
+        $objResult = \Cx\Lib\UpdateUtil::sql("
             SELECT `id`, `gender`
               FROM `$table_name`
              WHERE `gender` NOT IN
@@ -2306,7 +2306,7 @@ class Order
                 $objResult->fields['gender'])) {
                 $gender = 'gender_male';
             }
-            Cx\Lib\UpdateUtil::sql("
+            \Cx\Lib\UpdateUtil::sql("
                 UPDATE `$table_name`
                    SET `gender`='".addslashes($gender)."'
                  WHERE `id`=".$objResult->fields['id']);

@@ -347,7 +347,7 @@ die("Mail::storeTemplate(): Obsolete method called!");
     static function errorHandler()
     {
         if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
-        if (Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
+        if (\Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
             // Make sure there are no bodies lying around
             \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_NAME);
             \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_FROM);

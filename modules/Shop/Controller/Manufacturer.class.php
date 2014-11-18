@@ -426,8 +426,8 @@ class Manufacturer
         );
         $table_index = array();
         $default_lang_id = \FWLanguage::getDefaultLangId();
-        if (   Cx\Lib\UpdateUtil::table_exist($table_name)
-            && Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
             // Get rid of bodies
             \Text::deleteByKey('Shop', self::TEXT_NAME);
             \Text::deleteByKey('Shop', self::TEXT_URI);
@@ -435,7 +435,7 @@ class Manufacturer
             $query = "
                 SELECT `id`, `name`, `url`
                   FROM `".DBPREFIX."module_shop_manufacturer`";
-            $objResult = Cx\Lib\UpdateUtil::sql($query);
+            $objResult = \Cx\Lib\UpdateUtil::sql($query);
             while (!$objResult->EOF) {
                 $id = $objResult->fields['id'];
                 $name = $objResult->fields['name'];
@@ -453,11 +453,11 @@ class Manufacturer
                 $objResult->MoveNext();
             }
         }
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
-        Cx\Lib\UpdateUtil::sql("
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::sql("
             ALTER TABLE `$table_name`
               ADD PRIMARY KEY (`id`)");
-        Cx\Lib\UpdateUtil::sql("
+        \Cx\Lib\UpdateUtil::sql("
             ALTER TABLE `$table_name`
            CHANGE `id` `id` int(10) unsigned NOT NULL AUTO_INCREMENT");
 

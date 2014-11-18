@@ -1363,8 +1363,8 @@ class Product
             'flags' => array('fields' => array('flags'), 'type' => 'FULLTEXT', ),
         );
         $default_lang_id = \FWLanguage::getDefaultLangId();
-        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'title')) {
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'title')) {
                 // Migrate all Product strings to the Text table first
                 \Text::deleteByKey('Shop', self::TEXT_NAME);
                 \Text::deleteByKey('Shop', self::TEXT_SHORT);
@@ -1376,7 +1376,7 @@ class Product
                     SELECT `id`, `title`, `shortdesc`, `description`,
                            `product_id`, `external_link`, `keywords`
                       FROM `$table_name`";
-                $objResult = Cx\Lib\UpdateUtil::sql($query);
+                $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query Product strings", $query);
@@ -1423,7 +1423,7 @@ class Product
                 }
             }
         }
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Also fix Customer and some related tables
         Customer::errorHandler();
