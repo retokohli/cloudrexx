@@ -822,7 +822,7 @@ class Discount
                   FROM `$table_name`";
             $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to query article group names", $query);
             }
             while (!$objResult->EOF) {
@@ -830,7 +830,7 @@ class Discount
                 $name = $objResult->fields['name'];
                 if (!\Text::replace($group_id, $default_lang_id, 'Shop',
                     self::TEXT_NAME_GROUP_ARTICLE, $name)) {
-                    throw new Cx\Lib\Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                        "Failed to migrate article group names");
                 }
                 $objResult->MoveNext();
@@ -853,7 +853,7 @@ class Discount
                   FROM `$table_name`";
             $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to query customer group names", $query);
             }
             while (!$objResult->EOF) {
@@ -861,7 +861,7 @@ class Discount
                 $name = $objResult->fields['name'];
                 if (!\Text::replace($group_id, $default_lang_id, 'Shop',
                     self::TEXT_NAME_GROUP_CUSTOMER, $name)) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to migrate customer group names");
                 }
                 $objResult->MoveNext();
@@ -896,7 +896,7 @@ class Discount
                   FROM `$table_name`";
             $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to query count group names", $query);
             }
             while (!$objResult->EOF) {
@@ -905,12 +905,12 @@ class Discount
                 $unit = $objResult->fields['unit'];
                 if (!\Text::replace($group_id, $default_lang_id, 'Shop',
                     self::TEXT_NAME_GROUP_COUNT, $name)) {
-                    throw new Cx\Lib\Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                        "Failed to migrate count group names");
                 }
                 if (!\Text::replace($group_id, $default_lang_id, 'Shop',
                     self::TEXT_UNIT_GROUP_COUNT, $unit)) {
-                    throw new Cx\Lib\Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                        "Failed to migrate count group units");
                 }
                 $objResult->MoveNext();

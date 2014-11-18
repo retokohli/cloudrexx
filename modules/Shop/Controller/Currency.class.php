@@ -947,7 +947,7 @@ class Currency
                       FROM `$table_name`";
                 $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Cx\Lib\Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                        "Failed to query Currency names", $query);
                 }
                 while (!$objResult->EOF) {
@@ -955,7 +955,7 @@ class Currency
                     $name = $objResult->fields['name'];
                     if (!\Text::replace($id, $default_lang_id,
                         'Shop', self::TEXT_NAME, $name)) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to migrate Currency name '$name'");
                     }
                     $objResult->MoveNext();
@@ -988,13 +988,13 @@ class Currency
                 )";
             $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                     "Failed to insert default Currencies");
             }
             $id = $objDatabase->Insert_ID();
             if (!\Text::replace($id, FRONTEND_LANG_ID, 'Shop',
                 self::TEXT_NAME, $name)) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                     "Failed to add Text for default Currency name '$name'");
             }
         }

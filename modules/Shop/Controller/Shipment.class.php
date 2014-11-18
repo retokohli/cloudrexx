@@ -888,7 +888,7 @@ class Shipment
                       FROM `$table_name`";
                 $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Cx\Lib\Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                         "Failed to query names", $query);
                 }
                 while (!$objResult->EOF) {
@@ -896,7 +896,7 @@ class Shipment
                     $name = $objResult->fields['name'];
                     if (!\Text::replace($id, $default_lang_id, 'Shop',
                         self::TEXT_NAME, $name)) {
-                    throw new Cx\Lib\Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                         "Failed to migrate name '$name'");
                     }
                     $objResult->MoveNext();

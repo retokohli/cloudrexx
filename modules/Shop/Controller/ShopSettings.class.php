@@ -572,7 +572,7 @@ class ShopSettings
                  ORDER BY `id` ASC";
             $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    'Failed to query old Shop settings', $query);
             }
             while (!$objResult->EOF) {
@@ -671,14 +671,14 @@ class ShopSettings
                 if ($name) {
                     if (   \Cx\Core\Setting\Controller\Setting::getValue($name) === NULL
                         && !\Cx\Core\Setting\Controller\Setting::add($name, $value, ++$i)) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to add \Cx\Core\Setting entry for '$name'");
                     }
                 }
                 if ($name_status) {
                     if (   \Cx\Core\Setting\Controller\Setting::getValue($name_status) === NULL
                         && !\Cx\Core\Setting\Controller\Setting::add($name_status, $status, ++$i)) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to add \Cx\Core\Setting entry for status '$name_status'");
                     }
                 }

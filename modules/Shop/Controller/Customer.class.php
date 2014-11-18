@@ -693,13 +693,13 @@ class Customer extends \User
             $objProfileAttribute->setProtection(array(1));
 //DBG::log("Customer::errorHandler(): Made notes attribute: ".var_export($objProfileAttribute, true));
             if (!$objProfileAttribute->store()) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to create User_Profile_Attribute 'notes'");
             }
 //DBG::log("Customer::errorHandler(): Stored notes attribute, ID ".$objProfileAttribute->getId());
             if (!(\Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_notes', $objProfileAttribute->getId())
                && \Cx\Core\Setting\Controller\Setting::update('user_profile_attribute_notes'))) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to update User_Profile_Attribute 'notes' setting");
             }
 //DBG::log("Customer::errorHandler(): Stored notes attribute ID setting");
@@ -720,12 +720,12 @@ class Customer extends \User
             $objProfileAttribute->setParent(0);
             $objProfileAttribute->setProtection(array(1));
             if (!$objProfileAttribute->store()) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to create User_Profile_Attribute 'notes'");
             }
             if (!(\Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_customer_group_id', $objProfileAttribute->getId())
                && \Cx\Core\Setting\Controller\Setting::update('user_profile_attribute_customer_group_id'))) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to update User_Profile_Attribute 'customer_group_id' setting");
             }
         }
@@ -760,18 +760,18 @@ class Customer extends \User
         }
 //DBG::log("Group: ".var_export($objGroup, true));
         if (!$objGroup) {
-            throw new Cx\Lib\Update_DatabaseException(
+            throw new \Cx\Lib\Update_DatabaseException(
                "Failed to create UserGroup for customers");
         }
 //DBG::log("Customer::errorHandler(): Made customer usergroup: ".var_export($objGroup, true));
         if (!$objGroup->store() || !$objGroup->getId()) {
-            throw new Cx\Lib\Update_DatabaseException(
+            throw new \Cx\Lib\Update_DatabaseException(
                 "Failed to store UserGroup for customers");
         }
 //DBG::log("Customer::errorHandler(): Stored customer usergroup, ID ".$objGroup->getId());
         \Cx\Core\Setting\Controller\Setting::set('usergroup_id_customer', $objGroup->getId());
         if (!\Cx\Core\Setting\Controller\Setting::update('usergroup_id_customer')) {
-            throw new Cx\Lib\Update_DatabaseException(
+            throw new \Cx\Lib\Update_DatabaseException(
                "Failed to store UserGroup ID for customers");
         }
         $group_id_customer = $objGroup->getId();
@@ -792,17 +792,17 @@ class Customer extends \User
             $objGroup->setType('frontend');
         }
         if (!$objGroup) {
-            throw new Cx\Lib\Update_DatabaseException(
+            throw new \Cx\Lib\Update_DatabaseException(
                "Failed to create UserGroup for resellers");
         }
 //DBG::log("Customer::errorHandler(): Made reseller usergroup: ".var_export($objGroup, true));
         if (!$objGroup->store() || !$objGroup->getId()) {
-            throw new Cx\Lib\Update_DatabaseException(
+            throw new \Cx\Lib\Update_DatabaseException(
                 "Failed to store UserGroup for resellers");
         }
         \Cx\Core\Setting\Controller\Setting::set('usergroup_id_reseller', $objGroup->getId());
         if (!\Cx\Core\Setting\Controller\Setting::update('usergroup_id_reseller')) {
-            throw new Cx\Lib\Update_DatabaseException(
+            throw new \Cx\Lib\Update_DatabaseException(
                "Failed to store UserGroup ID for resellers");
         }
         $group_id_reseller = $objGroup->getId();
@@ -900,7 +900,7 @@ class Customer extends \User
             }
             if (!$objCustomer->store()) {
 //DBG::log(var_export($objCustomer, true));
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to migrate existing Customer ID ".
                    $old_customer_id.
                    " to Users (Messages: ".

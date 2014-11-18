@@ -891,7 +891,7 @@ class ShopCategory
                       FROM `$table_name`";
                 $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Cx\Lib\Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                         "Failed to query ShopCategory names");
                 }
                 while (!$objResult->EOF) {
@@ -899,7 +899,7 @@ class ShopCategory
                     $name = $objResult->fields['catname'];
                     if (!\Text::replace($id, $default_lang_id, 'Shop',
                         self::TEXT_NAME, $name)) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                             "Failed to migrate ShopCategory name '$name'");
                     }
                     $objResult->MoveNext();
