@@ -1019,6 +1019,7 @@ to {-moz-transform: rotate(360deg);}
         -webkit-box-shadow: none;
         -moz-box-shadow: none;
         box-shadow: none;
+        width: auto;
     }
     #blog div.search_date {
         padding: 0px 0px 0px 40px;
@@ -1185,6 +1186,7 @@ to {-moz-transform: rotate(360deg);}
         -webkit-box-shadow: none;
         -moz-box-shadow: none;
         box-shadow: none;
+        width: auto;
     }
     .mobile-header {
         float: left;
