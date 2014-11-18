@@ -740,7 +740,7 @@ class Vat
                     $class = $objResult->fields['class'];
                     if (!\Text::replace($id, $default_lang_id, 'Shop',
                         self::TEXT_CLASS, $class)) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                             "Failed to migrate VAT class '$class'");
                     }
                     $objResult->MoveNext();

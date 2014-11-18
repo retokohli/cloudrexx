@@ -452,7 +452,7 @@ class Zones
                       FROM `$table_name`";
                 $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Cx\Lib\Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                         "Failed to query Zone names", $query);
                 }
                 while (!$objResult->EOF) {
@@ -460,7 +460,7 @@ class Zones
                     $name = $objResult->fields['zones_name'];
                     if (!\Text::replace($id, $default_lang_id, 'Shop',
                         self::TEXT_NAME, $name)) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                             "Failed to migrate Zone name '$name'");
                     }
                     $objResult->MoveNext();

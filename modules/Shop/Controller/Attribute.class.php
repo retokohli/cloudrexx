@@ -857,7 +857,7 @@ class Attribute
                           FROM `$table_name_old`";
                     $objResult = \Cx\Lib\UpdateUtil::sql($query);
                     if (!$objResult) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to to query Attribute names", $query);
                     }
                     while (!$objResult->EOF) {
@@ -865,7 +865,7 @@ class Attribute
                         $name = $objResult->fields['name'];
                         if (!\Text::replace($id, $default_lang_id, 'Shop',
                             self::TEXT_ATTRIBUTE_NAME, $name)) {
-                            throw new Cx\Lib\Update_DatabaseException(
+                            throw new \Cx\Lib\Update_DatabaseException(
                                "Failed to migrate Attribute name '$name'");
                         }
                         $objResult->MoveNext();
@@ -875,7 +875,7 @@ class Attribute
 //DBG::activate(DBG_ADODB);
             \Cx\Lib\UpdateUtil::table($table_name_old, $table_structure, $table_index);
             if (!\Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new)) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to rename Attribute table");
             }
         }
@@ -900,7 +900,7 @@ class Attribute
                           FROM `$table_name_old`";
                     $objResult = \Cx\Lib\UpdateUtil::sql($query);
                     if (!$objResult) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to to query option names", $query);
                     }
                     while (!$objResult->EOF) {
@@ -908,7 +908,7 @@ class Attribute
                         $name = $objResult->fields['value'];
                         if (!\Text::replace($id, $default_lang_id,
                             'Shop', self::TEXT_OPTION_NAME, $name)) {
-                            throw new Cx\Lib\Update_DatabaseException(
+                            throw new \Cx\Lib\Update_DatabaseException(
                                "Failed to to migrate option Text '$name'");
                         }
                         $objResult->MoveNext();
@@ -917,7 +917,7 @@ class Attribute
             }
             \Cx\Lib\UpdateUtil::table($table_name_old, $table_structure, $table_index);
             if (!\Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new)) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to rename Option table");
             }
         }
@@ -935,7 +935,7 @@ class Attribute
             $table_index =  array();
             \Cx\Lib\UpdateUtil::table($table_name_old, $table_structure, $table_index);
             if (!\Cx\Lib\UpdateUtil::table_rename($table_name_old, $table_name_new)) {
-                throw new Cx\Lib\Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    "Failed to rename Product-Attribute relation table $table_name_old to $table_name_new");
             }
         }

@@ -144,7 +144,7 @@ class ShopMail
         $arrFrom = $arrSender = $arrSubject = array();
         $arrLanguageId = \FWLanguage::getIdArray();
         if (empty($arrLanguageId)) {
-            throw new Cx\Lib\Update_DatabaseException(
+            throw new \Cx\Lib\Update_DatabaseException(
                "Failed to get frontend language IDs");
         }
         if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_shop_mail')) {
@@ -235,7 +235,7 @@ class ShopMail
 //                    '/(?:\r|\n|\r\n)/', "<br />\n", $arrTemplate['message']);
                     $arrTemplate['lang_id'] = $lang_id;
                     if (!\Cx\Core\MailTemplate\Controller\MailTemplate::store('Shop', $arrTemplate)) {
-                        throw new Cx\Lib\Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to store Mailtemplate");
                     }
                 }
