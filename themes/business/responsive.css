@@ -638,6 +638,10 @@ padding-bottom: 20px;
       .form-control {
           width: 100%;
       }
+      #shop figure a .categorie-image-wrapper img {
+          padding: 0;
+      }
+      #mediadir .mapLarge, #livecam img {width: 100%;}
 }
 @media(max-width: 480px){
     #search-form {
@@ -737,6 +741,9 @@ height: auto;}
  .login-bottom a {
     white-space: normal;
 }
+#access p span input[type="file"], form p input[type="password"], form#directorySearch input[name="term"] {width: 100%;}
+#directory input, #directory textarea {width: 100% !important;}
+#market input#pic, #market input.searchbox, #market form input {width: 100%;}
 }
 
 @media(max-width: 340px){
