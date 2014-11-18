@@ -143,6 +143,10 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         
         $dbUserName = $dbUser->getName();
         $dbId = $this->getDbId($db->getName());
+        //if database does not exist return false
+        if(empty($dbId)){
+            return false;
+        }
         $dbUserId   = $this->getDbUserId($dbUserName, $dbId);
         if (!empty($dbUserId)) {
             $xmldoc = $this->getXmlDocument();
