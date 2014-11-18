@@ -1,0 +1,118 @@
+<!doctype html>
+<html><!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]--><!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]--><!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]--><!--[if (gte IE 9)|!(IE)]><!--><!--<![endif]--><head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>        
+        <meta name="generator" content="{VERSION}">
+        <meta name="keywords" content="{METAKEYS}">
+        <meta name="robots" content="{METAROBOTS}">
+        <meta name="description" content="{METADESC}">
+        <meta charset="{CHARSET}">
+        <meta name="viewport" content="width=device-width">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="themes/lava/images/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="themes/lava/images/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="themes/lava/images/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="themes/lava/images/apple-touch-icon-57-precomposed.png">
+        <link type="images/x-icon" rel="icon" href="themes/lava/images/favicon.png">        
+        <link type="text/css" rel="stylesheet" href="themes/lava/bootstrap.css">
+        <link type="text/css" rel="stylesheet" href="themes/lava/main.css">
+        <link type="text/css" rel="stylesheet" href="themes/lava/animate.css">
+        <link type="text/css" rel="stylesheet" href="themes/lava/font-awesome.css">
+        <link type="text/css" rel="stylesheet" href="themes/lava/modules.css">        
+        <link type="text/css" rel="stylesheet" href="themes/lava/superfish.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic" rel="stylesheet" type="text/css">        
+    </head><body>{JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>        
+        <script type="text/javascript">
+            $J(document).ready(function() {
+                //var path = cx.variables.get('basePath', 'contrexx');
+                var path = location.protocol + "//" + location.host + '/{PATH_OFFSET}';
+                scripts = [path + "/themes/lava/js/jquery.js", path + "/themes/lava/js/bootstrap.js",
+                    path + "/themes/lava/js/modernizr.js", path + "/themes/lava/js/javascript.js", path + "/themes/lava/js/superfish.js"];
+                $J.each(scripts, function(index, value) {
+                    console.log(value);
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = value;
+                    $J('body').append(script);
+                });
+            });
+        </script>      
+        <!--[if IE 6]>
+        <script type="text/javascript" src="themes/lava/js/DD_belatedPNG.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/lava/js/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    $J("body").each(function () {
+                        PIE.attach(this);
+                    });
+                    $J("body .container").each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
+        </script>
+        <![endif]-->
+
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="row">
+                    <div class="navbar-header"><a class="navbar-brand" href="{NODE_HOME}"><img src="themes/lava/images/logo.png" alt="logo"></a></div>
+                    <a class="btn btn-navbar btn-default" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+
+                    <div class="collapse navbar-collapse">
+                        {NAVBAR_FILE}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {CONTENT_FILE}
+        <div id="bottom">
+            <div class="container">
+                <div class="row margin-40">
+                    <div class="text-center col-lg-offset-1 col-sm-10 col-md-10">
+                        <p>{CONTACT_ADDRESS}, {CONTACT_ZIP} {CONTACT_PLACE} | {CONTACT_PHONE}  |  <a href="mailto:yourcompany.com"><i class="icon-envelope-alt"></i> support@yourcompany.com</a></p>
+                        <hr>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-center col-lg-offset-1 col-sm-10 col-md-10">
+                        <ul class="social-icons">
+                            <li><a class="twitter" href="http://twitter.com/contrexx" target="_blank"><i class="icon-twitter icon-3x"></i></a></li>
+                            <li><a class="facebook" href="http://www.facebook.com/contrexxsoftware" target="_blank"><i class="icon-facebook icon-3x"></i></a></li>
+                            <li><a class="google" href="https://plus.google.com/101022530429663496888" target="_blank"><i class="icon-google-plus icon-3x"></i></a></li>
+                            <li><a class="instagram" href="http://www.instagram.com" target="_blank"><i class="icon-camera-retro icon-3x"></i></a></li>
+                            <li><a class="pinterest" href="http://www.pinterest.com" target="_blank"><i class="icon-pinterest icon-3x"></i></a></li>
+                            <li><a class="linkedin" href="http://www.linkedin.com" target="_blank"><i class="icon-linkedin icon-3x"></i></a></li>
+                            <li><a class="Github" href="http://www.github.com" target="_blank"><i class="icon-github-alt icon-3x"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="text-center col-sm-12 col-md-12">
+                        <p>@ Copyright. All Rights Reserved. Created by <a href="#">Your Company.</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {LOGIN_CONTENT}
+        {COUNTER}
+
+    </body></html>
