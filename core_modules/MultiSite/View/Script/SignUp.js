@@ -30,7 +30,10 @@
         objModal.find('.multisite_submit').on('click', submitForm);
         objModal.find('.multisite_pay').on('click', setPaymentUrl);
         
+        init();
+        
         jQuery('.multisite_pay').payrexxModal({
+            hideObjects: ["#contact-details", ".contact"],
             show: function(e) {
                 //signup form validation
                 if (!formValidation()) {
@@ -54,8 +57,6 @@
                 }
             }
         });
-
-        init();
     }
 
     function cancelSetup() {

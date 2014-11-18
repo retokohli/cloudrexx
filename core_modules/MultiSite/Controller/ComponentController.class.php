@@ -292,20 +292,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         }
                         echo $objTemplate->get();
                         break;
+                    case 'Payrexx':
+                        $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
+                        if (!empty($transaction) && isset($transaction['status']) && $transaction['status'] === 'confirmed') {
+                            $invoice = $transaction['invoice'];
+                            $payment = new \Cx\Modules\Order\Model\Entity\Payment();
+                            $payment->setAmount($invoice['amount']);
+                            $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
+                            $payment->setTransactionReference($invoice['referenceId']);
+                            \Env::get('em')->persist($payment);
+                            \Env::get('em')->flush();
+                        }
+                        break;
                     default:
                         break;
-                }
-                break;
-            case 'Payrexx':
-                $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
-                if (!empty($transaction) && isset($transaction['status']) && $transaction['status'] === 'confirmed') {
-                    $invoice = $transaction['invoice'];
-                    $payment = new \Cx\Modules\Order\Model\Entity\Payment();
-                    $payment->setAmount($invoice['amount']);
-                    $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
-                    $payment->setTransactionReference($invoice['referenceId']);
-                    \Env::get('em')->persist($payment);
-                    \Env::get('em')->flush();
                 }
                 break;
             default:
