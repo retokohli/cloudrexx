@@ -140,7 +140,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      */
     public function removeDbUser(\Cx\Core\Model\Model\Entity\DbUser $dbUser, \Cx\Core\Model\Model\Entity\Db $db ){
         \DBG::msg("MultiSite (PleskController): Removing Database User.");
-        
+       
         $dbUserName = $dbUser->getName();
         $dbId = $this->getDbId($db->getName());
         //if database does not exist return false
@@ -247,9 +247,10 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in getting database ID : {$error} ");
-        }      
+        }
         if (!empty($respArr)) {
-            foreach($respArr['result'] as $res) {
+            $responseArr = (count($respArr['result']) == count($respArr['result'], COUNT_RECURSIVE)) ? $respArr : $respArr['result'];
+            foreach($responseArr as $res) {
                 if ($res['name'] == $name) {
                     return $res['id'];
                 }

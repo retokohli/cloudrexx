@@ -1088,11 +1088,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     //remove the database user
                     $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
                     $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') . $this->id);
-                    $hostingController->removeDbUser($objDbUser, $objDb);
+                    $removedDbUser = $hostingController->removeDbUser($objDbUser, $objDb);
 
                     //remove the database
-                    $hostingController->removeDb($objDb);
-
+                    if ($removedDbUser) {
+                        $hostingController->removeDb($objDb);
+                    }
                     //remove the website's data repository
                     if(file_exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name)) {
                         if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name, true)) {
