@@ -727,14 +727,14 @@ class Vat
         );
         $table_index =  array();
         $default_lang_id = \FWLanguage::getDefaultLangId();
-        if (Cx\Lib\UpdateUtil::table_exist($table_name, 'class')) {
-            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'class')) {
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name, 'class')) {
+            if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'class')) {
                 // Migrate all Vat classes to the Text table first
                 \Text::deleteByKey('Shop', self::TEXT_CLASS);
                 $query = "
                     SELECT `id`, `class`
                       FROM `$table_name`";
-                $objResult = Cx\Lib\UpdateUtil::sql($query);
+                $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['id'];
                     $class = $objResult->fields['class'];
@@ -747,7 +747,7 @@ class Vat
                 }
             }
         }
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

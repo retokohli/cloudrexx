@@ -582,14 +582,14 @@ class Payment
         );
         $table_index = array();
         $default_lang_id = \FWLanguage::getDefaultLangId();
-        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
                 // Migrate all Payment names to the Text table first
                 \Text::deleteByKey('Shop', self::TEXT_NAME);
                 $query = "
                     SELECT `id`, `name`
                       FROM `$table_name`";
-                $objResult = Cx\Lib\UpdateUtil::sql($query);
+                $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query Payment names", $query);
@@ -606,19 +606,19 @@ class Payment
                 }
             }
         }
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Update Payments that use obsolete PSPs:
         //  - 05, 'Internal_CreditCard'
         //  - 06, 'Internal_Debit',
         // Uses 04, Internal
-        Cx\Lib\UpdateUtil::sql(
+        \Cx\Lib\UpdateUtil::sql(
             "UPDATE $table_name
                 SET `processor_id`=4 WHERE `processor_id` IN (5, 6)");
         // - 07, 'Saferpay_Mastercard_Multipay_CAR',
         // - 08, 'Saferpay_Visa_Multipay_CAR',
         // Uses 01, Saferpay
-        Cx\Lib\UpdateUtil::sql(
+        \Cx\Lib\UpdateUtil::sql(
             "UPDATE $table_name
                 SET `processor_id`=1 WHERE `processor_id` IN (7, 8)");
 
@@ -628,7 +628,7 @@ class Payment
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
         );
         $table_index = array();
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

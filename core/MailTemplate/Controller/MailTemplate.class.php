@@ -1479,8 +1479,8 @@ Use plain text areas instead.  See below.
 // by UpdateUtil
 //            'primary' => array('key(32)', 'section(32)'),
         );
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
-        Cx\Lib\UpdateUtil::sql("
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::sql("
             ALTER TABLE `$table_name`
               ADD PRIMARY KEY (`key` (32), `section` (32))");
 //DBG::log("Mailtemplate::errorHandler(): Migrated table core_mail_template");

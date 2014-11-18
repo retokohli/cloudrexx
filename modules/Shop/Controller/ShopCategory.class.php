@@ -881,15 +881,15 @@ class ShopCategory
         $table_index =  array(
             'flags' => array('fields' => 'flags', 'type' => 'FULLTEXT'),
         );
-        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            if (Cx\Lib\UpdateUtil::column_exist($table_name, 'catname')) {
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name)) {
+            if (\Cx\Lib\UpdateUtil::column_exist($table_name, 'catname')) {
                 // Migrate all ShopCategory names to the Text table first
                 \Text::deleteByKey('Shop', self::TEXT_NAME);
                 \Text::deleteByKey('Shop', self::TEXT_DESCRIPTION);
                 $query = "
                     SELECT `catid`, `catname`
                       FROM `$table_name`";
-                $objResult = Cx\Lib\UpdateUtil::sql($query);
+                $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Cx\Lib\Update_DatabaseException(
                         "Failed to query ShopCategory names");
@@ -906,7 +906,7 @@ class ShopCategory
                 }
             }
         }
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always
         return false;

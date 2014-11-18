@@ -564,13 +564,13 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
         $table_name = DBPREFIX.'module_shop_config';
         $i = 0;
-        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+        if (\Cx\Lib\UpdateUtil::table_exist($table_name)) {
             // Migrate all entries using the \Cx\Core\Setting\Controller\Setting class
             $query = "
                 SELECT `name`, `value`, `status`
                   FROM ".DBPREFIX."module_shop_config
                  ORDER BY `id` ASC";
-            $objResult = Cx\Lib\UpdateUtil::sql($query);
+            $objResult = \Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
                 throw new Cx\Lib\Update_DatabaseException(
                    'Failed to query old Shop settings', $query);
@@ -860,7 +860,7 @@ class ShopSettings
 
         // Add more new/missing settings here
 
-        Cx\Lib\UpdateUtil::drop_table($table_name);
+        \Cx\Lib\UpdateUtil::drop_table($table_name);
 
         // Always
         return false;
