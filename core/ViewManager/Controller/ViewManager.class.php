@@ -1262,11 +1262,13 @@ CODE;
     function update()
     {
         \Permission::checkAccess(47, 'static');
-
+        
         $themes = !empty($_POST['themes']) && !stristr($_POST['themes'], '..') ? contrexx_input2raw($_POST['themes']) : null;
         $themesPage = !empty($_POST['themesPage']) &&  !stristr($_POST['themesPage'], '..') ? contrexx_input2raw($_POST['themesPage']) : null;
+        $isComponentFile = !empty($_POST['is_application']);
 
-        if (empty($themes) || empty($themesPage) || \ImageManager::_isImage($this->path.$themes.'/'.$themesPage)) {
+        $objImageManager = new \ImageManager;
+        if (empty($themes) || empty($themesPage) || $objImageManager->_isImage($this->path.$themes.$themesPage)) {
             return false;
         }
 
@@ -1279,14 +1281,26 @@ CODE;
             if (self::isFileTypeComponent($themesPage)) {
                 $themesPage = self::getComponentFilePath($themesPage, false);
             }
-            if (!file_exists($this->websiteThemesPath.$themes.'/'.$themesPage)) {
+            if (!file_exists($this->websiteThemesPath.$themes.$themesPage)) {
                 $dir = str_replace(basename($themesPage),"", $themesPage);
                 \Cx\Lib\FileSystem\FileSystem::make_folder($this->websiteThemesPath.$themes.'/'.$dir, true);
             }
-            $objFile = new \Cx\Lib\FileSystem\File($this->websiteThemesPath.$themes.'/'.$themesPage);
-            if(!file_exists($this->websiteThemesPath.$themes.'/'.$themesPage)){
-               $objFile->touch(); 
-            }            
+            $filePath = $this->websiteThemesPath.$themes.$themesPage;
+            
+            if ($isComponentFile && file_exists($filePath)) {
+                // override from application template, rename the file if its already exists
+                $pathInfo = pathinfo($filePath);
+                $idx = 1;
+                while (file_exists($filePath)) {
+                  $filePath = $pathInfo['dirname'].'/'.$pathInfo['filename'].'_custom_'.$idx++.'.'.$pathInfo['extension'];                  
+                }
+                $_POST['themesPage'] = self::getThemeRelativePath(preg_replace('#' . $this->websiteThemesPath.$themes . '#', '', $filePath));
+            }
+            
+            $objFile = new \Cx\Lib\FileSystem\File($filePath);
+            if(!file_exists($filePath)){
+               $objFile->touch();
+            }
             $objFile->write($pageContent);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
@@ -1438,6 +1452,7 @@ CODE;
             'CONTREXX_BASE_URL'     => \Env::get('cx')->getWebsiteOffsetPath() . '/',
             'THEMES_SELECTED_PAGENAME' => $themesPage,
             'THEME_EDIT_PATH'          => (!$isComponentFile ? '/'.$theme->getFoldername() : '') . $themesPage,
+            'THEME_IS_APPLICATION'  => $isComponentFile ? 1 : 0,
         ));
         
         if (empty($themesPage)) {
@@ -1920,7 +1935,8 @@ CODE;
         global $objTemplate, $_ARRAYLANG;
         
         if (file_exists($filePath)) {
-            $fileIsImage = \ImageManager::_isImage($filePath);                
+            $objImageManager = new \ImageManager;
+            $fileIsImage = $objImageManager->_isImage($filePath);
             $contenthtml = '';
             if (!$fileIsImage) {
                 $contenthtml = file_get_contents($filePath);
