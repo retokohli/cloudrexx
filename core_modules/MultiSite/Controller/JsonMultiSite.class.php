@@ -2418,13 +2418,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $authToken = null;
                     $websiteLoginUrl = null;
                     $websiteName = $website->getBaseDn()->getName();
-                    try {
-                        list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
-                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
-                        return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'], $websiteName),'webSiteLoginUrl' => $websiteLoginUrl->toString());
-                    } catch (Exception $ex) {
-                        return array('status' => 'error','message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_FAILED'], $websiteName));
-                    }
+                    list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
+                    $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
+                    return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'], $websiteName),'webSiteLoginUrl' => $websiteLoginUrl->toString());
                     break;
                 default:
                     break;

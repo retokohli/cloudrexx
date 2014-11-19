@@ -175,7 +175,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_FAILED'] = 'Failed 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_ALERT_MESSAGE'] = 'Making a change on the website configuration might break this selected website! You must not alter the configuration unless you know exactly what you are doing!';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_EXISTS'] = 'Failed to add configuration : %s .Option already exists!.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FETCH_LICENSE_FAILED'] = 'Failed to get license information of website: %s !.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_FAILED']  = 'Failed to remotelogin to this website: %s !.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_SUCCESS'] = 'The license option  "%s"  was successfully updated!.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_FAILED'] = 'Failed to update The license Option "%s"  !.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'] = 'Successfully login to website: %s !.';
