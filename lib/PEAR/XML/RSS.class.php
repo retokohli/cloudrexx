@@ -127,7 +127,7 @@ class XML_RSS extends XML_Parser
      */
     function __construct($handle='')
     {
-        $this->XML_Parser();
+        parent::__construct();
 
         if (!empty($handle)) {
             $this->setInput($handle);
@@ -148,7 +148,7 @@ class XML_RSS extends XML_Parser
      * @param  array  Attributes of XML tag
      * @return void
      */
-    function startHandler($parser, $element, $attribs)
+    function startHandler($parser, $element, &$attribs)
     {
         switch ($element) {
             case 'CHANNEL':
