@@ -93,18 +93,40 @@ class DBG
         if (!self::$fileskiplength) {
             self::$fileskiplength = strlen(dirname(dirname(dirname(dirname(__FILE__))))) + 1;
         }
+        $oldMode = self::$mode;
+        if (self::$mode === DBG_NONE) {
+            // activate DBG_LOG by default
+            self::$mode = DBG_LOG;
+        }
         if ($mode === DBG_NONE) {
             self::$mode = DBG_NONE;
         } elseif ($mode === null) {
-            self::$mode = (DBG_ALL & ~DBG_LOG_FILE & ~DBG_LOG_FIREPHP) | DBG_LOG;
+            self::$mode = self::$mode | (DBG_ALL & ~DBG_LOG_FILE & ~DBG_LOG_FIREPHP);
         } else {
-            self::$mode = self::$mode | $mode | DBG_LOG;
+            self::$mode = self::$mode | $mode;
         }
         self::__internal__setup();
         if ($mode !== DBG_NONE) {
-            self::log('DBG enabled');
-            self::stack();
+            if ($oldMode === DBG_NONE) {
+                self::log('DBG enabled ('.self::getActivatedFlagsAsString().')');
+                self::stack();
+            } else {
+                self::log('DBG mode changed ('.self::getActivatedFlagsAsString().')');
+            }
         }
+    }
+
+    public static function getActivatedFlagsAsString() {
+        $userConstants = array_keys(get_defined_constants(true)['user']);
+        $flags = array_filter(
+            $userConstants,
+            function($constant){
+                return    strpos($constant, 'DBG_') === 0
+                       && constant($constant)
+                       && (self::$mode & constant($constant)) === constant($constant);
+            }
+        );
+        return join(' | ', $flags);
     }
     
     public static function activateIf($condition, $mode = null) {
@@ -146,11 +168,11 @@ class DBG
         } else {
             self::$mode = self::$mode  & ~$mode;
         }
-        self::__internal__setup();
         if ($mode === DBG_NONE) {
-            self::log('DBG disabled');
+            self::log('DBG disabled ('.self::getActivatedFlagsAsString().')');
             self::stack();
         }
+        self::__internal__setup();
     }
 
 
@@ -782,15 +804,21 @@ class DBG
 
     private static function isLogWorthy($text) {
         $unworthLogs = array();
-        //$unworthLogs = array('File', 'FTPFile');
+        //$unworthLogs = array('File', 'FTPFile', 'YamlRepository');
         if (empty($unworthLogs)) {
             return true;
         }
         return !preg_match('/^MSG: ('.join('|', $unworthLogs).')[^:]*:/', $text);
     }
 
-    public static function appendLogsToMemory($logs) {
-        self::$memory_logs = array_merge(self::$memory_logs, $logs);
+    public static function appendLogs($logs) {
+        if (self::$mode & DBG_LOG_MEMORY) {
+            self::$memory_logs = array_merge(self::$memory_logs, $logs);
+        } else {
+            foreach ($logs as $log) {
+                self::_log($log);
+            }
+        }
     }
 
     public static function setSQLQueryCache($msg)
