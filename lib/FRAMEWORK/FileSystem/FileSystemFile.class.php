@@ -69,7 +69,7 @@ class FileSystemFile implements FileInterface
     public function getFileOwner()
     {
         // get the user-ID of the user who owns the loaded file
-        $fileOwnerId = fileowner($this->filePath);
+        $fileOwnerId = file_exists($this->filePath) && fileowner($this->filePath);
         if (!$fileOwnerId) {
             throw new FileSystemFileException('Unable to fetch file owner of '.$this->filePath);
         }
@@ -169,7 +169,7 @@ class FileSystemFile implements FileInterface
     public function getFilePermissions()
     {
         // fetch current permissions on loaded file
-        $filePerms = fileperms($this->filePath);
+        $filePerms = file_exists($this->filePath) && fileperms($this->filePath);
         if ($filePerms === false) {
             throw new FileSystemFileException('Unable to fetch file permissions of file '.$this->filePath.'!');
         }
