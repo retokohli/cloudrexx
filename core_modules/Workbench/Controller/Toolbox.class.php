@@ -9,9 +9,10 @@ class Toolbox {
         $this->template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template/Backend');
         switch ($mode) {
             case 'yaml':
-                \JS::registerJS('core_modules/Workbench/View/Script/ace.js');
+                \JS::activate('ace');
+                \Message::add('YAML toolbox is currently not working.', \Message::CLASS_WARN);
+                \Message::add('Implement in '.__METHOD__.' ('.__FILE__.')', \Message::CLASS_WARN);
                 $this->template->loadTemplateFile('Yaml.html');                
-                return;
                 $res = \Env::get('db')->Execute('SHOW TABLES');
                 while (!$res->EOF) {
                     $this->template->setVariable('TABLE', current($res->fields));
@@ -23,14 +24,14 @@ class Toolbox {
                 //} else {
                 //$result = sql
                 //}
-                $result = $this->sql2Yaml($result);
-                break;
+                //$result = $this->sql2Yaml($result);
                 $this->template->setVariable(array(
                     'TXT_WORKBENCH_TOOLBOX_YAML_FROM_TABLE' => $language['TXT_WORKBENCH_TOOLBOX_YAML_FROM_TABLE'],
                     'TXT_WORKBENCH_TOOLBOX_YAML_FROM_SQL' => $language['TXT_WORKBENCH_TOOLBOX_YAML_FROM_SQL'],
                     'TXT_WORKBENCH_TOOLBOX_SUBMIT' => $language['TXT_WORKBENCH_TOOLBOX_SUBMIT'],
                     'RESULT' => $result,
                 ));
+                break;
             case 'components':
                 $this->template->loadTemplateFile('Components.html');
                 $query = '
