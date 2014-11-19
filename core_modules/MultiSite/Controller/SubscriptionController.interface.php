@@ -35,4 +35,22 @@ interface SubscriptionController {
      */
     public function createCustomer(\Cx\Core_Modules\MultiSite\Model\Entity\Customer $customer);
 
+    /**
+     * Create new domain alias
+     * @param string $aliasName alias name
+     */
+    public function createDomainAlias($aliasName);
+    
+    /**
+     * Rename the domain alias
+     * @param string $oldAliasName old alias name
+     * @param string $newAliasName new alias name
+     */
+    public function renameDomainAlias($oldAliasName, $newAliasName);
+    
+    /**
+     * Remove the domain alias by name
+     * @param string $aliasName alias name to delete
+     */
+    public function deleteDomainAlias($aliasName);
 }
