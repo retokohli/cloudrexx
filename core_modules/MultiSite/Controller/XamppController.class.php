@@ -202,4 +202,44 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): get Ftp Accounts");
         return null;
     }
+    
+    /**
+     * Create new domain alias
+     * 
+     * @param string $aliasName alias name
+     * 
+     * @return null
+     */
+    public function createDomainAlias($aliasName)
+    {
+        \DBG::msg("MultiSite (XamppController): create domain alias");
+        return null;
+    }
+    
+    /**
+     * Rename the domain alias
+     * 
+     * @param string $oldAliasName old alias name
+     * @param string $newAliasName new alias name
+     * 
+     * @return null
+     */
+    public function renameDomainAlias($oldAliasName, $newAliasName)
+    {
+        \DBG::msg("MultiSite (XamppController): rename domain alias");
+        return null;
+    }
+    
+    /**
+     * Remove the domain alias by name
+     * 
+     * @param string $aliasName alias name to delete
+     * 
+     * @return null
+     */
+    public function deleteDomainAlias($aliasName)
+    {
+        \DBG::msg("MultiSite (XamppController): delete domain alias");
+        return null;
+    }
 }
