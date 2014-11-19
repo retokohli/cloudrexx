@@ -1288,7 +1288,7 @@ END;
      * @return boolean
      */
     public function isIllegalFileName($file) {
-        if (preg_match('#^(.htaccess|.ftpaccess|.passwd|web.config)$#i', $file)) {
+        if (preg_match('#^(\.htaccess|\.ftpaccess|\.passwd|web\.config)$#i', $file)) {
             return true;
         }
         return false;
