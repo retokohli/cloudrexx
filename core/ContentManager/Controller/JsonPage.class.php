@@ -1168,7 +1168,7 @@ class JsonPage implements JsonAdapter {
             if ($page->isTargetInternal()) {
                 $target = str_replace(array('[[', ']]'), array('{', '}'), $target);
                 \LinkGenerator::parseTemplate($target);
-            } elseif (strpos($target, ASCMS_PATH_OFFSET) === false) {
+            } elseif (empty(ASCMS_PATH_OFFSET) || strpos($target, ASCMS_PATH_OFFSET) === false) {
                 if (!isset($target[0]) || $target[0] !== '/') {
                     $target = '/' . $target;
                 }
