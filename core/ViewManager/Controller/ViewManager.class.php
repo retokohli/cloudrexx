@@ -1228,7 +1228,7 @@ CODE;
         }
         
        $mergeFolders = array_unique(array_merge($codeBaseDir, $websiteDir));
-       
+       sort($mergeFolders);
        foreach($mergeFolders as $folder) {
            if (!$this->themeRepository->findOneBy(array('foldername' => $folder))) {
                $result .= "<option value='".$folder."'>".$folder."</option>\n";
@@ -1243,14 +1243,11 @@ CODE;
      * @param type $dir 
      * @return array $directory
      */
-    function readFiles($dir) {
+    function readFiles($dirPath) {
         
-        $dh=opendir($dir);
         $directory = array();
-        while (($file = readdir($dh)) !== false) {
-            if ($file!="." && $file!=".." && $file != "zip") {
-                $directory [] = $file;
-            }
+        foreach(glob($dirPath . '*', GLOB_ONLYDIR) as $dir) {
+            $directory[] = str_replace($dirPath, '', $dir);
         }
         return $directory;
     }
@@ -1586,6 +1583,8 @@ CODE;
     function _getDropdownActivated($selectedTheme)
     {
         $themes = $this->themeRepository->findAll();
+        usort($themes, array($this, 'sortThemesByName'));
+        
         $selectedTheme = $this->themeRepository->findById($selectedTheme);
         $html = '';
         foreach ($themes as $theme) {
@@ -1613,7 +1612,7 @@ CODE;
         }
         
         $themes = $this->themeRepository->findAll(array('themesname', 'id'));
-        usort($themes, array($this, 'sortThemesByDefault'));
+        usort($themes, array($this, 'sortThemesByName'));
         
         $tdm = '';
         foreach ($themes as $item) {
@@ -2317,6 +2316,9 @@ CODE;
         return 1;
     }
 
+    public function sortThemesByName($a, $b) {
+        return strcmp($a->getThemesname(), $b->getThemesname());
+    }
 
     /**
      * if now rows in table -> drop $this->oldTable
