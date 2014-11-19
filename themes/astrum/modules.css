@@ -298,9 +298,8 @@ div.row2 {
     margin-left: 1px;
 }
 #contactForm #contactFrame .contact input[type="text"] {
-    clear: both;
     float: left;
-    width: 510px;
+    width: 300px;
     background: none repeat scroll 0 0 #FFFFFF;
     border: 1px solid #E0E0E0;
     border-radius: 3px 3px 3px 3px;
@@ -1624,6 +1623,7 @@ div.row2 {
     color: #FFFFFF;
     font-weight: bold;
     background: #0A85C8 url('images/arrow-right-white.png') no-repeat 62px 13px;
+    border-color: transparent;
 }
 
 #shop button.add-to-cart {
@@ -1641,6 +1641,7 @@ div.row2 {
     -o-border-top-left-radius: 0;
     -o-border-bottom-left-radius: 0;
     background: #0A85C8 url('images/cart-white.png') no-repeat 10px 7px;
+    border-color: transparent;
 }
 
 #shop button.details-button:hover,
@@ -2511,7 +2512,7 @@ dl.data_module img {
     padding-left: 180px;
 }
 .mediadirSelectorCenter{
-    padding: 60px 5px 0 !important;
+    padding: 60px 16px 60px !important;
 }
 #mediadir .map{
     margin-top: 10px;
@@ -2597,7 +2598,6 @@ dl.data_module img {
 }
 #mediadir .employee-left {
     float: left;
-    width: 25%;
 }
 #mediadir .employee-left img {
     float: left;
@@ -2606,7 +2606,6 @@ dl.data_module img {
 }
 #mediadir .employee-middle {
     float: left;
-    width: 30%;
 }
 #mediadir .employee-title {
     float: left;
@@ -2619,19 +2618,18 @@ dl.data_module img {
 }
 #mediadir .employee-right {
     float: left;
-    width: 45%;
 }
 #mediadir .employee-more {
     float: left;
 }
-#mediadir > .reference:hover {
+#mediadir .reference:hover {
   border: 1px solid #AAAAAA;
   box-shadow: 3px 3px 8px #AAAAAA;
   -moz-box-shadow: 3px 3px 8px #DDDDDD;
   -webkit-box-shadow: 3px 3px 8px #DDDDDD;
   -o-box-shadow: 3px 3px 8px #DDDDDD;
 }
-#mediadir > .reference {
+#mediadir .reference {
   border: 1px solid #DDDDDD;
   box-shadow: 3px 3px 8px #DDDDDD;
   -moz-box-shadow: 3px 3px 8px #DDDDDD;
@@ -2639,13 +2637,14 @@ dl.data_module img {
   -o-box-shadow: 3px 3px 8px #DDDDDD;
   float: left;
   height: 120px;
-  margin: 0 3% 20px 0;
   text-align: center;
-  width: 30%;
+  width: 100%;
+  margin-bottom: 20px;
 }
-#mediadir > .reference img {
+#mediadir .reference img {
   max-height: 60px;
   width: 80%;
+  margin: 32px auto 0;
 }
 #mediadir .mediadirOverview .reference {
     -moz-box-sizing: border-box;
@@ -3074,3 +3073,9 @@ padding-left: 0;
 #login p label {
 width: 160px;
 }
+.form-control {width: 300px;}
+select#deselectedCategories, select#selectedCategories, select#deselectedLevels, select#selectedLevels {
+    width: 100%;
+}
+.checkbox label {margin: 0;}
+#survey .questionBlock .radio, #survey .questionBlock .radio label {width: 100%; word-wrap: break-word;}
