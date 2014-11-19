@@ -181,10 +181,10 @@ class XML_Parser extends PEAR
      *                       to have it call functions named after elements
      * @param string $tgenc  a valid target encoding
      */
-    function XML_Parser($srcenc = null, $mode = 'event', $tgtenc = null)
+    /*function XML_Parser($srcenc = null, $mode = 'event', $tgtenc = null)
     {
         XML_Parser::__construct($srcenc, $mode, $tgtenc);
-    }
+    }*/
     // }}}
 
     /**
@@ -465,7 +465,11 @@ class XML_Parser extends PEAR
      * @param integer $ecode the error message code
      * @return XML_Parser_Error
      **/
-    function raiseError($msg = null, $ecode = 0)
+    function raiseError($msg = null, $ecode = 0, $mode = null,
+                                                 $options = null,
+                                                 $userinfo = null,
+                                                 $error_class = null,
+                                                 $skipmsg = false)
     {
         $msg = !is_null($msg) ? $msg : $this->parser;
         $err = new XML_Parser_Error($msg, $ecode);
