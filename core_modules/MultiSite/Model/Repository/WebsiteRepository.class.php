@@ -57,6 +57,7 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
     public function findOneForSale($productOptions, $saleOptions) {
         $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
         $websiteName = $saleOptions['websiteName'];
+        $websiteServiceServer = null;
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
             //get default service server
             $defaultWebsiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
