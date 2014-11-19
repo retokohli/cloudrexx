@@ -113,7 +113,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'updateUser', 'params' => $params));
                             if ($resp->status == 'error' || $resp->data->status == 'error') {
                                 if (isset($resp->log)) {
-                                    \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(Website: './*$this->getName().*/') '.$logEntry;}, $resp->log));
+                                    \DBG::appendLogs(array_map(function($logEntry) {return '(Website: './*$this->getName().*/') '.$logEntry;}, $resp->log));
                                 }
                                 throw new \Exception('Die Aktualisierung des Benutzerkontos hat leider nicht geklapt. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                             }

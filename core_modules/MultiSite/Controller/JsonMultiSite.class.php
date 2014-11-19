@@ -62,17 +62,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     static $isIscRequest = false;
     
     /**
-    * Returns the internal name used as identifier for this adapter
-    * @return String Name of this adapter
-    */
+     * Returns the internal name used as identifier for this adapter
+     * @return String Name of this adapter
+     */
     public function getName() {
         return 'MultiSite';
     }
 
     /**
-    * Returns an array of method names accessable from a JSON request
-    * @return array List of method names
-    */
+     * Returns an array of method names accessable from a JSON request
+     * @return array List of method names
+     */
     public function getAccessableMethods() {
         $multiSiteProtocol = (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') == 'mixed')? \Env::get('cx')->getRequest()->getUrl()->getProtocol(): \Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol');
         return array(
@@ -117,9 +117,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
-    * Returns all messages as string
-    * @return String HTML encoded error messages
-    */
+     * Returns all messages as string
+     * @return String HTML encoded error messages
+     */
     public function getMessagesAsString() {
         return '';
     }
@@ -194,9 +194,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
-    * function signup
-    * @param post parameters
-    * */
+     * @param post parameters
+     */
     public function signup($params) {
         global $_ARRAYLANG;
 
@@ -205,14 +204,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return;
         }
 
-        if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
-            if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
-                \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
-            }
-            if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-                \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
-            }
-        }
+        // activate memory-logging
+        $this->activateDebuggingToMemory();
 
         // Validate address and email before starting with the actual sign up process.
         // Those methods throw an individual exception that can be parsed by the sign up form.
@@ -396,18 +389,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * Creates a new website
      * @param type $params  
-    */
+     */
     public function createWebsite($params) {
-        if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
-            if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
-                \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
-            }
-            if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-                \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
-            }
-        }
-
-
 // TODO: what do we actually need the language data for? We should load the language data at the certain place where it is actually being used
         self::loadLanguageData('MultiSite');
         
@@ -445,15 +428,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     public function createUser($params) {
-        if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
-            if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
-                \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
-            }
-            if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-                \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
-            }
-        }
-
         try {
             if (empty($params['post'])) {
                 throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::createUser.');
@@ -644,8 +618,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return boolean
      */
-    public function auth(array $params = array()) 
-    {
+    public function auth(array $params = array()) {
         $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
 
         if (   empty($authenticationValue)
@@ -697,12 +670,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 break;
         }
         
-        if (md5($secretKey.$installationId) === $authenticationValue['key']) {
-            self::$isIscRequest = true;
-            return true;
+        if (md5($secretKey.$installationId) !== $authenticationValue['key']) {
+            return false;
         }
-        
-        return false;
+
+        // register request as intersystem communication request (ISC)
+        self::$isIscRequest = true;
+
+        // activate memory-logging
+        $this->activateDebuggingToMemory();
+
+        return true;
     }
 
     /**
@@ -746,7 +724,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return bin2hex(openssl_random_pseudo_bytes(16));    
     }
     
-     /**
+    /**
      * Map the website domain
      * 
      * @param type $params
@@ -1107,14 +1085,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
-     /**
+    /**
      * update Website State
      * 
      * @param array $params
      * 
      */
-     public function updateWebsiteState($params) {
-         
+    public function updateWebsiteState($params) {
         global $_ARRAYLANG;
         self::loadLanguageData();
 
@@ -1156,14 +1133,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function setLicense($params) {
         global $objDatabase;
 
-        // activate memory-log for website mode by default
-        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
-            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
-        }
-        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
-        }
-        
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_SERVICE:
@@ -1415,7 +1384,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $host . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=' . $command, $params, false, '', $httpAuth);
     }
 
-    /*
+    /**
      * This method will be used by the Website Service to execute commands on the Website Manager
      * Fetch connection data to Manager and pass it to the method executeCommand()
      */
@@ -1449,7 +1418,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
 
-    /*
+    /**
      * This method will be used by a Websites to execute commands on its Website Service
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
@@ -1468,7 +1437,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
 
-    /*
+    /**
      * This method will be used by the Website Manager to execute commands on the Website Service
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
@@ -1488,7 +1457,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
 
-    /*
+    /**
      * This method will be used by the Website Manager to execute commands on a Website Service
      * Fetch connection data to Service and pass it to the method executeCommand():
      */
@@ -1507,7 +1476,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
 
-    /*
+    /**
      * This method will be used by the Website Service to execute commands on a Website
      * Fetch connection data to Website and pass it to the method executeCommand():
      */
@@ -1596,14 +1565,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     public function generateAuthToken($params) {
-        // activate memory-log for website mode by default
-        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
-            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
-        }
-        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
-        }
-
         try {
             $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
             $objUser = \FWUser::getFWUserObject()->objUser->getUser(intval($websiteUserId));
@@ -1629,20 +1590,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
-     /**
+    /**
      * setup the config options
      */
     public function setupConfig($params) {
         if (empty($params['post']['coreAdminEmail']) || empty($params['post']['contactFormEmail']) || empty($params['post']['dashboardNewsSrc'])) {
             throw new MultiSiteJsonException('JsonMultiSite::setupConfig() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient arguments supplied: '.var_export($params, true));
-        }
-        
-        // activate memory-log for website mode by default
-        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
-            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
-        }
-        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
         }
         
         \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
@@ -1701,14 +1654,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function setDefaultLanguage($params) {
         global $objDatabase;
 
-        // activate memory-log for website mode by default
-        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
-            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
-        }
-        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
-        }
-        
         if (empty($params['post']['langId'])) {
             throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: No language specified.');
         }
@@ -1918,7 +1863,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return boolean
      */
-    
     public function checkGetLicenseAccess($params) {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_MANAGER:
@@ -1981,7 +1925,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
-    /*
+    /**
      * Completely removes an website
      * 
      */
@@ -2026,14 +1970,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function setWebsiteTheme($params) {
         global $objDatabase;
 
-        // activate memory-log for website mode by default
-        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
-            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
-        }
-        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
-        }
-        
         if (empty($params['post']['themeId'])) {
             throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme due to the empty param $themeId');
         }
@@ -2173,14 +2109,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
-    * split sql string
-    *
-    * split the sql string in sql queries
-    *
-    * @access private
-    * @param string $input
-    */
-    function extractSqlQueries($input)
+     * split sql string
+     *
+     * split the sql string in sql queries
+     *
+     * @access private
+     * @param string $input
+     */
+    protected function extractSqlQueries($input)
     {
         $input = trim($input);
         $queryStartPos = 0;
@@ -2547,13 +2483,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
-   /**
-    * sending account activation email to the user.
-    * 
-    * @return type
-    * @throws MultiSiteJsonException
-    */
-    function sendAccountActivation($params) {
+    /**
+     * sending account activation email to the user.
+     * 
+     * @return type
+     * @throws MultiSiteJsonException
+     */
+    public function sendAccountActivation($params) {
         global $_ARRAYLANG;
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
@@ -2626,7 +2562,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      * @throws MultiSiteJsonException
      */
-    function modifyMultisiteConfig($params) 
+    public function modifyMultisiteConfig($params) 
     {
         global $_ARRAYLANG;
         self::loadLanguageData();
@@ -2745,4 +2681,32 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
+    protected function activateDebuggingToMemory() {
+        // check if memory logging shall be activated
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case ComponentController::MODE_MANAGER:
+            case ComponentController::MODE_SERVICE:
+            case ComponentController::MODE_HYBRID:
+                // don't activate memory-logging if debug log shall not be sent to admin
+                if (!\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+                    return;
+                }
+                break;
+
+            case ComponentController::MODE_WEBSITE:
+                // always activate memory-logging for website mode
+            default:
+                break;
+        }
+
+        // activate memory-logging
+        if (\DBG::getMode() & DBG_LOG_FILE || \DBG::getMode() & DBG_LOG_FIREPHP) {
+            \DBG::deactivate(DBG_LOG_FILE | DBG_LOG_FIREPHP);
+        }
+        \DBG::deactivate(DBG_LOG);
+        if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+        }
+    }
 }
+

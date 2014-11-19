@@ -567,7 +567,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             $errMsg = isset($resp->message) ? $resp->message : '';
                             \DBG::dump($errMsg);
                             if (isset($resp->log)) {
-                                \DBG::appendLogsToMemory($resp->log);
+                                \DBG::appendLogs($resp->log);
                             }
                             throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Problem in service servers update setup process'.$errMsg);    
                         }

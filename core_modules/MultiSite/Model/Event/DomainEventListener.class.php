@@ -312,13 +312,13 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
         if (!$result || $result->status != 'success') {
             if (isset($result->log)) {
-                \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(DNS) '.$logEntry;}, $result->log));
+                \DBG::appendLogs(array_map(function($logEntry) {return '(DNS) '.$logEntry;}, $result->log));
             }
             throw new DomainEventListenerException($result->message);
         }
 
         if (isset($result->data->log)) {
-            \DBG::appendLogsToMemory(array_map(function($logEntry) {return '(DNS) '.$logEntry;}, $result->data->log));
+            \DBG::appendLogs(array_map(function($logEntry) {return '(DNS) '.$logEntry;}, $result->data->log));
         }
     }
 
