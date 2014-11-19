@@ -444,8 +444,8 @@ die("Mail::storeTemplate(): Obsolete method called!");
             }
         }
         // Drop old Mail tables after successful migration
-        \UpdateUtil::drop_table(DBPREFIX.'module_shop_mail_content');
-        \UpdateUtil::drop_table(DBPREFIX.'module_shop_mail');
+        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_mail_content');
+        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_mail');
 
         // Always!
         return false;
