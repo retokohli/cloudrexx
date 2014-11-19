@@ -981,4 +981,130 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         
     }
     
+    /**
+     * Create new domain alias
+     * 
+     * @param string $aliasName alias name
+     * 
+     * @return boolean true on success false otherwise
+     */
+    public function createDomainAlias($aliasName)
+    {
+        \DBG::msg("MultiSite (PleskController): create domain alias: $this->webspaceId");
+        if (empty($this->webspaceId)) {
+            return false;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        
+        $siteAlias = $xmldoc->createElement('site-alias');
+        $packet->appendChild($siteAlias);
+        
+        $createTag = $xmldoc->createElement('create');
+        $siteAlias->appendChild($createTag);
+        
+        $siteIdTag = $xmldoc->createElement('site-id', $this->webspaceId);
+        $createTag->appendChild($siteIdTag);
+        
+        $nameTag = $xmldoc->createElement('name', $aliasName);
+        $createTag->appendChild($nameTag);
+        
+        $response       = $this->executeCurl($xmldoc);
+        $resultNode     = $response->{'site-alias'}->{'create'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError){
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in creating Domain alias: {$error}");
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Rename the domain alias
+     * 
+     * @param string $oldAliasName old alias name
+     * @param string $newAliasName new alias name
+     * 
+     * @return boolean true on success false otherwise
+     */
+    public function renameDomainAlias($oldAliasName, $newAliasName)
+    {
+        \DBG::msg("MultiSite (PleskController): rename domain alias");
+        if (empty($oldAliasName) || empty($newAliasName)) {
+            return false;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        
+        $siteAlias = $xmldoc->createElement('site-alias');
+        $packet->appendChild($siteAlias);
+        
+        $renameTag = $xmldoc->createElement('rename');
+        $siteAlias->appendChild($renameTag);
+        
+        $nameTag = $xmldoc->createElement('name', $oldAliasName);
+        $renameTag->appendChild($nameTag);
+        
+        $newNameTag = $xmldoc->createElement('new_name', $newAliasName);
+        $renameTag->appendChild($newNameTag);
+        
+        $response       = $this->executeCurl($xmldoc);
+        $resultNode     = $response->{'site-alias'}->{'rename'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError){
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in renaming Domain alias: {$error}");
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Remove the domain alias by name
+     * 
+     * @param string $aliasName alias name to delete
+     * 
+     * @return boolean true on success false otherwise
+     */
+    public function deleteDomainAlias($aliasName)
+    {
+        \DBG::msg("MultiSite (PleskController): delete domain alias");
+        if (empty($aliasName)) {
+            return false;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        
+        $siteAlias = $xmldoc->createElement('site-alias');
+        $packet->appendChild($siteAlias);
+        
+        $deleteTag = $xmldoc->createElement('delete');
+        $siteAlias->appendChild($deleteTag);
+        
+        $filterTag = $xmldoc->createElement('filter');
+        $deleteTag->appendChild($filterTag);
+        
+        $nameTag = $xmldoc->createElement('name', $aliasName);
+        $filterTag->appendChild($nameTag);
+        
+        $response       = $this->executeCurl($xmldoc);
+        $resultNode     = $response->{'site-alias'}->{'delete'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError){
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in deleting Domain alias: {$error}");
+        }
+        
+        return true;
+    }
 }
