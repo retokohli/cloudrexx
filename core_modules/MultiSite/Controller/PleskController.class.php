@@ -178,9 +178,9 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             }
             return $respArr;
         }
-        
-        return false;
+        return true;
     }
+    
     /**
      * Removes a db
      * @param \Cx\Core\Model\Model\Entity\Db $db Database to remove
@@ -249,7 +249,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             throw new ApiRequestException("Error in getting database ID : {$error} ");
         }
         if (!empty($respArr)) {
-            $responseArr = (count($respArr['result']) == count($respArr['result'], COUNT_RECURSIVE)) ? $respArr : $respArr['result'];
+            $responseArr = $this->getFormattedResponse($respArr);
             foreach($responseArr as $res) {
                 if ($res['name'] == $name) {
                     return $res['id'];
@@ -295,13 +295,18 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             throw new ApiRequestException("Error in getting database User ID : {$error} ");
         }      
         
+        $dbUserId    = 0;
         if (!empty($respArr)) {
-            foreach($respArr as $result) {
-                if ($result['login'] == $name) {
-                    return $result['id'];
+            $responseArr = $this->getFormattedResponse($respArr);            
+            foreach($responseArr as $result) {
+                if (isset($result['login']) && $result['login'] == $name) {
+                    $dbUserId = $result['id'];
+                    break;
                 }
             }
         }
+        \DBG::dump($dbUserId);
+        return $dbUserId;
     }
     
      /**
@@ -1107,4 +1112,19 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         
         return true;
     }
+    
+    /**
+     * Get formatted array from the given response array
+     * 
+     * @param  array $respArr response array. 
+     * @return array
+     */
+    public function getFormattedResponse($respArr) {
+        if (count($respArr['result']) == count($respArr['result'], COUNT_RECURSIVE)) {
+            return $respArr;
+        } else {
+            return $respArr['result'];
+        }
+    }
+
 }
