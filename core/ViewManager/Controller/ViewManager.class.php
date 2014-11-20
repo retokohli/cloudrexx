@@ -247,20 +247,6 @@ class ViewManager
        //sort the themes by its release date
        uasort($themesCollection, array($this,'sortThemesByReleaseDate'));
        
-       /* $frontEndActiveTemplates = array();
-       foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-           $tempTheme = $this->themeRepository->getDefaultTheme(null, $lang['id']);
-           if ($tempTheme) {
-               $frontEndActiveTemplates[$tempTheme->getId()] = $tempTheme;
-           }           
-       }
-       
-       //First display the standard themes based on the active frontend languages
-       foreach ($frontEndActiveTemplates as $frontEndActiveTemplate) {
-           $this->parseThemesData($frontEndActiveTemplate);
-           unset($themesCollection[$frontEndActiveTemplate->getId()]);
-       } */
-
        //Display the themes by its release date
        foreach ($themesCollection as $theme) {
            $this->parseThemesData($theme);
@@ -309,6 +295,12 @@ class ViewManager
 
         if ($theme->getSubType() && in_array($theme->getSubType(), $subTypeArray)) {
             $subTypeArray = array($theme->getSubType());
+        } else {
+            // subtype not present so show only in standard and mobile tabs
+            $subTypeArray = array(
+              \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+              \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,
+            );
         }
 
         foreach ($subTypeArray as $subType) {
@@ -1974,6 +1966,14 @@ CODE;
                     break;
                 }
 
+                $jsFocusEditor = '';
+                if (isset($_POST['themesPage'])) {
+                    $jsFocusEditor = <<<CODE
+editor.focus();
+editor.gotoLine(1);
+CODE;
+                }
+                
                 $jsCode = <<<CODE
 var editor;                        
 \$J(function(){         
@@ -2003,6 +2003,8 @@ if (\$J("#editor").length) {
                     editor.resize();
             }
     });
+    $jsFocusEditor
+
     \$J('.fullscreen').click(function(){
         editor.execCommand('fullscreen');
     });
@@ -2024,7 +2026,7 @@ if (\$J("#editor").length) {
 CODE;
 
                 \JS::registerCode($jsCode);
-
+                
                 $objTemplate->touchBlock('file_editor_fullscreen');
                 $objTemplate->touchBlock('file_actions_bottom');
                 $objTemplate->touchBlock('template_content');
