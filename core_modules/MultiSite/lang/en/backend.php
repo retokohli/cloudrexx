@@ -169,7 +169,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG'] = 'Add new configuration';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_SUCCESSFUL'] = 'Successfully added the multisite configuration option: ';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_FAILED'] = 'Failed to add configuration Option due to empty option values!';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_CONFIG_OPTION_TOOLTIP'] = 'Option Values must be comma seperated values. <br /> Each option mustbe optionValue:optionName.<br/> For Example Activated => on:Activated';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_CONFIG_OPTION'] = 'Do you really want to delete this configuration?.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_CONFIG_OPTION'] = 'Do you really want to delete this configuration?';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_SUCCESSFUL'] = 'Successfully deleted the multisite configuration option: ';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_DELETE_FAILED'] = 'Failed to delete the multisite configuration option: ';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_ALERT_MESSAGE'] = 'Making a change on the website configuration might break this selected website! You must not alter the configuration unless you know exactly what you are doing!';
