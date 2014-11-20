@@ -370,14 +370,16 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         if (\Cx\Lib\FileSystem\FileSystem::exists($currentThemeFolder . $filePath)) {
             if (is_dir($currentThemeFolder . $filePath)) {
                 $status = \Cx\Lib\FileSystem\FileSystem::delete_folder($currentThemeFolder . $filePath,true);
+                $succesMessage = sprintf($_ARRAYLANG['TXT_THEME_FOLDER_DELETE_SUCCESS'], contrexx_input2xhtml($pathStripped));
             } else {
                 $status = \Cx\Lib\FileSystem\FileSystem::delete_file($currentThemeFolder . $filePath);
+                $succesMessage = sprintf($_ARRAYLANG['TXT_THEME_FILE_DELETE_SUCCESS'], contrexx_input2xhtml($pathStripped));
             }
             
             if (!$status) {
                 return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_DELETE_FAILED']);
             }
-            return array('status' => 'success', 'reload' => true, 'message' =>  $_ARRAYLANG['TXT_THEME_DELETE_SUCCESS']);
+            return array('status' => 'success', 'reload' => true, 'message' =>  $succesMessage);
         }
         
         return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_NOT_EXITS'], contrexx_input2xhtml($filePath)));
@@ -410,6 +412,7 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         $currentThemeFolder = \Env::get('cx')->getWebsiteThemesPath() . '/'.$params['post']['theme'];
         $oldFilePath        = $params['post']['oldName'];
         $newFileName        = $params['post']['newName'];
+        $isFolder           = $params['post']['isFolder'] ?: 0;
         $newFilePath        = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($newFileName);
                 
         // Cannot rename the virtual directory
@@ -453,7 +456,9 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             
             $path = preg_replace('#' . $currentThemeFolder . '#', '', $dirName . '/'. $newFilePath);
             
-            return array('status' => 'success', 'reload' => true, 'path' => \Cx\Core\ViewManager\Controller\ViewManager::getThemeRelativePath($path), 'message' =>  $_ARRAYLANG['TXT_THEME_RENAME_SUCCESS']);
+            $message = $isFolder ? $_ARRAYLANG['TXT_THEME_FOLDER_RENAME_SUCCESS'] : $_ARRAYLANG['TXT_THEME_FILE_RENAME_SUCCESS'];
+            
+            return array('status' => 'success', 'reload' => true, 'path' => \Cx\Core\ViewManager\Controller\ViewManager::getThemeRelativePath($path), 'message' =>  $message);
         }
         
         return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_NOT_EXITS'], contrexx_input2xhtml($newFileName)));
@@ -505,14 +510,16 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         if (!\Cx\Lib\FileSystem\FileSystem::exists($currentThemeFolderDirPath.$newFileName)) {
             if ($params['post']['isFolder']) {
                 $status = \Cx\Lib\FileSystem\FileSystem::make_folder($currentThemeFolderDirPath.$newFileName);
+                $succesMessage = sprintf($_ARRAYLANG['TXT_THEME_FOLDER_CREATE_SUCCESS'], contrexx_input2xhtml($newFileName));
             } else {
                 $status = \Cx\Lib\FileSystem\FileSystem::touch($currentThemeFolderDirPath.$newFileName);
+                $succesMessage = sprintf($_ARRAYLANG['TXT_THEME_FILE_CREATE_SUCCESS'], contrexx_input2xhtml($newFileName));
             }
             
             if (!$status) {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_NEWFILE_FAILED']);
             }
-            return array('status' => 'success', 'reload' => true, 'message' => $_ARRAYLANG['TXT_THEME_NEWFILE_SUCCESS'], 'path' => '/' .$newFileName);
+            return array('status' => 'success', 'reload' => true, 'message' => $succesMessage, 'path' => '/' .$newFileName);
         }
         return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_FILE_ALREADY_EXITS'], contrexx_input2xhtml($newFileName)));
     }    
