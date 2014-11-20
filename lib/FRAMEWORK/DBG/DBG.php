@@ -117,7 +117,8 @@ class DBG
     }
 
     public static function getActivatedFlagsAsString() {
-        $userConstants = array_keys(get_defined_constants(true)['user']);
+        $constants = get_defined_constants(true);
+        $userConstants = array_keys($constants['user']);
         $flags = array_filter(
             $userConstants,
             function($constant){
