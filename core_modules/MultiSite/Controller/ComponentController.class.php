@@ -979,6 +979,11 @@ throw new MultiSiteException('Refactor this method!');
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_ARRAYLANG;
 
+        // only show account-activation-bar if user is signed-in
+        if (!\FWUser::getFWUserObject()->objUser->login()) {
+            return;
+        }
+
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
         if (!$websiteUserId) {
