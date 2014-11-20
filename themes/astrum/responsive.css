@@ -258,10 +258,13 @@
                 .login-bottom a {white-space: normal;}
                 #fileshare p input#file_upload, #access span input[type="file"] {width: 100%;}
                 #shop div.details {margin-top: 220px;}
-                .form-control {width: 100%;}
+                .form-control, #mediadir .mapLarge {width: 100%;}
                 #blog div.search_date {width: 100%; padding: 0;}
                 #u2u .buttons input {margin: 0 10px 15px 0;}
                 #voting .voting label {width: 85% !important;}
+                #forum div.notification_center {padding: 50px 0; width: 100%; height: auto;}
+                #livecam .livecamSearch input {margin-bottom: 15px;}
+                #contactFormCaptcha {padding-left: 0;}
     }
 
 
