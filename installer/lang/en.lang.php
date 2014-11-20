@@ -72,7 +72,7 @@ $_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "You have to fill in all fields!";
 // license
 $_ARRLANG['TXT_READ_LICENCE'] = "Please read/accept license to continue installation";
 $_ARRLANG['TXT_MUST_ACCEPT_LICENCE'] = "You have to accept the license agreement to proceed with the installation!";
-$_ARRLANG['TXT_ACCEPT_LICENSE'] = "I accept the Contrexx license";
+$_ARRLANG['TXT_ACCEPT_LICENSE'] = "I accept the Contrexx license terms";
 
 // requirements
 $_ARRLANG['TXT_SOFTWARE_REQUIREMENTS'] = "Software requirements";

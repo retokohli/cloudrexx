@@ -421,22 +421,27 @@ class Installer
     * @global   array   $_CONFIG
     */
     function _getLicensePage() {
-        global $objTpl, $licenseFileCommerce, $licenseFileOpenSource, $_CONFIG;
+        global $objTpl, $licenseFileCommerce, $licenseFileOpenSource, $_CONFIG, $language;
 
         // load content tempalte
         $objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', "license.html");
 
-        // get license
-        if ($_CONFIG['coreCmsEdition'] != "OpenSource") {
-            $licenseFile = $licenseFileCommerce;
-        } else {
-            $licenseFile = $licenseFileOpenSource;
-        }
+        // get license for current language
+        $licenseFile = 'data/contrexx_lizenz_' . $language . '.txt';
         $license = @file_get_contents($licenseFile);
+
+        // replace I. and II. titles
+        $license = preg_replace('/^(I+\.\s[^\n]+)$/im', '<h3>\1</h3>', $license);
+        $license = preg_replace('/\n\n([a-zA-Z -]*)\n\n/im', "\n\n<h4>\\1</h4>\n", $license);
+        // replace section titles
+        $license = preg_replace('/^[ ]*([0-9]+\.[0-9]?\s[^\n]+)\n$/im', '<strong>\1</strong>', $license);
+        $license = preg_replace('/^(Section [0-9]+:\s[^\n]+)$/im', '<strong>\1</strong>', $license);
+        // turn urls into hyperlinks
+        $license = preg_replace('/(http(s)?:\/\/(?:[^\s])*(?:[^\s\.)]))/im', '<a target="_blank" href="\1">\1</a>', $license);
 
         // set template variables
         $objTpl->setVariable(array(
-            'LICENSE'   => nl2br(preg_replace('/^([0-9]\.[0-9]?\s[^\n]+)\n$/im', '<strong>\1</strong>', $license)),
+            'LICENSE'   => nl2br($license),
             'CHECKED'   => (isset($_SESSION['installer']['license']) && $_SESSION['installer']['license']) ? "checked=\"checked\"" : ""
         ));
 
