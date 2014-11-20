@@ -24,6 +24,9 @@ cx.ready(function() {
     };
     
     cx.vm.callbackDeleteFiles = function(res) {
+        if (res.status == 'error') {
+            cx.tools.StatusMessage.showMessage(res.message, null,2000);
+        }
         if (res.reload != 'undefined' && res.reload) {
             cx.vm.reloadThemesPage();
         }
@@ -33,6 +36,13 @@ cx.ready(function() {
     var TXT_RENAME = cx.variables.get('rename', "viewmanager/lang");
             
     cx.vm.callbackNewFile = function(res) {
+        if (res.status == 'success') {
+            cx.tools.StatusMessage.showMessage(res.message, null,3000);
+        } else {
+            $J('.dialogMessage').html('<div class="alertbox">'+ res.message +'</div>');
+            cx.vm.dialog.open();
+            return;
+        }
         if (res.path != 'undefined') {
             cx.jQuery('#themesPage').val(res.path);
         }
@@ -61,7 +71,8 @@ cx.ready(function() {
             label = cx.variables.get('fileName', "viewmanager/lang");
         }
         
-        view = '<table>\n\
+        view  = '<div class="dialogMessage"></div>';
+        view += '<table>\n\
                     <tr>\n\
                         <td>' 
                             + label + 
@@ -108,7 +119,15 @@ cx.ready(function() {
         });
     };
     
-    cx.vm.callbackRenameFile = function(res) {        
+    cx.vm.callbackRenameFile = function(res) {
+        if (res.status == 'success') {
+            cx.tools.StatusMessage.showMessage(res.message, null,3000);
+        } else {
+            $J('.dialogMessage').html('<div class="alertbox">'+ res.message +'</div>');
+            cx.vm.dialog.open();
+            return;
+        }
+        
         if (res.path != 'undefined') {
             cx.jQuery('#themesPage').val(res.path);
         }
@@ -134,17 +153,19 @@ cx.ready(function() {
                     cx.vm.unlock();
                     return;
                 }
-                
-                if (response.data.status == 'error') {
-                    cx.tools.StatusMessage.showMessage(response.data.message, null,2000);
-                }
-                
-                if (response.data.status == 'success') {
-                    if (callback && typeof(callback) === "function") {
-                        callback(response.data);
+
+                if (callback && typeof(callback) === "function") {
+                    callback(response.data);
+                } else {
+                    if (response.data.status == 'error') {
+                        cx.tools.StatusMessage.showMessage(response.data.message, null,2000);
                     }
-                    cx.tools.StatusMessage.showMessage(response.data.message, null,3000);
+
+                    if (response.data.status == 'success') {
+                        cx.tools.StatusMessage.showMessage(response.data.message, null,3000);
+                    }
                 }
+                cx.tools.StatusMessage.removeAllDialogs();
                 cx.vm.unlock();
             }
         });
@@ -187,7 +208,8 @@ cx.ready(function() {
             isFolder = 1;
         }
         
-        view = '<table>\n\
+        view  = '<div class="dialogMessage"></div>';
+        view += '<table>\n\
                     <tr>\n\
                         <td>' 
                             + label + 
