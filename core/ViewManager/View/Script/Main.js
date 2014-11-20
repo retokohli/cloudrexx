@@ -98,8 +98,7 @@ cx.ready(function() {
                         newName  : cx.jQuery('#new_file_name').val()
                     },
                     cx.vm.callbackRenameFile
-            );
-            cx.jQuery('#new_file_name').val('');
+            );            
         };
         
         if (typeof cx.vm.dialog == 'object') {
