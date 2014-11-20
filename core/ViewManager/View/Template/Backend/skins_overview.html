@@ -150,7 +150,7 @@
     });
 </script>
 <style type="text/css">
-    @media (min-width: 480px) and (max-width: 1599px) { 
+    @media (min-width: 480px) and (max-width: 1499px) { 
         .themeWrapper {
             width: 49%;
             margin-left: 2%;
@@ -160,7 +160,7 @@
         }
         
     }
-    @media (min-width: 1600px) and (max-width: 1919px) {
+    @media (min-width: 1500px) and (max-width: 1919px) {
         .themeWrapper {
             width: 32.333333333%;
             margin-left: 1.5%;
@@ -168,8 +168,9 @@
         .themeWrapper:nth-child(3n+1) {
             margin-left: 0;
         }
+        
     }
-    @media (min-width: 1920px) and (max-width: 2559px) {
+    @media (min-width: 1920px) and (max-width: 2399px) {
         .themeWrapper {
             width: 24%;
             margin-left: 1.333333333%;
@@ -178,7 +179,7 @@
             margin-left: 0;
         }
     }
-    @media (min-width: 2560px) { 
+    @media (min-width: 2400px) and (max-width: 2899px) { 
         .themeWrapper {
             width: 19%;
             margin-left: 1.25%;
@@ -187,7 +188,16 @@
             margin-left: 0;
         }
     }
-    @media (min-width: 320px) and (max-width: 720px) {
+    @media (min-width: 2900px) { 
+        .themeWrapper {
+            width: 15.666666666%;
+            margin-left: 1.2%;
+        }
+        .themeWrapper:nth-child(6n+1) {
+            margin-left: 0;
+        }
+    }
+    @media (min-width: 320px) and (max-width: 1050px) {
         .themesOverview .themeWrapper:hover .themeFooter .themeAction, .themesOverview .themeWrapper:hover .preview-overlay {
             display: none;
         }
@@ -395,6 +405,7 @@
         color: black !important;
     }    
     .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeDelete {
+        background: #ececec;
         color: red !important;
     }
     .preview-overlay, .preview-overlay-small {
