@@ -3079,3 +3079,8 @@ select#deselectedCategories, select#selectedCategories, select#deselectedLevels,
 }
 .checkbox label {margin: 0;}
 #survey .questionBlock .radio, #survey .questionBlock .radio label {width: 100%; word-wrap: break-word;}
+#directory select[name="notSelectedCat[]"], #directory select[name="selectedCat[]"], select[name="subscribed[]"], 
+select[name="unsubscribed[]"] {width: 100%;}
+#directory .selectorCenter {padding: 50px 25px;}
+#ecardForm span.radio label {margin: 0; float: left;}
+#contactFormCaptcha {float: left; padding-left: 250px;}

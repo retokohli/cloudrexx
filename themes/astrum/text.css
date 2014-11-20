@@ -82,7 +82,7 @@ a {
 a:hover {
     color: #999999;
 }
-a:focus, a: visited{outline: 0;}
+a:focus, a:visited{outline: 0;}
 p {
     padding: 0 0 10px 0;
 }
@@ -296,3 +296,6 @@ input[disabled=disabled]:hover {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+.radio {padding-left: 0;}
+.btn-link {color: #73bb19;}
+.btn-link:hover {color: #999999;}
