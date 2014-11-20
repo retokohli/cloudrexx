@@ -1965,14 +1965,6 @@ CODE;
                         $mode = 'yaml';
                     break;
                 }
-
-                $jsFocusEditor = '';
-                if (isset($_POST['themesPage'])) {
-                    $jsFocusEditor = <<<CODE
-editor.focus();
-editor.gotoLine(1);
-CODE;
-                }
                 
                 $jsCode = <<<CODE
 var editor;                        
@@ -2003,7 +1995,8 @@ if (\$J("#editor").length) {
                     editor.resize();
             }
     });
-    $jsFocusEditor
+    editor.focus();
+    editor.gotoLine(1);
 
     \$J('.fullscreen').click(function(){
         editor.execCommand('fullscreen');
