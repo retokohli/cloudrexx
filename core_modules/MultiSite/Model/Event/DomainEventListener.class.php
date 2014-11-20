@@ -147,8 +147,15 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
     private function manipulateDnsRecord($domain, $operation, $event, $eventArgs) {
         $this->logEvent('DNS '.$operation, $domain);
-        switch ($domain->getType()) {
-            case \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN:
+        
+        $domainType = $domain->getType();
+        
+        if (\Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN == $domainType) {
+            return;
+        }
+        
+        switch ($domainType) {
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN:
                 // FQDN shall not be persisted in postPersist event
                 // as it already gets persisted in prePersist event.
                 if ($event == 'postPersist') {
@@ -165,7 +172,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 $value= $domain->getWebsite()->getIpAddress();
                 break;
 
-            case \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN:
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN:
                 // In prePersist event, the DNS-record of BaseDN can't be created
                 // yet, as the FQDN, on which the BaseDN depends on, has not yet
                 // been flushed to the database.
@@ -188,8 +195,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
                 $value= $domain->getWebsite()->getFqdn()->getName();
                 break;
-
-            case \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN:
+            
             default:
                 $type = 'CNAME';
                 
@@ -315,6 +321,13 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 \DBG::appendLogs(array_map(function($logEntry) {return '(DNS) '.$logEntry;}, $result->log));
             }
             throw new DomainEventListenerException($result->message);
+        }
+        
+        if ($result->data->status == 'error') {
+            if (isset($result->data->log)) {
+                \DBG::appendLogs(array_map(function($logEntry) {return '(DNS) '.$logEntry;}, $result->log));
+            }
+            throw new \Cx\Core\Error\Model\Entity\ShinyException("The domain ".$domain->getName()." can't be used for this website as there is already another website by that domain present.");
         }
 
         if (isset($result->data->log)) {

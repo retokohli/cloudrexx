@@ -747,10 +747,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         try {
+            $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+            
+            if ($domainRepo->findOneBy(array('name' => $params['post']['domainName']))) {
+                return array(
+                    'status' => 'error',
+                    'log'    => \DBG::getMemoryLogs(),
+                );
+            }
             // create a new domain entity that shall be used for the mapping
             $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);
 
-            $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
             switch ($params['post']['componentType']) {
                 case ComponentController::MODE_SERVICE:
                     // If componentType is MODE_SERVICE, then we are about to
@@ -984,8 +991,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         try {
             $website = null;
-
+            
             $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+            if ($domainRepo->findOneBy(array('name' => $params['post']['domainName']))) {
+                return array(
+                    'status' => 'error',
+                    'log'    => \DBG::getMemoryLogs(),
+                );
+            }
             switch ($params['post']['componentType']) {
                 case ComponentController::MODE_SERVICE:
                     // If componentType is MODE_SERVICE, then we are about to
