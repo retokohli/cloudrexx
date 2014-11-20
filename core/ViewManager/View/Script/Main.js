@@ -24,7 +24,7 @@ cx.ready(function() {
     };
     
     cx.vm.callbackDeleteFiles = function(res) {
-        if (res.status == 'error') {
+        if (res.status) {
             cx.tools.StatusMessage.showMessage(res.message, null,2000);
         }
         if (res.reload != 'undefined' && res.reload) {
