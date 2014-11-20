@@ -160,7 +160,8 @@ body .navbar-inverse {
     background: #ff755a;
     background-repeat: repeat-x;
     border-color: #ff755a;
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff755a', endColorstr='#ff755a', GradientType=0)
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff755a', endColorstr='#ff755a', GradientType=0);
+    margin-bottom: 0;
 }
 .nav-collapse, .nav-collapse.collapse {
     background: none repeat scroll 0 0 #ff755a;
@@ -180,6 +181,9 @@ body .navbar-inverse {
 }
 .navbar-brand {
     margin-top: 10px;
+}
+body .navbar-inverse .navbar-nav>li>a {
+    color: #fff;
 }
 .navbar .nav > li > a {
     color: #FFFFFF;
@@ -1128,6 +1132,9 @@ ul.social-icons li a:hover {
         padding: 0;
         float: left;
     }
+    .navbar .nav>li {
+        width: 100%;
+    }
     #checkout .right {
         padding: 0;
         float: left;
@@ -1139,6 +1146,9 @@ ul.social-icons li a:hover {
     .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
         margin-left: 0px;
         margin-right: 0px;
+    }
+    .navbar .nav>li {
+        width: 100%;
     }
     .navbar .nav > li > a {
         padding: 2px 16px;
@@ -1182,6 +1192,22 @@ ul.social-icons li a:hover {
         position: static;
         margin-bottom: 0;
     }
+    /**/
+    html body .container .navbar-collapse {
+        padding-bottom: 10px;
+        width: 100% !important;
+    }
+    .navbar .nav > li {
+        width: 100%;
+    }
+    .container .navbar-collapse.collapse.in {
+        display: block !important;
+        clear: both;
+        float: none;
+    }
+    body .navbar .nav {float: left !important;}
+    .navbar .navbar-brand {padding: 8px 20px;margin-top: 2px;}
+    /**/
     .container .navbar-collapse.collapse {display: none !important;}
     .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
         padding: 5px;
@@ -1237,7 +1263,7 @@ ul.social-icons li a:hover {
     .nav-collapse .nav>li>.dropdown-menu:before,.nav-collapse .nav>li>.dropdown-menu:after{display:none;}
     .navbar .nav > li > a {
         margin-top: 20px;
-        padding: 2px 16px;
+        padding: 3px 16px;
         display: inline-block;
     }    
     .navbar-inverse .nav-collapse .nav > li > a, .navbar-inverse .nav-collapse .dropdown-menu a {
@@ -1402,7 +1428,7 @@ h2 span#fe_PreviewTitle{color: #626C72;}
 .nav > li.level-1 > ul.cx-drop-down-open {
     display: block;
 }
-h3.submenu-title, .menu-break{display: none;}
+/*h3.submenu-title, .menu-break{display: none;}*/
 #fe_PreviewContent h2, #fe_PreviewContent h3{padding: 18px 0 6px;}
 /*Custom*/
 .collapse.navbar-collapse {
@@ -1431,4 +1457,29 @@ h3.submenu-title, .menu-break{display: none;}
 #latest-news .margin-40 h3 {margin-right: -30px;}
 .navbar-header {
     float: left;
+}
+body .container .navbar-collapse {
+    border-top: 1px solid #ff755a !important;
+    box-shadow: inset 0 1px 0 #ff755a;
+    padding-left: 15px;
+    padding-bottom: 0px;
+    width: auto !important;
+}
+body .navbar-inverse .navbar-toggle:hover,body .navbar-inverse .navbar-toggle:focus {
+    background-color: transparent;
+}
+body .navbar-fixed-top {
+    border: 0;
+}
+body #page-title h2 {
+    color: #626C72;
+}
+.page {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 300;
+    color: #a5b2b9;
+}
+.margin-20 input.form-control {
+    width: 220px;
 }
