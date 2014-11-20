@@ -268,7 +268,7 @@ class YamlRepository {
                     $this->updatedEntities[] = $entity;
                 }
             }
-            $entitiesToPersist[] = $entity;
+            $entitiesToPersist[$this->getIdentifierOfEntity($entity)] = $entity;
         }
 
         foreach ($this->updatedEntities as $entity) {
