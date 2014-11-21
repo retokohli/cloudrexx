@@ -2220,13 +2220,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return result array
      */
     public function stopQueryExecution($params) {
-        if (isset($params['post']['sessionRandomKey'])) {
+        if (!empty($params['post']['sessionRandomKey'])) {
             if (isset($_SESSION['MultiSite']['executeSql'][$params['post']['sessionRandomKey']])) {
                 unset($_SESSION['MultiSite']['executeSql'][$params['post']['sessionRandomKey']]);
             }
-            return array('status' => 'success', 'message' => 'The Query Execution was Stopped');
         }
-        return array('status' => 'error', 'message' => 'Failed to Stop the Query Execution');
+        return array('status' => 'success', 'message' => 'The Query Execution was Stopped');
     }
     
     /**
