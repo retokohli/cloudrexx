@@ -91,6 +91,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
+            throw new DomainEventListenerException($e->getMessage());
         }
     }
 
@@ -123,6 +124,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
+            throw new DomainEventListenerException($e->getMessage());
         }
     }
 
