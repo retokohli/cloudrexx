@@ -1483,3 +1483,15 @@ body #page-title h2 {
 .margin-20 input.form-control {
     width: 220px;
 }
+.page h2 {
+    color: #626C72;
+}
+.page h2, .page h3 {
+    padding: 18px 0 6px;
+}
+.page a:hover {
+    color: #FF755A;
+}
+input[name="submitContactForm"] {
+    margin-left: 250px;
+}

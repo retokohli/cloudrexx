@@ -9,7 +9,7 @@ form > fieldset > div {
 }
 /* Start old contact form structure */
 form p {
-    width: 400px;
+    width: 100%;
     padding-left: 250px;
 }
 form p label {
@@ -73,6 +73,7 @@ form .formUploadedFiles .deleteIcon {
 form label {
     float: left;
     width: 250px;
+    font-weight: normal;
 }
 form input[type="submit"] {
     margin-right: 10px;
@@ -86,7 +87,8 @@ form input[type="submit"] {
     border: 0 none;
 }
 #login form input.remember_me {
-    margin-top: 9px;
+    margin-top: 5px;
+    margin-left: -20px;
 }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABLES IN MODULES    */
@@ -2490,11 +2492,11 @@ dl.data_module img {
     display: none;
 }
 /*new style*/
-#downloads .overview .row{
+/*#downloads .overview .row{
     float: left;
     margin: 0 !important;
     width: 50%;
-}
+}*/
 form .row{margin: 0 !important;}
 #downloads .overview .row .category .title a:hover{color: #FF755A;}
 #calendar .search input[name="startDate"], #calendar .search input[name="endDate"]{width: 80px !important;}
@@ -2505,3 +2507,15 @@ form .row{margin: 0 !important;}
 }
 ul.event-list a:hover, .letter_index a:hover{color: #FF755A;}
 #shop figure.visual{margin: 0;}
+/*custom*/
+body .btn.btn-link {
+    color: #626c72;
+    text-decoration: none;
+}
+.login-bottom {
+    float: left;
+    width: 100%;
+}
+.login-bottom .col-md-offset-6 {
+    margin-left: 0;
+}
