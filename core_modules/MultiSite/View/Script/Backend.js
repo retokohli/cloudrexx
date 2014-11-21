@@ -193,6 +193,7 @@
             var paramsArr = ($(this).attr('data-params')).split(':');
             var argName = paramsArr[0];
             var argValue = paramsArr[1];
+            var sessionRandomKey = '';
             var initialContent = '<div><form id="executeSql"><div id="statusMsg"></div><div class="resultSet"></div><textarea rows="10" cols="100" class="queryContent" name="executeQuery"></textarea></form></div>';
             cx.ui.dialog({
                 width: 820,
@@ -221,6 +222,7 @@
                                     url: domainUrl,
                                     type: 'POST',
                                     dataType: 'json',
+                                    data: {sessionRandomKey: sessionRandomKey},
                                     success: function(response) {
                                         cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
                                         $('.ui-dialog-buttonpane button:contains("Stop Execution...") span').text('Execute').removeClass('stop-execution');
@@ -250,7 +252,8 @@
                                                         cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
                                                         break;
                                                     case 'service':
-                                                        executeSql();
+                                                        sessionRandomKey = response.data.randomKey;
+                                                        executeSql(response.data.randomKey);
                                                         break;
                                                     default:
                                                         break;
@@ -258,11 +261,11 @@
                                             } else {
                                                 $('#statusMsg').text(response.data.message);
                                                 cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
+                                                cx.trigger('loadingEnd', 'executeSql', {});
                                             }
                                         } else {
                                             cx.tools.StatusMessage.showMessage(response.message, null, 3000);
                                         }
-                                        cx.trigger('loadingEnd', 'executeSql', {});
                                     }
                                 });
                             }
@@ -457,13 +460,14 @@
         /**
          * Execute the queued Sql Query in corresponding website
          */
-        var executeSql = function() {
+        var executeSql = function(randomKey) {
             domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + 'index.php?cmd=JsonData&object=MultiSite&act=executeQueryBySession';
             
             $.ajax({
                 url: domainUrl,
                 type: 'POST',
                 dataType: 'json',
+                data: {randomKey: randomKey},
                 success: function(response) {
                     if (response.status == 'success') {
                         switch (response.data.status) {
@@ -481,10 +485,10 @@
                                     offset += $(e).outerHeight(true);
                                 });
                                 $('.ui-dialog-content').animate({scrollTop: offset}, 'slow');
-                                executeSql();
+                                executeSql(randomKey);
                                 break;
                             case 'error':
-                                cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);                                                
+                                cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000); 
                                 cx.trigger('loadingEnd', 'executeSql', {});
                                 return;
                                 break;
@@ -494,7 +498,6 @@
                     } else {
                         cx.tools.StatusMessage.showMessage(response.message, null, 3000);
                     }
-                    cx.trigger('loadingEnd', 'executeSql', {});
                 }
             });
         };

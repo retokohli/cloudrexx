@@ -2062,19 +2062,26 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             $_SESSION['MultiSite'] = array();
                         }
                         
+                        $randomKey = rand();
+                        
                         if (!isset($_SESSION['MultiSite']['executeSql'])) {
                             $_SESSION['MultiSite']['executeSql'] = array();
                         }
                         
+                        if (!isset($_SESSION['MultiSite']['executeSql'][$randomKey])) {
+                            $_SESSION['MultiSite']['executeSql'][$randomKey] = array();
+                        }
+                        
                         $totalWebsiteCount = 0;
+                        
                         foreach ($websites as $website) {
                             if ($website) {
-                                $_SESSION['MultiSite']['executeSql'][$website->getId()] = $params['post']['query'];
+                                $_SESSION['MultiSite']['executeSql'][$randomKey][$website->getId()] = $params['post']['query'];
                                 $totalWebsiteCount++;
                             }
                         }
                         $_SESSION['MultiSite']['totalWebsites'] = $totalWebsiteCount;
-                        return array('status' => 'success');
+                        return array('status' => 'success','randomKey' => $randomKey);
                     }
                     break;
 
@@ -2176,30 +2183,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      * @throws MultiSiteJsonException
      */
-    public function executeQueryBySession() {
+    public function executeQueryBySession($params) {
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
                     $sqlQuery = array();
-                    if (is_object($_SESSION['MultiSite']['executeSql'])) {
-                        $sqlQuery = $_SESSION['MultiSite']['executeSql']->toArray();
+                    $randomKey = isset($params['post']['randomKey']) ? $params['post']['randomKey'] : '';
+                    if (!empty($randomKey)) {
+                        $websiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                        if (is_object($_SESSION['MultiSite']['executeSql'][$randomKey])) {
+                            $sqlQuery = $_SESSION['MultiSite']['executeSql'][$randomKey]->toArray();
+                        }
+                        if (!isset($_SESSION['MultiSite']) || empty($_SESSION['MultiSite']['executeSql'][$randomKey]) || empty($sqlQuery)) {
+                            return array('status' => 'error', 'message' => 'There are no more websites in the queue.');
+                        }
+                        foreach ($_SESSION['MultiSite']['executeSql'][$randomKey] as $websiteId => $query) {
+                            $website = $websiteRepo->findOneBy(array('id' => $websiteId));
+                            $websiteName = $website->getFqdn()->getName();
+                            $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $websiteName), $website);
+                            unset($_SESSION['MultiSite']['executeSql'][$randomKey][$websiteId]);
+                            $websitesDone = $_SESSION['MultiSite']['totalWebsites'] - count($_SESSION['MultiSite']['executeSql'][$randomKey]);
+                            return array('status' => 'success', 'queryResult' => $resp->data, 'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'], 'websitesDone' => $websitesDone, 'websiteName' => $websiteName);
+                        }
                     }
-                    
-                    if (!isset($_SESSION['MultiSite']) || !isset($_SESSION['MultiSite']['executeSql']) || empty($sqlQuery)) {
-                        return array('status' => 'error', 'message' => 'There are no more websites in the queue.');
-                    }
-
-                    $websiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    
-                    foreach ($_SESSION['MultiSite']['executeSql'] as $websiteId => $query) {
-                        $website = $websiteRepo->findOneBy(array('id' => $websiteId));
-                        $websiteName = $website->getFqdn()->getName();
-                        $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $websiteName), $website);   
-                        unset($_SESSION['MultiSite']['executeSql'][$websiteId]);
-                        $websitesDone = $_SESSION['MultiSite']['totalWebsites'] - count($_SESSION['MultiSite']['executeSql']);
-                        return array('status' => 'success', 'queryResult' => $resp->data, 'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'], 'websitesDone' => $websitesDone, 'websiteName' => $websiteName);
-                    }
-                break;    
+                    return array('status' => 'error', 'message' => 'Failed to execute the Query.');
+                    break;    
             }
         } catch (Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite (executeQueryBySession): failed to execute query' . $e->getMessage());
@@ -2211,12 +2219,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return result array
      */
-    public function stopQueryExecution() {
-        
-        if (isset($_SESSION['MultiSite']['executeSql'])) {
-            unset($_SESSION['MultiSite']['executeSql']);
+    public function stopQueryExecution($params) {
+        if (isset($params['post']['sessionRandomKey'])) {
+            if (isset($_SESSION['MultiSite']['executeSql'][$params['post']['sessionRandomKey']])) {
+                unset($_SESSION['MultiSite']['executeSql'][$params['post']['sessionRandomKey']]);
+            }
+            return array('status' => 'success', 'message' => 'The Query Execution was Stopped');
         }
-        return array('status' => 'success', 'message' => 'The Query Execution was Stopped');
+        return array('status' => 'error', 'message' => 'Failed to Stop the Query Execution');
     }
     
     /**
