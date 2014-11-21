@@ -1431,11 +1431,11 @@ CODE;
             $themesPage = '/index.html';
         }
         
+        $this->getFilesDropdown($theme, $themesPage, $isComponentFile);
+        $this->getFilesContent($filePath, $relativeFilePath);
+        
         $objTemplate->setVariable(array(
-            'THEMES_MENU'           => $this->getThemesDropdown($theme),
-            'THEMES_PAGES_MENU'     => $this->getFilesDropdown($theme, $themesPage, $isComponentFile),
-            'THEMES_PAGE_VALUE'     => $this->getFilesContent($filePath, $relativeFilePath),
-            'THEMES_MENU_DEL'       => $this->_getThemesDropdownDelete(),
+            'THEMES_MENU'           => $this->getThemesDropdown($theme),            
             'THEME_ID'              => $theme->getId(),
             'THEME_SELECTED_THEME'  => $theme->getFoldername(),
             'CONTREXX_BASE_URL'     => \Env::get('cx')->getWebsiteOffsetPath() . '/',
@@ -1729,6 +1729,7 @@ CODE;
                 }
             }
         }
+        $this->sortFilesFolders($componentFiles);
         
         $themeFolder = $theme->getFoldername();
         $codeBaseFiles = array();
