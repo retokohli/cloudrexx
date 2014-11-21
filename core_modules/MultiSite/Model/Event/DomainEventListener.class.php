@@ -327,7 +327,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         
         if ($result->data->status == 'error') {
             if (isset($result->data->log)) {
-                \DBG::appendLogs(array_map(function($logEntry) {return '(DNS) '.$logEntry;}, $result->log));
+                \DBG::appendLogs(array_map(function($logEntry) {return '(DNS) '.$logEntry;}, $result->data->log));
             }
             throw new \Cx\Core\Error\Model\Entity\ShinyException("The domain ".$domain->getName()." can't be used for this website as there is already another website by that domain present.");
         }
