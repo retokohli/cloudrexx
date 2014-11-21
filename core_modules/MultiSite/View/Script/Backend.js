@@ -250,6 +250,7 @@
                                                     case 'website':
                                                         $('.resultSet').html(parseQueryResult(response.data.queryResult));
                                                         cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
+                                                        cx.trigger('loadingEnd', 'executeSql', {});
                                                         break;
                                                     case 'service':
                                                         sessionRandomKey = response.data.randomKey;
