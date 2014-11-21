@@ -137,7 +137,7 @@ class Job extends \Cx\Model\Base\EntityBase {
         try {
             // check if cron job needs to be executed
             $cron = \Cron\CronExpression::factory($this->expression);
-            if ($cron->getNextRunDate($this->lastRan, 0, true)->getTimestamp() < time()) {
+            if ($cron->getNextRunDate($this->lastRan, 0)->getTimestamp() > time()) {
                 return false;
             }
             // execute cron job
