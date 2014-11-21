@@ -771,9 +771,7 @@ div.row2 {
 #directory div.image {
     float:left;
     height:auto !important;
-    padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
-    width: 20%;
 }
 #directory div.image img {
     margin: 0px 15px 15px 0px;
@@ -781,7 +779,6 @@ div.row2 {
     padding: 8px;
 }
 #directory div.infos {
-    padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     height:auto !important;
 }
@@ -1168,9 +1165,7 @@ div.row2 {
 #guestbook div.title {
     float:left;
     height: 27px;
-    padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
-    width: 60%;
 }
 #guestbook div.title h3{
     padding: 0px 0px 5px 0px;
@@ -1194,7 +1189,6 @@ div.row2 {
 }
 #guestbook div.message,
 #guestbook div.links {
-    padding: 0px 0px 0px 0px;
     margin: 7px 0px 0px 0px;
     height:auto !important;
     float:left;
@@ -1629,7 +1623,7 @@ div.row2 {
 #shop button.add-to-cart {
     float: right;
     min-height: 35px;
-    padding: 9px 10px 7px 33px;
+    padding: 8px 10px 6px 33px;
     color: #FFFFFF;
     font-weight: bold;
     border-top-left-radius: 0;
@@ -3084,3 +3078,4 @@ select[name="unsubscribed[]"] {width: 100%;}
 #directory .selectorCenter {padding: 50px 25px;}
 #ecardForm span.radio label {margin: 0; float: left;}
 #contactFormCaptcha {float: left; padding-left: 250px;}
+.reg .regdivider span {padding-left: 15px;}

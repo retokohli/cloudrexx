@@ -153,7 +153,8 @@
 		#slide1 .slide_text h2, #slide2 .slide_text h2{font-size: 32px !important;}
 		#slide1 .slide_text h3, #slide2 .slide_text h3{font-size: 20px !important;}
 		#slide1 .slide_text p, #slide2 .slide_text p{font-size: 13px !important;}	
-		.contact textarea{width: 100% !important;}	
+		.contact textarea{width: 100% !important;}
+                #livecam .livecamSearch input {margin-bottom: 15px;}
     }
 
 
@@ -265,6 +266,8 @@
                 #forum div.notification_center {padding: 50px 0; width: 100%; height: auto;}
                 #livecam .livecamSearch input {margin-bottom: 15px;}
                 #contactFormCaptcha {padding-left: 0;}
+                .questionBlock .questionBlock_button input[type="reset"] {margin: 0 20px 0 20px !important; float: left;}
+                #ecardSend input[type="button"] {margin-bottom: 15px;}
     }
 
 
