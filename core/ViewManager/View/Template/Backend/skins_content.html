@@ -5,12 +5,7 @@
     $J(document).ready(function() {
         $J("#tabs").tabs({
             show : function (event, ui) {
-                $J('#selectedTab').val($J( "#tabs" ).tabs('option', 'selected'));
-                if ($J("#tabs").tabs('option', 'selected') == 2) {
-                    $J('#file-operation').hide();
-                } else {
-                    $J('#file-operation').show();
-                }
+                $J('#selectedTab').val($J( "#tabs" ).tabs('option', 'selected'));                
             }
         });
     
@@ -345,11 +340,11 @@
 
                 <table summary=""  cellspacing="0" cellpadding="3" class="adminlist" id="themes_list">
                     <tr>
-                        <th width="350" nowrap="nowrap">{TXT_THEME_TEMPLATE}:{THEME_SELECTED_THEME}</th>
+                        <th width="275" nowrap="nowrap">{TXT_THEME_TEMPLATE}:{THEME_SELECTED_THEME}</th>
                     </tr>
                     <tr valign="top">
                         <td style="border:0">
-                            <select name="themes" size="0" onChange="cx.vm.reloadThemesPage()" style="width: 350px;background: white;margin-top: 15px;"> 
+                            <select name="themes" size="0" onChange="cx.vm.reloadThemesPage()" style="width: 275px;background: white;margin-top: 15px;"> 
                                 {THEMES_MENU}
                             </select>
                         </td>
@@ -369,6 +364,17 @@
                                             {THEME_FILES_TAB}                                            
                                         </div>
                                     </div>
+                                    <div id="file-operation">
+                                        <div class="file-action new_file file">
+                                            <a href="javascript:void(0);" class="file" title="{TXT_THEME_NEW_FILE}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_FILE}"/>&nbsp;{TXT_THEME_NEW_FILE}</a> 
+                                        </div>
+                                        <div class="file-action new_file folder">
+                                            <a href="javascript:void(0);" class="folder" title="{TXT_THEME_NEW_FOLDER}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_FOLDER}"/>&nbsp;{TXT_THEME_NEW_FOLDER}</a>
+                                        </div>
+                                        <div class="file-action">
+                                            <a href="index.php?cmd=ViewManager&amp;act=newDir" title="{TXT_THEME_NEW_THEME}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_THEME}"/>&nbsp;{TXT_THEME_NEW_THEME}</a>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div id="tabs-application-files" style="display: none;">
                                     <div class="jstree-container" >
@@ -380,7 +386,7 @@
                                 <div id="tabs-lib-files" style="display: none;">
                                     <!-- BEGIN theme_libraries -->
                                     <!-- BEGIN theme_library -->
-                                    <select name="libraryVersion[{THEME_LIBRARY_NAME}]" style="width: 350px;background: #fff;margin-bottom: 10px;">
+                                    <select name="libraryVersion[{THEME_LIBRARY_NAME}]" style="width: 275px;background: #fff;margin-bottom: 10px;">
                                         <option value="">{THEME_LIBRARY_NAME} {TXT_THEME_LIBRARY_NOT_USED}</option>
                                         <!-- BEGIN theme_library_version -->
                                         <option value="{THEME_LIBRARY_VERSION}" {THEME_LIBRARY_VERSION_SELECTED}>{THEME_LIBRARY_NAME} {THEME_LIBRARY_VERSION}</option>
@@ -393,21 +399,7 @@
                             </div>
 
                         </td>
-                    </tr>
-                    <tr valign="top"><td width="350" style="border:0">
-                            <div id="file-operation">
-                                <div class="file-action new_file file">
-                                    <a href="javascript:void(0);" class="file" title="{TXT_THEME_NEW_FILE}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_FILE}"/>&nbsp;{TXT_THEME_NEW_FILE}</a> 
-                                </div>
-                                <div class="file-action new_file folder">
-                                    <a href="javascript:void(0);" class="folder" title="{TXT_THEME_NEW_FOLDER}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_FOLDER}"/>&nbsp;{TXT_THEME_NEW_FOLDER}</a>
-                                </div>
-                                <div class="file-action">
-                                    <a href="index.php?cmd=ViewManager&amp;act=newDir" title="{TXT_THEME_NEW_THEME}"><img src="../core/ViewManager/View/Media/newFileIcon.png" alt="{TXT_THEME_NEW_THEME}"/>&nbsp;{TXT_THEME_NEW_THEME}</a>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
+                    </tr>                    
                 </table>
                 <input type="hidden" name="themesPage" id="themesPage" value="{THEMES_SELECTED_PAGENAME}"/>
                 <input type="hidden" name="newFileName" id="newFileName"/>
