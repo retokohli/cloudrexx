@@ -116,6 +116,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
                         $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
                         $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
+                        $paymentUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl');
                         $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl'));
                         \LinkGenerator::parseTemplate($termsUrlValue);
                         $termsUrl = '<a href="'.$termsUrlValue.'" target="_blank">'.$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'].'</a>';
@@ -143,6 +144,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'MULTISITE_SIGNUP_URL'          => $signUpUrl->toString(),
                             'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
                             'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
+                            'MULTISITE_PAYMENT_URL'         => $paymentUrl->toString(),
                             'TXT_MULTISITE_ACCEPT_TERMS'    => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
                             'TXT_MULTISITE_BUILD_WEBSITE_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'],
                             'TXT_MULTISITE_BUILD_WEBSITE_MSG' => $buildWebsiteMsg,
@@ -166,21 +168,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                             $productPrice = $product->getPrice();
                             if (!empty($productPrice)) {
-                                $additionalParameters = array(
-                                    'invoice_amount'    => number_format($productPrice, 2),
-                                    'invoice_currency'  => 'CHF',
-                                    'invoice_number'    =>  $product->getName(),
-                                    'contact_email'     => '',
-                                    'referenceId'       => ''
-                                );
-                                $i = 1;
-                                foreach ($additionalParameters as $key => $val) {
-                                    $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
-                                    $i++;
-                                }
-                                $delimiter = preg_match('#\?#', \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl')) ? '&' : '?';
                                 $objTemplate->setVariable(array(
-                                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml(\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl').$delimiter.$params),
+                                    'MULTISITE_OPTION_PAYREXXFORMURL' => \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount'),
                                 ));
                             }
                             $objTemplate->setVariable(array(
@@ -189,7 +178,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
                                 'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
                                 'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
-                                'PRODUCT_NAME'            => $product->getName(),
                                 'PRODUCT_ID'              => $product->getId()
                             ));
                         }
@@ -293,8 +281,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $objTemplate->get();
                         break;
                     case 'Payrexx':
-                        $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
-                        if (!empty($transaction) && isset($transaction['status']) && $transaction['status'] === 'confirmed') {
+                        $transaction   = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
+                        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+                        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+                        $paymentRequestId = $_POST['transaction']['invoice']['paymentRequestId'];
+                        
+                        $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
+
+                        $paymentRequest = new \Payrexx\Models\Request\PaymentRequest();
+                        $paymentRequest->setId($paymentRequestId);
+
+                        try {
+                            $response = $payrexx->getOne($paymentRequest);
+                        } catch (\Payrexx\PayrexxException $e) {
+                            throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
+                        }
+                        
+                        if (!empty($transaction) && isset($transaction['status']) && ($transaction['status'] === 'confirmed')
+                                && !empty($response) && isset($response['status']) && ($response['status'] === 'success')
+                                && $transaction['invoice']['amount'] === $response['invoice']['amount']
+                                && $transaction['invoice']['referenceId'] === $response['invoice']['referenceId']) {
                             $invoice = $transaction['invoice'];
                             $payment = new \Cx\Modules\Order\Model\Entity\Payment();
                             $payment->setAmount($invoice['amount']);
@@ -603,10 +609,20 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for maximum length for the FTP account name");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormUrl', '', 19,
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('payrexxAccount', '', 19,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for URL to Payrexx form");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormId', '', 20,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new MultiSiteException("Failed to add Setting entry for Payrexx Form Id");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('payrexxApiSecret', '', 21,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new MultiSiteException("Failed to add Setting entry for Payrexx API Secret");
             }
 
             // websiteSetup group

@@ -113,6 +113,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'stopQueryExecution'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'modifyMultisiteConfig' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'sendAccountActivation' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkSendAccountActivation')),
+            'getPayrexxUrl'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
         );  
     }
 
@@ -2553,6 +2554,52 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return array('status' => 'error', 'message' => 'JsonMultiSite::sendAccountActivation() failed: to Send Account Activation Mail of this Website.');
         } catch (Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: to Send Account Activation Mail of this Website: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get the Payrexx Url
+     * 
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function getPayrexxUrl($params) {
+        if (!isset($params['post']['product_id']) || !isset($params['post']['multisite_email_address']) || !isset($params['post']['multisite_address'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: Insufficient mapping information supplied: ' . var_export($params, true));
+        }
+
+        try {
+            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+            $product = $productRepository->findOneBy(array('id' => $params['post']['product_id']));
+            
+            $productPrice  = $product->getPrice();
+            $productName   = $product->getName();
+            $invoiceNumber = $productName . ' - ' . $params['post']['multisite_address'] . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+            $referenceId   = $product->getId() . '-' . $params['post']['multisite_address'];
+            $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+            $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+            $payrexxFormId = \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId');
+
+            $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
+            
+            $paymentRequest = new \Payrexx\Models\Request\PaymentRequest();
+            $paymentRequest->setAmount($productPrice);
+            $paymentRequest->setCurrency(\Payrexx\Models\Request\PaymentRequest::CURRENCY_CHF);
+            $paymentRequest->setNumber(contrexx_input2raw($invoiceNumber));
+            $paymentRequest->setEmail(contrexx_input2raw($params['post']['multisite_email_address']));
+            $paymentRequest->setReferenceId(contrexx_input2raw($referenceId));
+            $paymentRequest->setFormId($payrexxFormId);
+            
+            $response = $payrexx->create($paymentRequest);
+            if ($response['status'] == 'success' && !empty($response['data'])) {
+                $data = $response['data'];
+                $link = $data['link'] . '&appview=1';
+                return array('status' => 'success', 'link' => $link);
+            }
+        } catch (\Payrexx\PayrexxException $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: to get the payrexx url: ' . $e->getMessage());
         }
     }
 
