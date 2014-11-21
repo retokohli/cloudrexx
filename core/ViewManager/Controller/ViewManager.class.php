@@ -453,7 +453,7 @@ CODE;
             'TXT_THEME_FULLSCREEN'             => $_ARRAYLANG['TXT_THEME_FULLSCREEN'],
             'TXT_THEME_FULLSCREEN_INFO'        => $_ARRAYLANG['TXT_THEME_FULLSCREEN_INFO'],
             'TXT_FILES'                        => $_ARRAYLANG['TXT_FILES'],
-            'TXT_THEME_CREATE_OVERRIDES'       => $_ARRAYLANG['TXT_THEME_CREATE_OVERRIDES'],
+            'TXT_DESIGN_APPLICATION_TEMPLATE'  => $_ARRAYLANG['TXT_DESIGN_APPLICATION_TEMPLATE'],
             'TXT_THEMES_LIBRARIES'             => $_ARRAYLANG['TXT_THEMES_LIBRARIES'],
         ));
         $this->getDropdownContent();

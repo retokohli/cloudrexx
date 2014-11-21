@@ -397,7 +397,7 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         
         $_ARRAYLANG = $objInit->loadLanguageData('ViewManager');
         if (empty($params['post']['theme']) || empty($params['post']['oldName']) || empty($params['post']['newName'])) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS']);
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_NAME']);
         }
         if ($params['post']['isFolder'] && preg_match('/^\./', trim($params['post']['newName']))) { // folder name should not start with dot(.)
             return array('status' => 'error', 'reload' => false, 'message' => sprintf($_ARRAYLANG['TXT_THEME_FOLDER_NAME_NOT_ALLOWED'], contrexx_input2xhtml($params['post']['newName'])));
@@ -476,7 +476,7 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         
         $_ARRAYLANG = $objInit->loadLanguageData('ViewManager');
         if (empty($params['post']['theme']) || empty($params['post']['name'])) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS']);
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_NAME']);
         }
         
         if ($params['post']['isFolder'] && preg_match('/^\./', trim($params['post']['name']))) { // folder name should not start with dot(.)
