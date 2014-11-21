@@ -299,3 +299,4 @@ input[disabled=disabled]:hover {
 .radio {padding-left: 0;}
 .btn-link {color: #73bb19;}
 .btn-link:hover {color: #999999;}
+.btn-primary {border-color: #73bb19}
