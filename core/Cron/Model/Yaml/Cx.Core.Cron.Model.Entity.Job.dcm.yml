@@ -1,0 +1,24 @@
+Cx\Core\Cron\Model\Entity\Job:
+    type: entity
+    repositoryClass: Cx\Core\Cron\Model\Repository\JobRepository
+    table: core_cron_job
+    
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    
+    fields:
+        active:
+            type: boolean
+        expression:
+            type: string
+            length: 255
+        command:
+            type: string
+            length: 255
+        lastRan:
+            type: datetime
+            column: last_ran
+        
