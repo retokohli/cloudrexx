@@ -906,6 +906,29 @@ CODE;
     }
 
     /**
+     * get the themes files from codeBaseThemesFilePath and websiteThemesFilePath
+     *
+     * @return  array
+     */
+    function getThemesFiles() {
+        
+        $codeBaseFiles = array();
+        $websiteThemesFiles = array();
+        if (file_exists($this->codeBaseThemesFilePath)) {
+            $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
+            $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
+        }
+        if (file_exists($this->websiteThemesFilePath)) {
+            $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
+            $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
+        }
+
+        $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
+        $this->sortFilesFolders($codeBaseFiles);
+        return $codeBaseFiles;
+    }
+    
+    /**
      * Gets the themes assigning page
      * @access   private
      * @global   ADONewConnection
@@ -1732,21 +1755,8 @@ CODE;
         $this->sortFilesFolders($componentFiles);
         
         $themeFolder = $theme->getFoldername();
-        $codeBaseFiles = array();
-        $websiteThemesFiles = array();
-        if ($themeFolder != "") {            
-            if (file_exists($this->codeBaseThemesFilePath)) {
-                $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
-                $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
-            }
-            if (file_exists($this->websiteThemesFilePath)) {
-                $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
-                $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
-            }
-
-            $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
-            $this->sortFilesFolders($codeBaseFiles);
-            $mergedFiles = $codeBaseFiles;
+        if ($themeFolder != "") {
+            $mergedFiles = $this->getThemesFiles();
             
             $objTemplate->setVariable(array(
                     'THEME_FILES_TAB'                            => $this->getUlLi($mergedFiles, '', 'theme', !$isComponentFile ? $themesPage : ''),
