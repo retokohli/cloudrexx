@@ -4,7 +4,9 @@
     'use strict';
     var $J = jQuery;
 
-    angular.module('plupload.module', [])
+    angular.module('plupload.module', []).config(['$httpProvider', function ($httpProvider) {
+        $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+    }])
         .directive('plUpload', ['$parse', function ($parse) {
             return {
                 restrict: 'A',
@@ -38,7 +40,7 @@
                         iAttrs.$set('plMaxFileSize', '500mb');
                     }
                     if (!iAttrs.plUrl) {
-                        iAttrs.$set('plUrl', '?cmd=jsondata&object=Uploader&act=upload&id=' + iAttrs.uploaderId+'&csrf='+cx.variables.get('csrf'));
+                        iAttrs.$set('plUrl', '?cmd=jsondata&object=Uploader&act=upload&id=' + iAttrs.uploaderId + '&csrf=' + cx.variables.get('csrf'));
                     }
                     if (!iAttrs.plFlashSwfUrl) {
                         iAttrs.$set('plFlashSwfUrl', 'lib/plupload/plupload.flash.swf');
@@ -70,7 +72,10 @@
                         flash_swf_url: iAttrs.plFlashSwfUrl,
                         silverlight_xap_url: iAttrs.plSilverlightXapUrl,
                         filters: scope.filters,
-                        prevent_duplicates: true
+                        prevent_duplicates: true,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
                     };
 
 

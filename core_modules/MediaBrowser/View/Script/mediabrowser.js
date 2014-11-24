@@ -21,6 +21,10 @@
         }
     });
 
+    mediaBrowserApp.config(['$httpProvider', function ($httpProvider) {
+        $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+    }]);
+
     mediaBrowserApp.factory('mediabrowserFiles', function ($http, $q) {
         return {
             get: function (type) {
@@ -56,8 +60,8 @@
     });
 
     /* CONTROLLERS */
-    mediaBrowserApp.controller('MainCtrl', ['$scope', '$modalInstance', '$modal', '$location', '$http', 'mediabrowserConfig', 'mediabrowserFiles',
-        function ($scope, $modalInstance, $modal, $location, $http, mediabrowserConfig, mediabrowserFiles) {
+    mediaBrowserApp.controller('MainCtrl', ['$scope', '$modalInstance', '$modal', '$location', '$http', 'mediabrowserConfig', 'mediabrowserFiles','$timeout',
+        function ($scope, $modalInstance, $modal, $location, $http, mediabrowserConfig, mediabrowserFiles, $timeout) {
             /**
              * Sorting and searching
              */
@@ -143,8 +147,6 @@
             };
 
             $scope.closeModal = function () {
-
-
                 $modalInstance.dismiss('cancel');
                 var fn = mediabrowserConfig.get('callbackWrapper');
                 if (typeof fn === 'function') {
@@ -228,11 +230,18 @@
                 mediabrowserFiles.getByMediaType($scope.selectedSource.value).then(
                     function getFiles(data) {
                         jQuery(".loadingPlatform").hide();
-                        jQuery(".filelist").show();
                         $scope.dataFiles = data;
-                        $scope.files = $scope.dataFiles;
+                        $scope.files = data;
+                        $timeout(function() {
+                            $scope.$apply();
+                            jQuery(".filelist").show();
+                        });
                     }
                 );
+            };
+
+            $scope.setFiles = function(files){
+                $scope.files = files;
             };
 
             $scope.changeLocation = function (url, forceReload) {
@@ -281,9 +290,6 @@
             $scope.progress = 0;
             $scope.progressMessage = '';
             $scope.finishedUpload = false;
-
-
-
 
             $scope.template = {
                 url: '../core_modules/MediaBrowser/View/Template/_Uploader.html'
@@ -336,6 +342,7 @@
                             $scope.afterUpload();
                         },
                         Error: function (up, err) {
+
                             console.log("nError #" + err.code + ": " + err.message)
                         }
                     }
@@ -358,6 +365,7 @@
                 });
             };
 
+
         }]);
 
     mediaBrowserApp.controller('MediaBrowserListCtrl', ['$scope', '$http', 'mediabrowserConfig',
@@ -373,6 +381,10 @@
             };
             // __construct
 
+            /**
+             * Move up in the directory structure to the specified directory
+             * @param dirName
+             */
             $scope.extendPath = function (dirName) {
                 if (Array.isArray($scope.path)) {
                     $scope.path.push({name: dirName, path: dirName, standard: false});
@@ -382,7 +394,10 @@
                 $scope.refreshBrowser();
             };
 
-
+            /**
+             * Move down in the directory structure
+             * @param countDirs
+             */
             $scope.shrinkPath = function (countDirs) {
                 if (Array.isArray($scope.path)) {
                     for (var i = 0; i < countDirs; i++) {
@@ -394,6 +409,10 @@
                 $scope.refreshBrowser();
             };
 
+            /**
+             * Get the full path string.
+             * @returns {string}
+             */
             $scope.getPathString = function () {
                 var returnValue = '/';
                 $scope.path.forEach(function (pathpart) {
@@ -404,10 +423,10 @@
 
             $scope.refreshBrowser = function () {
                 $scope.selectedFiles = [];
-                $scope.files = $scope.dataFiles;
+                $scope.setFiles($scope.dataFiles);
                 $scope.path.forEach(function (pathpart) {
                     if (!pathpart.standard) {
-                        $scope.files = $scope.dataFiles[pathpart.path];
+                        $scope.setFiles($scope.dataFiles[pathpart.path]);
                     }
                 });
                 $scope.inRootDirectory = ($scope.path.length == 1);
@@ -439,12 +458,11 @@
                             $scope.selectedFiles = [];
                             file.datainfo.active = false;
 
-                            var fn = window[mediabrowserConfig.get('modalClosed')];
+                            var fn = mediabrowserConfig.get('callbackWrapper');
 
                             if (typeof fn === 'function') {
                                 fn({type: 'file', data: [file]});
                             }
-
                             if (!jQuery.isEmptyObject($scope.lastActiveFile)) {
                                 $scope.lastActiveFile.datainfo.active = false;
                             }
@@ -559,15 +577,12 @@
             };
 
             $scope.choosePictures = function () {
-                console.log(mediabrowserConfig.get('callbackWrapper'));
                 var fn = mediabrowserConfig.get('callbackWrapper');
                 $scope.closeModal();
                 for (var i = 0; i < $scope.selectedFiles.length; i++) {
                     var item = $scope.selectedFiles[i];
                     item.datainfo.active = false;
                 }
-                console.log(typeof fn === 'function');
-                console.log(fn);
                 if (typeof fn === 'function') {
                     fn({type: 'file', data: $scope.selectedFiles});
                     $scope.selectedFiles = [];
@@ -584,7 +599,8 @@
             };
 
             $scope.clickPage = function (site) {
-                var fn = window[mediabrowserConfig.get('modalClosed')];
+
+                var fn = mediabrowserConfig.get('callbackWrapper');
                 if (typeof fn === 'function') {
                     fn({type: 'page', data: [site]});
                 }
@@ -605,13 +621,12 @@
                     $J.ajax({
                         type: "GET",
                         url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + attrs.previewImage
-                    }).done(function (msg) {
-                        jQuery(el).popover({
-                            trigger: 'hover',
-                            html: true,
-                            content: '<img src="' + attrs.previewImage + '"  />',
-                            placement: 'right'
-                        });
+                    });
+                    jQuery(el).popover({
+                        trigger: 'hover',
+                        html: true,
+                        content: '<img src="' + attrs.previewImage + '"  />',
+                        placement: 'right'
                     });
 
                 }
@@ -741,7 +756,11 @@
         return {
             restrict: 'A', // only work with elements including the attribute cxMb
             link: function (scope, el, attrs) {
-                jQuery(el).click(function (event) {
+                jQuery(el).on("click", function (event, config) {
+                    for (var i in config) {
+                        attrs[i] = config[i];
+                    }
+
                     /**
                      * Set all options and default values
                      */
@@ -775,10 +794,14 @@
                         mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
                     }
 
-                    mediabrowserConfig.set('modalClosed', false);
-                    console.log(attrs.cxMbCbJsModalclosed);
-                    if (attrs.cxMbCbJsModalclosed) {
-                        mediabrowserConfig.set('modalClosed', attrs.cxMbCbJsModalclosed);
+                    if (config != undefined) {
+                        mediabrowserConfig.set('modalClosed', config.callback);
+                    }
+                    else {
+                        mediabrowserConfig.set('modalClosed', false);
+                        if (attrs.cxMbCbJsModalclosed) {
+                            mediabrowserConfig.set('modalClosed', attrs.cxMbCbJsModalclosed);
+                        }
                     }
 
                     $modal.open({
@@ -786,7 +809,9 @@
                         controller: 'MainCtrl',
                         dialogClass: 'media-browser-modal',
                         size: 'lg',
-                        backdrop: 'static'
+                        backdrop: 'static',
+                        backdropClass: 'media-browser-modal-backdrop',
+                        windowClass: 'media-browser-modal-window'
                     });
 
                     /**
@@ -802,11 +827,15 @@
 
                     mediabrowserConfig.set('callbackWrapper', function (e) {
                         scope.tabs = scope.dataTabs;
-
                         if (mediabrowserConfig.get('modalClosed') !== false) {
-                            var fn = window[mediabrowserConfig.get('modalClosed')];
-                            if (typeof fn === 'function') {
-                                fn(e);
+                            if (typeof mediabrowserConfig.get('modalClosed') === 'function') {
+                                mediabrowserConfig.get('modalClosed')(e);
+                            }
+                            else {
+                                var fn = window[mediabrowserConfig.get('modalClosed')];
+                                if (typeof fn === 'function') {
+                                    fn(e);
+                                }
                             }
                         }
                     });

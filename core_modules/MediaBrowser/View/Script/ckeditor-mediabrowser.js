@@ -1,49 +1,107 @@
-CKEDITOR.plugins.add( 'mediabrowser', {
-    icons: 'image',
-    init: function( editor ) {
-        editor.addCommand( 'addImage', {
-            exec: function( editor ) {
-                jQuery('#ckeditor_image_button').trigger('click');
+CKEDITOR.on('dialogDefinition', function (event) {
+    var editor = event.editor;
+    var dialogDefinition = event.data.definition;
+
+    var tabCount = dialogDefinition.contents.length;
+
+    for (var i = 0; i < tabCount; i++) {
+        var browseButton = dialogDefinition.contents[i].get('browse');
+
+        if (browseButton !== null) {
+            /**
+             * Handling image selection.
+             */
+            if (browseButton.filebrowser.target == 'info:txtUrl') {
+                browseButton.hidden = false;
+                var filelistCallback = function (callback) {
+                    if (callback.type == 'close') {
+                        return;
+                    }
+                    $J.ajax({
+                        type: "GET",
+                        url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + callback.data[0].datainfo.filepath
+                    });
+                    var dialog = window.MediaBrowserjQuery(cx.variables.get('thumbnails_template', 'mediabrowser'));
+                    var image = dialog.find('.image');
+                    image.attr('src', callback.data[0].datainfo.filepath);
+                    bootbox.dialog({
+                        title: cx.variables.get('TXT_FILEBROWSER_SELECT_THUMBNAIL', 'mediabrowser'),
+                        message: dialog.html(),
+                        buttons: {
+                            success: {
+                                label: cx.variables.get('TXT_FILEBROWSER_SELECT_THUMBNAIL', 'mediabrowser'),
+                                className: "btn-success",
+                                callback: function () {
+                                    var image, thumbnail = $J("[name='size']").val();
+                                    if (thumbnail == 0) {
+                                        image = callback.data[0].datainfo.filepath;
+                                    }
+                                    else {
+                                        image = callback.data[0].datainfo.thumbnail[thumbnail];
+                                    }
+                                    dialogDefinition.dialog.setValueOf('info', 'txtUrl', image);
+                                }
+                            }
+                        }
+                    });
+                };
+
+                browseButton.onClick = function (dialog, i) {
+                    editor._.filebrowserSe = this;
+                    //editor.execCommand ('image');
+                    jQuery('#ckeditor_image_button').trigger("click", {
+                        callback: filelistCallback,
+                        cxMbViews: 'filebrowser,uploader',
+                        cxMbStartview: 'MediaBrowserList'
+                    });
+                };
+
+                dialogDefinition.dialog.on('show', function (event) {
+                    var that = this;
+                    setTimeout(function () {
+                        var inputfield = that.getValueOf('info', 'txtUrl');
+                        if (inputfield == '') {
+                            jQuery('#ckeditor_image_button').trigger("click", {
+                                callback: filelistCallback,
+                                cxMbViews: 'filebrowser,uploader',
+                                cxMbStartview: 'MediaBrowserList'
+                            });
+                        }
+                    }, 2);
+                });
+
             }
-        });
-        editor.ui.addButton( 'mediabrowser.image', {
-            label: 'Add Image',
-            command: 'addImage',
-            toolbar: 'addImage',
-            icon: 'image'
-        });
+            /**
+             * Handling node links.
+             */
+            else if (browseButton.filebrowser.target == 'Link:txtUrl' || browseButton.filebrowser.target == 'info:url'){
+                var target = browseButton.filebrowser.target.split(':');
+                var sitestructureCallback = function (callback) {
+                    if (callback.type == 'close') {
+                        return;
+                    }
+
+                    dialogDefinition.dialog.setValueOf(target[0], target[1], callback.data[0].node);
+                    /**
+                     * Protocol field exists only in the info tab.
+                     */
+                    if (target[0] == 'info'){
+                        dialogDefinition.dialog.setValueOf('info','protocol', '');
+                    }
+
+                };
+                browseButton.hidden = false;
+                browseButton.onClick = function (dialog, i) {
+                    //editor.execCommand ('image');
+                    jQuery('#ckeditor_image_button').trigger("click", {
+                        callback: sitestructureCallback,
+                        cxMbViews: 'sitestructure',
+                        cxMbStartview: 'MediaBrowserList'
+                    });
+                };
+
+            }
+        }
+
     }
 });
-
-window.ckeditor_image_callback = function(callback){
-    if (callback.type == 'close'){
-        return;
-    }
-    $J.ajax({
-        type: "GET",
-        url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file="+callback.data[0].datainfo.filepath
-    });
-    var dialog = MediaBrowserjQuery(cx.variables.get('thumbnails_template', 'mediabrowser'));
-    var image = dialog.find('.image');
-    image.attr('src',callback.data[0].datainfo.filepath );
-    bootbox.dialog({
-            title:  cx.variables.get('TXT_FILEBROWSER_SELECT_THUMBNAIL', 'mediabrowser'),
-            message: dialog.html(),
-            buttons: {
-                success: {
-                    label: cx.variables.get('TXT_FILEBROWSER_SELECT_THUMBNAIL', 'mediabrowser'),
-                    className: "btn-success",
-                    callback: function () {
-                        var image, thumbnail = $J("[name='size']").val();
-                        if (thumbnail == 0){
-                            image = callback.data[0].datainfo.filepath;
-                        }
-                        else {
-                            image = callback.data[0].datainfo.thumbnail[thumbnail];
-                        }
-                        CKEDITOR.instances.cm_ckeditor.insertHtml('<img class="img-responsive" src="'+image+'" />')
-                    }
-                }
-            }
-    });
-};
