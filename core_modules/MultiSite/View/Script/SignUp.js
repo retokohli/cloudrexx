@@ -32,31 +32,6 @@
         
         init();
         
-        jQuery('.multisite_pay').payrexxModal({
-            hideObjects: ["#contact-details", ".contact"],
-            show: function(e) {
-                //signup form validation
-                if (!formValidation()) {
-                    return e.preventDefault();
-                }
-                
-                return true;
-            },
-            hidden: function(transaction) {
-                switch (transaction.status) {
-                    case 'confirmed':
-                        setFormButtonState('pay', false);
-                        callSignUp();
-                        break;
-                    case 'waiting':
-                    case 'cancelled':    
-                    default:    
-                        setFormButtonState('pay', false);
-                        setFormButtonState('submit', true, true);
-                        break;
-                }
-            }
-        });
     }
 
     function cancelSetup() {
@@ -97,8 +72,32 @@
 
         setFormButtonState('close', false);
         setFormButtonState('cancel', true, true);
-        
-        if (jQuery('.multisite_pay').data('href')) {
+        if (options.IsPayment) {
+            jQuery('.multisite_pay').payrexxModal({
+                hideObjects: ["#contact-details", ".contact"],
+                show: function(e) {
+                    //signup form validation
+                    if (!formValidation()) {
+                        return e.preventDefault();
+                    }
+
+                    return true;
+                },
+                hidden: function(transaction) {
+                    switch (transaction.status) {
+                        case 'confirmed':
+                            setFormButtonState('pay', false);
+                            callSignUp();
+                            break;
+                        case 'waiting':
+                        case 'cancelled':
+                        default:
+                            setFormButtonState('pay', false);
+                            setFormButtonState('submit', true, true);
+                            break;
+                    }
+                }
+            });
             setFormButtonState('submit', false);
             setFormButtonState('pay', true, true);
         } else {

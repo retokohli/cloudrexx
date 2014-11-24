@@ -167,12 +167,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             $product = $productRepository->findOneBy(array('id' => $productId));
 
                             $productPrice = $product->getPrice();
-                            if (!empty($productPrice)) {
-                                $objTemplate->setVariable(array(
-                                    'MULTISITE_OPTION_PAYREXXFORMURL' => \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount'),
-                                ));
-                            }
                             $objTemplate->setVariable(array(
+                                'TXT_MULTISITE_PAYMENT_MODE' => !empty($productPrice) ? true : false,
                                 'PRODUCT_NOTE_ENTITY'     => $product->getNoteEntity(),
                                 'PRODUCT_NOTE_RENEWAL'    => $product->getNoteRenewal(),
                                 'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
