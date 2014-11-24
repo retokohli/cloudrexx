@@ -2195,6 +2195,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             $sqlQuery = $_SESSION['MultiSite']['executeSql'][$randomKey]->toArray();
                         }
                         if (!isset($_SESSION['MultiSite']) || empty($_SESSION['MultiSite']['executeSql'][$randomKey]) || empty($sqlQuery)) {
+                            unset($_SESSION['MultiSite']['executeSql'][$randomKey]);
                             return array('status' => 'error', 'message' => 'There are no more websites in the queue.');
                         }
                         foreach ($_SESSION['MultiSite']['executeSql'][$randomKey] as $websiteId => $query) {
