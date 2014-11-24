@@ -60,7 +60,8 @@
                             }
                         );
                     });
-                }
+                    $J(window).trigger('resize');
+                }                
             })
             .jstree({
                 "ui": {
@@ -75,12 +76,16 @@
             }).delegate(".jstree-closed>a", "click.jstree", function(event) {
                 $J.jstree._reference(this).open_node(this, false, false);
             }); 
-            $J(window).trigger('resize');
     });
     $J(window).resize(function(){
         otherElmHeight = 440;
         if (($J('body').height() - otherElmHeight) > 300) {
             $J('.js-tree').css('height', ($J('body').height() - otherElmHeight) + 'px');
+            $J('.js-tree.theme-files').css('height', 
+                  (($J('body').height() - otherElmHeight) > $J('.js-tree.theme-files > ul').height() 
+                ? $J('.theme-files > ul').height() + 10
+                : $J('body').height() - otherElmHeight) + 'px'
+            );
             $J('#editor').css('height', (($J('body').height() - otherElmHeight) + 77) + 'px');
         } else {
             $J('.js-tree').css('height', '300px');
