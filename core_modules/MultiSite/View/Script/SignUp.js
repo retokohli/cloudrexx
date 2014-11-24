@@ -162,11 +162,12 @@
         var urlPattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
         var url = jQuery('.multisite_pay').data('href');
         
+        jQuery('.alert-danger').remove();
         if (!urlPattern.test(url)) {
             jQuery('<div class="alert alert-danger" role="alert">Invalid Payrexx Form Url</div>').insertAfter(jQuery('#product_id'));
             return false;
         }
-        jQuery('.alert-danger').remove();
+        
         return true;
     }
     
@@ -182,7 +183,11 @@
                 },
                 type: "POST",
                 success: function(response){
-                    if (response.data.link) {
+                    if (response.status == 'error') {
+                        return;
+                    }
+                    
+                    if (response.status == 'success' && response.data.link) {
                         jQuery('.multisite_pay').data('href', response.data.link);
                     }
                 }
