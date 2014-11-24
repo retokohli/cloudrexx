@@ -307,6 +307,17 @@ CREATE TABLE `contrexx_core_mail_template` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_cron_job` (
+  `id` int(11) NOT NULL auto_increment,
+  `active` tinyint(1) NOT NULL,
+  `expression` varchar(255) NOT NULL,
+  `command` varchar(255) NOT NULL,
+  `last_ran` datetime NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_linkmanager_crawler` (
   `id` int(11) NOT NULL auto_increment,
   `lang` tinyint(2) NOT NULL,
@@ -1466,17 +1477,6 @@ CREATE TABLE `contrexx_module_crm_task_types` (
   KEY `name` (`name`),
   FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_cron_job` (
-  `id` int(11) NOT NULL auto_increment,
-  `active` tinyint(1) NOT NULL,
-  `expression` varchar(255) NOT NULL,
-  `command` varchar(255) NOT NULL,
-  `last_ran` datetime NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
