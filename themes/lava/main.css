@@ -1120,10 +1120,7 @@ ul.social-icons li a:hover {
         margin-bottom: 40px;
     }
     /*sub-page styles*/
-    form p {
-        width: auto !important;
-        padding-left: 0 !important;
-    }
+
     form p label {
         margin: 0 0 10px 0 !important;
     }
@@ -1146,6 +1143,21 @@ ul.social-icons li a:hover {
     .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
         margin-left: 0px;
         margin-right: 0px;
+    }
+    .table-responsive {
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-y: hidden;
+        overflow-x: auto;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+        border: 1px solid #ddd;
+        -webkit-overflow-scrolling: touch;
+    }
+    .table-responsive>.table {
+        margin-bottom: 0;
+    }
+    #shop div.message p {
+        left: 0;
     }
     .navbar .nav>li {
         width: 100%;
@@ -1179,6 +1191,39 @@ ul.social-icons li a:hover {
         float: left;
         clear: both;
     }
+}
+@media (max-width: 767px) {
+    .col-sm-4.col-md-4,p #captcha {
+        float: left;
+        width: 100% !important;
+    }
+    .container form p , .container select.form-control {
+        width: 100%;
+        padding-left: 0;
+    }
+    #shop_acc_data input.btn.btn-default {
+        margin-bottom: 10px;
+    }
+    .order input {
+        word-wrap: break-word;
+        width: 100% !important;
+        float: left !important;
+    }
+    input.contactFormClass_button.btn.btn-default {
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+    .row, .thumbnails {
+        margin: 0 !important;
+    }
+    .login-bottom a {
+        padding-left: 0;
+    }
+    #mediadir .mediadirSearchForm .mediadirButtonSearch {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    .container #mediadir .employee-middle, .container #mediadir .employee-left, .container #newsletter form select, body input[type="text"], body input[type="password"], body input[type="number"], body select, body form select, body textarea {width: 100%;}
 }
 /* Desktops and laptops ----------- */
 @media (min-width: 980px) and (max-width: 1699px) {
@@ -1364,7 +1409,6 @@ input[type="text"], input[type="password"], input[type="number"], select, textar
     height: auto !important;
     margin: 0;
     color: #7D7D7D;
-    font-family: Arial;
     border: 1px solid #DDD;
     background: white;
     outline: 0;
@@ -1494,4 +1538,13 @@ body #page-title h2 {
 }
 input[name="submitContactForm"] {
     margin-left: 250px;
+}
+div#right-login {
+    width: 100%;
+}
+.login-bottom a {
+    white-space: normal;
+}
+#newsletter form select {
+    width: 300px;
 }

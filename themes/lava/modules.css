@@ -170,7 +170,7 @@ div.row2 {
 #captcha #coreCaptchaImage {
     float: left;
     width: 93px;
-    height: 31px;
+    height: 37px;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR CONTACT MODULE              */
@@ -1136,8 +1136,9 @@ div.row2 {
     padding: 0 0 10px 0;
 }
 #shop div.customer_address h2,
-#shop div.shipping_address h2 {
+#shop div.shipping_address h2, #shop h2 {
     padding-top: 0;
+    color: #626C72;
 }
 #shop .a_right {
     text-align: right;
@@ -1279,7 +1280,7 @@ div.row2 {
 #shop div.shop_options a {
     float: left;
     padding: 0 0 0 12px;
-    background: url('images/arrows.png') no-repeat 0 7px;
+    background: url('images/arrows.png') no-repeat 0 8px;
 }
 #shop div.shop_options a.active {
     background-position: 0 -8px;
@@ -1303,7 +1304,7 @@ div.row2 {
     margin: 0;
 }
 #shop div.message p {
-    padding-left: 362px;
+    padding-left: 0;
 }
 #shop div.message p label {
     width: 370px;
@@ -1358,7 +1359,7 @@ div.row2 {
 }
 #shop figure a {
     float: left;
-    width: 30%;
+    width: 100%;
     margin: 0 3% 20px 0;
     border: 1px solid #DDDDDD;
     box-shadow: 3px 3px 8px #DDDDDD;
@@ -1375,7 +1376,7 @@ div.row2 {
 }
 #shop figure a .categorie-image-wrapper {
     float: left;
-    width: 90%;
+    width: 100%;
     height: 150px;
     padding: 5%;
     text-align: center;
@@ -1388,7 +1389,7 @@ div.row2 {
 }
 #shop figure a h3 {
     float: left;
-    width: 90%;
+    width: 100%;
     padding: 4px 5% 6px 5%;
     margin: 0;
     color: white;
@@ -2507,6 +2508,335 @@ form .row{margin: 0 !important;}
 }
 ul.event-list a:hover, .letter_index a:hover{color: #FF755A;}
 #shop figure.visual{margin: 0;}
+/*Versandkonditionen page*/
+.shopterms {
+    float: left;
+    width: 100%;
+}
+#shop .row3 div {
+    display: table-cell;
+    float: left;
+    width: 50%;
+}
+#shop .row3 .shoprow:first-child {
+    width: 25%;
+    text-align: left;
+    padding-left: 10px;
+}
+#shop .row3 .shoprow:nth-child(2) {
+    width: 18%;
+    text-align: left;
+}
+#shop .row3 .shoprow:nth-child(3) {
+    width: 20%;
+}
+#shop .row3 .shoprow:nth-child(4) {
+    width: 22%;
+}
+#shop .row3 .shoprow:last-child {
+    width: 15%;
+    text-align: center;
+    padding-right: 10px;
+}
+.row2.first .shoprow:first-child {
+    width: 25%;
+    float: left;
+    padding-left: 10px;
+    word-wrap: break-word;
+    padding-right: 10px;
+}
+.row2.first .shoprow:nth-child(2) {
+    float: left;
+    width: 18.5%;
+}
+.row2 .shoprow:first-child {
+    float: left;
+    width: 43.5%;
+}
+.row2 .shoprow:nth-child(2) {
+    float: left;
+    width: 19%;
+}
+.row2 .shoprow:nth-child(3) {
+    float: left;
+    width: 22%;
+}
+/*cartlist*/
+#cartlist #th_bg {
+    background: #0A85C8;
+    color: #fff;
+    float: left;
+    width: 100%;
+}
+.cartrow {
+    padding: 6px 8px 6px 8px;
+    float: left;
+    width: 15%;
+}
+#th_bg .cartrow:first-child {
+    width: 35%;
+}
+#th_bg .cartrow:nth-child(2) {
+    width: 15%;
+}
+#th_bg .cartrow:nth-child(3) {
+    width: 14%;
+}
+#shop #th_bg .a_right.cartrow {
+    text-align: right;
+    width: 21%;
+}
+#cartlist #th_bg2 {
+    float: left;
+    width: 100%;
+}
+#cartlist #th_bg2 .cartrow:first-child {
+    width: 36%;
+}
+#cartlist #th_bg2 .cartrow {
+    float: left;
+    width: 9%;
+}
+#cartlist #th_bg2 .cartrow:nth-child(2) {
+    width: 15%;
+}
+#cartlist #th_bg2 .cartrow:nth-child(3) {
+    width: 14%;
+}
+#shop #th_bg2 .a_right {
+    text-align: right;
+    width: 17%;
+}
+#cartlist .row1 div {
+    float: left;
+    width: 50%;
+    padding: 7px 5px 6px 5px;
+}
+#cartlist .row1 {
+    float: left;
+    width: 100%;
+    background: #fff;
+}
+#shop #cartlist #th_bg_count {
+    float: left;
+    width: 100% !important;
+}
+#shop #cartlist #th_bg_count div {
+    float: left;
+    width: 50%;
+    padding: 7px 5px 6px 5px;
+}
+#cartlist #th_bg_lstbefore {
+    float: left;
+    width: 100% !important;
+}
+#shop #cartlist #th_bg_count {
+    float: left;
+    width: 100% !important;
+}
+#shop #cartlist #th_bg_count div {
+    float: left;
+    width: 50%;
+    padding: 7px 5px 6px 0px;
+}
+#cartlist #th_bg_lstbefore {
+    float: left;
+    width: 100% !important;
+    padding: 6px 5px;
+}
+#cartlist #th_bg_lstbefore div {
+    float: left;
+    width: 50%;
+}
+#cartlist #th_bg_lstbefore div.a_right {
+    float: right;
+    text-align: right;
+    width: 50%;
+}
+#shop .cart-buttons {
+    float: right;
+    padding: 10px 0px 0 0;
+    width:auto;
+}
+#cartlist {
+    float: left;
+    width: 100%;
+}
+#tagelement th {
+    float: left;
+    width: 33.3%;
+}
+input[name="bsubmit"] {
+    width: auto !important;
+}
+/*BLOGSEARCH*/
+#searchfield {
+    margin-bottom: 20px;
+}
+#searchfield p#fieldlast {
+    width: auto;
+    padding-top: 26px;
+}
+#searchfield p {
+    width: 33%;
+    margin-right: 10px;
+}
+input[name="recipient_save"] {
+    margin-top: 5px;
+}
+#sitemap ul {
+    margin: 0;
+    padding: 0;
+}
+#shop table#bestelTable tr.row3, #shop_payment .row1, #shop_payment .row3 {
+    float: none;
+}
+#shop #bestelTable .row1 {
+    float: none;
+}
+#mediadir .mediadirSearchForm .mediadirButtonSearch {
+    float: left;
+    width: auto !important;
+}
+.search {
+    margin-bottom: 15px;
+}
+.search form input[type="submit"] {margin-right: 0;}
+#profile-left {
+    float: left;
+    margin-left: 130px;
+}
+#profile-left-button {
+    padding-left: 28.5%;
+}
+.profile.networks th {
+    float: none;
+    width: auto;
+}
+.profile.networks tr {
+    float: none;
+    width: 100%;
+}
+.profile.networks td {
+    float: none;
+    width: auto;
+}
+input[type="radio"],
+input[type="checkbox"] {
+    margin: 4px 5px 0 0px;
+    height: auto;
+    line-height: normal;
+}
+.nav li > a:hover,
+.nav li > a:focus {
+    text-decoration: none;
+    color: #000;
+}
+.modal-content {
+    width: 100%;
+}
+.search-form {
+    float: left;
+    width: 100%;
+    padding-bottom: 10px;
+}
+/*Calendar_add*/
+.show_in .checkbox {
+    margin-bottom: 0;
+}
+#calendarErrorMessage {
+    float: left;
+    width: 100%;
+    margin-top: 5px;
+}
+/*MediaDir_search*/
+#mediadir .form_search .mediadirButtonSearch {
+    margin-left: 0;
+}
+/*U2u*/
+.buttons input {
+    margin-bottom: 10px;
+}
+.radio .description {
+    height: auto;
+}
+/*survey*/
+.questionBlock_button input[type="reset"] {
+    float: left;
+    margin-left: 0 !important;
+}
+.questionBlock {
+    width: 100%;
+    float: left;
+    margin-bottom: 20px;
+}
+.questionBlock_button input {
+    float: left;
+    margin-right: 10px;
+}
+/*Directory_Add*/
+.selectorCenter, .mediadirSelectorCenter {
+    padding: 60px 10px 0px;
+    float: left;
+    height: 100px;
+    text-align: center;
+}
+.selectorCenter input, .notification_center input, .mediadirSelectorCenter input {
+    margin-bottom: 15px;
+}
+.notification {
+    margin-bottom: 15px;
+}
+.radio label, .checkbox label {
+    height: auto;
+}
+.thread-button input {
+    margin-bottom: 15px;
+}
+#forum .breadcrumb {
+    margin-bottom: 0;
+}
+#forum .text-danger, #forum .text-success {
+    float: left;
+    width: 90%;
+    margin-bottom: 10px;
+}
+.adv-search {
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+}
+#hiddenSearch {
+    margin-top: 10px;
+    float: left;
+    width: 100%;
+}
+#regkey {margin-bottom: 10px;}
+.jobs-category > div {margin-bottom: 15px;}
+#registrationForm, #guestbook div.information, .resetForm {
+    margin-top: 5px;
+}
+.checkbox:last-child, .radio:last-child {
+    margin-bottom: 0;
+}
+.checkbox:first-child, .radio:first-child {
+    margin-top: 0;
+}
+.contact.row hr {
+    padding: 0;
+    margin: 6px 0 0px 0;
+}
+input[type="file"]{height: auto;float: left;}
+.radio label, .checkbox label {
+    height: 20px;
+    width: 100%;
+}
+.btn.btn-default, .btn.btn-primary {
+    font-size: 13px;
+}
+fieldset .checkbox, fieldset .radio {
+    padding-left: 0;
+}
 /*custom*/
 body .btn.btn-link {
     color: #626c72;
@@ -2518,4 +2848,31 @@ body .btn.btn-link {
 }
 .login-bottom .col-md-offset-6 {
     margin-left: 0;
+}
+#shop .menu input[type="text"] {
+    width: 300px !important;
+    float: left;
+    line-height: 18px;
+}
+#shop .menu select[name="catId"] {
+    width: 300px !important;
+    float: left;
+    margin-right: 10px;
+    min-height: 35px;
+    border-radius: 2px;
+}
+input, button, select, textarea {
+    font-family: 'Open Sans', sans-serif !important;
+}
+#shop .menu input[type="submit"] {font-size: 14px;}
+.btn.btn-default, .btn.btn-primary {font-size: 14px;}
+#shop_acc_data input[type="text"], #shop_acc_data select {width: 100%;}
+.shipping_address p.checkbox {
+    padding-left: 0;
+}
+.radio label, .checkbox label {
+    height: auto;
+}
+select.form-control {
+    width: 300px;
 }
