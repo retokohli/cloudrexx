@@ -1,0 +1,215 @@
+/* Reset */
+@font-face {
+    font-family: 'Droid Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: url(fonts/s-BiyweUPV0v-yRb-cjciBsxEYwM7FgeyaSgU71cLG0.woff) format('woff');
+}
+@font-face {
+    font-family: 'Droid Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: url(fonts/EFpQQyG9GqCrobXxL-KRMQFhaRv2pGgT5Kf0An0s4MM.woff) format('woff');
+}
+@font-face {
+    font-family: 'Dosis';
+    font-style: normal;
+    font-weight: 400;
+    src: url(fonts/xIAtSaglM8LZOYdGmG1JqQ.woff) format('woff');
+}
+@font-face {
+    font-family: 'Dosis';
+    font-style: normal;
+    font-weight: 700;
+    src: url(fonts/x-7NZTw0n-ypOAaIE8uSrvesZW2xOQ-xsNqO47m55DA.woff) format('woff');
+}
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+    background: transparent;
+}
+body {
+    line-height: 1;
+}
+html {
+    font-size: 16px;
+}
+h1, h2, h3, h4, h5, h6 {
+    clear: both;
+}
+ul {
+    list-style: none;
+}
+blockquote {
+    quotes: none;
+}
+blockquote:before, blockquote:after {
+    content: '';
+    content: none;
+}
+del {
+    text-decoration: line-through;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+a img { border: none; }
+img { display: block; }
+#shop .categories img{ display: inline; }
+input[type="submit"]::-moz-focus-inner {border:0;}
+input[type="submit"]::-webkit-focus-inner {border:0;}
+.homeSection img,
+.post p img,
+.page p img,
+.project p img,
+.postThumb,
+div.wp-caption img {
+    max-width: 100% !important;
+    height: auto;
+}
+.wp-caption {
+    max-width: auto !important;
+}
+.wp-caption-text {
+    padding: 5px 0 0 0;
+    font-style: italic;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+    margin:0;
+}
+/* Isotope ----------- */
+.isotope,
+.isotope .isotope-item {
+    -webkit-transition-duration: 0.8s;
+    -moz-transition-duration: 0.8s;
+    -ms-transition-duration: 0.8s;
+    -o-transition-duration: 0.8s;
+    transition-duration: 0.8s;
+}
+.isotope {
+    -webkit-transition-property: height, width;
+    -moz-transition-property: height, width;
+    -ms-transition-property: height, width;
+    -o-transition-property: height, width;
+    transition-property: height, width;
+}
+.isotope .isotope-item {
+    -webkit-transition-property: -webkit-transform, opacity;
+    -moz-transition-property:    -moz-transform, opacity;
+    -ms-transition-property:     -ms-transform, opacity;
+    -o-transition-property:         top, left, opacity;
+    transition-property:         transform, opacity;
+}
+/**** disabling Isotope CSS3 transitions ****/
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+    -webkit-transition-duration: 0s;
+    -moz-transition-duration: 0s;
+    -ms-transition-duration: 0s;
+    -o-transition-duration: 0s;
+    transition-duration: 0s;
+}
+.isotope-item {
+    z-index: 2;
+}
+.isotope-hidden.isotope-item {
+    pointer-events: none;
+    z-index: 1;
+}
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
+.mindfulSocial {
+    display: block !important;
+}
+.mindfulSocial ul li {
+    float: left !important;
+    margin: 0px 0px 0px 0 !important;
+    padding-top: 0px !important;
+    background-color: transparent !important;
+    list-style-type: none !important;
+    background: none;
+}
+.mindfulSocial ul {
+    background-color: transparent;
+    display: block;
+    padding: 0px !important;
+    list-style: none !important;
+}
+.mindfulSocial ul.tiny li span {
+    margin-right:6px; line-height:2.6em;
+}
+.mindfulSocial ul.small li span {
+    margin-right:6px;
+}
+.mindfulSocial ul.medium li span {
+    margin-right:6px;
+}
+.mindfulSocial ul.large li span {
+    margin-right:2px;
+}
+.mindfulSocial a {    
+    text-decoration: none;
+}
+.mindfulSocial ul li a:hover {
+    border: none !important;
+    text-decoration: none !important;
+}
+body #container span.icon-dribbble, .ie7 body #container span.icon-dribbble, .ie8 body #container span.icon-dribbble, .ie9 body #container span.icon-dribbble{
+    background-image: url('images/social_icon.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: 0 0 !important;
+    background-color: transparent !important;
+    width: 32px;
+    height: 30px;
+    float: left;
+}
+body #container span.icon-dribbble:hover, .ie7 body #container span.icon-dribbble:hover, .ie8 body #container span.icon-dribbble:hover, .ie9 body #container span.icon-dribbble:hover{
+    background-image: url('images/social_icon_hover.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: 0 0 !important;
+    background-color: transparent !important;
+}
+body #container span.icon-twitter, .ie7 body #container span.icon-twitter, .ie8 body #container span.icon-twitter, .ie9 body #container span.icon-twitter{
+    background-image: url('images/social_icon.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: -34px 0 !important;
+    background-color: transparent !important;
+    width: 33px;
+    height: 30px;
+    float: left;
+}
+body #container span.icon-twitter:hover, .ie7 body #container span.icon-twitter:hover, .ie8 body #container span.icon-twitter:hover, .ie9 body #container span.icon-twitter:hover {
+    background-image: url('images/social_icon_hover.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: -34px 0 !important;
+    background-color: transparent !important;
+}
+body #container span.icon-vimeo, .ie7 body #container span.icon-vimeo, .ie8 body #container span.icon-vimeo, .ie9 body #container span.icon-vimeo {
+    background-image: url('images/social_icon.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: -70px 0 !important;
+    background-color: transparent !important;
+    width: 35px;
+    height: 30px;
+    float: left;
+}
+body #container span.icon-vimeo:hover, .ie7 body #container span.icon-vimeo:hover, .ie8 body #container span.icon-vimeo:hover, .ie9 body #container span.icon-vimeo:hover {
+    background-image: url('images/social_icon_hover.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: -70px 0 !important;
+    background-color: transparent !important;
+}
