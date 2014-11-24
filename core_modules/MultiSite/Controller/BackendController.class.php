@@ -29,15 +29,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_SERVICE:
-                return array('domains','statistics','settings'=> array('codebases'));
+                return array('domains','statistics', 'notifications', 'settings'=> array('codebases'));
                 break;
 
             case ComponentController::MODE_MANAGER:
-                return array('domains','statistics','settings'=> array('email','website_templates','website_service_servers',));
+                return array('domains','statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers',));
                 break;
 
             case ComponentController::MODE_HYBRID:
-                return array('domains','statistics','settings'=> array('email','codebases'));
+                return array('domains','statistics', 'notifications', 'settings'=> array('email','codebases'));
                 break;
 
             case ComponentController::MODE_NONE:
@@ -73,6 +73,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         switch (current($cmd)) {
             case 'settings':
                 $this->parseSectionSettings($template, $cmd);
+                break;
+
+            case 'notifications':
+                $this->parseSectionNotifications($template, $cmd);
                 break;
 
             case 'statistics':
@@ -260,6 +264,30 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }else{
             $this->settings($template);
         }
+    }
+
+    public function parseSectionNotifications(\Cx\Core\Html\Sigma $template, array $cmd) {
+        global $_ARRAYLANG;
+        
+        $cronMails = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMail')->findAll();
+        if (empty($cronMails)) {
+            $cronMails = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMail();
+        }
+        
+        $cronMailsView = new \Cx\Core\Html\Controller\ViewGenerator($cronMails,
+                array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_CRON_MAILS'],
+                    'functions' => array(
+                        'edit' => true,
+                        'add' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,
+                        'filtering' => false,
+                    )
+                )
+        );
+        $template->setVariable('TABLE', $cronMailsView->render());
     }
 
     public function parseSectionStatistics(\Cx\Core\Html\Sigma $template, array $cmd) {

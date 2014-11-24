@@ -1,0 +1,16 @@
+Cx\Core_Modules\MultiSite\Model\Entity\CronMail:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\CronMailRepository
+  table: core_module_multisite_cron_mail
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    active:
+      type: boolean
+    mailTemplateKey:
+      type: string
+      column: mail_template_key
+    
