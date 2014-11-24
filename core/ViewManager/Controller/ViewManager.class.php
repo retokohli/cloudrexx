@@ -1597,8 +1597,22 @@ CODE;
      */
     function _getDropdownActivated($selectedTheme)
     {
-        $themes = $this->themeRepository->findAll();
+        $activeThemes = $this->themeRepository->getActiveThemes();
+        usort($activeThemes, array($this, 'sortThemesByName'));
+        $activeThemeIds = array();
+        foreach ($activeThemes as $theme) {
+            $activeThemeIds[] = $theme->getId();
+        }
+        
+        $themes = $this->themeRepository->findAll(array('themesname', 'id'));
         usort($themes, array($this, 'sortThemesByName'));
+        foreach ($themes as $key => $theme) {
+            if (in_array($theme->getId(), $activeThemeIds)) {
+                unset($themes[$key]);
+            }
+        }
+        
+        $themes = array_merge($activeThemes, $themes);
         
         $selectedTheme = $this->themeRepository->findById($selectedTheme);
         $html = '';
@@ -1626,8 +1640,22 @@ CODE;
             $selectedTheme = $this->themeRepository->getDefaultTheme();
         }
         
+        $activeThemes = $this->themeRepository->getActiveThemes();
+        usort($activeThemes, array($this, 'sortThemesByName'));
+        $activeThemeIds = array();
+        foreach ($activeThemes as $theme) {
+            $activeThemeIds[] = $theme->getId();
+        }
+        
         $themes = $this->themeRepository->findAll(array('themesname', 'id'));
         usort($themes, array($this, 'sortThemesByName'));
+        foreach ($themes as $key => $theme) {
+            if (in_array($theme->getId(), $activeThemeIds)) {
+                unset($themes[$key]);
+            }
+        }
+        
+        $themes = array_merge($activeThemes, $themes);
         
         $tdm = '';
         foreach ($themes as $item) {
