@@ -377,6 +377,15 @@ CREATE TABLE `contrexx_core_module_linkmanager_link` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_cron_mail` (
+  `id` int(11) NOT NULL auto_increment,
+  `active` tinyint(1) NOT NULL,
+  `mail_template_key` tinytext NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_domain` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(200) NOT NULL,
