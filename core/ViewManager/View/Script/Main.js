@@ -10,8 +10,10 @@ cx.ready(function() {
     cx.vm.deleteFiles = function(obj) {
         $J('#themesPage').val($J(obj.parents('li')).children('a.naming').attr('data-rel'));
         $J('#isFolder').val($J(obj.parents('li')).children('a.naming').hasClass('folder'));
-                                            
-        msg    = cx.variables.get('confirmDeleteFile', "viewmanager/lang");
+
+        msg    =   $J(obj.parents('li')).children('a.naming').hasClass('folder')
+                 ? cx.variables.get('confirmDeleteFolder', "viewmanager/lang")
+                 : cx.variables.get('confirmDeleteFile', "viewmanager/lang");
         msgTxt = msg.replace('%s', obj.closest('li').find('> a').text());
         if (!cx.vm.confirmDelete(msgTxt)) return;
         

@@ -48,6 +48,7 @@ $_ARRAYLANG['TXT_THEME_LOCAL_FILE'] = 'Local file';
 $_ARRAYLANG['TXT_THEME_SPECIFY_URL'] = 'Provide a URL';
 $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE'] = 'Really delete theme %s?';
 $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FILE'] = "Please confirm to permanently remove the file %s";
+$_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FOLDER'] = "Please confirm to permanently remove the folder %s";
 $_ARRAYLANG['TXT_FUNCTIONS'] = 'Functions';
 $_ARRAYLANG['TXT_NAME'] = 'Name';
 $_ARRAYLANG['TXT_THEME_SHOW_PRINT_THEME'] = 'Print preview list';

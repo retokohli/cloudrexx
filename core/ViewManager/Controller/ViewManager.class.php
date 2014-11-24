@@ -405,7 +405,8 @@ CODE;
                     
         \JS::registerCode($jsCode);
         $cxjs = \ContrexxJavascript::getInstance();
-        $cxjs->setVariable(array('confirmDeleteFile'     => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FILE'], 
+        $cxjs->setVariable(array('confirmDeleteFile'     => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FILE'],
+                                 'confirmDeleteFolder'   => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FOLDER'],
                                  'fileName'              => $_ARRAYLANG['TXT_THEME_FILE_NAME'],
                                  'txtName'               => $_ARRAYLANG['TXT_NAME'],                                 
                                  'newFileOperation'      => $_ARRAYLANG['TXT_THEME_CREATE_NEW_FILE'],
