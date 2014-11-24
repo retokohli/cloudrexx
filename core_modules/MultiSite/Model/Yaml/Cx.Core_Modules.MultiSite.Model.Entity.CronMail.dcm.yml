@@ -14,3 +14,10 @@ Cx\Core_Modules\MultiSite\Model\Entity\CronMail:
       type: string
       column: mail_template_key
     
+  oneToMany: # inverse side
+    cronMailCriterias:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\CronMailCriteria
+      mappedBy: cronMail
+    cronMailLogs:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog
+      mappedBy: cronMail

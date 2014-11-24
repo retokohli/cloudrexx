@@ -1,0 +1,27 @@
+Cx\Core_Modules\MultiSite\Model\Entity\CronMailCriteria:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\CronMailCriteriaRepository
+  table: core_module_multisite_cron_mail_criteria
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    attribute:
+        type: string
+        length: 20
+    criteria:
+        type: string
+        length: 100
+        
+  manyToOne: # owning side
+    cronMail:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\CronMail
+      inversedBy: cronMailCriterias
+      joinColumn:
+        name: cron_mail_id
+        referencedColumnName: id
+        cascade: [remove]
+      

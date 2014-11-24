@@ -1,0 +1,33 @@
+Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\CronMailLogRepository
+  table: core_module_multisite_cron_mail_log
+  
+  id:
+    id:
+      type: integer
+      generator:
+        
+  fields:
+    userId:
+        type: integer
+        length: 5
+        column: user_id
+    websiteId:
+        type: integer
+        length: 11
+    success:
+        type: boolean
+        options:
+            default: 0
+            
+  manyToOne: # owning side
+    cronMail:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\CronMail
+      inversedBy: cronMailLogs
+      joinColumn:
+        name: cron_mail_id
+        referencedColumnName: id
+        cascade: [remove]
+        
+      
