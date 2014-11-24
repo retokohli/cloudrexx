@@ -165,6 +165,51 @@ class ThemeRepository
     }
     
     /**
+     * Get themes active themes
+     */
+    public function getActiveThemes() {
+        
+        $objResult = $this->db->Execute('
+            SELECT   `themesid`, `mobile_themes_id`, `print_themes_id`, `pdf_themes_id`, `app_themes_id`
+            FROM     `'.DBPREFIX.'languages`
+            WHERE    `frontend` = 1
+            ORDER BY `id`
+        ');
+        $themesArray = array();
+        
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                if (!empty($objResult->fields['themesid'])) {
+                    $themesArray[] = $objResult->fields['themesid'];
+                }
+                if (!empty($objResult->fields['mobile_themes_id'])) {
+                    $themesArray[] = $objResult->fields['mobile_themes_id'];
+                }
+                if (!empty($objResult->fields['print_themes_id'])) {
+                    $themesArray[] = $objResult->fields['print_themes_id'];
+                }
+                if (!empty($objResult->fields['pdf_themes_id'])) {
+                    $themesArray[] = $objResult->fields['pdf_themes_id'];
+                }
+                if (!empty($objResult->fields['app_themes_id'])) {
+                    $themesArray[] = $objResult->fields['app_themes_id'];
+                }
+                
+                $objResult->MoveNext();
+            }
+        }
+        $themesArray = array_unique($themesArray);
+        
+        $themes = array();
+        
+        foreach ($themesArray as $themeId) {
+            $themes[] = $this->findById($themeId);
+        }
+        
+        return $themes;        
+    }
+    
+    /**
      * Removes a theme from database
      * @param \Cx\Core\View\Model\Entity\Theme $theme a theme object
      * @return boolean true if the query has been successfully completed
