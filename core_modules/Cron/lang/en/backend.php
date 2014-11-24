@@ -13,5 +13,5 @@
 global $_ARRAYLANG;
 
 // Let's start with module info:
-$_ARRAYLANG['TXT_CORE_CRON'] = 'Cron';
+$_ARRAYLANG['TXT_CORE_MODULE_CRON'] = 'Cron';
 
