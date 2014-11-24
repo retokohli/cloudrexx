@@ -1,7 +1,7 @@
-Cx\Core\Cron\Model\Entity\Job:
+Cx\Core_Modules\Cron\Model\Entity\Job:
     type: entity
-    repositoryClass: Cx\Core\Cron\Model\Repository\JobRepository
-    table: core_cron_job
+    repositoryClass: Cx\Core_Modules\Cron\Model\Repository\JobRepository
+    table: module_cron_job
     
     id:
         id:

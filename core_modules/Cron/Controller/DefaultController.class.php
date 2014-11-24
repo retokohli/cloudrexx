@@ -6,10 +6,10 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  core_cron
+ * @subpackage  coremodule_cron
  */
 
-namespace Cx\Core\Cron\Controller;
+namespace Cx\Core_Modules\Cron\Controller;
 
 /**
  * 
@@ -18,7 +18,7 @@ namespace Cx\Core\Cron\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  core_cron
+ * @subpackage  coremodule_cron
  */
 class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     
@@ -36,7 +36,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     
     /**
      * JobRepository instance 
-     * @var \Cx\Core\Cron\Model\Repository\JobRepository $jobRepository
+     * @var \Cx\Core_Modules\Cron\Model\Repository\JobRepository $jobRepository
      */
     protected $jobRepository;
     
@@ -65,7 +65,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         
         $this->template          = $template;
         $this->em                = $this->cx->getDb()->getEntityManager();
-        $this->jobRepository     = $this->em->getRepository('Cx\Core\Cron\Model\Entity\Job');
+        $this->jobRepository     = $this->em->getRepository('Cx\Core_Modules\Cron\Model\Entity\Job');
         
         $this->showCronJobs();
     }
@@ -80,10 +80,10 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         
         $cronJob = $this->jobRepository->findAll();
         if (empty($cronJob)) {
-            $cronJob = new \Cx\Core\Cron\Model\Entity\Job();
+            $cronJob = new \Cx\Core_Modules\Cron\Model\Entity\Job();
         }
         $view = new \Cx\Core\Html\Controller\ViewGenerator($cronJob, array(
-            'header'    => $_ARRAYLANG['TXT_CORE_CRON_ACT_DEFAULT'],
+            'header'    => $_ARRAYLANG['TXT_CORE_MODULE_CRON_ACT_DEFAULT'],
             'functions' => array(
                 'add'       => true,
                 'edit'      => true,
