@@ -63,15 +63,25 @@ class ComponentController extends
             $thumbnailsTemplate->loadTemplateFile(
                 'core_modules/MediaBrowser/View/Template/Thumbnails.html'
             );
+            $thumbnailsTemplate->setVariable(
+                'TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE', sprintf(
+                    $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE']
+                )
+            );
             foreach (
                 UploaderConfiguration::getInstance()->getThumbnails() as
                 $thumbnail
             ) {
                 $thumbnailsTemplate->setVariable(
                     array(
-                        'THUMBNAIL_SIZE' => $thumbnail['size'],
-                        'THUMBNAIL_NAME' => $thumbnail['name'],
-                        'THUMBNAIL_ID' => $thumbnail['id']
+                        'THUMBNAIL_NAME' => sprintf(
+                            $_ARRAYLANG[
+                            'TXT_FILEBROWSER_THUMBNAIL_' . strtoupper(
+                                $thumbnail['name']
+                            ) . '_SIZE'], $thumbnail['size']
+                        ),
+                        'THUMBNAIL_ID' => $thumbnail['id'],
+                        'THUMBNAIL_SIZE' => $thumbnail['size']
                     )
                 );
                 $thumbnailsTemplate->parse('thumbnails');

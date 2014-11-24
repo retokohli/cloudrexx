@@ -77,7 +77,7 @@ class JsonMediaBrowser implements JsonAdapter
     public function getSources()
     {
         global $_ARRAYLANG, $_CORELANG;
-
+        $mediaBrowser = MediaBrowserConfiguration::getInstance();
         // standard
         $return[] = array(
             'name' => 'Dateien',
@@ -85,8 +85,7 @@ class JsonMediaBrowser implements JsonAdapter
             'path' => array_values(
                 array_filter(
                     explode(
-                        '/', MediaBrowserConfiguration::getInstance(
-                        )->mediaTypePaths['files'][1]
+                        '/', $mediaBrowser->mediaTypePaths['files'][1]
                     )
                 )
             )
@@ -94,7 +93,7 @@ class JsonMediaBrowser implements JsonAdapter
 
         \Env::get('init')->loadLanguageData('FileBrowser');
         foreach (
-            MediaBrowserConfiguration::getInstance()->mediaTypes as $type =>
+            $mediaBrowser->mediaTypes as $type =>
             $name
         ) {
             if (!$this->_checkForModule($type)) {
@@ -110,8 +109,7 @@ class JsonMediaBrowser implements JsonAdapter
                 'path' => array_values(
                     array_filter(
                         explode(
-                            '/', MediaBrowserConfiguration::getInstance(
-                            )->mediaTypePaths[$type][1]
+                            '/', $mediaBrowser->mediaTypePaths[$type][1]
                         )
                     )
                 )

@@ -2275,3 +2275,11 @@ input#FileSearchIsRegex {
     float: right;
     margin: 17px 20px 0 0;
 }
+
+.media-browser-modal-backdrop {
+    z-index: 10030 !important;
+}
+
+.media-browser-modal-window, .bootbox {
+    z-index: 10050 !important;
+}

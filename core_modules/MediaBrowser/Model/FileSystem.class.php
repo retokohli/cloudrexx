@@ -144,9 +144,10 @@ class FileSystem
      */
     public static function removeFile($path, $file)
     {
+
         $absolutePath = self::getAbsolutePath($path);
         if (!\Cx\Lib\FileSystem\FileSystem::delete_file($absolutePath  . $file)) {
-//            throw new RemoveFileException("Couldn't remove File.");
+            throw new RemoveFileException("Couldn't remove File.");
         }
 
         $filePathinfo  = pathinfo($absolutePath . '/' . $file);
