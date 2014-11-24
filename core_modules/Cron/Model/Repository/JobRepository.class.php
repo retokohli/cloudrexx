@@ -6,10 +6,10 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  core_cron
+ * @subpackage  coremodule_cron
  */
 
-namespace Cx\Core\Cron\Model\Repository;
+namespace Cx\Core_Modules\Cron\Model\Repository;
 
 /**
  * Class Job Repository
@@ -17,7 +17,7 @@ namespace Cx\Core\Cron\Model\Repository;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  core_cron
+ * @subpackage  coremodule_cron
  */
 class JobRepository extends \Doctrine\ORM\EntityRepository {}
 
