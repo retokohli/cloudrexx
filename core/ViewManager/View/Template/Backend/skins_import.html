@@ -69,9 +69,6 @@ var importSelect = function(div) {
 
 $J(document).ready(function() {
     init();
-    $J('#existingdirName').change(function(){
-        $J('#display_name').val($J(this).val());
-    });
 });
 
 // ]]>
@@ -119,23 +116,15 @@ $J(document).ready(function() {
                     <div id="filesystem" style="display: none; float: none;">
                         <table style="width:100%" border="0" cellspacing="0" cellpadding="3">
                             <tr>
-                                <td width="127px">{TXT_THEME_EXISTING_DIR_NAME}</td>
-                                <td>
+                                <td style="border-bottom: none;" width="127px">{TXT_THEME_EXISTING_DIR_NAME}</td>
+                                <td style="border-bottom: none;">
                                     {TXT_THEME_PATH} 
                                     <select name="existingdirName" id="existingdirName" style="width: 250px;">
                                         <option value="" selected="selected" >--- {TXT_SELECT_DIR} -----------</option>
                                         {THEMES_MENU}
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td style="border-bottom: none;">
-                                    {TXT_THEME_DISPLAY_NAME}
-                                </td>
-                                <td style="border-bottom: none;">
-                                    <input type="text" id="display_name" name="display_name" style="padding-left: 3px; padding-right: 3px; width: 285px;" />
-                                </td>
-                            </tr>
+                            </tr>                            
                         </table>
                         
                     </div>

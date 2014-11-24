@@ -505,7 +505,6 @@ CODE;
             'TXT_THEME_NO_URL_SPECIFIED'    => $_ARRAYLANG['TXT_THEME_NO_URL_SPECIFIED'],
             'TXT_THEME_NO_FILE_SPECIFIED'   => $_ARRAYLANG['TXT_THEME_NO_FILE_SPECIFIED'],
             'TXT_THEME_FILESYSTEM'          => $_ARRAYLANG['TXT_THEME_FILESYSTEM'],
-            'TXT_THEME_DISPLAY_NAME'        => $_ARRAYLANG['TXT_DB_NAME'],
             'TXT_THEME_EXISTING_DIR_NAME'   => $_ARRAYLANG['TXT_EXISTING_DIR_NAME'],
             'TXT_SELECT_DIR'                => $_ARRAYLANG['TXT_SELECT_DIR'],
             'TXT_THEME_PATH'                => $this->webPath,
@@ -789,8 +788,29 @@ CODE;
                 $this->strOkMessage = contrexx_raw2xhtml($themeName).' ('.$themeDirectory.') '.$_ARRAYLANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
                 break;
             case 'filesystem':
-                $themeName = !empty($_POST['display_name']) ? contrexx_input2raw($_POST['display_name']) : null;        
+                $themeName = null;        
                 $existingThemeInFilesystem = !empty($_POST['existingdirName']) ? contrexx_input2raw($_POST['existingdirName']) : null;
+                
+                $themePath = file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem) ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $existingThemeInFilesystem;        
+        
+                if (!file_exists($themePath)) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS'];
+                    return false;
+                }
+                
+                $yamlFile =  file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml')
+                           ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
+                           : ( file_exists(\Env::get('cx')->getCodeBaseThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml')
+                              ? \Env::get('cx')->getCodeBaseThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
+                              : '');
+                if ($yamlFile) {
+                    $objFile = new \Cx\Lib\FileSystem\File($yamlFile);
+                    $yaml = new \Symfony\Component\Yaml\Yaml();
+                    $themeInformation = $yaml->load($objFile->getData());
+                    $themeName = $themeInformation['DlcInfo']['name'];
+                }
+            
+                $themeName = $themeName ?: $existingThemeInFilesystem;
                 
                 if (empty($themeName) || empty($existingThemeInFilesystem)) {
                     $this->strErrMessage = $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS'];
