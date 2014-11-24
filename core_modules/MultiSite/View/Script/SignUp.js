@@ -147,7 +147,11 @@
 
     function formValidation() {
         jQuery("#multisite_signup_form").data('bootstrapValidator').validate();
-        if (!isFormValid() || !jQuery("#multisite_signup_form").data('bootstrapValidator').isValid() || !isPaymentUrlValid()) {
+        if (!isFormValid() || !jQuery("#multisite_signup_form").data('bootstrapValidator').isValid()) {
+            return false;
+        }
+        
+        if (options.IsPayment && !isPaymentUrlValid()) {
             return false;
         }
 
