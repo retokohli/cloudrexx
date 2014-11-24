@@ -1,0 +1,59 @@
+<div id="main" class="clearfix">
+    <div id="middle">
+        <div id="pageHead">
+            <h1>{CONTENT_TITLE}</h1>
+        </div>
+        <div id="content" class="threeFourth clearfix">
+            <div class="post">
+                <div class="inside">
+                    {CONTENT_TEXT}
+                    <div id="social-media">
+                        {GOOGLE_PLUSONE}
+                        {FACEBOOK_LIKE_IFRAME}
+                    </div>
+                </div>
+            </div>                       				            				            				            				
+        </div>
+        <div id="sidebar" class="clearfix">
+            <div class="oneFourth widget_search sidebarBox widgetBox" id="search-2">
+                <form action="" id="searchform" method="get">
+                    <input type="text" onfocus="if (this.value == 'Type and press enter to search.'){this.value = '';}" onblur="if (this.value == '')   {this.value = 'Type and press enter to search.';}" id="s" name="s" value="Type and press enter to search.">
+                    <input type="hidden" id="searchsubmit">
+                </form>
+            </div>
+            <div class="oneFourth menu_group_recent_entries sidebarBox menu_group_Box">
+                {SUBNAVBAR_FILE}
+            </div>            
+            {BLOCK_GLOBAL}
+            <div class="oneFourth menu_group_categories sidebarBox menu_group_Box">
+                <h3>Adresse</h3>
+                <ul>
+                    <li class="cat-item">
+                        {CONTACT_COMPANY}
+                    </li>
+                    <li class="cat-item">
+                        {CONTACT_ADDRESS}
+                    </li>
+                    <li class="cat-item">
+                        {CONTACT_ZIP} {CONTACT_PLACE}
+                    </li>
+                    <li class="cat-item">
+                        {CONTACT_COUNTRY}
+                    </li>
+                    <li class="cat-item">
+                        <a href="tel:+0123456789" title="Telephone">Tel:&nbsp;&nbsp;{CONTACT_PHONE}</a>
+                    </li>
+                    <li class="cat-item">
+                        <a href="fax:+0123456789" title="Fax">Fax:&nbsp;{CONTACT_FAX}</a>
+                    </li>
+                    <li class="cat-item">
+                        <a href="mailto:{CONTACT_EMAIL}" title="Email">{CONTACT_EMAIL}</a>
+                    </li>
+                    <li class="cat-item">
+                        <a href="#" title="Website" target="_blank">www.yourcompany.com</a>
+                    </li>
+                </ul>
+            </div>            
+        </div>
+    </div>
+</div>

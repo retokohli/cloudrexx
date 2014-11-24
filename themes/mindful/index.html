@@ -1,0 +1,165 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+    <!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+        <meta name="generator" content="{VERSION}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="description" content="{METADESC}" />
+        <meta charset="{CHARSET}" />
+        <link type="images/x-icon" rel="icon" href="favicon.ico">
+        
+        {JAVASCRIPT}       
+        {STYLE_FILE}
+        <link type="text/css" rel="stylesheet" href="themes/mindful/text.css" />
+        <link type="text/css" rel="stylesheet" href="themes/mindful/style.css" />
+        <link type="text/css" rel="stylesheet" href="themes/mindful/layout.css" />        
+        <link type="text/css" rel="stylesheet" href="themes/mindful/modules.css" />
+        {LOGIN_INCLUDE}
+        <style>
+            .mindfulSocial a {color:#aaaaaa !important;}
+            .mindfulSocial a:hover {color:#828282 !important}
+        </style>
+        <script type="text/javascript">
+            $J.ajax({
+                url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
+                complete: function (jqXHR) {
+                    var contentType = jqXHR.getResponseHeader('Content-Type');
+                    if ($J.type(contentType) == 'string' && contentType.substring(0, 5) == 'image') {
+                        $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
+                    }
+                }
+            });
+        </script>
+        
+        <script type="text/javascript" src="themes/mindful/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="themes/mindful/js/modernizr.js"></script>
+        <script type="text/javascript" src="themes/mindful/js/javascript.js"></script>
+        <script type='text/javascript' src="themes/mindful/js/superfish.js"></script>
+        <script type='text/javascript' src="themes/mindful/js/sequence.jquery-min.js"></script>
+        <script type='text/javascript' src="themes/mindful/js/jflickrfeed.js"></script>
+        <script type='text/javascript' src="themes/mindful/js/jquery.fitvids.js"></script>
+        <script type='text/javascript' src="themes/mindful/js/jquery.isotope.min.js"></script>
+        <script type='text/javascript' src="themes/mindful/js/jquery.flexslider-min.js"></script>
+        <script type='text/javascript' src="themes/mindful/js/jquery.js"></script>
+         
+            <script type="text/javascript">
+            //<![CDATA[
+            jQuery(document).ready(function(){
+                $status = jQuery(".status");
+                var options = {
+                    autoPlayDelay: 6000,
+                    hidePreloaderDelay: 500,
+                    nextButton: true,
+                    prevButton: true,
+                    pauseButton: ".pause",
+                    hidePreloaderusingCSS: false,
+                    animateStartingFrameIn: true,
+                    transitionThreshold: 500,
+                    pauseOnHover: false,
+                    autoPlay: true,
+                    preloader: true,
+                    fallback: {
+                        speed: 500
+                    }
+                };
+                var sequence = jQuery("#sequence").sequence(options).data("sequence");
+                sequence.afterLoaded = function(){
+                    jQuery("#homeSlideshow .controls").fadeIn(100);
+                    jQuery("#homeSlideshow .controls li:nth-child("+(sequence.settings.startingFrameID)+")").addClass("active");
+                }
+                sequence.afterNextFrameAnimatesIn = function(){
+                    jQuery("#homeSlideshow .controls li:not(:nth-child("+(sequence.nextFrameID)+"))").removeClass("active");
+                    jQuery("#homeSlideshow .controls li:nth-child("+(sequence.nextFrameID)+")").addClass("active");
+                }
+                jQuery("#homeSlideshow .controls li").click(function(){
+                    jQuery(this).removeClass("active").addClass("active");
+                    sequence.nextFrameID = jQuery(this).index()+1;
+                    sequence.goTo(sequence.nextFrameID);
+                });
+            })
+            //]]>
+        </script>                        
+        <!--[if IE 6]>
+        <script type="text/javascript" src="themes/mindful/js/DD_belatedPNG.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/mindful/js/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    var elements = '#search-input';
+                    $J(elements).each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
+        </script>
+        <![endif]-->
+    </head>
+    <body>        
+        <div id="container">
+            <div id="fixed-top">
+                <div id="header">
+                    <div class="inside clearfix">
+                        <div id="logo">
+                            <h1 class="logo"><a href="{NODE_HOME}"><img src="themes/mindful/images/logo.png" alt="Mindful" /></a></h1>
+                        </div>
+                        <div id="mainNav" class="clearfix">
+                            {NAVBAR_FILE}                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {CONTENT_FILE}            
+            <div id="footer">
+                <div class="inside">
+                    <div class="main clearfix">
+                        <div id="mindful_social-2" class="oneThird mindfulSocial footerBox menu_group_Box">
+                            <ul class="clearfix medium">
+                                <li><a href="#" target="_blank"><span class="icon-dribbble">&nbsp;</span></a></li>
+                                <li><a href="#" target="_blank"><span class="icon-twitter">&nbsp;</span></a></li>
+                                <li><a href="#" target="_blank"><span class="icon-vimeo">&nbsp;</span></a></li>
+                            </ul>
+                        </div>                        
+                        <div id="mindful_recent_posts-2" class="oneThird mindful_recent_posts footerBox menu_group_Box">
+                            <h3>From the Blog</h3>
+                            {HEADLINES_FILE}
+                        </div>
+                        <div id="text-2" class="oneThird menu_group_text footerBox menu_group_Box">
+                            <div class="text_menu_group">
+                                <p>
+                                    <a href="{NODE_HOME}"><img alt="logo" src="themes/mindful/images/logo.png" /></a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="secondary clearfix">
+                        <div class="left"><p>&copy; 2013 <a href="#"><strong>Mindful</strong></a> All Rights Reserved.</p></div>
+                        <div class="center">
+                            <ul class="horizontal-list">
+                                <li><a href="{NODE_CONTACT_10}">Kontakt</a>|</li>
+                                <li><a href="{NODE_PRIVACY}">Rechtliche Hinweise</a>|</li>
+                                <li><a href="{NODE_IMPRINT}">Impressum</a>|</li>
+                                <li class="last">{LOGIN_URL}</li>
+                            </ul>
+                        </div>
+                        <div class="right"><p>Theme by <a href="#" title=""><strong>Your Company</strong></a></p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {LOGIN_CONTENT}
+        {COUNTER}
+    </body>
+</html>
