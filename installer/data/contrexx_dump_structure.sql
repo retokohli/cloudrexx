@@ -380,8 +380,33 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_cron_mail` (
   `id` int(11) NOT NULL auto_increment,
   `active` tinyint(1) NOT NULL,
-  `mail_template_key` tinytext NOT NULL,
+  `mail_template_key` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_cron_mail_criteria` (
+  `id` int(11) NOT NULL auto_increment,
+  `cron_mail_id` int(11) default NULL,
+  `attribute` varchar(20) NOT NULL,
+  `criteria` varchar(100) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `IDX_F33B4339EF07C77B` (`cron_mail_id`),
+  CONSTRAINT `contrexx_core_module_multisite_cron_mail_criteria_ibfk_1` FOREIGN KEY (`cron_mail_id`) REFERENCES `contrexx_core_module_multisite_cron_mail` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_cron_mail_log` (
+  `id` int(11) NOT NULL,
+  `cron_mail_id` int(11) default NULL,
+  `user_id` int(5) NOT NULL,
+  `websiteId` int(11) NOT NULL,
+  `success` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `IDX_A532A954EF07C77B` (`cron_mail_id`),
+  CONSTRAINT `contrexx_core_module_multisite_cron_mail_log_ibfk_1` FOREIGN KEY (`cron_mail_id`) REFERENCES `contrexx_core_module_multisite_cron_mail` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
