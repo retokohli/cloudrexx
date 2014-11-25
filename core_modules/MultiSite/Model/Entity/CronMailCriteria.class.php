@@ -89,7 +89,7 @@ class CronMailCriteria extends \Cx\Model\Base\EntityBase {
      * @param string $criteria
      */
     public function setCriteria($criteria) {
-        $this->attribute = $criteria;
+        $this->criteria = $criteria;
     }
 
     /**

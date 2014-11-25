@@ -62,6 +62,15 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set the id
+     * 
+     * @param integer $id
+     */
+    public function setId($id) {
+        $this->id = $id;
+    }
+    
+    /**
      * Get the userid
      * 
      * @return integer $userId

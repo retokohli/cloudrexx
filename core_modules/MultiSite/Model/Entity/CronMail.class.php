@@ -65,6 +65,14 @@ class CronMail extends \Cx\Model\Base\EntityBase {
     }
     
     /**
+     * Set the id
+     * 
+     * @return integer $id
+     */
+    public function setId($id) {
+        $this->id = $id;
+    }
+    /**
      * Set the active status
      * 
      * @param boolean $active
