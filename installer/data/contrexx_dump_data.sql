@@ -6123,6 +6123,14 @@ INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (5,'pdf','pdf_3_0',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (6,'app','app_3_0',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (7,'skeleton','skeleton_3_0',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (9,'Standard_Template_4.0_Blue','standard_4_0_blue',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (10,'Standard_Template_4.0_Green','standard_4_0_green',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (11,'Standard_Template_4.0_Yellow','standard_4_0_yellow',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (12,'Astrum','astrum',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (13,'Business','business',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (14,'Fema','fema',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (15,'Lava','lava',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (16,'Mindful','mindful',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (1,'reload_block_time','1800',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (2,'online_timeout','3000',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (3,'paging_limit','100',1);
