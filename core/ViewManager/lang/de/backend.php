@@ -166,3 +166,14 @@ $_ARRAYLANG['TXT_THEME_FILESYSTEM'] = 'Aus dem Dateisystem importieren (%s Verze
 $_ARRAYLANG['TXT_VIEWMANAGER_THEME_SELECTION_TXT'] = 'Wählen Sie die gewünschte Quelle aus, von welcher Sie ein neues Template importieren möchten';
 $_ARRAYLANG['TXT_VIEWMANAGER_THEME'] = 'Template';
 $_ARRAYLANG['TXT_VIEWMANAGER_SOURCE'] = 'Quelle';
+$_ARRAYLANG['TXT_THEME_DELETE_CUSTOM_ACTIVE_ALERT'] = "Das ausgewählte Template wird zurzeit für die Darstellung individueller Inhaltsseiten eingesetzt. Falls Sie dieses Template löschen, werden die betroffenen Inhaltsseiten anschliessend wieder mit dem hinterlegten Standard-Template angezeigt werden.
+                                                        <br><br>
+                                                        Wichtig: Dieser Vorgang kann nicht rückgängig gemacht werden!
+                                                        <br><br>
+                                                        Bitte bestätigen Sie den Vorgang.";
+$_ARRAYLANG['TXT_THEME_DELETE_ALERT'] = "Dieser Vorgang wird das ausgewählte Template löschen.
+                                        <br><br>
+                                        Wichtig: Dieser Vorgang kann nicht rückgängig gemacht werden!
+                                        <br><br>
+                                        Bitte bestätigen Sie den Vorgang.";
+$_ARRAYLANG['TXT_THEME_DELETE_DIALOG_TITLE'] = "Ausgewählte Template löschen";
