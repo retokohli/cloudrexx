@@ -404,7 +404,7 @@ CODE;
                     
         \JS::registerCode($jsCode);
         $cxjs = \ContrexxJavascript::getInstance();
-        $cxjs->setVariable(array('confirmDeleteFile'     => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FILE'],
+        $cxjs->setVariable(array('confirmDeleteFile'     => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FILE'], 
                                  'confirmDeleteFolder'   => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FOLDER'],
                                  'fileName'              => $_ARRAYLANG['TXT_THEME_FILE_NAME'],
                                  'txtName'               => $_ARRAYLANG['TXT_NAME'],                                 
@@ -497,18 +497,18 @@ CODE;
             'TXT_THEMES_EDIT'       => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
             'TXT_THEMES_CREATE'     => $_ARRAYLANG['TXT_CREATE'],
             'TXT_THEME_IMPORT'      => $_ARRAYLANG['TXT_THEME_IMPORT'],
-            
             'TXT_THEME_LOCAL_FILE'          => $_ARRAYLANG['TXT_THEME_LOCAL_FILE'],
             'TXT_THEME_SPECIFY_URL'         => $_ARRAYLANG['TXT_THEME_SPECIFY_URL'],
             'TXT_THEME_IMPORT_INFO'         => $_ARRAYLANG['TXT_THEME_IMPORT_INFO'],
-            'TXT_THEME_IMPORT_INFO_BODY'    => $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'],
             'TXT_THEME_NO_URL_SPECIFIED'    => $_ARRAYLANG['TXT_THEME_NO_URL_SPECIFIED'],
             'TXT_THEME_NO_FILE_SPECIFIED'   => $_ARRAYLANG['TXT_THEME_NO_FILE_SPECIFIED'],
-            'TXT_THEME_FILESYSTEM'          => $_ARRAYLANG['TXT_THEME_FILESYSTEM'],
-            'TXT_THEME_EXISTING_DIR_NAME'   => $_ARRAYLANG['TXT_EXISTING_DIR_NAME'],
-            'TXT_SELECT_DIR'                => $_ARRAYLANG['TXT_SELECT_DIR'],
-            'TXT_THEME_PATH'                => $this->webPath,
+            'TXT_THEME_FILESYSTEM'          => sprintf($_ARRAYLANG['TXT_THEME_FILESYSTEM'], \Cx\Core\Core\Controller\Cx::instanciate()->getThemesFolderName()),
             'THEMES_MENU'                   => $this->getDropdownNotInDb(),
+            'TXT_THEME_DO_IMPORT'     => $_ARRAYLANG['TXT_THEME_DO_IMPORT'],
+            'TXT_THEME_IMPORT_THEME'  => $_ARRAYLANG['TXT_THEME_IMPORT_THEME'],
+            'TXT_VIEWMANAGER_THEME_SELECTION_TXT' => $_ARRAYLANG['TXT_VIEWMANAGER_THEME_SELECTION_TXT'],
+            'TXT_VIEWMANAGER_THEME' => $_ARRAYLANG['TXT_VIEWMANAGER_THEME'],
+            'TXT_VIEWMANAGER_SOURCE' => $_ARRAYLANG['TXT_VIEWMANAGER_SOURCE'],
         ));
         
     }
@@ -790,7 +790,7 @@ CODE;
             case 'filesystem':
                 $themeName = null;        
                 $existingThemeInFilesystem = !empty($_POST['existingdirName']) ? contrexx_input2raw($_POST['existingdirName']) : null;
-                
+
                 $themePath = file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem) ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $existingThemeInFilesystem;        
         
                 if (!file_exists($themePath)) {
@@ -1087,12 +1087,10 @@ CODE;
         $this->pageTitle = $_ARRAYLANG['TXT_NEW_DIRECTORY'];
         $objTemplate->setVariable(array(
             'TXT_NEW_DIRECTORY'       => $_ARRAYLANG['TXT_NEW_DIRECTORY'],
-            'TXT_EXISTING_DIR_NAME'   => $_ARRAYLANG['TXT_EXISTING_DIR_NAME'],
             'CREATE_DIR_ACTION'       => '?cmd=ViewManager&amp;act=createDir&amp;path=' . $this->webPath,
             'TXT_DIR_NAME'            => $_ARRAYLANG['TXT_DIR_NAME'],
             'TXT_DB_NAME'             => $_ARRAYLANG['TXT_DB_NAME'],
             'TXT_DESCRIPTION'         => $this->webPath,
-            'TXT_SELECT_DIR'          => $_ARRAYLANG['TXT_SELECT_DIR'],
             'TXT_CREATE'              => $_ARRAYLANG['TXT_CREATE'],
             'TXT_FROM_TEMPLATE'       => $_ARRAYLANG['TXT_FROM_TEMPLATE'],
             'THEMES_TEMPLATE_MENU'    => $this->getThemesDropdown($selectedTheme, false),
