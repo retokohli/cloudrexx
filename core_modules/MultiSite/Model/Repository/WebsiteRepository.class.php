@@ -124,7 +124,7 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
      * 
      * @return array
      */
-    public function getWebsiteOwnersByCriteria($criteria) {
+    public function getWebsitesByCriteria($criteria) {
         try {
             if (!empty($criteria)) {
                 $where = array();

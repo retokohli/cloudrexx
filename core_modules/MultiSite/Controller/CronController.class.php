@@ -68,8 +68,8 @@ class CronController {
                         }
                     }
                 }
-                //Get all the website owners based on the criteria
-                $websites = $websiteRepo->getWebsiteOwnersByCriteria($criteria);
+                //Get all the websites based on the criteria
+                $websites = $websiteRepo->getWebsitesByCriteria($criteria);
                 if ($websites) {
                     foreach ($websites as $website) {
                         //If owner is empty, proceed next
