@@ -116,6 +116,37 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
         );
         return $query->getResult();
     }
+    
+    /**
+     * Get the Website Owners by criteria
+     * 
+     * @param array $criteria
+     * 
+     * @return array
+     */
+    public function getWebsiteOwnersByCriteria($criteria) {
+        try {
+            if (!empty($criteria)) {
+                $where = array();
+                foreach ($criteria as $key => $value) {
+                    if (empty($value)) {
+                        continue;
+                    }
+                    if ($key === 'creationDate') {
+                        $where[] = 'DATE( DATE_ADD(  website.`creationDate` , INTERVAL ' . strtoupper($value) .' ) ) =  CURDATE()';
+                    } else {
+                        $where[] = 'website.`' . $key . '` = ' . $value;
+                    }
+                }
+                $whereContdition = !empty($where) ? implode(' AND ', $where) : '';
+            }
+            $qb = \Env::get('em')->createQuery('SELECT website FROM Cx\Core_Modules\MultiSite\Model\Entity\Website website ' . (!empty($whereContdition) ? ' WHERE ' . $whereContdition : ''));
+            $websites = $qb->getResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $websites = array();
+        }
+        return $websites;
+    }
 }
 
 
