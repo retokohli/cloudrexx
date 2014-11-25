@@ -20,6 +20,14 @@ namespace Cx\Core_Modules\SysLog\Controller;
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
     
     /**
+     * This component's backend has only the default CMD
+     * @return array List of commands
+     */
+    public function getCommands() {
+        return array();
+    }
+    
+    /**
      * Parses a rudimentary system log backend page
      * @param \Cx\Core\Html\Sigma $template Backend template for this page
      * @param array $cmd Supplied CMD
