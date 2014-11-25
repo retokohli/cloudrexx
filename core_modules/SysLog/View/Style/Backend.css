@@ -1,0 +1,26 @@
+/**
+ * This file is loaded by the abstract SystemComponentBackendController
+ * You may add own CSS files using
+ * \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/FileName.css', 1));
+ * or remove this file if you don't need it
+ */
+.info_background {
+    display: block;
+    text-align: center;
+    color: white;
+    background-color: #0a85c8;
+}
+
+.warning_background {
+    display: block;
+    text-align: center;
+    background-color: #da7a0c;
+}
+
+.fatal_background {
+    display: block;
+    text-align: center;
+    color: white;
+    background-color: red;
+}
+
