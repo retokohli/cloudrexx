@@ -84,54 +84,44 @@ $J(document).ready(function() {
 <form name="themesForm" id="manageform" action="index.php?cmd=ViewManager&amp;act=settings&amp;tpl=manage" method="post" enctype="multipart/form-data">
     <table summary="" style="width:100%" border="0" cellspacing="0" cellpadding="3"  class="adminlist">
         <tr style="white-space: nowrap;">
-            <th>
-                {TXT_THEME_IMPORT}
+            <th colspan="2">
+                {TXT_THEME_IMPORT_THEME}
             </th>
         </tr>
+        <tr class="row3" style="white-space: nowrap;">
+            <td colspan="2">
+                {TXT_VIEWMANAGER_THEME_SELECTION_TXT}
+            </td>
+        </tr>
         <tr class="row1">
-            <td width="250">
-                <div style="vertical-align: top;">
-                    <div>
-                        <label>
-                            <input id="radiolocal" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="local" checked="checked" />
-                            {TXT_THEME_LOCAL_FILE}
-                        </label>
-                        <label>
-                            <input id="radioremote" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="web" /> 
-                            {TXT_THEME_SPECIFY_URL}
-                        </label>
-                        <label>
-                            <input id="radiofilesystem" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="filesystem" />
-                            {TXT_THEME_FILESYSTEM}
-                        </label>                        
-                    </div>
-                    <div id="local" style="display: block; float: left;">
-                        <input type="file" id="localarchive" name="importlocal" accept="application/zip" value="{TXT_SELECT_FILE}" />
-                        <span class="tooltip-trigger icon-info" style="margin: 11px 0 0 5px;"></span><span class="tooltip-message">{TXT_THEME_IMPORT_INFO_BODY}</span>
-                    </div>
-                    <div id="web" style="display: none; float: left;">
-                        <input type="text" id="remotearchive" name="importremote" size="30" value="http://" />
-                        <span class="tooltip-trigger icon-info" style="margin: 11px 0 0 5px;"></span><span class="tooltip-message">{TXT_THEME_IMPORT_INFO_BODY}</span>
-                    </div>
-                    <div id="filesystem" style="display: none; float: none;">
-                        <table style="width:100%" border="0" cellspacing="0" cellpadding="3">
-                            <tr>
-                                <td style="border-bottom: none;" width="127px">{TXT_THEME_EXISTING_DIR_NAME}</td>
-                                <td style="border-bottom: none;">
-                                    {TXT_THEME_PATH} 
-                                    <select name="existingdirName" id="existingdirName" style="width: 250px;">
-                                        <option value="" selected="selected" >--- {TXT_SELECT_DIR} -----------</option>
-                                        {THEMES_MENU}
-                                    </select>
-                                </td>
-                            </tr>                            
-                        </table>
-                        
-                    </div>
-                    
+            <td width="250">{TXT_VIEWMANAGER_SOURCE}</td>
+            <td>
+                <div>
+                    <input id="radiolocal" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="local" checked="checked" /><label for="radiolocal">{TXT_THEME_LOCAL_FILE}</label>
+                    <br />
+                    <input id="radioremote" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="web" /><label for="radioremote">{TXT_THEME_SPECIFY_URL}</label>
+                    <br />
+                    <input id="radiofilesystem" class="hidden" onclick="importSelect(this.value);" type="radio" name="src" value="filesystem" /><label for="radiofilesystem">{TXT_THEME_FILESYSTEM}</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>{TXT_VIEWMANAGER_THEME}</td>
+            <td>
+                <div id="local" style="display: block; float: left;">
+                    <input style="width:300px;" type="file" id="localarchive" name="importlocal" accept="application/zip" value="{TXT_SELECT_FILE}" />
+                </div>
+
+                <div id="web" style="display: none; float: left;">
+                    <input style="width:300px;" type="text" id="remotearchive" name="importremote" size="30" value="http://" />
+                </div>
+
+                <div id="filesystem" style="display: none; float: none;">
+                    <select name="existingdirName" id="existingdirName" style="width: 300px;">{THEMES_MENU}</select>
                 </div>
             </td>
         </tr>
     </table>
-    <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_IMPORT}" style="float: left;" />
+    <br />
+    <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_DO_IMPORT}" style="float: left;" />
 </form>
