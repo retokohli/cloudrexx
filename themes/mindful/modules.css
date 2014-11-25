@@ -9,7 +9,7 @@ form > fieldset > div {
 }
 /* Start old contact form structure */
 form p {
-    width: 400px;
+    width: 650px;
     padding-left: 250px;
 }
 form p label {
@@ -1353,8 +1353,8 @@ div.row2 {
 }
 #shop figure a {
     float: left;
-    width: 30%;
-    margin: 0 3% 20px 0;
+    width: 100%;
+    margin: 0 0 20px 0;
     border: 1px solid #DDDDDD;
     box-shadow: 3px 3px 8px #DDDDDD;
     -moz-box-shadow: 3px 3px 8px #DDDDDD;
@@ -1373,20 +1373,20 @@ div.row2 {
 }
 #shop figure a .categorie-image-wrapper {
     float: left;
-    width: 90% !important;
-    height: 150px !important;
+    width: 100% !important;
+    height: 170px !important;
     padding: 5%;
     text-align: center;
 }
 #shop figure a .categorie-image-wrapper img {
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 100%;
+    max-height: 100%;
     padding: 10%;
 }
 #shop figure a h3 {
     float: left;
-    width: 90%;
-    padding: 4px 5% 6px 5%;
+    width: 100%;
+    padding: 6px 5% 8px 5%;
     margin: 0;
     color: #FFFFFF;
     font-size: 15px;
@@ -2510,7 +2510,7 @@ dl.data_module img {
     border-bottom: 1px solid #DDD;
 }
 #newsletter input[type="radio"], #newsletter input[type="checkbox"]{float: left;}
-#newsletter select, select#newsCat{width:321px;}
+#newsletter select, select#newsCat{width:300px;}
 #newsletter select[name="month"]{width:150px !important;}
 .sidebar-block.contact-us img{width:220px !important;}
 .sidebar-block.contact-us a{
@@ -2540,7 +2540,7 @@ dl.data_module img {
     background: url('images/contact-button-hover.jpg')no-repeat;
 }
 #mediadir .reference img{margin-left:22px;}
-#shop #shop_acc_data select{width:321px !important;}
+#shop #shop_acc_data select{width:300px;}
 #shop #shop_acc_data input[type="checkbox"], #shop #shop_payment .message input[type="checkbox"]{float:left;}
 #shop #shop_payment .payment textarea{width:auto !important;}
 #news-links li {
@@ -2559,3 +2559,5 @@ dl.data_module img {
 {
     float:none;
 }
+.form-control {width: 300px; color: #6a6a6a !important;}
+#shop .menu input[type="text"] {font-size: 0.6em; line-height: 1.7em;}

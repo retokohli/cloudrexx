@@ -433,57 +433,7 @@ ul.sf-menu li li li.sfHover ul {
     -ms-transition-duration: 1s;
     transition-duration: 1s;
 }
-/* iPad Landscape */
-@media only screen and (max-width: 1024px) {
-    #container { overflow: hidden;}
-    #homeSlideshow .text h2 {
-        font-size: 1.5em !important;
-        line-height: 2.4em !important;
-    }
-    #homeSlideshow .text p {
-        font-size: .6em;
-    }
-}
-/* iPad Portrait */
-@media only screen and (max-width: 768px) {
-    #sequence {height: 360px;}
-    #homeSlideshow .sequence-prev, #homeSlideshow .sequence-next { display: none !important;}
-    #homeSlideshow .sequence { left: 4%;}
-    #homeSlideshow .right { right: 4%;}
-}
-/*layouts smaller than 600px, iPhone and mobiles*/
-@media only screen and (max-width: 480px), screen and (max-device-width: 480px), screen and (max-width: 600px)  {
-    #sequence {height: 160px;}
-    #homeSlideshow h2 {
-        font-size: 1.1em!important;
-    }
-    #homeSlideshow .controls {display:none;}
-    #homeSlideshow .text h2 {
-        font-size: 1em !important;
-    }
-    #homeSlideshow .text p {display:none;}
-    #homeSlideshow .controls li{
-        width: 25px;
-    }
-    #homeSlideshow .image {
-        top: 20px !important;
-    }
-    #homeSlideshow .text {
-        top: 30px !important;
-    }
-}
-/* iPhone Landscape */
-@media screen and (max-width: 480px) and (orientation: landscape) {
-    #sequence {height: 190px;}
-}
-/* iPhone Retina Portrait */
-@media screen and (max-width: 480px) and (orientation: portrait) {
-    #sequence {height: 180px;}
-    #homeSlideshow .text h2 {
-        font-size: .8em !important;
-    }
-    #homeSlideshow .image { width: 80%;}
-}
+
 /* Browser Resets */
 .flex-container a:active,
 .flexslider a:active,
@@ -532,10 +482,7 @@ html[xmlns] .slides {display: block;}
 .flex-control-thumbs img {width: 100%; display: block; opacity: .7; cursor: pointer;}
 .flex-control-thumbs img:hover {opacity: 1;}
 .flex-control-thumbs .flex-active {opacity: 1; cursor: default;}
-@media screen and (max-width: 860px) {
-    .flex-direction-nav .flex-prev {opacity: 1; left: 0;}
-    .flex-direction-nav .flex-next {opacity: 1; right: 0;}
-}
+
 input[type="submit"], input[type="reset"], input[type="button"]{
     background-color: #757575 !important;
 }

@@ -20,6 +20,7 @@
         <link type="text/css" rel="stylesheet" href="themes/mindful/style.css" />
         <link type="text/css" rel="stylesheet" href="themes/mindful/layout.css" />        
         <link type="text/css" rel="stylesheet" href="themes/mindful/modules.css" />
+        <link type="text/css" rel="stylesheet" href="themes/mindful/responsive.css" />
         {LOGIN_INCLUDE}
         <style>
             .mindfulSocial a {color:#aaaaaa !important;}
@@ -37,11 +38,11 @@
             });
         </script>
         
-        <script type="text/javascript" src="themes/mindful/js/jquery-1.6.1.min.js"></script>
+        
         <script type="text/javascript" src="themes/mindful/js/modernizr.js"></script>
         <script type="text/javascript" src="themes/mindful/js/javascript.js"></script>
-        <script type='text/javascript' src="themes/mindful/js/superfish.js"></script>
-        <script type='text/javascript' src="themes/mindful/js/sequence.jquery-min.js"></script>
+        
+       
         <script type='text/javascript' src="themes/mindful/js/jflickrfeed.js"></script>
         <script type='text/javascript' src="themes/mindful/js/jquery.fitvids.js"></script>
         <script type='text/javascript' src="themes/mindful/js/jquery.isotope.min.js"></script>
@@ -50,8 +51,10 @@
          
             <script type="text/javascript">
             //<![CDATA[
-            jQuery(document).ready(function(){
-                $status = jQuery(".status");
+            var j = jQuery.noConflict();
+             j(document).ready(function(){
+                
+                $status = j(".status");
                 var options = {
                     autoPlayDelay: 6000,
                     hidePreloaderDelay: 500,
@@ -68,21 +71,22 @@
                         speed: 500
                     }
                 };
-                var sequence = jQuery("#sequence").sequence(options).data("sequence");
+                var sequence = j("#sequence").sequence(options).data("sequence");
                 sequence.afterLoaded = function(){
-                    jQuery("#homeSlideshow .controls").fadeIn(100);
-                    jQuery("#homeSlideshow .controls li:nth-child("+(sequence.settings.startingFrameID)+")").addClass("active");
+                    j("#homeSlideshow .controls").fadeIn(100);
+                    j("#homeSlideshow .controls li:nth-child("+(sequence.settings.startingFrameID)+")").addClass("active");
                 }
                 sequence.afterNextFrameAnimatesIn = function(){
-                    jQuery("#homeSlideshow .controls li:not(:nth-child("+(sequence.nextFrameID)+"))").removeClass("active");
-                    jQuery("#homeSlideshow .controls li:nth-child("+(sequence.nextFrameID)+")").addClass("active");
+                    j("#homeSlideshow .controls li:not(:nth-child("+(sequence.nextFrameID)+"))").removeClass("active");
+                    j("#homeSlideshow .controls li:nth-child("+(sequence.nextFrameID)+")").addClass("active");
                 }
-                jQuery("#homeSlideshow .controls li").click(function(){
-                    jQuery(this).removeClass("active").addClass("active");
-                    sequence.nextFrameID = jQuery(this).index()+1;
+                j("#homeSlideshow .controls li").click(function(){
+                    j(this).removeClass("active").addClass("active");
+                    sequence.nextFrameID = j(this).index()+1;
                     sequence.goTo(sequence.nextFrameID);
-                });
-            })
+                }); 
+                j('ul.sf-menu').superfish();
+            });
             //]]>
         </script>                        
         <!--[if IE 6]>
@@ -161,5 +165,7 @@
         </div>
         {LOGIN_CONTENT}
         {COUNTER}
+         <script type='text/javascript' src="themes/mindful/js/sequence.jquery-min.js"></script>
+         <script type='text/javascript' src="themes/mindful/js/superfish.js"></script>
     </body>
 </html>
