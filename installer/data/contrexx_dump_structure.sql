@@ -399,7 +399,7 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_cron_mail_log` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL auto_increment,
   `cron_mail_id` int(11) default NULL,
   `user_id` int(5) NOT NULL,
   `websiteId` int(11) NOT NULL,
