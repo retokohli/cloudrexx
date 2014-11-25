@@ -228,6 +228,9 @@ class LegacyClassLoader {
             $path = $this->cx->getCodeBaseDocumentRootPath();
         }
         $files = glob($path . '/*.php');
+        if (!$files) {
+            return false;
+        }
         foreach ($files as $file) {
             $fileParts = explode('/', $file);
             if (substr(end($fileParts), 0, 1) == '!') {
@@ -254,7 +257,11 @@ class LegacyClassLoader {
             }
             
         }
-        foreach (glob($path.'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
+        $dirs = glob($path.'/*', GLOB_ONLYDIR|GLOB_NOSORT);
+        if (!$dirs) {
+            return false;
+        }
+        foreach ($dirs as $dir) {
             $dirParts = explode('/', $dir);
             if (substr(end($dirParts), 0, 1) == '!') {
                 continue;
@@ -277,7 +284,7 @@ class LegacyClassLoader {
         } else {
             require_once $this->cx->getCodeBaseDocumentRootPath() . '/' . $path;
         }
-        if ( ! class_exists($name, false) ) {
+        if ( !class_exists($name, false) && !interface_exists($name, false)) {
             return false;
         }
         $bytes = memory_get_peak_usage()-$bytes;
@@ -295,6 +302,7 @@ class LegacyClassLoader {
         /*if ($this->tab == 0) {
             echo '<br />';
         }*/
+        return true;
     }
 
     public static function getInstance() {
@@ -309,3 +317,4 @@ class LegacyClassLoader {
         return $this->bytes;
     }
 }
+
