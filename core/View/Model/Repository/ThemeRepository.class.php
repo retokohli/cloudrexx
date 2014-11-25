@@ -71,6 +71,32 @@ class ThemeRepository
     }
     
     /**
+     * get themes by its subtype
+     * 
+     * @param string $type the sub type of the theme
+     * 
+     * @return array array of themes filtered by the sub type
+     */
+    public function getThemesBySubType($type = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB)
+    {
+        $themes = array();
+        foreach($this->findAll() as $theme) {
+            $subType = $theme->getSubtype();
+            if (
+                   $type == $subType 
+                || (
+                       empty($subType)
+                    && in_array($type, array(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB, \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE))
+                   )
+            ) {
+                $themes[] = $theme;
+            }
+        }
+        
+        return $themes;
+    }
+    
+    /**
      * Get a theme by theme id
      * @param int $id the id of the theme
      * @return \Cx\Core\View\Model\Entity\Theme the theme

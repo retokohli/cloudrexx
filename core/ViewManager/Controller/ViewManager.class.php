@@ -236,22 +236,41 @@ class ViewManager
        
        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_overview', 'skins_overview.html');
               
-       $themes = $this->themeRepository->findAll();
+       $subTypeArray = array(
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT,
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF,
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP
+        );
        
-       $themesCollection = array();
-       
-       foreach ($themes as $theme) {           
-           $themesCollection[$theme->getId()] = $theme;  
-       }
-       
-       //sort the themes by its release date
-       uasort($themesCollection, array($this,'sortThemesByReleaseDate'));
-       
-       //Display the themes by its release date
-       foreach ($themesCollection as $theme) {
-           $this->parseThemesData($theme);
-       }
-       
+        foreach ($subTypeArray as $subType) {
+            $themes = $this->themeRepository->getThemesBySubType($subType);
+            
+            $themesCollection = array();
+            foreach ($themes as $theme) {
+                $themesCollection[$theme->getId()] = $theme;
+            }
+
+            //sort the themes by its release date
+            uasort($themesCollection, array($this,'sortThemesByReleaseDate'));
+            
+            $frontEndActiveTemplates = array();
+            foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                $tempTheme = $this->themeRepository->getDefaultTheme($subType, $lang['id']);
+                if ($tempTheme) {
+                    $frontEndActiveTemplates[$tempTheme->getId()] = $tempTheme;
+                    unset($themesCollection[$tempTheme->getId()]);
+                }
+            }
+
+            $themesCollection = array_merge($frontEndActiveTemplates, $themesCollection);
+            
+            foreach ($themesCollection as $theme) {
+                $this->parseThemesData($theme, $subType);
+            }
+        }
+        
        $objTemplate->setGlobalVariable(array(
             'TXT_DELETE'                         => $_ARRAYLANG['TXT_DELETE'],
             'TXT_EDIT'                           => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
@@ -280,54 +299,34 @@ class ViewManager
      * @global type $objTemplate
      * @param type $theme
      */
-    private function parseThemesData($theme) {
+    private function parseThemesData($theme, $subType) {
         global $objTemplate;
         
         $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
         
-        $subTypeArray = array(
-          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB, 
-          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,  
-          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT,  
-          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF,  
-          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP  
-        );
-
-        if ($theme->getSubType() && in_array($theme->getSubType(), $subTypeArray)) {
-            $subTypeArray = array($theme->getSubType());
-        } else {
-            // subtype not present so show only in standard and mobile tabs
-            $subTypeArray = array(
-              \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB,
-              \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE,
-            );
-        }
-
-        foreach ($subTypeArray as $subType) {
-            $activeLanguages   = $theme->getLanguagesByType($subType);
-            foreach ($activeLanguages  as $activeLanguage) {
-                $activatedLanguageCode = \FWLanguage::getLanguageCodeById($activeLanguage);
-                $objTemplate->setVariable(array(
-                    'THEME_ACTIVATED_LANG_CODE' => contrexx_raw2xhtml(strtoupper($activatedLanguageCode))
-                ));
-                $objTemplate->parse('activatedLangCode'. ucfirst($subType));
-
-                $objTemplate->setVariable(array(
-                    "TXT_THEME_STANDARD_DISPLAY"      => "default_active"
-                ));
-            }
+        $activeLanguages   = $theme->getLanguagesByType($subType);
+        foreach ($activeLanguages  as $activeLanguage) {
+            $activatedLanguageCode = \FWLanguage::getLanguageCodeById($activeLanguage);
+            $objTemplate->setVariable(array(
+                'THEME_ACTIVATED_LANG_CODE' => contrexx_raw2xhtml(strtoupper($activatedLanguageCode))
+            ));
+            $objTemplate->parse('activatedLangCode'. ucfirst($subType));
 
             $objTemplate->setVariable(array(
-                'THEME_PREVIEW'                      => $theme->getPreviewImage(),
-                'THEME_ID'                           => $theme->getId(),
-                'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
-                'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
-                'THEME_NAME'                         => contrexx_raw2xhtml($theme->getThemesname()),
-
+                "TXT_THEME_STANDARD_DISPLAY"      => "default_active"
             ));
-            
-            $objTemplate->parse('themes'. ucfirst($subType));
         }
+
+        $objTemplate->setVariable(array(
+            'THEME_PREVIEW'                      => $theme->getPreviewImage(),
+            'THEME_ID'                           => $theme->getId(),
+            'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
+            'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
+            'THEME_NAME'                         => contrexx_raw2xhtml($theme->getThemesname()),
+
+        ));
+
+        $objTemplate->parse('themes'. ucfirst($subType));
                 
     }
 
@@ -1388,7 +1387,7 @@ CODE;
         $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'skins` (`themesname`, `foldername`, `expert`) VALUES ("'.contrexx_raw2db($themesName).'", "'.contrexx_raw2db($themesFolder).'", 1)');
 
         return $objDatabase->Insert_ID();
-    }
+    }        
 
     /**
      * Get the file's full path
