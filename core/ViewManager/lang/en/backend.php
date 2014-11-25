@@ -199,3 +199,4 @@ $_ARRAYLANG['TXT_THEME_FILESYSTEM'] = 'Import from filesystem (%s directory)';
 $_ARRAYLANG['TXT_VIEWMANAGER_THEME_SELECTION_TXT'] = 'Select the source from where you would like to import a new theme';
 $_ARRAYLANG['TXT_VIEWMANAGER_THEME'] = 'Theme';
 $_ARRAYLANG['TXT_VIEWMANAGER_SOURCE'] = 'Source';
+$_ARRAYLANG['TXT_THEME_ERROR_IN_INSERT_THEME'] = 'Could not save the theme in database.';

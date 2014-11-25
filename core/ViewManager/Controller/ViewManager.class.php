@@ -817,8 +817,11 @@ CODE;
                     return false;
                 }
                 
-                $this->insertSkinIntoDb($themeName, $existingThemeInFilesystem);
-                $this->strOkMessage  = contrexx_raw2xhtml($themeName).' '.$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+                $this->validateThemeName($themeName);
+                
+                if ($this->insertSkinIntoDb($themeName, $existingThemeInFilesystem)) {
+                    $this->strOkMessage  = contrexx_raw2xhtml($themeName).' '.$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+                }
                 break;
             //everything else should never be the case
             default:
@@ -1177,7 +1180,7 @@ CODE;
                 }
                 
                 $this->replaceThemeName($copyFromTheme, $dirName, $this->websiteThemesPath.$dirName);
-                $this->insertSkinIntoDb($themeName, $dirName);
+                $this->insertSkinIntoDb($themeName, $dirName);                
                 $this->strOkMessage  = $themeName." ". $_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
                 $_POST['themes'] = $dirName;
                 $this->overview();  
@@ -1380,12 +1383,17 @@ CODE;
      */
     private function insertSkinIntoDb($themesName, $themesFolder)
     {
-        global $objDatabase;
-
-        $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'skins` (`themesname`, `foldername`, `expert`) VALUES ("'.contrexx_raw2db($themesName).'", "'.contrexx_raw2db($themesFolder).'", 1)');
-
-        return $objDatabase->Insert_ID();
-    }        
+        global $_ARRAYLANG, $objDatabase;
+                
+        $objResult = $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'skins` (`themesname`, `foldername`, `expert`) VALUES ("'.contrexx_raw2db($themesName).'", "'.contrexx_raw2db($themesFolder).'", 1)');
+        
+        if ($objResult) {
+            return $objDatabase->Insert_ID();
+        } else {
+            $this->strErrMessage = $_ARRAYLANG['TXT_THEME_ERROR_IN_INSERT_THEME'];
+            return false;
+        }
+    }
 
     /**
      * Get the file's full path
