@@ -229,7 +229,10 @@ class ThemeRepository
         $themes = array();
         
         foreach ($themesArray as $themeId) {
-            $themes[] = $this->findById($themeId);
+            $theme = $this->findById($themeId);
+            if ($theme) {
+                $themes[] = $theme;
+            }
         }
         
         return $themes;        
