@@ -1,0 +1,24 @@
+Cx\Core_Modules\SysLog\Model\Entity\Log:
+  type: entity
+  table: syslog
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    timestamp:
+      type: datetime
+
+    severity:
+      type: string
+
+    message:
+      type: string
+
+    data:
+      type: string
+
+    logger:
+      type: string
+ 
