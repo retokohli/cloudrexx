@@ -97,3 +97,7 @@ a.deleteMultisiteConfig {
     margin-bottom: 10px;
     width: 100%;
 } 
+
+.stopexecutionQuery.ui-button {
+    display :none;
+}

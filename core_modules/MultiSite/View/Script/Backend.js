@@ -2,6 +2,10 @@
     cx.ready(function() {
         $('#instance_table').append('<div id ="load-lock"></div>');
         
+        cx.multisite();
+        
+        cx.multisite.ajaxResponse = '';
+        
         $(".defaultCodeBase").change(function() {
             domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=updateDefaultCodeBase";
             cx.jQuery.ajax({
@@ -185,16 +189,60 @@
                 }
             });
         });
+        
         // execute query on websites / service server's websites
         $('.executeQuery').click(function() {
             cx.bind('loadingStart', executeQueryLock, 'executeSql');
             cx.bind('loadingEnd', executeQueryUnlock, 'executeSql');
-            var title = $(this).attr('title');
-            var paramsArr = ($(this).attr('data-params')).split(':');
-            var argName = paramsArr[0];
-            var argValue = paramsArr[1];
-            var sessionRandomKey = '';
-            var initialContent = '<div><form id="executeSql"><div id="statusMsg"></div><div class="resultSet"></div><textarea rows="10" cols="100" class="queryContent" name="executeQuery"></textarea></form></div>';
+
+            var title = $(this).attr('title'),
+                paramsArr = ($(this).attr('data-params')).split(':'),
+                argName = paramsArr[0],
+                argValue = paramsArr[1],
+                initialContent = '<div><form id="executeSql"><div id="statusMsg"></div><div class="resultSet"></div><textarea rows="10" cols="100" class="queryContent" name="executeQuery"></textarea></form></div>',
+                buttons = [
+                    {
+                        text: "Cancel",                            
+                        click: function() {
+                            cx.multisite.ajaxResponse.abort();
+                            cx.trigger("loadingEnd", 'multisiteAjaxcall', {});
+                            cx.tools.StatusMessage.removeAllDialogs();
+                            $(this).dialog('close');
+                        }
+                    },
+                    {
+                        text: "Execute",
+                        class: "executeQuery",
+                        click: function() {
+                            var query = $('.queryContent').val();
+                            if ($.trim(query) == '') {
+                                cx.tools.StatusMessage.showMessage(cx.variables.get('plsInsertQuery', "multisite/lang"), null, 3000);
+                                return false;
+                            } else {
+                                cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+                                cx.trigger('loadingStart', 'executeSql', {});
+                                $('.resultSet').html('');
+                                cx.multisite.MultisiteAjaxCall(
+                                        cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql",
+                                        {
+                                            query: query,
+                                            mode: argName,
+                                            id: argValue,
+                                            command: 'executeSql'
+                                        },
+                                        cx.multisite.callbackSqlQueryExecution
+                                );
+                            }
+                        }
+                    },
+                    {
+                        text: "Stop Execution...",
+                        class: "stopexecutionQuery",
+                        click: function() {
+                            cx.trigger('loadingEnd', 'executeSql', {});
+                        }
+                    }
+                ];
             cx.ui.dialog({
                 width: 820,
                 height: 400,
@@ -202,79 +250,13 @@
                 content: initialContent,
                 autoOpen: true,
                 modal: true,
-                buttons: {
-                    'Cancel': function() {
-                        $('#executeSql').remove();
-                        $(this).dialog('close');
-                    },
-                    'Execute': function() {
-                        cx.trigger('loadingStart', 'executeSql', {});
-                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
-                        var query = $('.queryContent').val();
-                        if ($.trim(query) == '') {
-                            cx.tools.StatusMessage.showMessage(cx.variables.get('plsInsertQuery', "multisite/lang"), null, 3000);
-                            cx.trigger('loadingEnd', 'executeSql', {});
-                            return false;
-                        } else {
-                            if ($('.ui-dialog-buttonpane button:contains("Stop Execution...") span').hasClass('stop-execution')) {
-                                domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=stopQueryExecution";
-                                $.ajax({
-                                    url: domainUrl,
-                                    type: 'POST',
-                                    dataType: 'json',
-                                    data: {sessionRandomKey: sessionRandomKey},
-                                    success: function(response) {
-                                        cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
-                                        $('.ui-dialog-buttonpane button:contains("Stop Execution...") span').text('Execute').removeClass('stop-execution');
-                                    }
-                                });
-                                
-                            } else {
-                                $('.resultSet').html('');
-                                $('.ui-dialog-buttonpane button:contains("Stop Execution...") span').addClass('stop-execution');
-                                domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=executeSql";
-                                $.ajax({
-                                    url: domainUrl,
-                                    type: 'POST',
-                                    data:{
-                                        query: query,
-                                        mode: argName,
-                                        id: argValue,
-                                        command: 'executeSql'
-                                        },
-                                    dataType: 'json',
-                                    success: function(response) {
-                                        if (response.status == 'success') {
-                                            if (response.data.status == 'success') {
-                                                switch (argName) {
-                                                    case 'website':
-                                                        $('.resultSet').html(parseQueryResult(response.data.queryResult));
-                                                        cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
-                                                        cx.trigger('loadingEnd', 'executeSql', {});
-                                                        break;
-                                                    case 'service':
-                                                        sessionRandomKey = response.data.randomKey;
-                                                        executeSql(response.data.randomKey);
-                                                        break;
-                                                    default:
-                                                        break;
-                                                }
-                                            } else {
-                                                $('#statusMsg').text(response.data.message);
-                                                cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
-                                                cx.trigger('loadingEnd', 'executeSql', {});
-                                            }
-                                        } else {
-                                            cx.tools.StatusMessage.showMessage(response.message, null, 3000);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                },
-                close: function() { 
+                buttons: buttons,
+                close: function() {
                     $('#executeSql').remove();
+                    cx.trigger("loadingEnd", 'multisiteAjaxcall', {});
+                    cx.multisite.ajaxResponse.abort();
+                    cx.tools.StatusMessage.removeAllDialogs();
+                    $(this).dialog('close');
                 }
             });
         });
@@ -284,7 +266,8 @@
          */
         var executeQueryLock = function() {
             $('.queryContent').attr('readonly', true);
-            $('.ui-dialog-buttonpane button:contains("Execute") span').text('Stop Execution...');
+            $('.executeQuery.ui-button').hide();
+            $('.stopexecutionQuery.ui-button').show();
         };
         
         /**
@@ -292,9 +275,101 @@
          */
         var executeQueryUnlock = function() {
             $('.queryContent').attr('readonly', false);
-            $('.ui-dialog-buttonpane button:contains("Stop Execution...") span').text('Execute').removeClass('stop-execution');
+            $('.stopexecutionQuery.ui-button').hide();
+            $('.executeQuery.ui-button').show();
         };
-            
+        
+        //Execute Sql Query on website/service 
+        cx.multisite.callbackSqlQueryExecution = function(response) {
+            if (response.status == 'success') {
+                switch (response.mode) {
+                    case 'website':
+                        if ($('.stopexecutionQuery.ui-button').is(':visible')) {
+                            $('.resultSet').html(parseQueryResult(response.queryResult));
+                            cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
+                            cx.trigger('loadingEnd', 'executeSql', {});
+                        } else {
+                            cx.multisite.MultisiteAjaxCall(
+                                    cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=stopQueryExecution",
+                                    {sessionRandomKey: response.randomKey}
+                            );
+                        }
+                        break;
+                    case 'service':
+                        cx.multisite.executeSql(response.randomKey);
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $('#statusMsg').text(response.message);
+                cx.tools.StatusMessage.showMessage(response.message, null, 3000);
+                cx.trigger('loadingEnd', 'executeSql', {});
+            }
+        };
+        
+        //Execute sql Query By Session
+        cx.multisite.callbackExecuteSqlQueryBySession = function(response) {
+            switch (response.status) {
+                case 'success':
+                    offset = 0;
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "<span> ( " + response.websitesDone + " / " + response.totalWebsites + " ) </span></div>");
+
+                    if (response.queryResult == null) {
+                        $('.resultSet').append('<div><table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%"><tbody><tr><th>' + response.websiteName + '</th></tr><tr class="row1"><td><div class="alertbox">' + cx.variables.get('errorMsg', 'multisite/lang') + '</div></td></tr></tbody></table></div>');
+                    } else {
+                        $('.resultSet').append(parseQueryResult(response.queryResult));
+                    }
+
+                    $(".resultSet > div:not(:last)").each(function(i, e) {
+                        offset += $(e).outerHeight(true);
+                    });
+                    $('.ui-dialog-content').animate({scrollTop: offset}, 'slow');
+                    cx.multisite.executeSql(response.randomKey);
+                    break;
+                case 'error':
+                    cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000);
+                    cx.trigger('loadingEnd', 'executeSql', {});
+                    return;
+                    break;
+                default:
+                    break;
+            }
+        };
+        
+        //Multisite AjaxCall Manipulation
+        cx.multisite.MultisiteAjaxCall = function (url, data, callback) {            
+            cx.bind('loadingStart', cx.lock, 'multisiteAjaxcall');
+            cx.bind('loadingEnd', cx.unlock, 'multisiteAjaxcall');
+            cx.trigger("loadingStart", 'multisiteAjaxcall', {});
+            cx.multisite.ajaxResponse = $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    if (response.status == 'success') {
+                        if (callback && typeof (callback) === "function") {
+                            callback(response.data);
+                        } else {
+                            switch (response.data.status) {
+                                case 'success':
+                                    cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
+                                    break;
+                                case 'error':
+                                    cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    } else {
+                        cx.tools.StatusMessage.showMessage(response.message, null, 4000);
+                    }
+                    cx.trigger("loadingEnd", 'multisiteAjaxcall', {});
+                }
+            });
+        };
+        
         /**
          * Show the Executed Query result in dialog window
          */
@@ -461,46 +536,19 @@
         /**
          * Execute the queued Sql Query in corresponding website
          */
-        var executeSql = function(randomKey) {
-            domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + 'index.php?cmd=JsonData&object=MultiSite&act=executeQueryBySession';
-            
-            $.ajax({
-                url: domainUrl,
-                type: 'POST',
-                dataType: 'json',
-                data: {randomKey: randomKey},
-                success: function(response) {
-                    if (response.status == 'success') {
-                        switch (response.data.status) {
-                            case 'success':
-                                offset = 0;
-                                cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "<span> ( " + response.data.websitesDone + " / " + response.data.totalWebsites + " ) </span></div>");
-
-                                if (response.data.queryResult == null) {
-                                    $('.resultSet').append('<div><table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%"><tbody><tr><th>' + response.data.websiteName + '</th></tr><tr class="row1"><td><div class="alertbox">' + cx.variables.get('errorMsg', 'multisite/lang') + '</div></td></tr></tbody></table></div>');
-                                } else {
-                                    $('.resultSet').append(parseQueryResult(response.data.queryResult));
-                                }
-
-                                $(".resultSet > div:not(:last)").each(function(i, e) {
-                                    offset += $(e).outerHeight(true);
-                                });
-                                $('.ui-dialog-content').animate({scrollTop: offset}, 'slow');
-                                executeSql(randomKey);
-                                break;
-                            case 'error':
-                                cx.tools.StatusMessage.showMessage(cx.variables.get('completedMsg', 'multisite/lang'), null, 3000); 
-                                cx.trigger('loadingEnd', 'executeSql', {});
-                                return;
-                                break;
-                            default:
-                                break;
-                        }
-                    } else {
-                        cx.tools.StatusMessage.showMessage(response.message, null, 3000);
-                    }
-                }
-            });
+        cx.multisite.executeSql = function(randomKey) {
+            if ($('.stopexecutionQuery.ui-button').is(':visible')) {
+                cx.multisite.MultisiteAjaxCall(
+                        cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + 'index.php?cmd=JsonData&object=MultiSite&act=executeQueryBySession',
+                        {randomKey: randomKey},
+                        cx.multisite.callbackExecuteSqlQueryBySession
+                );
+            } else {
+                cx.multisite.MultisiteAjaxCall(
+                        cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=stopQueryExecution",
+                        {sessionRandomKey: randomKey}
+                );
+            } 
         };
     });
 })(jQuery);
@@ -1041,3 +1089,7 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
     }
     return htmlResult;
 }
+
+cx.multisite = function() {
+    return true;
+};

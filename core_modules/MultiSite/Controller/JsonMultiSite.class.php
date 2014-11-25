@@ -2045,7 +2045,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
                         if ($resp->status == 'success') {
                             if ($resp->data->status) {
-                                return array('status' => 'success', 'queryResult' => $resp->data);
+                                return array('status' => 'success', 'queryResult' => $resp->data, 'mode' => $params['post']['mode']);
                             }
                             return array('status' => 'error', 'message' => $resp->data->error);
                         }
@@ -2081,7 +2081,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             }
                         }
                         $_SESSION['MultiSite']['totalWebsites'] = $totalWebsiteCount;
-                        return array('status' => 'success','randomKey' => $randomKey);
+                        return array('status' => 'success','randomKey' => $randomKey, 'mode' => $params['post']['mode']);
                     }
                     break;
 
@@ -2204,7 +2204,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             $resp = self::executeCommandOnWebsite('executeSql', array('query' => $query, 'websiteName' => $websiteName), $website);
                             unset($_SESSION['MultiSite']['executeSql'][$randomKey][$websiteId]);
                             $websitesDone = $_SESSION['MultiSite']['totalWebsites'] - count($_SESSION['MultiSite']['executeSql'][$randomKey]);
-                            return array('status' => 'success', 'queryResult' => $resp->data, 'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'], 'websitesDone' => $websitesDone, 'websiteName' => $websiteName);
+                            return array('status' => 'success', 'queryResult' => $resp->data, 'totalWebsites' => $_SESSION['MultiSite']['totalWebsites'], 'websitesDone' => $websitesDone, 'websiteName' => $websiteName, 'randomKey' => $randomKey);
                         }
                     }
                     return array('status' => 'error', 'message' => 'Failed to execute the Query.');
