@@ -4559,6 +4559,18 @@ CREATE TABLE `contrexx_stats_visitors_summary` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_syslog` (
+  `id` int(11) NOT NULL auto_increment,
+  `timestamp` datetime NOT NULL,
+  `severity` enum('INFO','WARNING','FATAL') NOT NULL,
+  `message` varchar(255) NOT NULL,
+  `data` varchar(255) NOT NULL,
+  `logger` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL auto_increment,
   `nickname` varchar(80) NOT NULL default '',

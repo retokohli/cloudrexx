@@ -698,6 +698,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (98,'Test','core'
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (99,'Routing','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (100,'Support','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (103,'Cron','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (104,'SysLog','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (904,'User','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
@@ -6018,6 +6019,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (904,'User','Comvation AG','TXT_CORE_USER_DESCRIPTION','y',1,1,1,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (100,'Support','Comvation AG','TXT_MODULE_SUPPORT_DESCRIPTION','n',1,0,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (103,'Cron','Comvation AG','TXT_CORE_MODULE_CRON_DESCRIPTION','y',1,1,1,1);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (104,'SysLog','Comvation AG','TXT_CORE_MODULE_SYSLOG_DESCRIPTION','y',0,1,1,1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
