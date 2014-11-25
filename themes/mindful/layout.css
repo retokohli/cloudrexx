@@ -462,7 +462,7 @@ a.button, #footer a.button, #searchsubmit, input[type="submit"], input[type="res
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 2px;
-    margin: 3px 5px 0 0 !important;
+    margin: 3px 5px 0 0;
     line-height: normal !important;
     border: none;
     -webkit-appearance: none;
@@ -486,18 +486,19 @@ a.button, #footer a.button {
     position: relative;
 }
 #projects .thumbs {
-    margin: 0 auto 10px;
+/*    margin: 0 auto 10px;*/
+    margin: 0 -10px 10px -10px;
 }
 #content #projects li{
     padding: 0;
     background: none;
 }
 #content .project.small{
-    max-width: 215px;
+    max-width: 235px;
     height: auto;
     display: block;
     margin: 0 0 20px 0 !important;
-    padding-bottom: 0;
+    padding: 0 10px 0 10px;
     cursor: pointer;
     float: left;
     position: relative;
@@ -736,223 +737,7 @@ a.button, #footer a.button {
     float: right;
     margin-right: 0%;
 }
-/*////////////////////////////////////////////////////////////////////
-//  12 - Media Queries
-////////////////////////////////////////////////////////////////////*/
-/* iPad Portrait */
-@media only screen and (max-width: 768px) {
-    #homeMessage p {
-        font-size: 30px;
-        line-height: 1em;
-    }
-    #mainNav ul{
-        display:none;
-    }
-    #mainNav select{
-        display:block !important;
-        width: 220px;
-    }
-    #content .project.small{
-    }
-    #sidebar {
-        float: none;
-        width: 97%;
-        margin-left: 3%;
-        padding-bottom: 30px!important;
-        padding-top: 10px;
-    }
-    #content.threeFourth {
-        width: 94% !important;
-        float: none;
-    }
-    .sidebarBox {
-        float: left;
-        margin: 0 3% 30px 0;
-    }
-    #comments { width: 100%;}
-    label{
-        width:100% !important;
-        margin-left: 0 !important;
-    }
-    form p{padding-left: 0 !important;}
-    #sidebar .oneFourth{clear:both !important;}
-    table{width:100% !important;}
-}
-/* iPad Landscape */
-@media only screen and (max-width: 1024px) {
-}
-/*layouts smaller than 600px, iPhone and mobiles*/
-@media only screen and (max-width: 480px), screen and (max-device-width: 480px), screen and (max-width: 600px)  {
-    html {
-        -webkit-text-size-adjust: none;
-    }
-    h1 { font-size: 1.2em;}
-    h2 { font-size: 1.1em;}
-    h3 { font-size: 1.0em;}
-    h4 { font-size: .9em;}
-    h5 { font-size: .8em;}
-    #header #logo {
-        width: auto;
-        float:left;
-    }
-    #header #logo img {
-        max-width: 100%;
-        height: auto;
-    }
-    #pageHead h1 { font-size: 1.2em; line-height:18px;}
-    #pageHead {
-        padding: 10px 0 20px 0;
-    }
-    .flex-direction-nav, .flex-control-nav, .flex-caption { display: none !important;}
-    #mainNav {
-        position: relative;
-        width: auto;
-        margin-top: 0;
-        top:0;
-        float:right;
-    }
-    #mainNav li{
-        margin: 0 0 0 3%;
-    }
-    #mainNav ul{
-        margin: 0 0 0 10px;
-        display:none;
-    }
-    #mainNav select{
-        display:block !important;
-        width: 220px !important;
-    }
-    #logo {
-        float: none;
-        margin-bottom: 10px;
-    }
-    #projects .full {width: 100%;}
-    #content .project.small {
-        margin: 0 10px 15px 0 !important;
-    }
-    #homeMessage {
-        padding-bottom: 20px !important;
-    }
-    #homeMessage p {
-        font-size: 20px;
-        line-height: 1.2em;
-    }
-    #content .post {
-        margin-bottom: 20px;
-        padding-bottom: 5px!important;
-    }
-    .post .moreLink {
-        display: none;
-    }
-    #footer { padding: 0 !important;}
-    #footer #flickrBox .flickrImage {
-        margin: 0 5px 5px 0;
-    }
-    #footer .secondary{
-        text-align: center;
-        margin-bottom: 0!important;
-    }
-    #footer .secondary p{
-        margin: 0px;
-        padding: 0px;
-    }
-    #footer .inside {
-    }
-    #footer .secondary .left,
-    #footer .secondary .right{
-        float: none;
-        margin: 0px !important;
-    }
-    #footer .secondary .right{
-        float: none;
-        padding-bottom: 15px;
-    }
-    #footer .oneThird{clear:both !important;}
-    .gallery-item img{
-        width: 90%;
-    }
-    label{
-        width:100% !important;
-        margin-left: 0 !important;
-    }
-    form p{padding-left: 0 !important;}
-    #sidebar .oneFourth{clear:both !important;}
-    table{width:100% !important;}
-    /*Column Shortcodes------------------*/
-    .one_half,.one_third,.two_third{ position:relative; margin-left:0; margin-right:0; display:block; float:none; width:auto; }
-}
-/* iPhone Landscape */
-@media screen and (max-width: 480px) and (orientation: landscape) {
-    .menu_group_Box {
-        width: 43%;
-        float: left;
-    }
-    #mainNav ul{
-        margin: 0 0 0 17px;
-        display:none;
-    }
-    #mainNav select{
-        display:block !important;
-    }
-    .page-template-page-portfolio-php #content.full, .home #content.full{
-        margin-left: 3% !important;
-        margin-right: 0px!important;
-        width: 97% !important;
-    }
-    #content .thumbs {
-        margin-left: 0 !important;
-    }
-    label{
-        width:100% !important;
-        margin-left: 0 !important;
-    }
-    form p{padding-left: 0 !important;}
-    #sidebar .oneFourth{clear:both !important;}
-    #footer .oneThird{clear:both !important;}
-    table{width:100% !important;}
-}
-/* iPhone Portrait */
-@media screen and (max-width: 480px) and (orientation: portrait) {
-    #mainNav ul{
-        margin: 0 0 0 3%;
-        display:none;
-    }
-    #mainNav select{
-        display:block !important;
-    }
-    .menu_group_Box {
-        width: 94%;
-        float: none;
-        margin: 0 2% 20px 2%;
-    }
-    #homeMessage  {
-        padding-top: 0;
-        font-size: 16px !important;
-    }
-    .page-template-page-portfolio-php #content.full, .home #content.full {
-        margin-left: 15px!important;
-        margin-right: 0px!important;
-        width: 94% !important;
-    }
-    #content .project.small {
-        margin-bottom: 10px !important;
-    }
-    #commentForm input[type="text"], #comments input[type="text"] {
-        width: 40% !important;
-        margin-right: 5px !important;
-    }
-    #commentForm label, #comments label {
-        font-size: .8em;
-    }
-    label{
-        width:100% !important;
-        margin-left: 0 !important;
-    }
-    form p{padding-left: 0 !important;}
-    #sidebar .oneFourth{clear:both !important;}
-    #footer .oneThird{clear:both !important;}
-    table{width:100% !important;}
-}
+
 #subnavigation li.level-1 > a,
 #subnavigation li ul {
     display: none;
