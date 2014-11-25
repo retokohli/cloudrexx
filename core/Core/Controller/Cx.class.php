@@ -2154,6 +2154,14 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Return the folder name used for the themes (/themes).
+         * @return string
+         */
+        public function getThemesFolderName() {
+            return self::FOLDER_NAME_THEMES;
+        }
+
+        /**
          * Set the path to the location of the website's Code Base in the file system.
          * @param string The base path of the Code Base (webserver's DocumentRoot path).
          * @param string The offset path from the webserver's DocumentRoot to the
