@@ -7,8 +7,10 @@
         width: 100%;
         height: auto;
     }
-    #podcast .media div +div {
-        padding-left: 0;
+    .container #mediadir .reference {
+        margin-bottom: 20px;
+        height: auto; 
+        padding: 30px;
     }
     #podcast_container embed {
         width: 100% !important;
@@ -540,6 +542,8 @@
     /*MediaDir Edit Start*/
     .mediadirSelector .mediadirSelectorCenter {
         padding: 5px 65px 0 !important;
+        width: 100%;
+        margin: 10px 0;
     }
     /*MediaDir Edit End*/
     .row .image img {
@@ -563,12 +567,91 @@
     #page #forum div.notification_center {
         padding: 20px 0px 20px 0px;
     }
+    /*new custom*/
+    .col-sm-4.col-md-4,p #captcha {
+        float: left;
+        width: 100% !important;
+    }
+    .container form p , .container select.form-control {
+        width: 100%;
+        padding-left: 0;
+    }
+    #shop_acc_data input.btn.btn-default {
+        margin-bottom: 10px;
+    }
+    .order input {
+        word-wrap: break-word;
+        width: 100% !important;
+        float: left !important;
+    }
+    input.contactFormClass_button.btn.btn-default {
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+    .row, .thumbnails {
+        margin: 0 !important;
+    }
+    .login-bottom a, .searchform .checkbox {
+        padding-left: 0;
+    }
+    #mediadir .mediadirSearchForm .mediadirButtonSearch {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    .member_list td {
+        float: left;
+        width: 100% !important;
+    }
+    input.searchbox {
+        margin-bottom: 10px;
+    }
+    input[type="file"], #guestbook div.date, #guestbook div.location, #mediadir .mapLarge {
+
+        width: 100%;
+    }
+    #forum div.anchor, #forum div.anchor-polo {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    #forum div.notification_center {
+        padding: 20px 0px 20px 0px;
+        width: 100%;
+        height: auto; 
+    }
+    .search_form select[name="id"] {
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+    .mediadirSelector .col-md-offset-3 > div {
+        float: left;
+        width: 100%;
+        padding: 0;
+    }
+    select#podcast_category_menu {
+        margin-bottom: 10px;
+    }
+    #livecam img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 5px;
+    }
+    input[type="file"], .container #mediadir .employee-middle, .container #mediadir .employee-left, .container #newsletter form select, body input[type="text"], body input[type="password"], body input[type="number"], body select, body form select, body textarea {width: 100% !important;}
 }
 @media (min-width: 768px) and (max-width: 979px) {
     #home-page {padding: 0 15px;}
     .home-box.col-md-4 {width: 100%;margin-bottom: 30px;}
     #content-wrapper {
         padding-bottom: 168px;
+    }
+    #forum div.notification_center {
+        padding: 20px 0px 20px 0px;
+        width: 100%;
+        height: auto; 
+    }
+    #livecam img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 5px;
     }
     #media_div .table-responsive {
         width: 100%;
@@ -610,7 +693,11 @@
         clear: both;
     }
     /*MediaDir Edit End*/
-    #mediadir .reference {margin-bottom: 20px;}
+    .container #mediadir .reference {
+        margin-bottom: 20px;
+        height: auto; 
+        padding: 30px;
+    }
     .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
     #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}

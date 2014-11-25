@@ -9,6 +9,7 @@ body p {
 }
 .nav > li.level-1 > ul {
     display: none;
+    margin-top: 0;
 }
 .nav > li.level-1.open > ul {
     display: block;
@@ -667,7 +668,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     margin-top: 22px;
 }
 input, button, select, textarea {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif !important;
 }
 .input-append .add-on, .input-prepend .add-on {
     background-color: #dfe5e8;
@@ -1175,7 +1176,7 @@ ul.social-icons li a:hover {
     }
     /*sub-page styles*/
     form p {
-        width: auto !important;
+        width: 100% !important;
         padding-left: 0 !important;
     }
     form p label {
@@ -1191,39 +1192,6 @@ ul.social-icons li a:hover {
         float: left;
         clear: both;
     }
-}
-@media (max-width: 767px) {
-    .col-sm-4.col-md-4,p #captcha {
-        float: left;
-        width: 100% !important;
-    }
-    .container form p , .container select.form-control {
-        width: 100%;
-        padding-left: 0;
-    }
-    #shop_acc_data input.btn.btn-default {
-        margin-bottom: 10px;
-    }
-    .order input {
-        word-wrap: break-word;
-        width: 100% !important;
-        float: left !important;
-    }
-    input.contactFormClass_button.btn.btn-default {
-        margin-left: 0;
-        margin-bottom: 10px;
-    }
-    .row, .thumbnails {
-        margin: 0 !important;
-    }
-    .login-bottom a {
-        padding-left: 0;
-    }
-    #mediadir .mediadirSearchForm .mediadirButtonSearch {
-        margin-left: 0;
-        margin-top: 10px;
-    }
-    .container #mediadir .employee-middle, .container #mediadir .employee-left, .container #newsletter form select, body input[type="text"], body input[type="password"], body input[type="number"], body select, body form select, body textarea {width: 100%;}
 }
 /* Desktops and laptops ----------- */
 @media (min-width: 980px) and (max-width: 1699px) {
@@ -1402,7 +1370,6 @@ ul.social-icons li a:hover {
     font-size: 14px;
     font-weight: 800;
 }
-form select{width: 326px;}
 input[type="text"], input[type="password"], input[type="number"], select, textarea {
     width: 300px;
     padding: 7px 12px 8px 12px;
@@ -1517,6 +1484,7 @@ body .navbar-fixed-top {
 }
 body #page-title h2 {
     color: #626C72;
+    word-wrap: break-word;
 }
 .page {
     font-size: 16px;
