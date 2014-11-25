@@ -1,9 +1,22 @@
 <?php
+/**
+ * System log
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author       Michael Ritter <michael.ritter@comvation.com>
+ * @package      contrexx
+ * @subpackage   coremodule_syslog
+ * @version      5.0.0
+ */
 
 namespace Cx\Core_Modules\SysLog\Model\Entity;
 
 /**
- * Cx\Core_Modules\SysLog\Model\Entity\Log
+ * Entity for system logs
+ * @copyright    CONTREXX CMS - COMVATION AG
+ * @author       Michael Ritter <michael.ritter@comvation.com>
+ * @package      contrexx
+ * @subpackage   coremodule_syslog
+ * @version      5.0.0
  */
 class Log extends \Cx\Model\Base\EntityBase {
     
