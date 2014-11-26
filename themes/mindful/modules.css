@@ -85,8 +85,9 @@ form input[type="submit"] {
     border: 0 none;
 }
 #login form input.remember_me {    
-    margin-top: 11px;
+    margin-top: 5px;
     float: left;
+    position: relative;
 }
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABLES IN MODULES    */
@@ -1070,6 +1071,7 @@ div.row2 {
     width: 100%;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 15px 0px;
+    float: left;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR SHOP MODULE                 */
@@ -2295,17 +2297,15 @@ dl.data_module img {
     border: 0;
 }
 #mediadir .employee-left {
-    float: left;
-    width: 25%;
+    float: left;   
 }
 #mediadir .employee-left img {
     float: left;
-    max-width: 90%;
+    max-width: 100%;
     max-height: 200px;
 }
 #mediadir .employee-middle {
-    float: left;
-    width: 30%;
+    float: left;    
 }
 #mediadir .employee-title {
     float: left;
@@ -2317,8 +2317,7 @@ dl.data_module img {
     clear: left;
 }
 #mediadir .employee-right {
-    float: left;
-    width: 45%;
+    float: left;   
 }
 .ie7 #container #mediadir .employee-right {width: 44% !important;}
 #mediadir .employee-more {
@@ -2326,10 +2325,9 @@ dl.data_module img {
 }
 .ie7 #container #mediadir .reference{width: 29% !important;}
 #mediadir .reference {
-    float: left;
-    width: 30%;
+    float: left;    
     height: 120px;
-    margin: 0 3% 20px 0;
+    margin: 0 0 20px 0;
     text-align: center;
     border: 1px solid #DDDDDD;
     box-shadow: 3px 3px 8px #DDDDDD;
@@ -2561,3 +2559,17 @@ dl.data_module img {
 }
 .form-control {width: 300px; color: #6a6a6a !important;}
 #shop .menu input[type="text"] {font-size: 0.6em; line-height: 1.7em;}
+#contactForm input[type="submit"], #newsletter input[type="submit"] {margin-left: 250px;}
+#mediadir .reference img {margin-top: 39px !important;}
+#right-login .checkbox {float: left;}
+#directory .form-control, #forum .form-control {width: 100%;}
+#directory .selectorCenter {float: left; padding: 60px 15px;}
+#directory .categorySelect {margin-bottom: 20px;}
+.form-control:focus {
+border-color: #AEAC7A;
+outline: 0;
+-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(174, 172, 122, 0.6);
+box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(174, 172, 122, 0.6);
+}
+.news {float: left;}
+#guestbook .entries .row {margin-left: 0; margin-right: 0;}

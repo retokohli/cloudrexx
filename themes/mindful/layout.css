@@ -315,7 +315,7 @@ a.action {
 #content {
     margin: 0 0 20px 3%;
     padding: 0 0 0 0 !important;
-    width: 70%;
+    width: 67%;
     float: left;
     min-height:450px;
 }
@@ -814,4 +814,8 @@ ul.horizontal-list li a{
 }
 .ie7 #main{
     float:left
+}
+#contactForm .row {
+    margin-left: 0;
+    margin-right: 0;
 }
