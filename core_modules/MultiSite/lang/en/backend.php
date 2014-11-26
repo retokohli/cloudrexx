@@ -159,7 +159,7 @@ $_ARRAYLANG['TXT_MULTISITE_QUERY_IS_EMPTY'] = 'JsonMultiSite : sql query is empt
 $_ARRAYLANG['TXT_MULTISITE_SEARCH'] = 'Search';
 $_ARRAYLANG['TXT_MULTISITE_FILTER'] = 'Filter';
 $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'] = 'Enter your search term';
-$_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'] = " rows affected successfully";
+$_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'] = " row(s) %s successfully.";
 
 //Multisite website status message
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CONFIG_TITLE']             = "Multisite configuration data of a website ";

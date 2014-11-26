@@ -2091,16 +2091,28 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $querys   = $this->extractSqlQueries($params['post']['query']);
                         foreach ($querys as $key => $query) {
                             switch(true) {
-                                case preg_match('/^SELECT/', (strtoupper($query))):
+                                case preg_match('/^(SELECT|DESC|SHOW|EXPLAIN|CHECK|OPTIMIZE|REPAIR|ANALYZE|CACHE INDEX)/', (strtoupper($query))):
                                     $objResult = $objDatabase->GetAll($query);
                                     $resultSet[$key]['query'] = $query;
                                     $resultSet[$key]['resultValue'] = $objResult;
                                     break;
-                                case preg_match('/^UPDATE/', (strtoupper($query))):
-                                case preg_match('/^DELETE/', (strtoupper($query))):
+                                case preg_match('/^(UPDATE|DELETE|REPLACE|INSERT)/', (strtoupper($query))):
                                     $objResult = $objDatabase->Execute($query);
                                     $resultSet[$key]['query'] = $query;
-                                    $resultSet[$key]['resultValue'] =  $objDatabase->Affected_Rows() . $_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'];
+                                    $resultSet[$key]['resultValue'] = '';
+                                    if ($objResult) {
+                                        switch (true) {
+                                            case preg_match('/^INSERT/', (strtoupper($query))):
+                                                $resultSet[$key]['resultValue'] = $objDatabase->Affected_Rows().sprintf($_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'], 'inserted');
+                                                break;
+                                            case preg_match('/^DELETE/', (strtoupper($query))):
+                                                $resultSet[$key]['resultValue'] = $objDatabase->Affected_Rows().sprintf($_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'], 'deleted');
+                                                break;
+                                            default:
+                                                $resultSet[$key]['resultValue'] = $objDatabase->Affected_Rows().sprintf($_ARRAYLANG['TXT_MULTISITE_NO_ROWS_AFFECTED'], 'affected');
+                                                break;
+                                        }
+                                    }
                                     break;
                                 default :
                                     $objResult = $objDatabase->Execute($query);
