@@ -135,7 +135,7 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
                     case preg_match('#^ON\ #i', $criteria['creationDate']):
                         $date = new \DateTime(preg_replace('#^ON\ #i', '', $criteria['creationDate']));
                         $qb->where('website.creationDate > ?1')->setParameter(1, $date->format('Y-m-d 00:00:01'));
-                        $qb->where('website.creationDate < ?2')->setParameter(2, $date->format('Y-m-d 23:59:59'));
+                        $qb->andWhere('website.creationDate < ?2')->setParameter(2, $date->format('Y-m-d 23:59:59'));
                         break;
                     case preg_match('#^BEFORE\ #i', $criteria['creationDate']):
                         $date = new \DateTime(preg_replace('#^BEFORE\ #i', '', $criteria['creationDate']));
