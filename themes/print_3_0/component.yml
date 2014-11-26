@@ -1,5 +1,5 @@
 DlcInfo:
-  name: 'print_3_0'
+  name: 'Print 3.0'
   description: 'Default print theme'
   type: template
   subtype: print

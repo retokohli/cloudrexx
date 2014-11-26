@@ -1108,7 +1108,6 @@ CODE;
 
     private function validateThemeName(&$themeName)
     {
-        $themeName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($themeName);
         $suffix = '';
         while ($this->themeRepository->findOneBy(array('themesname' => $themeName.$suffix))) {
             $suffix++;
