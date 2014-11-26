@@ -802,7 +802,6 @@ div.row2 {
 }
 #blog div.entries h2 {
     color: #222222;
-    font: bold 16px/20px 'Open Sans',Arial,Helvetica,sans-serif;
 }
 #blog div.entries h2 a{
     color: #222222;
@@ -1973,7 +1972,7 @@ dl.data_module img {
 #downloads div.file {
     float: left;
     width: 100%;
-    padding: 10px 0 10px 0;
+    padding: 10px;
 }
 #downloads div.image {
     float: left;
@@ -1982,6 +1981,7 @@ dl.data_module img {
 }
 #downloads div.image img {
     margin: 0px 0px 15px 0px;
+    width: 100%;
 }
 #downloads div.delete {
     clear: right;
@@ -2938,6 +2938,14 @@ select[name="cid"] {
     width: 100%;
     clear: both;
 }
-.livecamSearch input {
+.livecamSearch input, .cart-buttons input {
     margin-bottom: 10px;
+}
+input[name="downloads_search_keyword"], input[name="downloads_category_name"] {
+    margin-bottom: 10px;
+    margin-right: 10px;
+    float: left;
+}
+input#feedbutton {
+    margin-top: 10px;
 }
