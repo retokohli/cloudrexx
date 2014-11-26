@@ -354,8 +354,8 @@ class ViewManager
         global $_ARRAYLANG, $objTemplate;
         
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_settings', 'skins_settings.html');
-        
-        switch ($_REQUEST['tpl']) {
+        $tpl = isset($_REQUEST['tpl']) ? $_REQUEST['tpl'] : '';
+        switch ($tpl) {
             case 'examples':
                 $this->examples();
                 break;
@@ -1264,6 +1264,7 @@ CODE;
         
        $mergeFolders = array_unique(array_merge($codeBaseDir, $websiteDir));
        sort($mergeFolders);
+       $result = '';
        foreach($mergeFolders as $folder) {
            if (!$this->themeRepository->findOneBy(array('foldername' => $folder))) {
                $result .= "<option value='".$folder."'>".$folder."</option>\n";
@@ -1598,7 +1599,7 @@ CODE;
                 $objTemplate->setVariable(array(
                     'THEME_LIBRARY_NAME' => $libraryName,
                     'THEME_LIBRARY_VERSION' => $version,
-                    'THEME_LIBRARY_VERSION_SELECTED' => $version == $usedLibraries[$libraryName][0] ? 'selected="selected"' : '', 
+                    'THEME_LIBRARY_VERSION_SELECTED' => isset($usedLibraries[$libraryName]) && $version == $usedLibraries[$libraryName][0] ? 'selected="selected"' : '', 
                 ));
                 
                 $objTemplate->parse('theme_library_version');
