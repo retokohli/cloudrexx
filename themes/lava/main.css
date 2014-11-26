@@ -1209,6 +1209,7 @@ ul.social-icons li a:hover {
     html body .container .navbar-collapse {
         padding-bottom: 10px;
         width: 100% !important;
+        max-height: 100%;
     }
     .navbar .nav > li {
         width: 100%;
