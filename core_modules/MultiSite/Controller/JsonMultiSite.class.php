@@ -2094,7 +2094,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                 case preg_match('/^(SELECT|DESC|SHOW|EXPLAIN|CHECK|OPTIMIZE|REPAIR|ANALYZE|CACHE INDEX)/', (strtoupper($query))):
                                     $objResult = $objDatabase->GetAll($query);
                                     $resultSet[$key]['query'] = $query;
-                                    $resultSet[$key]['resultValue'] = $objResult;
+                                    $resultSet[$key]['resultValue'] = (count($objResult) > 0) ? $objResult : $_ARRAYLANG['TXT_MULTISITE_NO_RECORD_FOUND'];
                                     break;
                                 case preg_match('/^(UPDATE|DELETE|REPLACE|INSERT)/', (strtoupper($query))):
                                     $objResult = $objDatabase->Execute($query);
