@@ -13,6 +13,12 @@
         font-size: .6em;
     }
 }
+@media (max-width: 992px) {
+    #forum div.notification_center {
+        padding: 50px;
+        height: 150px;
+    }
+}
 /* iPad Portrait */
 @media only screen and (max-width: 768px) {
     #sequence {height: 360px;}
@@ -56,6 +62,10 @@
     #sidebar .oneFourth{clear:both !important;}
     table{width:100% !important;}
     #checkout .left, #checkout form {width: 100%;}
+    #sidebar {width: 220px;}
+    #newsletter input[type="submit"] {margin-left: 0;}
+    #voting .voting label {width: 80% !important;}
+    #mediadir .mapLarge {width: 100%;}
 }
 /*layouts smaller than 600px, iPhone and mobiles*/
 @media only screen and (max-width: 480px), screen and (max-device-width: 480px), screen and (max-width: 600px)  {
@@ -193,10 +203,7 @@
         margin-left: 3% !important;
         margin-right: 0px!important;
         width: 97% !important;
-    }
-    #content .thumbs {
-        margin-left: 0 !important;
-    }
+    }    
     label{
         width:100% !important;
         margin-left: 0 !important;
@@ -255,11 +262,17 @@
     input[type="email"], input[type="text"], textarea, select, input[type="password"] {width: 100%;}
     #newsletter select, select#newsCat, .form-control, #shop #shop_acc_data select, #checkout form select {width: 100%;}
     #blog div.search_date {width: 100%; padding: 0;}
-    input#file_upload {width: 100%; float: left;}
+    input#file_upload, .breadcrumb {width: 100%; float: left;}
     #shop div.details {margin-top: 180px;}
+    .login-bottom a {white-space: normal;}
+    #survey input[type="submit"], .questionBlock_button input[type="submit"] {margin-left: 150px !important;}
+    .radio label {word-break: break-all;}
+    #memberdir div.search_form {float: left;}
 }
 
 @media screen and (max-width: 860px) {
     .flex-direction-nav .flex-prev {opacity: 1; left: 0;}
     .flex-direction-nav .flex-next {opacity: 1; right: 0;}
+    #contactForm input[type="submit"] {margin-left: 0;}
+    #sidebar {width: 205px;}
 }
