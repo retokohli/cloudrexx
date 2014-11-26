@@ -497,6 +497,13 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         );
 
         $currentThemeFolderDirPath = \Env::get('cx')->getWebsiteThemesPath() . '/'.$params['post']['theme'].'/';
+        // Create the theme folder, if it does not exist
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($currentThemeFolderDirPath)) {
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($currentThemeFolderDirPath)) {
+                return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_NEWFILE_FAILED']);
+            }
+        }
+        
         $newFileName               = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($params['post']['name']);        
 
         if (!\FWValidator::is_file_ending_harmless($newFileName)) {
