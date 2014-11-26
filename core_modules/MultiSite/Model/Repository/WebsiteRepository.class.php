@@ -126,22 +126,44 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
      */
     public function getWebsitesByCriteria($criteria) {
         try {
-            if (!empty($criteria)) {
-                $where = array();
-                foreach ($criteria as $key => $value) {
-                    if (empty($value)) {
-                        continue;
-                    }
-                    if ($key === 'creationDate') {
-                        $where[] = 'DATE( DATE_ADD(  website.`creationDate` , INTERVAL ' . strtoupper($value) .' ) ) =  CURDATE()';
-                    } else {
-                        $where[] = 'website.`' . $key . '` = ' . $value;
-                    }
+            $qb = $this->getEntityManager()->createQueryBuilder();
+            $qb->select('website')
+                ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website');
+            
+            if (!empty($criteria['creationDate'])) {
+                switch (true) {
+                    case preg_match('#^ON\ #i', $criteria['creationDate']):
+                        $date = new \DateTime(preg_replace('#^ON\ #i', '', $criteria['creationDate']));
+                        $qb->where('website.creationDate > ?1')->setParameter(1, $date->format('Y-m-d 00:00:01'));
+                        $qb->where('website.creationDate < ?2')->setParameter(2, $date->format('Y-m-d 23:59:59'));
+                        break;
+                    case preg_match('#^BEFORE\ #i', $criteria['creationDate']):
+                        $date = new \DateTime(preg_replace('#^BEFORE\ #i', '', $criteria['creationDate']));
+                        $qb->where('website.creationDate < ?3')->setParameter(3, $date->format('Y-m-d 00:00:01'));
+                        break;
+                    case preg_match('#^AFTER\ #i', $criteria['creationDate']):
+                        $date = new \DateTime(preg_replace('#^AFTER\ #i', '', $criteria['creationDate']));
+                        $qb->where('website.creationDate > ?4')->setParameter(4, $date->format('Y-m-d 23:59:59'));
+                        break;
                 }
-                $whereContdition = !empty($where) ? implode(' AND ', $where) : '';
             }
-            $qb = \Env::get('em')->createQuery('SELECT website FROM Cx\Core_Modules\MultiSite\Model\Entity\Website website ' . (!empty($whereContdition) ? ' WHERE ' . $whereContdition : ''));
-            $websites = $qb->getResult();
+            
+            $i = 5;
+            foreach ($criteria as $key => $value) {
+                if (empty($value) || $key === 'creationDate') {
+                    continue;
+                }
+                if ($i == 5) {
+                    $method = !empty($criteria['creationDate']) ? 'andWhere' : 'where';
+                    $qb->$method('website.' . $key . ' = ?' . $i)->setParameter($i, $value);
+                } else {
+                    $qb->andWhere('website.' . $key . ' = ?' . $i)->setParameter($i, $value);
+                }
+                $i++;
+            }
+            
+            $qb->getDql();
+            $websites = $qb->getQuery()->getResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $websites = array();
         }
