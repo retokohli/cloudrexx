@@ -14,7 +14,7 @@ body p {
 .nav > li.level-1.open > ul {
     display: block;
 }
-body h1 {
+body .carousel-caption h1 {
     font-weight: 800;
     font-size: 62px;
     line-height: 60px;
@@ -982,7 +982,7 @@ ul.social-icons li a:hover {
     .navbar-inverse .nav-collapse .nav > li > a, .navbar-inverse .nav-collapse .dropdown-menu a {
         color: #ffffff;
     }
-    body h1 {
+    body .carousel-caption h1 {
         font-size: 40px !important;
         line-height: 38px;
     }

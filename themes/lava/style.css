@@ -572,9 +572,10 @@
         float: left;
         width: 100% !important;
     }
-    .container form p , .container select.form-control {
-        width: 100%;
+    .container form p , .container select.form-control, #shop .menu select[name="catId"], #shop .menu input[type="text"] {
+        width: 100% !important;
         padding-left: 0;
+        margin-bottom: 10px;
     }
     #shop_acc_data input.btn.btn-default {
         margin-bottom: 10px;
@@ -630,10 +631,20 @@
     select#podcast_category_menu {
         margin-bottom: 10px;
     }
-    #livecam img {
+    #livecam img, #shop div.images, #shop div.details, #shop div.short-description {
         width: 100%;
         height: auto;
         margin-bottom: 5px;
+    }
+    #shop .menu input[type="submit"] {
+        margin-bottom: 10px;
+        margin-left: -10px;
+    }
+    .overview > div > div, .overview.container-fluid, #downloads, #shop, .info-item, .categories .container-fluid {
+        padding: 0 !important;
+    }
+    .voting label {
+        width: 80%;
     }
     input[type="file"], .container #mediadir .employee-middle, .container #mediadir .employee-left, .container #newsletter form select, body input[type="text"], body input[type="password"], body input[type="number"], body select, body form select, body textarea {width: 100% !important;}
 }
