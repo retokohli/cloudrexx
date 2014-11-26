@@ -1486,6 +1486,7 @@ CODE;
             'THEMES_MENU'           => $this->getThemesDropdown($theme),            
             'THEME_ID'              => $theme->getId(),
             'THEME_SELECTED_THEME'  => $theme->getFoldername(),
+            'THEME_SELECTED_THEME_NAME'  => $theme->getThemesname(),
             'CONTREXX_BASE_URL'     => \Env::get('cx')->getWebsiteOffsetPath() . '/',
             'THEMES_SELECTED_PAGENAME' => $themesPage,
             'THEME_EDIT_PATH'          => (!$isComponentFile ? '/'.$theme->getFoldername() : '') . $themesPage,
