@@ -10,7 +10,7 @@ body {
     color: #7d7d7b;
     background: #202020;
 }
-fieldset legend{display:none;}
+fieldset legend{display:none; font-size: 0.8em; color: #7d7d7b;}
 p {
     line-height: 1.7em;
     font-size: .8em;
@@ -100,6 +100,7 @@ input[type="email"], input[type="text"], textarea, select, input[type="password"
     background:	#fafafa url(images/field_bkg.png) repeat-x;
     float:left;
     margin-right: 10px;
+    height: 37px;
 }
 input[type="email"]:focus, input[type="text"]:focus {outline: none; background-color: #f7f7f7;}
 textarea:focus {outline: none; background-color: #f7f7f7;}
@@ -462,7 +463,7 @@ a.button, #footer a.button, #searchsubmit, input[type="submit"], input[type="res
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 2px;
-    margin: 3px 5px 0 0;
+    margin: 2px 5px 0 0;
     line-height: normal !important;
     border: none;
     -webkit-appearance: none;
@@ -759,7 +760,7 @@ a.button, #footer a.button {
 #sidebar ul li > ul li{
     font-size: 12px;
 }
-#content .inside h2, #content .inside h3{margin-top:10px;}
+#content .inside h2, #content .inside h3{margin-top:10px; padding-top: 10px;}
 #content .inside p, #content .inside ul, #content .inside ul li{font-size:100% !important;}
 #subnavigation li.level-1 > ul,
 #subnavigation li.active > ul {
