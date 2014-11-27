@@ -144,10 +144,10 @@ div.row2 {
 #captcha {
     float: left !important;
     width: 430px !important;
-    clear: none !important;
-    margin: 0;
+    clear: none !important;    
     padding: 0;
 }
+#recommend #captcha {margin-left: 250px;}
 #captcha #coreCaptchaLabel {
     float: left;
     width: auto;
@@ -159,6 +159,7 @@ div.row2 {
 #captcha .row {
     clear: both;
     display: block;
+    margin: 0;
 }
 #captcha #coreCaptchaCode {
     float: left;
@@ -245,7 +246,6 @@ div.row2 {
 #gallery div.category_informations {
     float: left;
     height:auto !important;
-    padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
 }
 #gallery div.category_informations h2 {
@@ -269,13 +269,13 @@ div.row2 {
 }
 #gallery div.category_images div.image {
     width: 33%;
-    padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     text-align:left;
     float: left;
 }
 #gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img{
     margin: 0px 15px 0px 0px;
+    width: 100%;
 }
 #gallery div.show_image, #gallery div.image_navigation {
     text-align: center;
@@ -587,7 +587,6 @@ div.row2 {
     padding: 8px;
 }
 #directory div.infos {
-    padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     height:auto !important;
 }
@@ -1376,7 +1375,7 @@ div.row2 {
 #shop figure a .categorie-image-wrapper {
     float: left;
     width: 100% !important;
-    height: 170px !important;
+    height: 170px;
     padding: 5%;
     text-align: center;
 }
@@ -1448,15 +1447,12 @@ div.row2 {
 /***************************************************/
 .ecardColumn1 {
     float:left;
-    width:33%;
 }
 .ecardColumn2 {
     float:left;
-    width:33%;
 }
 .ecardColumn3 {
     float:left;
-    width:33%;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR NEWS MODULE                 */
@@ -2489,7 +2485,7 @@ dl.data_module img {
 #shop form[name="shopSearch"] select{
     padding:8px 10px;
 }
-#shop form[name="shopSearch"] input[type="submit"]{margin-top:2px !important;width: auto !important;}
+#shop form[name="shopSearch"] input[type="submit"]{margin-top:2px; width: auto !important;}
 #shop-currencies a{
     margin-right: 5px;
     font-size: 12px;
@@ -2557,6 +2553,7 @@ dl.data_module img {
 {
     float:none;
 }
+/* new */
 .form-control {width: 300px; color: #6a6a6a !important;}
 #shop .menu input[type="text"] {font-size: 0.6em; line-height: 1.7em;}
 #contactForm input[type="submit"], #newsletter input[type="submit"] {margin-left: 250px;}
@@ -2573,3 +2570,11 @@ box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(174, 172, 122, 0.6);
 }
 .news {float: left;}
 #guestbook .entries .row {margin-left: 0; margin-right: 0;}
+#ecardForm span.radio label, #access .resetForm span.checkbox label {margin: 0;}
+#access_user_tos {float: left; margin-right: 10px;}
+#access .reg {margin-left: 15px;}
+#ecardForm img {display: inline-block;}
+.checkbox label {margin: 0;}
+#access .profile p img {display: inline-block;}
+#survey .questionBlock .radio label {width: 100%;}
+#directory .image_default a img {width: 100%;}

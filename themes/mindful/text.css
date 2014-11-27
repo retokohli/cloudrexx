@@ -65,7 +65,7 @@ table {
     border-spacing: 0;
 }
 a img { border: none; }
-img { display: block; }
+img {display: block;}
 #shop .categories img{ display: inline; }
 input[type="submit"]::-moz-focus-inner {border:0;}
 input[type="submit"]::-webkit-focus-inner {border:0;}
@@ -213,3 +213,12 @@ body #container span.icon-vimeo:hover, .ie7 body #container span.icon-vimeo:hove
     background-position: -70px 0 !important;
     background-color: transparent !important;
 }
+input[type=radio] {
+float: left;
+margin: 3px 10px 3px 0;
+padding: 0;
+border: 0 none;
+clear: both;
+}
+h2, .h2 {font-size: 1.5em;}
+.label:empty {display: block;}
