@@ -74,7 +74,7 @@ class CronController {
                 $websites = $websiteRepo->getWebsitesByCriteria($criteria);
                 if ($websites) {
                     foreach ($websites as $website) {
-                        //checking creationDate criteria
+                        //checking creationDate criteria(like Date, Time format)
                         if (!empty($creationDateCriteria)) {
                             $currentDate  = new \DateTime('now');
                             $creationDate = $website->getCreationDate()->modify($creationDateCriteria);
@@ -98,15 +98,13 @@ class CronController {
                                 continue;
                             }
                         }
-                        $cronMailLogEntity = $cronMailLogRepo->findOneBy(array('userId' => $website->getOwnerId(), 'websiteId' => $website->getId(), 'success' => true));
-                        //If the owner already have a log, proceed next
-                        if ($cronMailLogEntity) {
+                        $cronMailLogEntity = $cronMailLogRepo->getOneCronMailLogByCriteria(array('id'        => $cronMail->getId(),
+                                                                                                 'userId'    => $website->getOwnerId(), 
+                                                                                                 'websiteId' => $website->getId()));
+                        //If the owner already have a log and status success, proceed next
+                        if ($cronMailLogEntity && $cronMailLogEntity->getSuccess()) {
                             continue;
                         }
-                        //Otherwise create a new log
-                        $cronMailLog = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog();
-                        $cronMailLog->setUserId($website->getOwnerId());
-                        $cronMailLog->setWebsiteId($website->getId());
                         //send mail to website owner
                         $mailStatus = \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                                         'section' => 'MultiSite',
@@ -128,10 +126,19 @@ class CronController {
                                             $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
                                             $objUser->getUsername()),
                                         ));
-                        $cronMailLog->setSuccess($mailStatus ? true : false);
-                        $cronMail->addCronMailLog($cronMailLog);
-                        \Env::get('em')->persist($cronMail);
-                        \Env::get('em')->persist($cronMailLog);
+                        //If the owner already have a log and status failed, update the log
+                        if ($cronMailLogEntity && !$cronMailLogEntity->getSuccess()) {
+                            $cronMailLogEntity->setSuccess($mailStatus ? true : false);
+                        }
+                        //Otherwise create a new log
+                        if (!$cronMailLogEntity) {
+                            $cronMailLog = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog();
+                            $cronMailLog->setUserId($website->getOwnerId());
+                            $cronMailLog->setWebsiteId($website->getId());
+                            $cronMailLog->setSuccess($mailStatus ? true : false);
+                            $cronMail->addCronMailLog($cronMailLog);
+                            \Env::get('em')->persist($cronMailLog);
+                        }
                         \Env::get('em')->flush();
                     }
                 }

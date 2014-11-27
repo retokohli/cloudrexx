@@ -42,10 +42,7 @@ class CronMailEventListener implements \Cx\Core\Event\Model\Entity\EventListener
     public function prePersist($eventArgs) {
         try {
             $cronMail = $eventArgs->getEntity();
-            $cronMailCriteria = $cronMail->getCronMailCriterias();
-            if (empty($cronMailCriteria[0])) {
-                throw new \Cx\Core\Error\Model\Entity\ShinyException('CronMailCriteria is empty');
-            }
+            $this->isValidCronMailCriteria($cronMail);
         } catch (\Exception $e) {
             throw new \Cx\Core\Error\Model\Entity\ShinyException($e->getMessage());
         }
@@ -60,12 +57,28 @@ class CronMailEventListener implements \Cx\Core\Event\Model\Entity\EventListener
     public function preUpdate($eventArgs) {
         try {
             $cronMail = $eventArgs->getEntity();
-            $cronMailCriteria = $cronMail->getCronMailCriterias();
-            if (empty($cronMailCriteria[0])) {
-                throw new \Cx\Core\Error\Model\Entity\ShinyException('CronMailCriteria is empty');
-            }
+            $this->isValidCronMailCriteria($cronMail);
         } catch (\Exception $e) {
             throw new \Cx\Core\Error\Model\Entity\ShinyException($e->getMessage());
+        }
+    }
+
+    /**
+     * To validate the CronMail entity have atleast one CronMailCriteria
+     * Otherwise Throw Exception
+     * 
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\CronMail $objCronMail
+     * 
+     * @return boolean
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException
+     */
+    public function isValidCronMailCriteria(\Cx\Core_Modules\MultiSite\Model\Entity\CronMail $objCronMail) {
+        if (!$objCronMail) {
+            return;
+        }
+        $cronMailCriteria = $objCronMail->getCronMailCriterias();
+        if (empty($cronMailCriteria[0])) {
+            throw new \Cx\Core\Error\Model\Entity\ShinyException('The CronMailCriteria is empty in the current given CronMail Entity.');
         }
     }
 
