@@ -114,7 +114,7 @@ class FormGenerator {
                 $fieldset = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
                 $inputYes = new \Cx\Core\Html\Model\Entity\DataElement($name, 'yes');
                 $inputYes->setAttribute('type', 'radio');
-                $inputYes->setAttribute('value', 'yes');
+                $inputYes->setAttribute('value', '1');
                 $inputYes->setAttribute('id', 'form-X-' . $name . '_yes');
                 $fieldset->addChild($inputYes);
                 $labelYes = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
@@ -124,7 +124,7 @@ class FormGenerator {
                 $inputNo = new \Cx\Core\Html\Model\Entity\DataElement($name, 'no');
                 $inputNo->setAttribute('id', 'form-X-' . $name . '_no');
                 $inputNo->setAttribute('type', 'radio');
-                $inputNo->setAttribute('value', 'no');
+                $inputNo->setAttribute('value', '0');
                 $fieldset->addChild($inputNo);
                 $labelNo = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
                 $labelNo->setAttribute('for', 'form-X-' . $name . '_no');
