@@ -30,7 +30,7 @@
                 });
                 if ($J(event.currentTarget).hasClass('theme-files')) {
                     
-                    $J(event.currentTarget).find('li a').each(function(key, val) {
+                    $J(event.currentTarget).find('li a:not(.protected)').each(function(key, val) {
                         var editImg;
                         
                         if ($J.inArray( $J.trim($J(this).text()), ['module', 'core', 'core_module'] ) === -1) {
