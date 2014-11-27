@@ -73,6 +73,7 @@ function contentManagerUpdates() {
         return "Error: $e->sql";
     }
 
+    $virtualComponents = array('Agb', 'Ids', 'Imprint', 'Privacy');
     //migrating custom application template
     $pageRepo   = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
     $themeRepo  = new \Cx\Core\View\Model\Repository\ThemeRepository();
@@ -80,6 +81,10 @@ function contentManagerUpdates() {
     $pages      = $pageRepo->findBy(array('type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION));
     foreach ($pages As $page) {
         try {
+            //virtual components do not migrating custom application template
+            if (in_array(ucfirst($page->getModule()), $virtualComponents)) {
+                continue;
+            }
             $designTemplateName  = $page->getSkin() ? $themeRepo->findById($page->getSkin())->getFoldername() : $themeRepo->getDefaultTheme()->getFoldername();
             $cmd                 = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
             $moduleFolderName    = contrexx_isCoreModule($page->getModule()) ? 'core_modules' : 'modules';
