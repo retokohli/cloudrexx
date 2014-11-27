@@ -124,7 +124,7 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
      * 
      * @return array
      */
-    public function getWebsitesByCriteria($criteria) {
+    public function getWebsitesByCriteria(array $criteria) {
         try {
             $qb = $this->getEntityManager()->createQueryBuilder();
             $qb->select('website')

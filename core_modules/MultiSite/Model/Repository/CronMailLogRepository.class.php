@@ -27,7 +27,7 @@ class CronMailLogRepository extends \Doctrine\ORM\EntityRepository {
      * @param array $criteria
      * @return object
      */
-    public function getOneCronMailLogByCriteria($criteria) {
+    public function getOneCronMailLogByCriteria(array $criteria) {
         if (empty($criteria)) {
             return;
         }
