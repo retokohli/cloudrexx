@@ -50,8 +50,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $command
      */
     public function executeCommand($command) {
-        
         $em                = $this->cx->getDb()->getEntityManager();
+        
+        $this->cx->getEvents()->triggerEvent(
+            'SysLog/Add', array(
+            'severity'  => 'INFO', 
+            'message'   => 'Cron Execution Started',
+            'data'      => ' ',
+        ));
         switch ($command) {
             case 'Cron':
               $cronJobs = $em->getRepository('Cx\Core_Modules\Cron\Model\Entity\Job')->findAll();

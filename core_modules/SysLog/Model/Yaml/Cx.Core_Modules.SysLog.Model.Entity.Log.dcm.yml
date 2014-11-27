@@ -1,5 +1,6 @@
 Cx\Core_Modules\SysLog\Model\Entity\Log:
   type: entity
+  repositoryClass: Cx\Core_Modules\SysLog\Model\Repository\LogRepository
   table: syslog
   id:
     id:
