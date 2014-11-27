@@ -816,6 +816,8 @@ class DBG
         if (self::$mode & DBG_LOG_MEMORY) {
             self::$memory_logs = array_merge(self::$memory_logs, $logs);
         } else {
+            if (!self::$enable_msg) return;
+
             foreach ($logs as $log) {
                 self::_log($log);
             }
