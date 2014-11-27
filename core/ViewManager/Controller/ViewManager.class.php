@@ -523,11 +523,17 @@ CODE;
         \Permission::checkAccess(102, 'static');
        
         //check GETs for action
-        if (!empty($_GET['export'])){
-            $archiveURL=$this->_exportFile();
+        $themeId = isset($_GET['export']) ? contrexx_input2raw($_GET['export']) : 0;
+        if (!empty($themeId)) {
+            $theme = $this->themeRepository->findOneBy(array('id' => $themeId));
+            
+            if (!$theme) {
+                throw new \Exception('Theme does not exist.');
+            }
+            
             $objHTTPDownload = new \HTTP_Download();
-            $objHTTPDownload->setFile($archiveURL);
-            $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, $_GET['export'].'.zip');
+            $objHTTPDownload->setFile($this->getExportFilePath($theme));
+            $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, $theme->getFoldername().'.zip');
             $objHTTPDownload->setContentType();
             $objHTTPDownload->send('application/force-download');
             exit;
@@ -868,44 +874,37 @@ CODE;
     }
 
     /**
-     * export theme as archive
-     * @access   private
-     * @param    string   theme folder name
-     * @return   string   path to the created archive
+     * Get the export archive file path
+     * 
+     * @param    object theme \Cx\Core\View\Model\Entity\Theme $theme
+     * 
+     * @return   string path to the created archive
      */
-    function _exportFile()
+    function getExportFilePath(\Cx\Core\View\Model\Entity\Theme $theme)
     {
         global $_ARRAYLANG;
+        
         //clean up tmp folder
         $this->_cleantmp();
-        //path traversal security check
-        $theme=str_replace(array('..','/'), '', trim(html_entity_decode(urldecode($_GET['export']))));
-        if (!$theme){
-            $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
-            return false;
-        }
 
-        //get the folder name from theme name
-        $objResult = \Env::get('db')->Execute("SELECT id, themesname, foldername from `".DBPREFIX."skins` WHERE themesname = '" . contrexx_raw2db($theme) . "'");
-        if ($objResult !== false && $objResult->RecordCount() > 0) {
-            $theme = $objResult->fields['foldername'];
-        } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
-            return false;
-        }
-        $this->codeBaseThemesFilePath = $this->codeBaseThemesPath.$theme;
-        $this->websiteThemesFilePath  = $this->websiteThemesPath.$theme;
+        $themeFolder = $theme->getFoldername();
+        
+        $this->codeBaseThemesFilePath = $this->codeBaseThemesPath . $themeFolder;
+        $this->websiteThemesFilePath  = $this->websiteThemesPath . $themeFolder;
         if (is_dir($this->codeBaseThemesFilePath) || is_dir($this->websiteThemesFilePath)) {
-            $selectedThemeFiles = $this->getThemesFiles();
-            $archive = new \PclZip($this->_archiveTempPath.$theme.'.zip');
+            $archive    = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
+            $themeFiles = $this->getThemesFiles();
+            
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
-            $this->createZipFolder($selectedThemeFiles, '', $archive);
-            \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath.$theme.'.zip');
-            return $this->_archiveTempPath.$theme.'.zip';     
+            $this->createZipFolder($themeFiles, '', $archive);
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath . $themeFolder . '.zip');
+            return $this->_archiveTempPath . $themeFolder . '.zip';     
         }
+        
         $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
         return false;
     }
+    
     /**
      * create the archive file to tmp folder
      *
