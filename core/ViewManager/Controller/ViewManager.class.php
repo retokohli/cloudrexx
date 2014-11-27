@@ -1874,6 +1874,7 @@ CODE;
         $result  = '<ul>';
         $virtualFolder = array('View', 'Template', 'Frontend');
         foreach ($folder as $folderName => $fileName) {
+            $permissionClass = '';
             if (is_array($fileName)) {
                 if (   $block == 'applicationTheme'
                     || (
@@ -1882,10 +1883,15 @@ CODE;
                        )
                    ) {                    
                     $path         = $imgPath . '/' . $folderName;
+                    if ($block != 'applicationTheme' && $this->websiteThemesFilePath !== $this->codeBaseThemesFilePath) {
+                        if (file_exists($this->codeBaseThemesFilePath . '/'. $imgPath . '/' . $folderName)) {
+                            $permissionClass = 'protected';
+                        }
+                    }
                     $icon         = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
                     $activeFolder = preg_match('#^'.$path.'# i', $themesPage) ? "id='activeFolder'" : '';
                     
-                    $result .= '<li><a  href="javascript:void(0);"' .$activeFolder. ' data-rel="'.$path.'" class="folder naming">' . $icon . $folderName . '</a>';
+                    $result .= '<li><a  href="javascript:void(0);"' .$activeFolder. ' data-rel="'.$path.'" class="folder naming '. $permissionClass .'">' . $icon . $folderName . '</a>';
                 }
                 $result .= $this->getUlLi($fileName, $imgPath .(!in_array($folderName, $virtualFolder) ? '/'. $folderName : ''), $block, $themesPage);
                 $result .= '</li>';
@@ -1893,8 +1899,13 @@ CODE;
                 if ($block == 'applicationTheme') {
                     $filePath = (file_exists($this->websitePath . '/' . $imgPath .'/'. $fileName)) ? $this->websitePath . '/' . $imgPath . '/Template/Frontend' .'/'. $fileName : $this->codeBasePath . '/' . $imgPath . '/Template/Frontend' .'/'. $fileName;                    
                 } else {
+                    if ($this->websiteThemesFilePath !== $this->codeBaseThemesFilePath) {
+                        if (file_exists($this->codeBaseThemesFilePath . '/'. $imgPath .'/'. $fileName)) {
+                            $permissionClass = 'protected';
+                        }
+                    }
                     $filePath = (file_exists($this->websiteThemesFilePath . '/' . $imgPath .'/'. $fileName)) ? $this->websiteThemesFilePath . '/' . $imgPath .'/'. $fileName : $this->codeBaseThemesFilePath . '/'. $imgPath .'/'. $fileName;
-                }  
+                }
                 
                 if (in_array($fileName, $this->filenames)) {
                     $iconSrc = '../core/ViewManager/View/Media/Config.png';
@@ -1905,7 +1916,7 @@ CODE;
                 $icon    = "<img height='16' width='16' alt='icon' src='" . $iconSrc . "' class='icon'>";
                 $activeFile = ($themesPage == $imgPath .'/'. $fileName) ? "id = 'activeFile'" : '';
                 
-                $result .= "<li><a  href= 'javascript:void(0);' class='loadThemesPage naming' $activeFile data-rel='" . $imgPath .'/'. $fileName . "'>" . $icon . $fileName . "</a></li>" . PHP_EOL;
+                $result .= "<li><a  href= 'javascript:void(0);' class='loadThemesPage naming $permissionClass' $activeFile data-rel='" . $imgPath .'/'. $fileName . "'>" . $icon . $fileName . "</a></li>" . PHP_EOL;
             }
         }
         $result .= '</ul>';
