@@ -471,7 +471,7 @@ CODE;
             $this->getLibrarySettings($theme);
         } else {
             $objTemplate->hideBlock('theme_libraries');
-            $this->strErrMessage = sprintf($_ARRAYLANG['TXT_THEME_NOT_COMPONENT'], $theme->getThemesname());
+            $this->strErrMessage = sprintf($_ARRAYLANG['TXT_THEME_NOT_COMPONENT'], contrexx_raw2xhtml($theme->getThemesname()));
         }
     }
 
@@ -1486,7 +1486,7 @@ CODE;
             'THEMES_MENU'           => $this->getThemesDropdown($theme),            
             'THEME_ID'              => $theme->getId(),
             'THEME_SELECTED_THEME'  => $theme->getFoldername(),
-            'THEME_SELECTED_THEME_NAME'  => $theme->getThemesname(),
+            'THEME_SELECTED_THEME_NAME'  => contrexx_raw2xhtml($theme->getThemesname()),
             'CONTREXX_BASE_URL'     => \Env::get('cx')->getWebsiteOffsetPath() . '/',
             'THEMES_SELECTED_PAGENAME' => $themesPage,
             'THEME_EDIT_PATH'          => (!$isComponentFile ? '/'.$theme->getFoldername() : '') . $themesPage,
@@ -1707,7 +1707,7 @@ CODE;
                 $appstyle = "(".$_ARRAYLANG['TXT_APP_VIEW'].")";
             }
             if ($selectedTheme == $item) $selected = "selected";
-            $tdm .='<option id="'.$item->getId()."\" value='".$item->getFoldername()."' $selected>".contrexx_stripslashes($item->getThemesname())." ".$default.$mobilestyle.$printstyle.$pdfstyle.$appstyle."</option>\n";
+            $tdm .='<option id="'.$item->getId()."\" value='".$item->getFoldername()."' $selected>".  contrexx_raw2xhtml($item->getThemesname())." ".$default.$mobilestyle.$printstyle.$pdfstyle.$appstyle."</option>\n";
         }
         return $tdm;
     }
