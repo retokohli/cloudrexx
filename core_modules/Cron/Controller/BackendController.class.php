@@ -35,7 +35,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return array List of acts
      */
     public function getCommands() {
-        return array();
+        return array('settings');
     }
     
     /**
