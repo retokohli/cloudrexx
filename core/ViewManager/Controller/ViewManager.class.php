@@ -2120,12 +2120,12 @@ CODE;
             return false;
         }        
         //Check for Core Modules
-        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'#i', $path)) {
+        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE .'/#i', $path)) {
             return true;
         }
         
         //Check for Modules
-        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'#i', $path)) {
+        if (preg_match('#^\/'. \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE .'/#i', $path)) {
             return true;
         }
         
