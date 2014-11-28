@@ -8,15 +8,18 @@ Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate:
       generator:
         strategy: AUTO
   fields:
+    name:
+      type: string
+      length: 255
     codeBase:
       type: string
       column: code_base
       length: 255
     licensedComponents:
-      type: string
+      type: array
       column: licensed_components
     licenseMessage:
-      type: string
+      type: array
       column: license_message
 
   manyToOne: # owning side

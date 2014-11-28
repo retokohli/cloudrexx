@@ -1379,24 +1379,25 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * 
      * @return boolean
      */
-    public function setupLicense($options) {
-        if (empty($options['subscription'])) {
-            throw new WebsiteException('Unable to setup license due to subscription details empty.');
+    public function setupLicense($options) 
+    {
+        $websiteTemplateRepo    = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate');
+        $defaultWebsiteTemplate = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate');
+        
+        //If the $options['websiteTemplate] is empty, take value from default websiteTemplate
+        if (empty($options['websiteTemplate'])) {
+            $options['websiteTemplate'] = $defaultWebsiteTemplate;
         }
-
-        switch ($options['subscription']) {
-            case 'Trial':
-                $legalComponents = array('Access', 'Agb', 'Alias', 'Block', 'Cache', 'Captcha', 'ComponentManager', 'Config', 'Contact', 'ContentManager',
-                                            'ContentWorkflow', 'core', 'Csrf', 'Error', 'FileBrowser', 'FileSharing', 'FrontendEditing', 'fulllanguage',
-                                            'Home', 'Ids', 'Imprint', 'JavaScript', 'JsonData', 'language', 'LanguageManager', 'License', 'Login', 'logout',
-                                            'Media', 'Media1', 'Media2', 'Media3', 'Media4', 'Message', 'MultiSite', 'Net', 'News', 'Newsletter', 
-                                            'Privacy', 'Search', 'Security', 'Session', 'Shell', 'Sitemap', 'Stats', 'U2u', 'Upload',
-                                            'ViewManager', 'Blog', 'Downloads', 'Shop', 'Crm', 'MemberDir', 'Market', 'Calendar', 'Directory', 'DocSys', 'Ecard',
-                                            'Forum', 'GuestBook', 'Jobs', 'Knowledge', 'LiveCam', 'MediaDir', 'Feed', 'Egov', 'Gallery', 'Podcast', 'Recommend',
-                                            'U2u', 'Voting', 'Data', 'Routing');
-                break;
+        
+        $websiteTemplate = $websiteTemplateRepo->findOneBy(array('id' => $options['websiteTemplate']));
+        
+        if (!$websiteTemplate) {
+            $websiteTemplate = $websiteTemplateRepo->findOneBy(array('id' => $defaultWebsiteTemplate));
         }
-
+        
+        $legalComponents   = $websiteTemplate->getLicensedComponents();
+        $dashboardMessages = $websiteTemplate->getLicenseMessage();
+        
         if (!empty($legalComponents)) {
             $params = array(
                 'websiteId'         => $this->id,
@@ -1405,14 +1406,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 'validTo'           => 2733517333,
                 'updateInterval'    => 8760,
                 'isUpgradable'      => false,
-                'dashboardMessages' => array(
-                    \FWLanguage::getLanguageCodeById(1) => array(
-                        'text' => '<h4>Cloudrexx BETA</h4>Sie können mit der Testversion bereits funktionstüchtige Websites aufschalten. Während der gesamten Testphase ist dies für Sie gratis. Die auf der Website aufgeschalteten Produkte sind während der Testphase noch nicht bestellbar. Nach der öffentlichen Lancierung werden Sie frühzeitig dazu aufgefordert, eines der regulären Produkte auszuwählen.',
-                        'type'       => 'okbox',
-                        'link'       => null,
-                        'linkTarget' => null
-                    ),
-                )
+                'dashboardMessages' => $dashboardMessages
             );
             //send the JSON Request 'setLicense' command from service to website
             try {

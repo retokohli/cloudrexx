@@ -13,6 +13,13 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
     protected $id;
     
     /**
+     * name
+     * 
+     * @var string $name 
+     */
+    protected $name;
+    
+    /**
      * codeBase
      * 
      * @var string $codeBase 
@@ -63,6 +70,26 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
     public function getId() 
     {
         return $this->id;
+    }
+    
+    /**
+     * Set name
+     * 
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    
+    /**
+     * Get name
+     * 
+     * @return string name
+     */
+    public function getName() 
+    {
+        return $this->name;
     }
     
     /**
