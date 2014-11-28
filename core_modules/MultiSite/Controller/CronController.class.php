@@ -124,7 +124,7 @@ class CronController {
                                             $objUser->getEmail(),
                                             $objUser->getEmail(),
                                             $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
-                                            $objUser->getUsername()),
+                                            \FWUser::getParsedUserTitle($objUser))
                                         ));
                         //If the owner already have a log and status failed, update the log
                         if ($cronMailLogEntity && !$cronMailLogEntity->getSuccess()) {

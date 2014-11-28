@@ -73,12 +73,13 @@ class CronMailEventListener implements \Cx\Core\Event\Model\Entity\EventListener
      * @throws \Cx\Core\Error\Model\Entity\ShinyException
      */
     public function isValidCronMailCriteria(\Cx\Core_Modules\MultiSite\Model\Entity\CronMail $objCronMail) {
+        global $_ARRAYLANG;
         if (!$objCronMail) {
             return;
         }
         $cronMailCriteria = $objCronMail->getCronMailCriterias();
         if (empty($cronMailCriteria[0])) {
-            throw new \Cx\Core\Error\Model\Entity\ShinyException('The CronMailCriteria is empty in the current given CronMail Entity.');
+            throw new \Cx\Core\Error\Model\Entity\ShinyException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CRON_MAIL_CRITERIA_EMPTY']);
         }
     }
 
