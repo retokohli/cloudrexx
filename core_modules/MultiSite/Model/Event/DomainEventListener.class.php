@@ -80,7 +80,9 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         break;
 
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                        if($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN) {
                             $this->domainMapping($domain, $mode, 'updateDomain');
+                        }
                         break;
 
                     default:
