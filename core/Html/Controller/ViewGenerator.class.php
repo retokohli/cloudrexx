@@ -329,6 +329,8 @@ class ViewGenerator {
             foreach($entityColumnNames as $column) {
                 $field = $entityObject->getFieldName($column);
                 if ($field != $primaryKeyName) {
+                    $fieldDefinition = $entityObject->getFieldMapping($field);
+                    $this->options[$field]['type']=$fieldDefinition['type'];
                     $renderArray[$field]="";
                 }
             }
@@ -351,9 +353,16 @@ class ViewGenerator {
             $actionUrl->setParam('editid', null);
             $renderObject = $this->object->getEntry($entityId);
             if (empty($renderObject)) return false;
-            foreach($renderObject as $name=>$value) {
-                if ($name!=$primaryKeyName) {
-                    $renderArray[$name]=$value;
+            foreach($renderObject as $name => $value) {
+                if ($name == 'virtual') {
+                    continue;
+                }
+                if (!\Env::get('em')->getClassMetadata($entityClass)->hasAssociation($name)) {
+                    $fieldDefinition = $entityObject->getFieldMapping($name);
+                }
+                if ($name != $primaryKeyName) {
+                    $this->options[$name]['type'] = $fieldDefinition['type'];
+                    $renderArray[$name] = $value;
                 }
             }
         } else {

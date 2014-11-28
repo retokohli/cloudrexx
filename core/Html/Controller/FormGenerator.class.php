@@ -37,7 +37,7 @@ class FormGenerator {
         foreach ($metadata->getColumnNames() as $field) {
             $type = $metadata->fieldMappings[$field]['type'];//*/
         foreach ($entity as $field=>$value) {
-            $type = gettype($value);
+            $type = $options[$field]['type'];
             if (is_object($value)) {
                 if ($value instanceof \Cx\Model\Base\EntityBase) {
                     $type = 'Cx\Model\Base\EntityBase';
@@ -192,6 +192,12 @@ class FormGenerator {
                 if (isset($options['readonly']) && $options['readonly']) {
                     $input->setAttribute('disabled');
                 }
+                \DateTimeTools::addDatepickerJs();
+                \JS::registerCode('
+                        cx.jQuery(function() {
+                          cx.jQuery(".datepicker").datetimepicker();
+                        });
+                        ');
                 return $input;
                 break;
             case 'text':
