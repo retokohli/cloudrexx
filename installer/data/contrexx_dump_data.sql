@@ -616,6 +616,7 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (221,210,'function','global','TXT_CORE_MODULE_LINKMANAGER_SETTINGS',1,'index.php?cmd=LinkManager&act=settings','_self',95,3,191);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (223,3,'navigation','backend','TXT_CORE_MODULE_CRON',1,'index.php?cmd=Cron','_self',103,0,900);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (222,0,'function','backend','TXT_MODULE_SUPPORT',1,'index.php?cmd=Support','_self',100,15,192);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (224,3,'navigation','backend','TXT_NET_MANAGER',1,'index.php?cmd=NetManager','_self',105,1,888);
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (2,'Stats','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (3,'Gallery','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (4,'Newsletter','module');
@@ -699,6 +700,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (99,'Routing','co
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (100,'Support','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (103,'Cron','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (104,'SysLog','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (105,'NetManager','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (904,'User','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
@@ -6022,6 +6024,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (100,'Support','Comvation AG','TXT_MODULE_SUPPORT_DESCRIPTION','n',1,0,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (103,'Cron','Comvation AG','TXT_CORE_MODULE_CRON_DESCRIPTION','y',1,1,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (104,'SysLog','Comvation AG','TXT_CORE_MODULE_SYSLOG_DESCRIPTION','y',0,1,1,1);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (105,'NetManager','Comvation AG','TXT_NETMANAGER_MODULE_DESCRIPTION','y',1,1,1,1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
