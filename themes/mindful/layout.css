@@ -820,3 +820,8 @@ ul.horizontal-list li a{
     margin-left: 0;
     margin-right: 0;
 }
+.login-bottom a {color: #77a7b9;}
+.login-bottom a:hover {color: #8dc7dc; text-decoration: none;}
+#content .inside p, #content .inside div, #content .inside ul, #content .inside ul li {
+font-size: 100% !important;
+}

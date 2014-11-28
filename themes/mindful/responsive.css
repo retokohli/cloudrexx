@@ -12,6 +12,10 @@
     #homeSlideshow .text p {
         font-size: .6em;
     }
+    #homeSlideshow .sequence-prev, #homeSlideshow .sequence-next {
+       display: none !important;
+    }
+    #container {overflow-x: hidden;}
 }
 @media (max-width: 992px) {
     #forum div.notification_center {
@@ -282,6 +286,13 @@
     #shop .menu input[type="text"], #shop .menu input[type="submit"] {margin-top: 15px !important;}
     #checkout form input[type=text], #checkout form input[type=password], #checkout form textarea {width: 100%;}
     #knowledge input[type="submit"] {margin-top: 15px;}
+    #memberdir .search_form input[name="keyword"] {margin-bottom: 5px;}
+    form .contactFormGroup, #checkout form input#invoice_amount, #checkout form input#contact_place {width: 100%;}
+    #main {margin: 100px 0 20px 0;}
+    #sequence {min-height: 100px;}
+    #shop .menu input[type="submit"] {margin-right: 25px;}
+    #checkout form select#invoice_currency {width: 100%; margin: 15px 0 0 0;}
+    #checkout form input#contact_postcode {width: 100%; margin: 0 0 15px 0;}
 }
 
 @media screen and (max-width: 860px) {

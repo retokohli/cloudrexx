@@ -87,32 +87,9 @@ function projectFilterInit() {
 ///////////////////////////////
 // Isotope Grid Resize
 ///////////////////////////////
-//function setColumns()
-//{
-//    var columns;
-//    if(container.width() < 480) {
-//        columns = 2;
-//        gridGutter = 10;
-//    } else if(container.width() < 700) {
-//        columns = 3;
-//        gridGutter = 20;
-//    } else {
-//        columns = 4;
-//        gridGutter = 20;
-//    }
-//    colW = Math.floor(container.width() / columns);
-//    jQuery('.thumbs.masonry .project.small').each(function(id){
-//        jQuery(this).css('width',colW-gridGutter+'px');
-//    });
-//}
+
 function gridResize() {
-//    setColumns();
-    container.isotope({
-        resizable: false,
-        masonry: {
-            columnWidth: colW
-        }
-    });
+
 }
 ///////////////////////////////
 // Project thumbs
@@ -137,13 +114,7 @@ function projectThumbInit() {
             });
     }
     var container = jQuery('.thumbs.masonry');
-//    setColumns();
-    container.isotope({
-        resizable: false,
-        masonry: {
-            columnWidth: colW
-        }
-    });
+
     gridResize();
     jQuery(".project.small").css("opacity", "1");
 }
@@ -151,9 +122,6 @@ jQuery.noConflict();
 jQuery(window).load(function(){
     projectThumbInit();
     projectFilterInit();
-    jQuery(".videoContainer").fitVids();
-    jQuery(window).smartresize(function(){
-        gridResize();
-    });
+
     jQuery('img').attr('title','');
 });
