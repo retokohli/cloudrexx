@@ -222,3 +222,5 @@ clear: both;
 }
 h2, .h2 {font-size: 1.5em;}
 .label:empty {display: block;}
+label {font-weight: normal}
+.btn {font-size: 13px;}

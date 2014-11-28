@@ -71,6 +71,8 @@
                         speed: 500
                     }
                 };
+                if (jQuery("#sequence").length) 
+                {
                 var sequence = j("#sequence").sequence(options).data("sequence");
                 sequence.afterLoaded = function(){
                     j("#homeSlideshow .controls").fadeIn(100);
@@ -86,6 +88,7 @@
                     sequence.goTo(sequence.nextFrameID);
                 }); 
                 j('ul.sf-menu').superfish();
+            }
             });
             //]]>
         </script>                        
