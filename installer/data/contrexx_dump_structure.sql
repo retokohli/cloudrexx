@@ -474,11 +474,13 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_website_template` (
   `id` int(11) NOT NULL auto_increment,
   `website_service_server_id` int(11) default NULL,
+  `name` varchar(255) NOT NULL,
   `code_base` varchar(255) NOT NULL,
-  `licensed_components` varchar(255) NOT NULL,
-  `license_message` varchar(255) NOT NULL,
+  `licensed_components` longtext NOT NULL,
+  `license_message` longtext NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `IDX_921321879A068FE9` (`website_service_server_id`)
+  KEY `IDX_921321879A068FE9` (`website_service_server_id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_template_ibfk_1` FOREIGN KEY (`website_service_server_id`) REFERENCES `contrexx_core_module_multisite_website_service_server` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
