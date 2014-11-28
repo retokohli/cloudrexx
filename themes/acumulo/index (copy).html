@@ -1,0 +1,348 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+    <!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+
+        <meta name="generator" content="{VERSION}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="description" content="{METADESC}" />
+        <meta charset="{CHARSET}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link type="images/x-icon" rel="icon" href="favicon.ico">
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/base.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/font-awesome.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/layout_new.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/shortcodes.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/text.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/style.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/modules.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/lightdefault.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/flexslider.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/prettyPhoto.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/css.css" />
+
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+
+        <script type="text/javascript">
+            $J.ajax({
+                url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
+                statusCode: {
+                    200: function() {
+                        $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
+                    }
+                }
+            });
+        </script>
+
+        <script type="text/javascript" src="themes/acumulo/jquery-1.8.1.min.js"></script>
+        <script type="text/javascript" src="themes/acumulo/modernizr.js"></script>        
+        <script type="text/javascript" src="themes/acumulo/javascript.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery-ui.min.js1"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.superfish.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.supersubs.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.dcarousel.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.fitvid.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.isotope.min.js1"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.flexslider.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.prettyPhoto.js1"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.tweetable.js1"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.jflickrfeed.js1"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.vegas.js1"></script>
+        <script type="text/javascript" src="themes/acumulo/scripts.js"></script>
+
+
+
+
+        <script type="text/javascript">
+            jQuery(window).load(function() {
+                jQuery('#slider').fitVids().flexslider({
+                    animation: "slide",
+                    controlNav: true,
+                    directionNav: true,
+                    slideshowSpeed: 5000,
+                    animationLoop: true,
+                    smoothHeight: true,
+                    pauseOnHover: true
+                });
+            });
+        </script>
+
+        <!--[if IE 6]>
+        <script type="text/javascript" src="themes/acumulo/DD_belatedPNG.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/acumulo/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    var elements = '#search-input';
+                    $J(elements).each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
+        </script>
+        <![endif]-->
+    </head>
+
+    <body class="responsive">
+
+
+        <div class="top-wrapper clearfix">
+            <div class="logo-wrapper">
+
+                <div class="logo">
+                    <a href="#">
+                        <img alt="logo" src="themes/acumulo/images/logo.png">
+                    </a>
+                </div>
+
+            </div><!-- END .logo-wrapper -->
+
+            <div class="info-wrapper">
+
+                <div class="info-inner">
+                    <span class="info-phone"> <i class="icon-phone"></i>Call Us +00 000 000 000</span>
+                    <span class="info-mail"> <i class="icon-envelope-alt"></i><a href="#">example@yourcompany.com</a></span>
+                </div>
+
+            </div><!-- END .info-wrapper -->
+
+        </div>
+
+
+
+        <div class="header-wrapper clearfix">
+
+            <!-- BEGIN .header -->
+            <div class="header">
+
+                <div class="navigation-wrapper clearfix">
+
+
+				{NAVBAR_FILE}
+
+
+
+                </div><!-- END .header -->
+
+            </div>
+
+            <div class="slogan-wrapper clearfix">
+                <div class="container">
+                    <div class="sixteen columns">
+                        <h1>Welcome to <img alt="logo" src="themes/acumulo/images/logo.png"> - lorem ipsum dummy<br>sit lorem ipsum dummy lorem</h1>
+                    </div>
+                </div>
+            </div>
+            {CONTENT_FILE}
+            <div class="footer-wrapper">
+
+                <a class="scrollup" href="#">Go To Top</a>
+
+                <div class="footer">
+
+                    <div class="container">
+
+                        <div class="four columns">
+                            <div class="widget">
+                                <h6><span class="first-word">Contact</span> Us</h6>
+                                <ul>
+                                    <li><i class="icon-home"></i> Your St, Your city, Your country</li>
+                                    <li><i class="icon-phone"></i> +00 (0) 1 2345 6789</li>
+                                    <li><i class="icon-phone"></i> +00 (0) 1 2345 6788</li>
+                                    <li><i class="icon-phone"></i> +00 (0) 1 2345 6787</li>
+                                    <li><i class="icon-envelope-alt"></i> <a href="#">example@yourcompany.com</a></li>
+                                </ul>
+                            </div><!-- END .widget -->
+                            <div class="widget">
+                                <h6><span class="first-word">Tags</span></h6>
+                                <div class="tagcloud">
+                                    <a href="#">Lorem</a>
+                                    <a href="#">ipsum</a>
+                                    <a href="#">dolor</a>
+                                    <a href="#">Lorem</a>
+                                    <a href="#">ipsum</a>
+                                    <a href="#">dolor</a>
+                                    <a href="#">Lorem</a>
+                                    <a href="#">ipsum</a>
+                                    <a href="#">dolor</a>
+                                    <a href="#">Lorem</a>
+                                </div>
+                            </div><!-- END .widget -->
+                        </div>
+
+                        <div class="four columns">
+                            <div class="widget">
+                                <h6><span class="first-word">Latest</span> Posts</h6>
+
+                                <ul class="lp-sidebar">
+                                    <li>
+                                        <div class="lp-image">
+                                            <a href="#"><img alt="post image" src="themes/acumulo/images/1.jpg"></a>
+                                        </div>
+                                        <div class="lp-description clearfix">
+                                            <h5><a href="#">lorem ipsum dummy lorem ipsum dummy</a></h5>
+                                            <span>October 3, 2012</span>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <div class="lp-image">
+                                            <a href="#"><img alt="post image" src="themes/acumulo/images/2.jpg"></a>
+                                        </div>
+                                        <div class="lp-description clearfix">
+                                            <h5><a href="#">lorem ipsum dummy sit</a></h5>
+                                            <span>October 3, 2012</span>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <div class="lp-image">
+                                            <a href="#"><img alt="post image" src="themes/acumulo/images/3.jpg"></a>
+                                        </div>
+                                        <div class="lp-description clearfix">
+                                            <h5><a href="#">lorem ipsum dummy sit lorem ipsum </a></h5>
+                                            <span>October 3, 2012</span>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <div class="lp-image">
+                                            <a href="#"><img alt="post image" src="themes/acumulo/images/4.jpg"></a>
+                                        </div>
+                                        <div class="lp-description clearfix">
+                                            <h5><a href="#">lorem ipsum dummy sit lorem </a></h5>
+                                            <span>October 3, 2012</span>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <div class="lp-image">
+                                            <a href="#"><img alt="post image" src="themes/acumulo/images/5.jpg"></a>
+                                        </div>
+                                        <div class="lp-description clearfix">
+                                            <h5><a href="#">lorem ipsum dummy sit lorem ipsum </a></h5>
+                                            <span>October 3, 2012</span>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </li>
+                                </ul>
+                            </div><!-- END .widget -->
+                        </div>
+
+                        <div class="four columns">
+                            <div class="widget">
+                                <h6><span class="first-word">Recent</span> Tweet</h6>
+                                <div class="tweets-wrap">
+                                    <div id="tweets"></div>
+                                </div>
+                                <p class="twitter-feed"><a href="http://twitter.com/contrexx" title="Follow Us on Twitter"><i class="icon-twitter"></i> Follow Us on Twitter</a></p>
+                            </div><!-- END .widget -->
+                            <div class="widget">
+                                <h6><span class="first-word">Useful</span> Links</h6>
+                                <ul>
+                                    <li><a href="#">lorem ipsum dummy sit </a></li>
+                                    <li><a href="#">lorem ipsum </a></li>
+                                    <li><a href="#">lorem ipsum dummy </a></li>
+                                </ul>
+                            </div><!-- END .widget -->
+                        </div>
+
+                        <div class="four columns">
+                            <div class="widget">
+                                <h6><span class="first-word">Follow</span> Us</h6>
+                                <div class="socials footer-socials clearfix">
+                                    <ul>
+                                        <li class="social-twitter"><a href="http://twitter.com/contrexx" target="_blank">twitter</a><div class="tooltip">twitter</div></li>
+                                        <li class="social-facebook"><a href="http://www.facebook.com/contrexxsoftware" target="_blank">facebook</a><div class="tooltip">facebook</div></li>
+                                        <li class="social-google"><a href="https://plus.google.com/101022530429663496888" target="_blank">google</a><div class="tooltip">google</div></li>
+                                        <li class="social-rss"><a href="/feed/news_de.xml" target="_blank">rss</a><div class="tooltip">rss</div></li>
+                                        <li class="social-linkedin"><a href="#" target="_blank">linkedin</a><div class="tooltip">linkedin</div></li>
+                                        <li class="social-dribbble"><a href="#" target="_blank">dribbble</a><div class="tooltip">dribbble</div></li>
+                                        <li class="social-pinterest"><a href="#" target="_blank">pinterest</a><div class="tooltip">pinterest</div></li>
+                                        <li class="social-skype"><a href="#" target="_blank">skype</a><div class="tooltip">skype</div></li>
+                                        <li class="social-forrst"><a href="#" target="_blank">forrst</a><div class="tooltip">forrst</div></li>
+                                        <li class="social-vimeo"><a href="#" target="_blank">vimeo</a><div class="tooltip">vimeo</div></li>
+                                        <li class="social-youtube"><a href="#" target="_blank">youtube</a><div class="tooltip">youtube</div></li>
+                                        <li class="social-instagram"><a href="#" target="_blank">instagram</a><div class="tooltip">instagram</div></li>
+                                        <li class="social-flickr"><a href="#" target="_blank">flickr</a><div class="tooltip">flickr</div></li>
+                                        <li class="social-deviantart"><a href="#" target="_blank">deviantart</a><div class="tooltip">deviantart</div></li>
+                                        <li class="social-digg"><a href="#" target="_blank">digg</a><div class="tooltip">digg</div></li>
+                                        <li class="social-stumbleupon"><a href="#" target="_blank">stumbleupon</a><div class="tooltip">stumbleupon</div></li>
+                                        <li class="social-reddit"><a href="#" target="_blank">reddit</a><div class="tooltip">reddit</div></li>
+                                        <li class="social-dropbox"><a href="#" target="_blank">dropbox</a><div class="tooltip">dropbox</div></li>
+                                        <li class="social-evernote"><a href="#" target="_blank">evernote</a><div class="tooltip">evernote</div></li>
+                                        <li class="social-picasa"><a href="#" target="_blank">picasa</a><div class="tooltip">picasa</div></li>
+                                        <li class="social-tumblr"><a href="#" target="_blank">tumblr</a><div class="tooltip">tumblr</div></li>
+                                        <li class="social-blogger"><a href="#" target="_blank">blogger</a><div class="tooltip">blogger</div></li>
+                                        <li class="social-behance"><a href="#" target="_blank">behance</a><div class="tooltip">behance</div></li>
+                                    </ul>
+                                </div>
+                            </div><!-- END .widget -->
+                        </div>
+
+                        <div class="four columns">
+                            <div class="widget">
+                                <h6><span class="first-word">Recent</span> Comments</h6>
+                                <ul>
+                                    <li>admin on <a href="#">lorem ipsum dummy sit lorem ipsum dummy sit</a></li>
+                                    <li>admin on <a href="#">lorem ipsum dummy sit lorem ipsum </a></li>
+                                    <li>admin on <a href="#">lorem ipsum dummy sit lorem ipsum sit</a></li>
+                                </ul>
+                            </div><!-- END .widget -->
+                        </div>
+
+                        <div class="clear"></div>
+
+                    </div>
+
+                    <div class="clear"></div>
+
+                </div><!-- END .footer -->
+
+            </div>
+            <div class="footer-bottom-wrapper">
+
+                <div class="footer-bottom">
+
+                    <div class="container">
+
+                        <div class="sixteen columns">
+
+                            <div class="copyright">
+
+                                <p>Your HTML Theme &copy; 2012 | Designed by <a href="#">Your company</a></p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="clear"></div>
+
+                </div><!-- END .footer-bottom -->
+
+            </div>
+            {LOGIN_CONTENT}
+            {COUNTER}
+    </body>
+</html>
