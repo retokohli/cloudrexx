@@ -35,7 +35,7 @@ class LogRepository extends \Doctrine\ORM\EntityRepository {
         $qb->select('Log')
                 ->from('\Cx\Core_Modules\SysLog\Model\Entity\Log', 'Log')
                 ->where('Log.logger = :logger')
-                ->orderBy('Log.id', 'DESC')
+                ->orderBy('Log.timestamp', 'DESC')
                 ->getDql();
         $qb->setParameter('logger', $logger);
         $qb->setFirstResult($offset)->setMaxResults($limit);
