@@ -66,8 +66,7 @@ class Config
             .(in_array('CacheManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="?cmd=Config&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'].'</a>' : '')  .
             '<a href="?cmd=Config&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_EMAIL_SERVER'].'</a>
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
-            .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '') .
-            '<a href="index.php?cmd=Config&amp;act=Domain" class="'.($this->act == 'Domain' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_DOMAINS'].'</a>'
+            .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '')
             . (\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isWebsiteOwner() && \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser') ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
         );
     }
@@ -134,10 +133,6 @@ class Config
                 $this->showFtp();
                 break;
             
-            case 'Domain':
-                $this->showDomains();
-                break;
-           
             case 'cache':
                 if (in_array('CacheManager', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
                     $boolShowStatus = false;
@@ -1038,52 +1033,6 @@ class Config
         }
         Csrf::header('Location: index.php?cmd=Config&act=image');
         die;
-    }
-    
-    public function showDomains() {
-        global $_ARRAYLANG, $objTemplate;
-        
-        $this->strPageTitle = $_ARRAYLANG['TXT_SETTINGS_DOMAINS'];
-        $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_domain', 'domains.html');
-        
-        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $domains = $domainRepository->findAll();
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($domains, array(
-            'header'    => $_ARRAYLANG['TXT_SETTINGS_DOMAINS'],
-            'entityName'    => $_ARRAYLANG['TXT_SETTINGS_DOMAIN'],
-            'fields'    => array(
-                'name'  => array(
-                    'header' => $_ARRAYLANG['TXT_NAME'],
-                    'table' => array(
-                        'parse' => function($value) {
-                            global $_ARRAYLANG;
-                            static $mainDomainName;
-                            if (empty($mainDomainName)) {
-                                $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-                                $mainDomainName = $domainRepository->getMainDomain()->getName();
-                            }
-                            $mainDomainIcon = '';
-                            if ($value == $mainDomainName) {
-                                $mainDomainIcon = ' <img src="'.\Env::get('cx')->getCodeBaseCoreWebPath().'/Core/View/Media/icons/Home.png" title="'.$_ARRAYLANG['TXT_CORE_CONFIG_MAINDOMAINID'].'" />';
-                            }
-                            return $value.$mainDomainIcon;
-                        },
-                    ),
-                ),
-                'id'    => array(
-                    'showOverview' => false,
-                ),
-            ),
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                )
-            ));
-        $objTemplate->setVariable('DOMAINS_CONTENT', $view->render());
     }
     
      /**
