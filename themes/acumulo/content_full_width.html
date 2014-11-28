@@ -1,0 +1,24 @@
+<div id="content-top">
+    <div id="breadcrumb">
+        Sie befinden sich hier:&nbsp;&nbsp;&nbsp;<a href="{NODE_HOME}">Home</a> &gt; {NAVTREE}<div class="current">{NAVTITLE}</div>
+    </div>
+    <ul id="profile-links" class="horizontal-list">
+        <!-- BEGIN access_logged_out -->
+        <li class="last"><a href="{NODE_LOGIN}">Login</a></li>
+        <!-- END access_logged_out -->
+        <!-- BEGIN access_logged_in -->
+        <li><a href="{NODE_ACCESS_SETTINGS_PROFILE}">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
+        <li class="last"><a href="{LOGOUT_URL}">Logout</a></li>
+        <!-- END access_logged_in -->
+    </ul>
+</div>
+<div id="content" class="content">
+    <div id="page" class="full-width">
+        <h1 class="first">{CONTENT_TITLE}</h1>
+        {CONTENT_TEXT}
+        <div id="social-media">
+            {GOOGLE_PLUSONE}
+            {FACEBOOK_LIKE_IFRAME}
+        </div>
+    </div>
+</div>

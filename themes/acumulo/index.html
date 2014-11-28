@@ -1,0 +1,115 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+    <!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+        <meta name="generator" content="{VERSION}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="description" content="{METADESC}" />
+        <meta charset="{CHARSET}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link type="images/x-icon" rel="icon" href="favicon.ico">
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/base.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/font-awesome.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/layout_new.css" />        
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/text.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/style.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/modules.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/lightdefault.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/flexslider.css" />                        
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+
+        <script type="text/javascript">
+            $J.ajax({
+                url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
+                statusCode: {
+                    200: function() {
+                        $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
+                    }
+                }
+            });
+        </script>        
+        <script type="text/javascript" src="themes/acumulo/modernizr.js"></script>        
+        <script type="text/javascript" src="themes/acumulo/javascript.js"></script>        
+        <script type="text/javascript" src="themes/acumulo/jquery.superfish.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.supersubs.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.dcarousel.js"></script>
+        <script type="text/javascript" src="themes/acumulo/jquery.fitvid.js"></script>        
+        <script type="text/javascript" src="themes/acumulo/jquery.flexslider.js"></script>       
+        <script type="text/javascript" src="themes/acumulo/jquery.jflickrfeed.js"></script>
+        <script type="text/javascript" src="themes/acumulo/scripts.js"></script>
+        <script type="text/javascript">
+            jQuery(window).load(function() {
+                jQuery('#slider').fitVids().flexslider({
+                    animation: "slide",
+                    controlNav: true,
+                    directionNav: true,
+                    slideshowSpeed: 5000,
+                    animationLoop: true,
+                    smoothHeight: true,
+                    pauseOnHover: true
+                });
+            });
+        </script>
+
+        <!--[if IE 6]>
+        <script type="text/javascript" src="themes/acumulo/DD_belatedPNG.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                DD_belatedPNG.fix('img, .png-bg');
+            });
+        </script>
+        <![endif]-->
+
+        <!--[if lt IE 10]>
+        <script type="text/javascript" src="themes/acumulo/PIE.js"></script>
+        <script type="text/javascript">
+            $J(document).ready(function () {
+                if (window.PIE) {
+                    var elements = '#search-input';
+                    $J(elements).each(function () {
+                        PIE.attach(this);
+                    });
+                }
+            });
+        </script>
+        <![endif]-->
+    </head>
+
+    <body class="responsive">
+        <div class="top-wrapper clearfix">
+            <div class="logo-wrapper">
+                <div class="logo">
+                    <a href="{NODE_HOME}">
+                        <img alt="logo" src="themes/acumulo/images/logo.png">
+                    </a>
+                </div>
+            </div><!-- END .logo-wrapper -->
+            <div class="info-wrapper">
+                <div class="info-inner">
+                    <span class="info-phone"> <i class="icon-phone"></i>Call Us +00 000 000 000</span>
+                    <span class="info-mail"> <i class="icon-envelope-alt"></i><a href="#">example@yourcompany.com</a></span>
+                </div>
+            </div><!-- END .info-wrapper -->
+        </div>
+        <div class="header-wrapper clearfix">
+            <!-- BEGIN .header -->
+            <div class="header">
+                <div class="navigation-wrapper clearfix">
+				{NAVBAR_FILE}
+                </div><!-- END .header -->
+            </div>
+            </div>
+            {CONTENT_FILE}            
+            {LOGIN_CONTENT}
+            {COUNTER}        
+    </body>
+</html>
