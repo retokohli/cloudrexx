@@ -29,6 +29,7 @@ body h2 {
     letter-spacing: -1px;
     line-height: 46px;
     color: #ffffff;
+    word-wrap: break-word;
 }
 body h3 {
     font-size: 34px;
@@ -194,7 +195,7 @@ body .navbar-inverse .navbar-nav>li>a {
     text-shadow: none;
     letter-spacing: -0.7px;
 }
-.navbar .nav > li > a:hover, #navigation li.level-1.starter_active > a {
+.container .navbar .nav > li > a:hover, #navigation li.level-1.starter_active > a {
     color: rgba(49,54,58,0.9);
     background: transparent;
 }
@@ -1516,4 +1517,8 @@ div#right-login {
 }
 #newsletter form select {
     width: 300px;
+}
+select.form-control.label {
+    color: #555;
+    font-weight: normal;
 }

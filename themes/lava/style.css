@@ -605,7 +605,7 @@
         float: left;
         width: 100% !important;
     }
-    input.searchbox {
+    input.searchbox, input#forward, .questionBlock_button input {
         margin-bottom: 10px;
     }
     input[type="file"], #guestbook div.date, #guestbook div.location, #mediadir .mapLarge {
@@ -655,7 +655,7 @@
     .directorySearch input[name='term'], #regkey, #podcast_category_menu {
         width: 52%;
     }
-    #media_div .table-responsive, .entries {
+    #media_div .table-responsive, .entries, .doc_list {
         width: 100%;
         margin-bottom: 15px;
         overflow-y: hidden;
@@ -863,6 +863,7 @@
     #sidebar {
         width: 25%;
     }
+    form .contactFormGroup, .container #checkout form, #page #gallery div.category_image img {width: 100%;}
     #subnavigation {
         display: none;
     }
@@ -872,6 +873,10 @@
     #content-wrapper {
         padding-bottom: 168px;
     }
+    form p {
+        padding-left: 0; 
+    }
+    form .contactFormGroup {width: 100%;}
     #shop div.message p label {
         min-height: 40px;
     }
