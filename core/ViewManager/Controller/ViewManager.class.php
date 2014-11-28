@@ -919,8 +919,15 @@ CODE;
             if (is_array($fileName)) {
                 $this->createZipFolder($fileName, $folder . '/' . $folderName, $archive);
             } else {
+                if (file_exists($this->websiteThemesFilePath . $folder . '/' . $fileName)) {
+                    $themesFilePath = $this->websiteThemesFilePath;
+                    $removePath     = $this->websiteThemesPath;
+                } else {
+                    $themesFilePath = $this->codeBaseThemesFilePath;
+                    $removePath     = $this->codeBaseThemesPath;
+                }
                 $themesFilePath = file_exists($this->websiteThemesFilePath . $folder . '/' . $fileName) ? $this->websiteThemesFilePath : $this->codeBaseThemesFilePath;
-                if ($archive->add($themesFilePath . $folder . '/' . $fileName, PCLZIP_OPT_REMOVE_PATH, $themesFilePath) == 0) {
+                if ($archive->add($themesFilePath . $folder . '/' . $fileName, PCLZIP_OPT_REMOVE_PATH, $removePath) == 0) {
                     throw new \Exception($_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] . ': ' . $archive->errorInfo(true));
                 }
             }
