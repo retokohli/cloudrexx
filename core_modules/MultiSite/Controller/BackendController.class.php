@@ -29,7 +29,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_SERVICE:
-                return array('domains','statistics', 'settings'=> array('codebases'));
+                return array('domains','statistics', 'settings'=> array('codebases','website_templates'));
                 break;
 
             case ComponentController::MODE_MANAGER:
@@ -37,7 +37,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
 
             case ComponentController::MODE_HYBRID:
-                return array('domains','statistics', 'notifications', 'settings'=> array('email','codebases'));
+                return array('domains','statistics', 'notifications', 'settings'=> array('email','codebases','website_templates'));
                 break;
 
             case ComponentController::MODE_NONE:
@@ -86,7 +86,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             case 'domains':
                 $this->parseSectionDomains($template, $cmd);
                 break;
-
+                
             default:
                 $this->parseSectionWebsites($template, $cmd);
                 break;
@@ -97,6 +97,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         global $_ARRAYLANG;
 
         $config = \Env::get('config');
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
         if (!empty($cmd[1]) && $cmd[1]=='email') {   
             $template->setVariable(array(
                 'TABLE' => \Cx\Core\MailTemplate\Controller\MailTemplate::adminView('MultiSite', 'nonempty', $config['corePagingLimit'], 'settings/email')->get(),
@@ -116,7 +117,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sorting' => true,
                         'paging' => true,       // cannot be turned off yet
                         'filtering' => false,   // this does not exist yet
-                        'actions' => (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
+                        'actions' => (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
                                         function($rowData) {
                                             return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, true);
                                         } : false,
@@ -233,13 +234,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (empty($websiteTemplates)) {
                 $websiteTemplates = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate();
             }
+            $hasAccess = in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID));
+            $headerMessage = in_array($mode, array(ComponentController::MODE_SERVICE))? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SETTINGS_WEBSITE_TEMPLATE_HEADER_MSG']: '';
             $websiteTemplatesView = new \Cx\Core\Html\Controller\ViewGenerator($websiteTemplates, 
                 array(
-                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_WEBSITE_TEMPLATES'],
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_WEBSITE_TEMPLATES'].$headerMessage,
                     'functions' => array(
-                        'edit' => true,
-                        'add' => true,
-                        'delete' => true,
+                        'edit' => $hasAccess,
+                        'add' => $hasAccess,
+                        'delete' => $hasAccess,
                         'sorting' => true,
                         'paging' => true,       
                         'filtering' => false,   
@@ -619,7 +622,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
             
-            if ($mode == ComponentController::MODE_MANAGER) {
+            if (in_array($mode, array(ComponentController::MODE_MANAGER,ComponentController::MODE_HYBRID))) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager', 'FileSystem');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,

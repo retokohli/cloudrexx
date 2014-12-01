@@ -185,3 +185,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'] = 'Successfully lo
 
 //cron mail error message
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CRON_MAIL_CRITERIA_EMPTY'] = "Please provide some conditions to setup the cron mail.";
+
+//website template message
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SETTINGS_WEBSITE_TEMPLATE_HEADER_MSG'] = ' - This section is managed by the Website Manager';
