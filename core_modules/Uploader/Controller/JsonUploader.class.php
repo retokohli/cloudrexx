@@ -12,6 +12,7 @@
 namespace Cx\Core_Modules\Uploader\Controller;
 
 use Cx\Core\Core\Controller\Cx;
+use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use \Cx\Core\Json\JsonAdapter;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
@@ -37,8 +38,9 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
      */
     protected $cx;
 
-    function __construct()
+    function __construct(SystemComponent $systemComponent, Cx $cx)
     {
+        parent::__construct($systemComponent, $cx);
         $this->cx = Cx::instanciate();
     }
 

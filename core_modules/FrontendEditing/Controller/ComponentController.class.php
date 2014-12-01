@@ -26,6 +26,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 {
 
     /**
+     * Returns all Controller class names for this component (except this)
+     * 
+     * Be sure to return all your controller classes if you add your own
+     * @return array List of Controller class names (without namespace)
+     */
+    public function getControllerClasses() {
+        return array('Frontend');
+    }
+    
+    /**
      * Checks whether the frontend editing is active or not
      *
      * The frontend editing is deactivated for application pages except the home page
