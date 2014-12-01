@@ -31,6 +31,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getCommandsForCommandMode() {
         return array('Cron');
     }
+    
+    /**
+     * This component only has a backend
+     */
+    public function getControllerClasses() {
+        return array('Backend');
+    }
+    
     /**
      * To describe the Cron command
      * 
