@@ -68,7 +68,7 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
                     $arrValue = null;
                 }
 
-                if(!empty($strValue) && file_exists(ASCMS_PATH.$strValue)) {
+                if(!empty($strValue) && file_exists(\Env::get('cx')->getWebsitePath().$strValue)) {
                     $arrFileInfo    = pathinfo($strValue);
                     $strFileName    = htmlspecialchars($arrFileInfo['basename'], ENT_QUOTES, CONTREXX_CHARSET);
                     
@@ -162,7 +162,7 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
             $fileName    = $arrFileInfo['basename'];
 
             //delete file
-            if (file_exists(ASCMS_PATH.$strPathFile)) {
+            if (file_exists(\Env::get('cx')->getWebsitePath().$strPathFile)) {
                 $objFile->delFile($this->imagePath, $this->imageWebPath, 'uploads/'.$fileName);
             }
         }

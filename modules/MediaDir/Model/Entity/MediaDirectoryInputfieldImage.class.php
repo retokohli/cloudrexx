@@ -68,7 +68,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                     $strValue = null;
                 }
 
-                if(!empty($strValue) && file_exists(ASCMS_PATH.$strValue.".thumb")) {
+                if(!empty($strValue) && file_exists(\Env::get('cx')->getWebsitePath().$strValue.".thumb")) {
                     $objInit->mode == 'backend' ? $style = 'style="border: 1px solid rgb(10, 80, 161); margin: 0px 0px 3px;"' : '';
                     $strImagePreview = '<img src="'.$strValue.'.thumb" alt="" '.$style.'  width="'.intval($this->arrSettings['settingsThumbSize']).'" />&nbsp;<input type="checkbox" value="1" name="deleteMedia['.$intId.']" />'.$_ARRAYLANG['TXT_MEDIADIR_DELETE'].'<br />';
                 } else {
@@ -170,12 +170,12 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
             $imageName    = $arrImageInfo['basename'];
 
             //delete thumb
-            if (file_exists(ASCMS_PATH.$strPathImage.".thumb")) {
+            if (file_exists(\Env::get('cx')->getWebsitePath().$strPathImage.".thumb")) {
                 $objFile->delFile($this->imagePath, $this->imageWebPath, 'images/'.$imageName.".thumb");
             }
 
             //delete image
-            if (file_exists(ASCMS_PATH.$strPathImage)) {
+            if (file_exists(\Env::get('cx')->getWebsitePath().$strPathImage)) {
                 $objFile->delFile($this->imagePath, $this->imageWebPath, 'images/'.$imageName);
             }
         }
@@ -247,7 +247,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
         global $objDatabase;
 
-        $arrImageInfo = getimagesize(ASCMS_PATH.$strPathImage);
+        $arrImageInfo = getimagesize(\Env::get('cx')->getWebsitePath().$strPathImage);
 
         if (   $arrImageInfo['mime'] == "image/gif"
             || $arrImageInfo['mime'] == "image/jpeg"
@@ -260,9 +260,9 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
             $thumbWidth = intval($this->arrSettings['settingsThumbSize']);
             $thumbHeight = intval($thumbWidth / $arrImageInfo[0] * $arrImageInfo[1]);
 
-            $objImage->loadImage(ASCMS_PATH.$strPathImage);
+            $objImage->loadImage(\Env::get('cx')->getWebsitePath().$strPathImage);
             $objImage->resizeImage($thumbWidth, $thumbHeight, 100);
-            $objImage->saveNewImage(ASCMS_PATH.$strPathImage . '.thumb', true);
+            $objImage->saveNewImage(\Env::get('cx')->getWebsitePath().$strPathImage . '.thumb', true);
         }
     }
 
@@ -309,7 +309,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
         if (empty($strValue) || $strValue == 'new_image') {
             return null;
         }
-        $arrImageInfo   = getimagesize(ASCMS_PATH.$strValue);
+        $arrImageInfo   = getimagesize(\Env::get('cx')->getWebsitePath().$strValue);
         $imageWidth     = $arrImageInfo[0]+20;
         $imageHeight    = $arrImageInfo[1]+20;
         $arrImageInfo   = pathinfo($strValue);

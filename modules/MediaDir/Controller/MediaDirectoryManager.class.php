@@ -41,7 +41,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $this->offset = !empty($_GET['pos']) ? $_GET['pos'] : 0;
 
         parent::__construct(ASCMS_MODULE_PATH.'/MediaDir/View/Template/Backend', $name);
-        parent::getFrontendLanguages();        
+        parent::getFrontendLanguages();    
     }
     private function setNavigation()
     {
@@ -677,7 +677,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $activeOff = 'checked="checked"';
             }
 
-            if(empty($objCategory->arrCategories[$intCategoryId]['catPicture']) || !file_exists(ASCMS_PATH.$objLevel->arrCategories[$intCategoryId]['catPicture'])) {
+            if(empty($objCategory->arrCategories[$intCategoryId]['catPicture']) || !file_exists(\Env::get('cx')->getWebsitePath().$objLevel->arrCategories[$intCategoryId]['catPicture'])) {
                 $catImage = '<img src="images/content_manager/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             } else {
                 $catImage = '<img src="'.$objCategory->arrCategories[$intCategoryId]['catPicture'].'.thumb" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
@@ -890,7 +890,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $activeOff = 'checked="checked"';
             }
 
-            if(empty($objLevel->arrLevels[$intLevelId]['levelPicture']) || !file_exists(ASCMS_PATH.$objLevel->arrLevels[$intLevelId]['levelPicture'])) {
+            if(empty($objLevel->arrLevels[$intLevelId]['levelPicture']) || !file_exists(\Env::get('cx')->getWebsitePath().$objLevel->arrLevels[$intLevelId]['levelPicture'])) {
                 $levelImage = '<img src="images/content_manager/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             } else {
                 $levelImage = '<img src="'.$objLevel->arrLevels[$intLevelId]['levelPicture'].'.thumb" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
