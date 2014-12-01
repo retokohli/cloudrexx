@@ -1,5 +1,5 @@
 DlcInfo:
-  name: 'Mobile 3.0'
+  name: 'Mobile'
   description: 'Default theme for mobile devices'
   type: template
   subtype: mobile
