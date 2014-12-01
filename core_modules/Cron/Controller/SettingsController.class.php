@@ -75,6 +75,7 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller {
         $this->template->setVariable(array(
             'CRON_LAST_EXECUTION'      => $_ARRAYLANG['TXT_CORE_MODULE_CRON_LAST_EXECUTION'],
             'CRON_LAST_EXECUTION_TIME' => $lastSysLogExecutionTime,
+	    'CRON_SETTINGS'            => $_ARRAYLANG['TXT_CORE_MODULE_CRON_ACT_SETTINGS']
         ));
     }
 }
