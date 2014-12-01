@@ -1,5 +1,5 @@
 DlcInfo:
-  name: 'Pdf 3.0'
+  name: 'Pdf'
   description: 'Default theme for PDFs'
   type: template
   subtype: pdf
