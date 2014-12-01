@@ -92,7 +92,23 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                 'paging'    => true,
                 'filtering' => false,
             ),
-            
+            'fields' => array(
+                'id' => array(
+                    'showOverview' => false,
+                ),
+                'active' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_CRON_ACTIVE'],
+                ),
+                'expression' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_CRON_EXPRESSION'],
+                ),
+                'command' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_CRON_COMMAND'],
+                ),
+                'lastRan' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_CRON_LAST_RUN'],
+                ),
+            )
         ));
         $this->template->setVariable('CRON_CONTENT', $view->render());
     }
