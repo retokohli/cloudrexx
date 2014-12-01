@@ -148,11 +148,13 @@ class JsonMediaBrowser implements JsonAdapter
             $strPath = $this->cx->getWebsiteImagesPath() . $this->_path;
         }
 
-        $recursiveIteratorIterator
-            = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($strPath),
-            \RecursiveIteratorIterator::SELF_FIRST
+        $recursiveIteratorIterator = new \RegexIterator(
+            new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($strPath),
+                \RecursiveIteratorIterator::SELF_FIRST
+            ), '/^((?!thumb_[a-z]+).)*$/'
         );
+
         $jsonFileArray = array();
 
         $thumbnailList = UploaderConfiguration::getInstance()->getThumbnails();
@@ -176,37 +178,31 @@ class JsonMediaBrowser implements JsonAdapter
 
             $thumbnails = array();
             if (preg_match("/(jpg|jpeg|gif|png)/i", ucfirst($extension))) {
-                if (preg_match("/_[ms]$/", $fileNamePlain)) {
-                    continue;
-                }
 
-                $preview = $this->cx->getCodeBaseOffsetPath() . str_replace(
-                        $this->cx->getCodeBaseDocumentRootPath(), '', $file->getRealPath()
-                    );
-
-                $preview = str_replace(
-                    '.' . lcfirst($extension),
-                    $thumbnailList[0]['value'] . '.' . lcfirst($extension),
-                    $preview
-                );
                 foreach (
                     UploaderConfiguration::getInstance()->getThumbnails() as
                     $thumbnail
                 ) {
-                    $thumbnails[$thumbnail['size']] = str_replace(
-                        '.' . lcfirst($extension),
+
+                    $thumbnails[$thumbnail['size']] = preg_replace(
+                        '/\.' . lcfirst($extension) . '$/',
+
                         $thumbnail['value'] . '.' . lcfirst($extension),
-                        $this->cx->getCodeBaseOffsetPath() . str_replace(
-                            $this->cx->getCodeBaseDocumentRootPath(), '', $file->getRealPath()
+
+                        $this->cx->getWebsiteOffsetPath() . str_replace(
+                            $this->cx->getWebsitePath(), '',
+                            $file->getRealPath()
                         )
+
                     );
                 }
+                $preview = current($thumbnails);
             }
 
             $fileInfos = array(
                 'filepath' => mb_strcut(
                     $file->getPath() . '/' . $file->getFilename(),
-                    mb_strlen($this->cx->getCodeBasePath())
+                    mb_strlen($this->cx->getWebsitePath())
                 ),
                 // preselect in mediabrowser or mark a folder
                 'name' => $file->getFilename(),

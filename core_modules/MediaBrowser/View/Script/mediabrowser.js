@@ -60,7 +60,7 @@
     });
 
     /* CONTROLLERS */
-    mediaBrowserApp.controller('MainCtrl', ['$scope', '$modalInstance', '$modal', '$location', '$http', 'mediabrowserConfig', 'mediabrowserFiles','$timeout',
+    mediaBrowserApp.controller('MainCtrl', ['$scope', '$modalInstance', '$modal', '$location', '$http', 'mediabrowserConfig', 'mediabrowserFiles', '$timeout',
         function ($scope, $modalInstance, $modal, $location, $http, mediabrowserConfig, mediabrowserFiles, $timeout) {
             /**
              * Sorting and searching
@@ -232,7 +232,7 @@
                         jQuery(".loadingPlatform").hide();
                         $scope.dataFiles = data;
                         $scope.files = data;
-                        $timeout(function() {
+                        $timeout(function () {
                             $scope.$apply();
                             jQuery(".filelist").show();
                         });
@@ -240,7 +240,7 @@
                 );
             };
 
-            $scope.setFiles = function(files){
+            $scope.setFiles = function (files) {
                 $scope.files = files;
             };
 
@@ -613,23 +613,51 @@
 
     /* DIRECTIVES */
     /* preview function */
-    mediaBrowserApp.directive('previewImage', function () {
+    mediaBrowserApp.directive('previewImage', ['Thumbnail', function (Thumbnail) {
         return {
             restrict: 'A',
             link: function (scope, el, attrs) {
                 if (attrs.previewImage !== 'none') {
-                    $J.ajax({
-                        type: "GET",
-                        url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + attrs.previewImage
-                    });
-                    jQuery(el).popover({
-                        trigger: 'hover',
-                        html: true,
-                        content: '<img src="' + attrs.previewImage + '"  />',
-                        placement: 'right'
+                    Thumbnail.isImage(attrs.previewImage).then(function () {
+                        jQuery(el).popover({
+                            trigger: 'hover',
+                            html: true,
+                            content: '<img src="' + attrs.previewImage + '"  />',
+                            placement: 'right'
+                        });
+                    }, function () {
+                        $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + attrs.previewImage').
+                            success(function (data, status, headers, config) {
+                                jQuery(el).popover({
+                                    trigger: 'hover',
+                                    html: true,
+                                    content: '<img src="' + attrs.previewImage + '"  />',
+                                    placement: 'right'
+                                });
+                            })
                     });
 
+
                 }
+            }
+        };
+    }]);
+
+
+    mediaBrowserApp.factory('Thumbnail', function ($q) {
+        return {
+            isImage: function (src) {
+                var deferred = $q.defer();
+
+                var image = new Image();
+                image.onerror = function () {
+                    deferred.resolve(false);
+                };
+                image.onload = function () {
+                    deferred.resolve(true);
+                };
+                image.src = src;
+                return deferred.promise;
             }
         };
     });
@@ -794,7 +822,7 @@
                         mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
                     }
 
-                    if (config != undefined) {
+                    if (config.callback != undefined) {
                         mediabrowserConfig.set('modalClosed', config.callback);
                     }
                     else {

@@ -15,6 +15,7 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
 // don't load Frontend and BackendController for this core_module
 use Cx\Core\Html\Sigma;
 use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
+use Cx\Core_Modules\MediaBrowser\Model\ResourceRegister;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 
 class ComponentController extends
@@ -45,6 +46,9 @@ class ComponentController extends
         );
     }
 
+    /**
+     * @param Sigma $template
+     */
     public function preFinalize(\Cx\Core\Html\Sigma $template)
     {
 
@@ -99,51 +103,10 @@ class ComponentController extends
                     $template->_blocks['__global__']
                 );
 
-                $code = "<script>var oldjQuery = jQuery</script>";
-                $code .= $this->createScriptTag(
-                    '../lib/javascript/jquery/1.9.1/js/jquery.min.js'
-                );
-                $code .= "<script> window.MediaBrowserjQuery = jQuery</script>";
-                $code .= $this->createScriptTag(
-                    '../lib/plupload/js/moxie.min.js'
-                );
-                $code .= $this->createScriptTag(
-                    '../lib/plupload/js/plupload.full.min.js'
-                );
-                $code .= $this->createScriptTag(
-                    '../lib/javascript/angularjs/angular.js'
-                );
-                $code .= $this->createScriptTag(
-                    '../lib/javascript/angularjs/angular-route.js'
-                );
-                $code .= $this->createScriptTag(
-                    '../lib/javascript/angularjs/angular-animate.js'
-                );
-                $code .= $this->createScriptTag(
-                    '../lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js'
-                );
-                $code .= $this->createScriptTag(
-                    '../lib/javascript/bootbox.min.js'
-                );
-                $code .= $this->createScriptTag(
-                    '../lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js'
-                );
+                ResourceRegister::registerMediaBrowserRessource();
 
-                $code .= $this->createScriptTag(
-                    '../' . $this->cx->getCoreModuleFolderName()
-                    . '/MediaBrowser/View/Script/mediabrowser.js?v=' . md5(
-                        date('HH:SS:Y:D:M')
-                    )
-                );
-                $code .= $this->createScriptTag(
-                    '../' . substr(
-                        $this->cx->getCoreModuleFolderName()
-                        . '/MediaBrowser/View/Script/standalone-directives.js',
-                        1
-                    )
-                );
                 $template->_blocks['__global__'] = str_replace(
-                    '</head>', $code . '</head>',
+                    '</head>', ResourceRegister::getCode() . '</head>',
                     $template->_blocks['__global__']
                 );
 
@@ -160,10 +123,6 @@ class ComponentController extends
         }
     }
 
-    function createScriptTag($link)
-    {
-        return "<script type=\"text/javascript\"  src=\"" . $link
-        . "\"></script>\n";
-    }
+
 
 }
