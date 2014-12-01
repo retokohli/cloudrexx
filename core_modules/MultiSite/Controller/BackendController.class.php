@@ -29,7 +29,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_SERVICE:
-                return array('domains','statistics', 'notifications', 'settings'=> array('codebases'));
+                return array('domains','statistics', 'settings'=> array('codebases'));
                 break;
 
             case ComponentController::MODE_MANAGER:
