@@ -104,6 +104,7 @@ class FormGenerator {
     }
     
     public function getDataElement($name, $type, $length, $value, $options) {
+        global $_ARRAYLANG;
         if (!empty($options['type'])) {
             $type = $options['type'];
         }
@@ -119,7 +120,7 @@ class FormGenerator {
                 $fieldset->addChild($inputYes);
                 $labelYes = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
                 $labelYes->setAttribute('for', 'form-X-' . $name . '_yes');
-                $labelYes->addChild(new \Cx\Core\Html\Model\Entity\TextElement('Yes'));
+                $labelYes->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_YES']));
                 $fieldset->addChild($labelYes);
                 $inputNo = new \Cx\Core\Html\Model\Entity\DataElement($name, 'no');
                 $inputNo->setAttribute('id', 'form-X-' . $name . '_no');
@@ -128,7 +129,7 @@ class FormGenerator {
                 $fieldset->addChild($inputNo);
                 $labelNo = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
                 $labelNo->setAttribute('for', 'form-X-' . $name . '_no');
-                $labelNo->addChild(new \Cx\Core\Html\Model\Entity\TextElement('No'));
+                $labelNo->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_NO']));
                 $fieldset->addChild($labelNo);
                 if ($value) {
                     $inputYes->setAttribute('checked');

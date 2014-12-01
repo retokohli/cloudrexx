@@ -96,7 +96,7 @@ class BackendTable extends HTML_Table {
                             $data = \Cx\Core\Country\Controller\Country::getNameById(204);
                         }
                     } else if (gettype($data) == 'boolean') {
-                        $data = '<i>' . ($data ? 'Yes' : 'No') . '</i>';
+                        $data = '<i>' . ($data ? $_ARRAYLANG['TXT_YES'] : $_ARRAYLANG['TXT_NO']) . '</i>';
                         $encode = false;
                     } else if ($data === null) {
                         $data = '<i>NULL</i>';

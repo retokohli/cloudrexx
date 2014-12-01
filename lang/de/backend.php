@@ -1397,4 +1397,5 @@ $_ARRAYLANG['TXT_DEACTIVATED'] = "Deaktiviert";
 $_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Ihre Sitzung ist abgelaufen.<br /><a href="./index.php" target="_blank">Klicken Sie hier um sich erneut anzumelden.</a>';
 
 $_ARRAYLANG['TXT_COMPONENTMANAGER_ADD_NEW_APPLICATION'] = "Neue hinzufügen...";
+$_ARRAYLANG['TXT_CORE_MODULE_CRON'] = "Geplante Aufgaben";
 $_ARRAYLANG['TXT_NET_MANAGER'] = "Domains";
