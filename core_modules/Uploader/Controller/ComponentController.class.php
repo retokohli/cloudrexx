@@ -15,6 +15,7 @@ namespace Cx\Core_Modules\Uploader\Controller;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
+use Cx\Core_Modules\MediaBrowser\Model\ResourceRegister;
 use Cx\Core_Modules\Uploader\Model\Uploader;
 
 class ComponentController extends SystemComponentController
@@ -60,17 +61,20 @@ class ComponentController extends SystemComponentController
                 echo($e->getMessage());
             }
 
-//            \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Style/mediabrowser.css', 1));
-//            \JS::registerJS('lib/javascript/jquery/1.9.1/js/jquery.min.js');
-//            \JS::registerJS('lib/plupload/js/moxie.min.js');
-//            \JS::registerJS('lib/plupload/js/plupload.full.min.js');
-//            \JS::registerJS('lib/javascript/angularjs/angular.js');
-//            \JS::registerJS('lib/javascript/angularjs/angular-route.js');
-//            \JS::registerJS('lib/javascript/angularjs/angular-animate.js');
-//            \JS::registerJS('lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js');
-//            \JS::registerJS('lib/javascript/bootbox.min.js');
-//            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/mediabrowser.js', 1));
-//            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/standalone-directives.js', 1));
+            ResourceRegister::registerMediaBrowserRessource();
+
+            $template->_blocks['__global__'] = str_replace(
+                '</head>', ResourceRegister::getCode() . '</head>',
+                $template->_blocks['__global__']
+            );
+
+            \JS::registerCSS(
+                substr(
+                    $this->cx->getCoreModuleFolderName()
+                    . '/MediaBrowser/View/Style/mediabrowser.css', 1
+                )
+            );
+
         }
     }
 
