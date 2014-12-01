@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    $J(document).ready(function() {
+        $J('.news-image').each(function() {
+            if ($J.trim($J(this).html()) == '') {
+                $J(this).siblings('.news-text').css('width', '100%');
+                $J(this).remove();
+            }
+        });
+        $J('#news li:last').css('border', 0);
+    });
+</script>
+<!-- BEGIN news_status_message -->
+{TXT_NEWS_NO_NEWS_FOUND}
+<!-- END news_status_message -->
+<!-- BEGIN news_list -->
+<ul id="news">
+    <!-- BEGIN newsrow -->
+    <li>
+        <div class="news-image">{NEWS_IMAGE}</div>
+        <div id="news-content">
+            <h2>{NEWS_LINK_TITLE}</h2>
+            <div class="news-text">
+                <div class="news-info">{NEWS_AUTHOR}, {NEWS_DATE}</div>
+                <div class="news-teaser">{NEWS_TEASER}</div>
+            </div>
+        </div>
+    </li>
+    <!-- END newsrow -->
+</ul>
+<!-- END news_list -->
+{NEWS_PAGING}

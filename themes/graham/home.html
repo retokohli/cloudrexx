@@ -1,0 +1,55 @@
+<div id="home-content" class="clearfix inner container">
+    <div class="row">
+        <div id="home-page-wrapper" class="content">
+            <div id="home-page" class="col-md-12 col-xs-12">
+                 <!-- {CONTENT_TEXT} -->
+                 <div id='imageBlocks'>
+                     <div class="imageContainer">
+                         <a class="cell grouped_elements" href="/themes/graham/images/img1.jpg" rel="portfolioImg" style="background-image:url('/themes/graham/images/img1.jpg')">&nbsp; </a> 
+                         <a class="cell grouped_elements" href="/themes/graham/images/img2.jpg" rel="portfolioImg" style="background-image:url('/themes/graham/images/img2.jpg')">&nbsp; </a>
+                         <a class="cell grouped_elements" href="/themes/graham/images/img3.jpg" rel="portfolioImg" style="background-image:url('/themes/graham/images/img3.jpg')">&nbsp; </a> 
+                         <a class="cell grouped_elements" href="/themes/graham/images/img4.jpg" rel="portfolioImg" style="background-image:url('/themes/graham/images/img4.jpg')">&nbsp; </a>
+                         <a class="cell grouped_elements" href="/themes/graham/images/img5.jpg" rel="portfolioImg" style="background-image:url('/themes/graham/images/img5.jpg')">&nbsp; </a>
+                         <a class="cell grouped_elements" href="/themes/graham/images/img6.jpg" rel="portfolioImg" style="background-image:url('/themes/graham/images/img6.jpg')">&nbsp; </a>
+                         <a class="cell grouped_elements" href="/themes/graham/images/img7.jpg" rel="portfolioImg" style="background-image:url('/themes/graham/images/img7.jpg')">&nbsp; </a>
+                         <a class="cell grouped_elements" href="/themes/graham/images/img8.jpg" rel="portfolioImg" style="background-image:url('/themes/graham/images/img8.jpg')">&nbsp; </a>
+                     </div>
+
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style type='text/css'>
+.cell {
+height:270px;
+width:270px;
+float:left;
+margin-right: 24px;
+margin-bottom : 24px;
+background-position: center center;
+background-repeat: no-repeat;
+background-size: cover;
+background-color: #222;
+}
+</style>
+<script>
+jQuery(document).ready(function() {
+var wall = new freewall(".imageContainer");
+        wall.reset({
+            selector: '.cell',
+            animate: true,
+            cellW: 270,
+            cellH: 270,
+            gutterX:24,
+            gutterY:24,
+            onResize: function() {
+                wall.refresh();
+            }
+        });
+        wall.fitWidth();
+        jQuery(window).trigger("resize");
+        jQuery(".grouped_elements").fancybox();
+
+});
+</script>
