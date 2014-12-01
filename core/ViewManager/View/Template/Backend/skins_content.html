@@ -5,7 +5,8 @@
     $J(document).ready(function() {
         $J("#tabs").tabs({
             show : function (event, ui) {
-                $J('#selectedTab').val($J( "#tabs" ).tabs('option', 'selected'));                
+                $J('#selectedTab').val($J( "#tabs" ).tabs('option', 'selected'));
+                $J(window).trigger('resize');
             }
         });
     
@@ -401,7 +402,7 @@
                                         <!-- END theme_library_version -->
                                     </select><br />
                                     <!-- END theme_library -->
-                                    <input type="submit" value="{TXT_SAVE}" />
+                                    <input type="submit" name="save_libraries" value="{TXT_SAVE}" />
                                     <!-- END theme_libraries -->  
                                 </div>
                             </div>
