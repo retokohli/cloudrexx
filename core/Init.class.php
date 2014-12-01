@@ -619,8 +619,7 @@ class InitCMS
         if ($themeId == 0)
             $themeId = $this->currentThemesId;
 
-        $customTemplateForTheme = $this->themeRepository->findOneBy(array('id', $themeId));
-        
+        $customTemplateForTheme = $this->themeRepository->findOneBy(array('id' => $themeId));
         if (!$customTemplateForTheme)
             return array();
 
