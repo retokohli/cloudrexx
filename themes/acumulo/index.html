@@ -19,14 +19,17 @@
         <link type="text/css" rel="stylesheet" href="themes/acumulo/font-awesome.css" />
         <link type="text/css" rel="stylesheet" href="themes/acumulo/layout_new.css" />        
         <link type="text/css" rel="stylesheet" href="themes/acumulo/text.css" />
+<!--        <link type="text/css" rel="stylesheet" href="themes/acumulo/modules.css" />
         <link type="text/css" rel="stylesheet" href="themes/acumulo/style.css" />
-        <link type="text/css" rel="stylesheet" href="themes/acumulo/modules.css" />
-        <link type="text/css" rel="stylesheet" href="themes/acumulo/lightdefault.css" />
-        <link type="text/css" rel="stylesheet" href="themes/acumulo/flexslider.css" />                        
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/lightdefault.css" />-->
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/flexslider.css" />        
+        
         {JAVASCRIPT}
         {STYLE_FILE}
         {LOGIN_INCLUDE}
-
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/modules.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/style.css" />
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/lightdefault.css" />
         <script type="text/javascript">
             $J.ajax({
                 url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
@@ -104,12 +107,12 @@
             <!-- BEGIN .header -->
             <div class="header">
                 <div class="navigation-wrapper clearfix">
-				{NAVBAR_FILE}
+                    {NAVBAR_FILE}
                 </div><!-- END .header -->
             </div>
-            </div>
-            {CONTENT_FILE}            
-            {LOGIN_CONTENT}
-            {COUNTER}        
+        </div>
+        {CONTENT_FILE}            
+        {LOGIN_CONTENT}
+        {COUNTER}        
     </body>
 </html>
