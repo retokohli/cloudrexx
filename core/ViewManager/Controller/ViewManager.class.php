@@ -919,6 +919,10 @@ CODE;
             if (is_array($fileName)) {
                 $this->createZipFolder($fileName, $folder . '/' . $folderName, $archive);
             } else {
+                $relativePath    = $folder . '/' . $fileName;
+                if (self::isFileTypeComponent($relativePath)) {
+                    $relativePath = self::getComponentFilePath($relativePath, false);
+                }
                 if (file_exists($this->websiteThemesFilePath . $folder . '/' . $fileName)) {
                     $themesFilePath = $this->websiteThemesFilePath;
                     $removePath     = $this->websiteThemesPath;
@@ -926,9 +930,8 @@ CODE;
                     $themesFilePath = $this->codeBaseThemesFilePath;
                     $removePath     = $this->codeBaseThemesPath;
                 }
-                $themesFilePath = file_exists($this->websiteThemesFilePath . $folder . '/' . $fileName) ? $this->websiteThemesFilePath : $this->codeBaseThemesFilePath;
-                if ($archive->add($themesFilePath . $folder . '/' . $fileName, PCLZIP_OPT_REMOVE_PATH, $removePath) == 0) {
-                    throw new \Exception($_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] . ': ' . $archive->errorInfo(true));
+                if ($archive->add($themesFilePath . $relativePath, PCLZIP_OPT_REMOVE_PATH, $removePath) == 0) {
+                    \DBG::log($_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] .' ' . $archive->errorInfo(true));
                 }
             }
         }
@@ -1875,43 +1878,45 @@ CODE;
      * 
      * @return string formatted ul and li for the js tree
      */
-    function getUlLi($folder, $path, $block, $themesPage) {        
-        $imgPath = $path;
+    function getUlLi($folder, $path, $block, $themesPage) {
         $result  = '<ul>';
         $virtualFolder = array('View', 'Template', 'Frontend');
         foreach ($folder as $folderName => $fileName) {
-            $permissionClass = '';
+            $permissionClass = 'protected';
+            $relativePath    = $path . '/' . (is_array($fileName) ? $folderName : $fileName);
+            
+            $isComponentFile = false;
+            if (self::isFileTypeComponent($relativePath)) {
+                $componentFilePath = self::getComponentFilePath($relativePath, ($block == 'applicationTheme'));
+                if (!$componentFilePath) { // may be a folder
+                    $componentFilePath = self::replaceComponentFolderByItsType($relativePath);
+                }
+                $isComponentFile   = true;
+            }
+            
+            $filePath = $this->websiteThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath);            
+            if (file_exists($filePath)) {
+                $permissionClass = '';
+            } else {
+                $filePath = $this->codeBaseThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath);
+            }
+            
             if (is_array($fileName)) {
+                
                 if (   $block == 'applicationTheme'
                     || (
-                           $block == 'theme' 
+                           $block == 'theme'
                         && !in_array($folderName, $virtualFolder)
                        )
-                   ) {                    
-                    $path         = $imgPath . '/' . $folderName;
-                    if ($block != 'applicationTheme' && $this->websiteThemesFilePath !== $this->codeBaseThemesFilePath) {
-                        if (file_exists($this->codeBaseThemesFilePath . '/'. $imgPath . '/' . $folderName)) {
-                            $permissionClass = 'protected';
-                        }
-                    }
+                   ) {
                     $icon         = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
-                    $activeFolder = preg_match('#^'.$path.'# i', $themesPage) ? "id='activeFolder'" : '';
-                    
-                    $result .= '<li><a  href="javascript:void(0);"' .$activeFolder. ' data-rel="'.$path.'" class="folder naming '. $permissionClass .'">' . $icon . $folderName . '</a>';
+                    $activeFolder = preg_match('#^'. $relativePath .'# i', $themesPage) ? "id='activeFolder'" : '';
+
+                    $result .= '<li><a  href="javascript:void(0);"' .$activeFolder. ' data-rel="'. $relativePath .'" class="folder naming '. $permissionClass .'">' . $icon . $folderName . '</a>';
                 }
-                $result .= $this->getUlLi($fileName, $imgPath .(!in_array($folderName, $virtualFolder) ? '/'. $folderName : ''), $block, $themesPage);
+                $result .= $this->getUlLi($fileName, $path .(!in_array($folderName, $virtualFolder) ? '/'. $folderName : ''), $block, $themesPage);
                 $result .= '</li>';
-            } else {                
-                if ($block == 'applicationTheme') {
-                    $filePath = (file_exists($this->websitePath . '/' . $imgPath .'/'. $fileName)) ? $this->websitePath . '/' . $imgPath . '/Template/Frontend' .'/'. $fileName : $this->codeBasePath . '/' . $imgPath . '/Template/Frontend' .'/'. $fileName;                    
-                } else {
-                    if ($this->websiteThemesFilePath !== $this->codeBaseThemesFilePath) {
-                        if (file_exists($this->codeBaseThemesFilePath . '/'. $imgPath .'/'. $fileName)) {
-                            $permissionClass = 'protected';
-                        }
-                    }
-                    $filePath = (file_exists($this->websiteThemesFilePath . '/' . $imgPath .'/'. $fileName)) ? $this->websiteThemesFilePath . '/' . $imgPath .'/'. $fileName : $this->codeBaseThemesFilePath . '/'. $imgPath .'/'. $fileName;
-                }
+            } else {
                 
                 if (in_array($fileName, $this->filenames)) {
                     $iconSrc = '../core/ViewManager/View/Media/Config.png';
@@ -1920,12 +1925,13 @@ CODE;
                 }
                 
                 $icon    = "<img height='16' width='16' alt='icon' src='" . $iconSrc . "' class='icon'>";
-                $activeFile = ($themesPage == $imgPath .'/'. $fileName) ? "id = 'activeFile'" : '';
+                $activeFile = ($themesPage == $relativePath) ? "id = 'activeFile'" : '';
                 
-                $result .= "<li><a  href= 'javascript:void(0);' class='loadThemesPage naming $permissionClass' $activeFile data-rel='" . $imgPath .'/'. $fileName . "'>" . $icon . $fileName . "</a></li>" . PHP_EOL;
+                $result .= "<li><a  href= 'javascript:void(0);' class='loadThemesPage naming $permissionClass' $activeFile data-rel='" . $relativePath . "'>" . $icon . $fileName . "</a></li>";
             }
         }
         $result .= '</ul>';
+        
         return $result;
     }
     
