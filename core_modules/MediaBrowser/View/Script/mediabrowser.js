@@ -822,7 +822,7 @@
                         mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
                     }
 
-                    if (config.callback != undefined) {
+                    if (typeof(config) !== 'undefined' && typeof(config.callback) !== 'undefined') {
                         mediabrowserConfig.set('modalClosed', config.callback);
                     }
                     else {
