@@ -395,10 +395,7 @@ class ViewManager
 // Tab initialization
 var tabs = \$J('#tabs').tabs({ selected: 0 });
 tabs.tabs('option', 'selected', $themeTab);
-\$J('#selectedTab').val($themeTab);
-  if ($themeTab == 2) {
-    \$J('#file-operation').hide();
-  }              
+\$J('#selectedTab').val($themeTab);         
 });
 CODE;
                     
@@ -1518,7 +1515,7 @@ CODE;
     {
         global $_ARRAYLANG;
         // only save if the form has been fired
-        if (!isset($_POST['libraryVersion'])) return;
+        if (!isset($_POST['save_libraries'])) return;
         
         $libraries = \JS::getConfigurableLibraries();
         
@@ -2233,7 +2230,7 @@ CODE;
      */
     private function createDefaultFiles($themeDirectory)
     {
-        global $_ARRAYLANG, $_FTPCONFIG;
+        global $_ARRAYLANG;
 
         foreach ($this->directories as $dir) {
             if (!\Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$themeDirectory.'/'.$dir)) {
@@ -2273,7 +2270,9 @@ CODE;
         
         // write component.yml file
         // this line will create a default component.yml file
-        $this->themeRepository->convertThemeToComponent($themeDirectory);
+        $theme = new \Cx\Core\View\Model\Entity\Theme();
+        $theme->setFoldername($themeDirectory);
+        $this->themeRepository->convertThemeToComponent($theme);
 
         return true;
     }

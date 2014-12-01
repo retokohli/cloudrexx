@@ -309,17 +309,26 @@ class ThemeRepository
             }
         }
         
-        $themePath = file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername) ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $foldername;        
+        $themePath =  file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername) 
+                    ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername 
+                    : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $foldername;        
         
         if (!file_exists($themePath)) {
+            \DBG::log($foldername. ' :Theme folder not Exists');
             return $theme;
         }
+        
+        $componentFile = file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername . '/component.yml') 
+                        ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername . '/component.yml' 
+                        : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $foldername . '/component.yml'; 
+        
         try {
             // create a new one if no component.yml exists
-            if (!file_exists($themePath . '/component.yml')) {
-                $this->convertThemeToComponent($theme);
+            if (!file_exists($componentFile)) {
+                $this->convertThemeToComponent($theme); // file will be written into website folder
+                $componentFile = \Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername . '/component.yml';
             }
-            $yamlFile = new \Cx\Lib\FileSystem\File($themePath . '/component.yml');
+            $yamlFile = new \Cx\Lib\FileSystem\File($componentFile);
             $yaml = new \Symfony\Component\Yaml\Yaml();
             $themeInformation = $yaml->load($yamlFile->getData());
             $theme->setComponentData($themeInformation['DlcInfo']);
@@ -343,20 +352,19 @@ class ThemeRepository
     
     /**
      * Generate a component.yml for one theme available on the system
-     * @param string|\Cx\Core\View\Model\Entity\Theme $theme
+     * 
+     * @param \Cx\Core\View\Model\Entity\Theme $theme
      */
-    public function convertThemeToComponent($theme) {
-        if ($theme instanceof \Cx\Core\View\Model\Entity\Theme) {
-            $theme = $theme->getFoldername();
-        }
+    public function convertThemeToComponent(\Cx\Core\View\Model\Entity\Theme $theme) {
+
+        $themePath = \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername();
         
-        $themePath = \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme;
         try {
             // check for old info file
-            $infoFile = new \Cx\Lib\FileSystem\File($theme . '/info.xml');
+            $infoFile = new \Cx\Lib\FileSystem\File($themePath . '/info.xml');
             $this->xmlParseFile($infoFile);
             $themeInformation['DlcInfo'] = array(
-                'name' => $theme,
+                'name' => $theme->getFoldername(),
                 'description' => $this->xmlDocument['THEME']['DESCRIPTION']['cdata'],
                 'type' => 'template',
                 'publisher' => $this->xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
@@ -371,7 +379,7 @@ class ThemeRepository
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             // create new data for new component.yml file
             $themeInformation['DlcInfo'] = array(
-                'name' => $theme,
+                'name' => $theme->getFoldername(),
                 'description' => '',
                 'type' => 'template',
                 'publisher' => 'Comvation AG',
@@ -392,9 +400,7 @@ class ThemeRepository
                 'maximumVersionNumber' => '1.6.1'
             )
         );
-        $themeFolder = $theme;
-        $theme = new \Cx\Core\View\Model\Entity\Theme();
-        $theme->setFoldername($themeFolder);
+        
         // write components yaml
         $theme->setComponentData($themeInformation['DlcInfo']);
         try {
