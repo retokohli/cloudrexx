@@ -1,0 +1,74 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+    <!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+        <meta name="generator" content="{VERSION}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="description" content="{METADESC}" />
+        <meta charset="{CHARSET}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta property="og:site_name" content="{GLOBAL_TITLE}" />
+        <meta property="og:title" content="{METATITLE}" />
+        <meta property="og:description" content="{METADESC}" />
+        <meta property="og:url" content="http://{DOMAIN_URL}{CURRENT_URL}" />
+        <meta property="og:image" content="{BASE_URL}/themes/graham/images/og_logo_social_media.jpg" />
+        <meta name="twitter:title" content="{METATITLE}" />
+        <meta name="twitter:description" content="{METADESC}" />
+        <meta name="twitter:image" content="{BASE_URL}/themes/graham/images/logo_social_media.jpg" />
+        <link type="images/x-icon" rel="icon" href="themes/graham/images/favicon.ico" />
+        <link rel="apple-touch-icon" href="/themes/graham/images/logo_social_media.jpg" />
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="themes/graham/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/graham/style.css" />
+        <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic' rel='stylesheet' type='text/css'>
+        <link type="text/css" rel="stylesheet" href="themes/graham/jquery.fancybox.css" />
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+        <link type="text/css" rel="stylesheet" href="themes/graham/modules.css" />
+        <link type="text/css" rel="stylesheet" href="themes/graham/text.css" />
+        <script type="text/javascript" src="themes/graham/modernizr.js"></script>
+        <script type="text/javascript" src= "themes/graham/javascript.js"></script>
+        <script type="text/javascript" src= "themes/graham/freewall.js"></script>
+        <script type="text/javascript" src= "themes/graham/jquery.fancybox.js"></script>      
+        <script type="text/javascript" src= "themes/graham/jquery.mousewheel-3.0.6.pack.js"></script>          
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="header">
+                <div class="container">
+                    <div class="row hidden-lg">
+                        <a href="javascript:void(0)" class="toggle-menu">Menu</a>
+                        <div class="mobile-nav">
+                            {NAVBAR2_FILE}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <a id="logo" href="{NODE_HOME}">GRAHAM</a>
+                        <div class="visible-lg" id="navigation-wrapper">{NAVBAR_FILE}</div>
+                    </div>
+                </div>
+            </div>
+            <section id="content-wrapper">
+                {CONTENT_FILE}
+            </section>
+            <footer id="footer" class="inner">
+                <div class="inner container">
+                    <div id="footerleft" class="row">
+                        <div class="footer-left-top">
+                            <div>&copy; {CONTACT_COMPANY}, {CONTACT_COUNTRY}</div>
+                            <div><span>&nbsp; | </span><a href="{NODE_IMPRINT}">Impressum</a><span>&nbsp; | </span>Graham Theme by <a href="http://www.cloudrexx.com" target="_blank">Cloudrexx.com</a>.</div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>       
+    </body>
+</html>
