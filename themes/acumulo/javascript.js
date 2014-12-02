@@ -19,7 +19,7 @@
         }
         /* Metanavigation End */
 
-        $('.breadcrumbs').html($('.breadcrumbs').html().replace(/\&gt;/g,'»')); 
+//        $('.breadcrumbs').html($('.breadcrumbs').html().replace(/\&gt;/g,'»')); 
         
         /* Navigation Start */
         $('#navigation > li').hover(function () {
