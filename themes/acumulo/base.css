@@ -24,7 +24,7 @@
     .container .two.columns                     { width: 100px; }
     .container .three.columns                   { width: 160px; }
     .container .four.columns                    { width: 220px; }
-    .container .five.columns                    { width: 280px; }
+    .container .five.columns                    { width: 29.2%; }
     .container .six.columns                     { width: 340px; }
     .container .seven.columns                   { width: 400px; }
     .container .eight.columns                   { width: 460px; }
@@ -57,7 +57,7 @@
     .container .offset-by-fourteen              { padding-left: 840px; }
     .container .offset-by-fifteen               { padding-left: 900px; }
 
-    .container .page-content.with-sidebar					  { width: 640px;padding: 0 10px;min-height: 400px;}
+    .container .page-content.with-sidebar					  { width: 68.7%;padding: 0 10px;min-height: 400px;}
     .container .with-sidebar .four.columns                    { width: 145px; }
 	.container .with-sidebar .eight.columns                   { width: 310px; }
 	.container .with-sidebar .twelve.columns                  { width: 475px; }

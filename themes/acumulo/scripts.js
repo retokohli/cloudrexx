@@ -6,7 +6,7 @@ jQuery(document).ready(function(){
 /*		    Navigation
 /*----------------------------------*/
 	
-	jQuery('ul.sf-menu').supersubs({
+	$jq('ul.sf-menu').supersubs({
 		minWidth: 14,
 		maxWidth: 28,
 		extraWidth: 1
@@ -89,9 +89,9 @@ jQuery(document).ready(function(){
 /*	     jQuery UI Tools
 /*----------------------------------*/
 
-	jQuery(".accordion").accordion ({
-		header: "h3"
-	});
+//	jQuery(".accordion").accordion ({
+//		header: "h3"
+//	});
 
 	jQuery(".toggle div").hide(); // hide div on default
 	jQuery(".toggle h3").click(function(){ // set the trigger
@@ -99,7 +99,7 @@ jQuery(document).ready(function(){
 		return false;
 	});
 
-	jQuery(".tabs").tabs({ fx: { opacity: 'show' } });
+	$jq(".tabs").tabs({ fx: { opacity: 'show' } });
 
 
 

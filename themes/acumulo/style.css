@@ -194,7 +194,11 @@ hr {
 }
 
 :focus {-moz-outline-style: none; outline: none;}
-a:focus {outline:none;}
+a:focus {
+    outline: none;
+    color: #ff6d11;
+    text-decoration: none;
+}
 a:active {outline:none;}
 
 /* ---------------------------- */
@@ -207,6 +211,7 @@ ul,ol {
 
 ul {
     list-style:none outside;
+    margin: 0;
 }
 
 ol {
@@ -2326,7 +2331,17 @@ p.form-submit {margin-bottom: 0;}
     input[name="downloads_search_keyword"] {
         width: 67%;
     }
-    select {width: 100%;}
+    body {
+        padding: 0;
+    }
+    #shop div.shop_options_click {
+        padding: 10px 0 10px 0;
+    }
+    form[name="shopSearch"] input[type="text"] {
+        width: 55% !important;
+    }
+    .container #shop button.add-to-cart,.container #shop div.price, #shop div.details {border-radius: 4px; width: auto;}
+    select, .shop_text .form-control, #shipping_address select {width: 100%;}
     #podcast .media div +div {
         padding-left: 0;
     }
@@ -2389,7 +2404,7 @@ p.form-submit {margin-bottom: 0;}
     #home-boxes .box1, #home-boxes .box2 {
         padding: 0;
     }
-    #home-boxes .first .home-box {
+    #home-boxes .first .home-box,  #shop div.short-description {
         width: 100%;
     }
     #home-boxes .middlebox .home-box {margin-left: 0;}
@@ -3061,6 +3076,7 @@ p.form-submit {margin-bottom: 0;}
     #content-wrapper {
         padding-bottom: 168px;
     }
+
     #shop div.message p label {
         min-height: 40px;
     }
@@ -3141,5 +3157,13 @@ p.form-submit {margin-bottom: 0;}
     }
     .navbar-nav {
         margin: 0;
+    }
+}
+@media (min-width: 1200px) {
+    .container {
+        position: relative;
+        width: 960px;
+        margin: 0 auto;
+        padding: 0;
     }
 }

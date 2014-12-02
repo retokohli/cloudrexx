@@ -17,41 +17,40 @@
         <link type="text/css" rel="stylesheet" href="themes/acumulo/layout.css" />
         <link type="text/css" rel="stylesheet" href="themes/acumulo/base.css" />
         <link type="text/css" rel="stylesheet" href="themes/acumulo/font-awesome.css" />
-        <link type="text/css" rel="stylesheet" href="themes/acumulo/layout_new.css" />        
         <link type="text/css" rel="stylesheet" href="themes/acumulo/text.css" />
-<!--        <link type="text/css" rel="stylesheet" href="themes/acumulo/modules.css" />
-        <link type="text/css" rel="stylesheet" href="themes/acumulo/style.css" />
-        <link type="text/css" rel="stylesheet" href="themes/acumulo/lightdefault.css" />-->
         <link type="text/css" rel="stylesheet" href="themes/acumulo/flexslider.css" />        
-        
         {JAVASCRIPT}
         {STYLE_FILE}
         {LOGIN_INCLUDE}
+        <link type="text/css" rel="stylesheet" href="themes/acumulo/layout_new.css" />   
         <link type="text/css" rel="stylesheet" href="themes/acumulo/modules.css" />
         <link type="text/css" rel="stylesheet" href="themes/acumulo/style.css" />
         <link type="text/css" rel="stylesheet" href="themes/acumulo/lightdefault.css" />
-        <script type="text/javascript">
-            $J.ajax({
-                url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
-                statusCode: {
-                    200: function() {
-                        $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
-                    }
-                }
-            });
-        </script>        
         <script type="text/javascript" src="themes/acumulo/modernizr.js"></script>        
         <script type="text/javascript" src="themes/acumulo/javascript.js"></script>        
-        <script type="text/javascript" src="themes/acumulo/jquery.superfish.js"></script>
-        <script type="text/javascript" src="themes/acumulo/jquery.supersubs.js"></script>
+        <script type="text/javascript" src= "themes/acumulo/superfish.js"></script>
+        <script type="text/javascript" src= "themes/acumulo/jquery.supersubs.js"></script>
         <script type="text/javascript" src="themes/acumulo/jquery.dcarousel.js"></script>
         <script type="text/javascript" src="themes/acumulo/jquery.fitvid.js"></script>        
         <script type="text/javascript" src="themes/acumulo/jquery.flexslider.js"></script>       
         <script type="text/javascript" src="themes/acumulo/jquery.jflickrfeed.js"></script>
-        <script type="text/javascript" src="themes/acumulo/scripts.js"></script>
         <script type="text/javascript">
-            jQuery(window).load(function() {
-                jQuery('#slider').fitVids().flexslider({
+            $jq = jQuery.noConflict(true);
+        </script>
+        <script type="text/javascript" src= "themes/acumulo/scripts.js"></script>
+        <script type="text/javascript">
+           $J.ajax({
+               url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
+               statusCode: {
+                   200: function() {
+                       $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
+                   }
+               }
+           });
+        </script>  
+        <script type="text/javascript">
+            $jq(window).load(function() {
+                $jq('#slider').fitVids().flexslider({
                     animation: "slide",
                     controlNav: true,
                     directionNav: true,
@@ -62,31 +61,7 @@
                 });
             });
         </script>
-
-        <!--[if IE 6]>
-        <script type="text/javascript" src="themes/acumulo/DD_belatedPNG.js"></script>
-        <script type="text/javascript">
-            $J(document).ready(function () {
-                DD_belatedPNG.fix('img, .png-bg');
-            });
-        </script>
-        <![endif]-->
-
-        <!--[if lt IE 10]>
-        <script type="text/javascript" src="themes/acumulo/PIE.js"></script>
-        <script type="text/javascript">
-            $J(document).ready(function () {
-                if (window.PIE) {
-                    var elements = '#search-input';
-                    $J(elements).each(function () {
-                        PIE.attach(this);
-                    });
-                }
-            });
-        </script>
-        <![endif]-->
     </head>
-
     <body class="responsive">
         <div class="top-wrapper clearfix">
             <div class="logo-wrapper">
