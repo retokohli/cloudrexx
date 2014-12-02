@@ -119,7 +119,7 @@ class JsonBlock implements JsonAdapter {
         $data = array();
         foreach ($blocks as $id=>$block) {
             $data[$id] = array(
-                'id' => $block['id'],
+                'id' => $id,
                 'name' => $block['name'],
                 'disabled' => $block['global'] == 1,
                 'selected' => $block['global'] == 1,
