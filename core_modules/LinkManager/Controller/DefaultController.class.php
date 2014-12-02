@@ -57,7 +57,6 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
      * @param \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController the system component controller object
      * @param \Cx\Core\Core\Controller\Cx                          $cx                        the cx object
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
-     * @param string                                               $submenu                   the submenu name
      */
     public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) { 
         //check the user permission
