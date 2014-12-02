@@ -205,6 +205,9 @@ class FormGenerator {
                 // textarea
                 $textarea = new \Cx\Core\Html\Model\Entity\HtmlElement('textarea');
                 $textarea->setAttribute('name', $name);
+                if (isset($options['readonly']) && $options['readonly']) {
+                    $textarea->setAttribute('disabled');
+                }
                 $textarea->addChild(new \Cx\Core\Html\Model\Entity\TextElement($value));
                 return $textarea;
                 break;
