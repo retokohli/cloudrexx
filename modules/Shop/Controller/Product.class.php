@@ -892,10 +892,18 @@ class Product
         if (!Attributes::removeFromProduct($this->id)) {
             return false;
         }
+        
+        \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+        
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE id=$this->id");
-        if (!$objResult) return false;
+                WHERE id=$this->id");
+        
+        if (!$objResult) {
+            return false;
+        }
+        \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+        
         $objDatabase->Execute("
             OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
         return true;
@@ -972,8 +980,8 @@ class Product
                 if (!Attributes::addOptionToProduct(
                     $value_id, $this->id, $ord
                 )) return false;
+                }
             }
-        }
         return true;
     }
 
@@ -990,38 +998,43 @@ class Product
     function update()
     {
         global $objDatabase;
-
+        
+        \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
-            SET picture='$this->pictures',
-                category_id='".addslashes($this->category_id)."',
-                distribution='$this->distribution',
-                normalprice=$this->price,
-                resellerprice=$this->resellerprice,
-                stock=$this->stock,
-                stock_visible=".($this->stock_visible ? 1 : 0).",
-                discountprice=$this->discountprice,
-                discount_active=".($this->discount_active ? 1 : 0).",
-                active=".($this->active ? 1 : 0).",
-                b2b=".($this->b2b ? 1 : 0).",
-                b2c=".($this->b2c ? 1 : 0).",
-                date_start='$this->date_start',
-                date_end='$this->date_end',
-                manufacturer_id=$this->manufacturer_id,
-                ord=$this->ord,
-                vat_id=$this->vat_id,
-                weight=$this->weight,
-                flags='".addslashes($this->flags)."',
-                usergroup_ids=".($this->usergroup_ids
-                    ? "'".$this->usergroup_ids."'" : 'NULL').",
-                group_id=".($this->group_id
-                    ? $this->group_id : 'NULL').",
-                article_id=".($this->article_id
-                    ? $this->article_id : 'NULL')."
-          WHERE id=$this->id";
+                SET picture='$this->pictures',
+                    category_id='".addslashes($this->category_id)."',
+                    distribution='$this->distribution',
+                    normalprice=$this->price,
+                    resellerprice=$this->resellerprice,
+                    stock=$this->stock,
+                    stock_visible=".($this->stock_visible ? 1 : 0).",
+                    discountprice=$this->discountprice,
+                    discount_active=".($this->discount_active ? 1 : 0).",
+                    active=".($this->active ? 1 : 0).",
+                    b2b=".($this->b2b ? 1 : 0).",
+                    b2c=".($this->b2c ? 1 : 0).",
+                    date_start='$this->date_start',
+                    date_end='$this->date_end',
+                    manufacturer_id=$this->manufacturer_id,
+                    ord=$this->ord,
+                    vat_id=$this->vat_id,
+                    weight=$this->weight,
+                    flags='".addslashes($this->flags)."',
+                    usergroup_ids=".($this->usergroup_ids
+                        ? "'".$this->usergroup_ids."'" : 'NULL').",
+                    group_id=".($this->group_id
+                        ? $this->group_id : 'NULL').",
+                    article_id=".($this->article_id
+                        ? $this->article_id : 'NULL')."
+                WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        return true;
+        
+        if ($objResult) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+            return true;
+        }
+        return false;
     }
 
 
@@ -1037,7 +1050,8 @@ class Product
     function insert()
     {
         global $objDatabase;
-
+        
+        \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products (
                 picture, category_id, distribution,
@@ -1064,10 +1078,13 @@ class Product
                 ".($this->article_id ? $this->article_id : 'NULL')."
             )";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        // My brand new ID
-        $this->id = $objDatabase->Insert_ID();
-        return true;
+        if ($objResult) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+            // My brand new ID
+            $this->id = $objDatabase->Insert_ID();
+            return true;
+        }
+        return false;
     }
 
 
@@ -1243,14 +1260,14 @@ class Product
     function decreaseStock($quantity)
     {
         global $objDatabase;
-
+        
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
                SET stock=stock-$quantity
              WHERE id=$this->id
                AND distribution='delivery'";
         return (boolean)$objDatabase->Execute($query);
-    }
+        }
 
 
     /**
