@@ -86,5 +86,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Modules\Shop\Model\Event\ShopEventListener());
-   }    
+   }
+   
+    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $evm = \Env::get('cx')->getEvents();
+        $productsEventListener = new \Cx\Modules\Shop\Model\Event\ProductsEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Shop\\Controller\\Products', $productsEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Shop\\Controller\\Products', $productsEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Shop\\Controller\\Products', $productsEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Modules\\Shop\\Controller\\Products', $productsEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Modules\\Shop\\Controller\\Products', $productsEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Modules\\Shop\\Controller\\Products', $productsEventListener);
+   }
 }
