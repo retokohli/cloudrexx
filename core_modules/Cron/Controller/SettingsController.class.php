@@ -40,7 +40,7 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller {
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
      * @param string                                               $submenu                   the submenu name
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template, $submenu = null) {
         parent::__construct($systemComponentController, $cx);
         
         $this->template          = $template;

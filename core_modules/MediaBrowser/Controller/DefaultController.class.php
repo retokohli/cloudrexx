@@ -28,12 +28,10 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
      * @param \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController
      * @param \Cx\Core\Core\Controller\Cx                          $cx
      * @param \Cx\Core\Html\Sigma                                  $template
-     * @param type                                                 $submenu
      */
     public function __construct(
         \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController,
-        \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template,
-        $submenu = null
+        \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template
     )
     {
         parent::__construct($systemComponentController, $cx);
