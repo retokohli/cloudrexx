@@ -76,8 +76,9 @@
     .login-content {
         padding: 0;
     }
-    #calendar-boxes {
+    #calendar #calendar-boxes {
         padding: 0;
+        width: 100%;
     }
     .voting td:last-of-type {
         width: 37%;
@@ -854,4 +855,5 @@
     .modules-page { width: 100%;}
     .news-info { line-height: 24pt;}
     .header { padding-right: 30px;}
+    .content ul li, #page a {word-break: break-word;}
 }
