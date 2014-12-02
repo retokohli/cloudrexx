@@ -171,30 +171,50 @@
         return true;
     }
     
+//    function setPaymentUrl() {
+//        try {
+//            jQuery.ajax({
+//                dataType: "json",
+//                url: options.paymentUrl,
+//                data: {
+//                    multisite_email_address : objMail.val(),
+//                    multisite_address : objAddress.val(),
+//                    product_id : jQuery("#product_id").val()
+//                },
+//                type: "POST",
+//                success: function(response){
+//                    if (response.status == 'error') {
+//                        return;
+//                    }
+//                    
+//                    if (response.status == 'success' && response.data.link) {
+//                        jQuery('.multisite_pay').data('href', response.data.link);
+//                    }
+//                }
+//            });
+//        } catch (e) {
+//            console.log(e);
+//        }
+//    }
     function setPaymentUrl() {
-        try {
-            jQuery.ajax({
-                dataType: "json",
-                url: options.paymentUrl,
-                data: {
-                    multisite_email_address : objMail.val(),
-                    multisite_address : objAddress.val(),
-                    product_id : jQuery("#product_id").val()
-                },
-                type: "POST",
-                success: function(response){
-                    if (response.status == 'error') {
-                        return;
-                    }
-                    
-                    if (response.status == 'success' && response.data.link) {
-                        jQuery('.multisite_pay').data('href', response.data.link);
-                    }
-                }
-            });
-        } catch (e) {
-            console.log(e);
-        }
+        var email = jQuery("#multisite_email_address").val();
+        var productId = jQuery("#product_id").val();
+        var productName = jQuery("#product_name").val();
+        var websiteName = jQuery("#multisite_address").val();
+        var domainName = jQuery("#multisite_domain").val();
+        var href = jQuery(".multisite_pay").data('href');
+        var hrefVal = href.split('&');
+        hrefVal = jQuery.map(hrefVal, function(v) {
+            if (v.search('contact_email') !== -1 || v.search('invoice_number') !== -1 || v.search('referenceId') !== -1) {
+                var modifyValue = v.split('=');
+                return (modifyValue[0] === 'contact_email') ? 'contact_email=' + email :
+                        (modifyValue[0] === 'invoice_number' ? 'invoice_number=' + productName + ' - ' + websiteName + '.' + domainName : 
+                        (modifyValue[0] === 'referenceId') ? 'referenceId=' + productId + '-' + websiteName : '');
+            }
+            return v;
+        });
+        
+        jQuery('.multisite_pay').data('href', hrefVal.join('&'));
     }
     
     function verifyForm() {

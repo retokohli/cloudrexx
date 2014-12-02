@@ -157,16 +157,30 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 // TODO: add configuration option for contact details and replace the hard-coded e-mail address on the next line
                             'TXT_MULTISITE_EMAIL_INFO'      => sprintf($_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO'], 'info@cloudrexx.com'),
                         ));
-                        if (!empty($arguments['product-id'])) {
-                            $productId = $arguments['product-id'];
-                        } else {
-                            $productId = \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
-                        }
+                        $productId = !empty($arguments['product-id']) ? $arguments['product-id'] : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
                         if (!empty($productId)) {
                             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
                             $product = $productRepository->findOneBy(array('id' => $productId));
-
                             $productPrice = $product->getPrice();
+                            if (!empty($productPrice)) {
+                                $additionalParameters = array(
+                                    'invoice_amount'    => $productPrice,
+                                    'invoice_currency'  => 'CHF',
+                                    'invoice_number'    =>  $product->getName(),
+                                    'contact_email'     => '',
+                                    'referenceId'       => ''
+                                );
+                                $i = 1;
+                                $params = '';
+                                foreach ($additionalParameters as $key => $val) {
+                                    $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
+                                    $i++;
+                                }
+                                $delimiter = preg_match('#\?#', \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl')) ? '&' : '?';
+                                $objTemplate->setVariable(array(
+                                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml(\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl').$delimiter.$params),
+                                ));
+                            }
                             $objTemplate->setVariable(array(
                                 'TXT_MULTISITE_PAYMENT_MODE' => !empty($productPrice) ? true : false,
                                 'PRODUCT_NOTE_ENTITY'     => $product->getNoteEntity(),
@@ -174,6 +188,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
                                 'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
                                 'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
+                                'PRODUCT_NAME'            => $product->getName(),
                                 'PRODUCT_ID'              => $product->getId()
                             ));
                         }
@@ -277,26 +292,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $objTemplate->get();
                         break;
                     case 'Payrexx':
-                        $transaction   = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
-                        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-                        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
-                        $paymentRequestId = $_POST['transaction']['invoice']['paymentRequestId'];
-                        
-                        $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
-
-                        $paymentRequest = new \Payrexx\Models\Request\PaymentRequest();
-                        $paymentRequest->setId($paymentRequestId);
-
-                        try {
-                            $response = $payrexx->getOne($paymentRequest);
-                        } catch (\Payrexx\PayrexxException $e) {
-                            throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
-                        }
-                        
-                        if (!empty($transaction) && isset($transaction['status']) && ($transaction['status'] === 'confirmed')
-                                && !empty($response) && isset($response['status']) && ($response['status'] === 'success')
-                                && $transaction['invoice']['amount'] === $response['invoice']['amount']
-                                && $transaction['invoice']['referenceId'] === $response['invoice']['referenceId']) {
+                        $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
+                        if (!empty($transaction) && isset($transaction['status']) && $transaction['status'] === 'confirmed') {
                             $invoice = $transaction['invoice'];
                             $payment = new \Cx\Modules\Order\Model\Entity\Payment();
                             $payment->setAmount($invoice['amount']);
@@ -305,6 +302,34 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             \Env::get('em')->persist($payment);
                             \Env::get('em')->flush();
                         }
+//                        $transaction   = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
+//                        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+//                        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+//                        $paymentRequestId = $_POST['transaction']['invoice']['paymentRequestId'];
+//                        
+//                        $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
+//
+//                        $paymentRequest = new \Payrexx\Models\Request\PaymentRequest();
+//                        $paymentRequest->setId($paymentRequestId);
+//
+//                        try {
+//                            $response = $payrexx->getOne($paymentRequest);
+//                        } catch (\Payrexx\PayrexxException $e) {
+//                            throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
+//                        }
+//                        
+//                        if (!empty($transaction) && isset($transaction['status']) && ($transaction['status'] === 'confirmed')
+//                                && !empty($response) && isset($response['status']) && ($response['status'] === 'success')
+//                                && $transaction['invoice']['amount'] === $response['invoice']['amount']
+//                                && $transaction['invoice']['referenceId'] === $response['invoice']['referenceId']) {
+//                            $invoice = $transaction['invoice'];
+//                            $payment = new \Cx\Modules\Order\Model\Entity\Payment();
+//                            $payment->setAmount($invoice['amount']);
+//                            $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
+//                            $payment->setTransactionReference($invoice['referenceId']);
+//                            \Env::get('em')->persist($payment);
+//                            \Env::get('em')->flush();
+//                        }
                         break;
                     default:
                         break;
@@ -605,21 +630,26 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for maximum length for the FTP account name");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('payrexxAccount', '', 19,
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormUrl', '', 19,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for URL to Payrexx form");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormId', '', 20,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new MultiSiteException("Failed to add Setting entry for Payrexx Form Id");
-            }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('payrexxApiSecret', '', 21,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new MultiSiteException("Failed to add Setting entry for Payrexx API Secret");
-            }
+//            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount') === NULL
+//                && !\Cx\Core\Setting\Controller\Setting::add('payrexxAccount', '', 19,
+//                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+//                    throw new MultiSiteException("Failed to add Setting entry for URL to Payrexx form");
+//            }
+//            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') === NULL
+//                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormId', '', 20,
+//                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+//                    throw new MultiSiteException("Failed to add Setting entry for Payrexx Form Id");
+//            }
+//            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret') === NULL
+//                && !\Cx\Core\Setting\Controller\Setting::add('payrexxApiSecret', '', 21,
+//                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+//                    throw new MultiSiteException("Failed to add Setting entry for Payrexx API Secret");
+//            }
 
             // websiteSetup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
