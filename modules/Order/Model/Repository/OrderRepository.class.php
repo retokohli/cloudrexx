@@ -57,4 +57,25 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
 
         return $qb->getQuery()->getResult();
     }
+    
+    /**
+     * Check the order count by the $crmId
+     * 
+     * @param integer $crmId Crm User Id
+     * 
+     * @return boolean
+     */
+    public function hasOrderByCrmId($crmId = 0) {
+        if (empty($crmId)) {
+            return;
+        }
+        
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('count(o.id)')
+           ->from('\Cx\Modules\Order\Model\Entity\Order', 'o')
+           ->where('o.contactId = :contactId');     
+        $qb->setParameter('contactId', $crmId);
+        
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

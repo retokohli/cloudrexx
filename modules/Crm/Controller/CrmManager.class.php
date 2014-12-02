@@ -653,7 +653,7 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_CUSTOMERS'             =>  $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                 'TXT_CRM_CUSTOMER_SEARCH_HINT'  =>  $_ARRAYLANG['TXT_CRM_CUSTOMER_SEARCH_HINT'],
                 'TXT_CRM_ADVANCED_SEARCH'       =>  $_ARRAYLANG['TXT_CRM_ADVANCED_SEARCH'],
-                'TXT_CRM_COMPANY_NAME'          =>  $_ARRAYLANG['TXT_COMPANY_NAME'],
+                'TXT_CRM_COMPANY_NAME'          =>  $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                 'TXT_CRM_CONTACT_NAME'          =>  $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_NAME'],
                 'TXT_CRM_PRIMARY_EMAIL'         =>  $_ARRAYLANG['TXT_CRM_TITLE_EMAIL'],
                 'TXT_CRM_ADDRESS'               =>  $_ARRAYLANG['TXT_CRM_TITLE_ADDRESS'],
@@ -1319,50 +1319,21 @@ END;
      */
     function deleteCustomers()
     {
-        global $_CORELANG, $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
         $id = intval($_GET['id']);
+        $contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
         if (!empty($id)) {
-            $deleteQuery    = 'DELETE       contact.*, email.*, phone.*, website.*, addr.*
-                               FROM  `'.DBPREFIX.'module_'.$this->moduleNameLC.'_contacts` AS contact
-                               LEFT JOIN    `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_contact_emails` AS email
-                                 ON contact.id = email.contact_id
-                               LEFT JOIN    `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_contact_phone` AS phone
-                                 ON contact.id = phone.contact_id
-                               LEFT JOIN    `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_contact_websites` AS website
-                                 ON contact.id = website.contact_id
-                               LEFT JOIN    `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_contact_address` AS addr
-                                 ON contact.id = addr.contact_id
-                               WHERE contact.id ='.$id;
-            $objDatabase->Execute($deleteQuery);
-            $deleteComQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_comment`
-                               WHERE       customer_id = '.$id;
-            $objDatabase->Execute($deleteComQuery);
-            $deleteMembership = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_membership`
-                                     WHERE contact_id = '.$id;
-            $objDatabase->Execute($deleteMembership);
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DELETED_SUCCESSFULLY'];
+            $contact->load($id);
+            if ($this->delete($id, $contact->contactType)) {
+                $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DELETED_SUCCESSFULLY'];
+            }
         } else {
             $deleteIds = $_POST['selectedEntriesId'];
             foreach ($deleteIds as $id) {
-                $deleteQuery    = 'DELETE       contact.*, email.*, phone.*, website.*, addr.*
-                               FROM  `'.DBPREFIX.'module_'.$this->moduleNameLC.'_contacts` AS contact
-                               LEFT JOIN    `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_contact_emails` AS email
-                                 ON contact.id = email.contact_id
-                               LEFT JOIN    `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_contact_phone` AS phone
-                                 ON contact.id = phone.contact_id
-                               LEFT JOIN    `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_contact_websites` AS website
-                                 ON contact.id = website.contact_id
-                               LEFT JOIN    `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_contact_address` AS addr
-                                 ON contact.id = addr.contact_id
-                               WHERE contact.id ='.$id;
-                $objDatabase->Execute($deleteQuery);
-                $deleteComQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_comment`
-                                   WHERE        customer_id = '.$id;
-                $objDatabase->Execute($deleteComQuery);
-                $deleteMembership = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleNameLC.'_customer_membership`
-                                     WHERE contact_id = '.$id;
-                $objDatabase->Execute($deleteMembership);
-                $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DELETED_SUCCESSFULLY'];
+                $contact->load($id);
+                if ($this->delete($id, $contact->contactType)) {
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DELETED_SUCCESSFULLY'];
+                }
             }
         }
         if (isset($_GET['ajax']))
@@ -1374,6 +1345,53 @@ END;
         exit();
     }
 
+    /**
+     * Delete the CRM Person/Company
+     * 
+     * @param integer $id
+     * @param integer $contactType
+     * 
+     * @global object $objDatabase
+     * 
+     * @return boolean
+     */
+    public function delete($id = 0, $contactType) {
+        global $objDatabase;
+        
+        if (empty($id)) {
+            return;
+        }
+        
+        $isCrmUser = $contactType == 2 ? true : false;
+        if ($isCrmUser) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em')), $id));    
+        }
+        $deleteQuery = 'DELETE       contact.*, email.*, phone.*, website.*, addr.*
+                            FROM  `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_contacts` AS contact
+                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_contact_emails` AS email
+                                ON contact.id = email.contact_id
+                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_contact_phone` AS phone
+                                ON contact.id = phone.contact_id
+                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_contact_websites` AS website
+                                ON contact.id = website.contact_id
+                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_contact_address` AS addr
+                                ON contact.id = addr.contact_id
+                            WHERE contact.id =' . $id;
+        $deleteComQuery = ' DELETE FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_comment`
+                                WHERE       customer_id = ' . $id;
+        $deleteMembership = 'DELETE FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_membership`
+                                WHERE contact_id = ' . $id;
+        
+        if ($objDatabase->Execute($deleteQuery) !== false && $objDatabase->Execute($deleteComQuery) !== false && $objDatabase->Execute($deleteMembership) !== false) {
+            if ($isCrmUser) {
+                \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em')), $id));    
+            }
+            return true;
+        }
+        
+        return false;
+    }
+    
     /**
      * chnage the customer status
      *
