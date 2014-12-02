@@ -610,7 +610,7 @@ class ContactLib
     )
     {
         global $objDatabase;
-
+        \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         $objDatabase->Execute("
             UPDATE
                 `".DBPREFIX."module_contact_form`
@@ -627,7 +627,7 @@ class ContactLib
             WHERE
                 id = ".$formID
         );
-
+        \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         $this->initContactForms();
     }
 
@@ -655,7 +655,8 @@ class ContactLib
     )
     {
         global $objDatabase, $_FRONTEND_LANGID;
-
+        
+        \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         $query = "
             INSERT INTO
                 ".DBPREFIX."module_contact_form
@@ -685,7 +686,7 @@ class ContactLib
 
         if ($objDatabase->Execute($query) !== false) {
             $formId = $objDatabase->Insert_ID();
-
+            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             /*
             foreach ($arrFields as $fieldId => $arrField) {
                 $this->_addFormField($formId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
@@ -819,7 +820,7 @@ class ContactLib
         global $objDatabase;
 
         $id = intval($id);
-
+        \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         $query = "
             DELETE FROM
                 `".DBPREFIX."module_contact_form_lang`
@@ -838,6 +839,7 @@ class ContactLib
         if ($res !== false) {
             $this->_deleteFormFieldsAndDataByFormId($id);
             $this->_deleteFormRecipients($id);
+            \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             $this->initContactForms();
 
             return true;
