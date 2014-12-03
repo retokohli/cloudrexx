@@ -554,7 +554,7 @@ class CrmManager extends CrmLibrary
             'filter_membership'   => isset($_REQUEST['filter_membership']) ? $_REQUEST['filter_membership'] : '',
             'term'                => isset($_REQUEST['term']) ? contrexx_input2raw($_REQUEST['term']) : '',
             'sorto'               => isset($_REQUEST['sorto']) ? $_REQUEST['sorto'] : '',
-            'sortf'               => isset($_REQUEST['sortf']) ? $_REQUEST['sortf'] : '',
+            'sortf'               => isset($_REQUEST['sortf']) ? $_REQUEST['sortf'] : 0,
         );
         
         $searchLink = '';
@@ -1323,15 +1323,13 @@ END;
         $id = intval($_GET['id']);
         $contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
         if (!empty($id)) {
-            $contact->load($id);
-            if ($this->delete($id, $contact->contactType)) {
+            if ($contact->delete($id)) {
                 $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DELETED_SUCCESSFULLY'];
             }
         } else {
             $deleteIds = $_POST['selectedEntriesId'];
             foreach ($deleteIds as $id) {
-                $contact->load($id);
-                if ($this->delete($id, $contact->contactType)) {
+                if ($contact->delete($id)) {
                     $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DELETED_SUCCESSFULLY'];
                 }
             }
@@ -1345,53 +1343,6 @@ END;
         exit();
     }
 
-    /**
-     * Delete the CRM Person/Company
-     * 
-     * @param integer $id
-     * @param integer $contactType
-     * 
-     * @global object $objDatabase
-     * 
-     * @return boolean
-     */
-    public function delete($id = 0, $contactType) {
-        global $objDatabase;
-        
-        if (empty($id)) {
-            return;
-        }
-        
-        $isCrmUser = $contactType == 2 ? true : false;
-        if ($isCrmUser) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em')), $id));    
-        }
-        $deleteQuery = 'DELETE       contact.*, email.*, phone.*, website.*, addr.*
-                            FROM  `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_contacts` AS contact
-                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_contact_emails` AS email
-                                ON contact.id = email.contact_id
-                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_contact_phone` AS phone
-                                ON contact.id = phone.contact_id
-                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_contact_websites` AS website
-                                ON contact.id = website.contact_id
-                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_contact_address` AS addr
-                                ON contact.id = addr.contact_id
-                            WHERE contact.id =' . $id;
-        $deleteComQuery = ' DELETE FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_comment`
-                                WHERE       customer_id = ' . $id;
-        $deleteMembership = 'DELETE FROM `' . DBPREFIX . 'module_' . $this->moduleNameLC . '_customer_membership`
-                                WHERE contact_id = ' . $id;
-        
-        if ($objDatabase->Execute($deleteQuery) !== false && $objDatabase->Execute($deleteComQuery) !== false && $objDatabase->Execute($deleteMembership) !== false) {
-            if ($isCrmUser) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em')), $id));    
-            }
-            return true;
-        }
-        
-        return false;
-    }
-    
     /**
      * chnage the customer status
      *
@@ -2202,7 +2153,7 @@ END;
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);
 
                 // ajax request
-                if ($_GET['design'] == 'custom') {
+                if (isset($_GET['design']) && $_GET['design'] == 'custom') {
                     $returnString = array(
                             'errChk'       => $ChckCount,
                             'customerId'   => $customerId,
@@ -2326,8 +2277,8 @@ END;
                 $this->_objTpl->setVariable(array(
                         'CRM_CONTACT_WEBSITE_NAME'    => "contactwebsite_{$Count}_{$website['profile']}_{$website['primary']}",
                         'CRM_CONTACT_WEBSITE'         => contrexx_raw2xhtml(html_entity_decode($website['value'], ENT_QUOTES, CONTREXX_CHARSET)),
-                        'CRM_WEBSITE_PROFILE'         => $_ARRAYLANG[$this->websiteProfileOptions[$website['profile']]],
-                        'CRM_WEBSITE_OPTION'          => $_ARRAYLANG[$this->websiteOptions[$website['type']]],
+                        'CRM_WEBSITE_PROFILE'         => !empty($this->websiteProfileOptions[$website['profile']]) ? $_ARRAYLANG[$this->websiteProfileOptions[$website['profile']]] : '',
+                        'CRM_WEBSITE_OPTION'          => $website['type'] != '' && !empty($this->websiteOptions[$website['type']]) ? $_ARRAYLANG[$this->websiteOptions[$website['type']]] : '',
                         'CRM_CONTACT_WEB_ID_NAME'     => "website_{$Count}",
                         'CRM_CONTACT_WEB_ID'          => (int) $website['id'],
                         'CRM_CONTACT_WEBSITE_PRIMARY' => ($website['primary']) ? "primary_field" : "not_primary_field",
@@ -2400,7 +2351,7 @@ END;
 
         // special fields for customer
         if ($contactType == 1) {
-            $this->getCustomerTypeDropDown($this->_objTpl, $this->contact->customerType); // Customer Types
+            $this->getCustomerTypeDropDown($this->_objTpl, $this->contact->customerType, '', array('is_hide' => false)); // Customer Types
 
             // Parse the contacts
             if (!empty($customerContacts)) {
@@ -2423,7 +2374,7 @@ END;
             // parse currency
             $this->getCustomerCurrencyDropDown($this->_objTpl, $this->contact->currency, "currency");
         } else {
-            $this->getCustomerTypeDropDown($this->_objTpl, $this->contact->customerType, "contactCustomerTypes");     // Customer Types
+            $this->getCustomerTypeDropDown($this->_objTpl, $this->contact->customerType, "contactCustomerTypes", array('is_hide' => false));     // Customer Types
             $this->getCustomerCurrencyDropDown($this->_objTpl, $this->contact->currency, "contactCurrency");  // currency
         }
 
@@ -2491,7 +2442,6 @@ END;
                 'TXT_CRM_ROLE'                  => $_ARRAYLANG['TXT_CRM_ROLE'],
                 'TXT_CRM_FAMILY_NAME'           => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                 'TXT_CRM_TITLE_SELECT_LANGUAGE' => $_ARRAYLANG['TXT_CRM_TITLE_SELECT_LANGUAGE'],
-                'TXT_TITLE_MAIN_CONTACT'    => $_ARRAYLANG['TXT_TITLE_MAIN_CONTACT'],
                 'TXT_CRM_HOME'              => $_ARRAYLANG['TXT_CRM_HOME'],
                 'TXT_CRM_WORK'              => $_ARRAYLANG['TXT_CRM_WORK'],
                 'TXT_CRM_BUSINESS1'         => $_ARRAYLANG['TXT_CRM_BUSINESS1'],

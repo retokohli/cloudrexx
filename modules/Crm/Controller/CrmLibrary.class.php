@@ -748,7 +748,7 @@ class CrmLibrary
                     $result['contactwebsite'][$splitKeys[1]]['id'] = $value;
                 break;
             case 'contactAddress':
-                if ($this->addressValues[$splitKeys[2]]['label'] == "address") $result[$splitKeys[0]][$splitKeys[1]]["primary"] = $splitKeys[3];
+                if (!empty($this->addressValues[$splitKeys[2]]['label']) && $this->addressValues[$splitKeys[2]]['label'] == "address") $result[$splitKeys[0]][$splitKeys[1]]["primary"] = $splitKeys[3];
                 $label = is_array($this->addressValues[$splitKeys[2]]) ? $this->addressValues[$splitKeys[2]]['label'] : $this->addressValues[$splitKeys[2]];
                 $result[$splitKeys[0]][$splitKeys[1]][$label] = $value;
                 break;
@@ -1375,7 +1375,7 @@ class CrmLibrary
 
         $sortingFields = array("c.customer_name" ,  "activities", "c.added_date");
         $sortOrder = (isset ($filter['sorto'])) ? (((int) $filter['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
-        $sortField = (isset ($filter['sortf']) && in_array($sortingFields[$filter['sortf']], $sortingFields)) ? $sortingFields[$filter['sortf']] : 'c.id';
+        $sortField = (isset ($filter['sortf']) && $filter['sortf'] != '' && in_array($sortingFields[$filter['sortf']], $sortingFields)) ? $sortingFields[$filter['sortf']] : 'c.id';
         
         $query = "SELECT
                        DISTINCT c.id,
