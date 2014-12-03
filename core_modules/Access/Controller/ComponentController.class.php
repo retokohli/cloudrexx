@@ -221,7 +221,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'TXT_PROFILE' => $txtProfile,
                     'USER_ID' => $objFWUser->objUser->getId(),
                 ));
-
+                
+                if ($loggedIn) {
+                    break;
+                }
+                
                 if (isset($_POST['redirect'])) {
                     $redirect = \FWUser::getRedirectUrl(urlencode($_POST['redirect']));
                     \Cx\Core\Csrf\Controller\Csrf::header('location: ' . $redirect);
