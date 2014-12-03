@@ -893,7 +893,7 @@ class Product
             return false;
         }
         
-        \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+        \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
@@ -902,7 +902,7 @@ class Product
         if (!$objResult) {
             return false;
         }
-        \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+        \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         
         $objDatabase->Execute("
             OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
@@ -999,7 +999,7 @@ class Product
     {
         global $objDatabase;
         
-        \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+        \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
                 SET picture='$this->pictures',
@@ -1031,7 +1031,7 @@ class Product
         $objResult = $objDatabase->Execute($query);
         
         if ($objResult) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             return true;
         }
         return false;
@@ -1051,7 +1051,7 @@ class Product
     {
         global $objDatabase;
         
-        \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+        \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products (
                 picture, category_id, distribution,
@@ -1079,7 +1079,7 @@ class Product
             )";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs(null, \Env::get('em'))));
+            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             // My brand new ID
             $this->id = $objDatabase->Insert_ID();
             return true;
