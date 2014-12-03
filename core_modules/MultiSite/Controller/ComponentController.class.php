@@ -178,7 +178,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 }
                                 $delimiter = preg_match('#\?#', \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl')) ? '&' : '?';
                                 $objTemplate->setVariable(array(
-                                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml(\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl').$delimiter.$params),
+                                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1'.$delimiter.$params),
                                 ));
                             }
                             $objTemplate->setVariable(array(
@@ -630,26 +630,21 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for maximum length for the FTP account name");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormUrl', '', 19,
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('payrexxAccount', '', 19,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for URL to Payrexx form");
             }
-//            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount') === NULL
-//                && !\Cx\Core\Setting\Controller\Setting::add('payrexxAccount', '', 19,
-//                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-//                    throw new MultiSiteException("Failed to add Setting entry for URL to Payrexx form");
-//            }
-//            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') === NULL
-//                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormId', '', 20,
-//                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-//                    throw new MultiSiteException("Failed to add Setting entry for Payrexx Form Id");
-//            }
-//            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret') === NULL
-//                && !\Cx\Core\Setting\Controller\Setting::add('payrexxApiSecret', '', 21,
-//                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-//                    throw new MultiSiteException("Failed to add Setting entry for Payrexx API Secret");
-//            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormId', '', 20,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new MultiSiteException("Failed to add Setting entry for Payrexx Form Id");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('payrexxApiSecret', '', 21,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
+                    throw new MultiSiteException("Failed to add Setting entry for Payrexx API Secret");
+            }
 
             // websiteSetup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
