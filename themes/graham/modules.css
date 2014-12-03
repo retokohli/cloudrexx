@@ -213,7 +213,7 @@ span.checkbox {
     color: #414141;
 }
 #login form input.remember_me {
-    margin-top: 4px;
+    margin-top: 10px;
     height: auto;
     width: auto;
     position: static;
@@ -1508,7 +1508,7 @@ form[name="registrationForm"] .row {
 }
 #shop button.add-to-cart {
     float: right;
-    height: 33px;
+    height: 44px;
     background-color: #0A85C8;
     padding: 5.5px 10px 7px 33px;
     color: #FFFFFF;
@@ -2635,8 +2635,7 @@ td ul {
     z-index: 9999;
     color: #25556d;
 }
-.noCaption {
-    width: auto;
+.noCaption {   
     float: left;
 }
 #news-social-media li {
@@ -2878,7 +2877,7 @@ input[name="bsubmit"] {
 }
 #searchfield p#fieldlast {
     width: auto;
-    padding-top: 26px;
+    padding-top: 47px;
 }
 #searchfield p {
     width: 33%;
@@ -2984,9 +2983,9 @@ input[type="checkbox"] {
 }
 /*Directory_Add*/
 .selectorCenter, .mediadirSelectorCenter {
-    padding: 60px 10px 0px;
+    padding: 60px 45px 60px;
     float: left;
-    height: 100px;
+    height: 220px;
     text-align: center;
 }
 .selectorCenter input, .notification_center input, .mediadirSelectorCenter input {
@@ -3021,3 +3020,11 @@ input[type="checkbox"] {
 }
 #regkey {margin-bottom: 10px;}
 .jobs-category > div {margin-bottom: 15px;}
+.form-control {
+    background-color: #E5E5E5;
+background-image: none;
+border: 1px solid #656565;
+height: 42px;
+}
+.label {color: #7d7d7d; font-weight: normal;}
+#directory .selectorCenter input[type="button"] {float: none;}

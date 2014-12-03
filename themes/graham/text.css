@@ -192,7 +192,7 @@ input[type=radio] {
 }
 input[type=checkbox] {
     float: left;
-    margin: 4px 10px 4px 0;
+    margin: 10px 10px 4px 0;
     padding: 0;
     border: 0 none;
 }
