@@ -114,6 +114,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'modifyMultisiteConfig' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'sendAccountActivation' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkSendAccountActivation')),
             'getPayrexxUrl'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
+            'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -2748,7 +2749,32 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::modifyMultisiteConfig() failed: to Fetch the Multisite Configuration of the This Website: ' . $e->getMessage());
         }
     }
-    
+
+    /**
+     * To set the values to entity.
+     * 
+     * @param array $param websiteTemplate array
+     * 
+     * @throws MultiSiteJsonException
+     */
+    public function push($param) {
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_SERVICE:
+                    $data = array($param['post']['data']);
+                    $dataType = $param['post']['dataType'];
+                    $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($data);
+                    $objDataSet->setDataType($dataType);
+                    $entity = current($objDataSet->arrayToObject());
+                    \Env::get('em')->persist($entity);
+                    \Env::get('em')->flush();
+                    break;
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::push() failed: To add / update the repository'. $e->getMessage());
+        }
+    }
+
     protected function activateDebuggingToMemory() {
         // check if memory logging shall be activated
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
