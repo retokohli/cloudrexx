@@ -855,5 +855,12 @@
     .modules-page { width: 100%;}
     .news-info { line-height: 24pt;}
     .header { padding-right: 30px;}
-    .content ul li, #page a {word-break: break-word;}
+    .content ul li, #page a, .radio label {word-break: break-word; white-space: normal; word-wrap: break-word;}    
+}
+
+@media (max-width: 450px) {
+    #mediadir .mediadirSearchForm input[type="submit"] {margin-top: 15px;}
+    form input[type="submit"], form input[type="reset"] {margin-top: 15px;}
+    #page #gallery div.category_image img {width: 100%;}
+    
 }
