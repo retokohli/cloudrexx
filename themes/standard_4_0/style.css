@@ -161,6 +161,9 @@
         width: 100%;
         font-size: 13px;
     }
+    .member_list td {
+        width: 100% !important;
+    }
     #tagelement td {
         float: left;
         width: 100%;

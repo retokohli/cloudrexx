@@ -407,15 +407,15 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 	                        }
                         	
                         	$strInputfield .= '<div class="mediadirSelector container-fluid"><div class="row"><div class="col-md-offset-3">';
-	                        $strInputfield .= '<div class="col-md-4"><div class="row"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple">';
+	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12"><div class="row"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple">';
 	                        $strInputfield .= $arrSelectorOptions['not_selected'];
 	                        $strInputfield .= '</select></div></div>';
-	                        $strInputfield .= '<div class="mediadirSelectorCenter col-md-2">';
+	                        $strInputfield .= '<div class="mediadirSelectorCenter col-md-2 col-sm-12 col-xs-12">';
 	                        $strInputfield .= '<input class="btn btn-default" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],addElement,removeElement);" type="button">';
 	                        $strInputfield .= '<br />';
 	                        $strInputfield .= '<input class="btn btn-default" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],removeElement,addElement);" type="button">';
 	                        $strInputfield .= '</div>';
-	                        $strInputfield .= '<div class="col-md-4"><div class="row"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple">';
+	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12"><div class="row"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple">';
 	                        $strInputfield .= $arrSelectorOptions['selected'];
 	                        $strInputfield .= '</select></div></div>';
 	                        $strInputfield .= '</div></div></div>';
