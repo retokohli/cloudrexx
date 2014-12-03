@@ -1,0 +1,35 @@
+Cx\Core_Modules\Contact\Model\Entity\Form:
+  type: entity
+  repositoryClass: Cx\Core_Modules\Contact\Model\Repository\FormRepository
+  table: module_contact_form
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    mails:
+      type: text
+    showForm:
+      type: boolean
+    useCaptcha:
+      type: boolean
+      column: use_captcha
+    useCustomStyle:
+      type: boolean
+      column: use_custom_style
+    saveDataInCrm:
+      type: boolean
+      column: save_data_in_crm
+    sendCopy:
+      type: boolean
+      column: send_copy
+    useEmailOfSender:
+      type: boolean
+      column: use_email_of_sender
+    htmlMail:
+      type: boolean
+      column: html_mail
+    sendAttachment:
+      type: boolean
+      column: send_attachment
