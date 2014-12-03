@@ -52,12 +52,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'User', $userEventListener);
         
         $crmUserEventListener = new \Cx\Modules\Crm\Model\Event\CrmUserEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Crm\\Controller\\CrmManager', $crmUserEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Crm\\Controller\\CrmManager', $crmUserEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Crm\\Controller\\CrmManager', $crmUserEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Modules\\Crm\\Controller\\CrmManager', $crmUserEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Modules\\Crm\\Controller\\CrmManager', $crmUserEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Modules\\Crm\\Controller\\CrmManager', $crmUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmUserEventListener);
     }
     
 }

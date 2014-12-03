@@ -208,6 +208,54 @@ class CrmContact
     }
     
     /**
+     * Delete the CRM Person/Company
+     * 
+     * @param integer $id
+     * @param integer $contactType
+     * 
+     * @global object $objDatabase
+     * 
+     * @return boolean
+     */
+    public function delete($id = 0) {
+        global $objDatabase;
+        
+        if (empty($id)) {
+            return;
+        }
+        
+        $this->load($id);
+        $isCrmUser = $this->contactType == 2 ? true : false;
+        if ($isCrmUser) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
+        }
+        $deleteQuery = 'DELETE       contact.*, email.*, phone.*, website.*, addr.*
+                            FROM  `' . DBPREFIX . 'module_' . $this->moduleName . '_contacts` AS contact
+                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleName . '_customer_contact_emails` AS email
+                                ON contact.id = email.contact_id
+                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleName . '_customer_contact_phone` AS phone
+                                ON contact.id = phone.contact_id
+                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleName . '_customer_contact_websites` AS website
+                                ON contact.id = website.contact_id
+                            LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleName . '_customer_contact_address` AS addr
+                                ON contact.id = addr.contact_id
+                            WHERE contact.id =' . $id;
+        $deleteComQuery = ' DELETE FROM `' . DBPREFIX . 'module_' . $this->moduleName . '_customer_comment`
+                                WHERE       customer_id = ' . $id;
+        $deleteMembership = 'DELETE FROM `' . DBPREFIX . 'module_' . $this->moduleName . '_customer_membership`
+                                WHERE contact_id = ' . $id;
+        
+        if ($objDatabase->Execute($deleteQuery) !== false && $objDatabase->Execute($deleteComQuery) !== false && $objDatabase->Execute($deleteMembership) !== false) {
+            if ($isCrmUser) {
+                \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
+            }
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * Set the variable if new
      *
      * @param String $name  variable name

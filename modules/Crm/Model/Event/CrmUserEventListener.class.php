@@ -64,38 +64,23 @@ class CrmUserEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
      * @param array $eventArgs
      */
     public function preRemove($eventArgs) {
-        $this->isValidToDeleteUser($eventArgs);
-    }
-
-    /**
-     * 
-     * @param array $eventArgs
-     */
-    public function postRemove($eventArgs) {
-        $this->isValidToDeleteUser($eventArgs);
-    }
-    
-    /**
-     * If the CRM user have a order, Throw a ShinyException
-     * 
-     * @param array $eventArgs
-     * @throws \Cx\Core\Error\Model\Entity\ShinyException
-     */
-    public function isValidToDeleteUser($eventArgs) {
         global $_ARRAYLANG;
         
-        $em = $eventArgs[0]->getEntityManager();
+        $em = $eventArgs->getEntityManager();
+        $crmEntity = $eventArgs->getEntity();
         $orderRepo = $em->getRepository('\Cx\Modules\Order\Model\Entity\Order');
-        if ($orderRepo->hasOrderByCrmId($eventArgs[1])) {
+        if ($orderRepo->hasOrderByCrmId($crmEntity->id)) {
             throw new \Cx\Core\Error\Model\Entity\ShinyException($_ARRAYLANG['TXT_MODULE_CRM_DELETE_USER_ERROR_MSG']);
         }
     }
 
+    /**
+     * 
+     * @param array $eventArgs
+     */
+    public function postRemove($eventArgs) {}
+    
     public function onEvent($eventName, array $eventArgs) {
-        if ($eventName == 'preRemove' || $eventName == 'postRemove') {
-            $this->$eventName($eventArgs);
-            return;
-        }
         $this->$eventName(current($eventArgs));
     }
 }
