@@ -7,7 +7,7 @@
         <form role="form" id="frmForumNotification" action="index.php?section=Forum&amp;cmd=notification" method="post" onsubmit="SelectAllList(document.getElementById('frmForumNotification').elements['subscribed[]']);">
                 <div class="notification container-fluid">
                     <div class="row">
-                        <div class="col-md-4 col-sm-12">
+                        <div class="col-md-4 col-sm-12 col-xs-12">
                             <h3>Verf&uuml;gbare Foren/Kategorien</h3>
                             <select name="unsubscribed[]" size="32" class="form-control" multiple="multiple">
                                 {FORUM_NOTIFICATION_UNSUBSCRIBED}
@@ -16,11 +16,11 @@
                             <a href="javascript:SelectAllList(document.getElementById('frmForumNotification').elements['unsubscribed[]']);">{TXT_SELECT_ALL}<br />
                             </a><a href="javascript:DeselectAllList(document.getElementById('frmForumNotification').elements['unsubscribed[]']);">{TXT_DESELECT_ALL}</a><br />
                         </div>
-                        <div class="notification_center col-md-1">
+                        <div class="notification_center col-md-1 col-sm-12 col-xs-12">
                             <input class="btn btn-default" type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.getElementById('frmForumNotification').elements['unsubscribed[]'], document.getElementById('frmForumNotification').elements['subscribed[]'], adduser, removeuser);" /><br />
                             <input class="btn btn-default" type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.getElementById('frmForumNotification').elements['unsubscribed[]'], document.getElementById('frmForumNotification').elements['subscribed[]'], adduser, removeuser);" />
                         </div>
-                        <div class="col-md-4 col-sm-12">
+                        <div class="col-md-4 col-sm-12 col-xs-12">
                             <h3>Abonnierte Foren/Kategorien</h3>
                             <select name="subscribed[]" size="32" class="form-control" multiple="multiple">
                                 {FORUM_NOTIFICATION_SUBSCRIBED}

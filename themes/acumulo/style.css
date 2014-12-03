@@ -23,10 +23,10 @@ h1, h2, h3, h4, h5, h6, .page-title span {
 blockquote, blockquote p, .meta a, .comment-meta a, .widget .lp-description span {
     font-family: Georgia, serif;
 }
-
+/*
 img {
     max-width:100%;
-}
+}*/
 
 a {
     text-decoration:none;
@@ -2328,6 +2328,20 @@ p.form-submit {margin-bottom: 0;}
         width: 100%;
         height: auto;
     }
+    .member_list td, .fields > form > p > input, .fields > form > p > textarea {
+        width: 100% !important;
+    }
+    .image_default img {
+        width: auto;
+    }
+    #forum div.notification_center {
+        padding: 0;
+        margin: 0;
+        float: left; 
+        width: 100%;
+        text-align: center;
+        height: auto;
+    }
     input[name="downloads_search_keyword"] {
         width: 67%;
     }
@@ -2404,8 +2418,14 @@ p.form-submit {margin-bottom: 0;}
     #home-boxes .box1, #home-boxes .box2 {
         padding: 0;
     }
-    #home-boxes .first .home-box,  #shop div.short-description {
+    #home-boxes .first .home-box,  #shop div.short-description, #knowledge #overview div.category {
         width: 100%;
+    }
+    .radio label, .checkbox label {
+        height: auto;
+    }
+    .questionBlock label {
+        word-wrap: break-word;
     }
     #home-boxes .middlebox .home-box {margin-left: 0;}
     #home-boxes .first, #home-boxes .middlebox, #home-boxes .lastbox {
@@ -2554,6 +2574,7 @@ p.form-submit {margin-bottom: 0;}
     }
     form p label {
         margin-right: 20px;
+        margin-left: 0;
     }
     form p {
         width: 100%;
@@ -2767,8 +2788,7 @@ p.form-submit {margin-bottom: 0;}
     }
     /*Shop*/
     #shop #bestelTable .row1, #shop_payment .row3, #shop_payment .row1 {
-        float: left;
-        width: 100%;
+        background-color: transparent;
     }
     #bestelTable tbody, #shop_payment tbody {
         float: left;
@@ -2808,9 +2828,6 @@ p.form-submit {margin-bottom: 0;}
         width: 100%;
         padding-left: 50%;
         text-align: right;
-    }
-    #shop div.message p label {
-        width: 260px;
     }
     #bestelTable .row1 td:nth-of-type(1):before {
         content: "ID";
@@ -2872,7 +2889,7 @@ p.form-submit {margin-bottom: 0;}
     .login-content .login-bottom > div {
         padding-left: 0;
     }
-    .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
+    #mediadir .employee-left,#mediadir .employee-middle,#mediadir .employee-right {padding-bottom: 20px; width: 100%;}
     #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
     /**/
@@ -2881,7 +2898,7 @@ p.form-submit {margin-bottom: 0;}
         padding: 5px 65px 0 !important;
     }
     /*MediaDir Edit End*/
-    .row .image img {
+    #directory div.image img {
         width: auto;
         height: auto;
     }
