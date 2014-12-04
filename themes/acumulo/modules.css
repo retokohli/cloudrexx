@@ -10,7 +10,7 @@ form > fieldset > div {
 
 /* Start old contact form structure */
 form p {
-    width: 400px;
+    width: 100%;
     padding-left: 250px;
 }
 
@@ -20,6 +20,8 @@ form p label {
 
 form p label.description {
     margin: 0;
+    height: auto;
+    width: 100%;
 }
 /* END old contact form structure */
 
@@ -95,7 +97,7 @@ form input[type=submit] {
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABLES IN MODULES    */
 /***************************************************/
-table {
+table, .breadcrumb {
     float: left;
     width: 100%;
 }
@@ -351,7 +353,7 @@ div.row2 {
 /***************************************************/
 /* CSS DEFINITIONS FOR CALENDAR MODULE             */
 /***************************************************/
-#calendar {
+#calendar, .addpost p, .form p {
     float: left;
     width: 100%;
 }
@@ -512,6 +514,8 @@ div.row2 {
 #podcast div.image img {
     padding: 0px 0px 0px 0px;
     margin: 0px 15px 15px 0px;
+    width: 100% !important;
+    height: auto !important;
 }
 #podcast div.description {
     padding: 0px 0px 0px 0px;
@@ -647,7 +651,6 @@ div.row2 {
 #forum div.category,
 #forum div.navtree,
 #forum div.paging,
-#forum div.anchor,
 #forum div.threads,
 #forum div.addthread,
 #forum div.posts,
@@ -665,6 +668,13 @@ div.row2 {
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 15px 0px;
     float:left;
+}
+#forum .row {
+    margin: 0 -15px;
+}
+#forum div.anchor, #forum div.anchor-polo {
+    margin-bottom: 15px;
+    width: auto;
 }
 #forum div.links {
     text-align: right;
@@ -969,7 +979,6 @@ div.row2 {
 }
 #guestbook div.title {
     float:left;
-    height: 27px;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
     width: 60%;
@@ -1023,6 +1032,7 @@ div.row2 {
     width: 100%;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 15px 0px;
+    float: left;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR SITEMAP MODULE              */
@@ -3058,4 +3068,20 @@ fieldset .checkbox, fieldset .radio {
     float: left;
     width: 100%;
     padding-top: 20px;
+}
+#memberForm input, #memberForm select {
+    margin-bottom: 10px;
+    float: left;
+    margin-right: 10px;
+}
+select#newsCat {
+    width: 300px;
+    float: left;
+}
+select.form-control {
+    width: 300px;
+    border-radius: 0;
+}
+.row.jobs-category {
+    margin: 0 -15px;
 }

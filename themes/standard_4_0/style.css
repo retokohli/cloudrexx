@@ -607,11 +607,7 @@
     .mediadirSelector .mediadirSelectorCenter {
         padding: 5px 65px 0 !important;
     }
-    #page #mediadir .mediadirSelector, #page #mediadir .mediadirGoogleMap {padding-left: 0; margin-top: 0;}
-    .mediadirSelector div {
-        float: left;
-        clear: both;
-    }
+    #page #mediadir .mediadirSelector, #page #mediadir .mediadirGoogleMap {margin-top: 0;}
     /*MediaDir Edit End*/
     #mediadir .reference {margin-bottom: 20px;}
     .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
