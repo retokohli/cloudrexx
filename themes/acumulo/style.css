@@ -2328,7 +2328,7 @@ p.form-submit {margin-bottom: 0;}
         width: 100%;
         height: auto;
     }
-    .member_list td, .fields > form > p > input, .fields > form > p > textarea {
+    .member_list td, .fields > form > p > input, .fields > form > p > textarea, .entries div, #mediadir .mapLarge {
         width: 100% !important;
     }
     .image_default img {
@@ -2341,6 +2341,9 @@ p.form-submit {margin-bottom: 0;}
         width: 100%;
         text-align: center;
         height: auto;
+    }
+    #forum div.anchor-polo {
+        float: left !important;
     }
     input[name="downloads_search_keyword"] {
         width: 67%;
@@ -2418,7 +2421,7 @@ p.form-submit {margin-bottom: 0;}
     #home-boxes .box1, #home-boxes .box2 {
         padding: 0;
     }
-    #home-boxes .first .home-box,  #shop div.short-description, #knowledge #overview div.category {
+    #home-boxes .first .home-box,  #shop div.short-description, #knowledge #overview div.category, #mediadir p img {
         width: 100%;
     }
     .radio label, .checkbox label {
@@ -2790,7 +2793,7 @@ p.form-submit {margin-bottom: 0;}
     #shop #bestelTable .row1, #shop_payment .row3, #shop_payment .row1 {
         background-color: transparent;
     }
-    #bestelTable tbody, #shop_payment tbody {
+    #bestelTable tbody, #shop_payment tbody, div#cke_message {
         float: left;
     }
     #shop table#bestelTable tr.row3 {
@@ -2935,8 +2938,11 @@ p.form-submit {margin-bottom: 0;}
         border: 1px solid #ddd;
         -webkit-overflow-scrolling: touch;
     }
-    #page #forum div.notification_center {
+    #forum div.notification_center {
         padding: 20px 0px 20px 0px;
+        height: auto;
+        margin: 0;
+        width: 100%;
     }
     .fields .selectorCenter{
         padding: 20px 10px 20px;
@@ -2960,11 +2966,8 @@ p.form-submit {margin-bottom: 0;}
     .mediadirSelector .mediadirSelectorCenter {
         padding: 5px 65px 0 !important;
     }
-    #page #mediadir .mediadirSelector, #page #mediadir .mediadirGoogleMap {padding-left: 0; margin-top: 0;}
-    .mediadirSelector div {
-        float: left;
-        clear: both;
-    }
+    #page #mediadir .mediadirSelector, #page #mediadir .mediadirGoogleMap {margin-top: 0;}
+
     /*MediaDir Edit End*/
     #mediadir .reference {margin-bottom: 20px;}
     .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
