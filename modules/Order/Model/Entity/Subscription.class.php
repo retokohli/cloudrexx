@@ -43,6 +43,8 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     protected $renewalUnit = null;
     protected $renewalQuantifier = null;
     protected $renewalDate = null;
+    protected $externalSubscriptionId = null;
+    protected $externalCustomerId = null;
 
     const PAYMENT_OPEN = 'open';
     const PAYMENT_PAID = 'paid';
@@ -195,6 +197,42 @@ class Subscription extends \Cx\Model\Base\EntityBase {
 
     public function setRenewalDate($renewalDate) {
         $this->renewalDate = $renewalDate;
+    }
+
+    /**
+     * Get the externalCustomerId
+     * 
+     * @return integer
+     */
+    public function getExternalCustomerId() {
+        return $this->externalCustomerId;
+    }
+
+    /**
+     * Set the externalCustomerId
+     * 
+     * @param integer $externalCustomerId
+     */
+    public function setExternalCustomerId($externalCustomerId) {
+        $this->externalCustomerId = $externalCustomerId;
+    }
+
+    /**
+     * Get the externalSubscriptionId
+     * 
+     * @return integer
+     */
+    public function getExternalSubscriptionId() {
+        return $this->externalSubscriptionId;
+    }
+
+    /**
+     * Set the externalSubscriptionId
+     * 
+     * @param integer $externalSubscriptionId
+     */
+    public function setExternalSubscriptionId($externalSubscriptionId) {
+        $this->externalSubscriptionId = $externalSubscriptionId;
     }
 
     public function payComplete() {
