@@ -293,12 +293,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                     case 'Payrexx':
                         $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
+                        $subscription = !empty($_POST['subscription']) ? $_POST['subscription'] : array();
                         if (!empty($transaction) && isset($transaction['status']) && $transaction['status'] === 'confirmed') {
                             $invoice = $transaction['invoice'];
+                            $referenceId = !empty($subscription['id']) ? $invoice['referenceId'] . '-' . $subscription['id'] : $invoice['referenceId'];
                             $payment = new \Cx\Modules\Order\Model\Entity\Payment();
                             $payment->setAmount($invoice['amount']);
                             $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
-                            $payment->setTransactionReference($invoice['referenceId']);
+                            $payment->setTransactionReference($referenceId);
                             \Env::get('em')->persist($payment);
                             \Env::get('em')->flush();
                         }

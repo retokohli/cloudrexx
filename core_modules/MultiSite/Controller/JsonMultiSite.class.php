@@ -277,17 +277,26 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $subscriptionOptions['themeId'] = $websiteThemeId;
             }
             
+            //create subscription
             $order->createSubscription($product, $subscriptionOptions);
-
+            //get the subscription
+            $subscription = $order->getSubscriptions() ? current($order->getSubscriptions()) : null;
             $order->billSubscriptions();
             $invoices = $order->getInvoices();
             if (!empty($invoices)) {
                 $paymentRepo = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Payment');
                 foreach ($invoices as $invoice) {
                     if (!$invoice->getPaid()) {
-                        $referenceId = $product->getId() . '-' . $websiteName;
-                        $payment     = $paymentRepo->findOneBy(array('amount' => $invoice->getAmount(), 'transactionReference' => $referenceId));
+                        $payment     = $paymentRepo->findOneByCriteria(array('amount' => $invoice->getAmount(), 'transactionReference' => $product->getId() . '-' . $websiteName));
                         if ($payment) {
+                            //set subscription-id to Subscription::$externalSubscriptionId
+                            if ($subscription) {
+                                $referenceArry = explode('-', $payment->getTransactionReference());
+                                if (isset($referenceArry[2]) && !empty($referenceArry[2])) {
+                                    $subscription->setExternalSubscriptionId($referenceArry[2]);
+                                    \Env::get('em')->persist($subscription);
+                                }
+                            }
                             $invoice->addPayment($payment);
                             $payment->setInvoice($invoice);
                             \Env::get('em')->persist($invoice);
