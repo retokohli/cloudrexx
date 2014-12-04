@@ -33,11 +33,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
 
             case ComponentController::MODE_MANAGER:
-                return array('domains','statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers',));
+                return array('domains','statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers', 'mail_service_servers' ));
                 break;
 
             case ComponentController::MODE_HYBRID:
-                return array('domains','statistics', 'notifications', 'settings'=> array('email','codebases','website_templates'));
+                return array('domains','statistics', 'notifications', 'settings'=> array('email','codebases','website_templates', 'mail_service_servers' ));
                 break;
 
             case ComponentController::MODE_NONE:
@@ -264,7 +264,50 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     )
             );
             $template->setVariable('TABLE', $websiteTemplatesView->render());
-        }else{
+        } else if (!empty($cmd[1]) && $cmd[1]=='mail_service_servers') {
+            $mailServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')->findAll();
+           
+            if (empty($mailServiceServers)) {
+                $mailServiceServers = new \Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer();
+            }
+            $mailServiceServersView = new \Cx\Core\Html\Controller\ViewGenerator($mailServiceServers, 
+                array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_MAIL_SERVICE_SERVERS'],
+                    'functions' => array(
+                        'edit' => true,
+                        'add' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,       
+                        'filtering' => false,   
+                    ),
+                    'fields' => array(
+                        'id' => array(
+                            'showOverview' => false,
+                        ),
+                        'websites' => array(
+                            'showOverview' => false,
+                        ),
+                        'authPassword' => array(
+                            'showOverview' => false,
+                        ),
+                        'authUsername' => array(
+                            'showOverview' => false,
+                        ),
+                        'label' => array(
+                            'header' => 'Label',
+                        ),
+                        'type' => array(
+                            'header' => 'Type',
+                        ),
+                        'hostname' => array(
+                            'header' => 'HostName',
+                            )
+                        )
+                    )
+            );
+            $template->setVariable('TABLE', $mailServiceServersView->render());
+        } else {
             $this->settings($template);
         }
     }

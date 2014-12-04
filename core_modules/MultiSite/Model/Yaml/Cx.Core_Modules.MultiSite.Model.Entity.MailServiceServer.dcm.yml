@@ -1,0 +1,26 @@
+Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\MailServiceServerRepository
+  table: core_module_multisite_mail_service_server
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    label:
+      type: string
+    type:
+      type: string
+      length: 10
+    hostname:
+      type: string
+    authUsername:
+      type: string
+    authPassword:
+      type: string
+      
+  oneToMany: # inverse side
+    websites:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
+      mappedBy: mailServiceServer

@@ -27,7 +27,8 @@ namespace Cx\Core_Modules\MultiSite\Controller;
 class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbController,
                                  \Cx\Core_Modules\MultiSite\Controller\SubscriptionController,
                                  \Cx\Core_Modules\MultiSite\Controller\FtpController,
-                                 \Cx\Core_Modules\MultiSite\Controller\DnsController {
+                                 \Cx\Core_Modules\MultiSite\Controller\DnsController,
+                                 \Cx\Core_Modules\MultiSite\Controller\MailController {
     /*
      * Protected object for db queries
      * */
@@ -242,4 +243,28 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): delete domain alias");
         return null;
     }
+    
+    /**
+     * Enable the mail service
+     * 
+     * @param integer $subscriptionId
+     * 
+     * @return null
+     */
+    public function enableMailService($subscriptionId) {
+        \DBG::msg("MultiSite (XamppController): delete domain alias");
+        return null;
+    } 
+
+    /**
+     * Disable the mail service
+     * 
+     * @param integer $subscriptionId
+     * 
+     * @return null
+     */
+    public function disableMailService($subscriptionId) {
+        \DBG::msg("MultiSite (XamppController): delete domain alias");
+        return null;
+    } 
 }

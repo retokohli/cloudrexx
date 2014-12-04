@@ -121,6 +121,11 @@ class Website extends \Cx\Model\Base\EntityBase {
      */
     protected $themeId;
     
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer
+     */
+    protected $mailServiceServer;
+
     /*
      * Constructor
      * */
@@ -1611,6 +1616,26 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function __toString() {
         return $this->name;
+    }
+    
+    /**
+     * Get mail service server
+     * 
+     * @return $mailServiceServer
+     */
+    public function getMailServiceServer()
+    {
+        return $this->mailServiceServer;
+    }
+    
+    /**
+     * Set mail service server
+     * 
+     * @param $mailServiceServer
+     */
+    public function setMailServiceServer(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer)
+    {
+        $this->mailServiceServer = $mailServiceServer;
     }
 
 }

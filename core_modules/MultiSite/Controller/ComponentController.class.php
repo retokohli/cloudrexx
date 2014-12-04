@@ -773,13 +773,18 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteServiceServerList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Default Website Service Server");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultMailServiceServer', 0, 2,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getMailServiceServerList()}', 'manager') ) {
+                   throw new MultiSiteException("Failed to add Setting entry for Default mail Service Server");
+            }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteTemplate', '0', 2,
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteTemplate', '0', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\Modules\Pim\Controller\BackendController::getWebsiteTemplateList()}', 'manager')) {
                     throw new MultiSiteException("Failed to add Setting entry for default Website Template");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct') === NULL 
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultPimProduct', '0', 3,
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultPimProduct', '0', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Product List");
             }
@@ -1017,7 +1022,21 @@ throw new MultiSiteException('Refactor this method!');
         }
         return implode(',', $dropdownOptions);
     }
-
+    
+    /**
+     * Get the mail service servers
+     * 
+     * @return string  mail service servers list
+     */
+    public static function getMailServiceServerList() {
+        $mailServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')->findAll();
+        $dropdownOptions = array();
+        foreach ($mailServiceServers as $mailServiceServer) {
+            $dropdownOptions[] = $mailServiceServer->getId() . ':' . $mailServiceServer->getHostname();
+        }
+        return implode(',', $dropdownOptions);
+    }
+    
     /**
      * Add the warning banner
      *

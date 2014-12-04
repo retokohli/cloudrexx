@@ -65,4 +65,10 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
         name: websiteServiceServerId
         referencedColumnName: id
 #        cascade: [remove]
+    mailServiceServer:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer
+      inversedBy: websites
+      joinColumn:
+        name: mailServiceServerId
+        referencedColumnName: id
 

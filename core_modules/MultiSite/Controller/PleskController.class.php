@@ -33,7 +33,8 @@ class ApiRequestException extends DbControllerException {}
 class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbController,
                                  \Cx\Core_Modules\MultiSite\Controller\SubscriptionController,
                                  \Cx\Core_Modules\MultiSite\Controller\FtpController,
-                                 \Cx\Core_Modules\MultiSite\Controller\DnsController {
+                                 \Cx\Core_Modules\MultiSite\Controller\DnsController,
+                                 \Cx\Core_Modules\MultiSite\Controller\MailController {
     
     /**
      * hostname for the plesk panel 
@@ -1126,5 +1127,80 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             return $respArr['result'];
         }
     }
+    
+    /**
+     * Enable the mail service
+     * 
+     * @param integer $subscriptionId
+     * 
+     * @return boolean
+     * @throws ApiRequestException
+     */
+    public function enableMailService($subscriptionId) {
+        \DBG::msg("MultiSite (PleskController): Enable Mail Service.");
+        if (empty($subscriptionId)) {
+            return;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
 
+        $mail = $xmldoc->createElement('mail');
+        $packet->appendChild($mail);
+        
+        $enableTag = $xmldoc->createElement('enable');
+        $mail->appendChild($enableTag);
+        
+        $siteId = $xmldoc->createElement('site-id', $subscriptionId);
+        $enableTag->appendChild($siteId);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'mail'}->{'enable'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in enable mail service: {$error}");
+        }
+        return true;	
+    } 
+
+    /**
+     * Disable Mail Service
+     * 
+     * @param integer $subscriptionId
+     * 
+     * @return boolean
+     * @throws ApiRequestException
+     */
+    public function disableMailService($subscriptionId) {
+        \DBG::msg("MultiSite (PleskController): Disable Mail Service.");
+        if (empty($subscriptionId)) {
+            return;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+
+        $mail = $xmldoc->createElement('mail');
+        $packet->appendChild($mail);
+        
+        $disableTag = $xmldoc->createElement('disable');
+        $mail->appendChild($disableTag);
+        
+        $siteId = $xmldoc->createElement('site-id', $subscriptionId);
+        $disableTag->appendChild($siteId);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'mail'}->{'disable'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in disable mail service: {$error}");
+        }
+        return true;	
+    } 
 }
