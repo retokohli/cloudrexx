@@ -37,6 +37,14 @@ Cx\Modules\Order\Model\Entity\Subscription:
       type: datetime
       column: renewal_date
       nullable: true
+    externalSubscriptionId:
+      type: integer
+      column: external_subscription_id
+      nullable: true
+    externalCustomerId:
+      type: integer
+      column: external_customer_id
+      nullable: true
 
   manyToOne: # owning side
     order:
