@@ -1573,4 +1573,10 @@ html input[type="reset"]:hover, html input[type="submit"]:hover {
 }
 
 .checkbox input[type="checkbox"], .radio input[type="radio"] {margin-top: 10px;}
-form input[type="submit"], form input[type="reset"] {margin-top: 0;}
+form input[type="submit"], form input[type="reset"], #podcast input[type="button"] {margin-top: 0;}
+#ecardSend input[type="button"] {margin: 0 15px 0 0;}
+#captcha span.row {margin-left: 0; margin-right: 0;}
+#recommendForm p input[type="submit"], #guestbook p input[type="submit"],
+#livecam .livecamSearch input[type="submit"] {margin-right: 15px;}
+#podcast .categories {float: left; width: 100%;}
+
