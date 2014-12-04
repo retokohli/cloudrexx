@@ -228,6 +228,7 @@ $_ARRAYLANG['TXT_ACCESS_USER'] = "Benutzer";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'] = "Benutzerkonto";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'] = "Aktivierungsmethode";
 $_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] = "Der Benutzer %s wurde erfolgreich aktiviert.";
+$_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_SAME_ID'] = "Sie können Ihr eigenes Benutzerkonto nicht deaktivieren.";
 $_ARRAYLANG['TXT_ACCESS_USER_ADMIN_RIGHTS'] = "Benutzer erhält Administrator-Rechte.";
 $_ARRAYLANG['TXT_ACCESS_USER_ADMIN_RIGHTS_TOOLTIP'] = "Mit Aktivierung dieser Option erhält der Benutzer Zugriff auf alle Bereiche des Systems, unabhängig von dessen Zugehörigkeiten zu Benutzergruppen.";
 $_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'] = "Der Benutzer %s wurde erfolgreich deaktiviert.";

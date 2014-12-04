@@ -1120,14 +1120,18 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $objFWUser = \FWUser::getFWUserObject();
         if (isset($_GET['id']) && ($userId = intval($_GET['id'])) && ($objUser = $objFWUser->objUser->getUser($userId)) && $objUser->getId()) {
-            $objUser->setActiveStatus(!$objUser->getActiveStatus());
-            if ($objUser->store()) {
-                if (isset($_GET['notifyUser']) && $_GET['notifyUser'] == '1') {
-                    $this->notifyUserAboutAccountStatusChange($objUser);
-                }
-                self::$arrStatusMsg['ok'][] = sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'], $objUser->getUsername());
+            if($userId==$objFWUser->objUser->getId()) {
+                self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_SAME_ID']);
             } else {
-                self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
+                $objUser->setActiveStatus(!$objUser->getActiveStatus());
+                if ($objUser->store()) {
+                    if (isset($_GET['notifyUser']) && $_GET['notifyUser'] == '1') {
+                        $this->notifyUserAboutAccountStatusChange($objUser);
+                    }
+                    self::$arrStatusMsg['ok'][] = sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'], $objUser->getUsername());
+                } else {
+                    self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $objUser->getErrorMsg());
+                }
             }
         } else {
             self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_ID'], $userId);
