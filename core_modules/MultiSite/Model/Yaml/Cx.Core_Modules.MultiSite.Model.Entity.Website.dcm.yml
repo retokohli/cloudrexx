@@ -71,4 +71,4 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       joinColumn:
         name: mailServiceServerId
         referencedColumnName: id
-
+        cascade: [remove]
