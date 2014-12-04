@@ -426,6 +426,18 @@ CREATE TABLE `contrexx_core_module_multisite_domain` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_mail_service_server` (
+  `id` int(11) NOT NULL auto_increment,
+  `label` varchar(255) NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `hostname` varchar(255) NOT NULL,
+  `authUsername` varchar(255) NOT NULL,
+  `authPassword` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_website` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(200) NOT NULL,
@@ -440,8 +452,11 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `themeId` int(11) default NULL,
   `installationId` varchar(40) NOT NULL,
   `ftpUser` varchar(200) default NULL,
+  `mailServiceServerId` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `name_index` (`name`)
+  UNIQUE KEY `name_index` (`name`),
+  KEY `mailServiceServerId` (`mailServiceServerId`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_1` FOREIGN KEY (`mailServiceServerId`) REFERENCES `contrexx_core_module_multisite_mail_service_server` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3641,6 +3656,8 @@ CREATE TABLE `contrexx_module_order_subscription` (
   `renewal_unit` varchar(5) default NULL,
   `renewal_quantifier` int(10) unsigned default NULL,
   `renewal_date` timestamp NULL default NULL,
+  `external_subscription_id` int(11) default NULL,
+  `external_customer_id` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `order_id` (`order_id`),
   KEY `product_id` (`product_id`),
