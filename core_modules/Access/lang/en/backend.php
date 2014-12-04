@@ -228,6 +228,7 @@ $_ARRAYLANG['TXT_ACCESS_USER'] = "User";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'] = "User account";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATION_METHOD_TEXT'] = "Method used to activate the user account of a new registered user";
 $_ARRAYLANG['TXT_ACCESS_USER_ACTIVATED_SUCCESSFULLY'] = "The user %s was successfully activated.";
+$_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_SAME_ID'] = "You can't disable your own user account.";
 $_ARRAYLANG['TXT_ACCESS_USER_ADMIN_RIGHTS'] = "User has administrator rights.";
 $_ARRAYLANG['TXT_ACCESS_USER_ADMIN_RIGHTS_TOOLTIP'] = "After this option is checked the user is permitted to access all areas of the system, independent of the membership to user groups.";
 $_ARRAYLANG['TXT_ACCESS_USER_DEACTIVATED_SUCCESSFULLY'] = "The user %s was successfully deactivated.";
