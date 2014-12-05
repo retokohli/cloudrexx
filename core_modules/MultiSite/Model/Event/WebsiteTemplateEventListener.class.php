@@ -34,25 +34,6 @@ class WebsiteTemplateEventListenerException extends \Exception {
 class WebsiteTemplateEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
     /**
-     * postPersist
-     *  
-     * @param object $eventArgs
-     * @throws \Cx\Core\Error\Model\Entity\ShinyException
-     */
-    public function postPersist($eventArgs) {
-        \DBG::msg('MultiSite (WebsiteTemplateEventListener): postPersist');
-        try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                    $this->manageWebsiteTemplatesOnServiceServer($eventArgs);
-                    break;
-            }
-        } catch (\Exception $e) {
-            throw new \Cx\Core\Error\Model\Entity\ShinyException($e->getMessage());
-        }
-    }
-
-    /**
      * postUpdate
      *  
      * @param object $eventArgs
@@ -60,34 +41,27 @@ class WebsiteTemplateEventListener implements \Cx\Core\Event\Model\Entity\EventL
      */
     public function postUpdate($eventArgs) {
         \DBG::msg('MultiSite (WebsiteTemplateEventListener): postUpdate');
+        $websiteTemplate = $eventArgs->getEntity();
+        if (!$websiteTemplate) {
+            return;
+        }
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                    $this->manageWebsiteTemplatesOnServiceServer($eventArgs);
+                    $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
+                    $dataSetObj = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteTemplate);
+                    $param = array();
+                    $param['data'] = $dataSetObj->toArray();
+                    // since website service server will be a object it cannot be converted into correct array.
+                     unset($param['data']['websiteServiceServer']);
+                    $param['dataType'] = $dataSetObj->getDataType();
+                    foreach ($websiteServiceServers as $websiteServiceServer) {
+                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('push', $param, $websiteServiceServer);
+                    }
                     break;
             }
         } catch (\Exception $e) {
-            throw new \Cx\Core\Error\Model\Entity\ShinyException($e->getMessage());
-        }
-    }
-
-    /**
-     * website template changes on service servers
-     * 
-     * @param type $eventArgs
-     */
-    public function manageWebsiteTemplatesOnServiceServer($eventArgs) {
-        $websiteTemplate = $eventArgs->getEntity();
-        if(!$websiteTemplate){
-            return;
-        }
-        $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
-        $dataSetObj = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteTemplate);
-        $param = array();
-        $param['data'] = $dataSetObj->toArray();
-        $param['dataType'] = $dataSetObj->getDataType();
-        foreach ($websiteServiceServers as $websiteServiceServer) {
-           $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('push', $param, $websiteServiceServer);
+            throw new WebsiteTemplateEventListenerException($e->getMessage());
         }
     }
 

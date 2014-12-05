@@ -128,45 +128,6 @@ class DataSet implements \Iterator {
         return $data;
     }
     
-    /**
-     * To convert array to objects
-     * 
-     * @return object
-     * 
-     * @throws DataSetException
-     */
-    public function arrayToObject() {
-        $entities = array();
-        try {
-            $class = '\\' . str_replace('\\\\', '\\', $this->getDataType());
-            if (!class_exists($class)) {
-                throw new DataSetException('Current Data type can not be convert into object.Make sure the class exists or not');
-            }
-            $repo = \Env::get('em')->getRepository($class);
-
-            foreach ($this->data as $key => $value) {
-                if ($value['id']) {
-                    $entity = $repo->findOneBy(array('id' => $value['id']));
-                } else {
-                    $entity = new $class;
-                }
-
-                foreach ($value as $field => $methodValue) {
-                    if ($field == 'id') {
-                        continue;
-                    }
-                    $methodNameToSetAssociation = 'set' . ucfirst($field);
-                    $entity->$methodNameToSetAssociation($methodValue);
-                }
-                $entities[] = $entity;
-            }
-        } catch (\Exception $e) {
-            \DBG::msg($e->getMessage());
-            throw new DataSetException('Converting array to object failed!');
-        }
-        return $entities;
-    }
-
     protected static function getYamlInterface() {
         if (empty(self::$yamlInterface)) {
             self::$yamlInterface = new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface();
@@ -251,10 +212,6 @@ class DataSet implements \Iterator {
      */
     public static function load($filename) {
         return self::importFromFile(self::getYamlInterface(), $filename);
-    }
-    
-    public function setDataType($dataType) {
-        $this->dataType = $dataType;
     }
     
     public function getDataType() {

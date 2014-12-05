@@ -2770,11 +2770,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_SERVICE:
-                    $data = array($param['post']['data']);
-                    $dataType = $param['post']['dataType'];
-                    $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($data);
-                    $objDataSet->setDataType($dataType);
-                    $entity = current($objDataSet->arrayToObject());
+                    $data = $param['post']['data'];
+                    $class = '\\' . str_replace('\\\\', '\\', $param['post']['dataType']);
+                    $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($data));
+                    $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface;
+                    $objEntityInterface->setEntityClass($class);
+                    $entity = current($objDataSet->export($objEntityInterface));
                     \Env::get('em')->persist($entity);
                     \Env::get('em')->flush();
                     break;
