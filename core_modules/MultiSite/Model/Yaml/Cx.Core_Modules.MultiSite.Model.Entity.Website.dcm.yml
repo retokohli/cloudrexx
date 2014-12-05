@@ -42,6 +42,8 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
     ftpUser:
       type: string
       length: 200
+    mailAccountId:
+      type: integer
       
   manyToMany:
     # unidirectional association
@@ -71,4 +73,3 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       joinColumn:
         name: mailServiceServerId
         referencedColumnName: id
-        cascade: [remove]

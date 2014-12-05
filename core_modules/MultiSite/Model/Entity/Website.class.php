@@ -125,7 +125,12 @@ class Website extends \Cx\Model\Base\EntityBase {
      * @var Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer
      */
     protected $mailServiceServer;
-
+    
+    /**
+     * @var integer $mailAccountId
+     */
+    protected $mailAccountId;
+    
     /*
      * Constructor
      * */
@@ -1637,5 +1642,24 @@ throw new WebsiteException('implement secret-key algorithm first!');
     {
         $this->mailServiceServer = $mailServiceServer;
     }
-
+    
+    /**
+     * Get mail account id
+     * 
+     * @return $mailAccountId
+     */
+    public function getMailAccountId()
+    {
+        return $this->mailAccountId;
+    }
+    
+    /**
+     * Set mail account id
+     * 
+     * @param $mailAccountId
+     */
+    public function setMailAccountId($mailAccountId)
+    {
+        $this->mailAccountId = $mailAccountId;
+    }
 }

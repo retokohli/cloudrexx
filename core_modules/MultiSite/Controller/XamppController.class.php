@@ -252,7 +252,7 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @return null
      */
     public function enableMailService($subscriptionId) {
-        \DBG::msg("MultiSite (XamppController): delete domain alias");
+        \DBG::msg("MultiSite (XamppController): enable mail service");
         return null;
     } 
 
@@ -264,7 +264,7 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @return null
      */
     public function disableMailService($subscriptionId) {
-        \DBG::msg("MultiSite (XamppController): delete domain alias");
+        \DBG::msg("MultiSite (XamppController): disable mail service");
         return null;
     } 
 }

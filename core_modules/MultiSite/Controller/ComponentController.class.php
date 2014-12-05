@@ -1032,7 +1032,7 @@ throw new MultiSiteException('Refactor this method!');
         $mailServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')->findAll();
         $dropdownOptions = array();
         foreach ($mailServiceServers as $mailServiceServer) {
-            $dropdownOptions[] = $mailServiceServer->getId() . ':' . $mailServiceServer->getHostname();
+            $dropdownOptions[] = $mailServiceServer->getId() . ':' .$mailServiceServer->getLabel(). ' ('.$mailServiceServer->getHostname().')';
         }
         return implode(',', $dropdownOptions);
     }
