@@ -6,10 +6,8 @@
  *	http://www.opensource.org/licenses/mit-license.php
  *	http://www.gnu.org/licenses/gpl.html
  */
-
 ;(function ($) {
 	"use strict";
-
 	var methods = (function () {
 		// private properties and methods go here
 		var c = {
@@ -79,7 +77,6 @@
 			touchHandler = function (e) {
 				var $this = $(this),
 					$ul = $this.siblings(e.data.popUpSelector);
-
 				if ($ul.length > 0 && $ul.is(':hidden')) {
 					$this.one('click.superfish', false);
 					if (e.type === 'MSPointerDown') {
@@ -109,7 +106,6 @@
 			close = function (o) {
 				o.retainPath = ($.inArray(this[0], o.$path) > -1);
 				this.superfish('hide');
-
 				if (!this.parents('.' + o.hoverClass).length) {
 					o.onIdle.call(getMenu(this));
 					if (o.$path.length) {
@@ -123,7 +119,6 @@
 			getOptions = function ($el) {
 				return getMenu($el).data('sf-options');
 			};
-
 		return {
 			// public methods
 			hide: function (instant) {
@@ -136,7 +131,6 @@
 					var not = (o.retainPath === true) ? o.$path : '',
 						$ul = $this.find('li.' + o.hoverClass).add(this).not(not).removeClass(o.hoverClass).children(o.popUpSelector),
 						speed = o.speedOut;
-
 					if (instant) {
 						$ul.show();
 						speed = 0;
@@ -157,7 +151,6 @@
 				}
 				var $this = this.addClass(o.hoverClass),
 					$ul = $this.children(o.popUpSelector);
-
 				o.onBeforeShow.call($ul);
 				$ul.stop(true, true).animate(o.animation, o.speed, function () {
 					o.onShow.call($ul);
@@ -199,22 +192,17 @@
 					var o = $.extend({}, $.fn.superfish.defaults, op),
 						$hasPopUp = $this.find(o.popUpSelector).parent('li');
 					o.$path = setPathToCurrent($this, o);
-
 					$this.data('sf-options', o);
-
 					toggleMenuClasses($this, o);
 					toggleAnchorClass($hasPopUp);
 					toggleTouchAction($this);
 					applyHandlers($this, o);
-
 					$hasPopUp.not('.' + c.bcClass).superfish('hide', true);
-
 					o.onInit.call(this);
 				});
 			}
 		};
 	})();
-
 	$.fn.superfish = function (method, args) {
 		if (methods[method]) {
 			return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
@@ -226,7 +214,6 @@
 			return $.error('Method ' +  method + ' does not exist on jQuery.fn.superfish');
 		}
 	};
-
 	$.fn.superfish.defaults = {
 		popUpSelector: 'ul,.sf-mega', // within menu context
 		hoverClass: 'sfHover',
@@ -247,11 +234,9 @@
 		onIdle: $.noop,
 		onDestroy: $.noop
 	};
-
 	// soon to be deprecated
 	$.fn.extend({
 		hideSuperfishUl: methods.hide,
 		showSuperfishUl: methods.show
 	});
-
 })(jQuery);

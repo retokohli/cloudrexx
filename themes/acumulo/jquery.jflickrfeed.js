@@ -22,24 +22,20 @@
 			itemTemplate: '',
 			itemCallback: function(){}
 		}, settings);
-
 		var url = settings.flickrbase + settings.feedapi + '?';
 		var first = true;
-
 		for(var key in settings.qstrings){
 			if(!first)
 				url += '&';
 			url += key + '=' + settings.qstrings[key];
 			first = false;
 		}
-
 		return $(this).each(function(){
 			var $container = $(this);
 			var container = this;
 			$.getJSON(url, function(data){
 				$.each(data.items, function(i,item){
 					if(i < settings.limit){
-					
 						// Clean out the Flickr Description
 						if(settings.cleanDescription){
 							var regex = /<p>(.*?)<\/p>/g;
@@ -50,7 +46,6 @@
 									item.description = item.description.replace('<p>','').replace('</p>','');
 							}
 						}
-						
 						// Add Image Sizes
 						// http://www.flickr.com/services/api/misc.urls.html
 						item['image_s'] = item.media.m.replace('_m', '_s');
@@ -59,7 +54,6 @@
 						item['image'] = item.media.m.replace('_m', '');
 						item['image_b'] = item.media.m.replace('_m', '_b');
 						delete item.media;
-						
 						// Use Template
 						if(settings.useTemplate){
 							var template = settings.itemTemplate;
@@ -69,7 +63,6 @@
 							}
 							$container.append(template)
 						}
-						
 						//itemCallback
 						settings.itemCallback.call(container, item);
 					}
