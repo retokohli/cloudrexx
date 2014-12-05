@@ -364,7 +364,7 @@ class ThemeRepository
             $infoFile = new \Cx\Lib\FileSystem\File($themePath . '/info.xml');
             $this->xmlParseFile($infoFile);
             $themeInformation['DlcInfo'] = array(
-                'name' => $theme->getFoldername(),
+                'name' => $theme->getThemesname(),
                 'description' => $this->xmlDocument['THEME']['DESCRIPTION']['cdata'],
                 'type' => 'template',
                 'publisher' => $this->xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
@@ -379,7 +379,7 @@ class ThemeRepository
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             // create new data for new component.yml file
             $themeInformation['DlcInfo'] = array(
-                'name' => $theme->getFoldername(),
+                'name' => $theme->getThemesname(),
                 'description' => '',
                 'type' => 'template',
                 'publisher' => 'Comvation AG',
