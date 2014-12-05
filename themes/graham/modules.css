@@ -209,7 +209,7 @@ span.checkbox {
     text-decoration: none;
 }
 #PASSWORD {
-    font-size: 13px;
+    font-size: 20px;
     color: #414141;
 }
 #login form input.remember_me {
@@ -357,6 +357,7 @@ div.row2 {
 #voting input[type=radio],
 #voting  input.radio{
     float: left;
+    margin-top: 11px;
 }
 .voting label{
     float: left;
@@ -1364,6 +1365,7 @@ form[name="registrationForm"] .row {
     float: left;
     padding: 0 0 0 12px;
     background: url('images/arrows.png') no-repeat 0 7px;
+    background-position: 0 16px;
 }
 #shop div.shop_options a.active {
     background-position: 0 -8px;
@@ -3028,3 +3030,4 @@ height: 42px;
 }
 .label {color: #7d7d7d; font-weight: normal;}
 #directory .selectorCenter input[type="button"] {float: none;}
+#livecam .livecamSearch input[type="text"] {float: left;}
