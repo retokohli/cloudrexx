@@ -488,7 +488,7 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_website_template` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL,
   `website_service_server_id` int(11) default NULL,
   `name` varchar(255) NOT NULL,
   `code_base` varchar(255) NOT NULL,
