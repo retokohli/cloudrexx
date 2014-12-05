@@ -453,6 +453,7 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `installationId` varchar(40) NOT NULL,
   `ftpUser` varchar(200) default NULL,
   `mailServiceServerId` int(11) default NULL,
+  `mailAccountId` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name_index` (`name`),
   KEY `mailServiceServerId` (`mailServiceServerId`),
