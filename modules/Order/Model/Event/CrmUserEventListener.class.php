@@ -6,10 +6,10 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_crm
+ * @subpackage  module_order
  */
 
-namespace Cx\Modules\Crm\Model\Event;
+namespace Cx\Modules\Order\Model\Event;
 
 /**
  * CrmUserEventListenerException
@@ -17,7 +17,7 @@ namespace Cx\Modules\Crm\Model\Event;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_crm
+ * @subpackage  module_order
  */
 class CrmUserEventListenerException extends \Exception {}
 
@@ -27,41 +27,14 @@ class CrmUserEventListenerException extends \Exception {}
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  module_crm
+ * @subpackage  module_order
  */
 class CrmUserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     
     /**
-     * prePersist event
+     * preRemove event
      * 
      * @param \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs
-     */
-    public function prePersist($eventArgs) {}
-    
-    /**
-     * postPersist event
-     * 
-     * @param \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs
-     */
-    public function postPersist($eventArgs) {}
-    
-    /**
-     * preUpdate event
-     * 
-     * @param \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs
-     */
-    public function preUpdate($eventArgs) {}
-    
-    /**
-     * postUpdate event
-     * 
-     * @param \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs
-     */
-    public function postUpdate($eventArgs) {}
-
-    /**
-     * 
-     * @param array $eventArgs
      */
     public function preRemove($eventArgs) {
         global $_ARRAYLANG;
@@ -74,12 +47,6 @@ class CrmUserEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         }
     }
 
-    /**
-     * 
-     * @param array $eventArgs
-     */
-    public function postRemove($eventArgs) {}
-    
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
     }
