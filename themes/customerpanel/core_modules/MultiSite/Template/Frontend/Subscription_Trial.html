@@ -1,0 +1,30 @@
+<!-- BEGIN showSiteTable -->
+<table>
+    <thead>
+        <tr>
+            <th width="55%" class="sort asc">Webseite</th>
+            <th width="20%" class="sort">Ablaufdatum</th>
+            <th width="25%" class="actions">Funktionen</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- BEGIN showSiteDetails -->
+        <tr>
+            <td><a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;{MULTISITE_WEBSITE_NAME}</a></td>
+            <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
+            <td class="actions">
+                <button onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Verwalten</button>
+                <button onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Adminkonsole</button>
+                <!-- BEGIN showUpgradeButton -->
+                <button class="save">Abo w&auml;hlen</button>
+                <!-- END showUpgradeButton -->
+            </td>
+        </tr>
+        <!-- END showSiteDetails -->
+    </tbody>
+</table>
+<!-- END showSiteTable -->
+
+<!-- BEGIN noSiteFound -->
+<div>Currently none</div>
+<!-- END noSiteFound -->

@@ -1,0 +1,64 @@
+<!-- BEGIN showSiteTable -->
+<table>
+    <thead>
+        <tr>
+            <th width="5%" class="sort asc">Referenz-Nr.</th>
+            <th width="30%" class="sort asc">Titel</th>
+            <th width="20%" class="sort">Abo</th>
+            <th width="20%" class="sort">N&auml;chste Rechnung</th>
+            <th width="25%" class="actions">Funktionen</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- BEGIN showSiteDetails -->
+        <tr class="subscription" data-ref-id="123">
+            <td><a href="#" class="show-websites">123</a></td>
+            <td>Titel Abo (optinal)</td>
+            <td>{MULTISITE_WEBSITE_PLAN}</td>
+            <td>{MULTISITE_WEBSITE_INVOICE_DATE}</td>
+            <td class="actions"> 
+                <button type="button" class="manage" onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Verwalten</button>
+                
+                <button type="button" class="upgrade">Upgrade</button>
+                <button type="button" class="add">Neue Website hinzuf&uuml;gen</button>
+                <!-- BEGIN showUpgradeButton --><button type="button" class="upgrade">Upgrade</button><!-- END showUpgradeButton -->
+            </td>
+        </tr> 
+        <tr class="website 123">
+            <td class="center"><span class="active"><!-- --></span></td>
+            <td colspan="3"><a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;thun</a></td>
+            <td class="actions">
+                <button onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Verwalten</button>
+                <button onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Adminkonsole</button>
+            </td>
+        </tr>
+        <tr class="website 123">
+            <td class="center"><span class="inactive"><!-- --></span></td>
+            <td colspan="3"><span class="entypo-popup">&nbsp;spiez</span></td>
+            <td class="actions">
+                <button onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Verwalten</button>
+            </td>
+        </tr>
+        <!-- END showSiteDetails -->
+    </tbody>
+</table>
+<!-- END showSiteTable -->
+
+<!-- BEGIN noSiteFound -->
+<div class="grid-elm grid-align-1-1 message info">Currently none</div>
+<!-- END noSiteFound -->
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('.subscription').bind('click', function () { 
+        var refId = jQuery(this).attr('data-ref-id');
+        
+        jQuery(this).find('a.show-websites').toggleClass('open'); 
+        jQuery('.website.'+refId).toggle(); 
+        
+        return false;
+    });
+});
+/* ]]> */
+</script>

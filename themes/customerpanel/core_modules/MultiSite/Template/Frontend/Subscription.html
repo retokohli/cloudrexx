@@ -1,0 +1,45 @@
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">
+    <button type="button" class="add">Neues Abo l&ouml;sen</button>
+</div>
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">
+    <h2>Aktiv</h2>
+    <div id="multisite_active_site">
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
+</div>
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">
+    <h2>Trial</h2>
+    <div id="multisite_trial_site">
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
+</div>
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">
+    <h2>Abgelaufen</h2>
+    <div id="multisite_expired_site">
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    function  loadContent(jQuerySelector, url) {
+        jQuery.ajax({
+            dataType: 'html',
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                if (data) {
+                    jQuery(jQuerySelector).html(data);
+                }
+            },
+            fail: function(data) {}
+        });
+    }
+    loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+    loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
+    loadContent('#multisite_expired_site', '/api/MultiSite/Subscription/Expired?status=expired');
+    
+    
+});
+/* ]]> */
+</script>
