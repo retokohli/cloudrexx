@@ -164,7 +164,11 @@ class JsonPage implements JsonAdapter {
      */
     public function set($params) {
         global $_CORELANG, $objCache;
-        $objCache->clearCache();
+        /*
+         * Really unneccessary, because we do not use resultcache 
+         * @see http://bugs.contrexx.com/contrexx/ticket/2339
+         */
+//        $objCache->clearCache();
         
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
@@ -452,7 +456,7 @@ class JsonPage implements JsonAdapter {
                 $this->em->remove($logEntries[2]);
             }
         }
-        
+
         $this->em->persist($page);
         
         if ((isset($dataPost['inheritFrontendAccess']) && $dataPost['inheritFrontendAccess'] == 'on')
@@ -521,8 +525,9 @@ class JsonPage implements JsonAdapter {
         // this fixes log version number skipping
         $this->em->clear();
         $logs = $this->logRepo->getLogEntries($page);
+
         $this->em->persist($logs[0]);
-        
+
         if ($updatingDraft) {
             $data = $logs[1]->getData();
             if (!empty($action) && $draftUpdateLog) {
