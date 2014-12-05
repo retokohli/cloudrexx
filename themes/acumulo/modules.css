@@ -7,42 +7,34 @@ form > fieldset > div {
     width: 100%;
     padding: 0 0 10px 0;
 }
-
 /* Start old contact form structure */
 form p {
     width: 100%;
     padding-left: 250px;
 }
-
 form p label {
     margin: 0 0 0 -250px;
 }
-
 form p label.description {
     margin: 0;
     height: auto;
     width: 100%;
 }
 /* END old contact form structure */
-
 form .is_required {
     padding: 0 0 0 5px;
     color: #FF0000;
 }
-
 form .contactFormGroup {
     float: left;
     width: 326px;
 }
-
 form .contactFormGroup input[type=checkbox] {
     clear: left;
 }
-
 form #uploadFormField_uploadWidget {
     padding: 0 0 0 250px;
 }
-
 form .contactFormUpload,
 form .formUploadedFiles,
 form .contactFormUpload div,
@@ -50,14 +42,12 @@ form .formUploadedFiles div {
     float: left;
     width: 326px;
 }
-
 form .contactFormUpload ul,
 form .formUploadedFiles ul {
     float: left;
     width: 326px;
     padding: 0 0 5px 0;
 }
-
 form .contactFormUpload li,
 form .formUploadedFiles li {
     float: left;
@@ -66,14 +56,12 @@ form .formUploadedFiles li {
     margin: 0 0 5px 0;
     border-bottom: 1px solid #DDDDDD;
 }
-
 form .contactFormUpload span,
 form .formUploadedFiles span {
     float: left;
     width: 280px;
     padding: 0 10px 0 0;
 }
-
 form .contactFormUpload .deleteIcon,
 form .formUploadedFiles .deleteIcon {
     float: left;
@@ -84,16 +72,13 @@ form .formUploadedFiles .deleteIcon {
     text-indent: 16px;
     background: url('../../cadmin/images/icons/delete.gif') no-repeat;
 }
-
 form label {
     float: left;
     width: 250px;
 }
-
 form input[type=submit] {
     margin-right: 10px;
 }
-
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR TABLES IN MODULES    */
 /***************************************************/
@@ -101,7 +86,6 @@ table, .breadcrumb {
     float: left;
     width: 100%;
 }
-
 table th {
     padding: 6px 5px;
     color: #FFFFFF;
@@ -109,36 +93,29 @@ table th {
     font-weight: bold;
     background-color: #FF9148;
 }
-
 table th a {
     color: #FFFFFF;
 }
-
 table tr.row1,
 table tr.marketRow2 {
     background-color: #FFFFFF;
 }
-
 table tr.row2,
 table tr.marketRow3 {
     background-color: #F6F6F6;
 }
-
 table tr.row3,
 table tr.marketRow1 {
     background-color: #FFEE9F;
 }
-
 table td {
     padding: 6px 5px;
     vertical-align:top;
     text-align: left;
 }
-
 table td.none {
     border: 0;
 }
-
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR LAYER RWO CLASS     */
 /***************************************************/
@@ -161,19 +138,19 @@ div.row2 {
     clear: none !important;
     margin: 0;
     padding: 0;
+    margin-bottom: 20px;
 }
 #captcha #coreCaptchaLabel {
     float: left;
     width: auto;
     clear: both;
     margin: 2px 0 2px 0;
-    white-space: nowrap;
     font-weight: normal;
 }
 #captcha #coreCaptchaCode {
     float: left;
     width: 79px !important;
-    height: 17px;
+    height: 31px;
     clear: both;
     margin: 0 7px 0 0;
     padding: 7px 12px 8px;
@@ -183,7 +160,6 @@ div.row2 {
     width: 93px;
     height: 31px;
 }
-
 /***************************************************/
 /* CSS DEFINITIONS FOR CONTACT MODULE              */
 /***************************************************/
@@ -192,7 +168,6 @@ div.row2 {
     width: 100%;
     padding: 15px 0 0 0;
 }
-
 #contactFormError {
     display: none;
     float: left;
@@ -200,7 +175,6 @@ div.row2 {
     padding: 15px 0 0 0;
     color: #FF0000;
 }
-
 /***************************************************/
 /* CSS DEFINITIONS FOR VOTING MODULE               */
 /***************************************************/
@@ -235,8 +209,6 @@ div.row2 {
 .voting label{
     float: none
 }
-
-
 /***************************************************/
 /* CSS DEFINITIONS FOR GALLERY MODULE              */
 /***************************************************/
@@ -294,6 +266,7 @@ div.row2 {
 }
 #gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img{
     margin: 0px 15px 0px 0px;
+    width: 100%;
 }
 #gallery div.show_image, #gallery div.image_navigation {
     text-align: center;
@@ -608,7 +581,6 @@ div.row2 {
     border-top: 1px solid #ECEDF3;
 }
 #directory .selector {
-    /*clear: left;*/
     clear: left;
     margin-top: -15px;
     padding-left: 190px;
@@ -1041,34 +1013,27 @@ div.row2 {
     width: 100%;
     float: left;
 }
-
 #sitemap ul li {
     padding: 0 0 5px;
     margin: 0 0 5px 0;
     border-bottom: 1px solid #F1F1F1;
     background: none;
 }
-
 #sitemap ul li.sitemap_level_1 {
     font-weight: bold;
 }
-
 #sitemap ul li.sitemap_level_2 {
     padding-left: 25px;
 }
-
 #sitemap ul li.sitemap_level_3 {
     padding-left: 50px;
 }
-
 #sitemap ul li.sitemap_level_4 {
     padding-left: 75px;
 }
-
 #sitemap ul li.sitemap_level_5 {
     padding-left: 100px;
 }
-
 /***************************************************/
 /* CSS DEFINITIONS FOR DOCSYS MODULE               */
 /***************************************************/
@@ -1458,7 +1423,6 @@ div.row2 {
 .ecardColumn1, .ecardPreviewMessage, .ecardPreviewData, .livecamSearch input {
     margin-bottom: 10px;
 }
-
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
@@ -1484,7 +1448,6 @@ div.row2 {
     margin: 20px 0 0 0;
     border-top: 1px solid #DDD;
 }
-
 #news li {
     float: left;
     width: 100%;
@@ -1492,48 +1455,40 @@ div.row2 {
     border-bottom: 1px solid #D6D6D6;
     background: none;
 }
-
 .news-image {
     float: left;
     width: 20%;
 }
-
 .news-image img {
     max-width: 120px;
     max-height: 120px;
 }
-
 .news-text {
     float: left;
     width: 80%;
 }
-
 .news-teaser {
     float: left;
     width: 100%;
     padding: 0 0 10px 0;
 }
-
 .news-info {
     float: left;
     width: 100%;
     color: #9C9C9C;
     font-size: 12px;
 }
-
 #news-date {
     float: left;
     width: 100%;
     padding: 0 0 5px 0;
     color: #9C9C9C;
 }
-
 #news-content {
     float: left;
     width: 100%;
     padding: 0 0 20px 0;
 }
-
 #news-links {
     float: left;
     width: 100%;
@@ -1542,12 +1497,10 @@ div.row2 {
     border-bottom: 1px solid #E3E4E5;
     background: #F5F6F7;
 }
-
 #news-links ul {
     float: left;
     padding: 0 10px 0 10px;
 }
-
 #news-social-media {
     float: left;
     width: 100%;
@@ -1555,34 +1508,27 @@ div.row2 {
     margin: 0 0 20px 0;
     border-bottom: 1px solid #D6D6D6;
 }
-
 #news-social-media li {
     padding: 0 30px 0 0;
     margin: 0;
     background: none;
 }
-
 #news-social-media li.last {
     padding: 0;
     margin: 0;
 }
-
 #news-social-media .google-plus {
     width: 67px;
 }
-
 #news-social-media .facebook {
     width: 114px;
 }
-
 #news-social-media .twitter {
     width: 92px;
 }
-
 #news-social-media .xing {
     width: 82px;
 }
-
 #news-social-media .rss-feed a {
     position: relative;
     float: left;
@@ -1590,24 +1536,20 @@ div.row2 {
     height: 22px;
     background: url('images/feed-icon.png');
 }
-
 #news-no-comments {
     float: left;
     width: 100%;
     margin: 0 0 20px 0;
 }
-
 #news-toggle {
     margin: 0 0 20px 0;
 }
-
 #news-comment-form {
     display: none;
     float: left;
     width: 100%;
     padding: 0 0 20px 0;
 }
-
 .news-comment {
     float: left;
     width: 100%;
@@ -1615,17 +1557,14 @@ div.row2 {
     border-bottom: 1px solid #E3E4E5;
     background: #F5F6F7;
 }
-
 .news-comment-poster {
     color: #9C9C9C;
 }
-
 .news-comment-poster,
 .news-comment-title,
 .news-comment-message {
     padding: 0 10px 0 10px;
 }
-
 /***************************************************/
 /* CSS DEFINITIONS FOR NEWSLETTER MODULE           */
 /***************************************************/
@@ -1708,7 +1647,6 @@ div.row2 {
 #u2u div.functions table td {
     vertical-align: middle;
 }
-
 /***************************************************/
 /* CSS DEFINITIONS FOR KNOWLEGE MODULE             */
 /***************************************************/
@@ -1717,7 +1655,6 @@ div.row2 {
     padding: 0px;
     margin: 0px;
 }
-
 #knowledge li {
     padding: 0px;
     margin: 0px;
@@ -1725,26 +1662,21 @@ div.row2 {
     margin-bottom: 10px;
     position: relative;
 }
-
 #knowledge dd {
     margin: 0px;
     padding: 0px;
     padding-bottom: 20px;
     padding-top: 5px;
 }
-
 #knowledge dt {
     font-weight: bold;
 }
-
 #knowledge form {
     padding: 10px 0 0 0;
 }
-
 #knowledge #content_search {
     position: relative;
 }
-
 #knowledge .crumbtrail,
 #knowledge .answer,
 #knowledge .informations {
@@ -1752,46 +1684,37 @@ div.row2 {
     width: 100%;
     padding: 0 0 10px 0;
 }
-
 #knowledge .category_title {
     padding: 15px 0 10px 0;
 }
-
 #knowledge .articlelist li {
     margin: 0px;
     padding: 0px;
     border-bottom: solid 1px #C6C6C6;
 }
-
 #knowledge .articlelist .title_row {
     padding: 8px 8px 5px 8px;
     background: #F9F9F9;
 }
-
 #knowledge .articlelist .opener {
     float: left;
     width: 40px;
     padding: 2px 0 2px 0;
 }
-
 #knowledge .articlelist .question_active {
     background-color: #F5F5F5;
     font-weight: bold;
     border-bottom: solid 1px #C6C6C6;
 }
-
 #knowledge #overview {
     padding: 5px 0 0 0;
 }
-
 #knowledge #overview div.category {
     float: left;
     width: 50%;
 }
-
 #knowledge #overview div.row {
 }
-
 #knowledge #overview div.row:after {
     content: ".";
     display: block;
@@ -1800,42 +1723,33 @@ div.row2 {
     visibility: hidden;
     margin-bottom: 1em;
 }
-
 /* FOR IE */
 * html #knowledge #overview div.row {
     height: 1%;
 }
-
 #knowledge #overview div div.title {
     font-weight: bold;
 }
-
 #knowledge #overview div div.title a {
     display: block;
 }
-
 #knowledge #overview div div.content {
     background-color: white;
 }
-
 #knowledge h2.category_list_title {
     padding: 3px;
 }
-
 #knowledge h2.article_list_title {
     clear: left;
     padding: 15px 0 10px 0;
 }
-
 #knowledge h2.article_list_title a {
     color: white;
 }
-
 #knowledge .most_read {
     background-color: #DAEDC6;
     font-weight: bold;
 }
-
 #knowledge .tags li, #knowledge .articlelist .tags li {
     margin: 0;
     padding: 0 3px 0 0;
@@ -1844,46 +1758,37 @@ div.row2 {
     border: none;
     background: none;
 }
-
 #knowledge_search_results {
     padding-left: 0px;
 }
-
 #knowledge_search_results ul {
     margin-left: 0px;
     padding-left: 0px;
     list-style-type: none;
 }
-
 #knowledge_search_results ul li {
     padding: 0px;
     margin: 0px;
     margin: 5px 5px;
     list-style-type: none;
 }
-
 .knowledge_sidebar {
     margin: 0px;
     padding: 0px;
 }
-
 .knowledge_sidebar ul {
     margin: 0px;
     padding: 0px;
     list-style: none;
 }
-
 .knowledge_sidebar li {
     width: 100%;
     display: block;
     margin: 0px;
 }
-
 .knowledge_sidebar li:hover {}
-
 /* FOR IE */
 * html .clearfix { height: 1%; }
-
 .clearfix:after {
     content: ".";
     display: block;
@@ -1891,7 +1796,6 @@ div.row2 {
     clear: both;
     visibility: hidden;
 }
-
 #resultbox {
     border: 1px solid #BBBBBB;
     position: absolute;
@@ -1903,13 +1807,11 @@ div.row2 {
     top: 43px;
     background-color: white;
 }
-
 #resultbox ul {
     list-style-type: none;
     padding: 2px;
     margin: 0px;
 }
-
 #resultbox li {
     list-style-type: none;
     display: block;
@@ -1917,22 +1819,18 @@ div.row2 {
     overflow: hidden;
     margin: 0px;
 }
-
 #resultbox li a {
     display: block;
 }
-
 #resultbox li:hover {
     background-color: #F0F8FA;
 }
-
 .cloud {
     margin: 0 0 1em 0;
     padding: 0px;
     list-style: none;
     border: none;
 }
-
 .cloud li {
     margin: 0px !important;
     padding: 0px 5px !important;
@@ -1942,15 +1840,12 @@ div.row2 {
     border: none !important;
     line-height: 1em !important;
 }
-
 .cloud li:hover {
     background-color: #cdcdcd;
 }
-
 .cloud li a{
     color: #646464;
 }
-
 /***************************************************/
 /* CSS DEFINITIONS FOR DATA MODULE                 */
 /***************************************************/
@@ -2510,7 +2405,6 @@ dl.data_module img {
 #media_div div.message_ok {
     color: #029202;
 }
-
 /***************************************/
 /* CSS DEFINITIONS FOR CHECKOUT MODULE */
 /***************************************/
@@ -2518,11 +2412,9 @@ dl.data_module img {
     width: 470px;
     padding: 0;
 }
-
 #checkout .right {
     padding: 0;
 }
-
 #checkout #ok_message,
 #checkout #error_message,
 #checkout #payment_methods,
@@ -2532,35 +2424,28 @@ dl.data_module img {
     display: inline-block;
     padding: 0 0 20px 0;
 }
-
 #checkout form {
     width: 442px;
 }
-
 #checkout #ok_message {
     color: #008000;
 }
-
 #checkout #error_message {
     color: #ff0000;
 }
-
 #checkout #payment_methods img {
     float: left;
     width: 96px;
     height: 58px;
     margin: 0 10px 0 0;
 }
-
 #checkout form p {
     padding-left: 0;
     width: auto;
 }
-
 #checkout form legend {
     display: block;
 }
-
 #checkout form input[type=text],
 #checkout form input[type=password],
 #checkout form textarea {
@@ -2568,55 +2453,47 @@ dl.data_module img {
     margin-right: 0;
     margin-left: 0;
 }
-
 #checkout form select {
     width: 420px;
+    color: #555;
+    font-size: 100%;
+    font-weight: normal;
 }
-
 #checkout form input.label,
 #checkout form select.label,
 #checkout form textarea.label {
     opacity: 0.6;
 }
-
 #checkout form input.highlight,
 #checkout form select.highlight,
 #checkout form textarea.highlight {
     border: 1px solid #ff0000;
 }
-
 #checkout form input#invoice_amount {
     float: left;
     width: 264px;
     margin-right: 10px;
 }
-
 #checkout form select#invoice_currency {
     float: left;
-    width: 120px;
 }
-
 #checkout form input#contact_postcode  {
     float: left;
     width: 94px;
     margin-right: 10px;
 }
-
 #checkout form input#contact_place {
     float: left;
     width: 264px;
 }
-
 #checkout form #buttons {
     display: block;
     position: static;
     margin: 20px 0 0 0;
 }
-
 #checkout form #buttons input {
     width: auto;
 }
-
 /***************************/
 /* HIDE UPLOADER EMBED TAG */
 /***************************/
@@ -2872,17 +2749,6 @@ input[name="bsubmit"] {
     width: auto !important;
 }
 /*BLOGSEARCH*/
-#searchfield {
-    margin-bottom: 20px;
-}
-#searchfield p#fieldlast {
-    width: auto;
-    padding-top: 26px;
-}
-#searchfield p {
-    width: 33%;
-    margin-right: 10px;
-}
 input[name="recipient_save"] {
     margin-top: 5px;
 }
@@ -2992,6 +2858,7 @@ input[type="checkbox"] {
 }
 .radio label, .checkbox label {
     height: auto;
+    width: 100%;
 }
 .thread-button input {
     margin-bottom: 15px;
@@ -3028,10 +2895,6 @@ input[type="checkbox"] {
 .contact.row hr {
     padding: 0;
     margin: 6px 0 0px 0;
-}
-input[type="file"]{height: auto;float: left;}
-.radio label, .checkbox label {
-    height: 20px;
 }
 .btn.btn-default, .btn.btn-primary {
     font-size: 13px;
@@ -3084,4 +2947,25 @@ select.form-control {
 }
 .row.jobs-category {
     margin: 0 -15px;
+}
+.categorySelect select.form-control, .notification select.form-control {
+    width: 100%;
+}
+.categorySelect .col-md-offset-3 {
+    margin-left: 0;
+}
+.categorySelect.container-fluid {
+    margin-bottom: 20px;
+}
+.ecardContainer span.radio {
+    margin-bottom: 0;
+    float: left;
+    width: 100%;
+}
+.ecardContainer form p {
+    width: 100%;
+    padding-left: 0;
+}
+.ecardContainer form p label {
+    margin: 0;
 }

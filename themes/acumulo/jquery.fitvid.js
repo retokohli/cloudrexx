@@ -8,17 +8,13 @@
 *
 * Date: Thu Sept 01 18:00:00 2011 -0500
 */
-
 (function( $ ){
-
   $.fn.fitVids = function( options ) {
     var settings = {
       customSelector: null
     }
-    
     var div = document.createElement('div'),
         ref = document.getElementsByTagName('base')[0] || document.getElementsByTagName('script')[0];
-        
   	div.className = 'fit-vids-style';
     div.innerHTML = '&shy;<style>         \
       .fluid-width-video-wrapper {        \
@@ -37,13 +33,10 @@
          height: 100%;                    \
       }                                   \
     </style>';
-                      
     ref.parentNode.insertBefore(div,ref);
-    
     if ( options ) { 
       $.extend( settings, options );
     }
-    
     return this.each(function(){
       var selectors = [
         "iframe[src^='http://player.vimeo.com']", 
@@ -52,13 +45,10 @@
         "object", 
         "embed"
       ];
-      
       if (settings.customSelector) {
         selectors.push(settings.customSelector);
       }
-      
       var $allVideos = $(this).find(selectors.join(','));
-
       $allVideos.each(function(){
         var $this = $(this);
         if (this.tagName.toLowerCase() == 'embed' && $this.parent('object').length || $this.parent('.fluid-width-video-wrapper').length) { return; } 
@@ -72,6 +62,5 @@
         $this.removeAttr('height').removeAttr('width');
       });
     });
-  
   }
 })( jQuery );
