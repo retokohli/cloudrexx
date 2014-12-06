@@ -1256,6 +1256,27 @@ CODE;
                         }
                     }
                     $this->replaceThemeName($copyFromTheme, $dirName, $this->websiteThemesPath . $dirName);
+                    //convert theme to component
+                    try {
+                        $this->themeRepository->loadComponentData($theme);
+                        if (!$theme->isComponent()) {
+                            // create a new one if no component.yml exists
+                            $this->themeRepository->convertThemeToComponent($theme);
+                            $this->themeRepository->loadComponentData($theme);
+                        }
+                        // change the theme name in component data
+                        $themeInformation = $theme->getComponentData();
+                        if ($themeInformation) {
+                            $themeInformation['name'] = $theme->getThemesname();                            
+                            $theme->setComponentData($themeInformation);
+
+                            $this->themeRepository->saveComponentData($theme);
+                        }
+                        
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \Message::add('Error in coverting component file', \Message::CLASS_ERROR);
+                    }
+                    
                     if ($this->insertSkinIntoDb($theme)) {
                         \Message::add(contrexx_raw2xhtml($themeName).' '.$_ARRAYLANG['TXT_STATUS_SUCCESSFULLY_CREATE']);
                     }
@@ -1430,8 +1451,9 @@ CODE;
      */
     private function insertIntoDb(\Cx\Core\View\Model\Entity\Theme $theme, $themeIdFromDatabaseBasedTheme = null)
     {
-
-        if (empty($theme->getThemesname()) || empty($theme->getFoldername())) {
+        $themeName   = $theme->getThemesname();
+        $themeFolder = $theme->getFoldername();
+        if (empty($themeName) || empty($themeFolder)) {
             return;
         }
 

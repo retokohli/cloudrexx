@@ -249,23 +249,58 @@ class ThemeRepository
     
     /**
      * Writes the component.yml file with the data defined in component data array
+     * 
      * @param \Cx\Core\View\Model\Entity\Theme $theme the theme object
      */
-    public function saveComponentData($theme) {
+    public function saveComponentData(\Cx\Core\View\Model\Entity\Theme $theme) {
         global $_ARRAYLANG;
+        
         if (!file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername())) {
             if (!\Cx\Lib\FileSystem\FileSystem::make_folder(\Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername())) {
-                $this->strErrMessage = \Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath . ":" . $_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
+                \Message::add($theme->getFoldername() . " : " . $_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE']);
             }
         }
-        $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername() . '/component.yml');
-        $file->touch();
-        $yaml = new \Symfony\Component\Yaml\Yaml();
-        $file->write(
-            $yaml->dump(
-                array('DlcInfo' => $theme->getComponentData())
-            )
-        );
+        
+        $filePath = \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername() . '/component.yml';
+        try {
+            $file = new \Cx\Lib\FileSystem\File($filePath);
+            $file->touch();
+
+            $yaml = new \Symfony\Component\Yaml\Yaml();
+            $file->write(
+                $yaml->dump(
+                    array('DlcInfo' => $theme->getComponentData())
+                )
+            );
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            DBG::msg($e->getMessage());
+        }
+    }
+    
+    /**
+     * Load the component data from component.yml file
+     * 
+     * @param \Cx\Core\View\Model\Entity\Theme $theme
+     */
+    public function loadComponentData(\Cx\Core\View\Model\Entity\Theme &$theme) {
+        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE;
+        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE;
+        $filePath         = file_exists($websiteFilePath) 
+                            ? $websiteFilePath
+                            : ( file_exists($codeBaseFilePath)
+                                ? $codeBaseFilePath
+                                : ''
+                              );
+        if ($filePath) {
+            try {
+                $objYaml = new \Symfony\Component\Yaml\Yaml();
+                $objFile = new \Cx\Lib\FileSystem\File($filePath);
+                $themeInformation = $objYaml->load($objFile->getData());
+                $theme->setComponentData($themeInformation['DlcInfo']);
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::log($e->getMessage());
+            }            
+        }
     }
     
     /**
@@ -318,21 +353,12 @@ class ThemeRepository
             return $theme;
         }
         
-        $componentFile = file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername . '/component.yml') 
-                        ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername . '/component.yml' 
-                        : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $foldername . '/component.yml'; 
-        
-        try {
-            // create a new one if no component.yml exists
-            if (!file_exists($componentFile)) {
-                $this->convertThemeToComponent($theme); // file will be written into website folder
-                $componentFile = \Env::get('cx')->getWebsiteThemesPath() . '/' . $foldername . '/component.yml';
-            }
-            $yamlFile = new \Cx\Lib\FileSystem\File($componentFile);
-            $yaml = new \Symfony\Component\Yaml\Yaml();
-            $themeInformation = $yaml->load($yamlFile->getData());
-            $theme->setComponentData($themeInformation['DlcInfo']);
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {}
+        $this->loadComponentData($theme);
+        // create a new one if no component.yml exists
+        if (!$theme->isComponent()) {
+            $this->convertThemeToComponent($theme);
+            $this->loadComponentData($theme);
+        }
         
         return $theme;
     }
@@ -359,24 +385,30 @@ class ThemeRepository
 
         $themePath = \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername();
         
-        try {
-            // check for old info file
-            $infoFile = new \Cx\Lib\FileSystem\File($themePath . '/info.xml');
-            $this->xmlParseFile($infoFile);
-            $themeInformation['DlcInfo'] = array(
-                'name' => $theme->getThemesname(),
-                'description' => $this->xmlDocument['THEME']['DESCRIPTION']['cdata'],
-                'type' => 'template',
-                'publisher' => $this->xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
-                'subtype' => null,
-                'versions' => array(
-                    'state' => 'stable',
-                    'number' => $this->xmlDocument['THEME']['VERSION']['cdata'],
-                    'releaseDate' => '',
-                ),
-            );
-            unset($this->xmlDocument);
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+        $infoFile         = null;
+        $themeInformation = array('DlcInfo' => array());
+        if (file_exists($themePath . '/info.xml')) {
+            try {
+                // check for old info file
+                $infoFile = new \Cx\Lib\FileSystem\File($themePath . '/info.xml');
+                $this->xmlParseFile($infoFile);
+                $themeInformation['DlcInfo'] = array(
+                    'name' => $theme->getThemesname(),
+                    'description' => $this->xmlDocument['THEME']['DESCRIPTION']['cdata'],
+                    'type' => 'template',
+                    'publisher' => $this->xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
+                    'subtype' => null,
+                    'versions' => array(
+                        'state' => 'stable',
+                        'number' => $this->xmlDocument['THEME']['VERSION']['cdata'],
+                        'releaseDate' => '',
+                    ),
+                );
+                unset($this->xmlDocument);
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \Message::add('Error in reading info.xml', \Message::CLASS_ERROR);
+            }
+        } else {
             // create new data for new component.yml file
             $themeInformation['DlcInfo'] = array(
                 'name' => $theme->getThemesname(),
@@ -391,6 +423,7 @@ class ThemeRepository
                 ),                
             );
         }
+        
         // Add default dependencies
         $themeInformation['DlcInfo']['dependencies'] = array(
             array(
@@ -406,14 +439,18 @@ class ThemeRepository
         try {
             $this->saveComponentData($theme);
         } catch (\Cx\Lib\FileSystem\FileException $e) {
+            \Message::add('Error in saving component data', \Message::CLASS_ERROR);
             // could not write new component.yml file, try next time
             throw new $e;
         }
-        try {
-            // delete existing info.xml file
-            $infoFile->delete();
-        } catch (\Cx\Lib\FileSystem\FileException $e) {
-            // not critical, ignore
+        if ($infoFile) {
+            try {
+                // delete existing info.xml file
+                $infoFile->delete();
+            } catch (\Cx\Lib\FileSystem\FileException $e) {
+                \Message::add('Error in removing '. $theme->getFoldername() .'/info.xml', \Message::CLASS_ERROR);
+                // not critical, ignore
+            }
         }
     }
     
