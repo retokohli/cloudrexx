@@ -38,6 +38,10 @@ class Theme extends \Cx\Model\Base\EntityBase
     const THEME_TYPE_APP = 'app';
     const THEME_TYPE_PDF = 'pdf';
     
+    const THEME_PREVIEW_FILE = '/images/preview.gif';
+    const THEME_DEFAULT_PREVIEW_FILE = '/core/Core/View/Media/preview.gif';
+    const THEME_COMPONENT_FILE = '/component.yml';
+
     public function __construct($id = null, $themesname = null, $foldername = null, $expert = 1) {
         $this->db = \Env::get('db');
         
@@ -129,8 +133,8 @@ class Theme extends \Cx\Model\Base\EntityBase
      * @return string the preview image source web path
      */
     public function getPreviewImage() {
-        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->foldername . '/images/preview.gif';
-        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->foldername . '/images/preview.gif';
+        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
+        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
         $filePath         = file_exists($websiteFilePath) 
                             ? $websiteFilePath
                             : ( file_exists($codeBaseFilePath)
@@ -138,9 +142,9 @@ class Theme extends \Cx\Model\Base\EntityBase
                                 : ''
                               );
         if ($filePath && file_exists($filePath)) {
-            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->foldername . '/images/preview.gif';
+            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
         }
-        return \Env::get('cx')->getCodeBaseOffsetPath().'/core/Core/View/Media/preview.gif';
+        return \Env::get('cx')->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
     }
     
     /**
@@ -271,7 +275,7 @@ class Theme extends \Cx\Model\Base\EntityBase
     public function isComponent() {
         return !empty($this->componentData);
     }
-    
+           
     /**
      * Compares two dependencies so they are loaded in the correct order.
      * @param array $a the dependency A
