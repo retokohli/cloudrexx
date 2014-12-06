@@ -1,0 +1,59 @@
+<!doctype html>
+<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
+<!--[if IE 7 ]>   <html class="no-js ie7" lang="en"><![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+    <!--<![endif]-->
+    <head>
+        <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+        <meta name="generator" content="{VERSION}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="description" content="{METADESC}" />
+        <meta charset="{CHARSET}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta property="og:site_name" content="{GLOBAL_TITLE}" />
+        <meta property="og:title" content="{METATITLE}" />
+        <meta property="og:description" content="{METADESC}" />
+        <meta property="og:url" content="http://{DOMAIN_URL}{CURRENT_URL}" />
+        <meta property="og:image" content="{BASE_URL}/themes/klasik/images/og_logo_social_media.jpg" />
+        <meta name="twitter:title" content="{METATITLE}" />
+        <meta name="twitter:description" content="{METADESC}" />
+        <meta name="twitter:image" content="{BASE_URL}/themes/klasik/images/logo_social_media.jpg" />
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
+        <link type="images/x-icon" rel="icon" href="themes/klasik/images/favicon.ico" />
+        <link rel="apple-touch-icon" href="/themes/klasik/images/logo_social_media.jpg" />
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="themes/klasik/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/klasik/style.css" />
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {LOGIN_INCLUDE}
+        <link type="text/css" rel="stylesheet" href="themes/klasik/modules.css" />
+        <link type="text/css" rel="stylesheet" href="themes/klasik/text.css" />
+        <script type="text/javascript" src="themes/klasik/modernizr.js"></script>
+        <script type="text/javascript" src="themes/klasik/jquery.cycle.js"></script>
+        <script type="text/javascript" src="themes/klasik/javascript.js"></script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <div class="container">
+                    <div class="row">
+                        <a href="{NODE_HOME}"><img src="/themes/klasik/images/logo.png" alt="images" /></a>
+                        <div class="main-nav">
+                            {NAVBAR_FILE}
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <section id="content-wrapper">
+                {CONTENT_FILE}
+            </section>
+            <footer></footer>
+        </div>
+        {LOGIN_CONTENT}
+        {COUNTER}
+    </body>
+</html>
