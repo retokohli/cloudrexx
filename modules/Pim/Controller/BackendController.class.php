@@ -25,10 +25,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     protected $template;
     
-    /**
-     * Sub menu name
-     */
-    protected $submenuName;
     
     /**
      * Returns a list of available commands (?act=XY)
@@ -53,10 +49,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $this->cx;
         $this->template = $template;
         $act = $cmd[0];
-        $this->submenuName = $this->getSubmenuName($cmd);
         
         $this->connectToController($act);
-        
+                
         \Message::show();
     }
     
@@ -74,28 +69,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return;
             }
             //  instantiate the view specific controller
-            new $controllerName($this->getSystemComponentController(), $this->cx, $this->template, $this->submenuName);
+            $objController = new $controllerName($this->getSystemComponentController(), $this->cx);            
         } else { 
             // instantiate the default View Controller
-            new DefaultController($this->getSystemComponentController(), $this->cx, $this->template);
+            $objController = new DefaultController($this->getSystemComponentController(), $this->cx);
         }
+        $objController->parsePage($this->template);
     }   
     
-    /**
-     * get the sub menu name
-     * 
-     * @param array $cmd
-     * 
-     * @return null|string
-     */
-    private function getSubmenuName($cmd)
-    {
-        if(count($cmd) > 1){
-            $submenu = ucfirst($cmd[1]);
-            return $submenu;
-        }
-        return null;
-    }
     
     
     /**

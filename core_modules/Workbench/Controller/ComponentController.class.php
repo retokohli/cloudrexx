@@ -15,7 +15,17 @@ namespace Cx\Core_Modules\Workbench\Controller;
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-
+    /**
+     * getControllerClasses
+     * 
+     * @return type
+     */
+    public function getControllerClasses() {
+        // Return an empty array here to let the component handler know that there
+        // does not exist a backend, nor a frontend controller of this component.
+        return array();
+    }
+    
     public function getCommandsForCommandMode() {
         return array('workbench', 'wb');
     }

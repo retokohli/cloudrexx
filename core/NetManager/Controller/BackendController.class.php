@@ -49,7 +49,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $this->template = $template;
         
         // instantiate the default View Controller
-        new \Cx\Core\NetManager\Controller\DefaultController($this->getSystemComponentController(), $this->cx, $this->template);
+        $objController = new \Cx\Core\NetManager\Controller\DefaultController($this->getSystemComponentController(), $this->cx);
+        $objController->parsePage($this->template);
         
         \Message::show();
     }

@@ -59,16 +59,19 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
      * @param \Cx\Core\Core\Controller\Cx                          $cx                        the cx object
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponentController, $cx);
         
-        $this->template          = $template;
-        $this->em                = $this->cx->getDb()->getEntityManager();
-        $this->productRepository   = $this->em->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+        $this->em                  = $this->cx->getDb()->getEntityManager();
+        $this->productRepository   = $this->em->getRepository('Cx\Modules\Pim\Model\Entity\Product');  
+    }
+    
+    public function parsePage(\Cx\Core\Html\Sigma $template) {
+        $this->template = $template;
         
         $this->showProducts();
     }
-
+    
     public function showProducts() 
     {
         global $_ARRAYLANG;

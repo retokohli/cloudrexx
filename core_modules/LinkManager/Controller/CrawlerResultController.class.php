@@ -66,13 +66,11 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
      * @param string                                               $submenu                   the submenu name
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template, $submenu = null) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         //check the user permission
         \Permission::checkAccess(1031, 'static');
         
         parent::__construct($systemComponentController, $cx);
-        
-        $this->template          = $template;
         $this->em                = $this->cx->getDb()->getEntityManager();
         $this->linkRepository    = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Link');
         $this->crawlerRepository = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Crawler');
@@ -80,6 +78,15 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         //register backend js
         \JS::registerJS('core_modules/LinkManager/View/Script/LinkManagerBackend.js');
         \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/SimpleHtmlDom.php');
+    }
+    
+     /**
+     * Use this to parse your backend page
+     * 
+     * @param \Cx\Core\Html\Sigma $template 
+     */
+    public function parsePage(\Cx\Core\Html\Sigma $template) {
+        $this->template = $template;
         
         $this->showCrawlerResult();
     }
