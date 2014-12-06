@@ -1,6 +1,6 @@
 DlcInfo:
-  name: 'Standard'
-  description: 'Default theme'
+  name: highwind
+  description: ' '
   type: template
   publisher: 'Comvation AG'
   versions: { state: stable, number: 1.0.0, releaseDate: '' }
