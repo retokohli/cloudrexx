@@ -85,9 +85,9 @@ class ViewGenerator {
                     if ($blankPost) {
                         \Message::add('Cannot save, You should fill any one field!', \Message::CLASS_ERROR);
                         return;
-                    }               
+                    }   
                     $entityObject = \Env::get('em')->getClassMetadata($entityNS);  
-                    $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name  
+                    $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name 
                     $entityColumnNames = $entityObject->getColumnNames(); //get all field names                 
 
                     // create new entity without calling the constructor
@@ -135,6 +135,7 @@ class ViewGenerator {
                             \DBG::msg('Unkown entity model '.get_class($entityObj).'! Trying to persist using entity manager...');
                         }
                         \Env::get('em')->persist($entityObj);
+                        $entityObject->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
                         \Env::get('em')->flush();
                     }
                     \Message::add($_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL']);   

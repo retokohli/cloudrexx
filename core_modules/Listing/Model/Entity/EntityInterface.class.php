@@ -38,14 +38,22 @@ class EntityInterface implements Exportable, Importable {
      * @return array return as object array
      */
     public function export($data) {
+        $associationMappings = \Env::get('em')->getClassMetadata($this->entityClass)->getAssociationMappings();
+        
         $repo = \Env::get('em')->getRepository($this->entityClass);
         foreach ($data as $key => $value) {
+            $entity = null;
             if (!empty($value['id'])) {
                 $entity = $repo->findOneBy(array('id' => $value['id']));
-            } else {
-                $entity = new $this->entityClass;
+            }
+            if (!$entity) {
+                $entity = new $this->entityClass();
             }
             foreach ($value as $field => $methodValue) {
+                if (array_key_exists($field, $associationMappings)) {
+                    continue;
+                }
+
                 $methodNameToSetAssociation = 'set' . ucfirst($field);
                 $entity->$methodNameToSetAssociation($methodValue);
             }
@@ -69,7 +77,23 @@ class EntityInterface implements Exportable, Importable {
      * @param type $data
      */
     public function import($data) {
+        $associationMappings = \Env::get('em')->getClassMetadata($this->entityClass)->getAssociationMappings();
         
+        $covertedData = array();
+        $classMethods = get_class_methods($this->entityClass);
+        foreach ($data as $dataVal) {
+            $result = array();
+            foreach ($dataVal as $field => $value) {
+                $methodNameToFetchAssociation = 'get' . ucfirst($field);
+                if (array_key_exists($field, $associationMappings)) {
+                    $result[$field] = array();
+                } elseif (in_array($methodNameToFetchAssociation, $classMethods)) {
+                    $result[$field] = $value;
+                }                 
+            }
+            $covertedData[] = $result;
+        }
+        return $covertedData;
     }
 
 }

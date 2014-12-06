@@ -6,7 +6,7 @@ Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate:
     id:
       type: integer
       generator:
-        strategy: NONE
+        strategy: AUTO
   fields:
     name:
       type: string

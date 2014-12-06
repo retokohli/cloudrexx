@@ -34,13 +34,33 @@ class WebsiteTemplateEventListenerException extends \Exception {
 class WebsiteTemplateEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
     /**
+     * postPersist
+     * 
+     * @param object $eventArgs
+     */
+    public function postPersist($eventArgs) {
+        \DBG::msg('MultiSite (WebsiteTemplateEventListener): postPersist');
+        $this->manageWebsiteTemplatesOnServiceServer($eventArgs);
+    }
+
+    /**
      * postUpdate
      *  
      * @param object $eventArgs
-     * @throws \Cx\Core\Error\Model\Entity\ShinyException
      */
     public function postUpdate($eventArgs) {
         \DBG::msg('MultiSite (WebsiteTemplateEventListener): postUpdate');
+        $this->manageWebsiteTemplatesOnServiceServer($eventArgs);
+    }
+
+    /**
+     * manage the website templates on service server
+     * 
+     * @param object $eventArgs
+     * @return type
+     * @throws WebsiteTemplateEventListenerException
+     */
+    public function manageWebsiteTemplatesOnServiceServer($eventArgs) {
         $websiteTemplate = $eventArgs->getEntity();
         if (!$websiteTemplate) {
             return;
@@ -52,8 +72,6 @@ class WebsiteTemplateEventListener implements \Cx\Core\Event\Model\Entity\EventL
                     $dataSetObj = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteTemplate);
                     $param = array();
                     $param['data'] = $dataSetObj->toArray();
-                    // since website service server will be a object it cannot be converted into correct array.
-                     unset($param['data']['websiteServiceServer']);
                     $param['dataType'] = $dataSetObj->getDataType();
                     foreach ($websiteServiceServers as $websiteServiceServer) {
                         \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('push', $param, $websiteServiceServer);
