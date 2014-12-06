@@ -1049,7 +1049,7 @@ throw new MultiSiteException('Refactor this method!');
         $websiteTemplates = $websiteTemplatesObj->findAll();
         $display = array();
         foreach ($websiteTemplates as $websiteTemplate) {
-            $display[] = $websiteTemplate->getName();
+            $display[] = $websiteTemplate->getId() .':'. $websiteTemplate->getName();
         }
         return implode(',', $display);
     }
