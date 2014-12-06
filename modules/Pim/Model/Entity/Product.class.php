@@ -252,6 +252,10 @@ class Product extends \Cx\Model\Base\EntityBase {
     }
 
     public function getRenewalDefinition($unit, $quantifier) {
+        if (empty($this->renewalOptions)) {
+            $this->initRenewalConfig();
+        }
+        
         if ($this->isValidRenewalDefinition($unit, $quantifier)) {
             return array($unit, $quantifier);
         }

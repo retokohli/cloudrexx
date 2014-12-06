@@ -44,7 +44,7 @@ class PaymentRepository extends \Doctrine\ORM\EntityRepository {
             if (empty($value)) {
                 continue;
             }
-            $operator = ($key == 'transactionReference') ? ' LIKE ?' : ' = ?';
+            $operator = ($key == 'transactionReference') ? ' LIKE ?' : ($key == 'invoice' ? ' IS ?' : ' = ?');
             $term     = ($key == 'transactionReference') ? $value . '%' : $value;
             if ($i == 1) {
                 $qb->where('p.' . $key . $operator . $i)->setParameter($i, $term);
@@ -54,6 +54,6 @@ class PaymentRepository extends \Doctrine\ORM\EntityRepository {
             $i++;
         }
         
-        return $qb->getQuery()->getSingleResult();
+        return current($qb->getQuery()->getResult());
     }
 }
