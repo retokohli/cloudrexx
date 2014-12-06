@@ -36,7 +36,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * This component only has a backend
      */
     public function getControllerClasses() {
-        return array('Backend');
+        return array('Backend', 'Default', 'Settings');
     }
     
     /**

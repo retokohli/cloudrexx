@@ -48,16 +48,25 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
      * @param string                                               $submenu                   the submenu name
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template, $submenu = null) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponentController, $cx);
         
-        $this->template          = $template;
         $this->em                = $this->cx->getDb()->getEntityManager();
         $this->subscriptionRepo   = $this->em->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
         
+    }
+    
+    /**
+     * Use this to parse your backend page
+     * 
+     * @param \Cx\Core\Html\Sigma $template 
+     */
+    public function parsePage(\Cx\Core\Html\Sigma $template) {
+        $this->template = $template;
+        
         $this->showSubscriptions();
     }
-
+    
     public function showSubscriptions() 
     {
         global $_ARRAYLANG;

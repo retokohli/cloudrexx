@@ -41,7 +41,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\LogEntry', new \Cx\Core\ContentManager\Model\Event\LogEntryEventListener());
         
     }
-
+    
+    /**
+     * get controller classes
+     * 
+     * @return array
+     */
+    public function getControllerClasses() {
+        // Return an empty array here to let the component handler know that there
+        // does not exist a backend, nor a frontend controller of this component.
+        return array();
+    }
     public function getControllersAccessableByJson() {
         return array(
             'JsonNode', 'JsonPage', 'JsonContentManager',

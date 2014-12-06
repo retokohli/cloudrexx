@@ -32,7 +32,13 @@ class ComponentController extends
     {
         parent::__construct($systemComponent, $cx);
     }
-
+    
+    public function getControllerClasses() {
+        // Return an empty array here to let the component handler know that there
+        // does not exist a backend, nor a frontend controller of this component.
+        return array('Backend', 'Frontend', 'Default');
+    }
+    
     public function addMediaBrowser(MediaBrowser $mediaBrowser)
     {
         $this->mediaBrowserInstances[] = $mediaBrowser;

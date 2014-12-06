@@ -128,17 +128,16 @@ class BackendController extends
 
             }
             //  instantiate the view specific controller
-            new $controllerName(
-                $this->getSystemComponentController(), $this->cx,
-                $this->template, $this->submenuName
+            $objController = new $controllerName(
+                $this->getSystemComponentController(), $this->cx
             );
         } else {
             // instantiate the default View Controller
-            new \Cx\Core_Modules\MediaBrowser\Controller\DefaultController(
-                $this->getSystemComponentController(), $this->cx,
-                $this->template
+            $objController = new DefaultController(
+                $this->getSystemComponentController(), $this->cx
             );
         }
+        $objController->parsePage($this->template);
 
     }
 

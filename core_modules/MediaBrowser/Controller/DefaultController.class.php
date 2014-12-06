@@ -31,12 +31,20 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
      */
     public function __construct(
         \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController,
-        \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template
+        \Cx\Core\Core\Controller\Cx $cx
     )
     {
         parent::__construct($systemComponentController, $cx);
-        $this->template = $template;
         $this->cx = $cx;
+    }
+    
+    /**
+     * Use this to parse your backend page
+     * 
+     * @param \Cx\Core\Html\Sigma $template 
+     */
+    public function parsePage(\Cx\Core\Html\Sigma $template) {
+        $this->template = $template;
     }
 
 }

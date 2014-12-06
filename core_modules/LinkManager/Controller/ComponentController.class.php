@@ -21,7 +21,7 @@ namespace Cx\Core_Modules\LinkManager\Controller;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     
     public function getControllerClasses() {
-        return array('Backend');
+        return array('Backend', 'CrawlerResult', 'Default', 'Settings');
     }
     
     /**

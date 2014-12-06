@@ -59,16 +59,24 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
      * @param \Cx\Core\Core\Controller\Cx                          $cx                        the cx object
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponentController, $cx);
         
-        $this->template          = $template;
         $this->em                = $this->cx->getDb()->getEntityManager();
         $this->orderRepository   = $this->em->getRepository('Cx\Modules\Order\Model\Entity\Order');
+    }
+    
+    /**
+     * Use this to parse your backend page
+     * 
+     * @param \Cx\Core\Html\Sigma $template 
+     */
+    public function parsePage(\Cx\Core\Html\Sigma $template) {
+        $this->template = $template;
         
         $this->showOrders();
     }
-
+    
     public function showOrders() 
     {
         global $_ARRAYLANG;

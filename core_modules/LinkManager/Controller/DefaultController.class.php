@@ -58,19 +58,25 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
      * @param \Cx\Core\Core\Controller\Cx                          $cx                        the cx object
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) { 
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) { 
         //check the user permission
         \Permission::checkAccess(1030, 'static');
         
         parent::__construct($systemComponentController, $cx);
-        
-        $this->template          = $template;
         $this->em                = $this->cx->getDb()->getEntityManager();
         $this->crawlerRepository = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Crawler');
+    }
+    
+    /**
+     * Use this to parse your backend page
+     * 
+     * @param \Cx\Core\Html\Sigma $template 
+     */
+    public function parsePage(\Cx\Core\Html\Sigma $template) {
+        $this->template = $template;
         
         $this->showCrawlerRuns();
     }
-    
     /**
      * Show all the runs and last runs detail
      * 

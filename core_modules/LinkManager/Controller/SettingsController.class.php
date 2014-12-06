@@ -54,35 +54,23 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller {
      * @param \Cx\Core\Html\Sigma                                  $template                  the template object
      * @param string                                               $submenu                   the submenu name
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template, $submenu = null) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         //check the user permission
         \Permission::checkAccess(1032, 'static');
         
         parent::__construct($systemComponentController, $cx);
-        
-        $this->template = $template;
         $this->em       = $this->cx->getDb()->getEntityManager();
-        
-        $this->handleSubViews($submenu);
     }
     
     /**
-     * Calls subviews functions automatically
-     * Based on the $submenu call
+     * Use this to parse your backend page
      * 
-     * @param string $submenu
+     * @param \Cx\Core\Html\Sigma $template 
      */
-    public function handleSubViews($submenu)
-    {
-        if (!empty($submenu)) {
-            // show{$submenu}
-            $controllerFunction = 'show'.ucfirst($submenu);
-            $this->$controllerFunction();
-            
-        } else {
-            // showDefault view
-            $this->showDefault();
-        }
+    public function parsePage(\Cx\Core\Html\Sigma $template) {
+        $this->template = $template;
+        
+        $this->showDefault();
     }
     
     /**
