@@ -1939,6 +1939,12 @@ p.form-submit {margin-bottom: 0;}
         padding: 0;
         float: left;
     }
+    input[type="text"], input[type="password"], input[type="email"], textarea, select {
+        padding: 12px;
+    }
+    h1, h2, h3, h4, h5, h6, .testimonial-author, .team-member h5 {
+        word-wrap: break-word;
+    }
     #checkout .right {
         padding: 0;
         width: 100%;
