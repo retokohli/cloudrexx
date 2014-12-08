@@ -175,18 +175,28 @@ class ClassLoader {
         // This means that also the customized files of the installer will be
         // located in the folder /customizing. 
         $regex = preg_replace('#([\(\)])#', '\\\\$1', $this->cx->getCodeBaseDocumentRootPath());
-        $file = preg_replace('#'.$regex.'#', '', $file);
+        $fileInCodeBase = preg_replace('#'.$regex.'#', '', $file);
         
         // load class from customizing folder
-        if ($this->customizingPath && file_exists($this->customizingPath.$file)) {
+        if ($this->customizingPath && file_exists($this->customizingPath.$fileInCodeBase)) {
             $isCustomized = true;
-            return $this->customizingPath.$file;
+            return $this->customizingPath.$fileInCodeBase;
         
         // load class from basepath
-        } else if (file_exists($this->basePath.$file)) {
+        } else if (file_exists($this->basePath.$fileInCodeBase)) {
             $isCustomized = false;
-            return $this->basePath.$file;
+            return $this->basePath.$fileInCodeBase;
         }
+
+        $regex = preg_replace('#([\(\)])#', '\\\\$1', $this->cx->getWebsiteThemesPath());
+        $fileInWebsite = preg_replace('#'.$regex.'#', '', $file);
+        
+        // load class from basepath
+        if (file_exists($this->cx->getWebsiteThemesPath().$fileInWebsite)) {
+            $isCustomized = false;
+            return $this->cx->getWebsiteThemesPath().$fileInWebsite;
+        }
+
         return false;
     }
     
