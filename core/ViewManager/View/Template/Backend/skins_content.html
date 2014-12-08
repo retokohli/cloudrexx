@@ -38,7 +38,7 @@
                             if ($J.inArray( $J.trim($J(this).text()), ['module', 'core', 'core_module'] ) === -1) {
                                 editImg = $J('<span/>')
                                             .addClass('theme_action rename')
-                                            .html("<img class='theme_action_img' src='../core/Core/View/Media/icons/edit.gif' />")
+                                            .html("<img title='{TXT_THEME_RENAME}' class='theme_action_img' src='../core/Core/View/Media/icons/edit.gif' />")
                                             .click(function(){
                                                 cx.vm.renameFile($J(this));
                                             });
@@ -46,12 +46,21 @@
 
                             var deleteImg = $J('<span/>')
                                             .addClass('theme_action delete')
-                                            .html("<img class='theme_action_img' src='../core/Core/View/Media/icons/delete.gif' />")
+                                            .html("<img title='{TXT_THEME_REMOVE}' class='theme_action_img' src='../core/Core/View/Media/icons/delete.gif' />")
                                             .click(function() {
                                                 cx.vm.deleteFiles($J(this));
                                             });
                             $J(this).append(editImg);
                             $J(this).append(deleteImg);
+                        }
+                        if ($J(this).hasClass('reset')) {
+                            var resetImg = $J('<span/>')
+                                            .addClass('theme_action reset')
+                                            .html("<img title='{TXT_THEME_RESET}' class='theme_action_img' src='../core/Core/View/Media/icons/reset.png' />")
+                                            .click(function() {
+                                                cx.vm.resetFiles($J(this));
+                                            });
+                            $J(this).append(resetImg);
                         }
                         $J(this).hover(
                             function() {

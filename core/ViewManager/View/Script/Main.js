@@ -25,6 +25,24 @@ cx.ready(function() {
         return;
     };
     
+    cx.vm.resetFiles = function(obj) {
+        $J('#themesPage').val($J(obj.parents('li')).children('a.naming').attr('data-rel'));
+        $J('#isFolder').val($J(obj.parents('li')).children('a.naming').hasClass('folder'));
+
+        msgTxt =   $J(obj.parents('li')).children('a.naming').hasClass('folder')
+                 ? cx.variables.get('confirmResetFolder', "viewmanager/lang")
+                 : cx.variables.get('confirmResetFile', "viewmanager/lang");
+        
+        if (!cx.vm.confirmDelete(msgTxt)) return;
+        
+        cx.vm.themesManipulationAjaxCall(
+                "index.php?cmd=JsonData&object=ViewManager&act=delete",
+                $J('form[name=themesForm]').serialize() +'&reset=1', 
+                cx.vm.callbackDeleteFiles
+        );
+        return;
+    };
+    
     cx.vm.callbackDeleteFiles = function(res) {
         if (res.status) {
             cx.tools.StatusMessage.showMessage(res.message, null,2000);

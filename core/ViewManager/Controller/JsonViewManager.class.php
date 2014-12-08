@@ -342,6 +342,8 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
     {
         global $_ARRAYLANG, $objInit;
         
+        $operation = isset($params['post']['reset']) && !empty($params['post']['reset']) ? 'RESET' : 'DELETE';
+        
         $_ARRAYLANG = $objInit->loadLanguageData('ViewManager');
         if (empty($params['post']['themes']) || empty($params['post']['themesPage'])) {
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS']);
@@ -370,14 +372,14 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         if (\Cx\Lib\FileSystem\FileSystem::exists($currentThemeFolder . $filePath)) {
             if (is_dir($currentThemeFolder . $filePath)) {
                 $status = \Cx\Lib\FileSystem\FileSystem::delete_folder($currentThemeFolder . $filePath,true);
-                $succesMessage = sprintf($_ARRAYLANG['TXT_THEME_FOLDER_DELETE_SUCCESS'], contrexx_input2xhtml($pathStripped));
+                $succesMessage = sprintf($_ARRAYLANG['TXT_THEME_FOLDER_'. $operation .'_SUCCESS'], contrexx_input2xhtml($pathStripped));
             } else {
                 $status = \Cx\Lib\FileSystem\FileSystem::delete_file($currentThemeFolder . $filePath);
-                $succesMessage = sprintf($_ARRAYLANG['TXT_THEME_FILE_DELETE_SUCCESS'], contrexx_input2xhtml($pathStripped));
+                $succesMessage = sprintf($_ARRAYLANG['TXT_THEME_FILE_'. $operation .'_SUCCESS'], contrexx_input2xhtml($pathStripped));
             }
             
             if (!$status) {
-                return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_DELETE_FAILED']);
+                return array('status' => 'error', 'reload' => false, 'message' => $_ARRAYLANG['TXT_THEME_'. $operation .'_FAILED']);
             }
             return array('status' => 'success', 'reload' => true, 'message' =>  $succesMessage);
         }
