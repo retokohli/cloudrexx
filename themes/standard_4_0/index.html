@@ -17,60 +17,96 @@
         <meta property="og:title" content="{METATITLE}" />
         <meta property="og:description" content="{METADESC}" />
         <meta property="og:url" content="http://{DOMAIN_URL}{CURRENT_URL}" />
-        <meta property="og:image" content="{BASE_URL}/themes/highwind/images/og_logo_social_media.jpg" />
+        <meta property="og:image" content="{BASE_URL}/themes/standard_4_0/images/og_logo_social_media.jpg" />
         <meta name="twitter:title" content="{METATITLE}" />
         <meta name="twitter:description" content="{METADESC}" />
-        <meta name="twitter:image" content="{BASE_URL}/themes/highwind/images/logo_social_media.jpg" />
-        <link type="images/x-icon" rel="icon" href="themes/highwind/images/favicon.ico" />
-        <link rel="apple-touch-icon" href="/themes/highwind/images/logo_social_media.jpg" />
+        <meta name="twitter:image" content="{BASE_URL}/themes/standard_4_0/images/logo_social_media.jpg" />
+        <link type="images/x-icon" rel="icon" href="themes/standard_4_0/images/favicon.ico" />
+        <link rel="apple-touch-icon" href="/themes/standard_4_0/images/logo_social_media.jpg" />
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-        <link type="text/css" rel="stylesheet" href="themes/highwind/layout.css" />
-        <link type="text/css" rel="stylesheet" href="themes/highwind/style.css" />
+        <link type="text/css" rel="stylesheet" href="themes/standard_4_0/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/standard_4_0/style.css" />
         {JAVASCRIPT}
         {STYLE_FILE}
         {LOGIN_INCLUDE}
-        <link type="text/css" rel="stylesheet" href="themes/highwind/modules.css" />
-        <link type="text/css" rel="stylesheet" href="themes/highwind/text.css" />
-        <script type="text/javascript" src="themes/highwind/modernizr.js"></script>
-        <script type="text/javascript" src="themes/highwind/jquery.cycle.js"></script>
-        <script type="text/javascript" src="themes/highwind/javascript.js"></script>
+        <link type="text/css" rel="stylesheet" href="themes/standard_4_0/modules.css" />
+        <link type="text/css" rel="stylesheet" href="themes/standard_4_0/text.css" />
+        <script type="text/javascript" src="themes/standard_4_0/modernizr.js"></script>
+        <script type="text/javascript" src="themes/standard_4_0/jquery.cycle.js"></script>
+        <script type="text/javascript" src="themes/standard_4_0/javascript.js"></script>
     </head>
     <body>
         <div class="wrapper">
-            <div class="inner-wrap">
-                <div class="header">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <a class="site-intro" href="javascript:void();">
-                                <img src="themes/highwind/images/man.jpeg">
-                                <h1 class="title">James Koster</h1>
-                                <h2 class="description">WEB DUDE.</h2>
-                            </a>
-
-                            <div class="visible-lg main-nav" id="navigation-wrapper"><div class="highwind-navigation">{NAVBAR_FILE}</div></div>                     
-                            <div class="navbar-header hidden-lg">
-                                <a class="mobile-reg" href="{NODE_ACCESS_SIGNUP}"></a>
-                                <a class="mobile-login" href="{NODE_LOGIN}"></a>
-                                <button class="navbar-toggle btn-navbar">
-                                    <span class="sr-only">Toggle navigation</span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                </button>
-                            </div>
+            <div class="header">
+                <div class="container-fluid">
+                    <div class="row">
+                        <a id="logo" href="{NODE_HOME}"><img src="themes/standard_4_0/images/demo_logo.png" alt="images"/></a>
+                        <div class="visible-lg" id="navigation-wrapper">{NAVBAR_FILE}</div>
+                        <div class="nav-right visible-lg" id="metanavigation">
+                            <ul>
+                                <li class="modal-nav">
+                                    <!-- BEGIN access_logged_out -->
+                                    <button class="open" data-toggle="modal" data-target="#myModal">Login</button>
+                                    <a href="{NODE_ACCESS_SIGNUP}">Registrieren</a>
+                                    <!-- END access_logged_out -->
+                                    <!-- BEGIN access_logged_in -->
+                                    <a href="{NODE_ACCESS_SETTINGS_PROFILE}">{ACCESS_USER_USERNAME}</a>
+                                    <a href="{LOGOUT_URL}">Logout</a>
+                                    <!-- END access_logged_in -->
+                                </li>
+                                <!--<li></li>-->
+                                <li>
+                                    <form id="search-form" action="{NODE_SEARCH}" method="get">
+                                        <input id="search-input" type="text" name="term" value=""  />
+                                        <input type="submit" id="search-icon" value=""/>
+                                    </form>
+                                </li>
+                                <li id="select-language">{LANGUAGE_NAVBAR_SHORT}</li>
+                            </ul>
+                        </div>
+                        <div class="navbar-header hidden-lg">
+                            <a class="mobile-reg" href="{NODE_ACCESS_SIGNUP}"></a>
+                            <a class="mobile-login" href="{NODE_LOGIN}"></a>
+                            <button class="navbar-toggle btn-navbar">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
                         </div>
                     </div>
                 </div>
-                <section id="content-wrapper">
-                    {CONTENT_FILE}
-                </section>
-                <footer id="footer" class="inner">
-                   
-                </footer>
-                <div class="mobile-nav">
-                    <ul id="lang-bar"><li>{LANGUAGE_NAVBAR_SHORT}</li></ul>
-                    {NAVBAR2_FILE}
+            </div>
+            <section id="content-wrapper">
+                {CONTENT_FILE}
+            </section>
+            <footer id="footer" class="inner">
+                <div class="inner container">
+                    <div id="footer-bottom" class="row">
+                        <div class="footer-left center-block">&copy; {DATE_YEAR} <a href="http://www.contrexx.com" target="_blank">Contrexx &reg;</a> Standard Theme</div>
+                        <div class="footer-right center-block">
+                            <ul class="horizontal-list">
+                                <li><a href="{NODE_CONTACT_10}">Kontakt</a></li>
+                                <li><a href="{NODE_PRIVACY}">Rechtliche Hinweise</a></li>
+                                <li><a href="{NODE_SITEMAP}">Inhaltsverzeichnis</a></li>
+                                <li><a href="{NODE_IMPRINT}">Impressum</a></li>
+                                <li class="last">{LOGIN_URL}</li>
+                            </ul>
+                        </div>
+                        <div class="social-foot center-block">
+                            <ul class="horizontal-list no-bg">
+                                <li><a target="_blank" href="http://twitter.com/contrexx"><i class="fa fa-twitter"></i></a></li>
+                                <li><a target="_blank" href="http://www.facebook.com/contrexxsoftware"><i class="fa fa-facebook"></i></a></li>
+                                <li><a target="_blank" href="https://plus.google.com/101022530429663496888"><i class="fa fa-google-plus"></i></a></li>
+                                <li class="last"><a target="_blank" href="/feed/news_de.xml"><i class="fa fa-rss"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
+            </footer>
+            <div class="mobile-nav">
+                <ul id="lang-bar"><li>{LANGUAGE_NAVBAR_SHORT}</li></ul>
+                {NAVBAR2_FILE}
             </div>
         </div>
 

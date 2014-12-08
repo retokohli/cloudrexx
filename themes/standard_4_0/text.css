@@ -62,15 +62,18 @@ table {
     src: url('fonts/ubuntu.ttf') format('truetype');
 }
 body {
-    color: #7a7a7a;
+    color: #505050;
     font-family: Arial, Helvetica;
-    font-size: 18px;
-    line-height: 28px;
-    background: #eff4f3;
+    font-size: 14px;
+    line-height: 1.5em;
+    background: #f7f7f7;
     padding-right: 0 !important;
 }
+body section {
+    margin-top: 63px;
+}
 body a {
-    color: #67bfb6;
+    color: #066196;
     text-decoration: none;
     outline: 0 none;
 }
@@ -80,12 +83,12 @@ body a:hover, body a:focus {
     outline: 0 none;
 }
 body p {
-    margin: 0 0 28px 0;
+    margin: 0 0 0px;
     padding: 0 0 10px 0;
 }
 b,
 strong {
-    font-weight: 600;
+    font-weight: bold;
 }
 ul.horizontal-list li {
     float: left;
@@ -101,7 +104,7 @@ ul.horizontal-list li.last {
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     padding: 10px 0 10px 0;
     line-height: 1.4;
-    color: #595959;
+    color: #151515;
     font-family: 'Ubuntu';
     font-weight: normal;
 }
@@ -368,11 +371,4 @@ modal-footer {
 }
 .carousel-indicators {
     bottom: 0;
-}
-
-/* new */
-
-img {
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
 }
