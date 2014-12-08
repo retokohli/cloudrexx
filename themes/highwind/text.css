@@ -25,7 +25,7 @@ footer, header, hgroup, menu, nav, section {
     display: block;
 }
 body {
-    line-height: 1;
+    line-height: 1.777;
 }
 body ol,body ul {
     list-style: none;
@@ -53,21 +53,19 @@ table {
     border-spacing: 0;
 }
 /* End CSS Reset */
-@font-face {
-    font-family: 'Ubuntu';
-    src: url('fonts/ubuntu.eot'); /* here you go, IE */
-}
-@font-face {
-    font-family: 'Ubuntu';
-    src: url('fonts/ubuntu.ttf') format('truetype');
+
+html {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 400;
 }
 body {
     color: #7a7a7a;
-    font-family: Arial, Helvetica;
-    font-size: 18px;
-    line-height: 28px;
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 400;
+    line-height: 32px;
     background: #eff4f3;
     padding-right: 0 !important;
+    font-size: 18px;
 }
 body a {
     color: #67bfb6;
@@ -75,13 +73,13 @@ body a {
     outline: 0 none;
 }
 body a:hover, body a:focus {
-    color: #323F55;
-    text-decoration: none;
+    color: #67bfb6;
+    text-decoration: underline;
     outline: 0 none;
 }
 body p {
     margin: 0 0 28px 0;
-    padding: 0 0 10px 0;
+   
 }
 b,
 strong {
@@ -99,10 +97,10 @@ ul.horizontal-list li.last {
     background: none !important;
 }
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-    padding: 10px 0 10px 0;
+    padding: 0;
     line-height: 1.4;
-    color: #595959;
-    font-family: 'Ubuntu';
+    color: #595959;    
+    margin-bottom: 16px;
     font-weight: normal;
 }
 h1 {
@@ -112,10 +110,11 @@ h1.first {
     padding-top: 0;
 }
 h2 {
-    font-size: 22px;
+    font-size: 27px;
 }
 h3 {
-    font-size: 18px;
+    font-size: 24px;
+    font-weight: 600;
 }
 h4 {
     font-size: 17px;
@@ -253,7 +252,6 @@ input[disabled=disabled]:hover {
 legend {
     display: none;
 }
-h1, .h1, h2, .h2, h3, .h3 {margin-top: 0;margin-bottom: 0;}
 fieldset .radio input[type="radio"],fieldset .radio-inline input[type="radio"],fieldset .checkbox input[type="checkbox"],fieldset .checkbox-inline input[type="checkbox"]{margin-left: -17px;}
 fieldset .radio label,fieldset .checkbox label {
     padding-left: 17px;
@@ -288,14 +286,7 @@ h1,
 .h1 {
     font-size: 34px;
 }
-h2,
-.h2 {
-    font-size: 22px;
-}
-h3,
-.h3 {
-    font-size: 18px;
-}
+
 h4,
 .h4 {
     font-size: 17px;
@@ -375,4 +366,10 @@ modal-footer {
 img {
     border-radius: 3px;
     -webkit-border-radius: 3px;
+}
+hr {
+    background: #7a7a7a;
+    height: 1px;
+    border: 0;
+    opacity: 0.2;
 }

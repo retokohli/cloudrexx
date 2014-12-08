@@ -87,13 +87,7 @@
         /* Metanavigation End */
         /* Navigation Start */
         $('#navigation-wrapper .navigation > li').hover(function() {
-            $(this).children('ul').animate({
-                height: 'toggle',
-                opacity: 'toggle'
-            }, 150);
-        }, function() {
-            $(this).children('ul').hide();
-        });
+            
         $('.navigation li.level-1:first').addClass('first');
         $('.navigation li.level-1:last').addClass('last');
         $('.navigation li.level-1').children('ul').each(function() {
@@ -136,6 +130,6 @@
             return false;
         });
         // Add .parent class to appropriate menu items
-        jQuery( 'ul.sub-menu' ).parent().addClass( 'parent' );
+        jQuery( 'ul.menu' ).parent().addClass( 'parent' );
     });
 })(jQuery);
