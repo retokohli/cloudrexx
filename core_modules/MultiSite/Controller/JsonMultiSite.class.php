@@ -1413,8 +1413,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
         }
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
-\DBG::msg('JsonMultiSite: execut directly on manager');
+        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+            \DBG::msg('JsonMultiSite: execut directly on manager');
             $config = \Env::get('config');
             $params['auth'] = json_encode(array('sender' => $config['domainUrl']));
             try {
