@@ -1261,7 +1261,12 @@ CODE;
                         $this->themeRepository->loadComponentData($theme);
                         if (!$theme->isComponent()) {
                             // create a new one if no component.yml exists
-                            $this->themeRepository->convertThemeToComponent($theme);
+                            try {
+                                $this->themeRepository->convertThemeToComponent($theme);
+                            } catch (\Exception $ex) {
+                                \DBG::log($ex->getMessage());
+                                \DBG::log($theme->getThemesname() .' : Unable to convert theme to component');
+                            }
                             $this->themeRepository->loadComponentData($theme);
                         }
                         // change the theme name in component data
@@ -1607,7 +1612,10 @@ CODE;
         }
         
         if (!empty($automaticallyModifiedDependencySettings)) {
-            $this->strErrMessage = sprintf($_ARRAYLANG['TXT_THEME_LIBRARY_AUTOMATICALLY_ADJUSTED'], implode(', ', $automaticallyModifiedDependencySettings));
+            \Message::add(
+                sprintf($_ARRAYLANG['TXT_THEME_LIBRARY_AUTOMATICALLY_ADJUSTED'], implode(', ', $automaticallyModifiedDependencySettings)),
+                \Message::CLASS_ERROR
+            );
         }
         
         // save component.yaml file
@@ -1615,7 +1623,10 @@ CODE;
         try {
             $this->themeRepository->saveComponentData($theme);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] . ': ' . \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername() . '/component.yml';
+            \Message::add(
+                $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] . ': ' . '/' .$theme->getFoldername() . '/component.yml',
+                \Message::CLASS_ERROR
+            );
         }
     }
     
@@ -1732,7 +1743,6 @@ CODE;
         
         $tdm = '';
         foreach ($themes as $item) {
-            $selected = "";
             $default = "";
             $mobilestyle = "";
             $printstyle = "";
@@ -1752,8 +1762,8 @@ CODE;
             }
             if ($item->isDefault(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP)){
                 $appstyle = "(".$_ARRAYLANG['TXT_APP_VIEW'].")";
-            }
-            if ($selectedTheme == $item) $selected = "selected";
+            }            
+            $selected = ($selectedTheme && $selectedTheme->getId() == $item->getId()) ? $selected = "selected" : '';
             $tdm .='<option id="'.$item->getId()."\" value='".$item->getFoldername()."' $selected>".  contrexx_raw2xhtml($item->getThemesname())." ".$default.$mobilestyle.$printstyle.$pdfstyle.$appstyle."</option>\n";
         }
         return $tdm;
@@ -2235,15 +2245,15 @@ CODE;
         }
 
         //copy "not available" preview.gif as default preview image
-        $previewImage = $this->path . $theme->getFoldername() . '/images/preview.gif';
+        $previewImage = $this->path . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
         if (!file_exists($previewImage)) {
             try {
-                $objFile = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Core/View/Media/preview.gif');
+                $objFile = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseDocumentRootPath() . \Cx\Core\View\Model\Entity\Theme::THEME_DEFAULT_PREVIEW_FILE);
                 $objFile->copy($previewImage);
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
                 \Message::add(
-                    sprintf($_ARRAYLANG['TXT_UNABLE_TO_CREATE_FILE'], contrexx_raw2xhtml($theme->getFoldername() . '/images/preview.gif')),
+                    sprintf($_ARRAYLANG['TXT_UNABLE_TO_CREATE_FILE'], contrexx_raw2xhtml($theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE)),
                     \Message::CLASS_ERROR    
                 ); 
                 return false;
@@ -2270,8 +2280,16 @@ CODE;
         }
         
         // write component.yml file
-        // this line will create a default component.yml file        
-        $this->themeRepository->convertThemeToComponent($theme);
+        // this line will create a default component.yml file    
+        try {
+            $this->themeRepository->convertThemeToComponent($theme);
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            \Message::add(
+                $_ARRAYLANG['TXT_UNABLE_TO_CONVERT_THEME_TO_COMPONENT'],
+                \Message::CLASS_ERROR
+            );
+        }
 
         return true;
     }

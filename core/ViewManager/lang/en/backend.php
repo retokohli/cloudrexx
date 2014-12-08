@@ -200,3 +200,4 @@ $_ARRAYLANG['TXT_VIEWMANAGER_THEME_SELECTION_TXT'] = 'Select the source from whe
 $_ARRAYLANG['TXT_VIEWMANAGER_THEME'] = 'Theme';
 $_ARRAYLANG['TXT_VIEWMANAGER_SOURCE'] = 'Source';
 $_ARRAYLANG['TXT_THEME_ERROR_IN_INSERT_THEME'] = 'Could not save the theme in database.';
+$_ARRAYLANG['TXT_UNABLE_TO_CONVERT_THEME_TO_COMPONENT'] = 'Unable to convert theme to component.Please make sure the theme folder has read and write permission.';
