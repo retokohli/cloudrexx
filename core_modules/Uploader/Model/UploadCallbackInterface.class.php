@@ -23,7 +23,6 @@ interface UploadCallbackInterface {
      * @param $data String Data given to setData() when creating the uploader.
      * @param $uploadId integer Per-session unique id for the current upload.
      * @param $fileInfos array('originalFileNames' => array( 'theCurrentAndCleanedFilename.txt' => 'raw!Source#Filename.txt' ) )
-     * @param $response null This is only here because of legacy reasons
      *
      * @return mixed The return value can be an array as shown in the example or null.
      *               When returning an array, all files left in the temporary directory are moved accordingly.
@@ -31,4 +30,4 @@ interface UploadCallbackInterface {
      */
     function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos);
 
-} 
+}

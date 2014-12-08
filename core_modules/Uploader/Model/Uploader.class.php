@@ -114,4 +114,20 @@ class Uploader extends EntityBase
         );
     }
 
+    public function setCallback($string)
+    {
+        $this->setOptions(array('data-on-file-uploaded' => $string));
+    }
+
+    public function setData($data)
+    {
+        if (!isset($_SESSION['uploader']['handlers'])) {
+            $_SESSION['uploader']['handlers'] = array();
+        }
+        if (!isset($_SESSION['uploader']['handlers'][$this->id])) {
+            $_SESSION['uploader']['handlers'][$this->id] = array();
+        }
+        $_SESSION['uploader']['handlers'][$this->id]['data'] = $data;
+    }
+
 } 
