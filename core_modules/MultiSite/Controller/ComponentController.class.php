@@ -843,6 +843,8 @@ throw new MultiSiteException('Refactor this method!');
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteTemplate', $websiteTemplateEventListener);
     }
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
+        global $_CONFIG;
+
         // Abort in case the request has been made to a unsupported cx-mode
         if (!in_array($cx->getMode(), array($cx::MODE_FRONTEND, $cx::MODE_BACKEND, $cx::MODE_COMMAND, $cx::MODE_MINIMAL))) {
             return;
@@ -868,16 +870,20 @@ throw new MultiSiteException('Refactor this method!');
                 break;
 
             case self::MODE_WEBSITE:
-                if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                // handle MultiSite-API requests
+                if (   $cx->getMode() == $cx::MODE_BACKEND
+                    && $_REQUEST['cmd'] == 'JsonData'
+                ) {
+                    // Set domainUrl to requeted website's domain alias.
+                    // This is required in case optino 'forceDomainUrl' is set.
+                    $_CONFIG['domainUrl'] = $_SERVER['HTTP_HOST'];
+
+                    // MultiSite-API requests shall always be by-passed
                     break;
                 }
 
-                // This is a workaround for let MultiSite-API requests through
-                // in case the Website is in setup-mode
-                if (   $cx->getMode() == $cx::MODE_BACKEND
-                    && $_REQUEST['cmd'] == 'JsonData'
-                    && \Cx\Core\Setting\Controller\Setting::getValue('websiteState') == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_SETUP
-                ) {
+                // deploy website when in online-state and request is a regular http request
+                if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
                     break;
                 }
 
