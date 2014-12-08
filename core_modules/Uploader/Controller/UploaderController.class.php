@@ -336,7 +336,10 @@ class UploaderController {
         $special_chars = array("?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}");
         $filename = str_replace($special_chars, '', $filename);
         $filename = preg_replace('/[\s-]+/', '-', $filename);
-        $filename = trim($filename, '.-_');
+        $filename = trim($filename, '.-_ ');
+        if ((boolean) preg_match("/^[a-z]+$/", $filename)) {
+            $filename = 'File_'.date('U').'.'.$filename;
+        }
         return $filename;
     }
 
