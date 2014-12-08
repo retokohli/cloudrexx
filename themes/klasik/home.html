@@ -3,6 +3,101 @@
     <div class="container">
         <div class="row">
             <img src="/themes/klasik/images/bgslider.jpg" alt="images" />
+            <div class="entry-content">
+                <hr>
+                <h1>Heading 1</h1>
+                <h2>Heading 2</h2>
+                <h3>Heading 3</h3>
+                <h4>Heading 4</h4>
+                <h5>Heading 5</h5>
+                <h6>Heading 6</h6>
+                <p><small><a href="#wrapper">[top]</a></small></p>
+                <hr>
+                <h2 id="paragraph">Paragraph</h2>
+                <p>Lorem ipsum dolor sit amet, <a href="#" title="test link">test link</a> adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.</p>
+                <p>Lorem ipsum dolor sit amet, <em>emphasis</em> consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.</p>
+                <p><small><a href="#wrapper">[top]</a></small></p>
+                <hr>
+                <h2 id="list_types">List Types</h2>
+                <h3>Definition List</h3>
+                <dl>
+                    <dt>Definition List Title</dt>
+                    <dd>This is a definition list division.</dd>
+                </dl>
+                <h3>Ordered List</h3>
+                <ol>
+                    <li>List Item 1</li>
+                    <li>List Item 2</li>
+                    <li>List Item 3</li>
+                </ol>
+                <h3>Unordered List</h3>
+                <ul>
+                    <li>List Item 1</li>
+                    <li>List Item 2</li>
+                    <li>List Item 3</li>
+                </ul>
+                <p><small><a href="#wrapper">[top]</a></small></p>
+                <hr>
+
+                <h2 id="form_elements">Forms</h2>
+                <legend>Legend</legend>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus.</p>
+                <form>
+                    <h2>Form Element</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui.</p>
+                    <fieldset id="contactFrame">
+                        <input type="hidden" name="csrf" value="NzEwNDU5Njc3">
+                        <legend>test</legend>
+                        <div class="contact row form-group">
+                            <label>test</label>
+                            <input class="contactFormClass_text" type="text" value="">
+                        </div>
+                        <div class="contact row form-group">
+                            <label>test</label>
+                            <textarea class="contactFormClass_textarea" rows="5" cols="20"></textarea>
+                        </div>
+                        <div class="contact row form-group">
+                            <label>test</label>
+                            <select class="contactFormClass_select">
+
+                                <option value="test">test</option>
+
+                                <option value=" test"> test</option>
+
+                            </select>
+                        </div>
+                        <div class="contact row form-group">
+                            <label>Radio Buttons:</label>
+                            <div class="contactFormGroup">
+                                <div class="radio"><label class="noCaption"><input class="contactFormClass_radio" type="radio" name="contactFormField_92" id="contactFormField_0_92" value="test">Radio 1</label></div>
+                                <div class="radio"><label class="noCaption" for="contactFormField_1_92"><input class="contactFormClass_radio" type="radio" value=" test"> Radio 2</label></div>
+                                <div class="radio"><label class="noCaption" for="contactFormField_2_92"><input class="contactFormClass_radio" type="radio" value=" test"> Radio 3</label></div>
+                            </div>
+                        </div>
+                        <div class="contact row form-group">
+                            <label>Checkboxes:</label>
+                            <div class="contactFormGroup">
+                                <div class="checkbox"><label class="noCaption"><input type="checkbox" class="contactFormClass_checkboxGroup" value="test">Radio 1</label></div>
+                                <div class="checkbox"><label class="noCaption"><input type="checkbox" class="contactFormClass_checkboxGroup" value=" test"> Radio 2</label></div>
+                                <div class="checkbox"><label class="noCaption"><input type="checkbox" class="contactFormClass_checkboxGroup" value=" test"> Radio 3</label></div>
+                            </div>
+                        </div>
+                        <div class="contact row form-group">
+                            <label>Password:</label>
+                            <input class="contactFormClass_password" type="password"  value="">
+                        </div>
+                        <div class="contact row form-group">
+                            <label>File upload:</label>
+                            <div class="contactFormUpload"><div class="contactFormClass_uploadWidget" ></div>
+                                <input class="contactFormClass_file" type="file" name="contactFormField_95"></div>
+                        </div>
+                        <div class="contact row form-group">
+                            <input class="contactFormClass_button btn btn-default" type="submit" name="submitContactForm" value="Submit">
+                            <input class="contactFormClass_button btn btn-default" type="reset" value="Clear">
+                            <input type="hidden" name="unique_id" value="7">
+                        </div>
+                    </fieldset>
+            </div>
         </div>
     </div>
 </div>
