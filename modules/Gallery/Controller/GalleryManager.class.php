@@ -10,6 +10,9 @@
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\Gallery\Controller;
+use Cx\Core_Modules\Uploader\Model\Uploader;
+use Cx\Lib\FileSystem\FileSystem;
+
 /**
  * Gallery
  *
@@ -56,6 +59,8 @@ class GalleryManager extends GalleryLibrary
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Gallery/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
+        \JS::registerCSS( substr(ASCMS_MODULE_FOLDER.'/Gallery/View/Style/main.css', 1));
 
         $this->intLangId=$objInit->userFrontendLangId;
 
@@ -2190,7 +2195,7 @@ class GalleryManager extends GalleryLibrary
      */
     function showUploadForm()
     {
-        global $objDatabase,$_ARRAYLANG;
+        global $objDatabase,$_ARRAYLANG, $_CORELANG;
 
         /**
          * Uploader button handling
@@ -2200,16 +2205,24 @@ class GalleryManager extends GalleryLibrary
             'path' => ASCMS_GALLERY_PATH,
             'webPath' => ASCMS_GALLERY_WEB_PATH
         );
-        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
-        $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Gallery/Controller/GalleryManager.class.php', '\Cx\Modules\Gallery\Controller\GalleryManager', 'uploadFinished'));
-        $comboUp->setData($paths);
+
+        $uploader = new Uploader();
+//        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
+        $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Gallery/Controller/GalleryManager.class.php', '\Cx\Modules\Gallery\Controller\GalleryManager', 'uploadFinished'));
+        $uploader->setData($paths);
+        $uploader->setOptions(array(
+               'class' => 'uploadbutton'
+            ));
+
+        $uploader->setCallback('finishedGalleryUpload');
         //set instance name to combo_uploader so we are able to catch the instance with js
-        $comboUp->setJsInstanceName('exposed_combo_uploader');
+//        $comboUp->setJsInstanceName('exposed_combo_uploader');
         $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Gallery&act=validate_form');
 
         $this->_objTpl->loadTemplateFile('module_gallery_upload_images.html', true, true);
         $this->_objTpl->setVariable(array(
-              'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
+//              'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
+                'COMBO_UPLOADER_CODE' => $uploader->getXHtml($_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM_SUBMIT']),
 			  'REDIRECT_URL'		=> $redirectUrl
         ));
         //end of uploader button handling
@@ -2229,10 +2242,16 @@ class GalleryManager extends GalleryLibrary
         }
 
         $this->_objTpl->setVariable(array(
-            'TXT_TITLE'                 =>    $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'],
-            'TXT_IMAGENUMBER'           =>    $_ARRAYLANG['TXT_GALLERY_UPLOAD_FORM_IMAGE_NUMBER'],
-            'TXT_ENABLED_IMAGE_TYPE'	=>    $_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'].' '.$strEnabledTypes.'. '.$_ARRAYLANG['TXT_GALLERY_NO_UPLOAD'],
-            'TXT_BUTTON_SUBMIT'         =>    $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM_SUBMIT']
+                'TXT_TITLE' => $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'],
+                'TXT_GALLERY_UPLOAD_CONFIRM_IMAGES' => $_ARRAYLANG['TXT_GALLERY_UPLOAD_CONFIRM_IMAGES'],
+                'TXT_GALLERY_UPLOAD_IMAGES' => $_ARRAYLANG['TXT_GALLERY_UPLOAD_IMAGES'],
+                'TXT_GALLERY_UPLOAD_HELP' => $_ARRAYLANG['TXT_GALLERY_UPLOAD_HELP'],
+                'TXT_IMAGENUMBER' => $_ARRAYLANG['TXT_GALLERY_UPLOAD_FORM_IMAGE_NUMBER'],
+                'TXT_ENABLED_IMAGE_TYPE' =>
+                    $_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'] . ' '
+                    . $strEnabledTypes . '. '
+                    . $_ARRAYLANG['TXT_GALLERY_NO_UPLOAD'],
+                'TXT_BUTTON_SUBMIT' => $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM_SUBMIT']
         ));
     }
 
@@ -2267,60 +2286,52 @@ class GalleryManager extends GalleryLibrary
 
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
-        $h = opendir($tempPath);
-        if ($h) {
-            $uploadedImagesCount = 0;
-            while(false != ($file = readdir($h))) {
-                $info = pathinfo($file);
 
-                //skip . and ..
-                if($file == '.' || $file == '..') { continue; }
+        $file = str_replace($tempPath.'/', '',$fileInfos['path']);
 
-                //delete unwanted files
-                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-                    $response->addMessage(\Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_UNALLOWED_EXTENSION'], $file);
-                   @unlink($tempPath.'/'.$file);
-                    continue;
-                }
 
-                //width of the image is wider than the allowed value. Show Error.
-                $arrImageSize = getimagesize($tempPath.'/'.$file);
-                if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
-                    $objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
-                    $response->addMessage(\Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_RESOLUTION_TOO_HIGH'], $file);
-                    @unlink($tempPath.'/'.$file);
-                    continue;
-                }
+        $info = pathinfo($file);
 
-                //check if file needs to be renamed
-                $newName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
-                if (file_exists($path.'/'.$newName)) {
-                    $info     = pathinfo($newName);
-                    $exte     = $info['extension'];
-                    $exte     = (!empty($exte)) ? '.'.$exte : '';
-                    $part1    = $info['filename'];
-                    if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                        $newName = $part1.'_'.time().$exte;
-                    }
-                }
+        //delete unwanted files
+        if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
+                 @unlink($tempPath.'/'.$file);
+        }
 
-                //if the name has changed, the file needs to be renamed afterwards
-                if ($newName != $file) {
-                    $arrFilesToRename[$file] = $newName;
-                    array_push($arrFiles, $newName);
-                }
+        //width of the image is wider than the allowed value. Show Error.
+        $arrImageSize = getimagesize($tempPath.'/'.$file);
+        if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
+            $objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
+             @unlink($tempPath.'/'.$file);
 
-                //create entry in the database for the uploaded image
-                self::insertImage($objGallery, $newName, $newName);
+        }
 
-                $uploadedImagesCount++;
+        //check if file needs to be renamed
+        $newName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
+        if (file_exists($path.'/'.$newName)) {
+            $info     = pathinfo($newName);
+            $exte     = $info['extension'];
+            $exte     = (!empty($exte)) ? '.'.$exte : '';
+            $part1    = $info['filename'];
+            if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+                $newName = $part1.'_'.time().$exte;
             }
         }
+
+        //if the name has changed, the file needs to be renamed afterwards
+        if ($newName != $file) {
+            $arrFilesToRename[$file] = $newName;
+            array_push($arrFiles, $newName);
+        }
+
+        //create entry in the database for the uploaded image
+        self::insertImage($objGallery, $newName, $newName);
 
         //rename files where needed
         foreach($arrFilesToRename as $oldName => $newName){
             rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
         }
+
+        FileSystem::move($tempPath.'/'.$newName, $path.'/'.$newName, true);
 
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
