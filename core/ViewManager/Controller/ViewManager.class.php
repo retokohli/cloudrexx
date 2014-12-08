@@ -468,6 +468,8 @@ CODE;
         $cxjs->setVariable(array(
             'confirmDeleteFile'     => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FILE'], 
             'confirmDeleteFolder'   => $_ARRAYLANG['TXT_THEME_CONFIRM_DELETE_FOLDER'],
+            'confirmResetFolder'    => $_ARRAYLANG['TXT_THEME_CONFIRM_RESET_FOLDER'],
+            'confirmResetFile'      => $_ARRAYLANG['TXT_THEME_CONFIRM_RESET_FILE'], 
             'fileName'              => $_ARRAYLANG['TXT_THEME_FILE_NAME'],
             'txtName'               => $_ARRAYLANG['TXT_NAME'],                                 
             'newFileOperation'      => $_ARRAYLANG['TXT_THEME_CREATE_NEW_FILE'],
@@ -513,7 +515,10 @@ CODE;
             'TXT_THEMES_LIBRARIES'            => $_ARRAYLANG['TXT_THEMES_LIBRARIES'],
             'TXT_THEME_TEMPLATE'              => $_ARRAYLANG['TXT_THEME_TEMPLATE'],
             'TXT_THEME_EDIT_FILE'             => $_ARRAYLANG['TXT_THEME_EDIT_FILE'],
-            'TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT' => $_ARRAYLANG['TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT'],            
+            'TXT_THEME_RENAME'                => $_ARRAYLANG['TXT_THEME_RENAME'],
+            'TXT_THEME_REMOVE'                => $_ARRAYLANG['TXT_THEME_REMOVE'],
+            'TXT_THEME_RESET'                 => $_ARRAYLANG['TXT_THEME_RESET'],
+            'TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT' => $_ARRAYLANG['TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT'],    
         ));
         
     }
@@ -1881,6 +1886,7 @@ CODE;
         $virtualFolder = array('View', 'Template', 'Frontend');
         foreach ($folder as $folderName => $fileName) {
             $permissionClass = 'protected';
+            $resetClass      = '';
             $relativePath    = $path . '/' . (is_array($fileName) ? $folderName : $fileName);
             
             $isComponentFile = false;
@@ -1895,10 +1901,16 @@ CODE;
             $filePath = $this->websiteThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath);            
             if (file_exists($filePath)) {
                 $permissionClass = '';
+                if (
+                       ($this->websiteThemesFilePath != $this->codeBaseThemesFilePath)
+                    && file_exists($this->codeBaseThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath))
+                ) {
+                    $resetClass = 'reset';
+                }
             } else {
                 $filePath = $this->codeBaseThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath);
             }
-            
+                        
             if (is_array($fileName)) {
                 
                 if (   $block == 'applicationTheme'
@@ -1910,7 +1922,7 @@ CODE;
                     $icon         = "<img height='16' width='16' alt='icon' src='" . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . "Folder.png' class='icon'>";
                     $activeFolder = preg_match('#^'. $relativePath .'# i', $themesPage) ? "id='activeFolder'" : '';
 
-                    $result .= '<li><a  href="javascript:void(0);"' .$activeFolder. ' data-rel="'. $relativePath .'" class="folder naming '. $permissionClass .'">' . $icon . $folderName . '</a>';
+                    $result .= '<li><a  href="javascript:void(0);"' .$activeFolder. ' data-rel="'. $relativePath .'" class="folder naming '. $permissionClass .' '. $resetClass .'">' . $icon . $folderName . '</a>';
                 }
                 $result .= $this->getUlLi($fileName, $path .(!in_array($folderName, $virtualFolder) ? '/'. $folderName : ''), $block, $themesPage);
                 $result .= '</li>';
@@ -1925,7 +1937,7 @@ CODE;
                 $icon    = "<img height='16' width='16' alt='icon' src='" . $iconSrc . "' class='icon'>";
                 $activeFile = ($themesPage == $relativePath) ? "id = 'activeFile'" : '';
                 
-                $result .= "<li><a  href= 'javascript:void(0);' class='loadThemesPage naming $permissionClass' $activeFile data-rel='" . $relativePath . "'>" . $icon . $fileName . "</a></li>";
+                $result .= "<li><a  href= 'javascript:void(0);' class='loadThemesPage naming $permissionClass $resetClass' $activeFile data-rel='" . $relativePath . "'>" . $icon . $fileName . "</a></li>";
             }
         }
         $result .= '</ul>';
