@@ -15,6 +15,7 @@ use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use \Cx\Core\Json\JsonAdapter;
+use Cx\Core\Model\RecursiveArrayAccess;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
 use Cx\Core_Modules\MediaBrowser\Model\MoveFileException;
 use Cx\Core_Modules\MediaBrowser\Model\RemoveDirectoryException;
@@ -83,7 +84,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             )
         ) {
             $id = intval($params['get']['id']);
-            $path = $_SESSION->getTempPath() . '/';
+            $path = $_SESSION->getTempPath() . '/'.$id.'/';
         } elseif (isset($params['post']['path'])) {
             $path_part = explode("/", $params['post']['path'], 2);
             $mediaBrowserConfiguration
@@ -100,11 +101,11 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             );
         }
 
-
         $uploader = UploaderController::handleRequest(
             array(
                 'allow_extensions' => 'jpg,jpeg,png,pdf,gif,mkv,zip,',
-                'target_dir' => $path
+                'target_dir' => $path,
+                'tmp_dir' => $path
             )
         );
 
@@ -116,7 +117,18 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
 
         if (isset($_SESSION['uploader']['handlers'][$id]['callback'])) {
 
+            /**
+             * @var $callback RecursiveArrayAccess
+             * @var $data RecursiveArrayAccess
+             */
             $callback = $_SESSION['uploader']['handlers'][$id]['callback'];
+            $data = $_SESSION['uploader']['handlers'][$id]['data'];
+
+            $callback = $callback->toArray();
+            $data = $data->toArray();
+
+            $filePath = dirname( $uploader['path']);
+
             if (!is_array($callback)) {
                 $class = new \ReflectionClass($callback);
                 if ($class->implementsInterface(
@@ -128,26 +140,28 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                      */
                     $callbackInstance = $class->newInstance($this->cx);
                     $fileLocation = $callbackInstance->uploadFinished(
-                        $uploader['path'], str_replace(
+                        $filePath, str_replace(
                             $this->cx->getWebsiteTempPath(), $this->cx->getWebsiteTempWebPath(),
-                            $uploader['path']
-                        ), "",
+                            $filePath
+                        ), $data,
                         $id,
                         $uploader
                     );
                 }
             } else {
                 $fileLocation = call_user_func(
-                    array($callback[1], $callback[2]), $uploader['path'],
+                    array($callback[1], $callback[2]), $filePath,
                     str_replace(
-                        $this->cx->getWebsiteTempPath(), $this->cx->getWebsiteTempWebPath(), $uploader['path']
-                    ), "", $id, $uploader, null
+                        $this->cx->getWebsiteTempPath(), $this->cx->getWebsiteTempWebPath(), $filePath
+                    ), $data, $id, $uploader, null
                 );
             }
             \Cx\Lib\FileSystem\FileSystem::move(
                 $uploader['path'], $fileLocation[0] . '/' . $uploader['name'],
                 true
             );
+            \Cx\Lib\FileSystem\FileSystem::delete_file($uploader['path']);
+
             $fileLocation = array(
                 $fileLocation[0] . '/' . $uploader['name'],
                 $fileLocation[1] . '/' . $uploader['name']
