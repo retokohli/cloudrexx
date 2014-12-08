@@ -1,4 +1,5 @@
 <?php
+header("content-type: application/javascript");
 if (strpos(dirname(__FILE__), 'customizing') === false) {
     $contrexx_path = dirname(dirname(dirname(__FILE__)));
 } else {
@@ -27,6 +28,7 @@ $defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ck
 
 
 ?>
+CKEDITOR.scriptLoader.load( '/core_modules/MediaBrowser/View/Script/ckeditor-mediabrowser.js' );
 CKEDITOR.editorConfig = function( config )
 {
     config.skin = 'moono';
@@ -51,10 +53,6 @@ CKEDITOR.editorConfig = function( config )
     config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
-
-    config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser; ?>');
-    config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
-    config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
     config.baseHref = 'http://<?php echo $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET; ?>/';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
