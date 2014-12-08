@@ -5,6 +5,7 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
+ * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_view
  */
@@ -16,6 +17,7 @@ namespace Cx\Core\View\Model\Repository;
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
+ * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_view
  */
@@ -103,7 +105,7 @@ class ThemeRepository
      */
     public function findById($id) {
         $result = $this->db->SelectLimit('SELECT `id`, `themesname`, `foldername`, `expert` FROM `'.DBPREFIX.'skins` WHERE `id` = '.intval($id), 1);
-        if ($result !== false && !$result->EOF) {
+        if ($result !== false && !$result->EOF) {            
             return $this->getTheme(
                 $result->fields['id'],
                 $result->fields['themesname'],
@@ -176,14 +178,14 @@ class ThemeRepository
         $result = $this->db->Execute($query);
         $themes = array();
         if ($result !== false) {
-            while (!$result->EOF) {
+            while (!$result->EOF) {                
                 $themes[] = $this->getTheme(
-                    $result->fields['id'],
-                    $result->fields['themesname'],
-                    $result->fields['foldername'],
-                    $result->fields['expert'],
-                    $languageId
-                );
+                        $result->fields['id'],
+                        $result->fields['themesname'],
+                        $result->fields['foldername'],
+                        $result->fields['expert'],
+                        $languageId
+                    ); 
                 $result->MoveNext();
             }
         }
@@ -272,8 +274,9 @@ class ThemeRepository
                     array('DlcInfo' => $theme->getComponentData())
                 )
             );
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            DBG::msg($e->getMessage());
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new $e;
         }
     }
     
@@ -297,7 +300,7 @@ class ThemeRepository
                 $objFile = new \Cx\Lib\FileSystem\File($filePath);
                 $themeInformation = $objYaml->load($objFile->getData());
                 $theme->setComponentData($themeInformation['DlcInfo']);
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            } catch (\Exception $e) {
                 \DBG::log($e->getMessage());
             }            
         }
@@ -353,10 +356,15 @@ class ThemeRepository
             return $theme;
         }
         
-        $this->loadComponentData($theme);
+        $this->loadComponentData($theme);        
         // create a new one if no component.yml exists
         if (!$theme->isComponent()) {
-            $this->convertThemeToComponent($theme);
+            try {
+                $this->convertThemeToComponent($theme);
+            } catch (\Exception $ex) {
+                \DBG::log($ex->getMessage());
+                \DBG::log($theme->getThemesname() .' : Unable to convert theme to component');
+            }
             $this->loadComponentData($theme);
         }
         
@@ -372,8 +380,14 @@ class ThemeRepository
             if ($theme->isComponent()) {
                 continue;
             }
-            $this->convertThemeToComponent($theme);
-        }
+            try {
+                $this->convertThemeToComponent($theme);
+            } catch (\Exception $ex) {                
+                \DBG::log($ex->getMessage());
+                \DBG::log($theme->getThemesname() .' : Unable to convert theme to component');
+            }
+            
+        }            
     }
     
     /**
@@ -405,8 +419,8 @@ class ThemeRepository
                     ),
                 );
                 unset($this->xmlDocument);
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \Message::add('Error in reading info.xml', \Message::CLASS_ERROR);
+            } catch (\Exception $e) {
+                // not critical, ignore
             }
         } else {
             // create new data for new component.yml file
@@ -438,8 +452,7 @@ class ThemeRepository
         $theme->setComponentData($themeInformation['DlcInfo']);
         try {
             $this->saveComponentData($theme);
-        } catch (\Cx\Lib\FileSystem\FileException $e) {
-            \Message::add('Error in saving component data', \Message::CLASS_ERROR);
+        } catch (\Exception $e) {
             // could not write new component.yml file, try next time
             throw new $e;
         }
@@ -447,8 +460,7 @@ class ThemeRepository
             try {
                 // delete existing info.xml file
                 $infoFile->delete();
-            } catch (\Cx\Lib\FileSystem\FileException $e) {
-                \Message::add('Error in removing '. $theme->getFoldername() .'/info.xml', \Message::CLASS_ERROR);
+            } catch (\Exception $e) {
                 // not critical, ignore
             }
         }
