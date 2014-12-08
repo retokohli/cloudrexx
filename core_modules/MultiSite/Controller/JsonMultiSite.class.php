@@ -114,7 +114,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'modifyMultisiteConfig' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'sendAccountActivation' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkSendAccountActivation')),
             'getPayrexxUrl'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
-            'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
+            'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -2787,6 +2788,134 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
 
+    public function websiteBackup($param) {
+        
+        $websiteName = isset($param['post']['websiteName']) ? contrexx_input2raw($param['post']['websiteName']) : '';
+        $backupLocation = !empty($param['post']['backupLocation']) ? $param['post']['backupLocation'] : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation');
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName;
+        \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($backupLocation);
+        
+        if (!empty($websiteName) && !\Cx\Lib\FileSystem\FileSystem::exists($websitePath)) {
+            return array('status' => 'error', 'message' => 'Failed to backup the website due to the website may not exists!.');
+        }
+        
+        if (!($this->websiteDataBackup($websiteName, $websitePath, $backupLocation))) {
+            return array('status' => 'error', 'message' => 'Failed to Backup the website Repository!.');
+        }
+        return array('status' => 'success','message' => 'Successfully Backup the website Repository');
+    }
+    
+    public function websiteDataBackup($websiteName, $websitePath, $backupLocation) {
+        global $sessionObj;
+        
+        if (!isset($sessionObj)) {
+            $sessionObj = \cmsSession::getInstance();
+        }
+        
+        $tempPath = $_SESSION->getTempPath();
+        $tempBackupPath = $tempPath.'/'.$websiteName;
+        
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tempBackupPath)) {
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tempBackupPath)) {
+                return false; 
+            }
+        }
+        if (!$this->WebsiteDatabaseBackup($websitePath, $tempBackupPath)) {
+            return false; 
+        }
+        
+        $websiteDataArray = $this->websiteExplodeRepository($websitePath);
+        if (!(($websiteDataArray) && $this->createWebsiteArchive($websiteDataArray, $websiteName, $backupLocation, $tempBackupPath))) {
+             return false;
+        }
+        return true; 
+    }
+    
+    public function createWebsiteArchive($websiteDataArray, $websiteName, $backupLocation, $tempBackupPath) {
+        
+        if (!empty($websiteDataArray)) {
+
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation)) {
+                return false;
+            }
+            
+            $i = 1;
+            $websiteZipFileName = $backupLocation . '/' . $websiteName;
+            
+            while (\Cx\Lib\FileSystem\FileSystem::exists($websiteZipFileName . '.zip')) {
+                $websiteZipFileName = $backupLocation . '/' . $websiteName . '_' . $i;
+                $i++;
+            }
+
+            $websiteZipArchive = new \PclZip($websiteZipFileName . '.zip');
+            foreach ($websiteDataArray as $file) {
+                if (\Cx\Lib\FileSystem\FileSystem::exists($file)) {
+                    $websiteZipArchive->add($file, PCLZIP_OPT_REMOVE_PATH, \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/');
+                }
+            }
+            $websiteZipArchive->add($tempBackupPath . '/data', PCLZIP_OPT_REMOVE_PATH, $tempBackupPath);
+
+            //clean up tmp dir
+            \Cx\Lib\FileSystem\FileSystem::delete_folder($tempBackupPath, true);
+            return true;
+        }
+    }
+
+    public function websiteExplodeRepository($websitePath, $exceptionFiles = array('.ftpaccess')) {
+        $files = array();
+        
+        foreach (glob($websitePath . "/*") as $file) {
+            if (!in_array(basename($file), $exceptionFiles)) {
+                $files[] = $file;
+            }
+        }
+        
+        foreach (glob($websitePath . "/*", GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
+          $files = array_merge($files, $this->websiteExplodeRepository($dir, $exceptionFiles));
+        }
+        
+        return $files;        
+    }
+
+    public function WebsiteDatabaseBackup($websitePath, $tempBackupPath) {
+        
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($websitePath)) {
+            return false;
+        }
+       
+        $config = new \Cx\Lib\FileSystem\File($websitePath.'config/configuration.php');
+        $configData = $config->getData();
+        $dbHost = $dbUserName = $dbPassword = $dbName = $matches = '';
+        $returnStatus = 0;
+        
+        if (preg_match('/\\$_DBCONFIG\\[\'host\'\\] = \'(.*?)\'/',$configData,$matches)) {
+            $dbHost = $matches[1];
+        }
+        if (preg_match('/\\$_DBCONFIG\\[\'user\'\\] = \'(.*?)\'/',$configData,$matches)) {
+            $dbUserName = $matches[1];
+        }
+        if (preg_match('/\\$_DBCONFIG\\[\'password\'\\] = \'(.*?)\'/',$configData,$matches)) {
+            $dbPassword = $matches[1];
+        }
+        if (preg_match('/\\$_DBCONFIG\\[\'database\'\\] = \'(.*?)\'/',$configData,$matches)) {
+            $dbName = $matches[1];
+        }
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tempBackupPath.'/data')) {
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tempBackupPath.'/data')) {
+                return false;
+            }
+        }
+        if (!empty($dbHost) && !empty($dbUserName) && !empty($dbName)) {
+            exec('mysqldump -h '.$dbHost.' -u '.$dbName.' -p'.$dbPassword.' '.$dbName.' > '.$tempBackupPath.'/data/sql_dump.sql', $output = array(), $returnStatus);
+        }
+      
+        if (!$returnStatus) {
+            return false;
+        }
+        
+        return true;
+    }
+    
     protected function activateDebuggingToMemory() {
         // check if memory logging shall be activated
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {

@@ -333,6 +333,30 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 //                            \Env::get('em')->flush();
 //                        }
                         break;
+                    case 'Backup':
+                        
+                        $websiteId      = isset($arguments['websiteId']) ? contrexx_input2raw($arguments['websiteId']) : 0;
+                        $backupLocation = isset($arguments['backupLocation']) ? contrexx_input2raw($arguments['backupLocation']) : '';
+                        try {                            
+                            if (!empty($websiteId)) {
+                                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                                $website = $websiteServiceRepo->findOneById($websiteId);
+                                if ($website) {
+                                    $params = array(
+                                        'websiteId' => $websiteId,
+                                        'websiteName' => $website->getName(),
+                                        'backupLocation' => $backupLocation
+                                    );
+                                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServerOfWebsite('websiteBackup', $params, $website);
+                                    if ($resp->status == 'success' && $resp->data->status = 'success') {
+                                        return $resp->data->message;
+                                    }
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            throw new MultiSiteException("Failed to backup the website:". $e->getMessage());
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -704,6 +728,11 @@ throw new MultiSiteException('Refactor this method!');
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteFtpPath', '', 11,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting Repository for website FTP path");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteBackupLocation', \Env::get('cx')->getCodeBaseDocumentRootPath().'/', 12,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
+                    throw new MultiSiteException("Failed to add Setting Repository for website Backup Location");
             }
 
             // websiteManager group
