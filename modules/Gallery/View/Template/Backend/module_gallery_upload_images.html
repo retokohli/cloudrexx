@@ -1,20 +1,38 @@
 <!-- START upload_images.html -->
-<div id="okbox">{TXT_ENABLED_IMAGE_TYPE}</div><br />
+<div class="okbox">{TXT_ENABLED_IMAGE_TYPE}</div><br/>
 <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-	<tr>
-		  <th colspan="2"> 
-			<div align="left">{TXT_TITLE}</div>
-		  </th>
-	</tr>
-</table><br />
-<input id="exposedComboUploaderStarter" name="exposedComboUploaderStarter" type="button" value="{TXT_BUTTON_SUBMIT}" />
+    <tr>
+        <th colspan="2">
+            <div align="left">{TXT_TITLE}</div>
+        </th>
+    </tr>
+</table><br/>
+<div class="okbox">
+    {TXT_GALLERY_UPLOAD_HELP}
+</div>
+<!--<input id="exposedComboUploaderStarter" name="exposedComboUploaderStarter" type="button" value="{TXT_BUTTON_SUBMIT}" />-->
 {COMBO_UPLOADER_CODE}
+<h3>{TXT_GALLERY_UPLOAD_IMAGES}</h3>
+<div class="imagesContainer">
+
+</div>
+<br/>
+<a href="index.php?cmd=Gallery&amp;act=validate_form&amp;type=all" class="button confirmImages">{TXT_GALLERY_UPLOAD_CONFIRM_IMAGES}</a>
 <script type="text/javascript">
-	cx.ready(function() {
-		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
-		uploader.dialog().bind('close',function(){
-			window.location = '{REDIRECT_URL}';
-		});
-	},true);
+    function finishedGalleryUpload(response) {
+        cx.jQuery('.confirmImages').show();
+        for (var i in response) {
+            var image = cx.jQuery(new Image());
+            image.attr('src', response[i]);
+            image.appendTo('.imagesContainer');
+            setTimeout(
+                    (function (image) {
+                        return function () { // what to do when item is selected
+                            image.addClass('galleryImageVisible');
+                        }
+                    }(image)), i*100
+            );
+        }
+    }
 </script>
 <!-- END upload_images.html -->
