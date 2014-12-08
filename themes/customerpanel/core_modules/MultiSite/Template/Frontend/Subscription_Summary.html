@@ -1,17 +1,17 @@
 <!-- BEGIN showSiteTable -->
-<ul class="list-group">
-<!-- BEGIN showSiteDetails -->
-  <li class="list-group-item clearfix">
-    <a href="{MULTISITE_WEBSITE_LINK}" target="_blank">{MULTISITE_WEBSITE_NAME}</a>
-    <button type="button" class="btn btn-default btn-sm pull-right" onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Manage</button>
-</li>
-<!-- END showSiteDetails -->
-  <li class="list-group-item">
-    <div>
-        <a href="{NODE_MULTISITE_SUBSCRIPTION}" class="btn btn-default" role="button">More</a>
-    </div>
-  </li>
-</ul>
+<table>            
+    <tbody>
+        <!-- BEGIN showSiteDetails -->
+        <tr>
+            <td><a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;{MULTISITE_WEBSITE_NAME}</a></td>
+            <td class="actions">                               
+                <button type="button" onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Manage</button>   
+            </td>
+        </tr>
+        <!-- END showSiteDetails -->
+    </tbody>
+</table>
+<button onclick="location.href='{NODE_MULTISITE_SUBSCRIPTION}';">Weitere</button>   
 <!-- END showSiteTable -->
 <!-- BEGIN noSiteFound -->
 <div>Currently none</div>

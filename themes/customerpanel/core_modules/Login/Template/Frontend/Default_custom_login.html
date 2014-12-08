@@ -1,0 +1,47 @@
+
+<!-- BEGIN login_social_networks -->
+<div class="login-social col-md-6 col-sm-12 col-xs-12">
+    <div id="sociallogin">
+        <!-- BEGIN login_social_networks_facebook -->
+        <a class="facebook loginbutton btn-social btn-facebook" href="{LOGIN_SOCIALLOGIN_FACEBOOK}"><i class="fa fa-facebook-square"></i>Facebook-Anmeldung</a>
+        <!-- END login_social_networks_facebook -->
+        <!-- BEGIN login_social_networks_google -->
+        <a class="google loginbutton btn-social btn-google-plus" href="{LOGIN_SOCIALLOGIN_GOOGLE}"><i class="fa fa-google-plus"></i>Mit Google amelden</a>
+        <!-- END login_social_networks_google -->
+        <!-- BEGIN login_social_networks_twitter -->
+        <a class="twitter loginbutton btn-social btn-twitter" href="{LOGIN_SOCIALLOGIN_TWITTER}"><i class="fa fa-twitter"></i>Mit Twitter anmelden</a>
+        <!-- END login_social_networks_twitter -->
+    </div>
+</div>
+<!-- END login_social_networks -->
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">                
+    <p class="login-error-msg text-danger">{LOGIN_STATUS_MESSAGE}</p>
+    <form role="form" method="post" action="{NODE_LOGIN}" name="loginForm">
+        <fieldset>
+            <input type="hidden" value="{LOGIN_REDIRECT}" name="redirect" />
+            <div class="row">
+                <label for="USERNAME">Benutzername</label><input id="USERNAME" name="USERNAME" value="" placeholder="E-Mail-Adresse oder Benutzername" type="text">
+            </div>
+            <div class="row">
+                <label for="PASSWORD">{TXT_PASSWORD}</label><input id="PASSWORD" name="PASSWORD" value="" placeholder="Passwort" type="password">
+            </div>
+            <!-- BEGIN captcha -->
+            <div class="row">
+                <label for="coreCaptchaCode">{TXT_CORE_CAPTCHA}</label>{CAPTCHA_CODE}
+            </div>
+            <!-- END captcha -->              
+        </fieldset>
+        <div class="grid-elm grid-align-1-2">  
+            <input class="btn btn-default" type="submit" name="login" value="{TXT_LOGIN}" />
+        </div><div class="grid-elm grid-align-1-2 right">  
+            <label for="remember_me" class="remember_me checkbox-radio">
+                <input type="checkbox" value="1" name="remember_me" class="remember_me" id="remember_me" />
+                {TXT_LOGIN_REMEMBER_ME}
+            </label>  
+        </div>
+    </form>        
+</div>                                              
+<div class="grid-elm grid-align-1-1">    
+    <a title="Jetzt kostenlos registrieren" href="{NODE_ACCESS_SIGNUP}" class="entypo-user-add">&nbsp;&nbsp;Haben Sie noch keinen Account? Jetzt registrieren</a><br />
+    <a title="{TXT_LOST_PASSWORD}" href="{NODE_LOGIN_LOSTPW}" class="entypo-key">&nbsp;&nbsp;&nbsp;{TXT_PASSWORD_LOST}</a>
+</div>        

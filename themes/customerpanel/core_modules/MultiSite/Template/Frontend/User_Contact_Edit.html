@@ -1,0 +1,75 @@
+<form role="form" action="#" id="multisite_user_contact_form">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="multisite_settings_contact_label">Contact</h4>
+    </div>
+
+    <div class="modal-body">
+        <!-- BEGIN multisite_user_profile_attribute_phone_office -->
+        <div class="form-group">
+            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_DESC}</label>
+            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_VALUE}">
+        </div>
+        <!-- END multisite_user_profile_attribute_phone_office --> 			
+
+        <!-- BEGIN multisite_user_profile_attribute_phone_private -->
+        <div class="form-group">
+            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_PRIVATE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_PRIVATE_DESC}</label>
+            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_PRIVATE_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_PRIVATE_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_PRIVATE_VALUE}">
+        </div>
+        <!-- END multisite_user_profile_attribute_phone_private --> 			
+
+        <!-- BEGIN multisite_user_profile_attribute_phone_mobile -->
+        <div class="form-group">
+            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_MOBILE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_MOBILE_DESC}</label>
+            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_MOBILE_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_MOBILE_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_MOBILE_VALUE}">
+        </div>
+        <!-- END multisite_user_profile_attribute_phone_mobile --> 			
+
+        <!-- BEGIN multisite_user_profile_attribute_phone_fax -->
+        <div class="form-group">
+            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_FAX_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_FAX_DESC}</label>
+            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_FAX_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_FAX_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_FAX_VALUE}">
+        </div>
+        <!-- END multisite_user_profile_attribute_phone_fax --> 			
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+
+</form>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('#multisite_user_contact_form').submit(function() {
+        jQuery.ajax({
+            dataType: "json",
+            url: '{MULTISITE_USER_PROFILE_SUBMIT_URL}',
+            data: jQuery(this).serialize(),
+            type: "POST",
+            success: function(data) {
+                if (data.status == 'success') {
+                    jQuery.ajax({
+                        dataType: 'html',
+                        url: '/api/MultiSite/User/Contact',
+                        type: 'GET',
+                        success: function(data) {
+                            if (data) {
+                                jQuery('#multisite_user_contact').html(data);
+                            }
+                            jQuery('#multisite_settings_contact').modal('hide');
+                        },
+                        fail: function(data) {}
+                    });
+                }
+            },
+            fail: function(data) {}
+        });
+
+        return false;
+    });
+});
+/* ]]> */
+</script>

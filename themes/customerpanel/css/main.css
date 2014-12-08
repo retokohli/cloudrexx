@@ -150,6 +150,11 @@ section {
     background-color: #ffffff;
 }
 
+#login {
+    background-color: #ffffff;
+    border: 1px solid #c7c6c7;
+}
+
 #breadcrumb {
     font-size: 0.8em;
     color: #777777;
@@ -377,7 +382,7 @@ table tbody tr td.actions a{
     display: inline-block;
 }
 
-table tfoot {
+table tfoot tr td {
     background-color: #F5F5F5;
     border-bottom: 1px solid #dddddd;
 }
@@ -806,6 +811,11 @@ button.actions:after {
         border-bottom: 1px solid #c7c6c7;
         background-color: #ffffff;
         min-height: 500px;
+    }
+    
+    #login {                          
+        max-width: 500px;
+        margin: 0 auto;
     }
              
 
