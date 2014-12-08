@@ -163,13 +163,8 @@ class JsonPage implements JsonAdapter {
      * @return type 
      */
     public function set($params) {
-        global $_CORELANG, $objCache;
-        /*
-         * Really unneccessary, because we do not use resultcache 
-         * @see http://bugs.contrexx.com/contrexx/ticket/2339
-         */
-//        $objCache->clearCache();
-        
+        global $_CORELANG;
+
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
             throw new \Exception($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
@@ -186,7 +181,11 @@ class JsonPage implements JsonAdapter {
         $nodeId = !empty($pageArray['node'])  ? intval($pageArray['node']) : (!empty($dataPost['nodeId']) ? intval($dataPost['nodeId']) : 0);
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId()));
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
+
+        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+        $cacheManager->deleteSingleFile($pageId);
         
+
         if (!empty($pageArray)) {
             if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
                 $pageArray['target'] = $pageArray['target_protocol'] . $pageArray['target'];

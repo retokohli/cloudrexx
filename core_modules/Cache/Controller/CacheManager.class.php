@@ -551,43 +551,48 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         global $objDatabase;
 
         $intPageId = intval($intPageId);
-        if ($intPageId > 0) {
-            $arrPageContent = array('url' => '/index.php?page=' . $intPageId,
-                'request' => array('page' => strval($intPageId))
-            );
-            $arrFileNames[0] = md5(serialize($arrPageContent));
-
-            $objResult = $objDatabase->Execute('SELECT		id
-												FROM		' . DBPREFIX . 'languages
-												ORDER BY	id ASC
-											');
-            while (!$objResult->EOF) {
-                $arrLanguages[$objResult->fields['id']] = $objResult->fields['id'];
-                $objResult->MoveNext();
-            }
-
-
-            $i = 2;
-            foreach ($arrLanguages as $intKey1 => $intLangId1) {
-                foreach ($arrLanguages as $intKey2 => $intLangId2) {
-                    unset($arrPageContent);
-                    $arrPageContent = array('url' => '/index.php?page=' . $intPageId,
-                        'request' => array('backendLangId' => $intLangId1,
-                            'langId' => $intLangId2,
-                            'page' => strval($intPageId)
-
-                        )
-                    );
-                    $arrFileNames[$i] = md5(serialize($arrPageContent));
-                    $i++;
+        if ( 0 < $intPageId ) {
+            $files = glob( $this->strCachePath . '*_' . $intPageId );
+            if ( count( $files ) ) {
+                foreach ( $files as $file ) {
+                    @unlink( $file );
                 }
             }
-
-            foreach ($arrFileNames as $intKey => $strFileName) {
-                if (is_file($this->strCachePath . $strFileName)) {
-                    @unlink($this->strCachePath . $strFileName);
-                }
-            }
+//            $arrPageContent = array('url' => '/index.php?page=' . $intPageId,
+//                'request' => array('page' => strval($intPageId))
+//            );
+//            $arrFileNames[0] = md5(serialize($arrPageContent));
+//            $objResult = $objDatabase->Execute('SELECT		id
+//												FROM		' . DBPREFIX . 'languages
+//												ORDER BY	id ASC
+//											');
+//            while (!$objResult->EOF) {
+//                $arrLanguages[$objResult->fields['id']] = $objResult->fields['id'];
+//                $objResult->MoveNext();
+//            }
+//
+//
+//            $i = 2;
+//            foreach ($arrLanguages as $intKey1 => $intLangId1) {
+//                foreach ($arrLanguages as $intKey2 => $intLangId2) {
+//                    unset($arrPageContent);
+//                    $arrPageContent = array('url' => '/index.php?page=' . $intPageId,
+//                        'request' => array('backendLangId' => $intLangId1,
+//                            'langId' => $intLangId2,
+//                            'page' => strval($intPageId)
+//
+//                        )
+//                    );
+//                    $arrFileNames[$i] = md5(serialize($arrPageContent));
+//                    $i++;
+//                }
+//            }
+//
+//            foreach ($arrFileNames as $intKey => $strFileName) {
+//                if (is_file($this->strCachePath . $strFileName)) {
+//                    @unlink($this->strCachePath . $strFileName);
+//                }
+//            }
         }
     }
 }
