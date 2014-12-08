@@ -601,7 +601,16 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
         // if it is an local javascript file
         if (!preg_match('#^https?://#', $fileName)) {
-            if (!file_exists(\Env::get('ClassLoader')->getFilePath(($fileName[0] == '/' ? ASCMS_PATH : ASCMS_DOCUMENT_ROOT.'/').$fileName))) {
+            if ($fileName[0] == '/') {
+                $codeBasePath = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBasePath();
+                $websitePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath();
+            } else {
+                $codeBasePath = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath();
+                $websitePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath();
+            }
+            if (   !file_exists(\Env::get('ClassLoader')->getFilePath(($codeBasePath.'/').$fileName))
+                && !file_exists(\Env::get('ClassLoader')->getFilePath(($websitePath.'/').$fileName))
+            ) {
                 self::$error .= "The file ".$fileName." doesn't exist\n";
                 return false;
             }
@@ -630,7 +639,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     public static function registerCSS($file)
     {
-        if (!file_exists(\Env::get('ClassLoader')->getFilePath(ASCMS_DOCUMENT_ROOT.'/'.$file))) {
+        if (   !file_exists(\Env::get('ClassLoader')->getFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath().'/'.$file))
+            && !file_exists(\Env::get('ClassLoader')->getFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$file))
+        ) {
             self::$error = "The file ".$file." doesn't exist\n";
             return false;
         }
@@ -798,7 +809,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             if (!preg_match('#^https?://#', $file)) {
                 $path = self::$offset;
                 if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH.'/'.$file)) {
-                    $path .= preg_replace('#'.ASCMS_DOCUMENT_ROOT.'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
+                    $path .= preg_replace('#'.\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath().'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
                 }
             }
 
@@ -823,7 +834,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         foreach ($files as $file) {
             $path = self::$offset;
             if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH.'/'.$file)) {
-                $path .= preg_replace('#'.ASCMS_DOCUMENT_ROOT.'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
+                $path .= preg_replace('#'.\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath().'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
             }
             $path .= $file;
             $code .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$path."\" />\n\t";
