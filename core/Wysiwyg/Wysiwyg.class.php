@@ -10,6 +10,7 @@
  */
 
 namespace Cx\Core\Wysiwyg;
+use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
 
 /**
  * Wysiqyg class
@@ -106,6 +107,13 @@ class Wysiwyg
      */
     public function getSourceCode()
     {
+        $mediaBrowserCkeditor = new MediaBrowser();
+        $mediaBrowserCkeditor->setOptions(array('type' => 'button', 'style' => 'display:none'));
+        $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
+        $mediaBrowserCkeditor->setOptions(array(
+                'id' => 'ckeditor_image_button'
+            ));
+
         \JS::activate('ckeditor');
         \JS::activate('jquery');
 
@@ -130,7 +138,7 @@ class Wysiwyg
             });
         ');
 
-        return '<textarea name="'.$this->name.'" style="width: 100%; height: ' . $this->types[$this->type]['height'] . 'px">'.$this->value.'</textarea>';
+        return $mediaBrowserCkeditor->getXHtml('mediabrowser').'<textarea name="'.$this->name.'" style="width: 100%; height: ' . $this->types[$this->type]['height'] . 'px">'.$this->value.'</textarea>';
     }
 
     /**
