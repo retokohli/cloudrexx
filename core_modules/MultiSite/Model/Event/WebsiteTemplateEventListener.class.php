@@ -69,10 +69,15 @@ class WebsiteTemplateEventListener implements \Cx\Core\Event\Model\Entity\EventL
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
-                    $dataSetObj = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteTemplate);
+                    
+                    $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
+                    $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
+                    
+                    $arrayDataSet = $objDataSet->import($objEntityInterface, $websiteTemplate);
                     $param = array();
-                    $param['data'] = $dataSetObj->toArray();
-                    $param['dataType'] = $dataSetObj->getDataType();
+                    $param['data'] = current($arrayDataSet);
+                    $param['dataType'] = get_class($websiteTemplate);
+                   
                     foreach ($websiteServiceServers as $websiteServiceServer) {
                         \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('push', $param, $websiteServiceServer);
                     }

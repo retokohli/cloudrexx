@@ -135,7 +135,6 @@ class ViewGenerator {
                             \DBG::msg('Unkown entity model '.get_class($entityObj).'! Trying to persist using entity manager...');
                         }
                         \Env::get('em')->persist($entityObj);
-                        $entityObject->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
                         \Env::get('em')->flush();
                     }
                     \Message::add($_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL']);   
