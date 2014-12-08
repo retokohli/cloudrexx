@@ -333,7 +333,7 @@ class Counter
     */
     function _getProxyInformations() {
         if (isset($_SERVER['HTTP_VIA']) && $_SERVER['HTTP_VIA']) { // client does use a proxy
-            $this->arrProxy['ip'] = $_SERVER['REMOTE_ADDR'];
+            $this->arrProxy['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
             $this->arrProxy['host'] = @gethostbyaddr($this->arrProxy['ip']);
             $proxyUseragent = trim(addslashes(urldecode(strstr($_SERVER['HTTP_VIA'],' '))));
             $startPos = strpos($proxyUseragent,"(");
@@ -358,11 +358,11 @@ class Counter
                 if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP'])) {
                     $this->arrClient['ip'] = $_SERVER['HTTP_CLIENT_IP'];
                 } else {
-                    $this->arrClient['ip'] = $_SERVER['REMOTE_ADDR'];
+                    $this->arrClient['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
                 }
             }
         } else { // Client does not use proxy
-            $this->arrClient['ip'] = $_SERVER['REMOTE_ADDR'];
+            $this->arrClient['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
             $this->arrProxy['type'] = 0; // No proxy
             $this->arrProxy['ip'] = "";
             $this->arrProxy['host'] = "";
