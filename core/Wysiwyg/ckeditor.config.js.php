@@ -28,7 +28,7 @@ $defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ck
 
 
 ?>
-CKEDITOR.scriptLoader.load( '/core_modules/MediaBrowser/View/Script/ckeditor-mediabrowser.js' );
+CKEDITOR.scriptLoader.load( '<?php ASCMS_PATH_OFFSET ?>/core_modules/MediaBrowser/View/Script/ckeditor-mediabrowser.js' );
 CKEDITOR.editorConfig = function( config )
 {
     config.skin = 'moono';
