@@ -232,6 +232,7 @@ class DbCommand extends Command {
         foreach ($sourceDirectoryRegexIterator as $sourceFile) {
             // move to correct location and add .class ending if necessary
             $sourceFile = current($sourceFile);
+            $sourceFile = str_replace('\\', '/', $sourceFile);
             $parts = explode('/Cx/', $sourceFile);
             $destinationFile = $destinationFolder . '/' . end($parts);
             $destinationFile = preg_replace_callback(
