@@ -123,10 +123,10 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     public function postUpdate($eventArgs) {
-        global $objCache;
-        if ($objCache) {
-            $objCache->clearCache();
-        }
+//        global $objCache;
+//        if ($objCache) {
+//            $objCache->clearCache();
+//        }
         
         $this->writeXmlSitemap($eventArgs);
     }

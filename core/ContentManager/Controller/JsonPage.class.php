@@ -180,8 +180,7 @@ class JsonPage implements JsonAdapter {
      * @return type 
      */
     public function set($params) {
-        global $_CORELANG, $objCache;
-        $objCache->clearCache();
+        global $_CORELANG;
         
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
@@ -205,6 +204,9 @@ class JsonPage implements JsonAdapter {
             $lang = $lang['lang'];
         }
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
+        
+        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+        $cacheManager->deleteSingleFile($pageId);
         
         if (!empty($pageArray)) {
             if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
