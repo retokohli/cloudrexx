@@ -38,9 +38,9 @@ class Theme extends \Cx\Model\Base\EntityBase
     const THEME_TYPE_APP = 'app';
     const THEME_TYPE_PDF = 'pdf';
     
-    const THEME_PREVIEW_FILE = '/images/preview.gif';
-    const THEME_DEFAULT_PREVIEW_FILE = '/core/Core/View/Media/preview.gif';
-    const THEME_COMPONENT_FILE = '/component.yml';
+    const THEME_PREVIEW_FILE = '/images/preview.gif'; // path from theme folder
+    const THEME_DEFAULT_PREVIEW_FILE = '/core/Core/View/Media/theme_preview.gif'; // path from the document root
+    const THEME_COMPONENT_FILE = '/component.yml'; // path from theme folder
 
     public function __construct($id = null, $themesname = null, $foldername = null, $expert = 1) {
         $this->db = \Env::get('db');
