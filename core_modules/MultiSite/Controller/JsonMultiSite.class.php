@@ -2789,6 +2789,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
 
+    /**
+     * To take websiteBackup to specified location in service server
+     * 
+     * @param array $param website data
+     * 
+     * @return array
+     */
     public function websiteBackup($param) {
         
         $websiteName = isset($param['post']['websiteName']) ? contrexx_input2raw($param['post']['websiteName']) : '';
@@ -2800,13 +2807,23 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return array('status' => 'error', 'message' => 'Failed to backup the website due to the website may not exists!.');
         }
         
-        if (!($this->websiteDataBackup($websiteName, $websitePath, $backupLocation))) {
+        if (!($this->websiteDataBackup($websiteName, $backupLocation))) {
             return array('status' => 'error', 'message' => 'Failed to Backup the website Repository!.');
         }
         return array('status' => 'success','message' => 'Successfully Backup the website Repository');
     }
     
-    public function websiteDataBackup($websiteName, $websitePath, $backupLocation) {
+    /**
+     * Website Data Repository backup
+     * 
+     * @param string $websiteName    websiteName
+     * 
+     * @param string $backupLocation websiteBackupLocation
+     * 
+     * @return boolean
+     */
+    public function websiteDataBackup($websiteName, $backupLocation) 
+    {
         global $sessionObj;
         
         if (!isset($sessionObj)) {
@@ -2821,70 +2838,87 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 return false; 
             }
         }
-        if (!$this->WebsiteDatabaseBackup($websitePath, $tempBackupPath)) {
+        if (!$this->WebsiteDatabaseBackup($websiteName, $tempBackupPath)) {
             return false; 
         }
         
-        $websiteDataArray = $this->websiteExplodeRepository($websitePath);
-        if (!(($websiteDataArray) && $this->createWebsiteArchive($websiteDataArray, $websiteName, $backupLocation, $tempBackupPath))) {
+        if (!$this->createWebsiteArchive($websiteName, $backupLocation, $tempBackupPath)) {
              return false;
         }
         return true; 
     }
     
-    public function createWebsiteArchive($websiteDataArray, $websiteName, $backupLocation, $tempBackupPath) {
+    /**
+     * Create Website Zip Archive for the given Location
+     * 
+     * @param string $websiteName    websiteName
+     * 
+     * @param string $backupLocation websiteBackupLocation
+     * 
+     * @param sting $tempBackupPath  session temp path for website
+     * 
+     * @return boolean
+     */
+    public function createWebsiteArchive($websiteName, $backupLocation, $tempBackupPath) 
+    {
+        $i = 1;
+        $websiteZipFileName = $backupLocation . '/' . $websiteName;
         
-        if (!empty($websiteDataArray)) {
-
-            if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation)) {
-                return false;
-            }
-            
-            $i = 1;
-            $websiteZipFileName = $backupLocation . '/' . $websiteName;
-            
-            while (\Cx\Lib\FileSystem\FileSystem::exists($websiteZipFileName . '.zip')) {
-                $websiteZipFileName = $backupLocation . '/' . $websiteName . '_' . $i;
-                $i++;
-            }
-
-            $websiteZipArchive = new \PclZip($websiteZipFileName . '.zip');
-            foreach ($websiteDataArray as $file) {
-                if (\Cx\Lib\FileSystem\FileSystem::exists($file)) {
-                    $websiteZipArchive->add($file, PCLZIP_OPT_REMOVE_PATH, \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/');
-                }
-            }
-            $websiteZipArchive->add($tempBackupPath . '/data', PCLZIP_OPT_REMOVE_PATH, $tempBackupPath);
-
-            //clean up tmp dir
-            \Cx\Lib\FileSystem\FileSystem::delete_folder($tempBackupPath, true);
-            return true;
-        }
-    }
-
-    public function websiteExplodeRepository($websitePath, $exceptionFiles = array('.ftpaccess')) {
-        $files = array();
-        
-        foreach (glob($websitePath . "/*") as $file) {
-            if (!in_array(basename($file), $exceptionFiles)) {
-                $files[] = $file;
-            }
-        }
-        
-        foreach (glob($websitePath . "/*", GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
-          $files = array_merge($files, $this->websiteExplodeRepository($dir, $exceptionFiles));
-        }
-        
-        return $files;        
-    }
-
-    public function WebsiteDatabaseBackup($websitePath, $tempBackupPath) {
-        
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($websitePath)) {
+        if (!$this->websiteRepositoryBackup($websiteName, $tempBackupPath)) {
             return false;
         }
-       
-        $config = new \Cx\Lib\FileSystem\File($websitePath.'config/configuration.php');
+        
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation)) {
+            return false;
+        }
+                
+        while (\Cx\Lib\FileSystem\FileSystem::exists($websiteZipFileName . '.zip')) {
+            $websiteZipFileName = $backupLocation . '/' . $websiteName . '_' . $i;
+            $i++;
+        }
+
+        $websiteZipArchive = new \PclZip($websiteZipFileName . '.zip');
+        if (\Cx\Lib\FileSystem\FileSystem::exists($tempBackupPath)) {
+            $websiteZipArchive->create($tempBackupPath, PCLZIP_OPT_REMOVE_PATH, $tempBackupPath);
+        }
+
+        $websiteZipArchive->delete(PCLZIP_OPT_BY_PREG, '/.ftpaccess$/');
+
+        //clean up tmp session dir
+        \Cx\Lib\FileSystem\FileSystem::delete_folder($tempBackupPath, true);
+        return true;
+    }
+
+    /**
+     * Website Repository Backup to temp folder
+     * 
+     * @param string $websiteName    websiteName
+     * 
+     * @param string $tempBackupPath session temp path
+     * 
+     * @return boolean
+     */
+    public function websiteRepositoryBackup($websiteName, $tempBackupPath) 
+    {
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName;
+        if (!(\Cx\Lib\FileSystem\FileSystem::exists($websitePath) && \Cx\Lib\FileSystem\FileSystem::copy_folder($websitePath, $tempBackupPath.'/'.$websiteName, true))) {
+            return false; 
+        }
+        return true;        
+    }
+
+    /**
+     * Website Database Backup to session temp path
+     * 
+     * @param string $websiteName    websiteName
+     * 
+     * @param string $tempBackupPath session temp path
+     * 
+     * @return boolean
+     */
+    public function WebsiteDatabaseBackup($websiteName, $tempBackupPath) 
+    {
+        $config = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName.'/config/configuration.php');
         $configData = $config->getData();
         $dbHost = $dbUserName = $dbPassword = $dbName = $matches = '';
         $returnStatus = 0;
@@ -2916,7 +2950,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
         return true;
     }
-    
+
     protected function activateDebuggingToMemory() {
         // check if memory logging shall be activated
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {

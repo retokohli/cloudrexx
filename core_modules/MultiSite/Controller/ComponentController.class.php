@@ -334,27 +334,40 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 //                        }
                         break;
                     case 'Backup':
-                        
-                        $websiteId      = isset($arguments['websiteId']) ? contrexx_input2raw($arguments['websiteId']) : 0;
-                        $backupLocation = isset($arguments['backupLocation']) ? contrexx_input2raw($arguments['backupLocation']) : '';
-                        try {                            
+                        try {
+                            $websiteId = isset($arguments['websiteId']) ? contrexx_input2raw($arguments['websiteId']) : 0;
+                            $backupLocation = isset($arguments['backupLocation']) ? contrexx_input2raw($arguments['backupLocation']) : '';
+
                             if (!empty($websiteId)) {
                                 $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                                 $website = $websiteServiceRepo->findOneById($websiteId);
-                                if ($website) {
+
+                                if (!$website) {
+                                    return false;
+                                }
+
+                                $websiteServiceServer = $website->getWebsiteServiceServer();
+                                if ($websiteServiceServer) {
                                     $params = array(
                                         'websiteId' => $websiteId,
                                         'websiteName' => $website->getName(),
                                         'backupLocation' => $backupLocation
                                     );
-                                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServerOfWebsite('websiteBackup', $params, $website);
+                                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
                                     if ($resp->status == 'success' && $resp->data->status = 'success') {
-                                        return $resp->data->message;
+                                        return array('status' => 'success', 'message' => $resp->data->message);
                                     }
+                                    return array('status' => 'error', 'message' => $resp->data->message);
                                 }
+                                $this->cx->getEvents()->triggerEvent(
+                                        'SysLog/Add', array(
+                                            'severity' => 'WARNING',
+                                            'message' => 'This website doesnot exists in the service server',
+                                            'data' => ' ',
+                                ));
                             }
                         } catch (\Exception $e) {
-                            throw new MultiSiteException("Failed to backup the website:". $e->getMessage());
+                            throw new MultiSiteException("Failed to backup the website:" . $e->getMessage());
                         }
                         break;
                     default:
