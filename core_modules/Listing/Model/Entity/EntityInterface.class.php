@@ -109,10 +109,12 @@ class EntityInterface implements Exportable, Importable {
         $associationMappings = $entityClassMetaData->getAssociationMappings();
         if (!empty($associationMappings)) {
             foreach ($associationMappings as $field => $associationMapping) {
-                if ($entityClassMetaData->isSingleValuedAssociation($field) && in_array('set' . ucfirst($field), get_class_methods($object))) {
+                if ($entityClassMetaData->isSingleValuedAssociation($field) && in_array('get' . ucfirst($field), get_class_methods($object))) {
                     $associationObj = $object->{'get' . ucfirst($field)}();
-                    $primaryKeyName = $em->getClassMetadata(get_class($associationObj))->getSingleIdentifierFieldName();
-                    $data[$field] = $associationObj->{'get' . ucfirst($primaryKeyName)}();
+                    if ($associationObj) {
+                        $primaryKeyName = $em->getClassMetadata(get_class($associationObj))->getSingleIdentifierFieldName();
+                        $data[$field] = $associationObj->{'get' . ucfirst($primaryKeyName)}();
+                    }
                 }
             }
         }
