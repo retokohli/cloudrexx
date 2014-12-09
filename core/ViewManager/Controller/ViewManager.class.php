@@ -1905,7 +1905,8 @@ CODE;
                        ($this->websiteThemesFilePath != $this->codeBaseThemesFilePath)
                     && file_exists($this->codeBaseThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath))
                 ) {
-                    $resetClass = 'reset';
+                    $permissionClass = 'protected';
+                    $resetClass      = 'reset';
                 }
             } else {
                 $filePath = $this->codeBaseThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath);
