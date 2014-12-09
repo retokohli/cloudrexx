@@ -81,7 +81,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
             $products = new \Cx\Modules\Pim\Model\Entity\Product();
         }
         $view = new \Cx\Core\Html\Controller\ViewGenerator($products, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT'],
+            'header'    => $_ARRAYLANG['TXT_MODULE_PIM_ACT_DEFAULT'],
             'functions' => array(
                 'add'       => true,
                 'edit'      => true,
