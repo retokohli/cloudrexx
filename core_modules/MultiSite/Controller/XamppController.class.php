@@ -129,27 +129,57 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
     }
     
-     /**
-     * Creates a Subscription
-     * @param \Cx\Core\Model\Model\Entity\Subscription
-     * @return 
+    /**
+     * Create a subscription
+     * 
+     * @param string $domain
+     * @param int $planId
+     * @param string $subscriptionStatus
+     * @param int $customerId defaut null
+     * @return null
      */
-    public function createSubscription(\Cx\Core_Modules\MultiSite\Model\Entity\Customer $customer,\Cx\Core_Modules\MultiSite\Model\Entity\SubscriptionInfo $subscription){
-        //createSubscription code will be here
+    public function createSubscription($domain, $planId, $subscriptionStatus = 0, $customerId = null){
+        \DBG::msg("MultiSite (XamppController): create a subscription: $domain / $planId / $subscriptionStatus / $customerId");
+        return null;
     }
     
     /**
-     * Removes a Subscription
-     * @param \Cx\Core\Model\Model\Entity\Subscription
+     * Removes a subscription
+     * 
+     * @param int $subscriptionId
      * @throws MultiSiteDbException On error
      */
-    public function removeSubscription(\Cx\Core_Modules\MultiSite\Model\Entity\SubscriptionInfo $subscription){
-        //removeSubscription code will be here  
-        return 0;  
+    public function removeSubscription($subscriptionId){
+        \DBG::msg("MultiSite (XamppController): remove a subscription: $subscriptionId");
+        return null;
     }
     
     /**
-     * Creaye a Customer
+     * Create user account
+     * 
+     * @param string $name
+     * @param string $role
+     * @param string $password
+     * @return null
+     */
+    public function createUserAccount($name, $role, $password){
+        \DBG::msg("MultiSite (XamppController): create user account: $name / $role / $password");
+        return null;
+    }
+    
+    /**
+     * Delete user account
+     * 
+     * @param int $userAccountId
+     * @return null
+     */
+    public function deleteUserAccount($userAccountId) {
+        \DBG::msg("MultiSite (XamppController): delete user account: $userAccountId");
+        return null;
+    }
+    
+    /**
+     * Create a Customer
      * @param \Cx\Core\Model\Model\Entity\Subscription
      * @throws MultiSiteDbException On error
      */

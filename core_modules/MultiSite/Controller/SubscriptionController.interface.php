@@ -15,19 +15,43 @@ namespace Cx\Core_Modules\MultiSite\Controller;
 interface SubscriptionController {
 
     /**
-     * Creates a Subscription
-     * @param \Cx\Core\Model\Model\Entity\Subscription
-     * @return 
+     * Creates a subscription
+     * 
+     * @param string $domain
+     * @param int $planId
+     * @param string $subscriptionStatus
+     * @param int $customerId
+     * 
+     * @return subcription id
      */
-    public function createSubscription(\Cx\Core_Modules\MultiSite\Model\Entity\Customer $customer,\Cx\Core_Modules\MultiSite\Model\Entity\SubscriptionInfo $subscription);
+    public function createSubscription($domain, $planId, $subscriptionStatus = 0, $customerId = null);
     
     /**
-     * Removes a Subscription
-     * @param \Cx\Core\Model\Model\Entity\Subscription
+     * Removes a subscription
+     * 
+     * @param int $subscriptionId
      * @throws MultiSiteDbException On error
      */
-    public function removeSubscription(\Cx\Core_Modules\MultiSite\Model\Entity\SubscriptionInfo $subscription);
+    public function removeSubscription($subscriptionId);
     
+     /**
+     * Creates a user account
+      * 
+     * @param string $domain
+     * @param string $role
+     * @param string $password
+     * @return 
+     */
+    public function createUserAccount($domain, $role, $password);
+    
+    /**
+     * Delete a user account
+     * 
+     * @param $userAccountId
+     * @return 
+     */
+    public function deleteUserAccount($userAccountId);
+
     /**
      * Creaye a Customer
      * @param \Cx\Core\Model\Model\Entity\Subscription

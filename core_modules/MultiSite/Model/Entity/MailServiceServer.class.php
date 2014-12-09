@@ -58,6 +58,11 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     protected $websites;
     
     /**
+     * array $config
+     */
+    protected $config = array();
+    
+    /**
      * Constructor
      */
     public function __construct() {
@@ -67,6 +72,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         $this->hostname = '';
         $this->authUsername = '';
         $this->authPassword = '';
+        $this->config = '';
         $this->websites = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
@@ -190,13 +196,34 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         return $this->authPassword;
     }
     
+        /**
+     * Set config
+     * 
+     * @param array $config
+     */
+    public function setConfig($config)
+    {
+        $this->config = $config;
+    }
+    
     /**
-     *  Set the websites
+     * Get config
+     * 
+     * @return array $config
+     */
+    public function getConfig() 
+    {
+        return $this->config;
+    }
+
+    /**
+     *  Add the websites
      * 
      * @param object $websites
      */
-    public function setWebsites(\Cx\Core_Modules\MultiSite\Model\Entity\Website $websites) {
-        $this->websites = $websites;
+    public function addWebsites(\Cx\Core_Modules\MultiSite\Model\Entity\Website $websites) {
+        $this->websites[] = $websites;
+        $websites->setMailServiceServer($this);
     }
     
     /**
@@ -206,5 +233,36 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
      */
     public function getWebsites() {
         return $this->websites;
+    }
+    
+    /**
+     * Create a new subscription
+     * 
+     * @return integer $accountId
+     */
+    public function createAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website) {
+        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        $domain = $website->getBaseDn();
+        $planId = isset($this->config['planId']) ? $this->config['planId'] : null;
+        $subscriptionId = $hostingController->createSubscription($domain, $planId, 1);
+        if ($subscriptionId) {
+            $this->addWebsites($website);
+            $role = isset($this->config['userRoleId']) ? $this->config['userRoleId'] : null;
+            $hostingController->createUserAccount('info@'.$domain, $role, \User::make_password(8, true));
+        }
+        return $subscriptionId;
+    }
+    
+    /**
+     * Delete a subscription
+     * 
+     * @param integer $accountId
+     */
+    public function deleteAccount($accountId) {
+        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        if($hostingController->removeSubscription($accountId)) {
+            return true;
+        }
+        return false;
     }
 }    

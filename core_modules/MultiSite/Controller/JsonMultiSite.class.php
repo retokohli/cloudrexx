@@ -2944,4 +2944,99 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
         }
     }
+    
+    /**
+     * Create the mail service account
+     * 
+     * @param array $params
+     * @return boolean
+     * 
+     * @throws MultiSiteJsonException
+     */    
+    public function createMailServiceAccount($params) {
+        if (empty($params['post']['websiteId'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::createMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
+        }
+               
+        try {
+            // check the mode
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    if (!$website) {
+                        throw new MultiSiteJsonException('JsonException::createMailServiceAccount() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                    }
+                    $defaultMailServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')
+                                                               ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer')));
+                    $accountId = $defaultMailServiceServer->createAccount($website);
+                    $website->setMailAccountId($accountId);
+                    \Env::get('em')->flush();
+                    return array('status' => 'success');
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                case ComponentController::MODE_SERVICE:
+                    // forward call to manager server. 
+                    $response = self::executeCommandOnManager('createMailServiceAccount', $params);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return true;
+                    } else {
+                        throw new MultiSiteJsonException('JsonException::createMailServiceAccount() failed: Unable to create mail service account');
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception $ex) {
+            throw new MultiSiteJsonException('JsonMultiSite::createMailServiceAccount() failed: To create mail service server'. $ex->getMessage());
+        }
+    }
+    
+    /**
+     * Delete the mail service account
+     * 
+     * @param array $params
+     * @return boolean
+     * 
+     * @throws MultiSiteJsonException
+     */
+    public function deleteMailServiceAccount($params) {
+        if (empty($params['post']['websiteId'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::deleteMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
+        }
+        try {
+            // check the mode
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    if (!$website) {
+                        throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                    }
+                    $accountId = $website->getMailAccountId();
+                    if (!empty($accountId)) {
+                        $mailServiceServer = $website->getMailServiceServer();
+                        $mailServiceServer->deleteAccount($accountId);
+                        //TODO remove the association between website and mail service server
+                    }
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                case ComponentController::MODE_SERVICE:
+                    // forward call to manager server. 
+                    $response = executeCommandOnManager('deleteMailServiceAccount', $params);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return true;
+                    } else {
+                        throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: Unable to delete mail service account');
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::deleteMailServiceAccount() failed: To create mail service server'. $e->getMessage());
+        }
+    }
 }

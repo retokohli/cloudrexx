@@ -294,6 +294,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'authUsername' => array(
                             'showOverview' => false,
                         ),
+                        'config' => array(
+                            'showOverview' => false,
+                        ),
                         'label' => array(
                             'header' => 'Label',
                         ),

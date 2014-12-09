@@ -517,34 +517,43 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
-     * Create a Customer
-     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Customer $customer
-     * @param \Cx\Core\Model\Model\Entity\SubscriptionInfo $subscription
-     * @return $response array
+     * Create a subscription
+     * 
+     * @param string $domain
+     * @param int $planId
+     * @param string $subscriptionStatus
+     * @param int $customerId default null
+     * 
+     * @return $response
      */
-    public function createSubscription(\Cx\Core_Modules\MultiSite\Model\Entity\Customer $customer,\Cx\Core_Modules\MultiSite\Model\Entity\SubscriptionInfo $subscription){
+    public function createSubscription($domain, $planId, $subscriptionStatus = 0, $customerId = null) {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);       
         $webspace = $xmldoc->createElement('webspace');
         $packet->appendChild($webspace);
         $addTag = $xmldoc->createElement('add');
         $webspace->appendChild($addTag);
+
+        /*--gen_setup data Start--*/
         $genSetup = $xmldoc->createElement('gen_setup');
         $addTag->appendChild($genSetup);
-        /*--gen_setup data Start--*/
-        $subscriptionName = $xmldoc->createElement('name',$subscription->getSubscriptionName());
+        $subscriptionName = $xmldoc->createElement('name', $domain);
         $genSetup->appendChild($subscriptionName);
-        $ownerId = $xmldoc->createElement('owner-id',$customer->getCustomerId());
-        $genSetup->appendChild($ownerId);
-        
-        $ipAddress = $xmldoc->createElement('ip_address',$this->ip);
-        $genSetup->appendChild($ipAddress);
-        $status = $xmldoc->createElement('status', $subscription->getSubscriptionStatus());      
+        if ($customerId) {
+            $ownerId = $xmldoc->createElement('owner-id', $customerId);
+            $genSetup->appendChild($ownerId);
+        }
+        $status = $xmldoc->createElement('status', $subscriptionStatus);      
         $genSetup->appendChild($status);
         /*--gen_setup data End--*/
+                
+        if ($planId) {
+            $planId = $xmldoc->createElement('plan-id', $planId);
+            $addTag->appendChild($planId);
+        }
+
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->webspace->{'add'}->result;
-        $errcode = $resultNode->errcode;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
             \DBG::dump($xmldoc->saveXML());
@@ -552,25 +561,30 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in creating Subscription: {$error}");
         }
-        return $resultNode;	
+        return $resultNode->id;	
     }
     
     /**
-     * Removes a Subscription
-     * @param \Cx\Core\Model\Model\Entity\Subscription
-     * @throws MultiSiteDbException On error
+     * Remove a subscription
+     * 
+     * @param int $subscriptionId
+     * @throws ApiRequestException on error
      */
-    function removeSubscription(\Cx\Core_Modules\MultiSite\Model\Entity\SubscriptionInfo $subscription){
+    function removeSubscription($subscriptionId){
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
-        $domain = $xmldoc->createElement('domain');
-        $packet->appendChild($domain);
-        $subscriptionId = $subscription->getSubscriptionId();
-        $delTag = $xmldoc->createElement('del',$subscriptionId);
-        $domain->appendChild($delTag);
+        $webspace = $xmldoc->createElement('webspace');
+        $packet->appendChild($webspace);
+        $delTag = $xmldoc->createElement('del');
+        $webspace->appendChild($delTag);
+        $filter = $xmldoc->createElement('filter');
+        $delTag->appendChild($filter);
+        
+        $id = $xmldoc->createElement('id', $subscriptionId);
+        $filter->appendChild($id);
+        
         $response = $this->executeCurl($xmldoc);
-        $resultNode = $response->domain->{'del'}->result;
-        $errcode = $resultNode->errcode;
+        $resultNode = $response->webspace->{'del'}->result;
         $systemError = $response->system->errtext;
         if ('error' == (string)$resultNode->status || $systemError) {
             \DBG::dump($xmldoc->saveXML());
@@ -578,9 +592,86 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in deleting Subscription: {$error}");
         }
-        return $response;    
+        return $resultNode->id;    
     }
     
+    /**
+     * Create user account
+     * 
+     * @param string $name
+     * @param string $role
+     * @param string $password
+     * 
+     * @return integer id
+     * @throws ApiRequestException
+     */
+    public function createUserAccount($name, $role, $password) {
+                
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        $user = $xmldoc->createElement('user');
+        $packet->appendChild($user);       
+        $addTag = $xmldoc->createElement('add');
+        $user->appendChild($addTag);
+        
+        /*--gen_info data Start--*/
+        $genInfo = $xmldoc->createElement('gen_info');
+        $addTag->appendChild($genInfo);              
+        $login = $xmldoc->createElement('login', $name);
+        $genInfo->appendChild($login);
+        $password = $xmldoc->createElement('passwd', $password);
+        $genInfo->appendChild($password);
+        $name = $xmldoc->createElement('name', $name);
+        $genInfo->appendChild($name);
+        /*--gen_info data End--*/
+        
+        $roles = $xmldoc->createElement('roles');
+        $addTag->appendChild($roles);
+        $roleName = $xmldoc->createElement('name', $role);
+        $roles->appendChild($roleName);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->user->{'add'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError)?$systemError:$resultNode->errtext);
+            throw new ApiRequestException("Error in creating Subscription: {$error}");
+        }
+        return $resultNode->id;	
+    }
+    
+    /**
+     * Delete user account
+     * 
+     * @param int $userAccountId
+     * @throws ApiRequestException
+     */
+    public function deleteUserAccount($userAccountId) {
+
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        $user = $xmldoc->createElement('user');
+        $packet->appendChild($user);
+        $delTag = $xmldoc->createElement('del');
+        $user->appendChild($delTag);
+        $filter = $xmldoc->createElement('filter');
+        $delTag->appendChild($delTag);
+        $guid = $xmldoc->createElement('guid', $userAccountId);
+        $filter->appendChild($guid);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->user->{'del'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError)?$systemError:$resultNode->errtext);
+            throw new ApiRequestException("Error in deleting Subscription: {$error}");
+        }
+        return $resultNode->id;          
+    }
     /**
      * Add DNS records
      * @param string    $type   DNS-Record type

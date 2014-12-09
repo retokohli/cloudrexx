@@ -19,7 +19,9 @@ Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer:
       type: string
     authPassword:
       type: string
-      
+    config:
+      type: array
+        
   oneToMany: # inverse side
     websites:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
