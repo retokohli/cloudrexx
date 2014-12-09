@@ -1,0 +1,27 @@
+Cx\Core\Wysiwyg\Model\Entity\Wysiwyg:
+  type: entity
+  table: wysiwyg
+  fields:
+    id:
+      id: true
+      type: integer
+      length: 11
+      generator:
+        strategy: AUTO
+    title:
+      type: string
+      length: 255
+      nullable: false
+    description:
+      type: text
+      nullable: false
+    imagePath:
+      type: string
+      length: 255
+      nullable: false
+    htmlContent:
+      type: text
+      nullable: true
+    inactive:
+      type: boolean
+      nullable: true
