@@ -639,7 +639,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
             throw new ApiRequestException("Error in creating Subscription: {$error}");
         }
-        return $resultNode->id;	
+        return $resultNode->guid;	
     }
     
     /**
