@@ -1,59 +1,41 @@
-<form role="form" action="#" id="multisite_user_profile_form">
-    <div class="modal-header">
+<div class="grid-elm grid-align-1-1 grid-offset">             
+    <form role="form" action="#" id="multisite_user_profile_form">                       
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="multisite_settings_profile_label">Profile</h4>
-    </div>
+        <h2>Profil</h2>   
+        
+        <fieldset>
+            <!-- BEGIN multisite_user_profile_attribute_gender -->       
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER}
+            </div>
+            <!-- END multisite_user_profile_attribute_gender --> 			
 
-    <div class="modal-body">
+            <!-- BEGIN multisite_user_profile_attribute_title -->     
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE}
+            </div>
+            <!-- END multisite_user_profile_attribute_title --> 			
 
-        <!-- BEGIN multisite_user_profile_attribute_gender -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_DESC}</label>
-            <select class="form-control" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_NAME}" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_ID}">
-                <!-- BEGIN multisite_user_profile_attribute_gender_children -->
-                <option value="{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_CHILD_VALUE}" {MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_CHILD_SELECTED}>
-                    {MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_CHILD_DESC}
-                </option>
-                <!-- END multisite_user_profile_attribute_gender_children -->
-            </select>
-        </div>
-        <!-- END multisite_user_profile_attribute_gender --> 			
+            <!-- BEGIN multisite_user_profile_attribute_firstname -->   
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}
+            </div>
+            <!-- END multisite_user_profile_attribute_firstname --> 			
 
-        <!-- BEGIN multisite_user_profile_attribute_title -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_DESC}</label>
-            <select class="form-control" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_NAME}" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_ID}">
-                <!-- BEGIN multisite_user_profile_attribute_title_children -->
-                <option value="{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_CHILD_VALUE}" {MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_CHILD_SELECTED}>
-                    {MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_CHILD_DESC}
-                </option>
-                <!-- END multisite_user_profile_attribute_title_children -->
-            </select>
-        </div>
-        <!-- END multisite_user_profile_attribute_title --> 			
+            <!-- BEGIN multisite_user_profile_attribute_lastname -->   
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}
+            </div>
+            <!-- END multisite_user_profile_attribute_lastname --> 		
+            
+            <div class="row">
+                <button type="submit" class="save">Speichern</button>
+                <button type="button" class="" data-dismiss="modal">Schliessen</button>
+            </div>
+        <fieldset>
 
-        <!-- BEGIN multisite_user_profile_attribute_firstname -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>
-            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_VALUE}">
-        </div>
-        <!-- END multisite_user_profile_attribute_firstname --> 			
-
-        <!-- BEGIN multisite_user_profile_attribute_lastname -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>
-            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_VALUE}">
-        </div>
-        <!-- END multisite_user_profile_attribute_lastname --> 		
-
-    </div>
-
-    <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-
-</form>
+    </form>
+</div>
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(document).ready(function() {

@@ -1,58 +1,47 @@
-<form role="form" action="#" id="multisite_user_address_form">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="multisite_settings_address_label">Address</h4>
-    </div>
+<div class="grid-elm grid-align-1-1 grid-offset">              
+    <form role="form" action="#" id="multisite_user_address_form">         
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>     
+        <h2>Adresse</h2> 
+          
+        <fieldset>  
+            <!-- BEGIN multisite_user_profile_attribute_company -->   
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY}
+            </div>
+            <!-- END multisite_user_profile_attribute_company --> 			
 
-    <div class="modal-body">
-        <!-- BEGIN multisite_user_profile_attribute_company -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_DESC}</label>
-            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_VALUE}">
-        </div>
-        <!-- END multisite_user_profile_attribute_company --> 			
+            <!-- BEGIN multisite_user_profile_attribute_address -->  
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS}
+            </div>
+            <!-- END multisite_user_profile_attribute_address --> 			
 
-        <!-- BEGIN multisite_user_profile_attribute_address -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_DESC}</label>
-            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_VALUE}">
-        </div>
-        <!-- END multisite_user_profile_attribute_address --> 			
+            <!-- BEGIN multisite_user_profile_attribute_city -->   
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY}
+            </div>
+            <!-- END multisite_user_profile_attribute_city --> 			
 
-        <!-- BEGIN multisite_user_profile_attribute_city -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}</label>
-            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_VALUE}">
-        </div>
-        <!-- END multisite_user_profile_attribute_city --> 			
+            <!-- BEGIN multisite_user_profile_attribute_zip -->  
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}</label> {MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP}
+            </div>
+            <!-- END multisite_user_profile_attribute_zip --> 			
 
-        <!-- BEGIN multisite_user_profile_attribute_zip -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}</label>
-            <input type="text" class="form-control" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_NAME}" value="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_VALUE}">
-        </div>
-        <!-- END multisite_user_profile_attribute_zip --> 			
+            <!-- BEGIN multisite_user_profile_attribute_country -->                   
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
+            </div>
+            <!-- END multisite_user_profile_attribute_country -->         
+                
+            <div class="row">
+                <button type="submit" class="save">Speichern</button>
+                <button type="button" class="" data-dismiss="modal">Schliessen</button>
+            </div>
+        <fieldset>     
+    </form>
+</div>  
 
-        <!-- BEGIN multisite_user_profile_attribute_country -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>
-            <select class="form-control" name="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_NAME}" id="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">
-                <!-- BEGIN multisite_user_profile_attribute_country_children -->
-                <option value="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_CHILD_VALUE}" {MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_CHILD_SELECTED}>
-                    {MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_CHILD_DESC}
-                </option>
-                <!-- END multisite_user_profile_attribute_country_children -->
-            </select>
-        </div>
-        <!-- END multisite_user_profile_attribute_country -->
-    </div>
-
-    <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-
-</form>
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(document).ready(function() {

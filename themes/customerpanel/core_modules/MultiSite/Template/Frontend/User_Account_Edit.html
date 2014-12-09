@@ -1,38 +1,38 @@
-<form role="form" action="#" id="multisite_user_account_form">
-    <div class="modal-header">
+<div class="grid-elm grid-align-1-1 grid-offset">
+    <form role="form" action="#" id="multisite_user_account_form">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="multisite_settings_account_label">Account</h4>
-    </div>
-
-    <div class="modal-body">
-        <!-- BEGIN multisite_user_account_email -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_ACCOUNT_EMAIL_ID}">{MULTISITE_USER_ACCOUNT_EMAIL_DESC}</label>
-            <input type="text" class="form-control" id="{MULTISITE_USER_ACCOUNT_EMAIL_ID}" name="{MULTISITE_USER_ACCOUNT_EMAIL_NAME}" value="{MULTISITE_USER_ACCOUNT_EMAIL_VALUE}">
-        </div>
-        <!-- END multisite_user_account_email --> 			
-
-        <!-- BEGIN multisite_user_account_password -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_ACCOUNT_PASSWORD_ID}">{MULTISITE_USER_ACCOUNT_PASSWORD_DESC}</label>
-            <input type="password" class="form-control" id="{MULTISITE_USER_ACCOUNT_PASSWORD_ID}" name="{MULTISITE_USER_ACCOUNT_PASSWORD_NAME}" value="{MULTISITE_USER_ACCOUNT_PASSWORD_VALUE}">
-        </div>
-        <!-- END multisite_user_account_password -->
+        <h2>Account</h2>
         
-        <!-- BEGIN multisite_user_account_password_confirmed -->
-        <div class="form-group">
-            <label for="{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_ID}">{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_DESC}</label>
-            <input type="password" class="form-control" id="{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_ID}" name="{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_NAME}" value="{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_VALUE}">
-        </div>
-        <!-- END multisite_user_account_password_confirmed -->
-    </div>
+        <fieldset>
+            <!-- BEGIN multisite_user_account_email -->
+            <div class="row">
+                <label for="{MULTISITE_USER_ACCOUNT_EMAIL_ID}">{MULTISITE_USER_ACCOUNT_EMAIL_DESC}</label>
+                <input type="text" id="{MULTISITE_USER_ACCOUNT_EMAIL_ID}" name="{MULTISITE_USER_ACCOUNT_EMAIL_NAME}" value="{MULTISITE_USER_ACCOUNT_EMAIL_VALUE}">
+            </div>  
+            <!-- END multisite_user_account_email -->                                    
+             
+            <!-- BEGIN multisite_user_account_password -->       
+            <div class="row">
+                <label for="{MULTISITE_USER_ACCOUNT_PASSWORD_ID}">{MULTISITE_USER_ACCOUNT_PASSWORD_DESC}</label>       
+                <input type="password" id="{MULTISITE_USER_ACCOUNT_PASSWORD_ID}" name="{MULTISITE_USER_ACCOUNT_PASSWORD_NAME}" value="{MULTISITE_USER_ACCOUNT_PASSWORD_VALUE}">
+            </div>
+            <!-- END multisite_user_account_password -->
+            
+            <!-- BEGIN multisite_user_account_password_confirmed -->
+            <div class="row">
+                <label for="{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_ID}">{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_DESC}</label> 
+                <input type="password"  id="{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_ID}" name="{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_NAME}" value="{MULTISITE_USER_ACCOUNT_PASSWORD_CONFIRMED_VALUE}">
+            </div>
+            <!-- END multisite_user_account_password_confirmed -->
+            
+            <div class="row">
+                <button type="submit" class="save">Speichern</button>
+                <button type="button" class="" data-dismiss="modal">Schliessen</button>
+            </div>
+        <fieldset>
+    </form>
+</div>
 
-    <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-
-</form>
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(document).ready(function() {
@@ -64,5 +64,5 @@ jQuery(document).ready(function() {
         return false;
     });
 });
-/* ]]> */
+/* }> */
 </script>
