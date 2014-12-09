@@ -24,14 +24,14 @@
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,300,600,400' rel='stylesheet' type='text/css'>
         <link type="images/x-icon" rel="icon" href="themes/highwind/images/favicon.ico" />
         <link rel="apple-touch-icon" href="/themes/highwind/images/logo_social_media.jpg" />
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-        <link type="text/css" rel="stylesheet" href="themes/highwind/layout.css" />
-        <link type="text/css" rel="stylesheet" href="themes/highwind/style.css" />
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">        
         {JAVASCRIPT}
         {STYLE_FILE}
         {LOGIN_INCLUDE}
-        <link type="text/css" rel="stylesheet" href="themes/highwind/modules.css" />
         <link type="text/css" rel="stylesheet" href="themes/highwind/text.css" />
+        <link type="text/css" rel="stylesheet" href="themes/highwind/layout.css" />
+        <link type="text/css" rel="stylesheet" href="themes/highwind/style.css" />
+        <link type="text/css" rel="stylesheet" href="themes/highwind/modules.css" />        
         <script type="text/javascript" src="themes/highwind/modernizr.js"></script>
         <script type="text/javascript" src="themes/highwind/jquery.cycle.js"></script>
         <script type="text/javascript" src="themes/highwind/javascript.js"></script>
@@ -42,23 +42,17 @@
                 <div class="header">
                     <div class="container-fluid">
                         <div class="row">
+                            <p class="toggle-container">&nbsp;
+                                <a href="javascript:void(0)" class="nav-toggle btn">&nbsp;Skip to&nbsp;navigation	&nbsp;</a>&nbsp;
+                            </p>
                             <a class="site-intro" href="javascript:void();">
                                 <img src="themes/highwind/images/man.jpeg">
                                 <h1 class="title">James Koster</h1>
                                 <h2 class="description">WEB DUDE.</h2>
                             </a>
 
-                            <div class="visible-lg main-nav" id="navigation-wrapper"><div class="highwind-navigation">{NAVBAR_FILE}</div></div>                     
-                            <div class="navbar-header hidden-lg">
-                                <a class="mobile-reg" href="{NODE_ACCESS_SIGNUP}"></a>
-                                <a class="mobile-login" href="{NODE_LOGIN}"></a>
-                                <button class="navbar-toggle btn-navbar">
-                                    <span class="sr-only">Toggle navigation</span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                    <span class="icon-bar"></span>
-                                </button>
-                            </div>
+                            <div class="main-nav" id="navigation-wrapper"><div class="highwind-navigation">{NAVBAR_FILE}</div></div>                     
+                            
                         </div>
                     </div>
                 </div>
@@ -66,6 +60,10 @@
                     {CONTENT_FILE}
                 </section>
                 <footer id="footer" class="inner">
+                    <div class="footer-content">
+                        <a href="javascript:void(0)" class="back-to-top btn">
+			Back to top		</a>
+                    </div>
                    
                 </footer>
                 <div class="mobile-nav">

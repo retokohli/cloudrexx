@@ -65,7 +65,7 @@ body {
     line-height: 32px;
     background: #eff4f3;
     padding-right: 0 !important;
-    font-size: 18px;
+    font-size: 16px;
 }
 body a {
     color: #67bfb6;
@@ -117,7 +117,7 @@ h3 {
     font-weight: 600;
 }
 h4 {
-    font-size: 17px;
+    font-size: 20px;
 }
 h5 {
     font-size: 16px;
@@ -289,7 +289,8 @@ h1,
 
 h4,
 .h4 {
-    font-size: 17px;
+    font-size: 20px;
+    font-weight: 600;
 }
 h5,
 .h5 {
@@ -366,6 +367,8 @@ modal-footer {
 img {
     border-radius: 3px;
     -webkit-border-radius: 3px;
+    max-width: 100%;
+    height: auto;
 }
 hr {
     background: #7a7a7a;
