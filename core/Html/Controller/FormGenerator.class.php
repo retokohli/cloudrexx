@@ -37,7 +37,10 @@ class FormGenerator {
         foreach ($metadata->getColumnNames() as $field) {
             $type = $metadata->fieldMappings[$field]['type'];//*/
         foreach ($entity as $field=>$value) {
-            $type = $options[$field]['type'];
+            if (!empty($options[$field]['type'])) {
+                $type = $options[$field]['type'];
+            }
+
             if (is_object($value)) {
                 if ($value instanceof \Cx\Model\Base\EntityBase) {
                     $type = 'Cx\Model\Base\EntityBase';
