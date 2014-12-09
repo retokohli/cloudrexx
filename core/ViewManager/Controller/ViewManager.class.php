@@ -117,7 +117,7 @@ class ViewManager
         global  $_ARRAYLANG, $objTemplate, $objDatabase;
 
         //add preview.gif to required files
-        $this->filenames[] = 'images/preview.gif';
+        $this->filenames[] = \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
         //get path variables
         $this->path = \Env::get('cx')->getWebsiteThemesPath() . '/';
         $this->arrWebPaths  = array(\Env::get('cx')->getWebsiteThemesWebPath() . '/');
