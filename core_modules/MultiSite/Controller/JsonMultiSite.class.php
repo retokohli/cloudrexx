@@ -2766,14 +2766,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function push($param) {
         try {
+            if (empty($param['post']['dataType']) && empty($param['post']['data'])) {
+                return;
+            }
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_SERVICE:
-                    $data = $param['post']['data'];
-                    $class = str_replace('\\\\', '\\', $param['post']['dataType']);
                     
-                    $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($data);
+                    $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($param['post']['data']);
                     $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
-                    $objEntityInterface->setEntityClass($class);
+                    $objEntityInterface->setEntityClass($param['post']['dataType']);
                     
                     $entity = current($objDataSet->export($objEntityInterface));
                     
@@ -2944,4 +2945,3 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
 }
-
