@@ -392,7 +392,7 @@ class File implements FileInterface
         }
 
         clearstatcache();
-        if (file_exists($this->file)) {
+        if (file_exists(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$this->file)) {
             throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
         }
 
