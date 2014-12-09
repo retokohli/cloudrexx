@@ -74,25 +74,58 @@ class FTPFile implements FileInterface
         $this->file = $pathInfo['basename'];
         $path = $pathInfo['dirname'];
 
-        if ($file == \Env::get('cx')->getCodeBasePath()) {
+        if (   $file == \Env::get('cx')->getWebsiteDocumentRootPath()
+            || $file == \Env::get('cx')->getCodeBaseDocumentRootPath()
+        ) {
             $this->file = '';
         }
 
         $this->filePath = $this->getValidFilePath($file, $path);
     }
 
+    /**
+     * Return the path on the FTP server to the document
+     * root of the Website or the Code Base repository.
+     */
     private function getValidFilePath($file, $path)
     {
-        if ($file == \Env::get('cx')->getCodeBasePath()) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+// TODO: Implement support for having a different document root for the Website repository than for the Code Base repository
+        if (strpos($cx->getWebsiteDocumentRootPath(), $cx->getCodeBaseDocumentRootPath()) !== 0) {
+            throw new FTPFileException(__CLASS__.' does not work in case the Code Base and Website repository do not share the same document root.');
+        }
+
+        // define the relative path from the installation's document root to the Website repository
+        $websiteRepositoryOffsetPath = substr($cx->getWebsiteDocumentRootPath(), strlen($cx->getCodeBaseDocumentRootPath()));
+
+        // $file is specified by absolute file system path of operating system to Website repository
+        if ($file == $cx->getWebsiteDocumentRootPath()) {
+            $filePath = $this->ftpConfig['path'] . $websiteRepositoryOffsetPath;
+        // $file is specified by absolute file system path of operating system to Code Base repository
+        } elseif ($file == $cx->getCodeBaseDocumentRootPath()) {
             $filePath = $this->ftpConfig['path'];
-        } elseif (strpos($path, \Env::get('cx')->getCodeBasePath()) === 0) {
-            $filePath = $this->ftpConfig['path'].substr($path, strlen(\Env::get('cx')->getCodeBasePath()));
-        } elseif (\Env::get('cx')->getCodeBaseOffsetPath() && strpos($path, \Env::get('cx')->getCodeBaseOffsetPath()) === 0) {
-            $filePath = $this->ftpConfig['path'].$path;
+        // $path is specified by absolute file system path of operating system to Website repository
+        } elseif (strpos($path, $cx->getWebsiteDocumentRootPath()) === 0) {
+            $filePath = $this->ftpConfig['path'] . $websiteRepositoryOffsetPath . substr($path, strlen($cx->getWebsiteDocumentRootPath()));
+        // $path is specified by absolute file system path of operating system to Code Base repository
+        } elseif (strpos($path, $cx->getCodeBaseDocumentRootPath()) === 0) {
+            $filePath = $this->ftpConfig['path'] . substr($path, strlen($cx->getCodeBaseDocumentRootPath()));
+        // $path is specified by relative path of Website's offset path
+        } elseif ($cx->getWebsiteOffsetPath() && strpos($path, $cx->getWebsiteOffsetPath()) === 0) {
+            $filePath = $this->ftpConfig['path'] . $websiteRepositoryOffsetPath . substr($path, strlen($cx->getWebsiteOffsetPath()));
+        // $path is specified by absolute path from installation path to of Website's data repository
+        } elseif (!empty($websiteRepositoryOffsetPath) && strpos($path, $websiteRepositoryOffsetPath) === 0) {
+            $filePath = $this->ftpConfig['path'] . $path;
+        // $path is specified by absolute path from installation path (without leading slash) to of Website's data repository
+        } elseif (!empty($websiteRepositoryOffsetPath) && strpos('/' . $path, $websiteRepositoryOffsetPath) === 0) {
+            $filePath = $this->ftpConfig['path'] . '/' . $path;
+        // $path is specified by absolute path from Website's document root
         } elseif (strpos($path, '/') === 0) {
-            $filePath = $this->ftpConfig['path']. \Env::get('cx')->getCodeBaseOffsetPath() . $path;
+            $filePath = $this->ftpConfig['path'] . $websiteRepositoryOffsetPath . $path;
+        // $path is unkown -> assuming its relative from Website's document root
         } else {
-            $filePath = $this->ftpConfig['path'] . \Env::get('cx')->getCodeBaseOffsetPath() . '/'.$path;
+            $filePath = $this->ftpConfig['path'] . $websiteRepositoryOffsetPath . '/'.$path;
         }
 
         return preg_replace('#^/+#', '', $filePath);
