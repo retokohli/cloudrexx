@@ -1,115 +1,69 @@
-<div class="grid-elm grid-align-1-1 grid-offset">   
-    <h2>Verwaltung</h2>
-    <button type="button">Ansicht</button>
-    <button type="button">Adminkonsole</button>
-    <button type="button">Deaktivieren</button>
-    <button type="button">L&ouml;schen</button>
+<script type="text/javascript">
+    /* <![CDATA[ */
+    jQuery(document).ready(function() {
+
+        function getQueryParams(qs) {
+            qs = qs.split("+").join(" ");
+            var params = {},
+                    tokens,
+                    re = /[?&]?([^=]+)=([^&]*)/g;
+
+            while (tokens = re.exec(qs)) {
+                params[decodeURIComponent(tokens[1])]
+                        = decodeURIComponent(tokens[2]);
+            }
+
+            return params;
+        }
+
+        var $_GET = getQueryParams(document.location.search);
+        var id = $_GET['id'];
+
+        function  loadContent(jQuerySelector, url) {
+            jQuery.ajax({
+                dataType: 'html',
+                url: url,
+                type: 'GET',
+                success: function(data) {
+                    if (data) {
+                        jQuery(jQuerySelector).html(data);
+                    }
+                },
+                fail: function(data) {
+                }
+            });
+        }
+        loadContent('#multisite_website_info', '/api/MultiSite/Website/Info?id=' + id);
+        loadContent('#multisite_website_admins', '/api/MultiSite/Website/Admins?id=' + id);
+        loadContent('#multisite_website_domains', '/api/MultiSite/Website/Domains?id=' + id);
+        loadContent('#multisite_website_resources', '/api/MultiSite/Website/Resources?id=' + id);
+    });
+    /* ]]> */
+</script>
+<div class="grid-elm grid-align-1-1 grid-offset">
+    <!-- BEGIN showWebsiteDomainName -->
+    <h1>{MULTISITE_WEBSITE_DOMAIN_NAME}</h1>
+    <!-- END showWebsiteDomainName -->
+    <h2>{TXT_MULTISITE_WEBSITE_MANAGEMENT}</h2>
+    <div id='multisite_website_info'>
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
 </div>
 <div class="grid-elm grid-align-1-1 grid-offset">  
-    <h2>Administratoren</h2>                                                              
-    <table>
-        <thead>
-            <tr>     
-                <th width="1%"><input type="checkbox"></th>   
-                <th class="sort">Konto</th>
-                <th class="sort">Name</th>
-                <th class="sort">E-Mail</th>
-                <th class="actions">Funktionen</th>
-            </tr>
-        </thead>
-        <tbody>        
-            <tr>
-                <th width="1%"><input type="checkbox"></th>
-                <td>smith</td>
-                <td>Peter Smith</td>
-                <td><a>peter.smith@example.com</a></td>        
-                <td class="actions"><a class="entypo-tools" href="#"></a>&nbsp;<a class="entypo-trash" href="#"></a></td>
-            </tr>     
-            <tr>
-                <th width="1%"><input type="checkbox"></th>
-                <td>jdoe</td>
-                <td>John Doe</td>
-                <td><a>jd@example.com</a></td>
-                <td class="actions"><a class="entypo-tools" href="#"></a>&nbsp;<a class="entypo-trash" href="#"></a></td>
-            </tr>   
-        </tbody> 
-        <!-- <tfoot>
-            <tr>
-                <td class="right" width="1%"><span class="entypo-level-down"></span></td>
-                <td><a href="#">Alle auswählen</a> | <a href="#">Auswahl aufheben</a></td>
-                <td colspan="3"><br /></td>
-            </tr>
-        </tfoot> -->
-    </table>     
-    <button type="button" class="add">Account hinzufügen</button>
+    <h2>{TXT_MULTISITE_WEBSITE_ADMINISTRATORS}</h2> 
+    <div id='multisite_website_admins'>
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
 </div>
 <div class="grid-elm grid-align-1-1 grid-offset">  
-    <h2>Domains</h2>                                             
-    <table>
-        <thead>
-            <tr>
-                <th width="1%"><input type="checkbox"></th>   
-                <th class="sort">Name</th>
-                <th class="actions">Funktionen</th>
-            </tr>
-        </thead>
-        <tbody>      
-            <tr>
-                <td width="1%"><input type="checkbox"></td>
-                <td>foo.cloudrexx.com</td>
-                <td class="actions"><a class="entypo-tools" href="#"></a>&nbsp;<a class="entypo-trash" href="#"></a></td>
-            </tr>  
-            <tr>
-                <td width="1%"><input type="checkbox"></td>
-                <td>foo.ch</td>
-                <td class="actions"><a class="entypo-tools" href="#"></a>&nbsp;<a class="entypo-trash" href="#"></a></td>
-            </tr>  
-            <tr>
-                <td width="1%"><input type="checkbox"></td>
-                <td>foobar.ch</td>
-                <td class="actions"><a class="entypo-tools" href="#"></a>&nbsp;<a class="entypo-trash" href="#"></a></td>
-            </tr>   
-        </tbody>
-        <!-- <tfoot>
-            <tr>
-                <td class="right" width="1%"><span class="entypo-level-down"></span></td>
-                <td><a href="#">Alle auswählen</a> | <a href="#">Auswahl aufheben</a></td>
-                <td><br /></td>
-            </tr>
-        </tfoot> -->
-    </table>  
-    <button type="button" class="add">Domain hinzufügen</button>
+    <h2>{TXT_MULTISITE_WEBSITE_DOMAINS}</h2>
+    <div id='multisite_website_domains'>
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
 </div>
 <div class="grid-elm grid-align-1-1 grid-offset">  
-    <h2>Ressourcen</h2>                                         
-    <table>
-        <thead>
-            <tr>
-                <th class="sort" width="33%">Funktion</th>
-                <th width="66%">Genutzt / Limite</th>
-            </tr>
-        </thead>
-        <tbody>    
-            <tr>
-                <td>Anzahl Administrator Accounts</td>
-                <td>1 / 1</td>
-            </tr>
-            <tr>
-                <td>Speicherplatz</td>
-                <td>4.3 / 5 GB</td>
-            </tr>
-            <tr>
-                <td>Kontakt Formulare</td>
-                <td>2 / 5</td>
-            </tr>
-            <tr>
-                <td>Shop Produkte</td>
-                <td>23 / 50</td>
-            </tr>
-            <tr>
-                <td>CRM Kunden</td>
-                <td>25 / 50</td>
-            </tr>
-        </tbody>
-    </table>    
-</div>            
+    <h2>{TXT_MULTISITE_WEBSITE_RESOURCES}</h2>
+    <div id='multisite_website_resources'>
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
+</div>
