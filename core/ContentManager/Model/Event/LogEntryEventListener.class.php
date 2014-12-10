@@ -56,10 +56,7 @@ class LogEntryEventListenerException extends \Exception {}
  * @subpackage  model_events
  */
 class LogEntryEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-    public function onFlush($eventArgs) {
-//        global $objCache;
-//        $objCache->clearCache();
-    }
+    public function onFlush($eventArgs) {}
     
     public function onEvent($eventName, $eventArgs) {
         $this->$eventName(current($eventArgs));
