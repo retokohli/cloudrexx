@@ -291,6 +291,48 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         }
                         echo $objTemplate->get();
                         break;
+                        
+                    case 'SubscriptionDetail':
+                        $subscriptionId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : '';
+                        
+                        if (!empty($subscriptionId)) {
+                            $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+                            $subscriptionObj  = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
+                            $product = $subscriptionObj->getProduct();
+                            $website = $subscriptionObj->getProductEntity();
+                           
+                            if (!$subscriptionObj) {
+                                echo 'The given Subscription not exists.';
+                                break;
+                            }
+                            
+                            if (!$website) {
+                                echo 'Website not exists.';
+                                break;
+                            }
+                            $objTemplate->setVariable(array(
+                                'MULTISITE_WEBSITE_NAME'                        => contrexx_raw2xhtml($website->getName()),
+//                                'MULTISITE_WEBSITE_ADMINCONSOLE'                => JsonMultiSite::websiteLogin(array('id' => $website->getId())),
+                                'MULTISITE_WEBSITE_ID'                          => contrexx_raw2xhtml($website->getId()),
+                                'MULTISITE_WEBSITE_FRONTEND_LINK'               => $this->getApiProtocol() . $website->getBaseDn()->getName(),
+                                'MULTISITE_WEBSITE_PRODUCT_NAME'                => contrexx_raw2xhtml($product->getName()),
+                                'MULTISITE_WEBSITE_SUBSCRIPTION_DATE'           => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
+                                'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => $subscriptionObj->getExpirationDate() ? contrexx_raw2xhtml($subscriptionObj->getExpirationDate()->format('d.m.Y')) : '',
+                            ));
+                            
+                            $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) ? true : false;
+                            self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
+                            self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
+                            self::showOrHideBlock($objTemplate, 'showWebsiteView', $status);
+                            self::showOrHideBlock($objTemplate, 'showWebsiteAdminConsole', $status);
+                            self::showOrHideBlock($objTemplate, 'showProductUpgrade', !$product->isUpgradable());
+                            
+                            echo $objTemplate->get();
+                            break;
+                        }
+                        echo 'The Subscription Id should not be empty.';
+                        break;
+                        
                     case 'Payrexx':
                         $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
                         $subscription = !empty($_POST['subscription']) ? $_POST['subscription'] : array();
@@ -379,6 +421,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
+    /**
+     * Show or hide the block based on criteria
+     * 
+     * @param \Cx\Core\Html\Sigma $objTemplate
+     * @param string              $blockName
+     * @param boolean             $status
+     */
+    public static function showOrHideBlock(\Cx\Core\Html\Sigma $objTemplate, $blockName, $status = true) {
+        if ($objTemplate->blockExists($blockName)) {
+            if ($status) {
+                $objTemplate->touchBlock($blockName);
+            } else {
+                $objTemplate->hideBlock($blockName);
+            }
+        } 
+    }
+    
     /**
      * @param array $params the parameters
      */
