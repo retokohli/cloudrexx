@@ -80,9 +80,7 @@
                         <!-- BEGIN postEdit -->
                         <input class="btn btn-default" onclick="location.href = '?section=Forum&amp;cmd=thread&amp;id={FORUM_THREAD_ID}&amp;act=edit&amp;postid={FORUM_POST_ID}';" value="{TXT_FORUM_EDIT}" type="button" />&nbsp;<!-- END postEdit -->
                         <!-- BEGIN postQuote -->
-                        <input class="btn btn-default" onclick="{
-                                FORUM_QUOTE_ONCLICK
-                            }" value="{TXT_FORUM_QUOTE}" type="button" />&nbsp;<!-- END postQuote -->               
+                        <input class="btn btn-default" onclick="{FORUM_QUOTE_ONCLICK}" value="{TXT_FORUM_QUOTE}" type="button" />&nbsp;<!-- END postQuote -->               
                         <!-- BEGIN postDelete -->
                         <input class="btn btn-default" onclick="deletePost('{FORUM_THREAD_ID}', '{FORUM_POST_ID}');
                             return false;" value="{TXT_FORUM_DELETE}" type="button" />&nbsp;
