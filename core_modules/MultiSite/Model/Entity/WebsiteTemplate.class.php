@@ -115,9 +115,9 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
     /**
      * Set websiteServiceServer
      * 
-     * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer $websiteServiceServer
+     * @param mixed $websiteServiceServer \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer | null
      */
-    public function setWebsiteServiceServer(WebsiteServiceServer $websiteServiceServer) 
+    public function setWebsiteServiceServer($websiteServiceServer) 
     {
         $this->websiteServiceServer = $websiteServiceServer;
     }
