@@ -362,7 +362,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         }
 
                         //Show the Website Admin and Backend group users
-                        if ($objTemplate->blockExists('showWebsiteAdminDetails')) {
+                        if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
                             $websiteAdminUsers = $website->getAdminUsers();
                             foreach ($websiteAdminUsers as $websiteAdminUser) {
                                 $objTemplate->setVariable(array(
@@ -371,7 +371,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     'MULTISITE_WEBSITE_USER_NAME' => $websiteAdminUser['firstname'] . ' ' . $websiteAdminUser['lastname'],
                                     'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser['email'],
                                 ));
-                                $objTemplate->parse('showWebsiteAdminDetails');
+                                $objTemplate->parse('showWebsiteAdminUsers');
                             }
                         }
 
