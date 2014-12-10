@@ -63,14 +63,7 @@ class NodeEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $nodeRepo->removeFromTree($entity);
     }
     
-    public function onFlush($eventArgs) {
-        global $objCache;
-        /*
-         * Really unneccessary, because we do not use resultcache 
-         * @see http://bugs.contrexx.com/contrexx/ticket/2339
-         */
-        //$objCache->clearCache();
-    }
+    public function onFlush($eventArgs) {}
 
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
