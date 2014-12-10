@@ -640,11 +640,7 @@
 </script>      
 
 
-<form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']);
-        {
-            CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS
-        }
-        return formCheck();">
+<form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']); {CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS} return formCheck();">
     <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
     <input type="hidden" name="copy" value="{CALENDAR_EVENT_COPY}" />
     <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
