@@ -67,6 +67,9 @@ body {
     padding-right: 0 !important;
     font-size: 16px;
 }
+body {
+    word-wrap: break-word;   
+}
 body a {
     color: #67bfb6;
     text-decoration: none;

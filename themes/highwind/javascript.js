@@ -108,7 +108,52 @@
         });
         // Add .parent class to appropriate menu items
         $('ul.menu').parent().addClass('parent');
+        
+        // Add the 'show-nav' class to the body when the nav toggle is clicked
+    jQuery( '.nav-toggle' ).click(function(e) {
 
+        // Prevent default behaviour
+        e.preventDefault();
+
+        // Add the 'show-nav' class
+        jQuery( 'body' ).toggleClass( 'show-nav' );
+
+    });
+
+
+    // Remove the 'show-nav' class from the body when the nav-close anchor is clicked
+    jQuery('.nav-close').click(function(e) {
+
+        // Prevent default behaviour
+        e.preventDefault();
+
+        // Remove the 'show-nav' class
+        jQuery( 'body' ).removeClass( 'show-nav' );
+    });
+    
+    if (jQuery(window).width() < 991) {
+        if (jQuery('body')[0].addEventListener){
+            document.addEventListener('touchstart', function(e) {
+            if ( jQuery( 'body' ).hasClass( 'show-nav' ) && !hasParent( e.target, 'navigation' ) ) {
+                // Prevent default behaviour
+                e.preventDefault();
+
+                // Remove the 'show-nav' class
+                jQuery( 'body' ).removeClass( 'show-nav' );
+            }
+        }, false);
+        } else if (jQuery('body')[0].attachEvent){
+            document.attachEvent('ontouchstart', function(e) {
+            if ( jQuery( 'body' ).hasClass( 'show-nav' ) && !hasParent( e.target, 'navigation' ) ) {
+                // Prevent default behaviour
+                e.preventDefault();
+
+                // Remove the 'show-nav' class
+                jQuery( 'body' ).removeClass( 'show-nav' );
+            }
+        });
+        }
+    }
         /**
          * Scroll to top
          */
