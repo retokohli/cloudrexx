@@ -395,19 +395,19 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
                         if(($arrInputfield['id'] == 2 && $objForms->arrForms[$this->intFormId]['formUseLevel']) || ($arrInputfield['id'] == 1 && $objForms->arrForms[$this->intFormId]['formUseCategory'])) {
 	                        if($arrInputfield['id'] == 2) {
-	                            $objLevel = new MediaDirectoryLevel(null, null, 0, $this->moduleName);
-                                $arrSelectorOptions = $objLevel->listLevels($objTpl, 4, null, null, $intEntryId);
+	                            $objLevel = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+                                    $arrSelectorOptions = $objLevel->listLevels($objTpl, 4, null, null, $intEntryId);
 	                            $strSelectedOptionsName = "selectedLevels";
 	                            $strNotSelectedOptionsName = "deselectedLevels";
 	                        } else {
-	                            $objCategory = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
+	                            $objCategory = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
 	                            $arrSelectorOptions = $objCategory->listCategories($objTpl, 4, null, null, $intEntryId);
 	                            $strSelectedOptionsName = "selectedCategories";
 	                            $strNotSelectedOptionsName = "deselectedCategories";
 	                        }
                         	
                         	$strInputfield .= '<div class="mediadirSelector container-fluid"><div class="row"><div class="col-md-offset-3">';
-	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12"><div class="row"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple">';
+	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12 mediadirSelectorLeft"><div class="row"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple">';
 	                        $strInputfield .= $arrSelectorOptions['not_selected'];
 	                        $strInputfield .= '</select></div></div>';
 	                        $strInputfield .= '<div class="mediadirSelectorCenter col-md-2 col-sm-12 col-xs-12">';
