@@ -103,6 +103,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
         \LinkGenerator::parseTemplate($pageContent, true, new \Cx\Core\Net\Model\Entity\Domain(\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')));
         $objTemplate = new \Cx\Core\Html\Sigma();
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTemplate);
         $objTemplate->setTemplate($pageContent);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -342,6 +344,60 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             break;
                         }
                         echo 'The Subscription Id should not be empty.';
+                        break;
+                        
+                    case 'Website':
+                        $websiteId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : '';
+
+                        if (empty($websiteId)) {
+                            echo 'Website ID is empty.';
+                            break;
+                        }
+
+                        $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                        $website = $websiteServiceRepo->findOneById($websiteId);
+                        if (!$website) {
+                            echo 'website is not exists';
+                            break;
+                        }
+
+                        //Show the Website Admin and Backend group users
+                        if ($objTemplate->blockExists('showWebsiteAdminDetails')) {
+                            $websiteAdminUsers = $website->getAdminUsers();
+                            foreach ($websiteAdminUsers as $websiteAdminUser) {
+                                $objTemplate->setVariable(array(
+                                    'MULTISITE_WEBSITE_USER_ID' => $websiteAdminUser['id'],
+                                    'MULTISITE_WEBSITE_USER_ACCOUNT_NAME' => $websiteAdminUser['username'],
+                                    'MULTISITE_WEBSITE_USER_NAME' => $websiteAdminUser['firstname'] . ' ' . $websiteAdminUser['lastname'],
+                                    'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser['email'],
+                                ));
+                                $objTemplate->parse('showWebsiteAdminDetails');
+                            }
+                        }
+
+                        //Show the Website Domain Alias name
+                        if ($objTemplate->blockExists('showWebsiteDomainAliases')) {
+                            $websiteDomainAliases = $website->getDomainAliases();
+                            foreach ($websiteDomainAliases as $domainAlias) {
+                                $objTemplate->setVariable(array(
+                                    'MULTISITE_WEBSITE_DOMAIN_ALIAS' => contrexx_raw2xhtml($domainAlias->getName()),
+                                ));
+                                $objTemplate->parse('showWebsiteDomainAliases');
+                            }
+                            self::showOrHideBlock($objTemplate, 'showNoWebsiteDomainAliasFound', !$websiteDomainAliases ? true : false);
+                        }
+
+                        //show the website's domain name
+                        if ($objTemplate->blockExists('showWebsiteDomainName')) {
+                            $domain = $website->getBaseDn();
+                            if ($domain) {
+                                $objTemplate->setVariable(array(
+                                    'MULTISITE_WEBSITE_DOMAIN_NAME' => contrexx_raw2xhtml($domain->getName()),
+                                ));
+                            }
+                        }
+                        
+                        echo $objTemplate->get();
                         break;
                         
                     case 'Payrexx':

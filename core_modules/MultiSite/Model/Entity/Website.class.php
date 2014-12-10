@@ -1662,4 +1662,22 @@ throw new WebsiteException('implement secret-key algorithm first!');
     {
         $this->mailAccountId = $mailAccountId;
     }
+    
+    /**
+     * get the website admin and backend group users
+     * 
+     * @return array data
+     * @throws WebsiteException
+     */
+    public function getAdminUsers() {
+        try {
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getAdminUsers', array(), $this);
+            if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                return $resp->data->users;
+            }
+        } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
+            throw new WebsiteException('Unable get admin users: '.$e->getMessage());
+        }
+        
+    }
 }
