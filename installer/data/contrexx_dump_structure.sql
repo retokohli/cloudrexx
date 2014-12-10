@@ -433,6 +433,7 @@ CREATE TABLE `contrexx_core_module_multisite_mail_service_server` (
   `hostname` varchar(255) NOT NULL,
   `authUsername` varchar(255) NOT NULL,
   `authPassword` varchar(255) NOT NULL,
+  `config` longtext,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
