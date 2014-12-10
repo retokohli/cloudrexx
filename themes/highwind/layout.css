@@ -24,6 +24,7 @@ body a:hover {text-decoration: underline;}
     margin: 0 auto;
     width: 100%;
     background: #f7f7f7;
+    overflow: hidden;
 }
 .login {
     display: none;
@@ -233,11 +234,9 @@ body a:hover {text-decoration: underline;}
 }
 .navigation >li {
     position: relative;
-    float: left;
+    display: block
 }
-.navigation li a {
-    display: block;
-    padding: 13px 18px;   
+.navigation li a {    
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -374,7 +373,7 @@ body a:hover {text-decoration: underline;}
     width: 100%;
     padding: 5px 0;
     margin: 0 0 20px 0;
-    background: #FFFFFF;
+    background: #f7fcfb;
 }
 #subnavigation.no-border,
 #subnavigation ul.no-border {
@@ -485,8 +484,10 @@ body a:hover {text-decoration: underline;}
     width: 100%;
     padding: 10px 15px 10px 15px;
     margin: 0 0 20px 0;
-    background: #2082CB;
+    background: #67bfb6;
     color: #fff;
+    font-size: 15px;
+    line-height: 1.777;
 }
 .sidebar-block.contact-us {
     width: 100%;
@@ -636,7 +637,7 @@ body a:hover {text-decoration: underline;}
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
-    background: #FFFFFF;
+    background: #f7fcfb;
     margin-right: 14px;
     width: 76.2%;
 }
@@ -835,11 +836,6 @@ span.disconnected {
 .footer-right .horizontal-list {
     padding-top: 12px;
     float: left;
-}
-.navigation li a:hover, .navigation li a:focus {
-    background: #67bfb6;
-    color: #fff;
-    text-decoration: none;
 }
 #home-block a:hover {
     background-color: #e6e6e6;
@@ -1478,172 +1474,8 @@ p#loginerror {
 
 .inner-wrap {
     background-color: #f7fcfb;
-    position: relative;
-    padding: 0 50px;    
-    left: 0 !important;
-    margin-top: 0;
-    margin-bottom: 0;    
-    -webkit-transform: none !important;
-    -moz-transform: none !important;
-    -ms-transform: none !important;
-    -o-transform: none !important;
-    transform: none !important;
-    max-width: 1255px;
-    margin: 0 auto;
+    position: relative;         
     width: 100%;      
-}
-
-.main-nav {
-    top: 0;
-    left: auto;
-    max-width: 1255px;
-    margin: 0 auto;
-    border-color: #67bfb6;
-    border-right: 0;
-    border-bottom: 6px solid #67bfb6;
-    clear: none;
-    position: fixed;       
-    width: 100%;
-    -webkit-transform: none !important;
-    -moz-transform: none !important;
-    -ms-transform: none !important;
-    -o-transform: none !important;
-    transform: none !important;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    height: auto;
-    background-color: #f7fcfb;
-    z-index: 9999;
-}
-.main-nav .highwind-navigation {
-    max-width: 1255px;
-    padding: 0 50px;
-    margin: 0 auto;
-}
-.main-nav ul {
-    position: relative;
-    margin-bottom: 0;
-    padding: 0;
-    display: inline;
-    float: left;
-    width: 93.85594477520422%;
-    margin-left: 3.072027612397888%;
-    margin-right: 3.072027612397888%;
-}
-.main-nav ul ul.menu, .main-nav ul > li:hover > a, .main-nav ul > li > a:hover {
-    background: #67bfb6;
-    color: #fff;
-}
-.main-nav ul ul.menu {
-    width: 240px;
-    -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
-    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 9999;
-    margin: 0;
-    padding: 0;
-    text-align: left;
-    -webkit-transition: all ease 0.238s;
-    -moz-transition: all ease 0.238s;
-    -o-transition: all ease 0.238s;
-    transition: all ease 0.238s;
-    overflow: hidden;
-    -webkit-transform: translateY(1em);
-    opacity: 0; 
-    overflow: hidden; 
-    -webkit-transform: translateY(1em);
-    visibility: hidden; 
-}
-.main-nav ul.menu {
-    display: none;
-}
-.main-nav ul a {
-    -webkit-transition: all ease 0.238s;
-    -moz-transition: all ease 0.238s;
-    -o-transition: all ease 0.238s;
-    transition: all ease 0.238s;
-}
-.main-nav ul li {
-    position: relative;
-    display: block;
-    float: left;
-    list-style: none;
-}
-.main-nav li:hover > .menu {
-    display: block;
-}
-.main-nav ul li:hover > ul.menu {
-    -moz-opacity: 1;
-    -khtml-opacity: 1;
-    opacity: 1;
-    overflow: visible;
-    visibility: visible;
-    -webkit-transform: translateY(0);
-}
-.main-nav ul > li.parent > a:after {
-    font-family: "FontAwesome";
-    font-weight: normal;
-    font-style: normal;
-    text-decoration: inherit;
-    speak: none;
-    width: 24px;
-    display: inline-block;
-    text-align: right;
-    line-height: 1;
-    content: "\f179";
-    content: "\f107";
-}
-.main-nav ul ul.menu li.parent > a:after {
-    font-family: "FontAwesome";
-    font-weight: normal;
-    font-style: normal;
-    text-decoration: inherit;
-    speak: none;
-    width: 24px;
-    display: inline-block;
-    text-align: right;
-    line-height: 1;
-    content: "\f179";
-    content: "\f105";
-    float: right;
-    line-height: 1.777;
-}
-.main-nav ul ul.menu li {
-    float: none;
-    display: block;
-}
-.main-nav ul ul a {
-    padding: 7px 18px;
-    color: #fff;
-    width: 100%;
-    display: inline-block;
-    text-transform: none;
-}
-.main-nav ul ul.menu ul.menu {
-    left: 100%;
-    top: 0;
-}
-.main-nav ul ul li:hover > a, .main-nav ul ul ul li > a, .main-nav ul ul li > a:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    padding-left: 27px;
-}
-.main-nav ul ul li:hover > .ul {
-    display: block;
-}
-.main-nav ul li:hover > ul {
-    -moz-opacity: 1;
-    -khtml-opacity: 1;
-    opacity: 1;
-    overflow: visible;
-    visibility: visible;
-    -webkit-transform: translateY(0);
-}
-.main-nav ul ul ul {
-    left: 100%;
-    top: 0;
 }
 
 .site-intro {
@@ -1834,4 +1666,116 @@ p#loginerror {
 }
 .header .nav-toggle:after {
     content: "\f0c9";
+}
+.main-nav h2 {
+    padding: 0 20px;
+    font-size: 16px;
+    letter-spacing: 0 !important;
+}
+.main-nav .buttons {
+    padding: 30px 20px;
+    margin: 0;
+    list-style: none;
+    width: 100%;
+    float: left;
+}
+.main-nav .buttons li.home {
+    float: right;
+}
+.main-nav .buttons li.close {
+    float: left;
+    opacity: 1;
+}
+.main-nav .buttons a {
+    text-indent: -999em;
+    position: relative;
+    display: block;
+    padding: 0;
+    height: 38px;
+    width: 38px;
+    font-size: 16px;
+    font-weight: normal;
+    color: #f7fcfb;
+    background: #67bfb6;
+    opacity: 1;
+}
+.main-nav .buttons li.home a:after {
+    content: "\f015";
+}
+.main-nav .buttons a:after {
+    font-family: "FontAwesome";
+    content: "\f118";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    text-indent: 0;
+    line-height: 2.369;
+}
+.main-nav .buttons a:after {
+    content: "\f00d";
+}
+
+.csstransforms3d.csstransitions .show-nav .main-nav {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    -moz-transform: translate3d(-100%, 0, 0);
+    -ms-transform: translate3d(-100%, 0, 0);
+    -o-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+}
+.csstransforms3d.csstransitions .main-nav {
+    left: 0;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    -moz-transform: translate3d(-100%, 0, 0);
+    -ms-transform: translate3d(-100%, 0, 0);
+    -o-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+    -webkit-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+}
+.csstransforms3d.csstransitions .inner-wrap {
+    left: 0 !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-transition: -webkit-transform 200ms ease;
+    -moz-transition: -moz-transform 200ms ease;
+    -o-transition: -o-transform 200ms ease;
+    transition: transform 200ms ease;
+    -webkit-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+}
+.csstransforms3d.csstransitions .show-nav .inner-wrap {
+    -webkit-transform: translate3d(80%, 0, 0);
+    -moz-transform: translate3d(80%, 0, 0);
+    -ms-transform: translate3d(80%, 0, 0);
+    -o-transform: translate3d(80%, 0, 0);
+    transform: translate3d(80%, 0, 0);
+    -webkit-transform-origin: 50% 0%;
+    -moz-transform-origin: 50% 0%;
+    -ms-transform-origin: 50% 0%;
+    -o-transform-origin: 50% 0%;
+    transform-origin: 50% 0%;
+}
+.show-nav .inner-wrap {
+left: 80%;
+-webkit-transform: translateZ(0);
+-webkit-transition: left ease 0.4s;
+-moz-transition: left ease 0.4s;
+-o-transition: left ease 0.4s;
+transition: left ease 0.4s;
+}
+.main-nav .buttons + hr {
+margin: 0 0 42px;
+width: 100%;
+}
+.main-nav ul ul.menu {
+    margin: 0 0 0 16px;
+    padding: 0;
 }

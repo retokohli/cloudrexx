@@ -36,14 +36,14 @@
         <script type="text/javascript" src="themes/highwind/jquery.cycle.js"></script>
         <script type="text/javascript" src="themes/highwind/javascript.js"></script>
     </head>
-    <body>
+    <body class="background-contrast">
         <div class="wrapper">
             <div class="inner-wrap">
                 <div class="header">
                     <div class="container-fluid">
                         <div class="row">
                             <p class="toggle-container">&nbsp;
-                                <a href="javascript:void(0)" class="nav-toggle btn">&nbsp;Skip to&nbsp;navigation	&nbsp;</a>&nbsp;
+                                <a href="javascript:void(0)" class="nav-toggle btn">&nbsp;Skip to&nbsp;navigation &nbsp;</a>&nbsp;
                             </p>
                             <a class="site-intro" href="javascript:void();">
                                 <img src="themes/highwind/images/man.jpeg">
@@ -51,7 +51,15 @@
                                 <h2 class="description">WEB DUDE.</h2>
                             </a>
 
-                            <div class="main-nav" id="navigation-wrapper"><div class="highwind-navigation">{NAVBAR_FILE}</div></div>                     
+                            <div class="main-nav" id="navigation-wrapper">
+                                <ul class="buttons">
+				        <li class="home"><a href="{NODE_HOME}" class="nav-home btn"><span>Home</span></a></li>
+				        <li class="close"><a href="#" class="nav-close btn"><span>Return to Content</span></a></li>
+                                </ul>
+                                <hr>
+                                    <h2>Navigation</h2>
+                                <div class="highwind-navigation">{NAVBAR_FILE}</div>                                    
+                            </div>                     
                             
                         </div>
                     </div>
