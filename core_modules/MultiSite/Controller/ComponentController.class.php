@@ -271,17 +271,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 foreach ($order->getSubscriptions() as $subscription) {
                                     $website = $subscription->getProductEntity();
                                     $product = $subscription->getProduct();
+                                    if (!$website || !$product) {
+                                        continue;
+                                    }
                                     $objTemplate->setVariable(array(
-                                        'MULTISITE_WEBSITE_NAME'         => $website->getName(),
-                                        'MULTISITE_WEBSITE_LINK'         => $this->getApiProtocol() . $website->getBaseDn()->getName(),
-                                        'MULTISITE_WEBSITE_BACKEND_LINK' => $this->getApiProtocol() . $website->getBaseDn()->getName() . '/cadmin',
-                                        'MULTISITE_WEBSITE_PLAN'         => $product->getName(),
+                                        'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
+                                        'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
+                                        
+                                        'MULTISITE_WEBSITE_NAME'         => contrexx_raw2xhtml($website->getName()),
+                                        'MULTISITE_WEBSITE_LINK'         => contrexx_raw2xhtml($this->getApiProtocol() . $website->getBaseDn()->getName()),
+                                        'MULTISITE_WEBSITE_BACKEND_LINK' => contrexx_raw2xhtml($this->getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
+                                        'MULTISITE_WEBSITE_PLAN'         => contrexx_raw2xhtml($product->getName()),
                                         'MULTISITE_WEBSITE_INVOICE_DATE' => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
-                                        'MULTISITE_WEBSITE_EXPIRE_DATE'  => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : ''
+                                        'MULTISITE_WEBSITE_EXPIRE_DATE'  => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',
+                                        'MULTISITE_WEBSITE_STATE_CLASS'  => $website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE ? 'active' : 'inactive',                                        
                                     ));
                                     if ($status == 'valid' && $objTemplate->blockExists('showUpgradeButton')) {
                                         $product->isUpgradable() ? $objTemplate->touchBlock('showUpgradeButton') : $objTemplate->hideBlock('showUpgradeButton');
                                     }
+                                    $websiteStatus = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) ? true : false;
+                                    self::showOrHideBlock($objTemplate, 'websiteLinkActive', $websiteStatus);
+                                    self::showOrHideBlock($objTemplate, 'websiteLinkInactive', !$websiteStatus);
+                                    
                                     $objTemplate->parse('showSiteDetails');
                                 }
                             }

@@ -45,7 +45,9 @@ Cx\Modules\Order\Model\Entity\Subscription:
       type: integer
       column: external_customer_id
       nullable: true
-
+    description:
+      type: string
+      
   manyToOne: # owning side
     order:
       targetEntity: Cx\Modules\Order\Model\Entity\Order

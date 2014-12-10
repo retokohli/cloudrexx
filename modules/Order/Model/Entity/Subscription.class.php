@@ -45,6 +45,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     protected $renewalDate = null;
     protected $externalSubscriptionId = null;
     protected $externalCustomerId = null;
+    protected $description = null;
 
     const PAYMENT_OPEN = 'open';
     const PAYMENT_PAID = 'paid';
@@ -217,6 +218,24 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         $this->externalCustomerId = $externalCustomerId;
     }
 
+    /**
+     * Getter for $description
+     * 
+     * @return string $description
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+    
+    /**
+     * Setter for $description
+     * 
+     * @param string $description
+     */
+    public function setDescription($description) {
+        $this->description = $description;
+    }
+    
     /**
      * Get the externalSubscriptionId
      * 

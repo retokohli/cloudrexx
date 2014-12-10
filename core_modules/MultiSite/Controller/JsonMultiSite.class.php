@@ -115,7 +115,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'sendAccountActivation' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkSendAccountActivation')),
             'getPayrexxUrl'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
+            'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true)
         );  
     }
 
@@ -3072,5 +3073,30 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::deleteMailServiceAccount() failed: To create mail service server'. $e->getMessage());
         }
+    }
+    
+    /**
+     * Get website remote login url
+     * 
+     * @param array $params websiteId
+     * 
+     * @return mixed Get website login url or false on website owner id is different from logged user
+     */
+    public function websiteLogin($params) {
+        if (empty($params['post']['websiteId'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::websiteLogin() failed: Insufficient arguments supplied: ' . var_export($params, true));
+        }
+        
+        $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+        if (!$website) {
+            throw new MultiSiteJsonException('JsonMultiSite::websiteLogin() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+        }
+        
+        $userId = \FWUser::getFWUserObject()->objUser->getId();
+        if ($website->getOwnerId() == $userId) {
+            return $this->remoteLogin(array('post' => array('websiteId' => $params['post']['websiteId'])));
+        }
+        
+        return false;
     }
 }
