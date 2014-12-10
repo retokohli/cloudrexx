@@ -1,0 +1,634 @@
+<style type="text/css">
+.prices > div {
+    display: inline-block;
+    width: 100%;
+    vertical-align: top;
+    margin-bottom: 30px;
+}
+
+.prices > div .header {
+    /*background-color: #216fbd;*/
+    background-color: rgba(33, 111, 189, 0.9);
+    height: 200px;
+    color: white;
+    padding-top: 24px;
+    text-align: center;
+}
+#free-version{
+    margin-left: 1%;   
+}
+.prices #free-version .header,
+.prices #non-profit .header,
+.prices #third-version .header
+.prices #non-profit .header  {
+    /*margin-top: 10px;*/
+    margin-bottom: 10px;
+}
+
+.prices #free-version .header {
+    /*background-color: black;*/
+    /* background-color: rgba(107, 107, 107, 0.7); */
+    background-color: rgba(33, 111, 189, 0.7);
+}
+.prices #business-version .header {
+    height: 210px;
+    /*background-color: rgb(136, 189, 19);*/
+    background-color: rgb(33, 111, 189);
+    /*margin-left: -10px;*/
+    /*margin-right: -10px;*/
+    margin-top: -10px;
+    padding-top: 34px;
+}
+.prices #third-version .header {
+    /*background-color: rgba(79, 184, 218, 0.8);*/
+    background-color: rgba(33, 111, 189, 0.8);
+}
+
+.prices-new #free-version .header {
+    background-color: rgba(107, 107, 107, 0.7);
+}
+.prices-new .prices #business-version .header {
+    background-color: rgb(136, 189, 19);
+}
+.prices-new .prices #third-version .header {
+    background-color: rgba(79, 184, 218, 0.8);
+}
+
+.prices > div .header:empty {
+    background-color: transparent;
+}
+
+.prices .header .name {
+    font-size: 20px;
+    text-transform: uppercase;
+    display: block;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.prices .header .monthly {
+    /*padding: 0 2px;*/
+}
+
+.prices .header .amount {
+    font-size: 35px;
+}
+
+.prices .header .currency {
+    vertical-align: super;
+    position: relative;
+    margin-left: -13px;
+    top: -10px;
+}
+
+.prices > div.description > span {
+    text-align: left;
+}
+
+.prices .features span {
+    display: block;
+    height: 26px;
+    line-height: 26px;
+    padding: 0px 15px;
+    text-align: left;
+    font-size: 14px;
+    /*background-color: #f5f5f5;*/
+    border-bottom: 1px solid #dadada;
+    position: relative;
+    /*border-left: 1px solid #dadada;*/
+}
+
+.prices .features p {
+    padding: 15px;
+    font-size: 14px;
+}
+
+/*.prices > div:last-child > span {*/
+/*border-right: 1px solid #dadada;*/
+/*}*/
+
+/*.prices .features span.yes:before,*/
+/*.prices .features span.no:before {*/
+/*position: absolute;*/
+/*left: 10%;*/
+/*font-family: FontAwesome;*/
+/*}*/
+
+/*.prices .features span.yes:before {*/
+/*content: '\f00c';*/
+/*color: #84b408;*/
+/*}*/
+
+/*.prices .features span.no:before {*/
+/*content: '\f00d';*/
+/*color: #fc920a;*/
+/*}*/
+
+.prices .features {
+    height: 400px;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin-top: 15px;
+}
+.features ul li {
+    line-height: 25px;
+}
+#business-version .features {
+    margin-top: 13px;
+}
+.prices .features ul {
+    list-style: square;
+    margin-top: 11px;
+}
+.text-block.prices {
+    border: none;
+}   
+.prices .order {
+    height: 50px;
+    line-height: 50px;
+    display: block;
+    background-color: #95c700;
+    width: 90%;
+    margin:30px auto 15px auto;
+    text-align: center;
+    color: white;
+    text-transform: uppercase;
+    max-width: 350px;
+}
+
+.prices .toggle-features {
+    text-align: center;
+    background-color: #dadada;
+    font-family: FontAwesome;
+    height: 32px;
+    line-height: 32px;
+    font-size: 28px;
+    display: block;
+    border-top: 1px solid #dadada;
+    color: white;
+    margin-top: 12px;
+    display: none;
+}
+
+.prices h2 .priceplan {
+    font-weight: lighter;
+}
+
+.prices-periods {
+    width: 100%;
+    max-width: 1024px;
+    margin: 60px auto 0;
+    text-align: center;
+    /*border-bottom: 1px solid #dadada;*/
+    background-color: #F1F1F1;
+    padding-top: 18px;
+    border-bottom: 1px solid #D5D5D5;
+}
+.periods-wrapper {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.prices-new .prices-periods {
+    background-color: #FFF;
+    border: 1px solid #dadada;
+    border-left: none;
+    border-right: none;
+    height: 50px;
+    margin-top: 35px;
+    margin-left: 1%;
+    max-width: 950px;
+    padding: 0;
+}
+.prices-periods a {
+    display: inline-block;
+    width: 33%;
+    height: 50px;
+    line-height: 50px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    margin-left: -10px;
+    /*background-color: white;*/
+    vertical-align: bottom;
+    font-size: 1.4em;
+    position: relative;
+    color: rgb(51, 51, 51);
+    bottom: -1px;
+    border-top: 1px solid #F1F1F1;
+}
+
+.prices-periods a.active {
+    border-left: 1px solid #dadada;
+    border-top: 1px solid #dadada;
+    border-right: 1px solid #dadada;
+
+    /*height: 54px;*/
+    /*line-height: 58px;*/
+    background-color: white;
+    opacity: 1;
+}
+
+.prices-periods a.monthly:after,
+.prices-periods a.biannually:after {
+    /*position: absolute;*/
+    /*top: 5px;*/
+    /*left: 10px;*/
+    /*height: 35px;*/
+    /*line-height: 10px;*/
+    font-size: 12px;
+    line-height: 12px;
+    /*font-weight: bold;*/
+    /*width: 35px;*/
+    /*background-color: #81ad00;*/
+    /*display: block;*/
+    /*border-radius: 35px;*/
+    /*line-height: 35px;*/
+    /*color: white;*/
+    color: #428bca;
+    margin-left: 5px;
+}
+
+.prices-periods a.biannually:after {
+    content: '-10%';
+}
+
+.prices-periods a.monthly:after {
+    /*content: '+10%';*/
+}
+
+/* prices-periods new */
+.prices-periods > span {
+    padding: 15px 5px 5px 5px;
+    display: inline-block;
+}
+
+.prices-periods span:hover,
+.prices-periods span label:hover {
+    cursor: pointer;
+}
+
+.prices-periods label {
+    font-weight: 100;
+    margin-bottom: 0;
+    vertical-align: top;
+}
+
+.prices-periods input[type="radio"] {
+    margin: 3px 5px 0 15px;
+}
+
+.prices-periods label[for="biannually"]:after {
+    content: "-10%";
+    font-size: 10px;
+    vertical-align: middle;
+    margin-left: 5px;
+    color: #428bca;
+}
+
+.prices-new h2.annual-prices {
+    margin-bottom: 0;
+    padding: 0 15px;
+}
+
+.prices-new .prices {
+    border: none;
+}
+
+.monthly-prices,
+.biannual-prices {
+    display: none;
+}
+
+.monthly-prices, .biannual-prices, .annual-prices {
+    min-height: 50px;
+}
+
+.prices .buy-now {
+    width: 90%;
+    display: block;
+    height: 50px;
+    line-height: 50px;
+    color: rgb(51,51,51);
+    /*color: white;*/
+    margin: 15px auto;
+    /*background-color: #95c700;*/
+    background-color: #FFF;
+    font-weight: bold;
+    /*opacity: 0.3;*/
+    cursor: not-allowed;
+}
+
+.prices {
+    position: relative;
+    padding-top: 30px;
+}
+
+.prices:before {
+    position: absolute;
+    content: 'Coming Soon';
+    padding-top: 48%;
+    box-sizing: border-box;
+    color: white;
+    font-size: 80px;
+    text-align: center;
+    left: -2%;
+    top: -2%;
+    width: 104%;
+    height: 104%;
+    background-color: rgba(0, 0, 0, 0.6);
+    /*opacity: 0.6;*/
+    z-index: 99;
+    /*border: 1px solid rgb(90,90,90);*/
+    display: none;
+}
+
+.prices > .comment {
+    border: none;
+    width: 100%;
+}
+
+.prices > .partner-button,
+.prices > .enterprise-button
+{
+    display: inline-block;
+    border: 1px solid rgb(218, 218, 218);
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.5em;
+    background-color: rgb(241, 241, 241);
+    /*padding: 24px 0px;*/
+}
+
+.prices > .partner-button a,
+.prices > .enterprise-button a
+{
+    color: #000;
+    display: inline-block;
+    padding: 24px 0px;
+    width: 100%;
+    height: 100%;
+    border-box: padding-box;
+}
+
+.prices > .partner-button a:hover,
+.prices > .enterprise-button a:hover {
+    color: #FFF;
+    background-color: rgb(149, 199, 0);
+}
+
+@media (min-width: 601px) {
+    /******************************************
+    * PRICES
+    ******************************************/
+    .contact input[type="submit"],
+    .contact input[type="reset"] {
+        width: 49.5%;
+        display: inline-block;
+    }
+
+    /******************************************
+    * PRICES
+    ******************************************/
+    .prices {
+        max-width: 1024px;
+        margin: 0 auto;
+        border-left: 1px solid #D5D5D5;
+        border-bottom: 1px solid #D5D5D5;
+        border-right: 1px solid #D5D5D5;
+        padding: 20px;
+    }
+
+    .prices > div {
+        width: 49%;
+        border-left: 1px solid #dadada;
+        /*border-bottom: 1px solid #dadada;*/
+        border-right: 1px solid #dadada;
+        border-radius: 3px;
+    }
+
+    /*.prices > div:last-of-type {*/
+    /**/
+    /*}*/
+    .prices > div.description {
+        display: none;
+    }
+
+    .prices > div.description:first-child {
+        display: inline-block;
+    }
+
+    .prices #business-version,
+    .prices #third-version {
+    }
+
+    .prices-periods a {
+        width: 25%;
+    }
+
+    .important-questions {
+        margin-bottom: 100px;
+        margin-top: 70px;
+    }
+
+    .important-questions h4 {
+        text-align: left;
+    }
+
+    .prices > .partner-button,
+    .prices > .enterprise-button
+    {
+        width: calc(98% + 3px);
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 1025px) {
+    /******************************************
+     * PRICES
+     ******************************************/
+    .prices > div {
+        width: 23.9%;
+
+        margin-right: 0%;
+    }
+
+    #non-profit {
+        margin-right: 0;
+    }
+     
+    .prices > .partner-button,
+    .prices > .enterprise-button 
+    {
+        width: calc(48.8% - 4px);
+    }
+
+    .prices > .partner-button {
+        margin-right: 14px;
+    }
+
+    #download .prices > div {
+        width: 32%;
+    }
+
+    #download .prices .description {
+        max-width: 25%;
+        margin: 0 auto;
+    }
+
+    #download .prices .features ul {
+        max-width: 80%;
+    }
+}
+
+.features {
+    border-bottom: 1px solid #dadada;
+}
+
+.monthly-prices,
+.annual-prices,
+.biannual-prices {
+    text-align: center;
+}
+</style>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	jQuery('.prices-periods a').on('click', function(e){
+		e.preventDefault();
+		jQuery('.prices-periods a').removeClass('active');
+		jQuery(this).addClass('active');
+		if(jQuery(this).hasClass('monthly')){
+			jQuery('.monthly-prices').show();
+			jQuery('.annual-prices').hide();
+			jQuery('.biannual-prices').hide();
+		}else if(jQuery(this).hasClass('annually')){
+			jQuery('.monthly-prices').hide();
+			jQuery('.annual-prices').show();
+			jQuery('.biannual-prices').hide();
+		}else if(jQuery(this).hasClass('biannually')){
+			jQuery('.monthly-prices').hide();
+			jQuery('.annual-prices').hide();
+			jQuery('.biannual-prices').show();
+		}
+	});
+});
+</script>
+
+<div class="prices-periods"><a class="monthly" href="#">Monatlich</a> <a class="annually active" href="#">Jährlich</a> <a class="biannually" href="#">Zwei Jahre</a></div>
+
+<div class="prices">
+<h2 class="monthly-prices" style="display: none;">Monatliches <span class="priceplan">Preismodell</span></h2>
+
+<h2 class="annual-prices" style="display: block;">Jährliches <span class="priceplan">Preismodell</span></h2>
+
+<h2 class="biannual-prices" style="display: none;">Zweijährliches <span class="priceplan">Preismodell</span></h2>
+
+<div id="third-version">
+<div class="header"><span class="name">Solo</span>
+
+<div class="monthly-prices" style="display: none;"><span class="amount">20.-</span><span class="currency">CHF</span></div>
+
+<div class="annual-prices" style="display: block;"><span class="amount">240.-</span><span class="currency">CHF</span></div>
+
+<div class="biannual-prices" style="display: none;"><span class="amount">432.-</span><span class="currency">CHF</span></div>
+<a class="buy-now" href="#">W&auml;hlen</a></div>
+
+<div class="features">
+<ul>
+	<li>1 Webseite</li>
+	<li>20 GB Speicherplatz</li>
+	<li>Eigener Domainname</li>
+	<li>1 Administrator Account</li>
+	<li>Eigener E-Mail-Account</li>
+	<li>CMS Basisfunktionen</li>
+	<li>Erweiterter Funktionsumfang</li>
+	<li>Media Asset Management</li>
+	<li>Mehrsprachigkeit</li>
+	<li>E-Mail-Marketing</li>
+	<li>Customer Relationship Management</li>
+	<li>E-Commerce</li>
+	<li>Werbefrei</li>
+</ul>
+</div>
+<a class="toggle-features" href="#">?</a></div>
+
+<div id="business-version">
+<div class="header"><span class="name">Business</span>
+
+<div class="monthly-prices" style="display: none;"><span class="amount">45.-</span><span class="currency">CHF</span></div>
+
+<div class="annual-prices" style="display: block;"><span class="amount">540.-</span><span class="currency">CHF</span></div>
+
+<div class="biannual-prices" style="display: none;"><span class="amount">972.-</span><span class="currency">CHF</span></div>
+<a class="buy-now" href="#">W&auml;hlen</a></div>
+
+<div class="features">
+<ul>
+	<li>3 Webseites</li>
+	<li>100 GB Speicherplatz</li>
+	<li>Eigener Domainname</li>
+	<li>Unbeschränkte Anzahl Administrator Accounts</li>
+	<li>Eigene E-Mail-Accounts</li>
+	<li>CMS Basisfunktionen</li>
+	<li>Erweiterter Funktionsumfang</li>
+	<li>Media Asset Management</li>
+	<li>Mehrsprachigkeit</li>
+	<li>E-Mail-Marketing</li>
+	<li>Customer Relationship Management</li>
+	<li>E-Commerce</li>
+	<li>Werbefrei</li>
+</ul>
+<a class="toggle-features" data-cke-saved-href="#" href="http://www.cloudrexx.com/#"></a></div>
+<a class="toggle-features" href="#">?</a></div>
+
+<div id="non-profit">
+<div class="header"><span class="name">Non-Profit</span>
+
+<div class="monthly-prices" style="display: none;"><span class="amount">30.-</span><span class="currency">CHF</span></div>
+
+<div class="annual-prices" style="display: block;"><span class="amount">360.-</span><span class="currency">CHF</span></div>
+
+<div class="biannual-prices" style="display: none;"><span class="amount">648.-</span><span class="currency">CHF</span></div>
+<a class="buy-now" href="#">W&auml;hlen</a></div>
+
+<div class="features">
+<ul>
+	<li>1 Webseite</li>
+	<li>50 GB Speicherplatz</li>
+	<li>Eigener Domainname</li>
+	<li>25 Administrator Accounts</li>
+	<li>Eigene E-Mail-Accounts</li>
+	<li>CMS Basisfunktionen</li>
+	<li>Erweiterter Funktionsumfang</li>
+	<li>Media Asset Management</li>
+	<li>Mehrsprachigkeit</li>
+	<li>E-Mail-Marketing</li>
+	<li>Customer Relationship Management</li>
+	<li>E-Commerce</li>
+	<li>Werbefrei</li>
+</ul>
+<a class="toggle-features" data-cke-saved-href="#" href="http://www.cloudrexx.com/#"></a></div>
+<a class="toggle-features" href="#">?</a></div>
+
+<div id="free-version">
+<div class="header"><span class="name">Free</span>
+
+<div class="monthly-prices" style="display: none;"><span class="amount">0.-</span><span class="currency">CHF</span></div>
+
+<div class="annual-prices" style="display: block;"><span class="amount">0.-</span><span class="currency">CHF</span></div>
+
+<div class="biannual-prices" style="display: none;"><span class="amount">0.-</span><span class="currency">CHF</span></div>
+<a class="buy-now" href="#">W&auml;hlen</a></div>
+
+<div class="features">
+<ul>
+	<li>1 Webseite</li>
+	<li>5 GB Speicherplatz</li>
+	<li>CMS Basisfunktionen</li>
+	<li>Erweiterter Funktionsumfang</li>
+	<li>Media Asset Management</li>
+	<li>Mehrsprachigkeit</li>
+	<li>Customer Relationship Management</li>
+</ul>
+</div>
+<a class="toggle-features" href="#">?</a></div>
+</div>
