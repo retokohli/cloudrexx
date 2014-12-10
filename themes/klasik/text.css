@@ -47,10 +47,6 @@ body ul li,body ol li {
     padding-top: 5px;
     padding-bottom: 5px;
 }
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
 /* End CSS Reset */
 @font-face {
     font-family: 'Ubuntu';
@@ -78,10 +74,6 @@ body a:hover, body a:focus {
     text-decoration: none;
     outline: 0 none;
 }
-body p {
-    margin: 0 0 0px;
-    padding: 0 0 10px 0;
-}
 b,
 strong {
     font-weight: bold;
@@ -108,6 +100,20 @@ h1, h2, h3 {
 }
 hr {
     margin: 30px 0;
+    float: left;
+    border-width: 0;
+    height: 1px;
+    line-height: 0;
+    margin: 30px 0px 30px 0px;
+    page-break-after: always;
+    text-align: center;
+    width: 100%;
+    clear: both;
+    color: #eaeaea; 
+    background-color: #eaeaea;
+}
+#contactFrame .form-group.last {
+    margin-bottom: 0;
 }
 input {color: #7d7d7d;}
 input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus{outline: none;}
@@ -122,7 +128,7 @@ select.form-control {
 select {
     display: block;
     width: 100%;
-    height: 34px;
+    height: 30px;
     padding: 7px 8px;
     font-size: 13px;
     line-height: 1.42857143;
@@ -141,10 +147,7 @@ select {
 input:focus,
 select:focus,
 textarea:focus {
-    border-color: #66afe9;
     outline: 0;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 input[type=submit],
 input[type=button],
@@ -198,18 +201,40 @@ input[name="access_signup"]:focus {
     border-color: #CCCCCC;
     box-shadow: none;
 }
-input[type=submit]:hover,
-input[type=reset]:hover, button[name="recipient_save"]:hover, #podcast input:hover {
-    background-color: #e6e6e6;
-    border-color: #adadad;
-    color: #414141;
+.button:hover, button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover {
+    background: #5e5e5e;
+    border: 0;
+    color: #fff;
+}
+.button, button, input[type="submit"], input[type="reset"], input[type="button"] {
+    background: #666666;
+    border: 0;
+    color: #fff;
+}
+.button, .button:visited, input[type="submit"], input[type="reset"], input[type="button"], button {
+    padding: 9px 20px 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 14px;
+    text-transform: uppercase;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    border-radius: 3px;
+}
+.entry-content input[type="submit"],  .entry-content input[type="reset"] {
+    margin: 10px 0;
+    float: left;
+    display: inline-block;
 }
 button[disabled=disabled]:hover,
 input[disabled=disabled]:hover {
     background: #F5F5F5;
 }
 legend {
-    display: none;
+    display: block;
+    color: #606060;
+    float: left;
 }
 fieldset .radio input[type="radio"],fieldset .radio-inline input[type="radio"],fieldset .checkbox input[type="checkbox"],fieldset .checkbox-inline input[type="checkbox"]{margin-left: -17px;}
 fieldset .radio label,fieldset .checkbox label {
@@ -267,10 +292,6 @@ h4, h5, h6 {
 .text-primary, .text-success, .text-info, .text-warning, .text-danger  {
     padding: 0;
     margin: 0;
-}
-legend {
-    display: none;
-    padding-bottom: 5px;
 }
 .label:empty {
     display: block;
@@ -360,4 +381,52 @@ input[type="text"], input[type="email"], textarea, input[type="password"], selec
     -khtml-border-radius: 3px;
     border-radius: 3px;
     width: 90%; 
+    height: 30px;
+}
+.radio, .checkbox {
+    margin-bottom: 23px;
+    margin-top: 15px !important;
+}
+table {
+    border: 1px solid #f1f1f1;
+    border-bottom: 0;
+    text-align: left;
+    margin: 0 -1px 24px 0;
+    width: 100%;
+}
+tr th, thead th {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 18px;
+    padding: 9px 24px;
+}
+th {
+    border-bottom: 1px solid #f1f1f1;
+    padding: 10px;
+    text-transform: uppercase;
+}
+table, td, th {
+    text-align: center;
+}
+tr td {
+    border-bottom: 1px solid #f1f1f1;
+    padding: 6px 24px;
+}
+pre {
+    border-left: solid 4px #ebebeb;
+    line-height: 18px;
+    margin-bottom: 18px;
+    padding: 20px;
+    background: transparent;
+    border-radius: 0;
+    color: #606060;
+}
+blockquote {
+    border-left: 8px solid #6c6c6c;clear: both;
+    font-style: normal;
+    line-height: 24px;
+    margin: 8px 0 23px 0;
+    padding: 0 10px 0 20px;
+    position: relative;
+    font-size: larger;
 }

@@ -41,6 +41,7 @@
 }
 .contact.row.form-group {
     margin: 0;
+    margin-bottom: 16px;
 }
 section {
     float: left;
@@ -48,7 +49,57 @@ section {
 }
 .banner-content {
     width: 66.67%;
+    float: left;
+    margin-top: 55px;
+    padding: 0 15px;
+    margin-left: -15px;
+    margin-right: -15px;
 }
 .entry-content {
     word-wrap: break-word;
+    float: left;
+}
+.posttitle, .posttitle a {
+    font-size: 20px;
+}
+.posttitle {
+    margin: 0 0 3px 0;
+    word-wrap: break-word;
+    font-weight: 600;
+}
+.posttitle a, .posttitle a:visited {
+    color: #444;
+}
+.entry-utility {
+    font-size: 11px;
+    margin: 0px 0px 5px 0px;
+    padding: 0px 0px 0px;
+    line-height: 22px;
+}
+.entry-utility .text-sep {
+    margin: 0 5px;
+}
+.entry-utility div {
+    display: inline-block;
+    line-height: 100%;
+}
+.entry-utility a {
+    color: #777;
+}
+.zero-comments {
+    display: none;
+}
+.entry-content {
+    overflow: hidden;
+    margin-bottom: 26px;
+    padding: 0 0 0px 0;
+    word-wrap: break-word;
+}
+.entry-content p {
+    margin-bottom: 16px;
+}
+.articlecontainer {
+    margin-bottom: 50px;
+    float: left;
+    width: 100%;
 }
