@@ -259,9 +259,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'licenseMessage' => array(
                             'header' => 'licenseMessage',
-                            )
-                        )
+                        ),
+                        'websiteServiceServer' => array(
+                            'showOverview' => $hasAccess,
+                        ),
                     )
+                )
             );
             $template->setVariable('TABLE', $websiteTemplatesView->render());
         } else if (!empty($cmd[1]) && $cmd[1]=='mail_service_servers') {
