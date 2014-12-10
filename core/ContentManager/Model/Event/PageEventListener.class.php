@@ -97,15 +97,6 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     public function postUpdate($eventArgs) {
-        global $objCache;
-        if ($objCache) {
-            /*
-             * Really unneccessary, because we do not use resultcache 
-             * @see http://bugs.contrexx.com/contrexx/ticket/2339
-             */
-            //$objCache->clearCache();
-        }
-        
         $this->writeXmlSitemap($eventArgs);
     }
 
