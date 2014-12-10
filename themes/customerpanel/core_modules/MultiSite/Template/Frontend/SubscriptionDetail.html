@@ -1,51 +1,51 @@
-<div class="grid-elm grid-align-1-1 grid-offset">    
-    <table>
-        <tbody>            
-            <tr>
-                <td width="33%">Abo</td>
-                <td width="66%">Business</td>
-            </tr>     
-            <tr>
-                <td>Erstellt</td>
-                <td>10.12.2014</td>
-            </tr>      
-            <tr>
-                <td>Ablaufdatum</td>
-                <td>10.12.2015</td>
-            </tr>  
-        </tbody>
-    </table>
-    <button type="button" class="upgrade">Upgrade</button> <button type="button" class="">K&uuml;ndigen</button><br /> 
+<div class="grid-elm grid-align-1-1 grid-offset">
+    <div id="multisite_subscription_detail_info">
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
 </div>
 <div class="grid-elm grid-align-1-1 grid-offset">  
-    <h2>Webseiten</h2>                                                                                                                       
-    <table>
-        <thead>         
-            <tr>
-                <th width="99%" class="sort">Name</th>
-                <th width="1%" class="actions">Funktionen</th>
-            </tr> 
-        </thead>    
-        <tbody>      
-            <tr>
-                <td><a href="#" class="entypo-popup" >&nbsp;thun</a></td>
-                <td>
-                    <button type="button">Ansicht</button>
-                    <button type="button">Verwalten</button>
-                    <button type="button" >Adminkonsole</button>
-                </td>
-            </tr>
-            
-            <tr>
-                <td><a href="#" class="entypo-popup" >&nbsp;bern</a></td>
-                <td>                                                                               
-                    <button type="button">Ansicht</button>
-                    <button type="button">Verwalten</button>
-                    <button type="button" >Adminkonsole</button>
-                </td>
-            </tr>
-            
-        </tbody>
-    </table>   
-    <button type="button" class="add">Neue hinzuf&uuml;gen</button>
+    <h2>Webseiten</h2>
+    <div id="multisite_subscription_detail_websites">
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
 </div>
+
+<script type="text/javascript">
+    
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    
+    function getQueryParams(qs) {
+        qs = qs.split("+").join(" ");
+        var params = {},
+            tokens,
+            re = /[?&]?([^=]+)=([^&]*)/g;
+
+        while (tokens = re.exec(qs)) {
+            params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+        }
+
+        return params;
+    }
+
+    var get = getQueryParams(document.location.search);
+    
+    function  loadContent(jQuerySelector, url) {
+        jQuery.ajax({
+            dataType: 'html',
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                if (data) {
+                    jQuery(jQuerySelector).html(data);
+                }
+            },
+            fail: function(data) {}
+        });
+    }
+    
+    loadContent('#multisite_subscription_detail_info', '/api/MultiSite/SubscriptionDetail/Info?id=' + get['id']);
+    loadContent('#multisite_subscription_detail_websites', '/api/MultiSite/SubscriptionDetail/Websites?id=' + get['id']);
+});
+/* ]]> */
+</script>

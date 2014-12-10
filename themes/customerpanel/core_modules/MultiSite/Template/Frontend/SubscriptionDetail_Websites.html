@@ -1,0 +1,33 @@
+<table>
+    <thead>         
+        <tr>
+            <th width="99%" class="sort">Name</th>
+            <th width="1%" class="actions">Funktionen</th>
+        </tr> 
+    </thead>    
+    <tbody>  
+        <tr>
+            <td>
+                <!-- BEGIN showWebsiteLink -->
+                <a href="{MULTISITE_WEBSITE_FRONTEND_LINK}" target = "_blank" class="entypo-popup" >&nbsp;{MULTISITE_WEBSITE_NAME}</a>
+                <!-- END showWebsiteLink -->
+                
+                <!-- BEGIN showWebsiteName -->
+                &nbsp;{MULTISITE_WEBSITE_NAME}
+                <!-- END showWebsiteName -->
+            </td>
+            <td> 
+                <!-- BEGIN showWebsiteView -->
+                <button type="button" onclick="window.open('{MULTISITE_WEBSITE_FRONTEND_LINK}', '_blank').focus();">Ansicht</button>
+                <!-- END showWebsiteView -->
+                
+                <button type="button" onclick="window.open('{NODE_MULTISITE_WEBSITE}?id={MULTISITE_WEBSITE_ID}', '_blank').focus();">Verwalten</button>
+               
+                <!-- BEGIN showWebsiteAdminConsole -->
+                <button type="button" onclick="window.open('{MULTISITE_WEBSITE_ADMINCONSOLE}', '_blank').focus();">Adminkonsole</button>
+                <!-- END showWebsiteAdminConsole -->
+            </td>
+        </tr>
+    </tbody>
+</table>   
+<button type="button" class="add">Neue hinzuf&uuml;gen</button>
