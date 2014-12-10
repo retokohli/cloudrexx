@@ -107,11 +107,12 @@ form .formUploadedFiles .deleteIcon {
 }
 fieldset select {
     color: #7d7d7d;
+    background-color: buttonface;
+    box-shadow: none;
 }
 form label {
     float: left;
     width: 100%;
-    margin-bottom: 5px;
 }
 label[for="access_user_tos"] {
     width: 95.5%;
@@ -224,13 +225,6 @@ span.checkbox {
 table {
     float: left;
     width: 100%;
-}
-table th {
-    padding: 6px 8px 6px 8px;
-    color: #FFFFFF;
-    text-align: left;
-    font-weight: bold;
-    background-color: #0A85C8;
 }
 table th a {
     color: #FFFFFF;
@@ -1602,7 +1596,9 @@ form[name="registrationForm"] .row {
 .news-teaser {
     float: left;
     width: 100%;
-    padding: 0 0 10px 0;
+    padding: 20px 0 10px 0;
+    font-size: 12px;
+    font-style: italic;
 }
 .news-info {
     float: left;
@@ -3009,6 +3005,7 @@ input[type="checkbox"] {
 }
 .radio label, .checkbox label {
     height: auto;
+    color: #606060;
 }
 .thread-button input {
     margin-bottom: 15px;
@@ -3037,7 +3034,7 @@ input[type="checkbox"] {
     margin-top: 5px;
 }
 .checkbox:last-child, .radio:last-child {
-    margin-bottom: 0;
+    margin-bottom: 6px;
 }
 .checkbox:first-child, .radio:first-child {
     margin-top: 0;
@@ -3055,4 +3052,51 @@ input[type="file"]{height: auto;float: left;}
 }
 fieldset .checkbox, fieldset .radio {
     padding-left: 0;
+}
+/*Homepage_News*/
+#home-headlines ul {
+    list-style: none;
+    margin: 0;
+    float: left;
+    width: 100%;
+    margin-bottom: 5px;
+}
+#home-headlines li {
+    float: left;
+    padding: 0;
+    font-size: 11px;
+    color: #606060;
+}
+#home-headlines {
+    float: left;
+    width: 100%;
+}
+.entries {
+    float: left;
+    width: 100%;
+    margin-bottom: 70px;
+
+}
+#home-headlines img {
+    float: left;
+}
+.entries h2 a {
+    font-size: 20px;
+    color: #444;
+}
+.entries h2 a:hover {
+    color: #777;
+}
+.entries h2 {margin: 0;}
+.entries > a {
+    float: left;
+    font-style: italic;
+    padding-top: 5px;
+}
+.entries:last-child {
+    margin-bottom: 0;
+}
+.entry-content p {
+    margin-bottom: 16px;
+    padding-bottom: 0;
 }

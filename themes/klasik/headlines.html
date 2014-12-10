@@ -1,5 +1,15 @@
-<ul id="home-headlines">
+<div id="home-headlines">
     <!-- BEGIN headlines_row -->
-    <li>{NEWS_LINK_TITLE}</li>
+    <div class="entries">
+        <h2>{NEWS_LINK_TITLE}</h2>
+        <ul>
+            <li>{NEWS_DATE}&nbsp;&nbsp;/&nbsp;&nbsp;</li>
+            <li>by {NEWS_AUTHOR}&nbsp;&nbsp;/&nbsp;&nbsp;</li>
+            <li>in {NEWS_CATEGORY_NAME}</li>
+        </ul>
+        {NEWS_IMAGE}
+        <div class="news-teaser">{NEWS_TEASER}</div>
+        <a href="{NEWS_LINK_URL}"><i>Read More</i></a>
+    </div>
     <!-- END headlines_row -->
-</ul>
+</div>
