@@ -246,9 +246,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $objTemplate->get();
                         break;
 
-                    case 'Subscription':
-                        $sessionObj = \cmsSession::getInstance();
-                        $objUser = \FWUser::getFWUserObject()->objUser;
+                    case 'Subscription':                        
                         if (!self::isUserLoggedIn()) {
                             echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
                             break;
