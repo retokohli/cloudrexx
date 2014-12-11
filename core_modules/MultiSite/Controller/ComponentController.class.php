@@ -246,12 +246,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $objTemplate->get();
                         break;
 
-                    case 'Subscription':                        
+                    case 'Subscription':                           
                         if (!self::isUserLoggedIn()) {
                             echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
                             break;
                         }
-                        $crmContactId = $objUser->getCrmUserId();
+                        
+                        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
                         if (empty($crmContactId)) {
                             echo $_ARRAYLANG['TXT_MULTISITE_NOT_VALID_USER'];
                             break;
@@ -306,6 +307,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $objTemplate->get();
                         break;
                         
+                    case 'SubscriptionSelection':
+                        echo $objTemplate->get();
+                        break;
+                    
                     case 'SubscriptionDetail':
                         $subscriptionId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : 0;
                         
