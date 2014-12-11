@@ -212,7 +212,7 @@ class cmsSession extends RecursiveArrayAccess {
         // release all locks
         if (!empty($this->locks)) {
             foreach (array_keys($this->locks) as $lockKey) {
-                if ($this->data[$lockKey]) {
+                if (isset($this->data[$lockKey])) {
                     $sessionValue = $this->data[$lockKey];
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
                         self::updateToDb($sessionValue);
