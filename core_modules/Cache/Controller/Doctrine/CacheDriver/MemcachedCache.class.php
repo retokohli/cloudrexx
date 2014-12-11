@@ -20,7 +20,7 @@ use \Memcached;
  * @package     contrexx
  * @subpackage  coremodule_cache
  */
-class MemcachedCache extends \Doctrine\Common\Cache\MemcacheCache
+class MemcachedCache extends \Doctrine\Common\Cache\MemcachedCache
 {
     /**
      * @var Memcache
