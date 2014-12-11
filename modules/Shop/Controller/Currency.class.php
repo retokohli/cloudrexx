@@ -111,6 +111,9 @@ class Currency
                 self::$defaultCurrencyId = $objResult->fields['id'];
             $objResult->MoveNext();
         }
+        if (!isset($_SESSION['shop'])) {
+            $_SESSION['shop'] = array();
+        }
         if (isset($_REQUEST['currency'])) {
             $currency_id = intval($_REQUEST['currency']);
             $_SESSION['shop']['currencyId'] =
