@@ -692,7 +692,7 @@ UPLOADER;
                 $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';   
             }
 
-            $this->_objTpl->setVariable(array(   
+            $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,    
             ));
             $this->_objTpl->parse('eventHostSelect');  
