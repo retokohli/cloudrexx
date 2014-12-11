@@ -679,6 +679,7 @@ class InitCMS
                         case 'Config':    
                         case 'SystemLog':
                         case 'NetManager':
+                        case 'Wysiwyg':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
