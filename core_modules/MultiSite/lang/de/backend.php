@@ -80,3 +80,8 @@ $_ARRAYLANG['TXT_MULTISITE_TITLE'] = 'Titel';
 $_ARRAYLANG['TXT_MULTISITE_NEXT_BILL_DATE'] = 'N&auml;chste Rechnung';
 $_ARRAYLANG['TXT_MULTISITE_UPGRADE'] = 'Upgrade';
 $_ARRAYLANG['TXT_MULTISITE_ADD_NEW_WEBSITE'] = 'Neue Website hinzuf&uuml;gen';
+
+// Subscription trial
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE'] = 'Webseite';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION'] = 'Abo w&auml;hlen';
+
