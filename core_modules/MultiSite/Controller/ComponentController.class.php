@@ -249,13 +249,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     case 'Subscription':
                         $sessionObj = \cmsSession::getInstance();
                         $objUser = \FWUser::getFWUserObject()->objUser;
-                        if (!$objUser->login()) {
-                            echo 'Access denied';
+                        if (!self::isUserLoggedIn()) {
+                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
                             break;
                         }
                         $crmContactId = $objUser->getCrmUserId();
                         if (empty($crmContactId)) {
-                            echo 'Not a MultiSite User';
+                            echo $_ARRAYLANG['TXT_MULTISITE_NOT_VALID_USER'];
                             break;
                         }
                         
@@ -281,6 +281,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                         'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
                                         
                                         'MULTISITE_WEBSITE_NAME'         => contrexx_raw2xhtml($website->getName()),
+                                        'MULTISITE_WEBSITE_ID'           => contrexx_raw2xhtml($website->getId()),
                                         'MULTISITE_WEBSITE_LINK'         => contrexx_raw2xhtml($this->getApiProtocol() . $website->getBaseDn()->getName()),
                                         'MULTISITE_WEBSITE_BACKEND_LINK' => contrexx_raw2xhtml($this->getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
                                         'MULTISITE_WEBSITE_PLAN'         => contrexx_raw2xhtml($product->getName()),
@@ -294,6 +295,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     $websiteStatus = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) ? true : false;
                                     self::showOrHideBlock($objTemplate, 'websiteLinkActive', $websiteStatus);
                                     self::showOrHideBlock($objTemplate, 'websiteLinkInactive', !$websiteStatus);
+                                    
+                                    self::parseWebsiteAdminConsoleLink($objTemplate, $website);
                                     
                                     $objTemplate->parse('showSiteDetails');
                                 }
