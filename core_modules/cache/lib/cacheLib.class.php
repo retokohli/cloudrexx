@@ -63,9 +63,14 @@ class cacheLib
     const CACHE_ENGINE_APC = 'apc';
     
     /**
-     * memcache(d) extension
+     * memcache extension
      */
     const CACHE_ENGINE_MEMCACHE = 'memcache';
+
+    /**
+     * memcache(d) extension
+     */
+    const CACHE_ENGINE_MEMCACHED = 'memcached';
     
     /**
      * xcache extension
@@ -214,6 +219,24 @@ class cacheLib
                 $this->userCacheEngines[] = self::CACHE_ENGINE_MEMCACHE;
             }
         }
+        
+        // Memcached
+        if (   $this->isInstalled(self::CACHE_ENGINE_MEMCACHED)
+            && (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+            || $_CONFIG['cacheUserCache'] == self::CACHE_ENGINE_MEMCACHED)
+        ) {
+            $memcachedConfiguration = $this->getMemcachedConfiguration();
+            unset($this->memcache); // needed for reinitialization
+            if (class_exists('\Memcached')) {
+                $memcache = new \Memcached();
+                if (@$memcache->addServer($memcachedConfiguration['ip'], $memcachedConfiguration['port'])) {
+                    $this->memcache = $memcache;
+                }
+            }
+            if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
+                $this->userCacheEngines[] = self::CACHE_ENGINE_MEMCACHED;
+            }
+        }
 
         // XCache
         if (
@@ -316,7 +339,9 @@ class cacheLib
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 return extension_loaded('opcache') || extension_loaded('Zend OPcache');
             case self::CACHE_ENGINE_MEMCACHE:
-                return extension_loaded('memcache') || extension_loaded('memcached');
+                return extension_loaded('memcache');
+            case self::CACHE_ENGINE_MEMCACHED:
+                return extension_loaded('memcached');
             case self::CACHE_ENGINE_XCACHE:
                 return extension_loaded('xcache');
             case self::CACHE_ENGINE_FILESYSTEM:
@@ -363,6 +388,8 @@ class cacheLib
                 return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
             case self::CACHE_ENGINE_MEMCACHE:
                 return $this->memcache ? true : false;
+            case self::CACHE_ENGINE_MEMCACHED:
+                return $this->memcache ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 if ($user) {
                     return (
@@ -384,6 +411,20 @@ class cacheLib
         
         if(!empty($_CONFIG['cacheUserCacheMemcacheConfig'])){
             $settings = json_decode($_CONFIG['cacheUserCacheMemcacheConfig'], true);
+            $ip = $settings['ip'];
+            $port = $settings['port'];
+        }
+        
+        return array('ip' => $ip, 'port' => $port);
+    }
+
+    protected function getMemcachedConfiguration() {
+        global $_CONFIG;
+        $ip = '127.0.0.1';
+        $port = '11211';
+        
+        if(!empty($_CONFIG['cacheUserCacheMemcachedConfig'])){
+            $settings = json_decode($_CONFIG['cacheUserCacheMemcachedConfig'], true);
             $ip = $settings['ip'];
             $port = $settings['port'];
         }
@@ -429,6 +470,9 @@ class cacheLib
                 break;
             case self::CACHE_ENGINE_MEMCACHE:
                 $this->clearMemcache();
+                break;
+            case self::CACHE_ENGINE_MEMCACHED:
+                $this->clearMemcached();
                 break;
             case self::CACHE_ENGINE_XCACHE:
                 $this->clearXcache();
@@ -494,6 +538,39 @@ class cacheLib
      */
     private function clearMemcache(){
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHE)){
+            return;
+        }
+        //$this->memcache->flush(); //<- not like this!!!
+        $keys = array();
+        $allSlabs = $this->memcache->getExtendedStats('slabs');
+
+        foreach ($allSlabs as $server => $slabs) {
+            if (is_array($slabs)) {
+                foreach (array_keys($slabs) as $slabId) {
+                    $dump = $this->memcache->getExtendedStats('cachedump', (int) $slabId);
+                    if ($dump) {
+                        foreach ($dump as $entries) {
+                            if ($entries) {
+                                $keys = array_merge($keys, array_keys($entries));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        foreach($keys as $key){
+            if(strpos($key, $this->getCachePrefix()) !== false){
+                $this->memcache->delete($key);
+            }
+        }
+    }
+    
+    /**
+     * Clears all Memcacheddata related to this Domain if Memcache is installed
+     */
+    private function clearMemcached()
+    {
+        if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHED)){
             return;
         }
         //$this->memcache->flush(); //<- not like this!!!

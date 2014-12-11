@@ -230,14 +230,15 @@ namespace Cx\Core\Model {
                     break;
                 case \Cache::CACHE_ENGINE_MEMCACHE:
                     $memcache = $objCache->getMemcache();
-                    if ($memcache instanceof \Memcache) {
-                        $cache = new \Doctrine\Common\Cache\MemcacheCache();
-                        $cache->setMemcache($memcache);
-                    } elseif ($memcache instanceof \Memcached) {
-                        $cache = new \Cx\Core_Modules\Cache\lib\Doctrine\CacheDriver\MemcachedCache();
-                        $cache->setMemcache($memcache);
-                    }
-                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
+                    $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                    $cache->setMemcache($memcache);
+                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
+                    break;
+                case \Cache::CACHE_ENGINE_MEMCACHED:
+                    $memcache = $objCache->getMemcache();
+                    $cache = new \Doctrine\Common\Cache\MemcachedCache();
+                    $cache->setMemcache($memcache);
+                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
                     break;
                 case \Cache::CACHE_ENGINE_XCACHE:
                     $cache = new \Doctrine\Common\Cache\XcacheCache();

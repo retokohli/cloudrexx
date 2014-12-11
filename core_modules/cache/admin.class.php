@@ -141,6 +141,7 @@ class CacheManager extends cacheLib
             'TXT_CACHE_ZEND_OPCACHE' => $_CORELANG['TXT_CACHE_ZEND_OPCACHE'],
             'TXT_CACHE_XCACHE' => $_CORELANG['TXT_CACHE_XCACHE'],
             'TXT_CACHE_MEMCACHE' => $_CORELANG['TXT_CACHE_MEMCACHE'],
+            'TXT_CACHE_MEMCACHED' => $_CORELANG['TXT_CACHE_MEMCACHED'],
             'TXT_CACHE_FILESYSTEM' => $_CORELANG['TXT_CACHE_FILESYSTEM'],
             'TXT_CACHE_APC_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_APC_ACTIVE_INFO'],
             'TXT_CACHE_APC_CONFIG_INFO' => $_CORELANG['TXT_CACHE_APC_CONFIG_INFO'],
@@ -150,6 +151,8 @@ class CacheManager extends cacheLib
             'TXT_CACHE_XCACHE_CONFIG_INFO' => $_CORELANG['TXT_CACHE_XCACHE_CONFIG_INFO'],
             'TXT_CACHE_MEMCACHE_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_MEMCACHE_ACTIVE_INFO'],
             'TXT_CACHE_MEMCACHE_CONFIG_INFO' => $_CORELANG['TXT_CACHE_MEMCACHE_CONFIG_INFO'],
+            'TXT_CACHE_MEMCACHED_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_MEMCACHED_ACTIVE_INFO'],
+            'TXT_CACHE_MEMCACHED_CONFIG_INFO' => $_CORELANG['TXT_CACHE_MEMCACHED_CONFIG_INFO'],
             'TXT_CACHE_ENGINE' => $_CORELANG['TXT_CACHE_ENGINE'],
             'TXT_CACHE_INSTALLATION_STATE' => $_CORELANG['TXT_CACHE_INSTALLATION_STATE'],
             'TXT_CACHE_ACTIVE_STATE' => $_CORELANG['TXT_CACHE_ACTIVE_STATE'],
@@ -194,6 +197,7 @@ class CacheManager extends cacheLib
         $this->parseUserCacheEngines();
 
         $this->parseMemcacheSettings();
+        $this->parseMemcachedSettings();
         $this->parseVarnishSettings();
 
         $intFoldersizePages = 0;
@@ -463,6 +467,7 @@ class CacheManager extends cacheLib
         $cachingEngines = array(
             self::CACHE_ENGINE_APC => array(),
             self::CACHE_ENGINE_MEMCACHE => array(),
+            self::CACHE_ENGINE_MEMCACHED => array(),
             self::CACHE_ENGINE_XCACHE => array(),
             self::CACHE_ENGINE_FILESYSTEM => array(),
         );
@@ -485,6 +490,16 @@ class CacheManager extends cacheLib
         }
         if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHE)) {
             $cachingEngines[self::CACHE_ENGINE_MEMCACHE]['configured'] = true;
+        }
+        
+        if ($this->isInstalled(self::CACHE_ENGINE_MEMCACHED)) {
+            $cachingEngines[self::CACHE_ENGINE_MEMCACHED]['installed'] = true;
+        }
+        if ($this->isActive(self::CACHE_ENGINE_MEMCACHED)) {
+            $cachingEngines[self::CACHE_ENGINE_MEMCACHED]['active'] = true;
+        }
+        if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHED)) {
+            $cachingEngines[self::CACHE_ENGINE_MEMCACHED]['configured'] = true;
         }
         
         if ($this->isInstalled(self::CACHE_ENGINE_XCACHE)) {
@@ -531,6 +546,12 @@ class CacheManager extends cacheLib
         $configuration = $this->getMemcacheConfiguration();
         $this->objTpl->setVariable('MEMCACHE_USERCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
         $this->objTpl->setVariable('MEMCACHE_USERCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
+    }
+
+    protected function parseMemcachedSettings() {
+        $configuration = $this->getMemcacheConfiguration();
+        $this->objTpl->setVariable('MEMCACHED_USERCACHE_CONFIG_IP', contrexx_raw2xhtml($configuration['ip']));
+        $this->objTpl->setVariable('MEMCACHED_USERCACHE_CONFIG_PORT', contrexx_raw2xhtml($configuration['port']));
     }
     
     protected function parseVarnishSettings(){

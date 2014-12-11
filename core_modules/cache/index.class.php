@@ -159,6 +159,7 @@ class Cache extends cacheLib
      */
     public function endContrexxCaching($page)
     {
+        
         if (!$this->boolIsEnabled) {
             return null;
         }
