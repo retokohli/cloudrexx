@@ -392,9 +392,11 @@ body a:hover {text-decoration: underline;}
     color: #323F55;
     border-bottom: 1px solid #D6D6D6;
     background-image: url('images/nav-2-inactive.png');
-    background-position: 15px 15.5px;
+    background-position: 15px 16px;
     background-repeat: no-repeat;
     outline: 0 none;
+    line-height: 1.333;
+    font-size: 16px;
 }
 #subnavigation li a.no-border {
     border: 0;
@@ -405,11 +407,12 @@ body a:hover {text-decoration: underline;}
 #subnavigation li.level-3 a {
     width: 100%;
     padding: 0 5px 1px 45px;
-    font-size: 13px;
+    font-size: 14px;
     border: 0;
     background-image: url('images/nav-3-inactive.png');
     background-position: 30px 7px;
     word-wrap: break-word;
+    line-height: 1.5;
 }
 #subnavigation li.level-4 a {
     font-size: 12px;
@@ -446,7 +449,7 @@ body a:hover {text-decoration: underline;}
 }
 #subnavigation li a:hover,
 #subnavigation li a.active {
-    color: #066196;
+    color: #67bfb6;
 }
 #subnavigation li.level-2 a.active {
     font-weight: bold;
@@ -454,7 +457,7 @@ body a:hover {text-decoration: underline;}
 #subnavigation li.level-2 a:hover,
 #subnavigation li.level-2 a.active {
     background-image: url('images/nav-2-active.png');
-    background-position: 15px 15px;
+    background-position: 15px 16px;
     text-decoration: none;
 }
 #subnavigation li.level-3 a:hover,
@@ -462,7 +465,7 @@ body a:hover {text-decoration: underline;}
 #subnavigation li.level-4 a:hover,
 #subnavigation li.level-4 a.active {
     background-image: url('images/nav-3-active.png');
-    background-position: 30px 6px;
+    background-position: 30px 7px;
 }
 .sidebar-block-title {
     float: left;
@@ -536,16 +539,16 @@ body a:hover {text-decoration: underline;}
     padding-left: 25px;
 }
 .contact-phone {
-    background: url('images/addr.png') no-repeat -3px -3px;
+    background: url('images/addr.png') no-repeat -3px 2px;
 }
 .contact-fax {
-    background: url('images/addr.png') no-repeat -3px -24px;
+    background: url('images/addr.png') no-repeat -3px -20px;
 }
 .contact-mail {
-    background: url('images/addr.png') no-repeat -3px -53px;
+    background: url('images/addr.png') no-repeat -3px -50px;
 }
 .contact-web {
-    background: url('images/addr.png') no-repeat -3px -74px;
+    background: url('images/addr.png') no-repeat -3px -70px;
 }
 .sidebar-block a {
     color: #fff;
@@ -639,7 +642,7 @@ body a:hover {text-decoration: underline;}
     -moz-box-sizing: border-box;
     background: #f7fcfb;
     margin-right: 14px;
-    width: 76.2%;
+    width: 75.2%;
 }
 #page.full-width {
     margin: 0;
@@ -670,7 +673,7 @@ body a:hover {text-decoration: underline;}
     font-size: 15px;
     font-weight: bold;
     font-family: Arial;
-    background: #0A85C8;
+    background: #67bfb6;
 }
 #page-header {
     float: left;
@@ -916,6 +919,8 @@ span.disconnected {
     margin-left: 3.072027612397888%;
     margin-right: 3.072027612397888%;
     padding-bottom: 67px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .item h1 {
     position: absolute;
@@ -1142,6 +1147,7 @@ section, footer, .wrapper {
 #feedbutton {
     margin-top: 16px;
 }
+#feedbutton:hover {color: #333;}
 #sociallogin {
     float: left;
     width: 100%;
@@ -1234,10 +1240,6 @@ row2 .eachrow:first-child, .homerow2 .eachrow:first-child {
     float: left;
     width: 22.5%;
     padding: 0;
-}
-#page.col-md-9 {
-    width: 76.3%;
-    margin-right: 14px;
 }
 .modal-body .left h2 {
     padding-bottom: 30px;
@@ -1510,12 +1512,12 @@ p#loginerror {
 }
 .site-intro .title {
     text-align: center;
-    font-size: 67px;
+    font-size: 76px;
     letter-spacing: -2px;
     font-weight: 300;
     color: #fff;
     margin-bottom: 0;
-    line-height: 1.333;
+    line-height: 100px;
     position: relative;
 }
 .site-intro .description {
@@ -1543,7 +1545,7 @@ p#loginerror {
     width: 100%;
     height: auto;
 }
-.article-content .p1 {font-size: 26px; line-height: 47px; font-weight: 400;}
+.article-content .p1 {font-size: 27px; line-height: 47px; font-weight: 400;}
 .article-content .p2 {
     text-align: center;
     padding-top: 16px;
@@ -1778,4 +1780,13 @@ width: 100%;
 .main-nav ul ul.menu {
     margin: 0 0 0 16px;
     padding: 0;
+}
+.btn-link {
+    color: #67bfb6;
+    background-color: #f7fcfb;    
+}
+.btn-link:hover {
+    color: #67bfb6;
+    text-decoration: underline;
+    background-color: #f7fcfb;
 }

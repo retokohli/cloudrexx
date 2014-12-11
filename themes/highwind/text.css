@@ -62,7 +62,7 @@ body {
     color: #7a7a7a;
     font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-weight: 400;
-    line-height: 32px;
+    line-height: 1.777;
     background: #eff4f3;
     padding-right: 0 !important;
     font-size: 16px;
@@ -107,7 +107,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-weight: normal;
 }
 h1 {
-    font-size: 34px;
+    font-size: 32px;
 }
 h1.first {
     padding-top: 0;
@@ -152,7 +152,7 @@ textarea {
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; 
 }
 input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus{outline: none;}
-input[type="submit"], input[type="reset"], input[type=button] {color: #414141; font-size: 13px;}
+input[type="submit"], input[type="reset"], input[type=button] {color: #fff; font-size: 13px; line-height: 5px;}
 textarea {color: #7d7d7d;}
 select.form-control {
     padding: 7px 8px;
@@ -272,7 +272,7 @@ html {
     overflow-y: scroll;
 }
 h1 {
-    font-size: 34px;
+    font-size: 32px;
     margin: 0;
 }
 button,
@@ -287,7 +287,7 @@ textarea {
 }
 h1,
 .h1 {
-    font-size: 34px;
+    font-size: 32px;
 }
 
 h4,

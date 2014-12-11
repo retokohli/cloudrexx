@@ -741,10 +741,7 @@
     }
     #shop div.message p label {
         min-height: 40px;
-    }
-    #page {
-        width: 75.9%;
-    }
+    }    
     #sidebar {
         width: 22.566667%;
     }
@@ -799,10 +796,11 @@
 }
 @media (min-width: 1200px) {
     body .container {
-        width: 1155px;
+        width: 100%;
     }
 }
 @media (min-width: 768px) {
+    .container {width: 100%;}
     .row .navbar-header {
         float: right;
     }
@@ -844,6 +842,10 @@
         color: #fff;
         margin-bottom: 0;
     }
+    .article-content .p1 {
+        font-size: 24px;
+        line-height: 42px;       
+    }
     .site-intro .description {text-align: left;}
     .site-intro {
         width: 100%;
@@ -883,6 +885,7 @@
 }
 
 @media (min-width: 992px) { 
+    .container {width: 100%;}
     .main-nav h2, .main-nav .buttons, .main-nav hr {
         display: none;
     } 
@@ -1063,8 +1066,22 @@
     .csstransforms3d.csstransitions .background-contrast .main-nav {
         left: auto;
     } 
+    .main-nav ul li.starter_active > a:before {
+        border-bottom-color: #67bfb6;
+    }
+    .main-nav ul > li.starter_active > a:before {
+        content: "";
+        display: block;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        margin-left: -9px;
+        color: #67bfb6;
+        border: 9px solid #67bfb6;
+        border-color: transparent transparent #67bfb6 transparent;
+    }
 }
 
 @media (max-width: 450px) { 
-    .btn {margin-bottom: 15px;}
+    .btn {margin-top: 15px;}
 }
