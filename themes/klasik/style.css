@@ -7,6 +7,27 @@
         width: 100%;
         height: auto;
     }
+    .main-nav {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    #tinynav1 {
+        display: inline-block;
+        width: 50%;
+    }
+    .banner-content, .subpage-content {
+        padding: 0;
+        margin: 0;
+        width: auto;
+    }
+    div#logo {
+        width: 100%;
+        float: left;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #topnav {display: none;}
     #podcast .media div +div {
         padding-left: 0;
     }
@@ -733,6 +754,22 @@
     #subnavigation {
         display: none;
     }
+    .main-nav {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    #tinynav1 {
+        display: inline-block;
+        width: 50%;
+    }
+    div#logo {
+        width: 100%;
+        float: left;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #topnav {display: none;}
 }
 @media (min-width: 980px) and (max-width: 1199px) {
     .home-box.col-md-4 {width: 31.4%;margin-right: 28px;}

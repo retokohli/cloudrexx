@@ -5,10 +5,10 @@
     border-bottom: 1px solid #ebebeb;
     float: left;
     margin-top: 39px;
-    padding-bottom: 38px;
+    padding-bottom: 36px;
     width: 100%;
 }
-.navigation li.starter_active a, .navigation li.starter_active a:hover {
+.navigation li a:hover, .navigation li.starter_active a {
     color: #444;
 }
 .navigation li.last {
@@ -20,15 +20,19 @@
     width: 100%;
     margin-bottom: 0;
 }
-.navigation li ul {
+.navigation li ul, #tinynav1 {
     display: none;
 }
 .navigation li {
     float: left;
-    padding-right: 27px;
+    padding-left: 27px;
     list-style: none;
     padding-top: 0;
     padding-bottom: 0;
+    position: relative;
+}
+.navigation li.last ul {
+    width: 100% !important;
 }
 .main-nav {
     float: right;
@@ -47,13 +51,17 @@ section {
     float: left;
     width: 100%;
 }
-.banner-content {
+.banner-content, .subpage-content {
     width: 66.67%;
     float: left;
-    margin-top: 55px;
+    margin-top: 60px;
     padding: 0 15px;
     margin-left: -15px;
     margin-right: -15px;
+    padding-bottom: 80px;
+}
+div#contactDescription {
+    margin-bottom: 40px;
 }
 .entry-content {
     word-wrap: break-word;
@@ -102,4 +110,133 @@ section {
     margin-bottom: 50px;
     float: left;
     width: 100%;
+}
+body footer {
+    float: left;
+    width: 100%;
+    background: #2c2c2c;
+    padding-bottom: 17px;
+    padding-top: 20px;
+    color: #777;
+}
+body footer a:hover {
+    color: #ddd;
+}
+img {
+    max-width: 100%;
+    height: auto;
+}
+.detail {
+    font-size: 13px;
+    font-style: italic;
+}
+.sf-menu li:hover ul, .sf-menu li.sfHover ul {
+    background: #ffffff!important;
+    color: #858585;
+    border: 1px solid #ebebeb;
+    border-top: 2px solid #c4c4c4;
+}
+.sf-menu li:hover ul, .sf-menu li.sfHover ul {
+    left: -5px;
+    top: 4.8em;
+    z-index: 999;
+    padding: 0 15px;
+}
+.sf-menu li li:first-child {
+    border: 0px;
+}
+.sf-menu li li {
+    text-align: left;
+    line-height: 20px;
+    margin: 0;
+    padding: 5px 0px!important;
+}
+.sf-menu a, .sf-menu a:visited {
+    color: #858585;
+}
+.sf-menu ul li a {
+    font-size: 13px;
+}
+.main-nav li > ul {
+    top: 4.8em;
+    position: absolute;
+    margin: 0;
+    background: #fff;
+}
+.main-title {
+    float: left;
+    width: 100%;
+    background-color: #fafafa;
+    border-bottom: 1px solid #ebebeb;
+    position: relative;
+    padding-top: 21px;
+    padding-bottom: 23px;
+    margin-bottom: 0px;
+}
+.main-title h1 {
+    margin-bottom: 0px;
+}
+.pagetitle {
+    font-size: 22px;
+    line-height: normal;
+    margin: 0px;
+    display: block;
+}
+body #contactFrame label {
+    padding: 5px 0;
+    margin-top: 0px;
+    padding: 5px 0;
+    display: inline-block;
+}
+#contactFrame input[type="text"] {
+    margin-bottom: 3px;
+    padding: 8px 5px;
+    vertical-align: middle;
+    width: 50%;
+    font-size: 12px;
+    font-family: arial;
+    display: block;
+    page-break-after: always;
+    height: 32px;
+}
+#contactFrame textarea {
+    width: 96.6%;
+    margin-bottom: 12px;
+    padding: 9px 5px;
+    vertical-align: top;
+    font-size: 12px;
+    font-family: arial;
+    display: block;
+    height: auto;
+}
+.subpage-content {padding-bottom: 90px;}
+#contactFrame .contact.row.form-group {
+    margin-bottom: 0;
+    padding: 0;
+}
+.entry-content #contactFrame textarea {
+    height: 40px;
+    width: 90%;
+    font-size: 11px;
+    padding: 7px 5px;
+    line-height: normal;
+    margin-bottom: 0;
+    float: left;
+}
+.entry-content #contactFrame input[type="text"] {
+    width: 90%;
+    font-size: 11px;
+    padding: 7px 5px;
+    margin-bottom: 0;
+    height: 28px;
+}
+body .entry-content #contactFrame label {
+    padding: 0;
+}
+.entry-content #contactFrame .contact.row.form-group {
+    margin-bottom: 16px;
+}
+#news-social-media, #news-links ul {list-style: none;}
+div#logo {
+    float: left;
 }

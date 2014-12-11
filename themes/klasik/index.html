@@ -33,6 +33,10 @@
         <link type="text/css" rel="stylesheet" href="themes/klasik/modules.css" />
         <link type="text/css" rel="stylesheet" href="themes/klasik/text.css" />
         <script type="text/javascript" src="themes/klasik/modernizr.js"></script>
+        <script type="text/javascript" src="themes/klasik/tinynav.min.js"></script>
+        <script type="text/javascript" src="themes/klasik/hoverIntent.js"></script>
+        <script type="text/javascript" src="themes/klasik/superfish.min.js"></script>
+        <script type="text/javascript" src="themes/klasik/supersubs.js"></script>
         <script type="text/javascript" src="themes/klasik/jquery.cycle.js"></script>
         <script type="text/javascript" src="themes/klasik/javascript.js"></script>
     </head>
@@ -40,21 +44,26 @@
         <div class="wrapper">
             <header>
                 <div class="container">
-                    <a href="{NODE_HOME}"><img src="/themes/klasik/images/logo.png" alt="images" /></a>
+                    <div id="logo"><a href="{NODE_HOME}"><img src="/themes/klasik/images/logo.png" alt="images" /></a></div>
                     <div class="main-nav">
                         {NAVBAR_FILE}
                     </div>
                 </div>
             </header>
-            <div class="banner">
-                <div class="container">
-                    <img src="/themes/klasik/images/bgslider.jpg" alt="images" />
-                </div>
-            </div>
+            
             <section id="content-wrapper">
                 {CONTENT_FILE}
             </section>
-            <footer></footer>
+            <footer>
+                <div class="container">
+                    <div class="copyrighttext">
+                        Copyright © 2014 
+                        <a href="#">Your Site.</a>
+                        Designed by
+                        <a href="#" title="">Lorem ipsum</a>.
+                    </div>
+                </div>
+            </footer>
         </div>
         {LOGIN_CONTENT}
         {COUNTER}
