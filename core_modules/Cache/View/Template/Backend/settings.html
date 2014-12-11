@@ -199,13 +199,38 @@
                         <img src="../core/Core/View/Media/icons/{MEMCACHE_USERCACHE_CONFIGURATION_ICON}" />&nbsp;
                         <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CACHE_MEMCACHE_CONFIG_INFO}</span>
                     </td>
-                    <td><a class="cx-expand cx-expandDown"><span class="cx-expandDownText">{TXT_DISPLAY_CONFIGURATION}</span><span class="cx-expandUpText">{TXT_HIDE_CONFIGURATION}</span></a></td>
+                    <td><a class="cx-expand cx-expandDown" data-group="memcache"><span class="cx-expandDownText">{TXT_DISPLAY_CONFIGURATION}</span><span class="cx-expandUpText">{TXT_HIDE_CONFIGURATION}</span></a></td>
                 </tr>
-                <tr class="cx-expanding">
+                <tr class="cx-expanding" data-group="memcache">
                     <td></td>
                     <td colspan="5">
                         <label for="memcacheSettingIp">IP:</label>&nbsp;<input type="text" id="memcacheSettingIp" name="memcacheSettingIp" value="{MEMCACHE_USERCACHE_CONFIG_IP}">
                         <lable for="memcacheSettingPort">Port:</lable>&nbsp;<input type="text" id="memcacheSettingPort" name="memcacheSettingPort" value="{MEMCACHE_USERCACHE_CONFIG_PORT}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <!-- BEGIN cache_usercache_memcached -->
+                        <input type="radio" name="usercache" value="memcached" id="usercache_memcached" {CHECKED_USERCACHE_MEMCACHED} />
+                        <!-- END cache_usercache_memcached -->
+                    </td>
+                    <td><label for="usercache_memcached">{TXT_CACHE_MEMCACHED}</label></td>
+                    <td><img src="../core/Core/View/Media/icons/{MEMCACHED_USERCACHE_INSTALLATION_ICON}" /></td>
+                    <td>
+                        <img src="../core/Core/View/Media/icons/{MEMCACHED_USERCACHE_ACTIVE_ICON}" />&nbsp;
+                        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CACHE_MEMCACHED_ACTIVE_INFO}</span>
+                    </td>
+                    <td>
+                        <img src="../core/Core/View/Media/icons/{MEMCACHED_USERCACHE_CONFIGURATION_ICON}" />&nbsp;
+                        <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CACHE_MEMCACHED_CONFIG_INFO}</span>
+                    </td>
+                    <td><a class="cx-expand cx-expandDown" data-group="memcached"><span class="cx-expandDownText">{TXT_DISPLAY_CONFIGURATION}</span><span class="cx-expandUpText">{TXT_HIDE_CONFIGURATION}</span></a></td>
+                </tr>
+                <tr class="cx-expanding" data-group="memcached">
+                    <td></td>
+                    <td colspan="5">
+                        <label for="memcachedSettingIp">IP:</label>&nbsp;<input type="text" id="memcachedSettingIp" name="memcachedSettingIp" value="{MEMCACHED_USERCACHE_CONFIG_IP}">
+                        <lable for="memcachedSettingPort">Port:</lable>&nbsp;<input type="text" id="memcachedSettingPort" name="memcachedSettingPort" value="{MEMCACHED_USERCACHE_CONFIG_PORT}">
                     </td>
                 </tr>
                 <tr>

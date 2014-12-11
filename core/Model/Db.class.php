@@ -218,7 +218,7 @@ namespace Cx\Core\Model {
                         $cache = new \Doctrine\Common\Cache\MemcacheCache();
                         $cache->setMemcache($memcache);
                     } elseif ($memcache instanceof \Memcached) {
-                        $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\MemcachedCache();
+                        $cache = new \Doctrine\Common\Cache\MemcachedCache();
                         $cache->setMemcache($memcache);
                     }
                     $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
