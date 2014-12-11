@@ -208,7 +208,7 @@ class CalendarLibrary
                 self::getSettings();
 
                 switch($strAction) {
-                    case 'add_event':  
+                    case 'add_event':
                        if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
                             if($this->arrSettings['addEventsFrontend'] == 2) {
                                 if($bolUserLogin) {

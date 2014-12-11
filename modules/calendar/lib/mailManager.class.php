@@ -218,14 +218,16 @@ class CalendarMailManager extends CalendarLibrary {
             $eventManager->_setNextSeriesElement($objEvent);
 
             $lastEvent = null;
-            while ($objEvent->startDate != $_POST['date']){
-                foreach ($eventManager->eventList as $event){
-                    if ($event->startDate == $_POST['date']){
-                        $objEvent = $event;
+            if (isset($_POST['date'])) {
+                while ($objEvent->startDate != $_POST['date']){
+                    foreach ($eventManager->eventList as $event){
+                        if ($event->startDate == $_POST['date']){
+                            $objEvent = $event;
+                        }
+                        $lastEvent = $event;
                     }
-                    $lastEvent = $event;
+                    $eventManager->_setNextSeriesElement($lastEvent);
                 }
-                $eventManager->_setNextSeriesElement($lastEvent);
             }
             
             $objRegistration = null;
