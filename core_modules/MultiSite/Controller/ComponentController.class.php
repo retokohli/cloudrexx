@@ -1141,7 +1141,7 @@ throw new MultiSiteException('Refactor this method!');
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $userEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $userEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $userEventListener);
-
+        
         $cronMailEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CronMailEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\CronMail', $cronMailEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\CronMail', $cronMailEventListener);
@@ -1150,6 +1150,11 @@ throw new MultiSiteException('Refactor this method!');
         $websiteTemplateEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteTemplateEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteTemplate', $websiteTemplateEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteTemplate', $websiteTemplateEventListener);
+        
+        //Form event Listener
+        $formEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\FormEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\Contact\\Model\\Entity\\Form', $formEventListener);
+        
     }
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         global $_CONFIG;
@@ -1352,6 +1357,30 @@ throw new MultiSiteException('Refactor this method!');
         return implode(',', $dropdownOptions);
     }
     
+    /**
+     * Get the module additional data by its type
+     * 
+     * @param string $moduleName      name of the module
+     * @param string $additionalType  additional type of the module additional data
+     * @return mixed array | boolean
+     */
+    public static function getModuleAdditionalDataByType($moduleName = '', $additionalType = 'quota') {
+        global $objDatabase;
+        
+        if (empty($moduleName) || empty($additionalType)) {
+            return;
+        }
+        
+        $objResult = $objDatabase->Execute('SELECT `additional_data` FROM ' . DBPREFIX . 'modules WHERE name= "'. $moduleName .'"');
+        if ($objResult !== false) {
+            $options = json_decode($objResult->fields['additional_data'], true);
+            if (!empty($options)) {
+               return $options[$additionalType]; 
+            }
+        }
+        
+        return false;
+    }
     
     /**
      * Shows the all website templates

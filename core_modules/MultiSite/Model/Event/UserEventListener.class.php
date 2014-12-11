@@ -54,16 +54,30 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             \DBG::msg($e->getMessage());
         }
     }
-
+    
+    /**
+     * PrePersist Event
+     * 
+     * @param type $eventArgs
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException
+     */
     public function prePersist($eventArgs) {
         \DBG::msg('MultiSite (UserEventListener): prePersist');
-         
+        
+        global $_ARRAYLANG;
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                  case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
 // TODO: add language variable
                         throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
+                    }
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Access');
+                    $usersCount = \FWUser::getFWUserObject()->objGroup->getUserCount();
+                    if ($usersCount > $options['User']) {
+                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_MAXIMUM_QUOTA_REACHED'], $options['User']));
                     }
                     break;
                 default:
