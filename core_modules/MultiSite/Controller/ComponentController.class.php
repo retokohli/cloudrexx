@@ -370,8 +370,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
 
                     case 'Website':
-                        $websiteId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : '';
 
+                        if (!self::isUserLoggedIn()) {
+                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
+                            break;
+                        }
+                        
+                        $websiteId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : '';
                         if (empty($websiteId)) {
                             echo 'Website ID is empty.';
                             break;
@@ -380,19 +385,30 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                         $website = $websiteServiceRepo->findOneById($websiteId);
                         if (!$website) {
-                            echo 'website is not exists';
+                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
                             break;
                         }
-
+                        if($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()){
+                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+                            break;
+                        }
+                        
+                        //show the admin console button
+                        if ($objTemplate->blockExists('showAdminButton')) {
+                            self::parseWebsiteAdminConsoleLink($objTemplate, $website);
+                        }
+                        //show the frontend
+                        $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
+                        $objTemplate->setVariable('MULTISITE_WEBSITE_FRONTEND_LINK', $this->getApiProtocol() . $website->getBaseDn()->getName());
+                        self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
+                        
                         //Show the Website Admin and Backend group users
                         if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
                             $websiteAdminUsers = $website->getAdminUsers();
                             foreach ($websiteAdminUsers as $websiteAdminUser) {
                                 $objTemplate->setVariable(array(
-                                    'MULTISITE_WEBSITE_USER_ID' => $websiteAdminUser['id'],
-                                    'MULTISITE_WEBSITE_USER_ACCOUNT_NAME' => $websiteAdminUser['username'],
-                                    'MULTISITE_WEBSITE_USER_NAME' => $websiteAdminUser['firstname'] . ' ' . $websiteAdminUser['lastname'],
-                                    'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser['email'],
+                                    'MULTISITE_WEBSITE_USER_NAME' => \FWUser::getParsedUserTitle($websiteAdminUser->id),
+                                    'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser->email,
                                 ));
                                 $objTemplate->parse('showWebsiteAdminUsers');
                             }
@@ -407,7 +423,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 ));
                                 $objTemplate->parse('showWebsiteDomainAliases');
                             }
-                            self::showOrHideBlock($objTemplate, 'showNoWebsiteDomainAliasFound', !$websiteDomainAliases ? true : false);
+                            self::showOrHideBlock($objTemplate, 'showWebsiteDomainAliasFound', !empty($websiteDomainAliases));
                         }
 
                         //show the website's domain name
@@ -419,6 +435,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 ));
                             }
                         }
+//                        //show the website's resources
+//                        if($objTemplate->blockExists('showWebsiteResources')){
+//                           $resourceUsageStats = $website->getResourceUsageStats();
+//                        }
                         
                         echo $objTemplate->get();
                         break;
