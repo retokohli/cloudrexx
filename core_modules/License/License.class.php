@@ -30,6 +30,7 @@ class License {
     private $editionName;
     private $availableComponents;
     private $legalComponents;
+    private $legalComponentsAdditionalData = array();
     private $legalFrontendComponents;
     private $validTo;
     private $upgradeUrl;
@@ -77,7 +78,7 @@ class License {
         $this->state = $state;
         $this->editionName = $editionName;
         $this->availableComponents = $availableComponents;
-        $this->legalComponents = $legalComponents;
+        $this->loadComponentsAdditionalData($legalComponents);
         $this->validTo = $validTo;
         $this->createdAt = $createdAt;
         $this->registeredDomains = is_array($registeredDomains) ? $registeredDomains : array();
@@ -109,6 +110,30 @@ class License {
         $this->setLastSuccessfulUpdateTime($lastSuccessfulUpdate);
     }
     
+    /**
+     * Load the component's addtional data from the argument $legalComponents
+     * 
+     * @param array $legalComponents
+     * 
+     * @return mixed array | boolean
+     */
+    public function loadComponentsAdditionalData($legalComponents = array()) {
+        if (empty($legalComponents)) {
+            return;
+        }
+        
+        $this->legalComponents = array();
+        foreach ($legalComponents as $key => $legalComponent) {
+            if (is_array($legalComponent)) {
+                $componentName = key($legalComponent);
+                $this->legalComponents[] = $componentName;
+                $this->legalComponentsAdditionalData[$componentName] = $legalComponent[$componentName];
+            } else {
+                $this->legalComponents[] = $legalComponent;
+            }
+        }
+    }
+
     public function getState() {
         return $this->state;
     }
@@ -145,9 +170,26 @@ class License {
     }
 
     public function setLegalComponents($legalComponents) {
-        $this->legalComponents = $legalComponents;
+        $this->loadComponentsAdditionalData($legalComponents);
+    }
+    /**
+     * get the legal components additional data
+     * 
+     * @return array
+     */
+    public function getLegalComponentsAdditionalData() {
+        return $this->legalComponentsAdditionalData;
     }
     
+    /**
+     * Set the legal Components additional data
+     * 
+     * @param array $legalComponentsAdditionalData
+     */
+    public function setLegalComponentsAdditionalData($legalComponentsAdditionalData) {
+        $this->legalComponentsAdditionalData = $legalComponentsAdditionalData;
+    }
+
     public function isInLegalComponents($componentName) {
         return in_array($componentName, $this->legalComponents);
     }
@@ -606,6 +648,25 @@ class License {
                 `name` IN(\'' . implode('\', \'', $this->getLegalComponentsList()) . '\')
         ';
         $objDb->Execute($query);
+        
+        //Save legal components additional data values.
+        if (!empty($this->getLegalComponentsAdditionalData())) {
+
+            foreach ($this->getLegalComponentsAdditionalData() as $componentName => $additionalData) {
+                if (empty($componentName) || empty($additionalData)) {
+                    continue;
+                }
+                $query = "
+                    UPDATE 
+                        " . DBPREFIX . "modules
+                    SET 
+                        `additional_data` = '" . json_encode($additionalData) . "'
+                    WHERE 
+                        `name` = '" . $componentName . "'
+                    ";
+                $objDb->Execute($query);
+            }
+        }
     }
     
     /**
