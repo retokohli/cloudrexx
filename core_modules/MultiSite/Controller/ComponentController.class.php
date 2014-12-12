@@ -467,7 +467,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'MULTISITE_WEBSITE_CRM_CUSTOMERS_QUOTA' => $resourceUsageStats->crmCustomer->quota,
                             ));
                             $objTemplate->parse('showWebsiteResources');
-                            self::showOrHideBlock($objTemplate, 'showWebsiteResources', !empty($resourceUsageStats));
                         }
 
                         echo $objTemplate->get();
