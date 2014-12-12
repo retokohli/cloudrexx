@@ -66,6 +66,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         
         global $_ARRAYLANG;
         try {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                  case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {

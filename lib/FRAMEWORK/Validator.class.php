@@ -275,7 +275,18 @@ class FWValidator
 
         return $fileName;
     }
-
+    
+    /**
+     * Check whether the given value is empty or not
+     * 
+     * @param mixed $value
+     * 
+     * @return boolean true if the value is empty, false otherwise
+     */
+    public static function isEmpty($value)
+    {
+        return empty($value);
+    }
 }
 
 /**

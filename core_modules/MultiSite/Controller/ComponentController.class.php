@@ -1166,6 +1166,9 @@ throw new MultiSiteException('Refactor this method!');
         $formEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\FormEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\Contact\\Model\\Entity\\Form', $formEventListener);
         
+        //Product event Listener
+        $productEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\ProductEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Shop\\Controller\\Product', $productEventListener);
     }
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         global $_CONFIG;
@@ -1382,7 +1385,7 @@ throw new MultiSiteException('Refactor this method!');
             return;
         }
         
-        $objResult = $objDatabase->Execute('SELECT `additional_data` FROM ' . DBPREFIX . 'modules WHERE name= "'. $moduleName .'"');
+        $objResult = $objDatabase->Execute('SELECT `additional_data` FROM ' . DBPREFIX . 'modules WHERE name= "'. contrexx_raw2db($moduleName) .'"');
         if ($objResult !== false) {
             $options = json_decode($objResult->fields['additional_data'], true);
             if (!empty($options)) {

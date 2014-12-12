@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FormEventListener
+ * ProductEventListener
 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
@@ -12,48 +12,50 @@
 namespace Cx\Core_Modules\MultiSite\Model\Event;
 
 /**
- * Class FormEventListenerException
+ * Class ProductEventListenerException
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_multisite
  */
-class FormEventListenerException extends \Exception {}
+class ProductEventListenerException extends \Exception {}
 
 /**
- * Class FormEventListener
+ * Class ProductEventListener
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_multisite
  */
-class FormEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class ProductEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     /**
-     * PrePersist Event
+     * prePersist Event
      * 
      * @param type $eventArgs
      * @throws \Cx\Core\Error\Model\Entity\ShinyException
      */
     public function prePersist($eventArgs) {
-        \DBG::msg('Multisite (FormEventListener): prePersist');
+        \DBG::msg('Multisite (ProductEventListener): prePersist');
         
         global $_ARRAYLANG;
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Contact');
-                    $forms   = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findAll();
-                    $formCount = $forms ? count($forms) : 0;
-                    if ($formCount > $options['Form']) {
-                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_MAXIMUM_QUOTA_REACHED'], $options['Form']));
+                    $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Shop');
+                    $count = 0;
+                    $products = \Cx\Modules\Shop\Controller\Products::getByShopParams($count, 0, null, null, null, null, false, false, null, null, true);
+                    $productsCount = !empty($products) ? count($products) : 0; 
+                    if ($productsCount > $options['Product']) {
+                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_MAXIMUM_QUOTA_REACHED'], $options['Product']));
                     }
                     break;
                 default:
                     break;
             }
+                   
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             throw new \Cx\Core\Error\Model\Entity\ShinyException($e->getMessage());
