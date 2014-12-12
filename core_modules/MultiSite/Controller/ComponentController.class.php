@@ -381,7 +381,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         
                         $websiteId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : '';
                         if (empty($websiteId)) {
-                            echo 'Website ID is empty.';
+                            echo $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
                             break;
                         }
 

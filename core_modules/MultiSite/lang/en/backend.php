@@ -214,3 +214,4 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'] = 'Not a Multisite User.
 
 $_ARRAYLANG['TXT_MULTISITE_NO_WEBSITE_FOUND'] = 'Websites not available';
 $_ARRAYLANG['TXT_MULTISITE_NOT_VALID_USER'] = 'Not a multisite user';
+$_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'] = 'Unknown website requested.';

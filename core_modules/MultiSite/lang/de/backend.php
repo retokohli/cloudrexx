@@ -84,4 +84,4 @@ $_ARRAYLANG['TXT_MULTISITE_ADD_NEW_WEBSITE'] = 'Neue Website hinzuf&uuml;gen';
 // Subscription trial
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE'] = 'Webseite';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION'] = 'Abo w&auml;hlen';
-
+$_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'] = 'Die angeforderte Website ist unbekannt.';
