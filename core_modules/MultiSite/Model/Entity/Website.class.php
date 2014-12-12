@@ -1680,4 +1680,21 @@ throw new WebsiteException('implement secret-key algorithm first!');
         }
         
     }
+    
+    /**
+     * This function used to get the website resource usage stats on website.
+     * 
+     * @return array website resource usage stats
+     * @throws WebsiteException
+     */
+    public function getResourceUsageStats() {
+        try {
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getResourceUsageStats', array(), $this);
+            if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                return $resp->data->resourceUsageStats;
+            }
+        } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
+            throw new WebsiteException('Unable get Resource usage stats: ' . $e->getMessage());
+        }
+    }
 }

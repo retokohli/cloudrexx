@@ -453,11 +453,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 ));
                             }
                         }
-//                        //show the website's resources
-//                        if($objTemplate->blockExists('showWebsiteResources')){
-//                           $resourceUsageStats = $website->getResourceUsageStats();
-//                        }
-                        
+                        //show the website's resources
+                        if ($objTemplate->blockExists('showWebsiteResources')) {
+                            $resourceUsageStats = $website->getResourceUsageStats();
+                            $objTemplate->setVariable(array(
+                                'MULTISITE_WEBSITE_ADMIN_USERS_USAGE' => $resourceUsageStats->accessUser->usage,
+                                'MULTISITE_WEBSITE_ADMIN_USERS_QUOTA' => $resourceUsageStats->accessUser->quota,
+                                'MULTISITE_WEBSITE_CONTACT_FORMS_USAGE' => $resourceUsageStats->contactForm->usage,
+                                'MULTISITE_WEBSITE_CONTACT_FORMS_QUOTA' => $resourceUsageStats->contactForm->quota,
+                                'MULTISITE_WEBSITE_SHOP_PRODUCTS_USAGE' => $resourceUsageStats->shopProduct->usage,
+                                'MULTISITE_WEBSITE_SHOP_PRODUCTS_QUOTA' => $resourceUsageStats->shopProduct->quota,
+                                'MULTISITE_WEBSITE_CRM_CUSTOMERS_USAGE' => $resourceUsageStats->crmCustomer->usage,
+                                'MULTISITE_WEBSITE_CRM_CUSTOMERS_QUOTA' => $resourceUsageStats->crmCustomer->quota,
+                            ));
+                            $objTemplate->parse('showWebsiteResources');
+                            self::showOrHideBlock($objTemplate, 'showWebsiteResources', !empty($resourceUsageStats));
+                        }
+
                         echo $objTemplate->get();
                         break;
                         

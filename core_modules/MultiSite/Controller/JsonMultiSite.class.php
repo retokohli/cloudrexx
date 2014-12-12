@@ -117,7 +117,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
-            'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
+            'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'getResourceUsageStats' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -3164,4 +3165,66 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::getAdminUsers() failed: To get the Admin users' . $e->getMessage());
         }
     }
+    
+    /**
+     * This function used to get the resource usage stats
+     * 
+     * @return array resource usage stats 
+     * @throws MultiSiteJsonException
+     */
+    
+    public function getResourceUsageStats() {
+
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_WEBSITE:
+                    $resourcesUsage = array();
+                    $modulesArray = array(
+                        'Access' => 'User',
+                        'Contact' => 'Form',
+                        'Shop' => 'Product',
+                        'Crm' => 'Customer'
+                    );
+
+                    foreach ($modulesArray as $module => $type) {
+                        switch ($module) {
+                            case 'Access':
+                                $usage = count($this->getAdminUsers());
+                                break;
+                            
+                            case 'Contact':
+                                $forms = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findAll();
+                                $usage = count($forms);
+                                break;
+
+                            case 'Shop':
+                                $count = 0;
+                                $products = \Cx\Modules\Shop\Controller\Products::getByShopParams($count, 0, null, null, null, null, false, false, null, null, true);
+                                $usage = count($products);
+                                break;
+
+                            case 'Crm':
+                                $objCrm = new \Cx\Modules\Crm\Controller\CrmManager('crm');
+                                $query = $objCrm->getContactsQuery(array('contactSearch' => 2));
+                                $usage = $objCrm->countRecordEntries($query);
+                                break;
+                        }
+                        
+                        $quotaResult = ComponentController::getModuleAdditionalDataByType($module);
+                        
+                        $resourceUsageStats[lcfirst($module) . $type] = array(
+                            'usage' => $usage ? $usage : 0,
+                            'quota' => !empty($quotaResult[$type]) ? $quotaResult[$type] : 'Unlimited'
+                        );
+                    }
+
+                    return array('status' => 'success', 'resourceUsageStats' => $resourceUsageStats);
+                    break;
+            }
+            return array('status' => 'error');
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::getResourceUsageStats() failed: To get the website Resource Usage Stats' . $e->getMessage());
+        }
+    }
+
 }
