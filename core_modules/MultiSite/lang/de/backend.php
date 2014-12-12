@@ -80,6 +80,7 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'] = 'Das angeforderte
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'] = 'Das angeforderte Produkt ist unbekannt.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'] = 'Die angeforderte Website ist unbekannt.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'] = 'Zugriff verweigert';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_WEBSITES'] = 'Webseiten';
 
 // Subscription active
 $_ARRAYLANG['TXT_MULTISITE_REFERENCE_NUMBER'] = 'Referenz-Nr.';

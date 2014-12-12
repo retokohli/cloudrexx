@@ -318,6 +318,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             break;
                         }
                         
+                        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+                        if (empty($crmContactId)) {
+                            echo ' '; // Do not show subscription detail
+                            break;
+                        }
+                        
                         if (empty($subscriptionId)) {
                             echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'];
                             break;
@@ -339,7 +345,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         }
                         
                         //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
-                        if (\FWUser::getFWUserObject()->objUser->getCrmUserId() != $order->getContactId()) {
+                        if ($crmContactId != $order->getContactId()) {
                             echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
                             break;
                         }
@@ -353,15 +359,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                         $website = $subscriptionObj->getProductEntity();
 
-                        if (!$website) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
-                            break;
+                        if ($website) {
+                            $objTemplate->setVariable(array(
+                                'MULTISITE_WEBSITE_NAME' => contrexx_raw2xhtml($website->getName()),
+                                'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($website->getId()),
+                                'MULTISITE_WEBSITE_FRONTEND_LINK' => $this->getApiProtocol() . $website->getBaseDn()->getName(),
+                            ));
+                            //Parse the Admin Console Link
+                            self::parseWebsiteAdminConsoleLink($objTemplate, $website);
+                            self::showOrHideBlock($objTemplate, 'showWebsites', true);
+                        } else {
+                            self::showOrHideBlock($objTemplate, 'showWebsites', false);
                         }
 
-                        $objTemplate->setVariable(array(
-                            'MULTISITE_WEBSITE_NAME' => contrexx_raw2xhtml($website->getName()),
-                            'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($website->getId()),
-                            'MULTISITE_WEBSITE_FRONTEND_LINK' => $this->getApiProtocol() . $website->getBaseDn()->getName(),
+                        $objTemplate->setVariable(array(                            
                             'MULTISITE_WEBSITE_PRODUCT_NAME' => contrexx_raw2xhtml($product->getName()),
                             'MULTISITE_WEBSITE_SUBSCRIPTION_DATE' => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
                             'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => $subscriptionObj->getExpirationDate() ? contrexx_raw2xhtml($subscriptionObj->getExpirationDate()->format('d.m.Y')) : '',
@@ -372,9 +383,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
                         self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
                         self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
-                        //Parse the Admin Console Link
-                        self::parseWebsiteAdminConsoleLink($objTemplate, $website);
-
+                        
                         echo $objTemplate->get();
                         break;
 
