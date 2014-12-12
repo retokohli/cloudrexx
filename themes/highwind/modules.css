@@ -122,7 +122,7 @@ label[for="access_user_tos"] {
 #access_user_tos {
     float: left;
     margin: 0;
-    margin-top: 3px;
+    margin-top: 10px;
     padding: 0;
     height: auto;
 }
@@ -1379,7 +1379,7 @@ form[name="registrationForm"] .row {
 #shop div.shop_options a {
     float: left;
     padding: 0 0 0 12px;
-    background: url('images/arrows.png') no-repeat 0 7px;
+    background: url('images/arrows.png') no-repeat 0 15px;
 }
 #shop div.shop_options a.active {
     background-position: 0 -8px;
@@ -1548,7 +1548,7 @@ form[name="registrationForm"] .row {
 #shop button.add-to-cart:hover {
     -webkit-box-shadow: inset 0 -5em 0 0 rgba(0, 0, 0, 0.1);
     -moz-box-shadow: inset 0 -5em 0 0 rgba(0, 0, 0, 0.1);
-     box-shadow: inset 0 -5em 0 0 rgba(0, 0, 0, 0.1)
+    box-shadow: inset 0 -5em 0 0 rgba(0, 0, 0, 0.1)
 }
 #shop form#card-tds-form .card-expiry-month {width: 50px}
 #shop form#card-tds-form .card-expiry-year {width: 75px}
@@ -2079,13 +2079,13 @@ dl.data_module img {
     color: black;
 }
 #downloads div.overview div.row div.category div.content a:hover {
-    color: #B8D30B;
+    color: #67bfb6;
 }
 #downloads div.overview div.row div.category div.content a.more {
     color: #8b9581;
 }
 #downloads div.overview div.row div.category div.content a.more:hover {
-    color: #B8D30B;
+    color: #67bfb6;
 }
 #downloads div.file_list {
     float: left;
@@ -2443,6 +2443,7 @@ dl.data_module img {
     float: left;
     padding: 3px 0 10px 0;
     font-size: 24px;
+    line-height: 1;
 }
 #mediadir .employee-description {
     float: left;
@@ -2905,6 +2906,7 @@ input[name="bsubmit"] {
 #searchfield p {
     width: 33%;
     margin-right: 10px;
+    line-height: 1.25;
 }
 input[name="recipient_save"] {
     margin-top: 5px;
@@ -3054,7 +3056,7 @@ input[type="checkbox"] {
 }
 input[type="file"]{height: auto;float: left;}
 .radio label, .checkbox label {
-    height: 20px;
+    height: auto;
 }
 .btn.btn-default, .btn.btn-primary {
     font-size: 13px;
@@ -3062,3 +3064,12 @@ input[type="file"]{height: auto;float: left;}
 fieldset .checkbox, fieldset .radio {
     padding-left: 0;
 }
+#page button.btn-primary {
+    line-height: 5px;
+}
+#page button.btn-primary:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+    color: #414141;
+}
+#podcast .categories input[type="button"] {float: left;}

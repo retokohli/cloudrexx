@@ -256,7 +256,7 @@ body a:hover {text-decoration: underline;}
     float: left;
     width: 100%;
     min-height: 194px;
-    padding: 20px 15px 20px 15px;
+    padding: 6px 15px 20px 15px;
     margin: 0 0 20px 0;   
 }
 #home-page {
@@ -357,7 +357,7 @@ body a:hover {text-decoration: underline;}
 }
 .content ul li {
     padding: 0 0 5px 20px;
-    background: url('images/marker.gif') no-repeat 2px 8px;
+    background: url('images/marker.gif') no-repeat 5px 14px;
 }
 #content-wrapper ol li {
     margin: 0 0 5px 5px;
@@ -1789,4 +1789,8 @@ width: 100%;
     color: #67bfb6;
     text-decoration: underline;
     background-color: #f7fcfb;
+}
+.sidebar-block a:hover {
+    color: #fff;
+    text-decoration: underline;
 }

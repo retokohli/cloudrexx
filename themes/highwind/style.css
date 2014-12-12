@@ -941,7 +941,7 @@
     }
     .navigation li a {
         display: block;
-        padding: 13px 18px;
+        padding: 15px 18px;
     }
     .navigation li a:hover, .navigation li a:focus {
         background: #67bfb6;
@@ -1083,5 +1083,5 @@
 }
 
 @media (max-width: 450px) { 
-    .btn {margin-top: 15px;}
+    .btn, input[type="button"], input[type="submit"], #mediadir .mediadirButtonSearch {margin-top: 15px;}
 }

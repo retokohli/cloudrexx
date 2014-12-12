@@ -152,7 +152,12 @@ textarea {
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; 
 }
 input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus{outline: none;}
-input[type="submit"], input[type="reset"], input[type=button] {color: #fff; font-size: 13px; line-height: 5px;}
+input[type="submit"], input[type="reset"], input[type=button] {
+    color: #fff;
+    font-size: 13px;
+    line-height: 5px;
+    background-color: #67bfb6;
+}
 textarea {color: #7d7d7d;}
 select.form-control {
     padding: 7px 8px;
