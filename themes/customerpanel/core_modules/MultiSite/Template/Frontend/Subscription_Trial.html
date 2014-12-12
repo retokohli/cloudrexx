@@ -1,46 +1,47 @@
 <!-- BEGIN showSiteTable -->
-<table>
-    <thead>
-        <tr>
-            <th width="55%" class="sort asc">{TXT_MULTISITE_WEBSITE}</th>
-            <th width="20%" class="sort">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRED}</th>
-            <th width="25%" class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- BEGIN showSiteDetails -->
-        <tr>
-            <td>
-                <!-- BEGIN websiteLinkActive -->
-                <a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;{MULTISITE_WEBSITE_NAME}</a>
-                <!-- END websiteLinkActive -->
-                
-                <!-- BEGIN websiteLinkInactive -->
-                <span class="entypo-popup">&nbsp;{MULTISITE_WEBSITE_NAME}</span>
-                <!-- END websiteLinkInactive -->
-            </td>
-            <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
-            <td class="actions">
-                <button onclick="window.location.replace('{NODE_MULTISITE_WEBSITE}?id={MULTISITE_WEBSITE_ID}');">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
-                
-                <!-- BEGIN showAdminButton -->
-                <button type="button" onclick="window.open('{MULTISITE_WEBSITE_ADMINCONSOLE}', '_blank').focus();">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
-                <!-- END showAdminButton -->
-                                
-                <button class="save" data-remote="/api/MultiSite/SubscriptionSelection" data-target="#SubscriptionSelection" data-toggle="modal">{TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION}</button>
-                <div aria-hidden="true" class="modal fade" id="SubscriptionSelection" role="dialog" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">Loading subscription form...</div>
-                    </div>
-                </div>
-                
-            </td>
-        </tr>
-        <!-- END showSiteDetails -->
-    </tbody>
-</table>
-<!-- END showSiteTable -->
+<div  class="grid-elm grid-align-1-1 grid-offset">
+    <h2>{TXT_MULTISITE_SUBSCRIPTION_TRAIL}</h2>
+    <div class="subscription-table">
+        <table>
+            <thead>
+                <tr>
+                    <th width="55%" class="sort asc">{TXT_MULTISITE_WEBSITE}</th>
+                    <th width="20%" class="sort">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRED}</th>
+                    <th width="25%" class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- BEGIN showSiteDetails -->
+                <tr>
+                    <td>
+                        <!-- BEGIN websiteLinkActive -->
+                        <a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;{MULTISITE_WEBSITE_NAME}</a>
+                        <!-- END websiteLinkActive -->
 
-<!-- BEGIN noSiteFound -->
-<div>{TXT_MULTISITE_NO_WEBSITE_FOUND}</div>
-<!-- END noSiteFound -->
+                        <!-- BEGIN websiteLinkInactive -->
+                        <span class="entypo-popup">&nbsp;{MULTISITE_WEBSITE_NAME}</span>
+                        <!-- END websiteLinkInactive -->
+                    </td>
+                    <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
+                    <td class="actions">
+                        <button onclick="window.location.replace('{NODE_MULTISITE_WEBSITE}?id={MULTISITE_WEBSITE_ID}');">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
+
+                        <!-- BEGIN showAdminButton -->
+                        <button type="button" onclick="window.open('{MULTISITE_WEBSITE_ADMINCONSOLE}', '_blank').focus();">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
+                        <!-- END showAdminButton -->
+
+                        <button class="save" data-remote="/api/MultiSite/SubscriptionSelection" data-target="#SubscriptionSelection" data-toggle="modal">{TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION}</button>
+                        <div aria-hidden="true" class="modal fade" id="SubscriptionSelection" role="dialog" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">Loading subscription form...</div>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+                <!-- END showSiteDetails -->
+            </tbody>
+        </table>        
+    </div>
+</div>
+<!-- END showSiteTable -->

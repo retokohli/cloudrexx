@@ -1,28 +1,30 @@
 <!-- BEGIN showSiteTable -->
-<table>
-    <thead>
-        <tr>
-            <th width="15%" class="sort asc">Referenz-Nr.</th>
-            <th width="40%" class="sort">Abo</th>
-            <th width="20%" class="sort">N&auml;chste Rechnung</th>
-            <th width="25%" class="actions">Funktionen</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- BEGIN showSiteDetails -->
-        <tr>
-            <td>34235</td>
-            <td>{MULTISITE_WEBSITE_PLAN}</td>
-            <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
-            <td class="actions">
-                <button class="save">Reaktivieren</button>
-            </td>
-        </tr>
-        <!-- END showSiteDetails -->
-    </tbody>
-</table>
+<div  class="grid-elm grid-align-1-1 grid-offset">
+    <h2>{TXT_MULTISITE_SUBSCRIPTION_EXPIRED}</h2>
+    <div class="subscription-table">
+        <table>
+            <thead>
+                <tr>
+                    <th width="15%" class="sort asc">{TXT_MULTISITE_REFERENCE_NUMBER}</th>
+                    <th width="40%" class="sort">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
+                    <th width="20%" class="sort">{TXT_MULTISITE_NEXT_BILL_DATE}</th>
+                    <th width="25%" class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- BEGIN showSiteDetails -->
+                <tr>
+                    <td>34235</td>
+                    <td>{MULTISITE_WEBSITE_PLAN}</td>
+                    <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
+                    <td class="actions">
+                        <button class="save">{TXT_MULTISITE_SUBSCRIPTION_REACTIVATE}</button>
+                    </td>
+                </tr>
+                <!-- END showSiteDetails -->
+            </tbody>
+        </table>
+    </div>
+</div>
 <!-- END showSiteTable -->
 
-<!-- BEGIN noSiteFound -->
-<div class="grid-elm grid-align-1-1 message info">Currently none</div>
-<!-- END noSiteFound -->
