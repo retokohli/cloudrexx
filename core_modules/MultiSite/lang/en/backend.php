@@ -206,11 +206,12 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TITLE_USED_LIMIT'] = 'Used / Limit';
 
 //website subscription detail template message
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'] = 'Access denied';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'] = 'The Subscription Id should not be empty.';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'] = 'The given Subscription not exists.';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'] = 'Product not exists.';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'] = 'Website not exists.';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'] = 'Not a Multisite User.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'] = 'Unknown subscription requested.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'] = 'Unknown subscription requested.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'] = 'Unknown product requested.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS'] = 'Unknown order requested.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'] = 'Unknown website requested.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'] = 'Access denied';
 
 $_ARRAYLANG['TXT_MULTISITE_NO_WEBSITE_FOUND'] = 'Websites not available';
 $_ARRAYLANG['TXT_MULTISITE_NOT_VALID_USER'] = 'Not a multisite user';

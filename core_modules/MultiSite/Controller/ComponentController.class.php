@@ -330,7 +330,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'];
                             break;
                         }
-
+                        
+                        $order = $subscriptionObj->getOrder();
+                        
+                        if (!$order) {
+                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS'];
+                            break;
+                        }
+                        
+                        //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
+                        if (\FWUser::getFWUserObject()->objUser->getCrmUserId() != $order->getContactId()) {
+                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+                            break;
+                        }
+                        
                         $product = $subscriptionObj->getProduct();
 
                         if (!$product) {
@@ -342,12 +355,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                         if (!$website) {
                             echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
-                            break;
-                        }
-                        
-                        //Verify the subscription is actually owned by the currently sign-in user
-                        if (\FWUser::getFWUserObject()->objUser->getId() != $website->getOwnerId()) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
                             break;
                         }
 
