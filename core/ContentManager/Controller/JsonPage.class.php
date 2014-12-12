@@ -205,7 +205,7 @@ class JsonPage implements JsonAdapter {
         }
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
         
-        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+        $cacheManager = new \CacheManager();
         $cacheManager->deleteSingleFile($pageId);
         
         if (!empty($pageArray)) {
