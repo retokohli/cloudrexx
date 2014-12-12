@@ -650,19 +650,19 @@ class License {
         $objDb->Execute($query);
         
         //Save legal components additional data values.
-        if (!empty($this->getLegalComponentsAdditionalData())) {
+        if (!\FWValidator::isEmpty($this->getLegalComponentsAdditionalData())) {
 
             foreach ($this->getLegalComponentsAdditionalData() as $componentName => $additionalData) {
-                if (empty($componentName) || empty($additionalData)) {
+                if (empty($componentName)) {
                     continue;
                 }
                 $query = "
                     UPDATE 
                         " . DBPREFIX . "modules
                     SET 
-                        `additional_data` = '" . json_encode($additionalData) . "'
+                        `additional_data` = '" . contrexx_raw2db(json_encode($additionalData)) . "'
                     WHERE 
-                        `name` = '" . $componentName . "'
+                        `name` = '" . contrexx_raw2db($componentName) . "'
                     ";
                 $objDb->Execute($query);
             }
