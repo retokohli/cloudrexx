@@ -254,7 +254,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         
                         $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
                         if (empty($crmContactId)) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_NOT_VALID_USER'];
+                            echo ' '; // Do not show sbuscriptions
                             break;
                         }
                         
@@ -301,7 +301,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 }
                             }
                         } else {
-                            $objTemplate->touchBlock('noSiteFound');
                             $objTemplate->hideBlock('showSiteTable');
                         }
                         echo $objTemplate->get();
