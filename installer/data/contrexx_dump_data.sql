@@ -6140,6 +6140,10 @@ INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (14,'Fema','fema',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (15,'Lava','lava',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (16,'Mindful','mindful',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (17,'Acumulo','acumulo',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (18,'Graham','graham',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (19,'Highwind','highwind',1);
+INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (20,'Klasik','klasik',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (1,'reload_block_time','1800',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (2,'online_timeout','3000',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (3,'paging_limit','100',1);
