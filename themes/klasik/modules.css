@@ -226,9 +226,6 @@ table {
     float: left;
     width: 100%;
 }
-table th a {
-    color: #FFFFFF;
-}
 table tr.row1,
 table tr.marketRow2 {
     background-color: #FFFFFF;
@@ -928,14 +925,11 @@ form[name="registrationForm"] .row {
 #blog div.entries h2 a{
     color: #222222;
 }
-#blog div.entries h2 a:hover {
-    color: rgb(18, 146, 221);
-}
 .posted a{
     color:#777777
 }
-.posted a:hover{
-    color: rgb(18, 146, 221);
+#checkout table, #checkout td {
+    border: 0;
 }
 #blog div.comments,
 #blog div.code,
@@ -2064,18 +2058,6 @@ dl.data_module img {
 #downloads div.overview div.row div.category div.title {
     font-weight: bold;
     width: 100%;
-}
-#downloads div.overview div.row div.category div.content a {
-    color: black;
-}
-#downloads div.overview div.row div.category div.content a:hover {
-    color: #B8D30B;
-}
-#downloads div.overview div.row div.category div.content a.more {
-    color: #8b9581;
-}
-#downloads div.overview div.row div.category div.content a.more:hover {
-    color: #B8D30B;
 }
 #downloads div.file_list {
     float: left;

@@ -1,3 +1,7 @@
+/*ul li*/
+#news, .ersteUl li, .horizontal-list, #subnavbar2 li, #news li, .blogTagHitlist li, #subnavigation li, #navigation li, .blogCategoriesList, #news_archive_months_list, #news_archive_list li {
+    list-style: none;
+}
 #fe_toolbar {
     display: none !important;
 }
@@ -102,6 +106,7 @@ div#contactDescription {
     margin-bottom: 26px;
     padding: 0 0 0px 0;
     word-wrap: break-word;
+    width: 100%;
 }
 .entry-content p {
     margin-bottom: 16px;
