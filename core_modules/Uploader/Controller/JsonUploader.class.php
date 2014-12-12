@@ -85,6 +85,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         ) {
             $id = intval($params['get']['id']);
             $path = $_SESSION->getTempPath() . '/'.$id.'/';
+            $tmpPath = $path;
         } elseif (isset($params['post']['path'])) {
             $path_part = explode("/", $params['post']['path'], 2);
             $mediaBrowserConfiguration
@@ -92,6 +93,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             );
             $path = $mediaBrowserConfiguration->mediaTypePaths[$path_part[0]][1]
                 . '/' . $path_part[1];
+            $tmpPath = $_SESSION->getTempPath();
         } else {
             return array(
                 'OK' => 0,
@@ -105,7 +107,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             array(
                 'allow_extensions' => 'jpg,jpeg,png,pdf,gif,mkv,zip,',
                 'target_dir' => $path,
-                'tmp_dir' => $path
+                'tmp_dir' => $tmpPath
             )
         );
 
