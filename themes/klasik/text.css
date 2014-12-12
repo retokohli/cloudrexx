@@ -64,12 +64,12 @@ body {
     background: #fff;
     padding-right: 0 !important;
 }
-body a {
+body a, .btn-link {
     color: #777;
     text-decoration: none;
     outline: 0 none;
 }
-body a:hover, body a:focus {
+body a:hover, body a:focus, .btn-link:hover, .btn-link:focus {
     color: #333;
     text-decoration: none;
     outline: 0 none;
@@ -148,6 +148,11 @@ input:focus,
 select:focus,
 textarea:focus {
     outline: 0;
+}
+select.form-control:focus {
+    outline: 0 none;
+    border-color: #e2e2e2;
+    box-shadow: none;
 }
 input[type=submit],
 input[type=button],
@@ -369,7 +374,7 @@ body ul {
 body label {
     color: #333;
 }
-input[type="text"], input[type="email"], input[type="password"], select {
+input[type="text"], input[type="email"], input[type="password"], select, select.form-control {
     border: solid 1px #e2e2e2;
     color: #888;
     font-size: 12px;
@@ -382,6 +387,8 @@ input[type="text"], input[type="email"], input[type="password"], select {
     border-radius: 3px;
     width: 90%; 
     height: 30px;
+    box-shadow: none;
+    font-weight: normal;
 }
 textarea {
     border: solid 1px #e2e2e2;
@@ -426,6 +433,7 @@ table, td, th {
 tr td {
     border-bottom: 1px solid #f1f1f1;
     padding: 6px 24px;
+    text-align: left;
 }
 pre {
     border-left: solid 4px #ebebeb;

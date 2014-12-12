@@ -16,10 +16,14 @@
         display: inline-block;
         width: 50%;
     }
+    .subpage-content #checkout .right, .subpage-content #checkout .left {
+        width: 100%;
+    }
     .banner-content, .subpage-content {
         padding: 0;
         margin: 0;
-        width: auto;
+        width: 100%;
+        margin-top: 60px;
     }
     div#logo {
         width: 100%;
@@ -266,6 +270,9 @@
     #page-right {
         width: 100%;
         padding: 0;
+    }
+    input[name="downloads_search_keyword"] {
+        width: 60%;
     }
     #page #shop figure a,#page #checkout .right,#page #checkout .left {width: 100%;}
     #page #shop figure a .categorie-image-wrapper {
@@ -593,6 +600,9 @@
     .home-box.col-md-4 {width: 100%;margin-bottom: 30px;}
     #content-wrapper {
         padding-bottom: 168px;
+    }
+    .subpage-content #checkout .right, .subpage-content #checkout .left {
+        width: 100%;
     }
     #media_div .table-responsive {
         width: 100%;
