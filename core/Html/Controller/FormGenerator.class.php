@@ -37,6 +37,8 @@ class FormGenerator {
         foreach ($metadata->getColumnNames() as $field) {
             $type = $metadata->fieldMappings[$field]['type'];//*/
         foreach ($entity as $field=>$value) {
+            $type = null;
+            
             if (!empty($options[$field]['type'])) {
                 $type = $options[$field]['type'];
             }
