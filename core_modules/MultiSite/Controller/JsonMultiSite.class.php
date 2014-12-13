@@ -116,7 +116,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getPayrexxUrl'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getResourceUsageStats' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
         );  
@@ -3089,6 +3089,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::websiteLogin() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         
+        //check user logged in or not
+        if (!\FWUser::getFWUserObject()->objUser->login()) {
+            throw new MultiSiteJsonException('JsonMultiSite::websiteLogin() failed: Colud not login to website');
+        }
+        
         $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
         if (!$website) {
             throw new MultiSiteJsonException('JsonMultiSite::websiteLogin() failed: Unkown Website-ID: '.$params['post']['websiteId']);
@@ -3135,7 +3140,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_WEBSITE:
                     $resourcesUsage = array();
                     $modulesArray = array(
-                        'Access' => 'User',
+                        'Access' => 'AdminUser',
                         'Contact' => 'Form',
                         'Shop' => 'Product',
                         'Crm' => 'Customer'

@@ -268,6 +268,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         
                         //parse the Site Details
                         if (!empty($orders)) {
+                            $userId = \FWUser::getFWUserObject()->objUser->getId();
                             foreach ($orders as $order) {
                                 foreach ($order->getSubscriptions() as $subscription) {
                                     $website = $subscription->getProductEntity();
@@ -294,15 +295,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     $websiteStatus = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) ? true : false;
                                     self::showOrHideBlock($objTemplate, 'websiteLinkActive', $websiteStatus);
                                     self::showOrHideBlock($objTemplate, 'websiteLinkInactive', !$websiteStatus);
-                                    
-                                    self::parseWebsiteAdminConsoleLink($objTemplate, $website);
+                                    self::showOrHideBlock($objTemplate, 'showAdminButton', ($websiteStatus && $website->getOwnerId() == $userId));
                                     
                                     $objTemplate->parse('showSiteDetails');
                                 }
-                            }
+                            }                            
                         } else {
                             $objTemplate->hideBlock('showSiteTable');
-                        }
+                        }                        
                         echo $objTemplate->get();
                         break;
                         
@@ -323,7 +323,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             echo ' '; // Do not show subscription detail
                             break;
                         }
-                        
+                        $userId = \FWUser::getFWUserObject()->objUser->getId();
+                                                
                         if (empty($subscriptionId)) {
                             echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'];
                             break;
@@ -365,8 +366,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($website->getId()),
                                 'MULTISITE_WEBSITE_FRONTEND_LINK' => $this->getApiProtocol() . $website->getBaseDn()->getName(),
                             ));
-                            //Parse the Admin Console Link
-                            self::parseWebsiteAdminConsoleLink($objTemplate, $website);
+                            $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
+                            
+                            self::showOrHideBlock($objTemplate, 'showAdminButton', ($status && $website->getOwnerId() == $userId));                                                        
+                            self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
+                            self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
+                            self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
                             self::showOrHideBlock($objTemplate, 'showWebsites', true);
                         } else {
                             self::showOrHideBlock($objTemplate, 'showWebsites', false);
@@ -377,11 +382,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'MULTISITE_WEBSITE_SUBSCRIPTION_DATE' => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
                             'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => $subscriptionObj->getExpirationDate() ? contrexx_raw2xhtml($subscriptionObj->getExpirationDate()->format('d.m.Y')) : '',
                         ));
-
-                        $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
-                        self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
-                        self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
-                        self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
+                        
                         self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
                         
                         echo $objTemplate->get();
@@ -411,14 +412,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             break;
                         }
                         
-                        //show the admin console button
-                        if ($objTemplate->blockExists('showAdminButton')) {
-                            self::parseWebsiteAdminConsoleLink($objTemplate, $website);
-                        }
                         //show the frontend
                         $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
                         $objTemplate->setVariable('MULTISITE_WEBSITE_FRONTEND_LINK', $this->getApiProtocol() . $website->getBaseDn()->getName());
                         self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
+                        self::showOrHideBlock($objTemplate, 'showAdminButton', $status);
                         
                         //Show the Website Admin and Backend group users
                         if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
@@ -457,8 +455,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         if ($objTemplate->blockExists('showWebsiteResources')) {
                             $resourceUsageStats = $website->getResourceUsageStats();
                             $objTemplate->setVariable(array(
-                                'MULTISITE_WEBSITE_ADMIN_USERS_USAGE' => $resourceUsageStats->accessUser->usage,
-                                'MULTISITE_WEBSITE_ADMIN_USERS_QUOTA' => $resourceUsageStats->accessUser->quota,
+                                'MULTISITE_WEBSITE_ADMIN_USERS_USAGE'   => $resourceUsageStats->accessAdminUser->usage,
+                                'MULTISITE_WEBSITE_ADMIN_USERS_QUOTA'   => $resourceUsageStats->accessAdminUser->quota,
                                 'MULTISITE_WEBSITE_CONTACT_FORMS_USAGE' => $resourceUsageStats->contactForm->usage,
                                 'MULTISITE_WEBSITE_CONTACT_FORMS_QUOTA' => $resourceUsageStats->contactForm->quota,
                                 'MULTISITE_WEBSITE_SHOP_PRODUCTS_USAGE' => $resourceUsageStats->shopProduct->usage,
@@ -468,6 +466,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             ));
                             $objTemplate->parse('showWebsiteResources');
                         }
+                        $objTemplate->setGlobalVariable(array(
+                            'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($websiteId)
+                        ));
 
                         echo $objTemplate->get();
                         break;
@@ -575,53 +576,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objTemplate->hideBlock($blockName);
             }
         } 
-    }
-    
-    /**
-     * Parse the Admin Console Link
-     * 
-     * @param \Cx\Core\Html\Sigma $objTemplate                         templateObject
-     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website $website websiteObject
-     * 
-     * @return boolean
-     */
-    public static function parseWebsiteAdminConsoleLink(\Cx\Core\Html\Sigma $objTemplate, \Cx\Core_Modules\MultiSite\Model\Entity\Website $website) {
-        $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
-        
-        if (!$status) {
-            self::showOrHideBlock($objTemplate, 'showAdminButton', false);
-            return;
-        }
-        
-        $adminConsoleUrl = self::getAdminConsoleUrl($website->getId());
-        if ($adminConsoleUrl) {
-            $objTemplate->setVariable('MULTISITE_WEBSITE_ADMINCONSOLE', $adminConsoleUrl);
-            self::showOrHideBlock($objTemplate, 'showAdminButton', true);
-        } else {
-            self::showOrHideBlock($objTemplate, 'showAdminButton', false);
-        }
-    }
-
-    /**
-     * Get the Admin Console Link
-     * 
-     * @param integer $websiteId WebsiteId
-     * 
-     * @return mixed website login url | boolean
-     */
-    public static function getAdminConsoleUrl($websiteId = 0) 
-    {
-        if (empty($websiteId)) {
-            return false;
-        }
-        
-        $websiteLoginResp = JsonMultiSite::executeCommandOnManager('websiteLogin', array('websiteId' => $websiteId));
-
-        if (($websiteLoginResp->status == 'success') && $websiteLoginResp->data->status == 'success') {
-            return $websiteLoginResp->data->webSiteLoginUrl;
-        }
-        
-        return false;
     }
     
     /**
