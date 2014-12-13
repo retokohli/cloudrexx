@@ -2351,7 +2351,7 @@ END;
 
         // special fields for customer
         if ($contactType == 1) {
-            $this->getCustomerTypeDropDown($this->_objTpl, $this->contact->customerType, '', array('is_hide' => false)); // Customer Types
+            $this->getCustomerTypeDropDown($this->_objTpl, $this->contact->customerType, 'customerTypes', array('is_hide' => false)); // Customer Types
 
             // Parse the contacts
             if (!empty($customerContacts)) {
