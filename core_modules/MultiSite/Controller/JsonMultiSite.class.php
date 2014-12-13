@@ -3109,56 +3109,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function getAdminUsers() {
         try {
-            // check the mode
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-                case ComponentController::MODE_WEBSITE:
-                    
-                    $objFWUser = \FWUser::getFWUserObject();
-                    $backendGroupIds = array();
-                    $users = array();
-                    
-                    //get the backend group ids
-                    $objGroup = $objFWUser->objGroup->getGroups(array('type' => \Cx\Core\Core\Controller\Cx::MODE_BACKEND));
-                    if ($objGroup) {
-                        while (!$objGroup->EOF) {
-                            $backendGroupIds[] = $objGroup->getId();
-                            $objGroup->next();
-                        }
-                    }
-                    
-                    //get backend group users
-                    $objBackendGroupUser = $objFWUser->objUser->getUsers(array('group_id' => $backendGroupIds));
-                    if ($objBackendGroupUser) {
-                        while (!$objBackendGroupUser->EOF) {
-                            $users[$objBackendGroupUser->getId()] = array(
-                                                                        'id'        => contrexx_raw2xhtml($objBackendGroupUser->getId()),
-                                                                        'email'     => contrexx_raw2xhtml($objBackendGroupUser->getEmail()),
-                                                                        'username'  => contrexx_raw2xhtml($objBackendGroupUser->getUsername()),
-                                                                        'firstname' => contrexx_raw2xhtml($objBackendGroupUser->getProfileAttribute('firstname')),
-                                                                        'lastname'  => contrexx_raw2xhtml($objBackendGroupUser->getProfileAttribute('lastname'))
-                                                                    );
-                            $objBackendGroupUser->next();
-                        }
-                    }
-                    
-                    //get Admin users
-                    $objAdminUser = $objFWUser->objUser->getUsers(array('is_admin' => 1));
-                    if ($objAdminUser) {
-                        while (!$objAdminUser->EOF) {
-                            if (!array_key_exists($objAdminUser->getId(), $users)) {
-                                $users[$objAdminUser->getId()] = array(
-                                                                    'id'        => contrexx_raw2xhtml($objAdminUser->getId()),
-                                                                    'email'     => contrexx_raw2xhtml($objAdminUser->getEmail()),
-                                                                    'username'  => contrexx_raw2xhtml($objAdminUser->getUsername()),
-                                                                    'firstname' => contrexx_raw2xhtml($objAdminUser->getProfileAttribute('firstname')),
-                                                                    'lastname'  => contrexx_raw2xhtml($objAdminUser->getProfileAttribute('lastname'))
-                                                                );
-                            }
-                            $objAdminUser->next();
-                        }
-                    }
-                    return array('status' => 'success', 'users' => $users);
-                    break;
+            $users = ComponentController::getAllAdminUsers();
+            if (!empty($users)) {
+                return array('status' => 'success', 'users' => $users);
             }
             return array('status' => 'error');
         } catch (Exception $e) {

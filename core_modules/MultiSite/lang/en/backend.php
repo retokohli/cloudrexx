@@ -218,3 +218,5 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_WEBSITES'] = 'Websites';
 $_ARRAYLANG['TXT_MULTISITE_NO_WEBSITE_FOUND'] = 'Websites not available';
 $_ARRAYLANG['TXT_MULTISITE_NOT_VALID_USER'] = 'Not a multisite user';
 $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'] = 'Unknown website requested.';
+
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'] = 'You have reached the maximum of %s entities that are included in your current plan.';

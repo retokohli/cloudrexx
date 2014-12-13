@@ -1143,6 +1143,11 @@ throw new MultiSiteException('Refactor this method!');
             return;
         }
 
+        global $objInit, $_ARRAYLANG;
+        
+        $langData = $objInit->loadLanguageData('MultiSite');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        
         $evm = \Env::get('cx')->getEvents();
         $evm->addEvent('model/payComplete');
         $domainEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\DomainEventListener();
@@ -1161,17 +1166,18 @@ throw new MultiSiteException('Refactor this method!');
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
         $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteEventListener);
         
-        $userEventListener    = new \Cx\Core_Modules\MultiSite\Model\Event\UserEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $userEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $userEventListener);
+        //accessUser Event Listenter
+        $accessUserEventListener    = new \Cx\Core_Modules\MultiSite\Model\Event\AccessUserEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         
         $cronMailEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CronMailEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\CronMail', $cronMailEventListener);
@@ -1182,13 +1188,18 @@ throw new MultiSiteException('Refactor this method!');
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteTemplate', $websiteTemplateEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteTemplate', $websiteTemplateEventListener);
         
-        //Form event Listener
-        $formEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\FormEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\Contact\\Model\\Entity\\Form', $formEventListener);
+        //ContactForm event Listener
+        $contactFormEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\ContactFormEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\Contact\\Model\\Entity\\Form', $contactFormEventListener);
         
-        //Product event Listener
-        $productEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\ProductEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Shop\\Controller\\Product', $productEventListener);
+        //ShopProduct Event Listener
+        $shopProductEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\ShopProductEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Shop\\Controller\\Product', $shopProductEventListener);
+        
+        //CrmCustomer event Listener
+        $crmCustomerEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CrmCustomerEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmCustomerEventListener);
+        
     }
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         global $_CONFIG;
@@ -1432,6 +1443,66 @@ throw new MultiSiteException('Refactor this method!');
         return implode(',', $display);
     }
     
+    
+    /**
+     * Used to get all the admin users and backend group users
+     * 
+     * @return array returns admin users
+     */
+    public static function getAllAdminUsers() {
+        // check the mode
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case ComponentController::MODE_WEBSITE:
+
+                $objFWUser = \FWUser::getFWUserObject();
+                $backendGroupIds = array();
+                $users = array();
+
+                //get the backend group ids
+                $objGroup = $objFWUser->objGroup->getGroups(array('type' => \Cx\Core\Core\Controller\Cx::MODE_BACKEND));
+                if ($objGroup) {
+                    while (!$objGroup->EOF) {
+                        $backendGroupIds[] = $objGroup->getId();
+                        $objGroup->next();
+                    }
+                }
+
+                //get backend group users
+                $objBackendGroupUser = $objFWUser->objUser->getUsers(array('group_id' => $backendGroupIds));
+                if ($objBackendGroupUser) {
+                    while (!$objBackendGroupUser->EOF) {
+                        $users[$objBackendGroupUser->getId()] = array(
+                            'id' => contrexx_raw2xhtml($objBackendGroupUser->getId()),
+                            'email' => contrexx_raw2xhtml($objBackendGroupUser->getEmail()),
+                            'username' => contrexx_raw2xhtml($objBackendGroupUser->getUsername()),
+                            'firstname' => contrexx_raw2xhtml($objBackendGroupUser->getProfileAttribute('firstname')),
+                            'lastname' => contrexx_raw2xhtml($objBackendGroupUser->getProfileAttribute('lastname'))
+                        );
+                        $objBackendGroupUser->next();
+                    }
+                }
+
+                //get Admin users
+                $objAdminUser = $objFWUser->objUser->getUsers(array('is_admin' => 1));
+                if ($objAdminUser) {
+                    while (!$objAdminUser->EOF) {
+                        if (!array_key_exists($objAdminUser->getId(), $users)) {
+                            $users[$objAdminUser->getId()] = array(
+                                'id' => contrexx_raw2xhtml($objAdminUser->getId()),
+                                'email' => contrexx_raw2xhtml($objAdminUser->getEmail()),
+                                'username' => contrexx_raw2xhtml($objAdminUser->getUsername()),
+                                'firstname' => contrexx_raw2xhtml($objAdminUser->getProfileAttribute('firstname')),
+                                'lastname' => contrexx_raw2xhtml($objAdminUser->getProfileAttribute('lastname'))
+                            );
+                        }
+                        $objAdminUser->next();
+                    }
+                }
+                return $users;
+                break;
+        }
+    }
+
     /**
      * Add the warning banner
      *

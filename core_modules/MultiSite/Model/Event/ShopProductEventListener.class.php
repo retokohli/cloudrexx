@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ProductEventListener
+ * ShopProductEventListener
 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
@@ -12,24 +12,24 @@
 namespace Cx\Core_Modules\MultiSite\Model\Event;
 
 /**
- * Class ProductEventListenerException
+ * Class ShopProductEventListenerException
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_multisite
  */
-class ProductEventListenerException extends \Exception {}
+class ShopProductEventListenerException extends \Exception {}
 
 /**
- * Class ProductEventListener
+ * Class ShopProductEventListener
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_multisite
  */
-class ProductEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class ShopProductEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     /**
      * prePersist Event
      * 
@@ -37,7 +37,7 @@ class ProductEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
      * @throws \Cx\Core\Error\Model\Entity\ShinyException
      */
     public function prePersist($eventArgs) {
-        \DBG::msg('Multisite (ProductEventListener): prePersist');
+        \DBG::msg('Multisite (ShopProductEventListener): prePersist');
         
         global $_ARRAYLANG;
         try {
@@ -48,8 +48,8 @@ class ProductEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                     $count = 0;
                     $products = \Cx\Modules\Shop\Controller\Products::getByShopParams($count, 0, null, null, null, null, false, false, null, null, true);
                     $productsCount = !empty($products) ? count($products) : 0; 
-                    if ($productsCount > $options['Product']) {
-                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_MAXIMUM_QUOTA_REACHED'], $options['Product']));
+                    if (!empty($options['Product']) && $productsCount >= $options['Product']) {
+                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Product']));
                     }
                     break;
                 default:

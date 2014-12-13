@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UserEventListener
+ * AccessUserEventListener
 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
@@ -12,31 +12,31 @@
 namespace Cx\Core_Modules\MultiSite\Model\Event;
 
 /**
- * UserEventListenerException
+ * AccessUserEventListenerException
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_multisite
  */
-class UserEventListenerException extends \Exception {}
+class AccessUserEventListenerException extends \Exception {}
 
 /**
- * UserEventListener
+ * AccessUserEventListener
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_multisite
  */
-class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function postPersist($eventArgs) {
-        \DBG::msg('MultiSite (UserEventListener): postPersist');
+        \DBG::msg('MultiSite (AccessUserEventListener): postPersist');
         $objUser = $eventArgs->getEntity();
         try {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if (empty($websiteUserId)) {
                         //set user's id to websiteUserId
@@ -62,7 +62,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
      * @throws \Cx\Core\Error\Model\Entity\ShinyException
      */
     public function prePersist($eventArgs) {
-        \DBG::msg('MultiSite (UserEventListener): prePersist');
+        \DBG::msg('MultiSite (AccessUserEventListener): prePersist');
         
         global $_ARRAYLANG;
         try {
@@ -76,9 +76,10 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Access');
-                    $usersCount = \FWUser::getFWUserObject()->objGroup->getUserCount();
-                    if ($usersCount > $options['User']) {
-                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_MAXIMUM_QUOTA_REACHED'], $options['User']));
+                    $adminUsers = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
+                    $adminUsersCount = count($adminUsers); 
+                    if (!empty($options['AdminUser']) && $adminUsersCount >= $options['AdminUser']) {
+                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['AdminUser']));
                     }
                     break;
                 default:
@@ -91,7 +92,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     public function preUpdate($eventArgs) {
-        \DBG::msg('MultiSite (UserEventListener): preUpdate');
+        \DBG::msg('MultiSite (AccessUserEventListener): preUpdate');
         $objUser = $eventArgs->getEntity();
         
         try {
@@ -155,7 +156,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
     
     public function preRemove($eventArgs) {
-        \DBG::msg('MultiSite (UserEventListener): preRemove');
+        \DBG::msg('MultiSite (AccessUserEventListener): preRemove');
         $objUser = $eventArgs->getEntity();
         
         try {
@@ -203,7 +204,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
     
     public function postUpdate($eventArgs) {
-        \DBG::msg('MultiSite (UserEventListener): postUpdate');
+        \DBG::msg('MultiSite (AccessUserEventListener): postUpdate');
         
         $objUser = $eventArgs->getEntity();
         //get user's profile details
@@ -271,4 +272,3 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $this->$eventName(current($eventArgs));
     }
 }
-
