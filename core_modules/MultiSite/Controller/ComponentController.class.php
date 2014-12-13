@@ -307,9 +307,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                         
                     case 'SubscriptionSelection':
+
+                        $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
+                        if ($products) {
+                            foreach ($products as $product) {
+                                $productName = contrexx_raw2xhtml($product->getName());
+                                $objTemplate->setVariable(array(
+                                    'MULTISITE_WEBSITE_PRODUCT_NAME' => $productName,
+                                    'MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID' => lcfirst($productName),
+                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $product->getPrice(),
+                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => $product->getPrice() * 12,
+                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $product->getPrice() * 12 * 0.9,
+                                    'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice(),
+                                ));
+                                $objTemplate->parse('showProduct');
+                            }
+                        }
                         echo $objTemplate->get();
                         break;
-                    
+                        
                     case 'SubscriptionDetail':
                         $subscriptionId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : 0;
                         
