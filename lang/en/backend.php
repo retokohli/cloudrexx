@@ -1330,5 +1330,3 @@ $_ARRAYLANG['TXT_COMPONENTMANAGER_ADD_NEW_APPLICATION'] = "Add new...";
 
 $_ARRAYLANG['TXT_CORE_MODULE_CRON'] = "Scheduled Tasks";
 $_ARRAYLANG['TXT_NET_MANAGER'] = "Domains";
-
-$_ARRAYLANG['TXT_MAXIMUM_QUOTA_REACHED'] = "You have reached the maximum of %s entities that are included in your current plan.";
