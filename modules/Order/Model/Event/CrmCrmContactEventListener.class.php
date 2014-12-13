@@ -1,7 +1,7 @@
 <?php
 
 /**
- * CrmUserEventListener
+ * CrmCrmContactEventListener
 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
@@ -12,24 +12,24 @@
 namespace Cx\Modules\Order\Model\Event;
 
 /**
- * CrmUserEventListenerException
+ * CrmCrmContactEventListenerException
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  module_order
  */
-class CrmUserEventListenerException extends \Exception {}
+class CrmCrmContactEventListenerException extends \Exception {}
 
 /**
- * CrmUserEventListener
+ * CrmCrmContactEventListener
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  module_order
  */
-class CrmUserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class CrmCrmContactEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     
     /**
      * preRemove event
@@ -41,10 +41,13 @@ class CrmUserEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         
         $em = $eventArgs->getEntityManager();
         $crmEntity = $eventArgs->getEntity();
-        $orderRepo = $em->getRepository('\Cx\Modules\Order\Model\Entity\Order');
-        if ($orderRepo->hasOrderByCrmId($crmEntity->id)) {
-            throw new \Cx\Core\Error\Model\Entity\ShinyException($_ARRAYLANG['TXT_MODULE_CRM_DELETE_USER_ERROR_MSG']);
+        if ($crmEntity->contactType == 2) {
+            $orderRepo = $em->getRepository('\Cx\Modules\Order\Model\Entity\Order');
+            if ($orderRepo->hasOrderByCrmId($crmEntity->id)) {
+                throw new \Cx\Core\Error\Model\Entity\ShinyException($_ARRAYLANG['TXT_MODULE_CRM_DELETE_USER_ERROR_MSG']);
+            }
         }
+        
     }
 
     public function onEvent($eventName, array $eventArgs) {

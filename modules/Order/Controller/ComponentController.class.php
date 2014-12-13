@@ -41,7 +41,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $evm = \Env::get('cx')->getEvents();
         
-        $crmUserEventListener = new \Cx\Modules\Order\Model\Event\CrmUserEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmUserEventListener);
+        $crmCrmContactEventListener = new \Cx\Modules\Order\Model\Event\CrmCrmContactEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmCrmContactEventListener);
     }
 }
