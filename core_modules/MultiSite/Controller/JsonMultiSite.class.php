@@ -3174,7 +3174,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     
     public function getResourceUsageStats() {
-
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_WEBSITE:
@@ -3214,7 +3216,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         
                         $resourceUsageStats[lcfirst($module) . $type] = array(
                             'usage' => $usage ? $usage : 0,
-                            'quota' => !empty($quotaResult[$type]) ? $quotaResult[$type] : 'Unlimited'
+                            'quota' => !empty($quotaResult[$type]) ? $quotaResult[$type] : $_ARRAYLANG['TXT_MULTISITE_UNLIMITED']
                         );
                     }
 
