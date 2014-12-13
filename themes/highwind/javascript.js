@@ -131,6 +131,22 @@
         jQuery( 'body' ).removeClass( 'show-nav' );
     });
     
+    // Remove the 'show-nav' class from the body when the use clicks (taps) outside #navigation
+    var hasParent = function(el, id) {
+        if (el) {
+            do {
+                if (el.id === id) {
+                    return true;
+                }
+                if (el.nodeType === 9) {
+                    break;
+                }
+            }
+            while((el = el.parentNode));
+        }
+        return false;
+    };
+    
     if (jQuery(window).width() < 991) {
         if (jQuery('body')[0].addEventListener){
             document.addEventListener('touchstart', function(e) {
