@@ -176,28 +176,22 @@ class CrmContact
             'gender'            => isset ($this->contact_gender) ? (int) $this->contact_gender : '',
             'profile_picture'   => array ( 'val' => isset ($this->profile_picture) && !empty($this->profile_picture) ? $this->profile_picture : null, 'omitEmpty' => true)
         );
-        $isCrmUser = ($this->contactType == 2) ? true : false;
+        
         if (!isset($this->id) || empty ($this->id)) {
             $fields['datasource'] = isset ($this->datasource) ? $this->datasource : '';
             $fields['added_date'] = date('Y-m-d H:i:s');
-            if ($isCrmUser) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
-            }
+            \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             $query = \SQL::insert("module_{$this->moduleName}_contacts", $fields, array('escape' => true));
         } else {
-            if ($isCrmUser) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
-            }
+            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             $query = \SQL::update("module_{$this->moduleName}_contacts", $fields, array('escape' => true))." WHERE `id` = {$this->id}";
         }
         //echo $query; exit();
         if ($objDatabase->execute($query)) {
             if (!isset($this->id) || empty ($this->id)) {
                 $this->id = $objDatabase->INSERT_ID();
-                if ($isCrmUser) {
-                   \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
-                }
-            } else if (!empty ($this->id) && $isCrmUser) {
+                \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+            } else if (!empty ($this->id)) {
                 \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             }
             
@@ -225,10 +219,7 @@ class CrmContact
         }
         
         $this->load($id);
-        $isCrmUser = $this->contactType == 2 ? true : false;
-        if ($isCrmUser) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
-        }
+        \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
         $deleteQuery = 'DELETE       contact.*, email.*, phone.*, website.*, addr.*
                             FROM  `' . DBPREFIX . 'module_' . $this->moduleName . '_contacts` AS contact
                             LEFT JOIN    `' . DBPREFIX . 'module_' . $this->moduleName . '_customer_contact_emails` AS email
@@ -246,9 +237,7 @@ class CrmContact
                                 WHERE contact_id = ' . $id;
         
         if ($objDatabase->Execute($deleteQuery) !== false && $objDatabase->Execute($deleteComQuery) !== false && $objDatabase->Execute($deleteMembership) !== false) {
-            if ($isCrmUser) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
-            }
+            \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
             return true;
         }
         
