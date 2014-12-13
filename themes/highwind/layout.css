@@ -1102,7 +1102,7 @@ span.disconnected {
     -ms-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
-    display: none;
+/*    display: none;*/
 }
 .mobile-nav .navigation li a {
     color: #fff;
@@ -1604,11 +1604,19 @@ p#loginerror {
     position: fixed;
     bottom: 18px;
     right: 18px;    
-    overflow: hidden;
+    
 }
 #footer a.back-to-top:before {
     -webkit-transform: translateY(48px);
     transform: translateY(48px);
+}
+.footer a.back-to-top:hover:before {
+-webkit-transform: translateY(0);
+transform: translateY(0);
+}
+.footer a.back-to-top:hover:after {
+-webkit-transform: translateY(-48px);
+transform: translateY(-48px);
 }
 #footer a.back-to-top:after, #footer a.back-to-top:before {
     font-family: "FontAwesome";
@@ -1794,3 +1802,4 @@ width: 100%;
     color: #fff;
     text-decoration: underline;
 }
+#guestbook .add_entry input[type="button"]:hover {color: #333;}

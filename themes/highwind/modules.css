@@ -210,6 +210,7 @@ span.checkbox {
 .login-bottom > div {padding-left: 40px;}
 .login-bottom a:hover {
     text-decoration: underline;
+    box-shadow: none;
 }
 #PASSWORD {
     font-size: 13px;
@@ -1155,7 +1156,8 @@ form[name="registrationForm"] .row {
     font-weight: bold;
 }
 #sitemap a:hover {
-    text-decoration: none;
+    text-decoration: underline;
+    box-shadow: none;
 }
 #sitemap a {
     padding: 0;
