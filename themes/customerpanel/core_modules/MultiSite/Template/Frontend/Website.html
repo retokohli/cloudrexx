@@ -1,44 +1,17 @@
 <script type="text/javascript">
-    /* <![CDATA[ */
-    jQuery(document).ready(function() {
-
-        function getQueryParams(qs) {
-            qs = qs.split("+").join(" ");
-            var params = {},
-                    tokens,
-                    re = /[?&]?([^=]+)=([^&]*)/g;
-
-            while (tokens = re.exec(qs)) {
-                params[decodeURIComponent(tokens[1])]
-                        = decodeURIComponent(tokens[2]);
-            }
-
-            return params;
-        }
-
+/* <![CDATA[ */
+cx.ready(function() {
+    jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
         var $_GET = getQueryParams(document.location.search);
-        var id = $_GET['id'];
+        var id    = $_GET['id'];
 
-        function  loadContent(jQuerySelector, url) {
-            jQuery.ajax({
-                dataType: 'html',
-                url: url,
-                type: 'GET',
-                success: function(data) {
-                    if (data) {
-                        jQuery(jQuerySelector).html(data);
-                    }
-                },
-                fail: function(data) {
-                }
-            });
-        }
         loadContent('#multisite_website_info', '/api/MultiSite/Website/Info?id=' + id);
         loadContent('#multisite_website_admins', '/api/MultiSite/Website/Admins?id=' + id);
         loadContent('#multisite_website_domains', '/api/MultiSite/Website/Domains?id=' + id);
         loadContent('#multisite_website_resources', '/api/MultiSite/Website/Resources?id=' + id);
     });
-    /* ]]> */
+});
+/* ]]> */
 </script>
 <div class="grid-elm grid-align-1-1 grid-offset">
     <!-- BEGIN showWebsiteDomainName -->

@@ -18,25 +18,12 @@
 </div>
 <script type="text/javascript">
 /* <![CDATA[ */
-jQuery(document).ready(function() {
-    function  loadContent(jQuerySelector, url) {
-        jQuery.ajax({
-            dataType: 'html',
-            url: url,
-            type: 'GET',
-            success: function(data) {
-                if (data) {
-                    jQuery(jQuerySelector).html(data);
-                }
-            },
-            fail: function(data) {}
-        });
-    }
-    loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
-    loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
-    loadContent('#multisite_expired_site', '/api/MultiSite/Subscription/Expired?status=expired');
-    
-    
+cx.ready(function() {
+    jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
+        loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+        loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
+        loadContent('#multisite_expired_site', '/api/MultiSite/Subscription/Expired?status=expired');
+    });
 });
 /* ]]> */
 </script>
