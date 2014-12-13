@@ -12,11 +12,31 @@
         width: 100%;
         text-align: center;
     }
+    body .searchbox, body .directorySearch input[name='term'], body #regkey, body #podcast_category_menu {
+        width: 58%;
+    }
+    .questionBlock_button {
+        float: left;
+        width: 100%;
+        margin-top: 10px;
+        padding-left: 10px;
+        margin-bottom: 10px;
+    }
+    .mediadirSelector select {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    form[name="shopSearch"] input[name="term"] {
+        width: 54% !important;
+    }
     #tinynav1 {
         display: inline-block;
         width: 50%;
     }
-    .subpage-content #checkout .right, .subpage-content #checkout .left {
+    #forum div.notification_center {
+        padding: 15px 0px 0px 0px;
+    }
+    .subpage-content #checkout .right, .subpage-content #checkout .left, .categorySelect select, .notification select {
         width: 100%;
     }
     .banner-content, .subpage-content {
@@ -46,11 +66,6 @@
         margin-bottom: 10px;
     }
     /*survey*/
-    .survey td {
-        float: left;
-        width: 100%;
-        padding-left: 0;
-    }
     .questionBlock_button input {
         margin-left: 0 !important;
     }
@@ -97,7 +112,6 @@
         padding-right: 0;
     }
     .navbar-header {float: right;}
-    #subnavigation {display: none;}
     .login-content {
         padding: 0;
     }
@@ -457,10 +471,6 @@
         margin: 30px 0;
     }
     /*Shop*/
-    #shop #bestelTable .row1, #shop_payment .row3, #shop_payment .row1 {
-        float: left;
-        width: 100%;
-    }
     #bestelTable tbody, #shop_payment tbody {
         float: left;
     }
@@ -557,7 +567,6 @@
     #profile-left {
         margin-left: 0px;
     }
-    #subnavigation {display: none;}
     #profile-left-button {
         padding-left: 0;
     }
@@ -761,9 +770,6 @@
     #sidebar {
         width: 25%;
     }
-    #subnavigation {
-        display: none;
-    }
     .main-nav {
         display: block;
         width: 100%;
@@ -842,7 +848,6 @@
     #profile-left-button {
         padding-left: 35.5%;
     }
-    #subnavigation {display: none;}
 }
 @media (min-width: 1200px) {
     body .container {

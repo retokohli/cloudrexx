@@ -1405,7 +1405,7 @@ form[name="registrationForm"] .row {
 #shop div.message p label {
     width: auto;
 }
-#shop div.vat {
+#shop div.vat, div#cke_message {
     float: left;
     width: 100%;
 }
@@ -3056,3 +3056,82 @@ input[type="file"]{height: auto;float: left;}
 fieldset .checkbox, fieldset .radio {
     padding-left: 0;
 }
+/* Shop Start */
+.shop-box {
+    float: left;
+    width: 100%;
+    padding: 0 10px 20px 10px;
+    margin-left: 0;
+}
+#shopJsCart li {
+    padding: 0 0 5px 0;
+    margin: 0 0 5px 0;
+    border-bottom: 1px solid #DDDDDD;
+    background: none;
+}
+#shopJsCart li.empty,
+#shopJsCart li.loading,
+#shopJsCart li.not-loaded {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+#shopJsCart li.total {
+    padding: 0 0 15px 0;
+    margin: 0;
+    border: 0;
+}
+#shopJsCart li.link {
+    padding: 0 0 2px 0;
+    margin: 0;
+    border: 0;
+}
+#shopJsCart li.link a {
+    padding: 1px 0 0 25px;
+    background-position: left top;
+    background-repeat: no-repeat;
+}
+#shopJsCart li.link.cart a {
+    background-image: url('images/cart.png');
+}
+#shopJsCart li.link.destroy a {
+    background-image: url('images/destroy.png');
+}
+#shop-currencies a {
+    padding: 0 10px 0 0;
+    margin: 0 10px 0 0;
+    background: url('images/divider.gif') no-repeat right 3px;
+}
+#shop-currencies a.active {
+    font-weight: bold;
+}
+#shop-currencies a.last {
+    padding: 0;
+    margin: 0;
+    background: none;
+}
+#shop-product-added-info-wrapper {
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    float: left;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+#shop-product-added-info-box {
+    position: fixed;
+    top: 40%;
+    left: 35%;
+    float: left;
+    width: 30%;
+    padding: 20px 0 20px 0;
+    color: #505050;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #DDDDDD;
+    background: #FFFFFF;
+}
+/* Shop End */

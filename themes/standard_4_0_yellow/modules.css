@@ -1405,7 +1405,7 @@ form[name="registrationForm"] .row {
 #shop div.message p label {
     width: auto;
 }
-#shop div.vat {
+#shop div.vat, div#cke_message {
     float: left;
     width: 100%;
 }

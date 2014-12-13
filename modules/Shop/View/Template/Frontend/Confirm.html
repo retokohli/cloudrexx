@@ -79,36 +79,38 @@
                     </tr>
                 </table>
             </div>
-            <table class="order-address" summary="" cellspacing="0">
-                <tr style="background: #F2F2F2;">
-                    <th width="50%" align="left">{TXT_ADDRESS_CUSTOMER}</th>
-                    <th width="50%" align="left">{TXT_SHIPPING_ADDRESS}</th>
-                </tr>
-                <tr>
-                    <td nowrap="nowrap" valign="top">
-                        <span>{SHOP_COMPANY}</span>
-                        <span>{SHOP_PREFIX} {SHOP_FIRSTNAME} {SHOP_LASTNAME}</span>
-                        <span>{SHOP_ADDRESS}</span>
-                        <span>{SHOP_ZIP} {SHOP_CITY}</span>
-                        <span>{SHOP_COUNTRY}</span>
-                        <span>{SHOP_PHONE}</span>
-                        <span>{SHOP_FAX}</span>
-                        <span>{SHOP_EMAIL}</span>
-                    </td>
-                    <td nowrap="nowrap" valign="top">
-                        <!-- BEGIN shopShipmentAddress -->
-                        <span>{SHOP_COMPANY2}</span>
-                        <span>{SHOP_PREFIX2} {SHOP_FIRSTNAME2} {SHOP_LASTNAME2}</span>
-                        <span>{SHOP_ADDRESS2}</span>
-                        <span>{SHOP_ZIP2} {SHOP_CITY2}</span>
-                        <span>{SHOP_COUNTRY2}</span>
-                        <span>{SHOP_PHONE}</span>
-                        <span>{SHOP_FAX2}</span>
-                        <span>{SHOP_EMAIL2}</span>
-                        <!-- END shopShipmentAddress -->
-                    </td>
-                </tr>
-            </table>
+            <div class="table-responsive">
+                <table class="order-address table" summary="" cellspacing="0">
+                    <tr style="background: #F2F2F2;">
+                        <th width="50%" align="left">{TXT_ADDRESS_CUSTOMER}</th>
+                        <th width="50%" align="left">{TXT_SHIPPING_ADDRESS}</th>
+                    </tr>
+                    <tr>
+                        <td nowrap="nowrap" valign="top">
+                            <span>{SHOP_COMPANY}</span>
+                            <span>{SHOP_PREFIX} {SHOP_FIRSTNAME} {SHOP_LASTNAME}</span>
+                            <span>{SHOP_ADDRESS}</span>
+                            <span>{SHOP_ZIP} {SHOP_CITY}</span>
+                            <span>{SHOP_COUNTRY}</span>
+                            <span>{SHOP_PHONE}</span>
+                            <span>{SHOP_FAX}</span>
+                            <span>{SHOP_EMAIL}</span>
+                        </td>
+                        <td nowrap="nowrap" valign="top">
+                            <!-- BEGIN shopShipmentAddress -->
+                            <span>{SHOP_COMPANY2}</span>
+                            <span>{SHOP_PREFIX2} {SHOP_FIRSTNAME2} {SHOP_LASTNAME2}</span>
+                            <span>{SHOP_ADDRESS2}</span>
+                            <span>{SHOP_ZIP2} {SHOP_CITY2}</span>
+                            <span>{SHOP_COUNTRY2}</span>
+                            <span>{SHOP_PHONE}</span>
+                            <span>{SHOP_FAX2}</span>
+                            <span>{SHOP_EMAIL2}</span>
+                            <!-- END shopShipmentAddress -->
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <!-- BEGIN shopComment -->
             <table summary="" cellspacing="0">
                 <tr class="row3 active" style="background:#F2F2F2 ">
