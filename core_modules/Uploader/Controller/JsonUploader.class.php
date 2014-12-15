@@ -91,9 +91,11 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $mediaBrowserConfiguration
                 = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::getInstance(
             );
-            $path = $mediaBrowserConfiguration->getMediaTypePathsbyNameAndOffset($path_part[0],1)
+            $path = $mediaBrowserConfiguration->getMediaTypePathsbyNameAndOffset($path_part[0],0)
                 . '/' . $path_part[1];
+
             $tmpPath = $_SESSION->getTempPath();
+
         } else {
             return array(
                 'OK' => 0,
@@ -113,7 +115,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
 
         $fileLocation = array(
             $uploader['path'],
-            str_replace($this->cx->getCodeBAsePath(), '', $uploader['path'])
+            str_replace($this->cx->getCodeBasePath(), '', $uploader['path'])
         );
 
 
@@ -125,9 +127,13 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
              */
             $callback = $_SESSION['uploader']['handlers'][$id]['callback'];
             $data = $_SESSION['uploader']['handlers'][$id]['data'];
+            if (!is_string($callback)) {
+                $callback = $callback->toArray();
+            }
 
-            $callback = $callback->toArray();
-            $data = $data->toArray();
+            if ($data){
+                $data = $data->toArray();
+            }
 
             $filePath = dirname( $uploader['path']);
 
