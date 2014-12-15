@@ -268,6 +268,7 @@ fieldset .radio label,fieldset .checkbox label {
     display: block;
     max-width: 102.2%;
     height: auto;
+    width: auto;
 }
 /**/
 html {
@@ -371,7 +372,6 @@ modal-footer {
 }
 
 /* new */
-
 img {
     border-radius: 3px;
     -webkit-border-radius: 3px;
@@ -383,4 +383,8 @@ hr {
     height: 1px;
     border: 0;
     opacity: 0.2;
+}
+.btn-link:focus, .btn-link:hover {
+    color: #67bfb6;
+    outline: 0;
 }

@@ -671,8 +671,7 @@ body a:hover {text-decoration: underline;}
     margin: 0 0 5px 0;
     color: #FFFFFF;
     font-size: 15px;
-    font-weight: bold;
-    font-family: Arial;
+    font-weight: bold;    
     background: #67bfb6;
 }
 #page-header {
@@ -1102,7 +1101,7 @@ span.disconnected {
     -ms-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
-/*    display: none;*/
+    /*    display: none;*/
 }
 .mobile-nav .navigation li a {
     color: #fff;
@@ -1603,20 +1602,22 @@ p#loginerror {
     padding-right: 0;
     position: fixed;
     bottom: 18px;
-    right: 18px;    
-    
+    right: 18px;  
+    outline: 0;
+
 }
+a.back-to-top:hover, a.back-to-top:focus, .nav-toggle:focus {color: #f7fcfb;}
 #footer a.back-to-top:before {
     -webkit-transform: translateY(48px);
     transform: translateY(48px);
 }
-.footer a.back-to-top:hover:before {
--webkit-transform: translateY(0);
-transform: translateY(0);
+#footer a.back-to-top:hover:before {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
 }
-.footer a.back-to-top:hover:after {
--webkit-transform: translateY(-48px);
-transform: translateY(-48px);
+#footer a.back-to-top:hover:after {
+    -webkit-transform: translateY(-48px);
+    transform: translateY(-48px);
 }
 #footer a.back-to-top:after, #footer a.back-to-top:before {
     font-family: "FontAwesome";
@@ -1634,7 +1635,7 @@ transform: translateY(-48px);
     text-align: center;
     margin: 0;
     position: absolute;
-    top: 0;
+    top: -1px;
     right: 0;
     bottom: 0;
     left: 0;    
@@ -1660,6 +1661,7 @@ transform: translateY(-48px);
     width: 42px;
     font-size: 16px;
     font-weight: normal;
+    outline: 0;
 }
 
 .header .nav-toggle:after {
@@ -1774,16 +1776,16 @@ transform: translateY(-48px);
     transform-origin: 50% 0%;
 }
 .show-nav .inner-wrap {
-left: 80%;
--webkit-transform: translateZ(0);
--webkit-transition: left ease 0.4s;
--moz-transition: left ease 0.4s;
--o-transition: left ease 0.4s;
-transition: left ease 0.4s;
+    left: 80%;
+    -webkit-transform: translateZ(0);
+    -webkit-transition: left ease 0.4s;
+    -moz-transition: left ease 0.4s;
+    -o-transition: left ease 0.4s;
+    transition: left ease 0.4s;
 }
 .main-nav .buttons + hr {
-margin: 0 0 42px;
-width: 100%;
+    margin: 0 0 42px;
+    width: 100%;
 }
 .main-nav ul ul.menu {
     margin: 0 0 0 16px;

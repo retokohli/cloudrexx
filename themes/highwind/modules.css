@@ -3075,3 +3075,4 @@ fieldset .checkbox, fieldset .radio {
     color: #414141;
 }
 #podcast .categories input[type="button"] {float: left;}
+.livecamSearch input.hasDatepicker {float: left;}
