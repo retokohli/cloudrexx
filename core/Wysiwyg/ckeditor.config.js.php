@@ -24,8 +24,12 @@ $defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
 $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
                    .'?cmd=FileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
-$defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
+//$defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
 
+$em = $cx->getDb()->getEntityManager();
+$componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+$wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
+//Call the ComponentContrtollerMethod
 ?>
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/ckeditor-mediabrowser.js'   ?>' );
 CKEDITOR.editorConfig = function( config )
@@ -100,6 +104,37 @@ CKEDITOR.editorConfig = function( config )
     ];
     config.extraPlugins = 'codemirror';
 };
+
+CKEDITOR.on('instanceReady',function(){
+    var loadingTemplates = <?=$wysiwyg->getWysiwygTempaltes();?>;
+    for(var instanceName in CKEDITOR.instances) {
+    
+        //console.log( CKEDITOR.instances[instanceName] );
+        loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
+        
+        // Define Standard-Path
+        //var path = CKEDITOR.plugins.getPath('templates')
+        //var defaultPath = path.split("lib/ckeditor/")[0]+"customizing/lib/ckeditor"+path.split("lib/ckeditor")[1]+"templates/"
+        //var defaultPath = path.split("lib/ckeditor")[0] //Path to Templates-Folder
+        //var defaultPath = "/"
+        
+        loadingTemplates.load = (function(){
+            //this.defaultPath = defaultPath;
+            this.button.setState(CKEDITOR.TRISTATE_DISABLED) // Disable "Template"-Button
+            for(var i=0;i<this.length;i++){
+                (function(item){
+                    CKEDITOR.addTemplates('default',{
+                        imagesPath: "../../",//CKEDITOR.getUrl(defaultPath),
+                        templates: this
+                    });
+                }).bind(this)(this[i])
+            }
+            this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
+        }).bind(loadingTemplates)();
+    
+    
+    }
+});
 
 if (<?php
         if (\FWUser::getFWUserObject()->objUser->login()) {
