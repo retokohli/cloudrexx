@@ -273,7 +273,7 @@ class FileSystem
         $absolutePath = self::getAbsolutePath($path);
         $absoluteSubdirectory = self::getAbsolutePath($subdirectory);
         return (boolean)preg_match(
-            '#^' . preg_quote($absolutePath) . '#', $absoluteSubdirectory
+            '#^' . preg_quote($absolutePath,'#') . '#', $absoluteSubdirectory
         );
     }
 
