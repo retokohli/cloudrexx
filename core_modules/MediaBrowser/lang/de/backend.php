@@ -65,14 +65,24 @@ $_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER'] = "oder File Uploader starten
 $_ARRAYLANG['TXT_FILEBROWSER_FILE_ACTIONS'] = "Aktionen";
 $_ARRAYLANG['TXT_FILEBROWSER_FILE_RENAME'] = "Umbenennen";
 $_ARRAYLANG['TXT_FILEBROWSER_FILE_REMOVE'] = "Löschen";
+
+$_ARRAYLANG['TXT_FILEBROWSER_FILE_REMOVE_FILE']                    = "Datei löschen";
 $_ARRAYLANG['TXT_FILEBROWSER_RELOAD'] = "Aktualisieren";
 $_ARRAYLANG['TXT_FILEBROWSER_EXTENDED_FILE_SEARCH'] = "Regex Suche";
 $_ARRAYLANG['TXT_FILEBROWSER_EXTENDED_FILE_SEARCH_EXPLANATION'] = "Wenn die Regex Suche aktiviert ist, können sie die Dateien mithilfe von Regexen untersuchen.";
 $_ARRAYLANG['TXT_FILEBROWSER_SELECT_THUMBNAIL'] = "Vorschaubild auswählen";
 $_ARRAYLANG['TXT_FILEBROWSER_CANCEL'] = "Abbrechen";
 $_ARRAYLANG['TXT_FILEBROWSER_ARE_YOU_SURE'] = "Sind sie sicher?";
+$_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_NAME'] = "Verzeichnisname";
 
 $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_MEDIUM_SIZE'] = "Mittelgrosses Vorschaubild (%spx breit)";
 $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_LARGE_SIZE'] = "Grosses Vorschaubild (%spx breit)";
 $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_THUMBNAIL_SIZE'] = "Vorschaubild (%spx breit)";
 $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE'] = "Originale Grösse";
+
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER'] = "Datei hierher ziehen";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR'] = "oder";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK'] = "Bild vom Computer auswählen";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_BUTTON'] = "Hochladen";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_WATING'] = "Contrexx lädt die Dateien für Sie hoch...";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED'] = "Contrexx hat alle Dateien hochgeladen.";
