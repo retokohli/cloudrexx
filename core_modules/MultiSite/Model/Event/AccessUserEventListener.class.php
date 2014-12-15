@@ -76,10 +76,12 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Access');
-                    $adminUsers = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
-                    $adminUsersCount = count($adminUsers); 
-                    if (!empty($options['AdminUser']) && $adminUsersCount >= $options['AdminUser']) {
-                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['AdminUser']));
+                    if (!empty($options['AdminUser']) && $options['AdminUser'] > 0) {
+                        $adminUsers = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
+                        $adminUsersCount = count($adminUsers);
+                        if ($adminUsersCount >= $options['AdminUser']) {
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['AdminUser']));
+                        }
                     }
                     break;
                 default:

@@ -44,12 +44,14 @@ class CrmCustomerEventListener implements \Cx\Core\Event\Model\Entity\EventListe
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $options    = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Crm');
-                    $objCrm     = new \Cx\Modules\Crm\Controller\CrmManager('crm');
-                    $query      = $objCrm->getContactsQuery(array('contactSearch' => 2));
-                    $usageCount = $objCrm->countRecordEntries($query);
-                    $crmCustomerCount = !empty($usageCount) ? $usageCount : 0; 
-                    if (!empty($options['Customer']) && $crmCustomerCount >= $options['Customer']) {
-                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Customer']));
+                    if (!empty($options['Customer']) && $options['Customer'] > 0) {
+                        $objCrm = new \Cx\Modules\Crm\Controller\CrmManager('crm');
+                        $query = $objCrm->getContactsQuery(array('contactSearch' => 2));
+                        $usageCount = $objCrm->countRecordEntries($query);
+                        $crmCustomerCount = !empty($usageCount) ? $usageCount : 0;
+                        if ($crmCustomerCount >= $options['Customer']) {
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Customer']));
+                        }
                     }
                     break;
                 default:

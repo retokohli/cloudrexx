@@ -45,11 +45,13 @@ class ShopProductEventListener implements \Cx\Core\Event\Model\Entity\EventListe
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Shop');
-                    $count = 0;
-                    $products = \Cx\Modules\Shop\Controller\Products::getByShopParams($count, 0, null, null, null, null, false, false, null, null, true);
-                    $productsCount = !empty($products) ? count($products) : 0; 
-                    if (!empty($options['Product']) && $productsCount >= $options['Product']) {
-                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Product']));
+                    if (!empty($options['Product']) && $options['Product'] > 0) {
+                        $count = 0;
+                        $products = \Cx\Modules\Shop\Controller\Products::getByShopParams($count, 0, null, null, null, null, false, false, null, null, true);
+                        $productsCount = !empty($products) ? count($products) : 0;
+                        if ($productsCount >= $options['Product']) {
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Product']));
+                        }
                     }
                     break;
                 default:

@@ -45,10 +45,12 @@ class ContactFormEventListener implements \Cx\Core\Event\Model\Entity\EventListe
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Contact');
-                    $forms   = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findAll();
-                    $formCount = $forms ? count($forms) : 0;
-                    if (!empty($options['Form']) && $formCount >= $options['Form']) {
-                        throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Form']));
+                    if (!empty($options['Form']) && $options['Form'] > 0) {
+                        $forms = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findAll();
+                        $formCount = $forms ? count($forms) : 0;
+                        if ($formCount >= $options['Form']) {
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Form']));
+                        }
                     }
                     break;
                 default:
