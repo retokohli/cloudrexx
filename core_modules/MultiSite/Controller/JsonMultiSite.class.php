@@ -3144,7 +3144,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     foreach ($modulesArray as $module => $type) {
                         switch ($module) {
                             case 'Access':
-                                $usage = count($this->getAdminUsers());
+                                $usage = count(ComponentController::getAllAdminUsers());
                                 break;
                             
                             case 'Contact':
