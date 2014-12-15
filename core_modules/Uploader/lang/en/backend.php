@@ -14,6 +14,8 @@ global $_ARRAYLANG;
 
 // Let's start with module info:
 $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER'] = 'Uploader';
+$_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_DESCRIPTION']
+    = "Uploader which is integrated with contrexx.";
 $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER'] = "Drag file here";
 $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER_OR'] = "or";
 $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER_CLICK'] = "Choose picture from your computer";
