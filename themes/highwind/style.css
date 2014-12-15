@@ -539,7 +539,7 @@
     .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
     #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
-    /**/
+    
     /*MediaDir Edit Start*/
     .mediadirSelector .mediadirSelectorCenter {
         padding: 5px 65px 0 !important;
@@ -733,6 +733,7 @@
     #subnavigation {
         display: none;
     }
+    .sidebar-block {padding: 10px 0px 10px 15px;}
 }
 @media (min-width: 980px) and (max-width: 1199px) {
     .home-box.col-md-4 {width: 31.4%;margin-right: 28px;}
@@ -854,7 +855,18 @@
     }
     .site-intro img {margin: 0;}
     .btn {font-size: 16px;}    
-    #footer {margin: 0 -15px !important;}    
+    #footer {margin: 0 -15px !important;}  
+    #home-content {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+    }
+    .page-title {
+        font-size: 28px;
+        line-height: 28px;
+        font-weight: normal;
+    }
 }
 
 @media (max-width: 991px) { 
@@ -881,6 +893,12 @@
     }
     .main-nav .navigation {
         padding: 0 18px;
+    }
+    .table-responsive {
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-y: hidden;
+        overflow-x: auto;
     }
 }
 
