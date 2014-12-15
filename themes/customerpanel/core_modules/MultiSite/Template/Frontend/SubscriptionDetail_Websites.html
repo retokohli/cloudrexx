@@ -28,7 +28,7 @@
                     <button type="button" onclick="window.open('{NODE_MULTISITE_WEBSITE}?id={MULTISITE_WEBSITE_ID}', '_self').focus();">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
 
                     <!-- BEGIN showAdminButton -->
-                    <button type="button" onclick="getRemoteLoginToken('{MULTISITE_WEBSITE_ID}');">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
+                    <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
                     <!-- END showAdminButton -->
                 </td>
             </tr>

@@ -2,7 +2,7 @@
 <button type="button" onclick="window.open('{MULTISITE_WEBSITE_FRONTEND_LINK}', '_blank').focus();">{TXT_MULTISITE_WEBSITE_BUTTON_VIEW}</button>
 <!-- END showWebsiteViewButton -->
 <!-- BEGIN showAdminButton -->
-<button type="button" onclick="getRemoteLoginToken('{MULTISITE_WEBSITE_ID}');">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
+<button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
 <!-- END showAdminButton -->
 <button type="button">{TXT_MULTISITE_WEBSITE_BUTTON_DEACTIVATE}</button>
 <button type="button">{TXT_MULTISITE_WEBSITE_BUTTON_DELETE}</button>
