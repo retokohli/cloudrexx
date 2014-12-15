@@ -117,7 +117,7 @@ hr {
 }
 input {color: #7d7d7d;}
 input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus{outline: none;}
-input[type="submit"], input[type="reset"], input[type=button] {color: #414141; font-size: 13px;}
+input[type="submit"], input[type="reset"], input[type=button] {color: #414141; font-size: 13px;padding: 9px 20px 10px 20px !important;}
 textarea {color: #7d7d7d;}
 select.form-control {
     padding: 7px 8px;
@@ -160,7 +160,7 @@ input[type=reset],
 input[type=radio],
 input[type=checkbox],
 button {
-    width: auto;
+    width: auto !important;
 }
 input[type=radio] {
     float: left;
@@ -211,10 +211,15 @@ input[name="access_signup"]:focus {
     border: 0;
     color: #fff;
 }
-.button, button, input[type="submit"], input[type="reset"], input[type="button"] {
+body .button,body button,body input[type="submit"],body input[type="reset"],body input[type="button"] {
     background: #666666;
     border: 0;
+    width: auto;
     color: #fff;
+    padding: 9px 20px 10px 20px;
+}
+body .entry-content #contactFrame .radio label, body .entry-content #contactFrame .checkbox label {
+    padding-left: 17px;
 }
 .button, .button:visited, input[type="submit"], input[type="reset"], input[type="button"], button {
     padding: 9px 20px 10px 20px;
@@ -236,7 +241,7 @@ button[disabled=disabled]:hover,
 input[disabled=disabled]:hover {
     background: #F5F5F5;
 }
-legend {
+legend, .breadcrumb li:empty {
     display: block;
     color: #606060;
     float: left;
@@ -427,8 +432,14 @@ th {
     padding: 10px;
     text-transform: uppercase;
 }
-table, td, th {
+body ol ol {
+    list-style: upper-alpha;
+}
+.entry-content table,.entry-content td,.entry-content th, .subpage-content > .table-responsive td, .subpage-content > .table-responsive th, .subpage-content > #fe_content > .table-responsive th, .subpage-content > #fe_content > .table-responsive td {
     text-align: center;
+}
+#gallery .breadcrumb ul {
+    display: inline-block;
 }
 tr td {
     border-bottom: 1px solid #f1f1f1;
