@@ -30,7 +30,15 @@ function  loadContent(jQuerySelector, url) {
     });
 }
 
-function getRemoteLoginToken(websiteId) {
+/**
+ * Generate Remote website-login token
+ * depends bootstrap js
+ * 
+ * @param object elm jQuery button object
+ */
+function getRemoteLoginToken($this) {
+    var websiteId = $this.data('id');
+    
     jQuery.ajax({
         dataType: "json",
         url: websiteLoginUrl,
@@ -38,6 +46,10 @@ function getRemoteLoginToken(websiteId) {
             websiteId :  websiteId
         },
         type: "POST",
+        beforeSend: function (xhr, settings) {
+            $this.button('loading');
+            $this.prop('disabled', true);
+        },
         success: function(response) {
             if (response.status == 'success') {
                 resp = response.data;
@@ -53,6 +65,10 @@ function getRemoteLoginToken(websiteId) {
             } else {
                 alert(response.message);
             }
+        },
+        complete: function (xhr, settings) {
+            $this.button('reset');
+            $this.prop('disabled', false);
         },
         error: function() { }
     });
