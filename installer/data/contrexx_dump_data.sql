@@ -617,6 +617,7 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (223,3,'navigation','backend','TXT_CORE_MODULE_CRON',1,'index.php?cmd=Cron','_self',103,0,900);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (222,0,'function','backend','TXT_MODULE_SUPPORT',1,'index.php?cmd=Support','_self',100,15,192);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (224,3,'navigation','backend','TXT_NET_MANAGER',1,'index.php?cmd=NetManager','_self',105,1,888);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (225,3,'navigation','backend','TXT_CORE_WYSIWYG',1,'index.php?cmd=Wysiwyg','_self',905,16,901);
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (2,'Stats','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (3,'Gallery','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (4,'Newsletter','module');
@@ -704,6 +705,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (103,'Cron','core
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (104,'SysLog','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (105,'NetManager','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (904,'User','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (905,'Wysiwyg','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
@@ -6037,6 +6039,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (105,'NetManager','Comvation AG','TXT_NETMANAGER_MODULE_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (101,'Uploader','Comvation AG','TXT_CORE_MODULE_UPLOADER_DESCRIPTION','y',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (102,'MediaBrowser','Comvation AG','TXT_CORE_MODULE_MEDIABROWSER_DESCRIPTION','y',0,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (905,'Wysiwyg','Comvation AG','TXT_CORE_WYSIWYG_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
@@ -6200,3 +6203,6 @@ INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, ex
 INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday, 
 website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');
 INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');
+INSERT INTO `contrexx_core_wysiwyg_wysiwyg` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `inactive`) VALUES (1, 'Bild und Titel', 'Bild mit einem Titel und Text, der das Bild umfliesst.', '/images/content/template1.gif', '<h3><img src=" " alt="" style="margin-right: 10px" height="100" width="100" align="left" />Hier den Titel einfügen</h3><p>Hier den Text einfügen</p>', 0);
+INSERT INTO `contrexx_core_wysiwyg_wysiwyg` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `inactive`) VALUES (2, 'Zwei Spalten mit Titel', 'Zwei Spalten, die beide einen Titel und Text beinhalten.', '/images/content/template2.gif', '<div class="row"><div class="col-md-6"><h2>Hier den Titel einfügen</h2>Hier den Text einfügen <br/> </div><div class="col-md-6"><h2 >Title</h2>Hier den Text einfügen <br/></div></div>Text goes here', 0);
+INSERT INTO `contrexx_core_wysiwyg_wysiwyg` (`id`, `title`, `description`, `imagePath`, `htmlContent`, `inactive`) VALUES (3, 'Text und Tabelle', 'Ein Titel mit Text und einer Tabelle.', '/images/content/template3.gif', '<div style="width: 80%"><h3>Hier den Titel einfügen</h3><table style="width:150px;float: right" cellspacing="0" cellpadding="0" border="1"><caption style="border:solid 1px black"><strong> Hier den Tabellentitel einfügen</strong></caption><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></table><p>Type the text here</p></div>', 0);

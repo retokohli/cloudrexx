@@ -4663,3 +4663,11 @@ CREATE TABLE `contrexx_voting_system` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
+CREATE TABLE `contrexx_core_wysiwyg_wysiwyg` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `description` text COLLATE utf8_unicode_ci NOT NULL,
+  `imagePath` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `htmlContent` text COLLATE utf8_unicode_ci,
+  `inactive` tinyint(4) NOT NULL
+) ENGINE=InnoDB;
