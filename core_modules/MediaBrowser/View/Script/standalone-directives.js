@@ -114,6 +114,10 @@
                     });
 
                     $J(iElement).bind('click', function () {
+                        $J('#uploader-modal-' + iAttrs.uploaderId).modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
                         $J('#uploader-modal-' + iAttrs.uploaderId).modal('show');
                     });
 

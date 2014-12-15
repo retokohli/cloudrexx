@@ -44,7 +44,13 @@ class FileSystem
      */
     public static function createDirectory($path, $directory)
     {
-        if (!\Cx\Lib\FileSystem\FileSystem::make_folder(self::getAbsolutePath($path) . '/' . $directory)) {
+        if (!self::checkPermissions($path)) {
+            throw new CreateDirectoryException('No rights to remove file.');
+        }
+        if (!\Cx\Lib\FileSystem\FileSystem::make_folder(
+            self::getAbsolutePath($path) . '/' . $directory
+        )
+        ) {
             throw new CreateDirectoryException('Can\' create directory.');
         }
     }
@@ -64,7 +70,13 @@ class FileSystem
      */
     public static function removeDirectory($path, $directory, $force = true)
     {
-        if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(self::getAbsolutePath($path) . '/' . $directory, $force)) {
+        if (!self::checkPermissions($path)) {
+            throw new RemoveDirectoryException('No rights to remove file.');
+        }
+        if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(
+            self::getAbsolutePath($path) . '/' . $directory, $force
+        )
+        ) {
             throw new RemoveDirectoryException('Can\' remove directory.');
         }
     }
@@ -83,11 +95,21 @@ class FileSystem
      *
      * @throws MoveDirectoryException
      */
-    public static function moveDirectory($sourcePath, $destinationPath, $directory, $force)
+    public static function moveDirectory(
+        $sourcePath, $destinationPath, $directory, $force
+    )
     {
+        if (!self::checkPermissions($sourcePath) || !self::checkPermissions($destinationPath)) {
+            throw new MoveDirectoryException("No rights to remove file");
+        }
         try {
-            $objFile = new File(self::getAbsolutePath($sourcePath) . '/' . $directory);
-            $objFile->move(self::getAbsolutePath($destinationPath) . '/' . $directory, $force);
+            $objFile = new File(
+                self::getAbsolutePath($sourcePath) . '/' . $directory
+            );
+            $objFile->move(
+                self::getAbsolutePath($destinationPath) . '/' . $directory,
+                $force
+            );
         } catch (OldFileSystemException $e) {
             throw new MoveDirectoryException($e->getMessage());
         }
@@ -100,28 +122,51 @@ class FileSystem
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveFile('files/Movies','files/Movies/Tarantino','ReservoirDogs.jpg');
      * ```
      *
-     * @param $sourcePath      String
-     * @param $destinationPath String
-     * @param $file            String
+     * @param $sourcePath             String
+     * @param $destinationPath        String
+     * @param $file                   String
      * @param $newfileName            String
-     * @param $force           bool Overwrite existing file
+     * @param $force                  bool Overwrite existing file
      *
      * @throws MoveFileException
      */
-    public static function moveFile($sourcePath, $destinationPath, $file, $newfileName, $force)
+    public static function moveFile(
+        $sourcePath, $destinationPath, $file, $newfileName, $force
+    )
     {
+        if (!self::checkPermissions($sourcePath) || !self::checkPermissions($destinationPath)){
+            throw new MoveFileException("No rights to remove file");
+        }
         $sourceAbsolutePath = self::getAbsolutePath($sourcePath);
         $destinationAbsolutePath = self::getAbsolutePath($destinationPath);
         try {
-            $filePathinfo  = pathinfo($sourceAbsolutePath . '/' . $file);
-            $fileExtension = isset($filePathinfo['extension']) ? $filePathinfo['extension'] : '';
+            $filePathinfo = pathinfo($sourceAbsolutePath . '/' . $file);
+            $fileExtension = isset($filePathinfo['extension'])
+                ? $filePathinfo['extension'] : '';
             $File = new File($sourceAbsolutePath . '/' . $file);
-            $File->move($destinationAbsolutePath . '/' . $newfileName.'.'.$fileExtension, $force);
+            $File->move(
+                $destinationAbsolutePath . '/' . $newfileName . '.'
+                . $fileExtension, $force
+            );
 
-            foreach (UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail) {
-                if (FileSystem::fileExists($sourceAbsolutePath, $filePathinfo['filename'] . $thumbnail['value'] . '.' . $fileExtension)) {
-                    $File = new File($sourceAbsolutePath . '/' . $filePathinfo['filename'] . $thumbnail['value'] . '.' . $fileExtension);
-                    $File->move($destinationAbsolutePath . '/' . $newfileName . $thumbnail['value'] . '.' . $fileExtension, $force);
+            foreach (
+                UploaderConfiguration::getInstance()->getThumbnails() as
+                $thumbnail
+            ) {
+                if (FileSystem::fileExists(
+                    $sourceAbsolutePath,
+                    $filePathinfo['filename'] . $thumbnail['value'] . '.'
+                    . $fileExtension
+                )
+                ) {
+                    $File = new File(
+                        $sourceAbsolutePath . '/' . $filePathinfo['filename']
+                        . $thumbnail['value'] . '.' . $fileExtension
+                    );
+                    $File->move(
+                        $destinationAbsolutePath . '/' . $newfileName
+                        . $thumbnail['value'] . '.' . $fileExtension, $force
+                    );
                 }
             }
         } catch (OldFileSystemException $e) {
@@ -144,17 +189,34 @@ class FileSystem
      */
     public static function removeFile($path, $file)
     {
-
+        if (!self::checkPermissions($path)){
+            throw new RemoveFileException("No rights to remove file");
+        }
         $absolutePath = self::getAbsolutePath($path);
-        if (!\Cx\Lib\FileSystem\FileSystem::delete_file($absolutePath  . $file)) {
-            throw new RemoveFileException("Couldn't remove File.");
+        if (!\Cx\Lib\FileSystem\FileSystem::delete_file(
+            $absolutePath . $file
+        )
+        ) {
+            throw new RemoveFileException("Couldn't remove file.");
         }
 
-        $filePathinfo  = pathinfo($absolutePath . '/' . $file);
-        $fileExtension = isset($filePathinfo['extension']) ? $filePathinfo['extension'] : '';
-        foreach (UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail) {
-            if (FileSystem::fileExists($absolutePath, $filePathinfo['filename'] . $thumbnail['value'] . '.' . $fileExtension)) {
-                if (!\Cx\Lib\FileSystem\FileSystem::delete_file($absolutePath . '/' . $filePathinfo['filename'] . $thumbnail['value'] . '.' . $fileExtension)) {
+        $filePathinfo = pathinfo($absolutePath . '/' . $file);
+        $fileExtension = isset($filePathinfo['extension'])
+            ? $filePathinfo['extension'] : '';
+        foreach (
+            UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail
+        ) {
+            if (FileSystem::fileExists(
+                $absolutePath,
+                $filePathinfo['filename'] . $thumbnail['value'] . '.'
+                . $fileExtension
+            )
+            ) {
+                if (!\Cx\Lib\FileSystem\FileSystem::delete_file(
+                    $absolutePath . '/' . $filePathinfo['filename']
+                    . $thumbnail['value'] . '.' . $fileExtension
+                )
+                ) {
 //                    throw new RemoveFileException("Couldn't remove File.".$absolutePath . '/' . $file . $thumbnail['value'] . '.' . $fileExtension);
                 }
             }
@@ -189,12 +251,91 @@ class FileSystem
     {
         if (self::isVirtualPath($virtualPath)) {
             $pathArray = explode('/', $virtualPath);
-            return MediaBrowserConfiguration::getInstance()->mediaTypePaths[array_shift($pathArray)][0] . '/' . join(
+            return MediaBrowserConfiguration::getInstance(
+            )->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0) . '/' . join(
                 '/', $pathArray
             );
         }
         return $virtualPath;
     }
+
+    /**
+     * Checks if $subdirectory is a subdirectory of $path.
+     * You can use a virtual path as a parameter.
+     *
+     * @param $path
+     * @param $subdirectory
+     *
+     * @return boolean
+     */
+    public static function isSubdirectory($path, $subdirectory)
+    {
+        $absolutePath = self::getAbsolutePath($path);
+        $absoluteSubdirectory = self::getAbsolutePath($subdirectory);
+        return (boolean)preg_match(
+            '#^' . preg_quote($absolutePath) . '#', $absoluteSubdirectory
+        );
+    }
+
+    /**
+     * @param $path
+     *
+     * @return bool
+     */
+    public static function checkPermissions($path)
+    {
+        $hasAccess = false;
+        foreach (
+            MediaBrowserConfiguration::getInstance()->getAllMediaTypePaths() as
+            $virtualPathName => $mediatype
+        ) {
+            if (self::isSubdirectory($virtualPathName, $path)) {
+                return self::checkMediaTypePermission($virtualPathName);
+            }
+        }
+        return $hasAccess;
+    }
+
+    /**
+     * Checks whether the user has the right to edit files in this mediatype directory.
+     *
+     * @param $mediatype
+     *
+     * @return boolean
+     */
+    public static function checkMediaTypePermission($mediatype)
+    {
+        switch ($mediatype) {
+        case 'media1':
+        case 'media2':
+        case 'media3':
+        case 'media4':
+        case 'media5':
+            return \Permission::checkAccess(7, 'static', true)
+            && \Permission::checkAccess(38, 'static', true)
+            && \Permission::checkAccess(39, 'static', true);
+        case 'shop':
+            return \Permission::checkAccess(13, 'static', true);
+        case 'gallery':
+            return \Permission::checkAccess(12, 'static', true)
+            && \Permission::checkAccess(67, 'static', true);
+        case 'access':
+            return \Permission::checkAccess(18, 'static', true);
+        case 'mediadir':
+            return \Permission::checkAccess(153, 'static', true);
+        case 'downloads':
+            return \Permission::checkAccess(141, 'static', true);
+        case 'calendar':
+            return \Permission::checkAccess(16, 'static', true);
+        case 'podcast':
+            return \Permission::checkAccess(87, 'static', true);
+        case 'blog':
+            return \Permission::checkAccess(119, 'static', true);
+        default:
+            return true;
+        }
+    }
+
 
     /**
      * Checks if a file exists either in the actual filesystem or in the virtual filesystem.
@@ -206,7 +347,9 @@ class FileSystem
      */
     public static function fileExists($path, $file)
     {
-        return \Cx\Lib\FileSystem\FileSystem::exists(self::getAbsolutePath($path) . '/' . $file);
+        return \Cx\Lib\FileSystem\FileSystem::exists(
+            self::getAbsolutePath($path) . '/' . $file
+        );
     }
 
 

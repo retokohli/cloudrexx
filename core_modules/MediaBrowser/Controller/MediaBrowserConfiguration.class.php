@@ -11,6 +11,9 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
+use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
+use Cx\Lib\FileSystem\File;
+
 class MediaBrowserConfiguration
 {
 
@@ -26,7 +29,7 @@ class MediaBrowserConfiguration
      */
     protected $cx;
 
-    public $mediaTypes
+    protected $mediaTypes
         = array(
             'files' => 'TXT_FILEBROWSER_FILES',
             'webpages' => 'TXT_FILEBROWSER_WEBPAGES',
@@ -43,10 +46,11 @@ class MediaBrowserConfiguration
             'calendar' => 'TXT_CALENDAR',
             'podcast' => 'TXT_FILEBROWSER_PODCAST',
             'blog' => 'TXT_FILEBROWSER_BLOG',
-            'Wysiwyg'   => 'TXT_FILEBROWSER_WYSIWYG',
+            'Wysiwyg' => 'TXT_FILEBROWSER_WYSIWYG',
         );
 
-    public $mediaTypePaths;
+    protected $mediaTypePaths;
+    protected $allMediaTypePaths;
 
     /**
      * gets the instance via lazy initialization (created on first usage)
@@ -69,7 +73,7 @@ class MediaBrowserConfiguration
     {
         $this->cx = \Env::get('cx');
 
-        $this->mediaTypePaths
+        $this->allMediaTypePaths
             = array(
             'files' => array(
                 $this->cx->getWebsiteImagesContentPath(),
@@ -91,7 +95,7 @@ class MediaBrowserConfiguration
                 $this->cx->getWebsiteMediaarchive4Path(),
                 $this->cx->getWebsiteMediaarchive4WebPath(),
             ),
-            'attach' => array(
+            'media5' => array(
                 $this->cx->getWebsiteMediaarchive5Path(),
                 $this->cx->getWebsiteMediaarchive5WebPath(),
             ),
@@ -128,10 +132,20 @@ class MediaBrowserConfiguration
                 $this->cx->getWebsiteImagesBlogWebPath(),
             ),
             'Wysiwyg' => array(
-                $this->cx->getWebsiteImagesPath().'/wysiwyg',
-                $this->cx->getWebsiteImagesWebPath().'/wysiwyg',
+                $this->cx->getWebsiteImagesPath() . '/wysiwyg',
+                $this->cx->getWebsiteImagesWebPath() . '/wysiwyg',
             ),
         );
+
+        foreach ($this->allMediaTypePaths as $mediatype => $path) {
+            if (FileSystem::checkMediaTypePermission($mediatype)) {
+                $this->mediaTypePaths[$mediatype] = $path;
+            } else {
+                unset($this->mediaTypes[$mediatype]);
+            }
+        }
+
+
     }
 
 
@@ -141,6 +155,43 @@ class MediaBrowserConfiguration
     public static function getThumbnails()
     {
         return self::$thumbnails;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypes()
+    {
+        return $this->mediaTypes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypePaths()
+    {
+        return $this->mediaTypePaths;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypePathsbyName($name)
+    {
+        return $this->mediaTypePaths[$name];
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypePathsbyNameAndOffset($name, $offset)
+    {
+        return $this->mediaTypePaths[$name][$offset];
+    }
+
+    public function getAllMediaTypePaths()
+    {
+
     }
 
     /**

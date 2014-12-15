@@ -2,7 +2,7 @@
     <div class="modal-header">
         <button type="button" class="close" data-ng-click="closeModal()" data-dismiss="modal" aria-hidden="true">×
         </button>
-        <h4 class="modal-title">{{ 'TXT_FILEBROWSER_CHOOSE_FILE' | translate }}</h4>
+        <h4 class="modal-title">{{ 'TXT_FILEBROWSER_MEDIABROWSER' | translate }}</h4>
     </div>
     <div class="mediaBrowserMain" id="mediaBrowserMain">
         <div>
@@ -17,7 +17,9 @@
                 </ul>
                 <select class="selectsource" data-ng-options="source as source.name for source in sources"
                         data-ng-model="selectedSource" data-ng-change="updateSource()">
-                    <option value="files">Dateien</option>
+                    <option value="files">
+                        {{ 'TXT_FILEBROWSER_FILES' | translate }}
+                    </option>
                 </select>
             </nav>
 

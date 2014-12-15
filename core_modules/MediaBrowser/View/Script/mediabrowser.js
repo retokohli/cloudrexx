@@ -66,19 +66,16 @@
              * Sorting and searching
              */
             $scope.sorting = 'cleansize';
-            $scope.searchFile = '';
-            $scope.isRegex = false;
+            $scope.searchString = '';
             $scope.reverse = false;
-
             $scope.sources = [];
             $scope.fileCallBack = '';
             $scope.files = [];
             $scope.dataFiles = [];
             $scope.sites = [];
 
-
             $scope.path = [
-                {name: 'Dateien', path: 'files', standard: true}
+                {name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'), path: 'files', standard: true}
             ];
 
             $scope.activeController = mediabrowserConfig.get('startView');
@@ -158,19 +155,19 @@
 
             $scope.dataTabs = [
                 {
-                    label: 'Hochladen',
+                    label:  cx.variables.get('TXT_FILEBROWSER_UPLOADER', 'mediabrowser'),
                     icon: 'icon-upload',
                     controller: 'UploaderCtrl',
                     name: 'uploader'
                 },
                 {
-                    label: 'Ablage',
+                    label:  cx.variables.get('TXT_FILEBROWSER_FILEBROWSER', 'mediabrowser'),
                     icon: 'icon-folder',
                     controller: 'MediaBrowserListCtrl',
                     name: 'filebrowser'
                 },
                 {
-                    label: 'Seitenstruktur',
+                    label: cx.variables.get('TXT_FILEBROWSER_SITESTRUCTURE', 'mediabrowser'),
                     icon: 'icon-sitestructure',
                     controller: 'SitestructureCtrl',
                     name: 'sitestructure'
@@ -376,6 +373,11 @@
             $scope.noFileSelected = true;
             $scope.selectedFiles = [];
 
+            $scope.searchConfig = {
+                isRegex: false,
+                string: ""
+            };
+
             $scope.template = {
                 url: '../core_modules/MediaBrowser/View/Template/_FileBrowser.html'
             };
@@ -390,7 +392,7 @@
                     $scope.path.push({name: dirName, path: dirName, standard: false});
                 }
                 $scope.inRootDirectory = ($scope.path.length == 1);
-                $scope.searchFile = '';
+                $scope.searchString = '';
                 $scope.refreshBrowser();
             };
 
@@ -546,25 +548,39 @@
 
 
             $scope.removeFile = function (file, index) {
-                bootbox.confirm(cx.variables.get('TXT_FILEBROWSER_ARE_YOU_SURE', 'mediabrowser'), function (result) {
-                    if (result === null) {
+                bootbox.dialog({
+                    title: "Datei löschen",
+                    message: cx.variables.get('TXT_FILEBROWSER_ARE_YOU_SURE', 'mediabrowser'),
+                    buttons: {
+                        danger: {
+                            label: cx.variables.get('TXT_FILEBROWSER_CANCEL', 'mediabrowser'),
+                            className: "btn-default",
+                            callback: function () {
 
-                    } else {
-                        $http({
-                            method: 'POST',
-                            url: 'index.php?cmd=jsondata&object=Uploader&act=removeFile&path=' + $scope.getPathAsString() + '&csrf=' + cx.variables.get('csrf'),
-                            data: $.param({
-                                file: file
-                            }),
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                                'X-Requested-With': 'XMLHttpRequest'
                             }
-                        }).success(function (jsonadapter) {
-                            $scope.updateSource();
-                        });
+                        },
+                        success: {
+                            label:  cx.variables.get('TXT_FILEBROWSER_FILE_REMOVE', 'mediabrowser'),
+                            className: "btn-danger",
+                            callback: function () {
+                                $http({
+                                    method: 'POST',
+                                    url: 'index.php?cmd=jsondata&object=Uploader&act=removeFile&path=' + $scope.getPathAsString() + '&csrf=' + cx.variables.get('csrf'),
+                                    data: $.param({
+                                        file: file
+                                    }),
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                }).success(function (jsonadapter) {
+                                    $scope.updateSource();
 
-                        $scope.refreshBrowser();
+                                });
+
+                                $scope.refreshBrowser();
+                            }
+                        }
                     }
                 });
             };
@@ -587,6 +603,8 @@
                     fn({type: 'file', data: $scope.selectedFiles});
                     $scope.selectedFiles = [];
                 }
+
+
             };
         }
     ]);
@@ -626,15 +644,15 @@
                             placement: 'right'
                         });
                     }, function () {
-                        $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + attrs.previewImage').
-                            success(function (data, status, headers, config) {
-                                jQuery(el).popover({
-                                    trigger: 'hover',
-                                    html: true,
-                                    content: '<img src="' + attrs.previewImage + '"  />',
-                                    placement: 'right'
-                                });
-                            })
+                        //$http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + attrs.previewImage').
+                        //    success(function (data, status, headers, config) {
+                        //        jQuery(el).popover({
+                        //            trigger: 'hover',
+                        //            html: true,
+                        //            content: '<img src="' + attrs.previewImage + '"  />',
+                        //            placement: 'right'
+                        //        });
+                        //    })
                     });
 
 
@@ -727,12 +745,18 @@
             });
             if (searchFile != '') {
                 var searchObject;
+                console.log(isRegex);
                 if (isRegex) {
-                    searchObject = function () {
-                        var regex = new RegExp(searchFile, 'i');
-                        return function (string) {
-                            return regex.test(string);
-                        }
+                    try {
+                        searchObject = function () {
+                            var regex = new RegExp(searchFile, 'i');
+                            return function (string) {
+                                return regex.test(string);
+                            }
+                        }();
+                    }
+                    catch(e) {
+                        return [];
                     }
                 }
                 else {
@@ -746,7 +770,7 @@
                             }
                             return true;
                         }
-                    }
+                    }()
                 }
                 return recursiveSearch(searchObject, array, 0);
             }
@@ -767,7 +791,7 @@
             }
             if (searchArray[key]['datainfo'] != undefined) {
                 if (searchArray[key]['datainfo']['name'] != undefined) {
-                    if (searchObject()(searchArray[key]['datainfo']['name'])) {
+                    if (searchObject(searchArray[key]['datainfo']['name'])) {
                         resultArray.push(searchArray[key]);
                     }
                 }
