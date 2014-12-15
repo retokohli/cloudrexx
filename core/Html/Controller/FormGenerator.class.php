@@ -236,6 +236,41 @@ class FormGenerator {
                 }
                 return $input;
                 break;
+            case 'uploader':
+                \JS::registerCode('
+                    function javascript_callback_function(data) {
+                        if(data.type=="file") {
+                            if(data.data[0].datainfo.extension=="Jpg"||data.data[0].datainfo.extension=="Gif"){
+                                cx.jQuery("#'.$name.'").val(data.data[0].datainfo.filepath);
+                            }
+                        }
+                        //console.log(data.data[0].datainfo.extension);
+                    }
+                ');
+                $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+                $mediaBrowser->setOptions(array('type' => 'button'));
+                $mediaBrowser->setCallback('javascript_callback_function');
+                $mediaBrowser->setOptions(
+                    array(
+                        'data-cx-mb-views' => 'filebrowser,uploader',
+                        'id' => 'page_target_browse',
+                        'cxMbStartview' => 'MediaBrowserList'
+                    )
+                );
+                $mb = $mediaBrowser->getXHtml(
+                    $_ARRAYLANG['TXT_CORE_CM_BROWSE']
+                );
+                
+                $input = new \Cx\Core\Html\Model\Entity\DataElement($name, $value);
+                $input->setAttribute('type', 'text');
+                $input->setAttribute('id', $name);
+                
+                $div = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                $div->addChild($input);
+                $div->addChild(new \Cx\Core\Html\Model\Entity\TextElement($mb));
+                
+                return $div;
+                break;
             case 'string':
             default:
                 // input field with type text
