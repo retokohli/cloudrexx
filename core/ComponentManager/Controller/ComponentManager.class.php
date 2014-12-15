@@ -205,12 +205,12 @@ class ComponentManager
         
         $moduleLink = '<a href="index.php?cmd=%s"> %s </a>';
         $moduleArchiveLink = '<a href="index.php?cmd=%s&amp;archive=%s"> %s </a>';
-        
+
         if ($objResult) {
             while (!$objResult->EOF) {
-                $class = (++$i % 2 ? 'row1' : 'row2');                                  
+                $class = (++$i % 2 ? 'row1' : 'row2');
                 if (   in_array($objResult->fields['id'], $arrayInstalledModules)
-                    || $objResult->fields['id'] == 6) {
+                    || $objResult->fields['id'] == 6 ||  $objResult->fields['id'] == 101 ||  $objResult->fields['id'] == 102) {
                     $moduleStatusLink = $objResult->fields['is_active'] 
                                         ? sprintf($statusLink, (int) $objResult->fields['id'], 0, sprintf($statusIcon, 'led_green.gif'))
                                         : sprintf($statusLink, (int) $objResult->fields['id'], 1, sprintf($statusIcon, 'led_red.gif'));
@@ -253,7 +253,7 @@ class ComponentManager
                     $literalName = ucfirst($objResult->fields['name']);
                 }
                 
-                if (!in_array($objResult->fields['name'], array('Agb', 'Error', 'Home', 'Ids', 'Imprint', 'Login', 'Privacy', 'Search', 'Sitemap'))   
+                if (!in_array($objResult->fields['name'], array('Agb', 'Error', 'Home', 'Ids', 'Imprint', 'Login', 'Privacy', 'Search', 'Sitemap'))
                     && (   in_array($objResult->fields['id'], $arrayInstalledModules)
                         || $objResult->fields['id'] == 6)
                     ) {
