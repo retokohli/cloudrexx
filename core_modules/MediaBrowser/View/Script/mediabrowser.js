@@ -253,7 +253,7 @@
             };
 
             $scope.createFolder = function () {
-                bootbox.prompt("Verzeichnisname:", function (dirName) {
+                bootbox.prompt(cx.variables.get('TXT_FILEBROWSER_DIRECTORY_NAME','mediabrowser'), function (dirName) {
                     if (dirName === null) {
 
                     } else {
@@ -499,19 +499,19 @@
                     '<div class="file-dot">.</div>' +
                     '<div class="file-extension"><input type="text" class="form-control" value="' + fileExtension + '" disabled/></div>  </div>';
                 bootbox.dialog({
-                    title: "Datei umbennenen",
+                    title: cx.variables.get('TXT_FILEBROWSER_FILE_RENAME', 'mediabrowser'),
                     message: renameForm,
                     buttons: {
 
                         danger: {
-                            label: "Abbrechen",
+                            label: cx.variables.get('TXT_FILEBROWSER_CANCEL', 'mediabrowser'),
                             className: "btn-danger",
                             callback: function () {
 
                             }
                         },
                         success: {
-                            label: "Umbenennen",
+                            label: cx.variables.get('TXT_FILEBROWSER_FILE_RENAME', 'mediabrowser'),
                             className: "btn-success",
                             callback: function () {
                                 var newName = $('#mediabrowser-renamefile .file-name input').val();
@@ -549,7 +549,7 @@
 
             $scope.removeFile = function (file, index) {
                 bootbox.dialog({
-                    title: "Datei löschen",
+                    title: cx.variables.get('TXT_FILEBROWSER_FILE_REMOVE_FILE', 'mediabrowser'),
                     message: cx.variables.get('TXT_FILEBROWSER_ARE_YOU_SURE', 'mediabrowser'),
                     buttons: {
                         danger: {

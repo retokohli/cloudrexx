@@ -11,16 +11,19 @@
             <div class="uploadPlatform uploadStart">
                 <i class="icon-dropzone"></i>
 
-                <div class="dropzoneText1">Datei hierher ziehen</div>
-                <div class="dropzoneText2">- oder -</div>
-                <button type="submit" id="selectFileFromComputer" class="btn btn-default">Bild vom Computer auswählen
+                <div class="dropzoneText1">
+                    {{ 'TXT_FILEBROWSER_DRAG_TO_UPLOADER' | translate }}
+                </div>
+                <div class="dropzoneText2">-
+                    {{ 'TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR' | translate }} -</div>
+                <button type="submit" id="selectFileFromComputer" class="btn btn-default">{{ 'TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK' | translate }}
                 </button>
             </div>
             <div class="uploadlist">
                 <table class="table">
                     <tr>
                         <td colspan="3">
-                            Name
+                            {{ 'TXT_FILEBROWSER_FILE_NAME' | translate }}
                         </td>
                     </tr>
                     <tr data-ng-repeat="file in uploaderData.filesToUpload">
@@ -34,7 +37,7 @@
                         </td>
                         <td class="text-right table-action">
                             <a href="#" data-ng-click="removeFile(file)" data-ng-show="file.percent != 100">
-                                {{ 'TXT_FILEBROWSER_FILE_REMOVE' | translate }}
+
                             </a>
                         </td>
                     </tr>
@@ -42,18 +45,18 @@
             </div>
             <div style="display: none;" class="uploadPlatform uploadFilesAdded">
                 <img src="../core_modules/MediaBrowser/View/Media/ajax_loader_gray_128.gif" alt=""/>
-                <div class="dropzoneText2">Contrexx lädt die Dateien für Sie hoch...</div><br />
+                <div class="dropzoneText2"> {{ 'TXT_FILEBROWSER_UPLOAD_WATING' | translate }}</div><br />
                 <!--<button type="submit" id="uploadInterrupt" class="btn btn-default">Upload abbrechen</button>-->
             </div>
             <div class="successfulUpload" data-ng-show="finishedUpload">
-                <div>Contrexx hat alle Dateien hochgeladen.</div><br />
+                <div>{{ 'TXT_FILEBROWSER_UPLOAD_FINISHED' | translate }} </div><br />
             </div>
         </div>
     </div>
     <div class="tabMediaBrowserFooter">
         <button type="submit" class="btn btn-primary" data-ng-click="cancel()"> {{ 'TXT_FILEBROWSER_CANCEL' | translate }}</button>
         <button  data-ng-show="!finishedUpload" type="submit" class="btn btn-primary" data-ng-click="startUpload()"
-                data-ng-class="uploaderData.filesToUpload.length > 0 ? 'visible' : 'hidden'">Upload starten
+                data-ng-class="uploaderData.filesToUpload.length > 0 ? 'visible' : 'hidden'">{{ 'TXT_FILEBROWSER_UPLOAD_BUTTON' | translate }}
         </button>
     </div>
 </div>
