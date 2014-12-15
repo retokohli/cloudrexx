@@ -12,6 +12,9 @@
         width: 100%;
         text-align: center;
     }
+    .egov-desc input#CalDate {
+        width: auto;
+    }
     body .searchbox, body .directorySearch input[name='term'], body #regkey, body #podcast_category_menu {
         width: 58%;
     }

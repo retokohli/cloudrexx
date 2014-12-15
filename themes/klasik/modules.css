@@ -130,6 +130,7 @@ label[for="access_user_tos"] {
 form input[type="submit"] {
     margin-right: 10px;
     float: left;
+    width: auto;
 }
 #calendarform input[type="submit"] {
     width: auto !important;
@@ -238,7 +239,6 @@ table tr.marketRow2 {
 }
 table tr.row2,
 table tr.marketRow3 {
-    background-color: #F6F6F6;
     padding: 0;    
 }
 #tagelement td {
@@ -1538,13 +1538,13 @@ form[name="registrationForm"] .row {
 }
 .ecardColumn1, .ecardPreviewMessage, .ecardPreviewData, .livecamSearch input {
     margin-bottom: 10px;
+    width: auto;
 }
 /***************************************************/
 /* CSS DEFINITIONS FOR LIVECAM MODULE               */
 /***************************************************/
 .livecamSearch {
     position: relative;
-    white-space: nowrap;
 }
 #livecam a img {
     width: 90%;
@@ -2586,7 +2586,7 @@ td ul {
     float: left;
     width: 100%;
 }
-#checkout form #buttons input {
+#checkout form #buttons input, input#male, input#female {
     width: auto;
 }
 /***************************/
@@ -2917,6 +2917,7 @@ input[type="checkbox"] {
     margin: 4px 5px 0 0px;
     height: auto;
     line-height: normal;
+    width: auto;
 }
 .nav li > a:hover,
 .nav li > a:focus {
@@ -3051,7 +3052,6 @@ fieldset .checkbox, fieldset .radio {
     float: left;
     width: 100%;
     margin-bottom: 70px;
-
 }
 #home-headlines img {
     float: left;

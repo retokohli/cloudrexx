@@ -20,13 +20,11 @@
         $(window).scroll(function() {
             position = $(window).scrollTop();
             if (position > topDistance && !inside) {
-
                 topbarML();
                 $('.header').bind('mouseenter', topbarME);
                 $('.header').bind('mouseleave', topbarML);
                 inside = true;
             }
-
             else if (position < topDistance) {
                 topbarME();
                 $('.header').unbind('mouseenter', topbarME);

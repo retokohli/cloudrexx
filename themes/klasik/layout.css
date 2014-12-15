@@ -1,5 +1,5 @@
 /*ul li*/
-#news, .ersteUl li, .horizontal-list, #subnavbar2 li, #news li, .blogTagHitlist li, #subnavigation li, #navigation li, .blogCategoriesList, #news_archive_months_list, #news_archive_list li {
+#sitemap ul, #news, .ersteUl li, .horizontal-list, #subnavbar2 li, #news li, .blogTagHitlist li, #subnavigation li, #navigation li, .blogCategoriesList, #news_archive_months_list, #news_archive_list li {
     list-style: none;
 }
 #fe_toolbar {
@@ -214,7 +214,7 @@ body #contactFrame label {
     display: block;
     height: 130px;
 }
-.subpage-content {padding-bottom: 90px;}
+.subpage-content, .shop {padding-bottom: 90px;}
 #contactFrame .contact.row.form-group {
     margin-bottom: 0;
     padding: 0;

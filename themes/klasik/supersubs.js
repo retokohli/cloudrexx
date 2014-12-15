@@ -13,9 +13,7 @@
  * to the jQuery Google Group with the word 'Superfish' in the subject line.
  *
  */
-
 ;(function($){ // $ will refer to jQuery within this closure
-
 	$.fn.supersubs = function(options){
 		var opts = $.extend({}, $.fn.supersubs.defaults, options);
 		// return original object to support chaining
@@ -78,7 +76,6 @@
 					$childUl.css(offsetDirection,'100%');
 				});
 			}).hide();
-			
 		});
 	};
 	// expose defaults
@@ -87,5 +84,4 @@
 		maxWidth		: 25,		// requires em unit.
 		extraWidth		: 0			// extra width can ensure lines don't sometimes turn over due to slight browser differences in how they round-off values
 	};
-	
 })(jQuery); // plugin code ends
