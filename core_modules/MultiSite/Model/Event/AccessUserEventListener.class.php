@@ -106,26 +106,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                             throw new \Exception('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
 
-                        //get user's profile details
-                        $objUser->objAttribute->first();
-                        while (!$objUser->objAttribute->EOF) {
-                            $arrUserDetails[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-                            $objUser->objAttribute->next();
-                        }
-                        //get user's other details
-                        $params = array(
-                            'multisite_user_profile_attribute'          => $arrUserDetails,
-                            'multisite_user_account_username'           => $objUser->getUsername(),
-                            'multisite_user_account_email'              => $objUser->getEmail(),
-                            'multisite_user_account_frontend_language'  => $objUser->getFrontendLanguage(),
-                            'multisite_user_account_backend_language'   => $objUser->getBackendLanguage(),
-                            'multisite_user_account_email_access'       => $objUser->getEmailAccess(),
-                            'multisite_user_account_profile_access'     => $objUser->getProfileAccess(),
-                            'multisite_user_account_verified'           => $objUser->isVerified(),
-                            'multisite_user_account_restore_key'        => $objUser->getRestoreKey(),
-                            'multisite_user_account_restore_key_time'   => $objUser->getRestoreKeyTime(),
-                            'multisite_user_md5_password'               => $objUser->getHashedPassword(),
-                        );
+                        $params = self::fetchUserData($objUser);
                         try {
                             $objJsonData = new \Cx\Core\Json\JsonData();
                             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'updateUser', 'params' => $params));
@@ -209,27 +190,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         \DBG::msg('MultiSite (AccessUserEventListener): postUpdate');
         
         $objUser = $eventArgs->getEntity();
-        //get user's profile details
-        $objUser->objAttribute->first();
-        while (!$objUser->objAttribute->EOF) {
-            $arrUserDetails[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-            $objUser->objAttribute->next();
-        }
-        //get user's other details
-        $params = array(
-            'userId'                                    => $objUser->getId(),
-            'multisite_user_profile_attribute'          => $arrUserDetails,
-            'multisite_user_account_username'           => $objUser->getUsername(),
-            'multisite_user_account_email'              => $objUser->getEmail(),
-            'multisite_user_account_frontend_language'  => $objUser->getFrontendLanguage(),
-            'multisite_user_account_backend_language'   => $objUser->getBackendLanguage(),
-            'multisite_user_account_email_access'       => $objUser->getEmailAccess(),
-            'multisite_user_account_profile_access'     => $objUser->getProfileAccess(),
-            'multisite_user_account_verified'           => $objUser->isVerified(),
-            'multisite_user_account_restore_key'        => $objUser->getRestoreKey(),
-            'multisite_user_account_restore_key_time'   => $objUser->getRestoreKeyTime(),
-            'multisite_user_md5_password'               => $objUser->getHashedPassword(),
-        );
+        $params = self::fetchUserData($objUser);
         try {
             $objJsonData = new \Cx\Core\Json\JsonData();
             switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
@@ -268,6 +229,34 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
+    }
+
+    public static function fetchUserData($objUser) {
+        //get user's profile details
+        $objUser->objAttribute->first();
+        $arrUserDetails = array();
+        while (!$objUser->objAttribute->EOF) {
+            $arrUserDetails[$objUser->objAttribute->getId()][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
+            $objUser->objAttribute->next();
+        }
+        //get user's other details
+        $params = array(
+            'multisite_user_profile_attribute'          => $arrUserDetails,
+            'multisite_user_account_username'           => $objUser->getUsername(),
+            'multisite_user_account_email'              => $objUser->getEmail(),
+            'multisite_user_account_frontend_language'  => $objUser->getFrontendLanguage(),
+            'multisite_user_account_backend_language'   => $objUser->getBackendLanguage(),
+            'multisite_user_account_email_access'       => $objUser->getEmailAccess(),
+            'multisite_user_account_profile_access'     => $objUser->getProfileAccess(),
+            'multisite_user_account_verified'           => $objUser->isVerified(),
+            'multisite_user_account_restore_key'        => $objUser->getRestoreKey(),
+            'multisite_user_account_restore_key_time'   => $objUser->getRestoreKeyTime(),
+            'multisite_user_md5_password'               => $objUser->getHashedPassword(),
+        );
+        if ($objUser->getId()) {
+            $params['userId'] = $objUser->getId();
+        }
+        return $params;
     }
     
     public function onEvent($eventName, array $eventArgs) {        
