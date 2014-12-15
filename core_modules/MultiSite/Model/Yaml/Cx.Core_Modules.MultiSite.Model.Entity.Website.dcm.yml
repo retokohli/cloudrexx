@@ -73,3 +73,10 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       joinColumn:
         name: mailServiceServerId
         referencedColumnName: id
+    websiteCollection:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection
+      inversedBy: websites
+      joinColumn:
+        name: websiteCollectionId
+        referencedColumnName: id
+        

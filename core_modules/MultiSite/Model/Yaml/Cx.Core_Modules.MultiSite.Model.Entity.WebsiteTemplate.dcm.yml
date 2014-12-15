@@ -30,4 +30,10 @@ Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate:
         name: website_service_server_id
         referencedColumnName: id
         cascade: [remove]
+    websiteCollection:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection
+      inversedBy: websiteTemplates
+      joinColumn:
+        name: websiteCollectionId
+        referencedColumnName: id
 

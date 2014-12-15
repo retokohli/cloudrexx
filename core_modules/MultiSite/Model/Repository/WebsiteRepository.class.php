@@ -55,18 +55,8 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
     }
     
     public function findOneForSale($productOptions, $saleOptions) {
-        $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
-        $websiteName = $saleOptions['websiteName'];
-        $websiteServiceServer = null;
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
-            //get default service server
-            $defaultWebsiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer')));
-            $websiteServiceServer = $defaultWebsiteServiceServer[0];
-        }
-        $objUser = $saleOptions['customer'];
         $websiteThemeId = isset($saleOptions['themeId']) ? $saleOptions['themeId'] : null;
-        $website = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false, $websiteThemeId);
+        $website = $this->initWebsite($saleOptions['websiteName'], $saleOptions['customer'], $websiteThemeId);
         \Env::get('em')->persist($website);
         // flush $website to database -> subscription will need the ID of $website
         // to properly work
@@ -168,6 +158,32 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
             $websites = array();
         }
         return $websites;
+    }
+    
+    /**
+     * Initializing the website
+     * 
+     * @param string $websiteName
+     * @param \User $objUser
+     * @param integer $websiteThemeId
+     * @return \Cx\Core_Modules\MultiSite\Model\Entity\Website
+     */
+    public function initWebsite($websiteName = '', \User $objUser = null, $websiteThemeId = 0) {
+        if (empty($websiteName)) {
+            return;
+        }
+        
+        $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $websiteServiceServer = null;
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
+            //get default service server
+            $defaultWebsiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
+            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer')));
+            $websiteServiceServer = $defaultWebsiteServiceServer[0];
+        }
+        
+        $website = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false, $websiteThemeId);
+        return $website;
     }
 }
 

@@ -131,6 +131,12 @@ class Website extends \Cx\Model\Base\EntityBase {
      */
     protected $mailAccountId;
     
+    /**
+     *
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection
+     */
+    protected $websiteCollection;
+    
     /*
      * Constructor
      * */
@@ -1661,6 +1667,26 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function setMailAccountId($mailAccountId)
     {
         $this->mailAccountId = $mailAccountId;
+    }
+    
+    /**
+     * Get the WebsiteCollection
+     * 
+     * @return $websiteCollection
+     */
+    public function getWebsiteCollection()
+    {
+        return $this->websiteCollection;
+    }
+    
+    /**
+     * Set the Website Collection
+     * 
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection
+     */
+    public function setWebsiteCollection(WebsiteCollection $websiteCollection)
+    {
+        $this->websiteCollection = $websiteCollection;
     }
     
     /**

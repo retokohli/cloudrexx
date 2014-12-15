@@ -48,6 +48,13 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
     protected $licenseMessage;
     
     /**
+     * websiteCollection
+     * 
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection
+     */
+    protected $websiteCollection;
+    
+    /**
      * Constructor
      */
     public function __construct() {}
@@ -172,4 +179,23 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
         return $this->licenseMessage;
     }
 
+    /**
+     * Get the WebsiteCollection
+     * 
+     * @return $websiteCollection
+     */
+    public function getWebsiteCollection()
+    {
+        return $this->websiteCollection;
+    }
+    
+    /**
+     * Set the Website Collection
+     * 
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection
+     */
+    public function setWebsiteCollection(WebsiteCollection $websiteCollection)
+    {
+        $this->websiteCollection = $websiteCollection;
+    }   
 }

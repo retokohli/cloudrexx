@@ -1,0 +1,21 @@
+Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\WebsiteCollectionRepository
+  table: core_module_multisite_website_collection
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    quota:
+      type: integer
+
+  oneToMany: # inverse side
+    websites:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
+      mappedBy: websiteCollection
+    websiteTemplates:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate
+      mappedBy: websiteCollection
+
