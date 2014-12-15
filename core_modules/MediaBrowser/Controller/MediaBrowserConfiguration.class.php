@@ -43,6 +43,7 @@ class MediaBrowserConfiguration
             'calendar' => 'TXT_CALENDAR',
             'podcast' => 'TXT_FILEBROWSER_PODCAST',
             'blog' => 'TXT_FILEBROWSER_BLOG',
+            'Wysiwyg'   => 'TXT_FILEBROWSER_WYSIWYG',
         );
 
     public $mediaTypePaths;
@@ -125,6 +126,10 @@ class MediaBrowserConfiguration
             'blog' => array(
                 $this->cx->getWebsiteImagesBlogPath(),
                 $this->cx->getWebsiteImagesBlogWebPath(),
+            ),
+            'Wysiwyg' => array(
+                $this->cx->getWebsiteImagesPath().'/wysiwyg',
+                $this->cx->getWebsiteImagesWebPath().'/wysiwyg',
             ),
         );
     }
