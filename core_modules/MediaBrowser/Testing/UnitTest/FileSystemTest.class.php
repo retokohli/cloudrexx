@@ -12,6 +12,7 @@
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Testing\UnitTest;
+use Cx\Core\Core\Controller\Cx;
 use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
 
 /**
@@ -34,10 +35,11 @@ class FileSystemTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 
     public function testSubdirectoryCheck()
     {
-        $this->assertTrue(FileSystem::isSubdirectory('/home/robin/Web/trunk/subfolder/images', 'files/'));
-        $this->assertTrue(FileSystem::isSubdirectory('/home/robin/Web/trunk/subfolder/media', 'media2/'));
-        $this->assertFalse(FileSystem::isSubdirectory('/home/robin/Web/trunk/subfolder/media', 'files/'));
-        $this->assertFalse(FileSystem::isSubdirectory('/home/robin/Web/trunk/subfolder/images', 'media5/'));
+        $cx = Cx::instanciate();
+        $this->assertTrue(FileSystem::isSubdirectory($cx->getWebsitePath().'/images', 'files/'));
+        $this->assertTrue(FileSystem::isSubdirectory($cx->getWebsitePath().'/media', 'media2/'));
+        $this->assertFalse(FileSystem::isSubdirectory($cx->getWebsitePath().'/media', 'files/'));
+        $this->assertFalse(FileSystem::isSubdirectory($cx->getWebsitePath().'/images', 'media5/'));
     }
 
 
