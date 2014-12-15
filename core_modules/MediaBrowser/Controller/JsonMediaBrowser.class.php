@@ -78,14 +78,18 @@ class JsonMediaBrowser implements JsonAdapter
     {
         global $_ARRAYLANG, $_CORELANG;
         $mediaBrowser = MediaBrowserConfiguration::getInstance();
+
+        \Env::get('init')->loadLanguageData('MediaBrowser');
         // standard
+
+
         $return[] = array(
-            'name' => 'Dateien',
+            'name' => $_ARRAYLANG['TXT_FILEBROWSER_FILES'],
             'value' => 'files',
             'path' => array_values(
                 array_filter(
                     explode(
-                        '/', $mediaBrowser->mediaTypePaths['files'][1]
+                        '/', $mediaBrowser->getMediaTypePathsbyNameAndOffset('files', 1)
                     )
                 )
             )
@@ -93,7 +97,7 @@ class JsonMediaBrowser implements JsonAdapter
 
         \Env::get('init')->loadLanguageData('FileBrowser');
         foreach (
-            $mediaBrowser->mediaTypes as $type =>
+            $mediaBrowser->getMediaTypes() as $type =>
             $name
         ) {
             if (!$this->_checkForModule($type)) {
@@ -109,7 +113,7 @@ class JsonMediaBrowser implements JsonAdapter
                 'path' => array_values(
                     array_filter(
                         explode(
-                            '/', $mediaBrowser->mediaTypePaths[$type][1]
+                            '/', $mediaBrowser->getMediaTypePathsbyNameAndOffset($type,1)
                         )
                     )
                 )
@@ -140,10 +144,11 @@ class JsonMediaBrowser implements JsonAdapter
 
         if (array_key_exists(
             $this->_mediaType,
-            MediaBrowserConfiguration::getInstance()->mediaTypePaths
+            MediaBrowserConfiguration::getInstance()->getMediaTypePaths()
         )) {
             $strPath = MediaBrowserConfiguration::getInstance(
-                )->mediaTypePaths[$this->_mediaType][0] . $this->_path;
+                )->getMediaTypePaths();
+             $strPath=    $strPath[$this->_mediaType][0] . $this->_path;
         } else {
             $strPath = $this->cx->getWebsiteImagesPath() . $this->_path;
         }

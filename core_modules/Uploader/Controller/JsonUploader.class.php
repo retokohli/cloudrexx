@@ -91,7 +91,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $mediaBrowserConfiguration
                 = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::getInstance(
             );
-            $path = $mediaBrowserConfiguration->mediaTypePaths[$path_part[0]][1]
+            $path = $mediaBrowserConfiguration->getMediaTypePathsbyNameAndOffset($path_part[0],1)
                 . '/' . $path_part[1];
             $tmpPath = $_SESSION->getTempPath();
         } else {
@@ -188,10 +188,10 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         $mediaBrowserConfiguration
             = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::getInstance(
         );
-        $mediaBrowserConfiguration->mediaTypes;
+        $mediaBrowserConfiguration->getMediaTypes();
         $pathArray = explode('/', $params['get']['path']);
         $strPath = MediaBrowserConfiguration::getInstance(
-        )->mediaTypePaths[array_shift($pathArray)][0];
+        )->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0);
 
 
         $strPath .= '/' . join('/', $pathArray);
@@ -246,7 +246,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         }
         \Env::get('init')->loadLanguageData('MediaBrowser');
         $strPath = MediaBrowserConfiguration::getInstance(
-        )->mediaTypePaths[rtrim($params['get']['path'], "/")][0];
+        )->getMediaTypePathsbyNameAndOffset(rtrim($params['get']['path'], "/"),0);
 
         $fileDot = '.';
         if (is_dir($strPath . '/' . $params['post']['oldName'])) {

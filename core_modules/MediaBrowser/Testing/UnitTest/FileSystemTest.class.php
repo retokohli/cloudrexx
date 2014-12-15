@@ -32,9 +32,12 @@ class FileSystemTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
         $this->assertTrue(!FileSystem::isVirtualPath('/var/www/contrexx/images/content/Movies'));
     }
 
-    public function testCreateDirectory()
+    public function testSubdirectoryCheck()
     {
-
+        $this->assertTrue(FileSystem::isSubdirectory('/home/robin/Web/trunk/subfolder/images', 'files/'));
+        $this->assertTrue(FileSystem::isSubdirectory('/home/robin/Web/trunk/subfolder/media', 'media2/'));
+        $this->assertFalse(FileSystem::isSubdirectory('/home/robin/Web/trunk/subfolder/media', 'files/'));
+        $this->assertFalse(FileSystem::isSubdirectory('/home/robin/Web/trunk/subfolder/images', 'media5/'));
     }
 
 

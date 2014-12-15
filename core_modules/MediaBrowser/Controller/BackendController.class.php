@@ -72,7 +72,7 @@ class BackendController extends
         $uploader->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );
-        $uploader->setOptions(array('data-on-file-uploaded' => 'callback3'));
+        $uploader->setCallback('callback3');
         $template->setVariable(
             'UPLOADER_CODE', $uploader->getXHtml('Open Uploader 1')
         );
