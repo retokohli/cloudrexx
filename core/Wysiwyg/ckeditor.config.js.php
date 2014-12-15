@@ -9,7 +9,7 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
 }
 
 require_once($contrexx_path . '/core/Core/init.php');
-init('minimal');
+$cx = init('minimal');
 
 $sessionObj = \cmsSession::getInstance();
 $_SESSION->cmsSessionStatusUpdate('backend');
@@ -26,9 +26,8 @@ $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
 
 $defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
 
-
 ?>
-CKEDITOR.scriptLoader.load( '<?php ASCMS_PATH_OFFSET ?>/core_modules/MediaBrowser/View/Script/ckeditor-mediabrowser.js' );
+CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/ckeditor-mediabrowser.js'   ?>' );
 CKEDITOR.editorConfig = function( config )
 {
     config.skin = 'moono';
