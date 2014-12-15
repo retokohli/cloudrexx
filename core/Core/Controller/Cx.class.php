@@ -482,7 +482,6 @@ namespace Cx\Core\Core\Controller {
         protected $websiteMediaarchive2Path;
         protected $websiteMediaarchive4Path;
         protected $websiteMediaarchive3Path;
-        protected $websiteMediaarchive5Path;
         protected $websiteImagesContentWebPath;
         protected $websiteImagesAttachWebPath;
         protected $websiteImagesShopWebPath;
@@ -497,7 +496,6 @@ namespace Cx\Core\Core\Controller {
         protected $websiteMediaarchive2WebPath;
         protected $websiteMediaarchive3WebPath;
         protected $websiteMediaarchive4WebPath;
-        protected $websiteMediaarchive5WebPath;
 
         protected $websiteImagesPath;
         protected $websiteImagesWebPath;
@@ -2415,9 +2413,8 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive4Path
                 = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
                 . '/archive4';
-            $this->websiteMediaarchive5Path
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
-                . '/archive5';
+
+
 
             $this->websiteImagesContentWebPath
                 = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
@@ -2461,9 +2458,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive4WebPath
                 = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
                 . '/archive4';
-            $this->websiteMediaarchive5WebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
-                . '/archive5';
+
 
         }
 
@@ -2804,21 +2799,7 @@ namespace Cx\Core\Core\Controller {
             return $this->websiteMediaarchive4WebPath;
         }
 
-        /**
-         * @return string
-         */
-        public function getWebsiteMediaarchive5Path()
-        {
-            return $this->websiteMediaarchive5Path;
-        }
 
-        /**
-         * @return string
-         */
-        public function getWebsiteMediaarchive5WebPath()
-        {
-            return $this->websiteMediaarchive5WebPath;
-        }
 
         /**
          * @return string

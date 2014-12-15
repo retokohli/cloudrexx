@@ -188,17 +188,13 @@ class JsonMediaBrowser implements JsonAdapter
                     UploaderConfiguration::getInstance()->getThumbnails() as
                     $thumbnail
                 ) {
-
                     $thumbnails[$thumbnail['size']] = preg_replace(
                         '/\.' . lcfirst($extension) . '$/',
-
                         $thumbnail['value'] . '.' . lcfirst($extension),
-
                         $this->cx->getWebsiteOffsetPath() . str_replace(
                             $this->cx->getWebsitePath(), '',
                             $file->getRealPath()
                         )
-
                     );
                 }
                 $preview = current($thumbnails);
@@ -413,7 +409,7 @@ class JsonMediaBrowser implements JsonAdapter
                 }
                 return true;
             }
-            return false;
+            return true;
         }
         return true;
     }

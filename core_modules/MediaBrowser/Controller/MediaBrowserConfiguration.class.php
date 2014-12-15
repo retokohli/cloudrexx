@@ -16,6 +16,8 @@ use Cx\Lib\FileSystem\File;
 
 class MediaBrowserConfiguration
 {
+    const  WEB_PATH = 1;
+    const  PATH = 0;
 
     protected static $thumbnails;
 
@@ -95,9 +97,9 @@ class MediaBrowserConfiguration
                 $this->cx->getWebsiteMediaarchive4Path(),
                 $this->cx->getWebsiteMediaarchive4WebPath(),
             ),
-            'media5' => array(
-                $this->cx->getWebsiteMediaarchive5Path(),
-                $this->cx->getWebsiteMediaarchive5WebPath(),
+            'attach' => array(
+                $this->cx->getWebsiteImagesAttachPath(),
+                $this->cx->getWebsiteImagesAttachWebPath(),
             ),
             'shop' => array(
                 $this->cx->getWebsiteImagesShopPath(),
@@ -191,7 +193,7 @@ class MediaBrowserConfiguration
 
     public function getAllMediaTypePaths()
     {
-
+        return $this->allMediaTypePaths;
     }
 
     /**
