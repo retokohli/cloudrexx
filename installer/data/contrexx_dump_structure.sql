@@ -455,10 +455,21 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `ftpUser` varchar(200) default NULL,
   `mailServiceServerId` int(11) default NULL,
   `mailAccountId` int(11) default NULL,
+  `websiteCollectionId` int(11) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name_index` (`name`),
   KEY `mailServiceServerId` (`mailServiceServerId`),
-  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_1` FOREIGN KEY (`mailServiceServerId`) REFERENCES `contrexx_core_module_multisite_mail_service_server` (`id`)
+  KEY `IDX_7E722DC8F71CEE96` (`websiteCollectionId`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_1` FOREIGN KEY (`mailServiceServerId`) REFERENCES `contrexx_core_module_multisite_mail_service_server` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_2` FOREIGN KEY (`websiteCollectionId`) REFERENCES `contrexx_core_module_multisite_website_collection` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_website_collection` (
+  `id` int(11) NOT NULL auto_increment,
+  `quota` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -495,9 +506,12 @@ CREATE TABLE `contrexx_core_module_multisite_website_template` (
   `code_base` varchar(255) NOT NULL,
   `licensed_components` longtext NOT NULL,
   `license_message` longtext NOT NULL,
+  `websiteCollectionId` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `IDX_921321879A068FE9` (`website_service_server_id`),
-  CONSTRAINT `contrexx_core_module_multisite_website_template_ibfk_1` FOREIGN KEY (`website_service_server_id`) REFERENCES `contrexx_core_module_multisite_website_service_server` (`id`)
+  KEY `IDX_92132187F71CEE96` (`websiteCollectionId`),
+  CONSTRAINT `contrexx_core_module_multisite_website_template_ibfk_1` FOREIGN KEY (`website_service_server_id`) REFERENCES `contrexx_core_module_multisite_website_service_server` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_template_ibfk_2` FOREIGN KEY (`websiteCollectionId`) REFERENCES `contrexx_core_module_multisite_website_collection` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
