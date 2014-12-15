@@ -1,6 +1,6 @@
 Cx\Core\Wysiwyg\Model\Entity\Wysiwyg:
   type: entity
-  table: wysiwyg
+  table: core_wysiwyg_wysiwyg
   fields:
     id:
       id: true
