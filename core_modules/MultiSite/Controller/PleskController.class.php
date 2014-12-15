@@ -519,14 +519,15 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Create a subscription
      * 
-     * @param string $domain
-     * @param int $planId
-     * @param string $subscriptionStatus
-     * @param int $customerId default null
+     * @param string $domain             domain name
+     * @param int    $subscriptionStatus status
+     * @param int    $customerId         customer
+     * @param int    $planId             plan
      * 
-     * @return $response
+     * @return subscription id
      */
-    public function createSubscription($domain, $planId, $subscriptionStatus = 0, $customerId = null) {
+    public function createSubscription ($domain, $subscriptionStatus = 0, $customerId = null, $planId = null) 
+    {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);       
         $webspace = $xmldoc->createElement('webspace');
@@ -567,10 +568,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Remove a subscription
      * 
-     * @param int $subscriptionId
+     * @param int $subscriptionId subcription id
+     * 
      * @throws ApiRequestException on error
+     * 
+     * @return  id 
      */
-    function removeSubscription($subscriptionId){
+    function removeSubscription ($subscriptionId) 
+    {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $webspace = $xmldoc->createElement('webspace');
@@ -598,14 +603,16 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Create user account
      * 
-     * @param string $name
-     * @param string $role
-     * @param string $password
+     * @param string $name      name 
+     * @param string $password  password
+     * @param string $role      role of user
+     * @param int    $accountId account id
      * 
      * @return integer id
      * @throws ApiRequestException
      */
-    public function createUserAccount($name, $role, $password) {
+    public function createUserAccount($name, $password, $role = null, $accountId = null)
+    {
                 
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
@@ -623,6 +630,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $genInfo->appendChild($password);
         $name = $xmldoc->createElement('name', $name);
         $genInfo->appendChild($name);
+        $accountId = $xmldoc->createElement('subscription-domain-id', $accountId);
+        $genInfo->appendChild($accountId);
         /*--gen_info data End--*/
         
         $roles = $xmldoc->createElement('roles');
@@ -645,10 +654,13 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Delete user account
      * 
-     * @param int $userAccountId
+     * @param int $userAccountId user id
+     * 
+     * @return integer id
      * @throws ApiRequestException
      */
-    public function deleteUserAccount($userAccountId) {
+    public function deleteUserAccount($userAccountId) 
+    {
 
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
@@ -672,6 +684,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
         return $resultNode->id;          
     }
+    
     /**
      * Add DNS records
      * @param string    $type   DNS-Record type

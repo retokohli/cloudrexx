@@ -132,24 +132,29 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Create a subscription
      * 
-     * @param string $domain
-     * @param int $planId
-     * @param string $subscriptionStatus
-     * @param int $customerId defaut null
+     * @param string $domain             domain name
+     * @param string $subscriptionStatus status
+     * @param int    $customerId         customer id
+     * @param int    $planId             plan
+     * 
      * @return null
      */
-    public function createSubscription($domain, $planId, $subscriptionStatus = 0, $customerId = null){
-        \DBG::msg("MultiSite (XamppController): create a subscription: $domain / $planId / $subscriptionStatus / $customerId");
+    public function createSubscription($domain, $subscriptionStatus = 0, $customerId = null, $planId = null)
+    {
+        \DBG::msg("MultiSite (XamppController): create a subscription: $domain / $subscriptionStatus / $customerId /$planId");
         return null;
     }
     
     /**
      * Removes a subscription
      * 
-     * @param int $subscriptionId
+     * @param int $subscriptionId id
+     * 
+     * @return null
      * @throws MultiSiteDbException On error
      */
-    public function removeSubscription($subscriptionId){
+    public function removeSubscription($subscriptionId)
+    {
         \DBG::msg("MultiSite (XamppController): remove a subscription: $subscriptionId");
         return null;
     }
@@ -157,23 +162,28 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Create user account
      * 
-     * @param string $name
-     * @param string $role
-     * @param string $password
+     * @param string $name      name
+     * @param string $password  password
+     * @param string $role      user role
+     * @param int    $accountId account id
+     * 
      * @return null
      */
-    public function createUserAccount($name, $role, $password){
-        \DBG::msg("MultiSite (XamppController): create user account: $name / $role / $password");
+    public function createUserAccount($name, $password, $role = null, $accountId = null)
+    {
+        \DBG::msg("MultiSite (XamppController): create user account: $name / $password / $role / $accountId");
         return null;
     }
     
     /**
      * Delete user account
      * 
-     * @param int $userAccountId
+     * @param int $userAccountId user id
+     * 
      * @return null
      */
-    public function deleteUserAccount($userAccountId) {
+    public function deleteUserAccount($userAccountId)
+    {
         \DBG::msg("MultiSite (XamppController): delete user account: $userAccountId");
         return null;
     }

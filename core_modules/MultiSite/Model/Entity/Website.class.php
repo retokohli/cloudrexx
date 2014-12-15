@@ -1636,9 +1636,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
     /**
      * Set mail service server
      * 
-     * @param $mailServiceServer
+     * @param mixed Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer | null
      */
-    public function setMailServiceServer(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer)
+    public function setMailServiceServer($mailServiceServer)
     {
         $this->mailServiceServer = $mailServiceServer;
     }

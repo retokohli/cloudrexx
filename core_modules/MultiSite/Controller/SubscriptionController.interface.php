@@ -17,38 +17,42 @@ interface SubscriptionController {
     /**
      * Creates a subscription
      * 
-     * @param string $domain
-     * @param int $planId
-     * @param string $subscriptionStatus
-     * @param int $customerId
+     * @param string  $domain
+     * @param integer $subscriptionStatus
+     * @param integer $customerId default null
+     * @param integer $planId default null
      * 
      * @return subcription id
      */
-    public function createSubscription($domain, $planId, $subscriptionStatus = 0, $customerId = null);
+    public function createSubscription($domain, $subscriptionStatus = 0, $customerId = null, $planId = null);
     
     /**
      * Removes a subscription
      * 
      * @param int $subscriptionId
+     * 
      * @throws MultiSiteDbException On error
      */
     public function removeSubscription($subscriptionId);
     
      /**
      * Creates a user account
-      * 
-     * @param string $domain
-     * @param string $role
-     * @param string $password
-     * @return 
+     * 
+     * @param string  $domain
+     * @param string  $password
+     * @param string  $role
+     * @param integer $accountId
+     * 
+     * @return id
      */
-    public function createUserAccount($domain, $role, $password);
+    public function createUserAccount($domain, $password, $role = null, $accountId = null);
     
     /**
      * Delete a user account
      * 
      * @param $userAccountId
-     * @return 
+     * 
+     * @return id 
      */
     public function deleteUserAccount($userAccountId);
 

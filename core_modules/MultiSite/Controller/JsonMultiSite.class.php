@@ -2986,11 +2986,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Create the mail service account
      * 
      * @param array $params
+     * 
      * @return boolean
      * 
      * @throws MultiSiteJsonException
      */    
-    public function createMailServiceAccount($params) {
+    public function createMailServiceAccount($params)
+    {
         if (empty($params['post']['websiteId'])) {
             throw new MultiSiteJsonException('JsonMultiSite::createMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
@@ -3007,9 +3009,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $defaultMailServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')
                                                                ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer')));
                     $accountId = $defaultMailServiceServer->createAccount($website);
-                    $website->setMailAccountId($accountId);
-                    \Env::get('em')->flush();
-                    return array('status' => 'success');
+                    if ($accountId) {
+                        $website->setMailAccountId($accountId);
+                        \Env::get('em')->flush();
+                        return array('status' => 'success', 'message' => 'JsonException::createMailServiceAccount() failed: mail subscribtion created successfully.');
+                    } else {
+                        return array('status' => 'error', 'message' => 'JsonException::createMailServiceAccount() failed: mail subscribtion not created.');
+                    }
                     break;
 
                 case ComponentController::MODE_WEBSITE:
@@ -3034,11 +3040,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Delete the mail service account
      * 
      * @param array $params
+     * 
      * @return boolean
      * 
      * @throws MultiSiteJsonException
      */
-    public function deleteMailServiceAccount($params) {
+    public function deleteMailServiceAccount($params)
+    {
         if (empty($params['post']['websiteId'])) {
             throw new MultiSiteJsonException('JsonMultiSite::deleteMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
@@ -3051,11 +3059,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (!$website) {
                         throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: Unkown Website-ID: '.$params['post']['websiteId']);
                     }
-                    $accountId = $website->getMailAccountId();
-                    if (!empty($accountId)) {
-                        $mailServiceServer = $website->getMailServiceServer();
-                        $mailServiceServer->deleteAccount($accountId);
-                        //TODO remove the association between website and mail service server
+                    
+                    $mailServiceServer = $website->getMailServiceServer();
+                    if (!$mailServiceServer) {
+                        throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: mail service server is not set.');
+                    }
+                    
+                    if (!$website->getMailAccountId()) {
+                        throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: mail account id is not set.');
+                    }
+                    
+                    if ($mailServiceServer->deleteAccount($website->getMailAccountId())) {
+                        $mailServiceServer->removeWebsite($website);
+                        $website->setMailAccountId(null);
+                        $website->setMailServiceServer(null);
+                        \Env::get('em')->flush();
+                        return array('status' => 'success', 'message' => 'JsonException::createMailServiceAccount() failed: mail subscribtion deleted successfully.');
+                    } else {
+                        return array('status' => 'error', 'message' => 'JsonException::deleteMailServiceAccount() failed: mail subscribtion not deleted.');
                     }
                     break;
 

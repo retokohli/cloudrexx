@@ -808,38 +808,24 @@ throw new MultiSiteException('Refactor this method!');
     }
 
     /**
+     * Get mail service server hosting controller
      * 
-     * @global array $_DBCONFIG
-     * 
-     * @param string $host
-     * @param string $login
-     * @param string $password
+     * @param object \Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer
      * 
      * @return $hostingController
      */
     public static function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer) {
-        global $_DBCONFIG;
-
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         switch ($mailServiceServer->getType()) {
             case 'plesk':
-                $defaultMailServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')
-                                            ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer')));
-                $hostingController = new PleskController($defaultMailServiceServer->getHostname(), $defaultMailServiceServer->getAuthUsername() , $defaultMailServiceServer->getAuthPassword());
+                $hostingController = new PleskController($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword());
                 break;
 
             case 'xampp':
-                // initialize XAMPP controller with database of Website Manager
-                $dbObj = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
-                $dbUserObj = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
-                $hostingController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($dbObj, $dbUserObj); 
-                break;
-
             default:
                 throw new WebsiteException('Unknown MailController set!');    
                 break;
         }
-
         return $hostingController;
     }
     
