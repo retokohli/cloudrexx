@@ -201,4 +201,7 @@ $_ARRAYLANG['TXT_GALLERY_SINGLE_IMAGE_VIEW'] = "Single image view";
 $_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'] = "Show file names";
 $_ARRAYLANG['TXT_GALLERY_UNALLOWED_EXTENSION'] = "unallowed extension";
 $_ARRAYLANG['TXT_GALLERY_RESOLUTION_TOO_HIGH'] = "resolution too high";
-?>
+$_ARRAYLANG['TXT_GALLERY_UPLOAD_CONFIRM_IMAGES'] = "Confirm images";
+$_ARRAYLANG['TXT_GALLERY_UPLOAD_IMAGES'] = "Uploaded images";
+$_ARRAYLANG['TXT_GALLERY_UPLOAD_HELP'] = "<b>How can I import new images:</b><br/>
+    First upload the images with the upload images button. After the upload has finished, you can confirm the images by clicking on the confirm images button below, add titles and move them into a category.";
