@@ -22,9 +22,12 @@
                     <td class="actions"> 
                         <button type="button" class="manage" onclick="window.location.href = '{NODE_MULTISITE_SUBSCRIPTIONDETAIL}?id={MULTISITE_SUBSCRIPTION_ID}'">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
                         <!-- BEGIN showUpgradeButton --><button type="button" class="upgrade">{TXT_MULTISITE_UPGRADE}</button><!-- END showUpgradeButton -->
+                        <!-- BEGIN showAddWebsiteButton -->
                         <button type="button" class="add">{TXT_MULTISITE_ADD_NEW_WEBSITE}</button>
+                        <!-- END showAddWebsiteButton -->
                     </td>
                 </tr> 
+                <!-- BEGIN showWebsites -->
                 <tr class="website {MULTISITE_SUBSCRIPTION_ID}">
                     <td class="center"><span class="{MULTISITE_WEBSITE_STATE_CLASS}"><!-- --></span></td>
                     <td colspan="3">
@@ -43,7 +46,8 @@
                         <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
                         <!-- END showAdminButton -->
                     </td>
-                </tr>        
+                </tr>
+                <!-- END showWebsites -->
                 <!-- END showSiteDetails -->
             </tbody>
         </table>
