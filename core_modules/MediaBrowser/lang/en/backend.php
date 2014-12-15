@@ -15,7 +15,7 @@ global $_ARRAYLANG;
 
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER'] = "MediaBrowser";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_DESCRIPTION']
-    = "To manage files and sites innovative.";
+    = "A filebrowser for all contrexx applications.";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_DEFAULT'] = "Modal Tests";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_BROWSER'] = "MediaBrowser";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_DEFAULT'] = "Uploader";
