@@ -270,36 +270,44 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         if (!empty($orders)) {
                             $userId = \FWUser::getFWUserObject()->objUser->getId();
                             foreach ($orders as $order) {
-                                foreach ($order->getSubscriptions() as $subscription) {
-                                    $website = $subscription->getProductEntity();
+                                foreach ($order->getSubscriptions() as $subscription) {                                    
                                     $product = $subscription->getProduct();
-                                    if (!$website || !$product) {
+                                    if (!$product) {
                                         continue;
                                     }
                                     $objTemplate->setVariable(array(
                                         'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
                                         'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
-                                        
-                                        'MULTISITE_WEBSITE_NAME'         => contrexx_raw2xhtml($website->getName()),
-                                        'MULTISITE_WEBSITE_ID'           => contrexx_raw2xhtml($website->getId()),
-                                        'MULTISITE_WEBSITE_LINK'         => contrexx_raw2xhtml($this->getApiProtocol() . $website->getBaseDn()->getName()),
-                                        'MULTISITE_WEBSITE_BACKEND_LINK' => contrexx_raw2xhtml($this->getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
-                                        'MULTISITE_WEBSITE_PLAN'         => contrexx_raw2xhtml($product->getName()),
-                                        'MULTISITE_WEBSITE_INVOICE_DATE' => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
-                                        'MULTISITE_WEBSITE_EXPIRE_DATE'  => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',
-                                        'MULTISITE_WEBSITE_STATE_CLASS'  => $website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE ? 'active' : 'inactive',                                        
+                                        'MULTISITE_WEBSITE_PLAN'             => contrexx_raw2xhtml($product->getName()),
+                                        'MULTISITE_WEBSITE_INVOICE_DATE'     => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
+                                        'MULTISITE_WEBSITE_EXPIRE_DATE'      => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',                                        
                                     ));
+                                    
                                     if ($status == 'valid' && $objTemplate->blockExists('showUpgradeButton')) {
                                         $product->isUpgradable() ? $objTemplate->touchBlock('showUpgradeButton') : $objTemplate->hideBlock('showUpgradeButton');
                                     }
-                                    $websiteStatus = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) ? true : false;
-                                    self::showOrHideBlock($objTemplate, 'websiteLinkActive', $websiteStatus);
-                                    self::showOrHideBlock($objTemplate, 'websiteLinkInactive', !$websiteStatus);
-                                    self::showOrHideBlock($objTemplate, 'showAdminButton', ($websiteStatus && $website->getOwnerId() == $userId));
+                                    
+                                    if ($status != 'expired') {
+                                        $websiteCollection = $subscription->getProductEntity();
+                                        if ($websiteCollection) {
+                                            if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                                                foreach ($websiteCollection->getWebsites() as $website) {
+                                                    if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                                                        continue;
+                                                    }
+                                                    self::parseWebsiteDetails($objTemplate, $website);
+                                                    $objTemplate->parse('showWebsites');
+                                                }
+                                                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
+                                            } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                                                self::parseWebsiteDetails($objTemplate, $websiteCollection);
+                                            }
+                                        }                                        
+                                    }
                                     
                                     $objTemplate->parse('showSiteDetails');
                                 }
-                            }                            
+                            }
                         } else {
                             $objTemplate->hideBlock('showSiteTable');
                         }                        
@@ -374,26 +382,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             break;
                         }
 
-                        $website = $subscriptionObj->getProductEntity();
-
-                        if ($website) {
-                            $objTemplate->setVariable(array(
-                                'MULTISITE_WEBSITE_NAME' => contrexx_raw2xhtml($website->getName()),
-                                'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($website->getId()),
-                                'MULTISITE_WEBSITE_FRONTEND_LINK' => $this->getApiProtocol() . $website->getBaseDn()->getName(),
-                            ));
-                            $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
-                            
-                            self::showOrHideBlock($objTemplate, 'showAdminButton', ($status && $website->getOwnerId() == $userId));                                                        
-                            self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
-                            self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
-                            self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
-                            self::showOrHideBlock($objTemplate, 'showWebsites', true);
-                        } else {
-                            self::showOrHideBlock($objTemplate, 'showWebsites', false);
-                        }
-
-                        $objTemplate->setVariable(array(                            
+                        $objTemplate->setVariable(array(
                             'MULTISITE_WEBSITE_PRODUCT_NAME' => contrexx_raw2xhtml($product->getName()),
                             'MULTISITE_WEBSITE_SUBSCRIPTION_DATE' => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
                             'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => $subscriptionObj->getExpirationDate() ? contrexx_raw2xhtml($subscriptionObj->getExpirationDate()->format('d.m.Y')) : '',
@@ -401,6 +390,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         
                         self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
                         
+                        $websiteCollection = $subscriptionObj->getProductEntity();
+
+                        if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                            foreach ($websiteCollection->getWebsites() as $website) {
+                                if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                                    continue;
+                                }
+                                self::parseWebsiteDetails($objTemplate, $website);
+                                
+                                $objTemplate->parse('showWebsites');
+                            }
+                            self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
+                        } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                            self::parseWebsiteDetails($objTemplate, $websiteCollection);
+                        }
+                                                
                         echo $objTemplate->get();
                         break;
 
@@ -575,6 +580,34 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             default:
                 break;
         }
+    }
+
+    /**
+     * Parse the website details to the view page
+     * 
+     * @param \Cx\Core\Html\Sigma $objTemplate                         Template object
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website $website website object
+     */
+    public function parseWebsiteDetails(\Cx\Core\Html\Sigma $objTemplate, \Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
+    {
+        $userId = \FWUser::getFWUserObject()->objUser->getId();
+        
+        $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
+        $objTemplate->setVariable(array(
+            'MULTISITE_WEBSITE_NAME'          => contrexx_raw2xhtml($website->getName()),
+            'MULTISITE_WEBSITE_ID'            => contrexx_raw2xhtml($website->getId()),
+            'MULTISITE_WEBSITE_LINK'          => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()),
+            'MULTISITE_WEBSITE_BACKEND_LINK'  => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
+            'MULTISITE_WEBSITE_FRONTEND_LINK' => self::getApiProtocol() . $website->getBaseDn()->getName(),
+            'MULTISITE_WEBSITE_STATE_CLASS'   => $status ? 'active' : 'inactive',
+        ));
+        
+        self::showOrHideBlock($objTemplate, 'websiteLinkActive', $status);
+        self::showOrHideBlock($objTemplate, 'websiteLinkInactive', !$status);
+        self::showOrHideBlock($objTemplate, 'showAdminButton', ($status && $website->getOwnerId() == $userId));
+        self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
+        self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
+        self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);                
     }
 
     /**
