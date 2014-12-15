@@ -527,6 +527,17 @@ CREATE TABLE `contrexx_core_text` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_wysiwyg_wysiwyg` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `imagePath` varchar(255) NOT NULL,
+  `htmlContent` text,
+  `inactive` tinyint(4) NOT NULL
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `timestamp` int(14) default NULL,
