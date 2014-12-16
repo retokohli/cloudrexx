@@ -30,7 +30,7 @@ class LinkCrawlerControllerException extends \Exception {}
  * @subpackage  coremodule_linkmanager
  */
 
-class LinkCrawlerController {
+class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
     
     const TYPE_CONTENT     = 'content';
     const RUN_STATUS_INCOMPLETE = 'incomplete';
@@ -88,10 +88,21 @@ class LinkCrawlerController {
     /**
      * Constructor
      * 
-     * @param integer $langId
-     * @param string  $langName
+     * @param \Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController
+     * @param \Cx\Core\Core\Controller\Cx                          $cx
      */
-    public function __construct($langId, $langName) 
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) 
+    {
+        parent::__construct($systemComponentController, $cx);
+    }
+    
+    /**
+     * Load the Crawler
+     * 
+     * @param integer $langId
+     * @param string $langName
+     */
+    public function loadCrawler($langId, $langName)
     {
         $this->langId    = $langId;
         $this->langName  = $langName;
