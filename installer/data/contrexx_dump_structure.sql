@@ -542,13 +542,14 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_wysiwyg_wysiwyg` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `imagePath` varchar(255) NOT NULL,
   `htmlContent` text,
-  `inactive` tinyint(4) NOT NULL
-) ENGINE=MyISAM;
+  `inactive` tinyint(4) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
