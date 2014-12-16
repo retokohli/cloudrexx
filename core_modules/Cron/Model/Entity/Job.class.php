@@ -133,6 +133,9 @@ class Job extends \Cx\Model\Base\EntityBase {
      * @return boolean
      */
     public function execute() {
+        if (!$this->getActive()) {
+            return false;
+        }
             
         try {
             // check if cron job needs to be executed
@@ -148,7 +151,7 @@ class Job extends \Cx\Model\Base\EntityBase {
             return true;
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            return $e->getMessage();
+            throw $e;
         }
     }
 }

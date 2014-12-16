@@ -58,25 +58,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $command
      */
     public function executeCommand($command) {
-        $em                = $this->cx->getDb()->getEntityManager();
+        $em = $this->cx->getDb()->getEntityManager();
         
-        $this->cx->getEvents()->triggerEvent(
-            'SysLog/Add', array(
-            'severity'  => 'INFO', 
-            'message'   => 'Cron Execution Started',
-            'data'      => ' ',
-        ));
-        switch ($command) {
-            case 'Cron':
-              $cronJobs = $em->getRepository('Cx\Core_Modules\Cron\Model\Entity\Job')->findAll();
-              if ($cronJobs) {
-                  foreach ($cronJobs as $cron) {
-                      $cron->execute();
-                      $em->flush();
-                  }
-              }
-              break;
+        $executedJobs = 0;
+        $starttime = microtime(true);
+        try {
+            switch ($command) {
+                case 'Cron':
+                    $cronJobs = $em->getRepository('Cx\Core_Modules\Cron\Model\Entity\Job')->findBy(array('active'=>1));
+                    if (!$cronJobs) {
+                        break;
+                    }
+                    foreach ($cronJobs as $cron) {
+                        if ($cron->execute()) {
+                            $executedJobs++;
+                        }
+                        $em->flush();
+                    }
+                    break;
+            }
+            $duration = microtime(true) - $starttime;
+            $severity = 'INFO';
+            $data = 'Successfully executed ' . $executedJobs . ' job(s). This took ' . $duration . 's';
+        } catch (\Exception $e) {
+            $severity = 'FATAL';
+            $data = 'Exception of type "' . get_class($e) . '" with message "' . $e->getMessage() . '" caught in ' . $e->getFile() . ' on line ' . $e->getLine();
         }
         
+        $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
+            'severity'  => $severity, 
+            'message'   => 'Cron Executed',
+            'data'      => $data,
+        ));
     }
 }
