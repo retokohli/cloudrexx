@@ -114,6 +114,7 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
      */
     public function addWebsite(Website $website) {
         $this->websites[] = $website;
+        $website->setWebsiteCollection($this);
     }
     
     /**
