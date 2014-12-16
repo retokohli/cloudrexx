@@ -19,9 +19,13 @@ namespace Cx\Core_Modules\LinkManager\Controller;
 * @subpackage  coremodule_linkmanager
 */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-    
+    /**
+     * Get the controller classes
+     * 
+     * @return array array of the controller classes
+     */
     public function getControllerClasses() {
-        return array('Backend', 'CrawlerResult', 'Default', 'Settings');
+        return array('Backend', 'CrawlerResult', 'Default', 'Settings', 'LinkCrawler');
     }
     
     /**
