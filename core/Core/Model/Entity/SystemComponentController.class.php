@@ -118,6 +118,7 @@ class SystemComponentController extends Controller {
      * Returns a controller instance if one already exists
      * @param $controllerClass Short or FQCN controller name
      * @return \Cx\Core\Core\Model\Entity\Controller Controller instance
+     */
     public function getController($controllerClass) {
         $this->getControllers(false);
         $controllerClass = $this->getControllerClassName($controllerClass);
@@ -131,6 +132,7 @@ class SystemComponentController extends Controller {
      * This makes sure a FQCN does not contain double backslashes
      * @param string $className FQCN of a controller
      * @return string Clean FQCN of a controller
+     */
     protected function adjustFullyQualifiedClassName($className) {
         return preg_replace('/^\\\\/', '', $className);
     }
