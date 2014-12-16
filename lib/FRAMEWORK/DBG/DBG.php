@@ -124,7 +124,7 @@ class DBG
             function($constant){
                 return    strpos($constant, 'DBG_') === 0
                        && constant($constant)
-                       && (self::$mode & constant($constant)) === constant($constant);
+                       && (\DBG::getMode() & constant($constant)) === constant($constant);
             }
         );
         return join(' | ', $flags);
