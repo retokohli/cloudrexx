@@ -98,8 +98,21 @@ class JsonData {
             $adapter = $namespace . '\\' . $className;
         }
         // check if its an adapter!
+        
         // find proper systemcomponent instead of empty one
-        $object = new $adapter(new \Cx\Core\Core\Model\Entity\SystemComponent(), \Env::get('cx'));
+        $nsParts = explode('\\', $namespace);
+        $possibleComponentName = $nsParts[2];
+        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component = $componentRepo->findOneBy(array('name'=>$possibleComponentName));
+        if (!$component) {
+            // legacy adapter
+            $object = new $adapter();
+            $this->adapters[$object->getName()] = $object;
+            return;
+        }
+        // new adapter
+        $object = new $adapter($component, \Env::get('cx'));
         $this->adapters[$object->getName()] = $object;
     }
 
