@@ -58,37 +58,58 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $command
      */
     public function executeCommand($command) {
-        $em = $this->cx->getDb()->getEntityManager();
-        
-        $executedJobs = 0;
-        $starttime = microtime(true);
-        try {
-            switch ($command) {
-                case 'Cron':
-                    $cronJobs = $em->getRepository('Cx\Core_Modules\Cron\Model\Entity\Job')->findBy(array('active'=>1));
-                    if (!$cronJobs) {
-                        break;
+        switch ($command) {
+            case 'Cron':
+                $executedJobs = 0;
+                $starttime = microtime(true);
+                $severity = 'INFO';
+                $details = $this->executeCronJobs($severity, $executedJobs);
+                $duration = microtime(true) - $starttime;
+                $data = 'Executed ' . $executedJobs . ' job(s). This took ' . $duration . 's';
+                if ($executedJobs > 0) {
+                    $data .= "\r\n\r\nDetails:";
+                    foreach ($details as $command=>$detail) {
+                        $data .= "\r\n\r\n" . $command . ":\r\n" . $detail;
                     }
-                    foreach ($cronJobs as $cron) {
-                        if ($cron->execute()) {
-                            $executedJobs++;
-                        }
-                        $em->flush();
-                    }
-                    break;
-            }
-            $duration = microtime(true) - $starttime;
-            $severity = 'INFO';
-            $data = 'Successfully executed ' . $executedJobs . ' job(s). This took ' . $duration . 's';
-        } catch (\Exception $e) {
-            $severity = 'FATAL';
-            $data = 'Exception of type "' . get_class($e) . '" with message "' . $e->getMessage() . '" caught in ' . $e->getFile() . ' on line ' . $e->getLine();
+                }
+                
+                $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
+                    'severity'  => $severity, 
+                    'message'   => 'Cron Executed',
+                    'data'      => $data,
+                ));
+                break;
         }
-        
-        $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
-            'severity'  => $severity, 
-            'message'   => 'Cron Executed',
-            'data'      => $data,
-        ));
+    }
+    
+    protected function executeCronJobs(&$severity, &$executedJobs) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $cronJobs = $em->getRepository('Cx\Core_Modules\Cron\Model\Entity\Job')->findBy(array('active'=>1));
+        if (!$cronJobs) {
+            break;
+        }
+        $details = array();
+        foreach ($cronJobs as $cron) {
+            try {
+                ob_start();
+                $jobExecuted = false;
+                if ($cron->execute()) {
+                    $jobExecuted = true;
+                    $executedJobs++;
+                }
+                $em->flush();
+                $detail = ob_get_flush();
+                if ($jobExecuted) {
+                    $details[$cron->getCommand()] = $detail;
+                }
+            } catch (\Exception $e) {
+                $executedJobs++;
+                $severity = 'FATAL';
+                $details[$cron->getCommand()] = 'Exception of type "' .
+                    get_class($e) . '" with message "' . $e->getMessage() .
+                    '" caught in ' . $e->getFile() . ' on line ' . $e->getLine();
+            }
+        }
+        return $details;
     }
 }
