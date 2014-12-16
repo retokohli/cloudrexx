@@ -4625,7 +4625,7 @@ CREATE TABLE `contrexx_syslog` (
   `timestamp` datetime NOT NULL,
   `severity` enum('INFO','WARNING','FATAL') NOT NULL,
   `message` varchar(255) NOT NULL,
-  `data` varchar(255) NOT NULL,
+  `data` text NOT NULL,
   `logger` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
