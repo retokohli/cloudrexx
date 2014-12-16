@@ -11,6 +11,8 @@
 
 namespace Cx\Core_Modules\Cron\Model\Entity;
 
+class JobException extends \Exception {}
+
 /**
  * Class Job
  * 
@@ -136,7 +138,7 @@ class Job extends \Cx\Model\Base\EntityBase {
         if (!$this->getActive()) {
             return false;
         }
-            
+        
         try {
             // check if cron job needs to be executed
             $cron = \Cron\CronExpression::factory($this->expression);
@@ -144,10 +146,15 @@ class Job extends \Cx\Model\Base\EntityBase {
                 return false;
             }
             // execute cron job
-            if (call_user_func($this->command)) {
-                // update last ran time to now if cron job has successfully been executed
-                $this->lastRan = new \DateTime();
+            $arguments = explode(' ', $this->command);
+            $command = array_shift($arguments);
+            $commands = $this->cx->getCommands();
+            if (!isset($commands[$command])) {
+                throw new JobException('Command "' . $command . '" not found!');
             }
+            $commands[$command]->executeCommand($command, $arguments);
+            // update last ran time to now if cron job has successfully been executed
+            $this->lastRan = new \DateTime();
             return true;
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
