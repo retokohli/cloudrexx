@@ -301,7 +301,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                             } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                                                 self::parseWebsiteDetails($objTemplate, $websiteCollection);
                                             }
-                                        }                                        
+                                        }
                                     }
                                     
                                     $objTemplate->parse('showSiteDetails');
@@ -409,6 +409,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         }
 
                         $objTemplate->setVariable(array(
+                            'MULTISITE_SUBSCRIPTION_ID'      => contrexx_raw2xhtml($subscriptionObj->getId()),
                             'MULTISITE_WEBSITE_PRODUCT_NAME' => contrexx_raw2xhtml($product->getName()),
                             'MULTISITE_WEBSITE_SUBSCRIPTION_DATE' => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
                             'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => $subscriptionObj->getExpirationDate() ? contrexx_raw2xhtml($subscriptionObj->getExpirationDate()->format('d.m.Y')) : '',
@@ -433,6 +434,36 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         }
                                                 
                         echo $objTemplate->get();
+                        break;
+
+                    case 'SubscriptionAddWebsite':
+                        $subscriptionId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : 0;
+                        if (!self::isUserLoggedIn()) {
+                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
+                            break;
+                        }
+                        if (isset($_GET['addWebsite'])) {
+                            $websiteName = isset($arguments['multisite_address']) ? contrexx_input2xhtml($arguments['multisite_address']) : '';
+                            // TO-DO:: add new website code here
+                            
+                            $json = new \Cx\Core\Json\JsonData();
+                            echo $json->data(array(), true);
+                            die();
+                        } else {
+                            $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                            $mainDomain = $domainRepository->getMainDomain()->getName();
+                            $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
+
+                            $objTemplate->setVariable(array(
+                                'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                                'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
+                                'MULTISITE_ADD_WEBSITE_URL'     => '/api/MultiSite/SubscriptionAddWebsite?addWebsite=1&id='.$subscriptionId,
+                                'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
+                            ));
+                            
+                            echo $objTemplate->get();
+                        }
+                        
                         break;
 
                     case 'Website':
