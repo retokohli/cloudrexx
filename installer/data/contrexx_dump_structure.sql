@@ -3716,6 +3716,18 @@ CREATE TABLE `contrexx_module_pim_product` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_pim_product_upgrade` (
+  `product_id` int(11) NOT NULL,
+  `upgrade_product_id` int(11) NOT NULL,
+  PRIMARY KEY  (`product_id`,`upgrade_product_id`),
+  KEY `IDX_8541336E4584665A` (`product_id`),
+  KEY `IDX_8541336E667E081F` (`upgrade_product_id`),
+  CONSTRAINT `contrexx_module_pim_product_upgrade_ibfk_2` FOREIGN KEY (`upgrade_product_id`) REFERENCES `contrexx_module_pim_product` (`id`),
+  CONSTRAINT `contrexx_module_pim_product_upgrade_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_podcast_category` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
