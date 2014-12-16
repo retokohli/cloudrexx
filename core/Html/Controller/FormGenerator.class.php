@@ -113,6 +113,13 @@ class FormGenerator {
         if (!empty($options['type'])) {
             $type = $options['type'];
         }
+        if (isset($options['formfield']) && is_callable($options['formfield'])) {
+            $formFieldGenerator = $options['formfield'];
+            $formField = $formFieldGenerator($name, $type, $length, $value, $options);
+            if (is_a($formField, 'Cx\Core\Html\Model\Entity\HtmlElement')) {
+                return $formField;
+            }
+        }
         switch ($type) {
             case 'bool':
             case 'boolean':

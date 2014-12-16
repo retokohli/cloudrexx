@@ -97,7 +97,15 @@ class ViewGenerator {
                         $field = $entityObject->getFieldName($column);
                         if (isset($_POST[$field]) && $field != $primaryKeyName) {
                             $fieldDefinition = $entityObject->getFieldMapping($field);
-                            if ($fieldDefinition['type'] == 'datetime') {
+                            if (
+                                isset($this->options['fields']) &&
+                                isset($this->options['fields'][$field]) &&
+                                isset($this->options['fields'][$field]['storecallback']) &&
+                                is_callable($this->options['fields'][$field]['storecallback'])
+                            ) {
+                                $storecallback = $this->options['fields'][$field]['storecallback'];
+                                $newValue = $storecallback(contrexx_input2raw($_POST[$field]));
+                            } else if ($fieldDefinition['type'] == 'datetime') {
                                 $newValue = new \DateTime($_POST[$field]);
                             } elseif ($fieldDefinition['type'] == 'array') {
                                 $newValue = unserialize($_POST[$field]);
@@ -177,8 +185,9 @@ class ViewGenerator {
                 $classMethods = get_class_methods($entityObj->newInstance());
                 foreach ($entityObject as $name=>$value) {
                     if (isset ($_POST[$name])) {
-                        if (   \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name)
-                            && in_array('set'.ucfirst($name), $classMethods)
+                        if (
+                            \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name) &&
+                            in_array('set'.ucfirst($name), $classMethods)
                         ) {
                             // store single-valued-associations
                             $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
@@ -188,7 +197,15 @@ class ViewGenerator {
                                   && in_array('set'.ucfirst($name), $classMethods)
                         ) { 
                             $fieldDefinition = $entityObj->getFieldMapping($name);
-                            if ($fieldDefinition['type'] == 'datetime') {
+                            if (
+                                isset($this->options['fields']) &&
+                                isset($this->options['fields'][$name]) &&
+                                isset($this->options['fields'][$name]['storecallback']) &&
+                                is_callable($this->options['fields'][$name]['storecallback'])
+                            ) {
+                                $storecallback = $this->options['fields'][$name]['storecallback'];
+                                $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
+                            } else if ($fieldDefinition['type'] == 'datetime') {
                                 $newValue = new \DateTime($_POST[$name]);
                             } elseif ($fieldDefinition['type'] == 'array') {
                                 $newValue = unserialize($_POST[$name]);
