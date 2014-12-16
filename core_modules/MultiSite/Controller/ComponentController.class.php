@@ -178,9 +178,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
                                     $i++;
                                 }
-                                $delimiter = preg_match('#\?#', \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormUrl')) ? '&' : '?';
                                 $objTemplate->setVariable(array(
-                                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1'.$delimiter.$params),
+                                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
                                 ));
                             }
                             $objTemplate->setVariable(array(
@@ -315,18 +314,45 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                         
                     case 'SubscriptionSelection':
-
+                        $websiteId = isset($_GET['id']) ? $_GET['id'] : 0;
                         $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
+                        
                         if ($products) {
+                            if (!empty($websiteId)) {
+                                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                                $website = $websiteServiceRepo->findOneById($websiteId);
+                                $websiteName = ($website) ? $website->getName() : '';
+                            }
+                            
+                            $conatctEmail = (self::isUserLoggedIn()) ? \FWUser::getFWUserObject()->objUser->getEmail() : '';
                             foreach ($products as $product) {
                                 $productName = contrexx_raw2xhtml($product->getName());
+                                $productPrice = $product->getPrice();
+                                if ($productPrice > 0) {
+                                    $additionalParameters = array(
+                                    'invoice_number'    => $productName . ' - ' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                                    'contact_email'     => $conatctEmail,
+                                    'invoice_amount'    => $productPrice,
+                                    'invoice_currency'  => 'CHF',
+                                    'referenceId'       => $product->getId() . '-' . $websiteName
+                                    );
+                                    $i = 1;
+                                    $params = '';
+                                    foreach ($additionalParameters as $key => $val) {
+                                        $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
+                                        $i++;
+                                    }
+                                    $objTemplate->setVariable(array(
+                                        'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
+                                    ));
+                                }
                                 $objTemplate->setVariable(array(
                                     'MULTISITE_WEBSITE_PRODUCT_NAME' => $productName,
                                     'MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID' => lcfirst($productName),
-                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $product->getPrice(),
-                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => $product->getPrice() * 12,
-                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $product->getPrice() * 12 * 0.9,
-                                    'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice(),
+                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $productPrice,
+                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => $productPrice * 12,
+                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $productPrice * 12 * 0.9,
+                                    'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice()
                                 ));
                                 $objTemplate->parse('showProduct');
                             }
