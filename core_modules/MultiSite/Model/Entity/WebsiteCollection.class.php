@@ -42,14 +42,13 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
      *
      * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate
      */
-    protected $websiteTemplates;
+    protected $websiteTemplate;
     
     /**
      * Constructor
      */
     public function __construct() {
-        $this->websites         = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->websiteTemplates = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->websites = new \Doctrine\Common\Collections\ArrayCollection();        
     }
     
     /**
@@ -118,12 +117,12 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
     }
     
     /**
-     * Get the website Templates
+     * Get the website Template
      * 
-     * @return array $websiteTemplates
+     * @return array $websiteTemplate
      */
-    public function getWebsiteTemplates() {
-        return $this->websiteTemplates;
+    public function getWebsiteTemplate() {
+        return $this->websiteTemplate;
     }
     
     /**
@@ -132,15 +131,6 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
      * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate $websiteTemplate
      */
     public function setWebsiteTemplate(WebsiteTemplate $websiteTemplate) {
-        $this->websiteTemplates = $websiteTemplate;
-    }
-    
-    /**
-     * Add the website Template
-     * 
-     * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate $websiteTemplate
-     */
-    public function addWebsiteTemplate(WebsiteTemplate $websiteTemplate) {
-        $this->websiteTemplates[] = $websiteTemplate;
+        $this->websiteTemplate = $websiteTemplate;
     }
 }

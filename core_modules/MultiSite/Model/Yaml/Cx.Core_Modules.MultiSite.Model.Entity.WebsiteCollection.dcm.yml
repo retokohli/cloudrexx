@@ -15,7 +15,11 @@ Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection:
     websites:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
       mappedBy: websiteCollection
-    websiteTemplates:
+  manyToOne: # owning side   
+    websiteTemplate:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate
-      mappedBy: websiteCollection
+      inversedBy: websiteCollections
+      joinColumn:
+        name: website_template_id
+        referencedColumnName: id
 

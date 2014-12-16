@@ -48,16 +48,18 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
     protected $licenseMessage;
     
     /**
-     * websiteCollection
+     * websiteCollections
      * 
-     * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollections
      */
-    protected $websiteCollection;
+    protected $websiteCollections;
     
     /**
      * Constructor
      */
-    public function __construct() {}
+    public function __construct() {
+        $this->websiteCollections = new \Doctrine\Common\Collections\ArrayCollection();
+    }
     
     /**
      * Set id
@@ -180,22 +182,21 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get the WebsiteCollection
+     * Get the WebsiteCollections
      * 
-     * @return $websiteCollection
+     * @return $websiteCollections
      */
-    public function getWebsiteCollection()
+    public function getWebsiteCollections()
     {
-        return $this->websiteCollection;
+        return $this->websiteCollections;
     }
     
     /**
-     * Set the Website Collection
+     * Add the website Collection
      * 
      * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection
      */
-    public function setWebsiteCollection(WebsiteCollection $websiteCollection)
-    {
-        $this->websiteCollection = $websiteCollection;
-    }   
+    public function addWebsiteCollection(WebsiteCollection $websiteCollection) {
+        $this->websiteCollections[] = $websiteCollection;
+    }
 }
