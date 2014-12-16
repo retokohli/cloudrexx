@@ -498,43 +498,95 @@
         jQuery('.prices-periods a').on('click', function(e) {
             e.preventDefault();
             jQuery('.prices-periods a').removeClass('active');
+            $class = jQuery(this).attr('class');
             jQuery(this).addClass('active');
-            if (jQuery(this).hasClass('monthly')) {
-                jQuery('.monthly-prices').show();
-                jQuery('.annual-prices').hide();
-                jQuery('.biannual-prices').hide();
-            } else if (jQuery(this).hasClass('annually')) {
-                jQuery('.monthly-prices').hide();
-                jQuery('.annual-prices').show();
-                jQuery('.biannual-prices').hide();
-            } else if (jQuery(this).hasClass('biannually')) {
-                jQuery('.monthly-prices').hide();
-                jQuery('.annual-prices').hide();
-                jQuery('.biannual-prices').show();
+            jQuery('.amt').hide();
+            jQuery('.' + $class + '-prices').show();
+        });
+
+        jQuery('.buy-now').on('click', function() {
+            var $this = jQuery(this);
+            if (getProductPrice($this)) {
+                modifyPaymentUrl($this);
+                $this.addClass('subscriptionProduct');
+                jQuery("#SubscriptionSelection").addClass('subscriptionProduct');
+                return true;
             }
+            jQuery('.buy-now').removeClass('subscriptionProduct');
+            jQuery("#SubscriptionSelection").removeClass('subscriptionProduct');
+            return false;
+        });
+                
+        function validPaymentUrl($this) {
+            var urlPattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+            var url = $this.data('href');
+            if (!urlPattern.test(url)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        function getProductPrice($this) {
+            var productPrice = $this.parent().find('> div:visible').data('price');
+            if (productPrice > 0) {
+                return productPrice;
+            }
+            return false;
+        }
+        
+        function modifyPaymentUrl($this) {
+            var productPrice = getProductPrice($this);
+            var href = $this.data('href');
+            var hrefVal = href.split('&');
+            hrefVal = jQuery.map(hrefVal, function(v) {
+                if (v.search('invoice_amount') !== -1) {
+                    var modifyValue = v.split('=');
+                    return (modifyValue[0] === 'invoice_amount') ? 'invoice_amount=' + productPrice : '';
+                }
+                return v;
+            });
+            $this.attr('data-href', hrefVal.join('&'));
+        }
+        
+        jQuery.getScript('https://media.payrexx.com/modal/v1/modal.js', function() {
+            jQuery('.buy-now').payrexxModal({
+                hideObjects: ["#contact-details", ".contact"],
+                show: function(e) {
+                    //Payrexx URL validation
+                    if ((jQuery('.buy-now.subscriptionProduct').length < 0) || !validPaymentUrl(jQuery('.buy-now.subscriptionProduct'))) {
+                        return e.preventDefault();
+                    }
+                    jQuery('#SubscriptionSelection.subscriptionProduct').modal('hide');                    
+                    return true;
+                },
+                hidden: function(transaction) {
+                    //TODO: Based on the transaction status to proceed further process
+                }
+            });
         });
     });
 </script>
 
-<div class="prices-periods"><a class="monthly" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a> <a class="annually active" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a> <a class="biannually" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}</a></div>
+<div class="prices-periods"><a class="monthly" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a> <a class="annual active" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a> <a class="biannual" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}</a></div>
 
 <div class="prices">
-    <h2 class="monthly-prices" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTH} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
+    <h2 class="monthly-prices amt" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTH} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
 
-    <h2 class="annual-prices" style="display: block;">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
+    <h2 class="annual-prices amt" style="display: block;">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
 
-    <h2 class="biannual-prices" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
+    <h2 class="biannual-prices amt" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
 
     <!-- BEGIN showProduct -->
     <div id="{MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID}">
         <div class="header"><span class="name">{MULTISITE_WEBSITE_PRODUCT_NAME}</span>
 
-            <div class="monthly-prices" style="display: none;"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}.-</span><span class="currency">CHF</span></div>
+            <div class="monthly-prices amt" style="display: none;" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}.-</span><span class="currency">CHF</span></div>
 
-            <div class="annual-prices" style="display: block;"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}.-</span><span class="currency">CHF</span></div>
+            <div class="annual-prices amt" style="display: block;" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}.-</span><span class="currency">CHF</span></div>
 
-            <div class="biannual-prices" style="display: none;"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}.-</span><span class="currency">CHF</span></div>
-            <a class="buy-now" href="#">{TXT_MULTISITE_WEBSITE_CHOOSE}</a></div>
+            <div class="biannual-prices amt" style="display: none;" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}.-</span><span class="currency">CHF</span></div>
+            <a class="buy-now" href = "javascript:void(0)" data-href="{MULTISITE_OPTION_PAYREXXFORMURL}">{TXT_MULTISITE_WEBSITE_CHOOSE}</a></div>
 
         <div class="features">
             {MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE}
