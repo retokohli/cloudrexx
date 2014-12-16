@@ -41,6 +41,11 @@ class Product extends \Cx\Model\Base\EntityBase {
     protected $noteUpgrade = null;
     protected $noteExpiration = null;
     protected $notePrice = null;
+    
+    /**
+     * @var array $upgrades
+     */
+    protected $upgrades;
 
     const UNIT_DAY = 'day';
     const UNIT_MONTH = 'month';
@@ -49,6 +54,7 @@ class Product extends \Cx\Model\Base\EntityBase {
 
     public function __construct() {
         $this->initRenewalConfig();
+        $this->upgrades = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getId() {
@@ -270,5 +276,26 @@ class Product extends \Cx\Model\Base\EntityBase {
         );
         $this->defaultRenewalOption = array(self::UNIT_YEAR, 1);
     }
+    
+    /**
+     * Get the available upgrades
+     * 
+     * @return array Return the available upgrades
+     */
+    public function getUpgrades()
+    {
+        return $this->upgrades;
+    }
+    
+    /**
+     * Add upgrade product to the existing upgrades
+     * 
+     * @param type $upgrade
+     */
+    public function addUpgrade(Product $upgrade)
+    {
+        $this->upgrades[] = $upgrade;
+    }
+    
 }
 

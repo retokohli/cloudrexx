@@ -55,3 +55,17 @@ Cx\Modules\Pim\Model\Entity\Product:
     subscriptions:
       targetEntity: Cx\Modules\Order\Model\Entity\Subscription
       mappedBy: product
+  manyToMany:
+    upgrades:
+      targetEntity: Cx\Modules\Pim\Model\Entity\Product
+      inversedBy: upgrades
+      joinTable:
+        name: module_pim_product_upgrade
+        joinColumns:
+          product_id:
+            referencedColumnName: id
+            nullable: false
+        inverseJoinColumns:
+          upgrade_product_id:
+            referencedColumnName: id
+            nullable: false
