@@ -94,6 +94,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-weight: 600;
     font-family: 'Open Sans', Arial, sans-serif;
     color: #444;
+    word-break: break-all;
 }
 h1, h2, h3 {
     margin-bottom: 20px;
@@ -206,12 +207,12 @@ input[name="access_signup"]:focus {
     border-color: #CCCCCC;
     box-shadow: none;
 }
-.button:hover, button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover {
+.button:hover, button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover, button.btn.btn-primary.btn-lg:hover {
     background: #5e5e5e;
     border: 0;
     color: #fff;
 }
-body .button,body button,body input[type="submit"],body input[type="reset"],body input[type="button"] {
+body .button,body button,body input[type="submit"],body input[type="reset"],body input[type="button"], button.btn.btn-primary.btn-lg {
     background: #666666;
     border: 0;
     width: auto;

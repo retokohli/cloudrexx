@@ -7,6 +7,9 @@
         width: 100%;
         height: auto;
     }
+    #ecardSend input {
+        margin-bottom: 10px;
+    }
     .main-nav {
         display: block;
         width: 100%;
