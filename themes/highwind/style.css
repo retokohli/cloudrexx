@@ -537,7 +537,8 @@
         padding-left: 0;
     }
     .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
-    #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
+    #page #gallery div.show_image img , #page #gallery div.category_image img,
+    #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
     
     /*MediaDir Edit Start*/
@@ -572,16 +573,7 @@
     .home-box.col-md-4 {width: 100%;margin-bottom: 30px;}
     #content-wrapper {
         padding-bottom: 168px;
-    }
-    #media_div .table-responsive {
-        width: 100%;
-        margin-bottom: 15px;
-        overflow-y: hidden;
-        overflow-x: auto;
-        -ms-overflow-style: -ms-autohiding-scrollbar;
-        border: 1px solid #ddd;
-        -webkit-overflow-scrolling: touch;
-    }
+    }    
     #page #forum div.notification_center {
         padding: 20px 0px 20px 0px;
     }
@@ -611,7 +603,8 @@
     /*MediaDir Edit End*/
     #mediadir .reference {margin-bottom: 20px;}
     .employee-left, .employee-middle, .employee-right {padding-bottom: 20px;}
-    #page #gallery div.show_image img , #page #gallery div.category_image img, #page #gallery div.category_images img{width: auto;}
+    #page #gallery div.show_image img , #page #gallery div.category_image img,
+    #page #gallery div.category_images img{width: auto;}
     #page #shop div.description{width: 100%;}
     .news-image {
         margin-right: 0;
@@ -734,6 +727,7 @@
         display: none;
     }
     .sidebar-block {padding: 10px 0px 10px 15px;}
+    #shop .menu input {margin-bottom: 15px;}
 }
 @media (min-width: 980px) and (max-width: 1199px) {
     .home-box.col-md-4 {width: 31.4%;margin-right: 28px;}
@@ -899,7 +893,7 @@
         margin-bottom: 15px;
         overflow-y: hidden;
         overflow-x: auto;
-    }
+    }    
 }
 
 @media (min-width: 992px) { 
@@ -1101,5 +1095,6 @@
 }
 
 @media (max-width: 450px) { 
-    .btn, input[type="button"], input[type="submit"], #mediadir .mediadirButtonSearch {margin-top: 15px;}
+    .btn, input[type="button"], input[type="submit"], #mediadir .mediadirButtonSearch, 
+    #market .search input.searchbox {margin-top: 15px;}
 }

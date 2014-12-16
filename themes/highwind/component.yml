@@ -3,5 +3,5 @@ DlcInfo:
   description: ' '
   type: template
   publisher: 'Comvation AG'
-  versions: { state: stable, number: 1.0.0, releaseDate: 12.12.2014 }
+  versions: { state: stable, number: 1.0.0, releaseDate: 16.12.2014 }
   dependencies: [{ name: jquery, type: lib, minimumVersionNumber: 2.0.3, maximumVersionNumber: 2.0.3 }, { name: twitter-bootstrap, type: lib, minimumVersionNumber: 3.2.0, maximumVersionNumber: 3.2.0 }]

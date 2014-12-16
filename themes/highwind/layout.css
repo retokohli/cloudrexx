@@ -97,7 +97,7 @@ body a:hover {text-decoration: underline;}
     margin-right: -50px;
     padding-left: 0;
     padding-right: 0;
-    padding: 120px 0 42px 0;
+    padding: 135px 0 47px 0;
     margin-bottom: 67px;
 }
 #header .inner {
@@ -214,7 +214,6 @@ body a:hover {text-decoration: underline;}
     padding-bottom: 5px;
     color: #323F55;
 }
-
 #navigation-wrapper.sticky {
     position: fixed;
     top: 0;
@@ -357,7 +356,7 @@ body a:hover {text-decoration: underline;}
 }
 .content ul li {
     padding: 0 0 5px 20px;
-    background: url('images/marker.gif') no-repeat 5px 14px;
+    background: url('images/marker.gif') no-repeat 5px 13px;
 }
 #content-wrapper ol li {
     margin: 0 0 5px 5px;
@@ -585,7 +584,7 @@ body a:hover {text-decoration: underline;}
 }
 #shopJsCart li.link a {
     padding: 1px 0 0 25px;
-    background-position: left top;
+    background-position: 0 3px;
     background-repeat: no-repeat;
 }
 #shopJsCart li.link.cart a {
@@ -662,7 +661,8 @@ body a:hover {text-decoration: underline;}
     float: left;
     width: 100%;
     margin: 0 0 5px 0;
-    background: #fff;
+    background: #f7fcfb;
+    font-size: 16px;
 }
 #page-right h3 {
     float: left;
@@ -670,7 +670,7 @@ body a:hover {text-decoration: underline;}
     padding: 5px 10px 5px 10px;
     margin: 0 0 5px 0;
     color: #FFFFFF;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;    
     background: #67bfb6;
 }
@@ -701,10 +701,8 @@ body a:hover {text-decoration: underline;}
     margin: 0 -50px;
     background: rgba(0, 0, 0, 0.02);
     padding: 67px 0;
-
 }
 #footer .inner > div {
-
     padding-top: 8px;
 }
 #footer-top {
@@ -1179,13 +1177,15 @@ section, footer, .wrapper {
     float: left;
     width: 13%;
 }
-row2 .eachrow:first-child, .homerow2 .eachrow:first-child {
+row2 .eachrow:first-child,
+.homerow2 .eachrow:first-child {
     float: left;
     min-height: 26px;
     padding-left: 9px;
     width: 32px;
 }
-.row2 .eachrow, .homerow2 .eachrow {
+.row2 .eachrow,
+.homerow2 .eachrow {
     width: 96%;
     padding-left: 7px;
 }
@@ -1470,15 +1470,12 @@ p#loginerror {
     vertical-align: top;
 }
 
-
 /* new */
-
 .inner-wrap {
     background-color: #f7fcfb;
     position: relative;         
     width: 100%;      
 }
-
 .site-intro {
     display: inline;
     float: left;
@@ -1527,7 +1524,8 @@ p#loginerror {
     font-weight: 400;
     color: #fff;
 }
-.page-title, .post-title {
+.page-title,
+.post-title {
     margin: 0;
     margin-bottom: 16px;
     color: #444854;
@@ -1544,7 +1542,11 @@ p#loginerror {
     width: 100%;
     height: auto;
 }
-.article-content .p1 {font-size: 27px; line-height: 47px; font-weight: 400;}
+.article-content .p1 {
+    font-size: 27px;
+    line-height: 47px;
+    font-weight: 400;
+}
 .article-content .p2 {
     text-align: center;
     padding-top: 16px;
@@ -1563,9 +1565,6 @@ p#loginerror {
     transition: all ease 0.238s;
     font-size: 18px;
     line-height: 1;
-}
-.article-content .p2 .btn {
-
 }
 .btn:hover {
     text-decoration: none;
@@ -1604,9 +1603,15 @@ p#loginerror {
     bottom: 18px;
     right: 18px;  
     outline: 0;
+    display: none;
+    overflow: hidden;
 
 }
-a.back-to-top:hover, a.back-to-top:focus, .nav-toggle:focus {color: #f7fcfb;}
+a.back-to-top:hover,
+a.back-to-top:focus,
+.nav-toggle:focus {
+    color: #f7fcfb;
+}
 #footer a.back-to-top:before {
     -webkit-transform: translateY(48px);
     transform: translateY(48px);
@@ -1619,7 +1624,8 @@ a.back-to-top:hover, a.back-to-top:focus, .nav-toggle:focus {color: #f7fcfb;}
     -webkit-transform: translateY(-48px);
     transform: translateY(-48px);
 }
-#footer a.back-to-top:after, #footer a.back-to-top:before {
+#footer a.back-to-top:after,
+#footer a.back-to-top:before {
     font-family: "FontAwesome";
     font-weight: normal;
     font-style: normal;
@@ -1663,7 +1669,6 @@ a.back-to-top:hover, a.back-to-top:focus, .nav-toggle:focus {color: #f7fcfb;}
     font-weight: normal;
     outline: 0;
 }
-
 .header .nav-toggle:after {
     font-family: "FontAwesome";
     content: "\f118";
@@ -1729,7 +1734,6 @@ a.back-to-top:hover, a.back-to-top:focus, .nav-toggle:focus {color: #f7fcfb;}
 .main-nav .buttons a:after {
     content: "\f00d";
 }
-
 .csstransforms3d.csstransitions .show-nav .main-nav {
     -webkit-transform: translate3d(-100%, 0, 0);
     -moz-transform: translate3d(-100%, 0, 0);
