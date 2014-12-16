@@ -585,7 +585,7 @@ class MediaManager extends MediaLibrary
                 for($x = 0; $x < count($dirTree[$key]['icon']); $x++)
                 {
                     $fileName = $dirTree[$key]['name'][$x];
-                    if ($this->isIllegalFileName($fileName)) {
+                    if (MediaLibrary::isIllegalFileName($fileName)) {
                         continue;
                     }
                     // colors
@@ -795,10 +795,10 @@ class MediaManager extends MediaLibrary
             if (!file_exists($this->path . $this->getFile)) $check = false;
         }
 
-        if ($check == false || $this->isIllegalFileName($this->getFile)) { // file doesn't exist
+        if ($check == false || MediaLibrary::isIllegalFileName($this->getFile)) { // file doesn't exist
             $this->_objTpl->setVariable(array(  // ERROR
                 'TXT_MEDIA_ERROR_OCCURED'    => $_ARRAYLANG['TXT_MEDIA_ERROR_OCCURED'],
-                'TXT_MEDIA_FILE_DONT_EXISTS' => $this->isIllegalFileName($this->getFile) ? $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'] : $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS']
+                'TXT_MEDIA_FILE_DONT_EXISTS' => MediaLibrary::isIllegalFileName($this->getFile) ? $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'] : $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EXISTS']
             ));
             $this->_objTpl->parse('mediaErrorFile');
         } else if ($check == true) { // file exists

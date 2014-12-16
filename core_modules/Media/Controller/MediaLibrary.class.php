@@ -104,7 +104,7 @@ class MediaLibrary
     {
         global $_ARRAYLANG;
         
-        if ($this->isIllegalFileName($this->getFile)) { die($_ARRAYLANG['TXT_MEDIA_FILE_DONT_DOWNLOAD']);}
+        if (self::isIllegalFileName($this->getFile)) { die($_ARRAYLANG['TXT_MEDIA_FILE_DONT_DOWNLOAD']);}
         // The file is already checked (media paths only)
         $file = $this->path.$this->getFile;
         //First, see if the file exists
@@ -302,7 +302,7 @@ class MediaLibrary
     {
         global $_ARRAYLANG;
 
-        if ($this->isIllegalFileName($file)) {
+        if (self::isIllegalFileName($file)) {
             return $_ARRAYLANG['TXT_MEDIA_FILE_DONT_DELETE'];
         }
         $obj_file = new \File();
@@ -1201,7 +1201,7 @@ END;
                     continue;
                 }
                 
-                if ($this->isIllegalFileName($file)) {
+                if (self::isIllegalFileName($file)) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
                         "You are not able to create the requested file.",
@@ -1287,7 +1287,7 @@ END;
      * @param type $file
      * @return boolean
      */
-    public function isIllegalFileName($file) {
+    public static function isIllegalFileName($file) {
         if (preg_match('#^(\.htaccess|\.ftpaccess|\.passwd|web\.config)$#i', $file)) {
             return true;
         }

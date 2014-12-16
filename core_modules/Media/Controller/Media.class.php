@@ -188,7 +188,7 @@ class Media extends MediaLibrary
         foreach (array_keys($dirTree) as $key) {
             if (is_array($dirTree[$key]['icon'])) {
                 for ($x = 0; $x < count($dirTree[$key]['icon']); $x++) {
-                    if ($this->isIllegalFileName($dirTree[$key]['name'][$x])) {
+                    if (MediaLibrary::isIllegalFileName($dirTree[$key]['name'][$x])) {
                         continue;
                     }
                     $class = ($i % 2) ? 'row2' : 'row1';
@@ -471,7 +471,7 @@ class Media extends MediaLibrary
         $fileName = !empty($_FILES[$inputField]['name']) ? contrexx_stripslashes($_FILES[$inputField]['name']) : '';
         $fileTmpName = !empty($_FILES[$inputField]['tmp_name']) ? $_FILES[$inputField]['tmp_name'] : '';
 
-        if ($this->isIllegalFileName($fileName)) {
+        if (MediaLibrary::isIllegalFileName($fileName)) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_CREATE'];
             return false;
         }
@@ -542,7 +542,7 @@ class Media extends MediaLibrary
             return false;
         }
         
-        if ($this->isIllegalFileName($this->getFile)) {
+        if (MediaLibrary::isIllegalFileName($this->getFile)) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'];
             return false;
         }
@@ -583,7 +583,7 @@ class Media extends MediaLibrary
             return false;
         }
 
-        if ($this->isIllegalFileName($this->getFile)) {
+        if (MediaLibrary::isIllegalFileName($this->getFile)) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_DELETE'];
             return false;
         }
