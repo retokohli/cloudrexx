@@ -597,7 +597,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             // $this->setupRobotsFile($websiteName);
 
             \DBG::msg('Website: createContrexxUser..');
-            $this->createContrexxUser($websiteName);
+            $this->createContrexxUser();
 
             \DBG::msg('Website: setup process.. DONE');
 
@@ -1023,7 +1023,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         }
     }
 
-    protected function createContrexxUser($websiteName)
+    protected function createContrexxUser()
     {
         $params = array(
             'email' => $this->owner->getEmail(),
