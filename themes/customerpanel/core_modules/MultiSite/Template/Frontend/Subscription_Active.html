@@ -23,7 +23,7 @@
                         <button type="button" class="manage" onclick="window.location.href = '{NODE_MULTISITE_SUBSCRIPTIONDETAIL}?id={MULTISITE_SUBSCRIPTION_ID}'">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
                         <!-- BEGIN showUpgradeButton --><button type="button" class="upgrade">{TXT_MULTISITE_UPGRADE}</button><!-- END showUpgradeButton -->
                         <!-- BEGIN showAddWebsiteButton -->
-                        <button type="button" class="add">{TXT_MULTISITE_ADD_NEW_WEBSITE}</button>
+                        <button class="add" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionAddWebsite" data-toggle="modal">{TXT_MULTISITE_ADD_NEW_WEBSITE}</button>
                         <!-- END showAddWebsiteButton -->
                     </td>
                 </tr> 
@@ -54,16 +54,23 @@
     </div>
 </div>
 
+<div aria-hidden="true" class="modal fade" id="SubscriptionAddWebsite" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">Loading Add Website form...</div>
+    </div>
+</div>
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(document).ready(function() {
     jQuery('.subscription').bind('click', function () { 
-        var refId = jQuery(this).attr('data-ref-id');
-        
-        jQuery(this).find('a.show-websites').toggleClass('open'); 
-        jQuery('.website.'+refId).toggle(); 
-        
-        return false;
+        if (event.target.nodeName != 'BUTTON') {
+            var refId = jQuery(this).attr('data-ref-id');
+
+            jQuery(this).find('a.show-websites').toggleClass('open'); 
+            jQuery('.website.'+refId).toggle(); 
+
+            return false;
+        }
     });
 });
 /* ]]> */
