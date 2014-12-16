@@ -20,6 +20,7 @@ namespace Cx\Core_Modules\MultiSite\Model\Entity;
  * @subpackage  coremodule_multisite
  */
 class MailServiceServer extends \Cx\Model\Base\EntityBase {
+    
     /**
      * @var int $id
      */
@@ -196,7 +197,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         return $this->authPassword;
     }
     
-        /**
+    /**
      * Set config
      * 
      * @param array $config
@@ -242,9 +243,9 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     }
     
     /**
-     * Get the website
+     * Get the websites
      * 
-     * @return Cx\Core_Modules\MultiSite\Model\Entity\Website $website
+     * @return array $websites
      */
     public function getWebsites()
     {
@@ -287,5 +288,37 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Enable the mail service
+     * 
+     * @param integer $accountId
+     * 
+     * @return boolean
+     */
+    public function enableService($accountId)
+    {
+        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        if ($hostingController->enableMailService($accountId)) {
+            return true;
+        }
+            return false;
+    }
+        
+    /**
+     * Disable the mail service
+     * 
+     * @param integer $accountId
+     * 
+     * @return boolean
+     */
+    public function disableService($accountId)
+    {
+        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        if ($hostingController->disableMailService($accountId)) {
+            return true;
+        }
+            return false;
     }
 }    

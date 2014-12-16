@@ -544,8 +544,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $ownerId = $xmldoc->createElement('owner-id', $customerId);
             $genSetup->appendChild($ownerId);
         }
-        $status = $xmldoc->createElement('status', $subscriptionStatus);      
-        $genSetup->appendChild($status);
+        
+        if ($subscriptionStatus) {
+            $status = $xmldoc->createElement('status', $subscriptionStatus);      
+            $genSetup->appendChild($status);
+        }
         /*--gen_setup data End--*/
                 
         if ($planId) {
@@ -630,15 +633,17 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $genInfo->appendChild($password);
         $name = $xmldoc->createElement('name', $name);
         $genInfo->appendChild($name);
-        $accountId = $xmldoc->createElement('subscription-domain-id', $accountId);
-        $genInfo->appendChild($accountId);
+        if ($accountId) {
+            $accountId = $xmldoc->createElement('subscription-domain-id', $accountId);
+            $genInfo->appendChild($accountId);
+        }
         /*--gen_info data End--*/
-        
-        $roles = $xmldoc->createElement('roles');
-        $addTag->appendChild($roles);
-        $roleName = $xmldoc->createElement('name', $role);
-        $roles->appendChild($roleName);
-        
+        if ($role) {
+            $roles = $xmldoc->createElement('roles');
+            $addTag->appendChild($roles);
+            $roleName = $xmldoc->createElement('name', $role);
+            $roles->appendChild($roleName);
+        }
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->user->{'add'}->result;
         $systemError = $response->system->errtext;
@@ -646,7 +651,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             \DBG::dump($xmldoc->saveXML());
             \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
-            throw new ApiRequestException("Error in creating Subscription: {$error}");
+            throw new ApiRequestException("Error in creating user account: {$error}");
         }
         return $resultNode->guid;	
     }
@@ -680,7 +685,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             \DBG::dump($xmldoc->saveXML());
             \DBG::dump($response);
             $error = (isset($systemError)?$systemError:$resultNode->errtext);
-            throw new ApiRequestException("Error in deleting Subscription: {$error}");
+            throw new ApiRequestException("Error in deleting user account: {$error}");
         }
         return $resultNode->id;          
     }
@@ -1240,7 +1245,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @return boolean
      * @throws ApiRequestException
      */
-    public function enableMailService($subscriptionId) {
+    public function enableMailService($subscriptionId)
+    {
         \DBG::msg("MultiSite (PleskController): Enable Mail Service.");
         if (empty($subscriptionId)) {
             return;
@@ -1271,14 +1277,15 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     } 
 
     /**
-     * Disable Mail Service
+     * Disable the Mail Service
      * 
      * @param integer $subscriptionId
      * 
      * @return boolean
      * @throws ApiRequestException
      */
-    public function disableMailService($subscriptionId) {
+    public function disableMailService($subscriptionId)
+    {
         \DBG::msg("MultiSite (PleskController): Disable Mail Service.");
         if (empty($subscriptionId)) {
             return;

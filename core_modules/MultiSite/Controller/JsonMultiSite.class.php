@@ -3012,25 +3012,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if ($accountId) {
                         $website->setMailAccountId($accountId);
                         \Env::get('em')->flush();
-                        return array('status' => 'success', 'message' => 'JsonException::createMailServiceAccount() failed: mail subscribtion created successfully.');
-                    } else {
-                        return array('status' => 'error', 'message' => 'JsonException::createMailServiceAccount() failed: mail subscribtion not created.');
-                    }
+                        return array('status' => 'success', 'message' => 'JsonException::createMailServiceAccount(): mail subscribtion created successfully.');
+                    } 
                     break;
-
                 case ComponentController::MODE_WEBSITE:
                 case ComponentController::MODE_SERVICE:
                     // forward call to manager server. 
                     $response = self::executeCommandOnManager('createMailServiceAccount', $params);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return true;
-                    } else {
-                        throw new MultiSiteJsonException('JsonException::createMailServiceAccount() failed: Unable to create mail service account');
                     }
                     break;
                 default:
                     break;
             }
+            return array('status' => 'error', 'message' => 'JsonException::createMailServiceAccount() failed: Unable to create mail subscribtion.');
         } catch (Exception $ex) {
             throw new MultiSiteJsonException('JsonMultiSite::createMailServiceAccount() failed: To create mail service server'. $ex->getMessage());
         }
@@ -3060,42 +3056,151 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: Unkown Website-ID: '.$params['post']['websiteId']);
                     }
                     
-                    $mailServiceServer = $website->getMailServiceServer();
-                    if (!$mailServiceServer) {
-                        throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: mail service server is not set.');
-                    }
-                    
-                    if (!$website->getMailAccountId()) {
-                        throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: mail account id is not set.');
-                    }
-                    
-                    if ($mailServiceServer->deleteAccount($website->getMailAccountId())) {
-                        $mailServiceServer->removeWebsite($website);
+                    if (
+                           self::validateWebsiteForMailService($website) 
+                        && $website->getMailServiceServer()->deleteAccount($website->getMailAccountId())
+                    ) {
+                        $website->getMailServiceServer()->removeWebsite($website);
                         $website->setMailAccountId(null);
                         $website->setMailServiceServer(null);
                         \Env::get('em')->flush();
-                        return array('status' => 'success', 'message' => 'JsonException::createMailServiceAccount() failed: mail subscribtion deleted successfully.');
-                    } else {
-                        return array('status' => 'error', 'message' => 'JsonException::deleteMailServiceAccount() failed: mail subscribtion not deleted.');
-                    }
-                    break;
-
+                        return array('status' => 'success', 'message' => 'JsonException::deleteMailServiceAccount(): mail subscribtion deleted successfully.');
+                    }                    
                 case ComponentController::MODE_WEBSITE:
                 case ComponentController::MODE_SERVICE:
                     // forward call to manager server. 
                     $response = executeCommandOnManager('deleteMailServiceAccount', $params);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return true;
-                    } else {
-                        throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: Unable to delete mail service account');
                     }
                     break;
                 default:
                     break;
             }
+            return array('status' => 'error', 'message' => 'JsonException::deleteMailServiceAccount() failed: Unable to delete mail service account');
         } catch (Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::deleteMailServiceAccount() failed: To create mail service server'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::deleteMailServiceAccount() failed: To delete mail service server'. $e->getMessage());
         }
+    }
+    
+    /**
+     * Enable the mail service
+     * 
+     * @param array $params
+     * 
+     * @return boolean
+     * @throws MultiSiteJsonException
+     */    
+    public function enableMailService($params)
+    {
+        if (empty($params['post']['websiteId'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::enableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
+        }
+               
+        try {
+            // check the mode
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    if (!$website) {
+                        throw new MultiSiteJsonException('JsonException::enableMailService() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                    }
+                    
+                    if (
+                           self::validateWebsiteForMailService($website) 
+                        && $website->getMailServiceServer()->enableService($website->getMailAccountId())
+                    ) {
+                        return array('status' => 'success', 'message' => 'JsonException::enableMailService(): mail service enabled successfully.');
+                    }
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                case ComponentController::MODE_SERVICE:
+                    // forward call to manager server. 
+                    $response = self::executeCommandOnManager('enableMailService', $params);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return array('status' => 'error', 'message' => 'JsonException::enableMailService() failed: mail service not enable.');
+        } catch (Exception $ex) {
+            throw new MultiSiteJsonException('JsonMultiSite::enableMailService() failed: To enable mail service account.'. $ex->getMessage());
+        }
+    }
+    
+    /**
+     * Disable the mail service
+     * 
+     * @param array $params
+     * 
+     * @return boolean
+     * @throws MultiSiteJsonException
+     */    
+    public function disableMailService($params)
+    {
+        if (empty($params['post']['websiteId'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::disableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
+        }
+               
+        try {
+            // check the mode
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    if (!$website) {
+                        throw new MultiSiteJsonException('JsonException::disableMailService() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                    }
+                    
+                    if (
+                           self::validateWebsiteForMailService($website) 
+                        && $website->getMailServiceServer()->disableService($website->getMailAccountId())
+                    ) {
+                        return array('status' => 'success', 'message' => 'JsonException::disableMailService(): mail service disabled successfully.');
+                    }
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                case ComponentController::MODE_SERVICE:
+                    // forward call to manager server. 
+                    $response = self::executeCommandOnManager('disableMailService', $params);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return array('status' => 'error', 'message' => 'JsonException::disableMailService() failed: To disable mail service account.');
+        } catch (Exception $ex) {
+            throw new MultiSiteJsonException('JsonMultiSite::disableMailService() failed: To disable mail service'. $ex->getMessage());
+        }
+    }
+    
+    /**
+     * Validate the website to handle it by mail service server
+     * 
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website $website
+     * 
+     * @return boolean                True when website is has enough values to handled by mail service
+     * @throws MultiSiteJsonException when webiste does not have proper values
+     */
+    public static function validateWebsiteForMailService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website) {
+        
+        $mailServiceServer = $website->getMailServiceServer();
+        if (!$mailServiceServer) {
+            throw new MultiSiteJsonException('JsonException failed: mail service server is not set.');
+        }
+
+        if (!$website->getMailAccountId()) {
+            throw new MultiSiteJsonException('JsonException failed: mail account id is not set.');
+        }
+        
+        return true;
     }
     
     /**

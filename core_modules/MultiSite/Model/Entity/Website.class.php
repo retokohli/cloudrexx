@@ -1650,9 +1650,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
     }
     
     /**
-     * Get mail account id
+     * Get the mail account id
      * 
-     * @return $mailAccountId
+     * @return integer $mailAccountId
      */
     public function getMailAccountId()
     {
@@ -1660,9 +1660,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
     }
     
     /**
-     * Set mail account id
+     * Set the mail account id
      * 
-     * @param $mailAccountId
+     * @param integer $mailAccountId
      */
     public function setMailAccountId($mailAccountId)
     {

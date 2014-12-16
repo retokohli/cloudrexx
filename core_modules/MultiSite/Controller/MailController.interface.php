@@ -26,12 +26,14 @@ interface MailController {
     /**
      * Enable the new mail service
      * 
+     * @param integer $subscriptionId
      */
     public function enableMailService($subscriptionId);
     
     /**
      * Disable the new mail service
      * 
+     * @param integer $subscriptionId
      */
     public function disableMailService($subscriptionId);
     

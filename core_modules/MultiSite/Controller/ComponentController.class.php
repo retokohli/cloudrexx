@@ -841,7 +841,6 @@ throw new MultiSiteException('Refactor this method!');
      * @return $hostingController
      */
     public static function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer) {
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         switch ($mailServiceServer->getType()) {
             case 'plesk':
                 $hostingController = new PleskController($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword());
