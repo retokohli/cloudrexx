@@ -119,6 +119,81 @@ body {
     display: inline-block;
 }
 
+.grid-elm.msg-error {
+    border: 2px solid #c53e27;
+    border-radius: 6px;
+    color: #c53e27;
+    font-weight: 400; 
+    background-color: #FFE8E5;
+}
+
+.grid-elm.msg-error .close {         
+    color: #c53e27;   
+    opacity: 1;   
+    background-color: none;   
+    background-image: none;
+}
+
+.grid-elm.msg-info {
+    border: 2px solid #216FBD;
+    border-radius: 6px;
+    color: #216FBD;
+    font-weight: 400; 
+    background-color: #EAF4FF;
+}
+
+.grid-elm.msg-info .close {         
+    color: #216FBD;   
+    opacity: 1;   
+    background-color: none;   
+    background-image: none;
+}    
+
+.grid-elm.msg-warning {
+    border: 2px solid #F49B00;
+    border-radius: 6px;
+    color: #F49B00;
+    font-weight: 400; 
+    background-color: #FFF8E8;
+}
+
+.grid-elm.msg-warning .close {         
+    color: #FFBB00;   
+    opacity: 1;   
+    background-color: none;   
+    background-image: none;
+}
+
+.grid-elm.msg-success {
+    border: 2px solid #019308;
+    border-radius: 6px;
+    color: #019308;
+    font-weight: 400; 
+    background-color: #EDFFEE;
+}
+
+.grid-elm.msg-success .close {         
+    color: #019308;   
+    opacity: 1;   
+    background-color: none;   
+    background-image: none;
+}
+
+.grid-elm.msg-error button:focus, 
+.grid-elm.msg-error button:hover,
+.grid-elm.msg-info button:focus, 
+.grid-elm.msg-info button:hover,
+.grid-elm.msg-warning button:focus, 
+.grid-elm.msg-warning button:hover,
+.grid-elm.msg-success button:focus, 
+.grid-elm.msg-success button:hover {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: 0px 0px 0px 0px transparent;
+}
+
+
+
 /**
  * layout 
  *

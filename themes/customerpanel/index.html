@@ -51,7 +51,51 @@
         <![endif]-->
     </head>
                                                           
-    <body>      
+    <body>
+        <div class="modal fade" id="error_msg_container" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="grid-elm grid-align-1-1 grid-offset msg-error">                                                                                             
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> 
+                        This is an Error Message!
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="warning_msg_container" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="grid-elm grid-align-1-1 grid-offset msg-warning">                                                                                             
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> 
+                        This is an Warning!
+                    </div>
+                </div>
+            </div>
+        </div>  
+        
+        <div class="modal fade" id="info_msg_container" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="grid-elm grid-align-1-1 grid-offset msg-info">                                                                                             
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> 
+                        This is an Information!
+                    </div>
+                </div>
+            </div>
+        </div>  
+        
+        <div class="modal fade" id="success_msg_container" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="grid-elm grid-align-1-1 grid-offset msg-success">                                                                                             
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> 
+                        This is an Success Message!
+                    </div>
+                </div>
+            </div>
+        </div>  
+    
         {CONTENT_FILE}
         
         <footer>
