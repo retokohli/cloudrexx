@@ -427,13 +427,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             $products = $product->getUpgrades();
         } else {
-            $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll(); // if the user clicked on button "Abo wählen" from trial subscription means list all products
+            // if the user clicked on button "Abo wählen" from trial subscription means list all products
+            $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findBy(array('entityClass' => 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection'));                   
         }
 
         if (empty($products)) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
         }
-
+        
         if (!empty($websiteId)) {
             $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $website = $websiteServiceRepo->findOneById($websiteId);
@@ -459,7 +460,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $i++;
                 }
                 $objTemplate->setVariable(array(
-                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
+                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),                    
                 ));
             }
             $objTemplate->setVariable(array(
@@ -467,8 +468,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID' => lcfirst($productName),
                 'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $productPrice,
                 'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => $productPrice * 12,
-                'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $productPrice * 12 * 0.9,
-                'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice()
+                'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $productPrice * 24 * 0.9,
+                'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice(),
+                'MULTISITE_WEBSITE_PRODUCT_ID' => $product->getId()
             ));
             $objTemplate->parse('showProduct');
         }
