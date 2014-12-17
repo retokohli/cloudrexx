@@ -246,11 +246,21 @@
     }
 
     function isFormValid() {
-        return (objMail.data('valid')
-                && objAddress.data('valid')
-                && objTerms.data('valid'));
-    }
+        if (objMail.length && !objMail.data('valid')) {
+            return false;
+        }
 
+        if (objAddress.length && !objAddress.data('valid')) {
+            return false;
+        }
+
+        if (objTerms.length && !objTerms.data('valid')) {
+            return false;
+        }
+
+        return true;
+
+    }
     function setFormHeader(headerTxt) {
         objModal.find('.modal-header .modal-title').html(headerTxt);
     }

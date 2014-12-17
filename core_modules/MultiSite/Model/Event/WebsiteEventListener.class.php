@@ -115,6 +115,7 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
 
         switch ($website->getStatus()) {
             case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
+                $entityAttributes['initialSignUp'] = true;
                 return $website->setup($entityAttributes);
                 break;
 
