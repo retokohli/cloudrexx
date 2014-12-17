@@ -21,7 +21,7 @@
                     <td>{MULTISITE_WEBSITE_INVOICE_DATE}</td>
                     <td class="actions"> 
                         <button type="button" class="manage" onclick="window.location.href = '{NODE_MULTISITE_SUBSCRIPTIONDETAIL}?id={MULTISITE_SUBSCRIPTION_ID}'">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
-                        <!-- BEGIN showUpgradeButton --><button type="button" class="upgrade">{TXT_MULTISITE_UPGRADE}</button><!-- END showUpgradeButton -->
+                        <!-- BEGIN showUpgradeButton --><button class="upgrade" data-remote="/api/MultiSite/SubscriptionSelection?id={MULTISITE_WEBSITE_ID}&subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionSelection" data-toggle="modal">{TXT_MULTISITE_UPGRADE}</button><!-- END showUpgradeButton -->
                         <!-- BEGIN showAddWebsiteButton -->
                         <button class="add" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionAddWebsite" data-toggle="modal">{TXT_MULTISITE_ADD_NEW_WEBSITE}</button>
                         <!-- END showAddWebsiteButton -->
