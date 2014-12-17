@@ -47,6 +47,13 @@ Cx\Modules\Order\Model\Entity\Subscription:
       nullable: true
     description:
       type: string
+    state:
+      type: string
+      length: 12
+    terminationDate:
+      type: datetime
+      column: termination_date
+      nullable: true
       
   manyToOne: # owning side
     order:
