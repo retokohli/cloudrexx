@@ -112,7 +112,7 @@ class JsonData {
             return;
         }
         // new adapter
-        $object = new $adapter($component, \Env::get('cx'));
+        $object = new $adapter($component->getSystemComponent(), \Env::get('cx'));
         $this->adapters[$object->getName()] = $object;
     }
 
