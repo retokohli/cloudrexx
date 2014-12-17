@@ -9,7 +9,7 @@ jQuery(document).ready(function(){
         signUpUrl: '{MULTISITE_ADD_WEBSITE_URL}',
         addressUrl: '{MULTISITE_ADDRESS_URL}',
         multisiteDomain: '{MULTISITE_DOMAIN}',
-        headerInitTxt: '{TITLE}',
+        headerInitTxt: '{TXT_MULTISITE_ADD_NEW_WEBSITE}',
         headerSetupTxt: '{TXT_MULTISITE_BUILD_WEBSITE_TITLE} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />',
         headerSuccessTxt: '{TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE}',
         headerErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_TITLE}',
@@ -57,27 +57,32 @@ var validateAdress = function (value, validator, $field) {
 /* ]]> */
 </style>
 <div class="grid-elm grid-align-1-1 grid-offset">
-    <form role="form" id="multisite_signup_form">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h2>Neue Website hinzufügen</h2>
+    <div class="modal-body multisite-form">
+        <form role="form" id="multisite_signup_form">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h2>{TXT_MULTISITE_ADD_NEW_WEBSITE}</h2>
+            <div class="modal-body multisite-status"></div>
+            <fieldset>
+                <div class="row">
 
-        <fieldset>
-            <div class="row">
-
-                <div class="form-group">
-                    <div class="input-group multisite-address">
-                        <input  data-bv-notempty="true" data-bv-notempty-message=" " data-bv-callback="true" data-bv-callback-callback="validateAdress"  id="multisite_address" name="multisite_address" type="text" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" value="" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
-                        <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
+                    <div class="form-group">
+                        <div class="input-group multisite-address">
+                            <input  data-bv-notempty="true" data-bv-notempty-message=" " data-bv-callback="true" data-bv-callback-callback="validateAdress"  id="multisite_address" name="multisite_address" type="text" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" value="" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
+                            <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
+                        </div>
                     </div>
+
                 </div>
 
-            </div>
+                <div class="row">
+                    <button type="button" class="multisite_submit">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+                    <button type="button" data-dismiss="modal">{TXT_MULTISITE_CLOSE}</button>
+                </div>
 
-            <div class="row">
-                <button type="button" class="multisite_submit">{TXT_MULTISITE_CREATE_WEBSITE}</button>
-                <button type="button" data-dismiss="modal">{TXT_MULTISITE_CLOSE}</button>
-            </div>
-    
-        </fieldset>
-    </form>
+            </fieldset>
+        </form>
+     </div>
+    <div class="modal-body multisite-progress">
+        <div></div>
+    </div>
 </div>
