@@ -63,8 +63,8 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
      */
     public function prePersist($eventArgs) {
         \DBG::msg('MultiSite (AccessUserEventListener): prePersist');
+        $objUser = $eventArgs->getEntity();
         
-        global $_ARRAYLANG;
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
@@ -75,14 +75,8 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Access');
-                    if (!empty($options['AdminUser']) && $options['AdminUser'] > 0) {
-                        $adminUsers = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
-                        $adminUsersCount = count($adminUsers);
-                        if ($adminUsersCount >= $options['AdminUser']) {
-                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['AdminUser']));
-                        }
-                    }
+                    //Check Admin Users quota
+                    self::checkAdminUsersQuota($objUser);
                     break;
                 default:
                     break;
@@ -100,6 +94,12 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    //Check Admin Users quota
+                    $adminUsersList = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
+                    if (!array_key_exists($objUser->getId(), $adminUsersList)) {
+                        self::checkAdminUsersQuota($objUser);
+                    }
+                    
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
                         if (!$objUser->isVerified()) {
@@ -257,6 +257,35 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
             $params['userId'] = $objUser->getId();
         }
         return $params;
+    }
+    
+    /**
+     * Check the Admin Users Quota
+     * 
+     * @param \User $objUser
+     * @throws \Cx\Core\Error\Model\Entity\ShinyException
+     */
+    public static function checkAdminUsersQuota(\User $objUser) {
+        global $objInit, $_ARRAYLANG;
+        
+        $langData = $objInit->loadLanguageData('MultiSite');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+                
+        $userGroupIds     = $objUser->getAssociatedGroupIds();
+        $backendGroupIds  = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getBackendGroupIds();
+        $backendGroupUser = count(array_intersect($backendGroupIds, $userGroupIds));
+        if ($objUser->getAdminStatus() || $backendGroupUser)  {
+            $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Access');
+            if (!empty($options['AdminUser']) && $options['AdminUser'] > 0) {
+                $adminUsers = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
+                $adminUsersCount = count($adminUsers);
+                if ($adminUsersCount >= $options['AdminUser']) {
+                    throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['AdminUser']));
+                }
+            }
+        }
+        
+        return true;
     }
     
     public function onEvent($eventName, array $eventArgs) {        

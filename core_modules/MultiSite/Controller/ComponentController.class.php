@@ -1626,17 +1626,10 @@ throw new MultiSiteException('Refactor this method!');
             case ComponentController::MODE_WEBSITE:
 
                 $objFWUser = \FWUser::getFWUserObject();
-                $backendGroupIds = array();
                 $users = array();
 
                 //get the backend group ids
-                $objGroup = $objFWUser->objGroup->getGroups(array('type' => \Cx\Core\Core\Controller\Cx::MODE_BACKEND));
-                if ($objGroup) {
-                    while (!$objGroup->EOF) {
-                        $backendGroupIds[] = $objGroup->getId();
-                        $objGroup->next();
-                    }
-                }
+                $backendGroupIds = self::getBackendGroupIds();
                 
                 //get backend group users
                 $objBackendGroupUser = $objFWUser->objUser->getUsers(array('group_id' => $backendGroupIds));
@@ -1672,6 +1665,24 @@ throw new MultiSiteException('Refactor this method!');
                 return $users;
                 break;
         }
+    }
+    
+    /**
+     * Get the backend group ids
+     * 
+     * @return array $backendGroupIds
+     */
+    public static function getBackendGroupIds() {
+        $objFWUser       = \FWUser::getFWUserObject();
+        $backendGroupIds = array();
+        $objGroup = $objFWUser->objGroup->getGroups(array('type' => \Cx\Core\Core\Controller\Cx::MODE_BACKEND));
+        if ($objGroup) {
+            while (!$objGroup->EOF) {
+                $backendGroupIds[] = $objGroup->getId();
+                $objGroup->next();
+            }
+        }
+        return $backendGroupIds;
     }
     
     /**
