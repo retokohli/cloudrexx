@@ -70,7 +70,25 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
             }
         }
     }
-    
+    /**
+     * Terminated Event Change the website status to offline
+     * 
+     * @param object $eventArgs
+     */
+    public function terminated($eventArgs) {
+        \DBG::msg('MultiSite (WebsiteCollectionEventListener): terminated');
+        $subscription      = $eventArgs->getEntity();
+        $websiteCollection = $subscription->getProductEntity();
+        
+        //Set all the associated websiteCollections website to offline
+        if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+            foreach ($websiteCollection->getWebsites() as $website) {
+                $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
+            }
+        }
+        
+    }
+
     public function onEvent($eventName, array $eventArgs) {        
         $this->$eventName(current($eventArgs));
     }

@@ -1195,6 +1195,7 @@ throw new MultiSiteException('Refactor this method!');
         
         $evm = \Env::get('cx')->getEvents();
         $evm->addEvent('model/payComplete');
+        $evm->addEvent('model/terminated');
         $domainEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\DomainEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
@@ -1244,6 +1245,9 @@ throw new MultiSiteException('Refactor this method!');
         //CrmCustomer event Listener
         $crmCustomerEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CrmCustomerEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmCustomerEventListener);
+        
+        $websiteCollectionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteCollectionEventListener();
+        $evm->addModelListener('terminated', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
         
     }
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
@@ -1511,7 +1515,7 @@ throw new MultiSiteException('Refactor this method!');
                         $objGroup->next();
                     }
                 }
-
+                
                 //get backend group users
                 $objBackendGroupUser = $objFWUser->objUser->getUsers(array('group_id' => $backendGroupIds));
                 if ($objBackendGroupUser) {
@@ -1547,7 +1551,7 @@ throw new MultiSiteException('Refactor this method!');
                 break;
         }
     }
-
+    
     /**
      * Add the warning banner
      *

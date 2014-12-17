@@ -10,6 +10,8 @@
 
 namespace Cx\Modules\Order\Model\Entity;
 
+class SubscriptionException extends \Exception {}
+
 /**
  * Class Subscription
  * 
@@ -46,10 +48,25 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     protected $externalSubscriptionId = null;
     protected $externalCustomerId = null;
     protected $description = null;
+    
+    /**
+     *
+     * @var string $state 
+     */
+    protected $state;
+    
+    /**
+     *
+     * @var datetime $terminationDate
+     */
+    protected $terminationDate;
 
     const PAYMENT_OPEN = 'open';
     const PAYMENT_PAID = 'paid';
     const PAYMENT_RENEWAL = 'renewal';
+    const STATE_ACTIVE      = 'active';
+    const STATE_INACTIVE    = 'inactive';
+    const STATE_TERMINATED  = 'terminated';
 
     /**
      * Constructor
@@ -282,5 +299,83 @@ class Subscription extends \Cx\Model\Base\EntityBase {
      */
     public function setSubscriptionDate($subscriptionDate) {
         $this->subscriptionDate = $subscriptionDate;
+    }
+    
+    /**
+     * Get the state
+     * 
+     * @return string state of the subscription
+     */
+    public function getState()
+    {
+        return $this->state; 
+    }
+    
+    /**
+     * Set the state
+     * 
+     * @param string $state state of the subscription
+     */
+    public function setState($state)
+    {
+        $this->state = $state; 
+    }
+    
+    /**
+     * Get the subscription's termination date
+     * 
+     * @return object date time object of termination date
+     */
+    public function getTerminationDate()
+    {
+        return $this->terminationDate;
+    }
+    
+    /**
+     * Set the subscription's termination date
+     * 
+     * @param object $terminationDate date time object of termination date
+     */
+    public function setTerminationDate($terminationDate)
+    {
+        $this->terminationDate = $terminationDate; 
+    }
+    
+    /**
+     * Change Subscription State to Terminate.
+     * 
+     * @throws WebsiteException
+     */
+    public function terminate()
+    {
+        global $_ARRAYLANG;
+        
+        if ($this->externalSubscriptionId) {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+            $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+            $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+            if(empty($instanceName) || empty($apiSecret)) {
+                return;
+            }
+            $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
+            
+            $subscription = new \Payrexx\Models\Request\Subscription();
+            $subscription->setId($this->externalSubscriptionId);
+            try {
+                $response = $payrexx->cancel($subscription);
+                if ((isset($response['status']) && $response['status'] != 'success') 
+                        || (isset($response['data']['status']) && $response['data']['status'] != 'cancelled')) {
+                    throw new SubscriptionException($_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PAYREXX_CANCEL_FAILED']);
+                }
+            } catch (\Payrexx\PayrexxException $e) {
+                throw new SubscriptionException($e->getMessage());
+            }
+        }
+        //set state terminated.
+        $this->setState(self::STATE_TERMINATED);
+        //Set current date/time
+        $this->setTerminationDate(new \DateTime());
+        //Trigger the model event terminated on the subscription's product entity.
+        \Env::get('cx')->getEvents()->triggerEvent('model/terminated', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
     }
 }
