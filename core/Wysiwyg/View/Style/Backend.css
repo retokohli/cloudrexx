@@ -4,3 +4,6 @@
  * \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/FileName.css', 1));
  * or remove this file if you don't need it
  */
+#form-X-title, #imagePath, #form-X-description, #form-X-htmlContent {width: 500px;}
+#form-X-description {height: 50px;}
+#form-X-htmlContent {height: 200px;}
