@@ -33,7 +33,7 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
     public function findOneForSale($productOptions, $saleOptions) { 
         global $_ARRAYLANG;
         //create new entity of website collection
-        $websiteCollection = new Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection();
+        $websiteCollection = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection();
         if ($productOptions['websiteCollectionQuota']) {
             $websiteCollection->setQuota($productOptions['websiteCollectionQuota']);
         }
@@ -47,7 +47,7 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
         if (!$websiteTemplate) {
             throw new WebsiteCollectionRepositoryException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_TEMPLATE_FAILED']);    
         }
-        $websiteCollection->setWebsiteTemplate($websiteTemplate);
+        $websiteTemplate->addWebsiteCollection($websiteCollection);        
         
         //Initialize new website
         $websiteThemeId = isset($saleOptions['themeId']) ? $saleOptions['themeId'] : null;
