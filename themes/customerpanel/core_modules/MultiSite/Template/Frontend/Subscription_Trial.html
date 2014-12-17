@@ -30,20 +30,20 @@
                         <!-- BEGIN showAdminButton -->
                         <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
                         <!-- END showAdminButton -->
-
+                       
                         <button class="save" data-remote="/api/MultiSite/SubscriptionSelection?id={MULTISITE_WEBSITE_ID}" data-target="#SubscriptionSelection" data-toggle="modal">{TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION}</button>
-                        <div aria-hidden="false" class="modal fade" id="SubscriptionSelection" role="dialog" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content">Loading subscription form...</div>
-                            </div>
-                        </div>
-
+                        
                     </td>
                 </tr>
                 <!-- END showWebsites -->
                 <!-- END showSiteDetails -->
             </tbody>
         </table>        
+    </div>
+</div>
+<div aria-hidden="false" class="modal fade " id="SubscriptionSelection" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">Loading subscription form...</div>
     </div>
 </div>
 <!-- END showSiteTable -->

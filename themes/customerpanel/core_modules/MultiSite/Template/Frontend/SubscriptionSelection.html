@@ -509,11 +509,9 @@
             if (getProductPrice($this)) {
                 modifyPaymentUrl($this);
                 $this.addClass('subscriptionProduct');
-                jQuery("#SubscriptionSelection").addClass('subscriptionProduct');
                 return true;
             }
             jQuery('.buy-now').removeClass('subscriptionProduct');
-            jQuery("#SubscriptionSelection").removeClass('subscriptionProduct');
             return false;
         });
                 
@@ -557,7 +555,7 @@
                     if ((jQuery('.buy-now.subscriptionProduct').length < 0) || !validPaymentUrl(jQuery('.buy-now.subscriptionProduct'))) {
                         return e.preventDefault();
                     }
-                    jQuery('#SubscriptionSelection.subscriptionProduct').modal('hide');                    
+                    jQuery('#SubscriptionSelection').modal('hide');                    
                     return true;
                 },
                 hidden: function(transaction) {
@@ -566,6 +564,8 @@
             });
         });
     });
+    
+    jQuery('.modal-backdrop').hide();
 </script>
 
 <div class="prices-periods"><a class="monthly" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a> <a class="annual active" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a> <a class="biannual" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}</a></div>
