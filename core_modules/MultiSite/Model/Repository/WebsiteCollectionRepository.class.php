@@ -63,5 +63,7 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
         \Env::get('em')->persist($websiteCollection);
         //Flush the entity manager
         \Env::get('em')->flush();
+        
+        return $websiteCollection;
     }
 }
