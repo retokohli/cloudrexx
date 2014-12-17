@@ -3,6 +3,26 @@ cx.ready(function() {
     websiteLoginUrl = cx.variables.get('cadminPath', 'contrexx') + 'index.php&cmd=JsonData&object=MultiSite&act=websiteLogin';    
 });
 
+var customerPanel = {
+  messageTypes : ['error', 'warning', 'info', 'success']  
+};
+
+/**
+ * Show messages to the user
+ * uses bootstrap modal and predefined modal boxes
+ * 
+ * @param html   msgTxt Html format message text
+ * @param string type   Type of message(error, warning, info, success)
+ */
+function showMessage(msgTxt, type) {
+    type      = jQuery.inArray(type, customerPanel.messageTypes) !== -1 ? type : 'error';
+    $objModal = jQuery('#'+ type + '_msg_container');
+    $content  = $objModal.find('.msg_text');
+    
+    $content.html(msgTxt);
+    $objModal.modal('show');
+}
+
 function getQueryParams(qs) {
     qs = qs.split("+").join(" ");
     var params = {},
@@ -60,10 +80,10 @@ function getRemoteLoginToken($this) {
                         newWindow.focus();
                     }
                 } else {
-                    alert(resp.message);
+                    showMessage(resp.message, 'error');
                 }
             } else {
-                alert(response.message);
+                showMessage(response.message, 'error');
             }
         },
         complete: function (xhr, settings) {
