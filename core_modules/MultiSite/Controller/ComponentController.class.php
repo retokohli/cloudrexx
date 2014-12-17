@@ -102,9 +102,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $page->setModule('MultiSite');
         $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
         \LinkGenerator::parseTemplate($pageContent, true, new \Cx\Core\Net\Model\Entity\Domain(\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')));
-        $objTemplate = new \Cx\Core\Html\Sigma();
-        $objTemplate->setGlobalVariable($_ARRAYLANG);
-        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTemplate);
+        $objTemplate = new \Cx\Core\Html\Sigma();                
         $objTemplate->setTemplate($pageContent);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -112,523 +110,43 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case 'MultiSite':
                 switch ($subcommand) {
                     case 'Signup':
-                        $websiteName = isset($arguments['multisite_address']) ? contrexx_input2xhtml($arguments['multisite_address']) : '';
-                        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-                        $mainDomain = $domainRepository->getMainDomain()->getName();
-                        $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
-                        $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
-                        $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
-                        $paymentUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl');
-                        $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl'));
-                        \LinkGenerator::parseTemplate($termsUrlValue);
-                        $termsUrl = '<a href="'.$termsUrlValue.'" target="_blank">'.$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'].'</a>';
-                        $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
-                        $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
-                        if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin')) {
-                            $buildWebsiteMsg = $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'];
-                        } else {
-                            $buildWebsiteMsg = $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'];
-                        }
-                        $objTemplate->setVariable(array(
-                            'TITLE'                         => $_ARRAYLANG['TXT_MULTISITE_TITLE'],
-                            'TXT_MULTISITE_CLOSE'           => $_ARRAYLANG['TXT_MULTISITE_CLOSE'],
-                            'TXT_MULTISITE_EMAIL_ADDRESS'   => $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS'],
-                            'TXT_MULTISITE_SITE_ADDRESS'         => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
-                            'TXT_MULTISITE_SITE_ADDRESS_SCHEME'  => sprintf($_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME'], $websiteNameMinLength, $websiteNameMaxLength),
-                            'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
-                            'TXT_MULTISITE_ORDER_NOW'       => $_ARRAYLANG['TXT_MULTISITE_ORDER_BUTTON'],
-                            'MULTISITE_PATH'                => ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getWebsiteOffsetPath(),
-                            'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
-                            'POST_URL'                      => '',
-                            'MULTISITE_ADDRESS_MIN_LENGTH'  => $websiteNameMinLength,
-                            'MULTISITE_ADDRESS_MAX_LENGTH'  => $websiteNameMaxLength,
-                            'MULTISITE_ADDRESS'             => $websiteName,
-                            'MULTISITE_SIGNUP_URL'          => $signUpUrl->toString(),
-                            'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
-                            'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
-                            'MULTISITE_PAYMENT_URL'         => $paymentUrl->toString(),
-                            'TXT_MULTISITE_ACCEPT_TERMS'    => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
-                            'TXT_MULTISITE_BUILD_WEBSITE_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'],
-                            'TXT_MULTISITE_BUILD_WEBSITE_MSG' => $buildWebsiteMsg,
-                            'TXT_MULTISITE_REDIRECT_MSG'    => $_ARRAYLANG['TXT_MULTISITE_REDIRECT_MSG'],
-                            'TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'],
-                            'TXT_MULTISITE_BUILD_ERROR_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'],
-                            'TXT_MULTISITE_BUILD_ERROR_MSG' => $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'],
-                            'TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL'],
-                            'TXT_MULTISITE_ACCEPT_TERMS_ERROR' => $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_ERROR'],
-// TODO: add configuration option for contact details and replace the hard-coded e-mail address on the next line
-                            'TXT_MULTISITE_EMAIL_INFO'      => sprintf($_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO'], 'info@cloudrexx.com'),
-                        ));
-                        $productId = !empty($arguments['product-id']) ? $arguments['product-id'] : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
-                        if (!empty($productId)) {
-                            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
-                            $product = $productRepository->findOneBy(array('id' => $productId));
-                            $productPrice = $product->getPrice();
-                            if (!empty($productPrice)) {
-                                $additionalParameters = array(
-                                    'invoice_amount'    => $productPrice,
-                                    'invoice_currency'  => 'CHF',
-                                    'invoice_number'    =>  $product->getName(),
-                                    'contact_email'     => '',
-                                    'referenceId'       => ''
-                                );
-                                $i = 1;
-                                $params = '';
-                                foreach ($additionalParameters as $key => $val) {
-                                    $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
-                                    $i++;
-                                }
-                                $objTemplate->setVariable(array(
-                                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
-                                ));
-                            }
-                            $objTemplate->setVariable(array(
-                                'TXT_MULTISITE_PAYMENT_MODE' => !empty($productPrice) ? true : false,
-                                'PRODUCT_NOTE_ENTITY'     => $product->getNoteEntity(),
-                                'PRODUCT_NOTE_RENEWAL'    => $product->getNoteRenewal(),
-                                'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
-                                'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
-                                'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
-                                'PRODUCT_NAME'            => $product->getName(),
-                                'PRODUCT_ID'              => $product->getId()
-                            ));
-                        }
-                        echo $objTemplate->get();
+                        echo $this->executeCommandSignup($objTemplate, $arguments);
                         break;
 
                     case 'Login':
-                        $langData = $objInit->loadLanguageData('Login');
-                        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-                        $langData = $objInit->loadLanguageData('core');
-                        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-                        $objTemplate->setVariable(array(
-                            'TITLE'                 => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
-                            'TXT_LOGIN_PASSWORD'    => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
-                            'TXT_LOGIN_USERNAME'    => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
-                            'TXT_LOGIN_REMEMBER_ME' => $_ARRAYLANG['TXT_CORE_REMEMBER_ME'],
-                            'TXT_LOGIN_LOGIN'       => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
-                            'TXT_LOGIN_PASSWORD_LOST'=> $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
-                        ));
-                        echo $objTemplate->get();
+                        echo $this->executeCommandLogin($objTemplate);                        
                         break;
 
                     case 'User':
-                        // profile attribute labels are stored in core-lang
-                        global $objInit, $_CORELANG;
-                        $langData = $objInit->loadLanguageData('core');
-                        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-
-                        $sessionObj = \cmsSession::getInstance();
-                        $objUser = \FWUser::getFWUserObject()->objUser;
-                        if (!$objUser->login()) {
-                            echo 'Access denied';
-                            break;
-                        }
-
-                        $blockName = 'multisite_user';
-                        $placeholderPrefix = strtoupper($blockName).'_';
-                        $objAccessLib = new \Cx\Core_Modules\Access\Controller\AccessLib($objTemplate);
-                        $objAccessLib->setModulePrefix($placeholderPrefix);
-                        $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
-                        $objAccessLib->setAccountAttributeNamePrefix($blockName.'_account_');
-
-                        $objUser->objAttribute->first();
-                        while (!$objUser->objAttribute->EOF) {
-                            $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, $arguments[2] == 'Edit' ? true : false, false, false, false, false);
-                            $objUser->objAttribute->next();
-                        }
-                        $objAccessLib->parseAccountAttributes($objUser);
-                        $objTemplate->setVariable(array(
-                            'MULTISITE_USER_PROFILE_SUBMIT_URL' => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
-                        ));
-                        echo $objTemplate->get();
+                        echo $this->executeCommandUser($objTemplate, $arguments);
                         break;
 
-                    case 'Subscription':                           
-                        if (!self::isUserLoggedIn()) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
-                            break;
-                        }
-                        
-                        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
-                        if (empty($crmContactId)) {
-                            echo ' '; // Do not show sbuscriptions
-                            break;
-                        }
-                        
-                        //Get the input values
-                        $status         = isset($_GET['status']) ? contrexx_input2raw($_GET['status']) : '';
-                        $excludeProduct = isset($_GET['exclude_product']) ? array_map('contrexx_input2raw', $_GET['exclude_product']) : '';
-                        $includeProduct = isset($_GET['include_product']) ? array_map('contrexx_input2raw', $_GET['include_product']) : '';
-                        //Get the orders based on CRM contact id and get params
-                        $orderRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order');
-                        $orders    = $orderRepo->getOrdersByCriteria($crmContactId, $status, $excludeProduct, $includeProduct);
-                        
-                        //parse the Site Details
-                        if (!empty($orders)) {
-                            $userId = \FWUser::getFWUserObject()->objUser->getId();
-                            foreach ($orders as $order) {
-                                foreach ($order->getSubscriptions() as $subscription) {                                    
-                                    $product = $subscription->getProduct();
-                                    if (!$product) {
-                                        continue;
-                                    }
-                                    $objTemplate->setVariable(array(
-                                        'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
-                                        'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
-                                        'MULTISITE_WEBSITE_PLAN'             => contrexx_raw2xhtml($product->getName()),
-                                        'MULTISITE_WEBSITE_INVOICE_DATE'     => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
-                                        'MULTISITE_WEBSITE_EXPIRE_DATE'      => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',                                        
-                                    ));
-                                    
-                                    if ($status == 'valid' && $objTemplate->blockExists('showUpgradeButton')) {
-                                        $product->isUpgradable() ? $objTemplate->touchBlock('showUpgradeButton') : $objTemplate->hideBlock('showUpgradeButton');
-                                    }
-                                    
-                                    if ($status != 'expired') {
-                                        $websiteCollection = $subscription->getProductEntity();
-                                        if ($websiteCollection) {
-                                            if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-                                                foreach ($websiteCollection->getWebsites() as $website) {
-                                                    if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
-                                                        continue;
-                                                    }
-                                                    self::parseWebsiteDetails($objTemplate, $website);
-                                                    $objTemplate->parse('showWebsites');
-                                                }
-                                                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
-                                            } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                                                self::parseWebsiteDetails($objTemplate, $websiteCollection);
-                                            }
-                                        }
-                                    }
-                                    
-                                    $objTemplate->parse('showSiteDetails');
-                                }
-                            }
-                        } else {
-                            $objTemplate->hideBlock('showSiteTable');
-                        }                        
-                        echo $objTemplate->get();
+                    case 'Subscription':
+                        echo $this->executeCommandSubscription($objTemplate, $arguments);                        
                         break;
                         
                     case 'SubscriptionSelection':
-                        $websiteId = isset($_GET['id']) ? $_GET['id'] : 0;
-                        $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
-                        
-                        if ($products) {
-                            if (!empty($websiteId)) {
-                                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                                $website = $websiteServiceRepo->findOneById($websiteId);
-                                $websiteName = ($website) ? $website->getName() : '';
-                            }
-                            
-                            $conatctEmail = (self::isUserLoggedIn()) ? \FWUser::getFWUserObject()->objUser->getEmail() : '';
-                            foreach ($products as $product) {
-                                $productName = contrexx_raw2xhtml($product->getName());
-                                $productPrice = $product->getPrice();
-                                if ($productPrice > 0) {
-                                    $additionalParameters = array(
-                                    'invoice_number'    => $productName . ' - ' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
-                                    'contact_email'     => $conatctEmail,
-                                    'invoice_amount'    => $productPrice,
-                                    'invoice_currency'  => 'CHF',
-                                    'referenceId'       => $product->getId() . '-' . $websiteName
-                                    );
-                                    $i = 1;
-                                    $params = '';
-                                    foreach ($additionalParameters as $key => $val) {
-                                        $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
-                                        $i++;
-                                    }
-                                    $objTemplate->setVariable(array(
-                                        'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
-                                    ));
-                                }
-                                $objTemplate->setVariable(array(
-                                    'MULTISITE_WEBSITE_PRODUCT_NAME' => $productName,
-                                    'MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID' => lcfirst($productName),
-                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $productPrice,
-                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => $productPrice * 12,
-                                    'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $productPrice * 12 * 0.9,
-                                    'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice()
-                                ));
-                                $objTemplate->parse('showProduct');
-                            }
-                        }
-                        echo $objTemplate->get();
+                        echo $this->executeCommandSubscriptionSelection($objTemplate, $arguments);
                         break;
                         
                     case 'SubscriptionDetail':
-                        $subscriptionId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : 0;
-                        
-                        if (!self::isUserLoggedIn()) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
-                            break;
-                        }
-                        
-                        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
-                        if (empty($crmContactId)) {
-                            echo ' '; // Do not show subscription detail
-                            break;
-                        }
-                        $userId = \FWUser::getFWUserObject()->objUser->getId();
-                                                
-                        if (empty($subscriptionId)) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'];
-                            break;
-                        }
-                        
-                        $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-                        $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
-
-                        if (!$subscriptionObj) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'];
-                            break;
-                        }
-                        
-                        $order = $subscriptionObj->getOrder();
-                        
-                        if (!$order) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS'];
-                            break;
-                        }
-                        
-                        //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
-                        if ($crmContactId != $order->getContactId()) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
-                            break;
-                        }
-                        
-                        $product = $subscriptionObj->getProduct();
-
-                        if (!$product) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
-                            break;
-                        }
-
-                        $objTemplate->setVariable(array(
-                            'MULTISITE_SUBSCRIPTION_ID'      => contrexx_raw2xhtml($subscriptionObj->getId()),
-                            'MULTISITE_WEBSITE_PRODUCT_NAME' => contrexx_raw2xhtml($product->getName()),
-                            'MULTISITE_WEBSITE_SUBSCRIPTION_DATE' => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
-                            'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => $subscriptionObj->getExpirationDate() ? contrexx_raw2xhtml($subscriptionObj->getExpirationDate()->format('d.m.Y')) : '',
-                        ));
-                        
-                        self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
-                        
-                        $websiteCollection = $subscriptionObj->getProductEntity();
-
-                        if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-                            foreach ($websiteCollection->getWebsites() as $website) {
-                                if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
-                                    continue;
-                                }
-                                self::parseWebsiteDetails($objTemplate, $website);
-                                
-                                $objTemplate->parse('showWebsites');
-                            }
-                            self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
-                        } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                            self::parseWebsiteDetails($objTemplate, $websiteCollection);
-                        }
-                                                
-                        echo $objTemplate->get();
+                        echo $this->executeCommandSubscriptionDetail($objTemplate, $arguments);
                         break;
 
                     case 'SubscriptionAddWebsite':
-                        $subscriptionId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : 0;
-                        if (!self::isUserLoggedIn()) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
-                            break;
-                        }
-                        if (isset($_GET['addWebsite'])) {
-                            $websiteName = isset($arguments['multisite_address']) ? contrexx_input2xhtml($arguments['multisite_address']) : '';
-                            // TO-DO:: add new website code here
-                            
-                            $json = new \Cx\Core\Json\JsonData();
-                            echo $json->data(array(), true);
-                            die();
-                        } else {
-                            $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-                            $mainDomain = $domainRepository->getMainDomain()->getName();
-                            $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
-
-                            $objTemplate->setVariable(array(
-                                'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
-                                'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
-                                'MULTISITE_ADD_WEBSITE_URL'     => '/api/MultiSite/SubscriptionAddWebsite?addWebsite=1&id='.$subscriptionId,
-                                'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
-                            ));
-                            
-                            echo $objTemplate->get();
-                        }
-                        
+                        echo $this->executeCommandSubscriptionAddWebsite($objTemplate, $arguments);                        
                         break;
 
                     case 'Website':
-
-                        if (!self::isUserLoggedIn()) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
-                            break;
-                        }
-                        
-                        $websiteId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : '';
-                        if (empty($websiteId)) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
-                            break;
-                        }
-
-                        $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                        $website = $websiteServiceRepo->findOneById($websiteId);
-                        if (!$website) {
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
-                            break;
-                        }
-                        if($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()){
-                            echo $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
-                            break;
-                        }
-                        
-                        //show the frontend
-                        $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
-                        $objTemplate->setVariable('MULTISITE_WEBSITE_FRONTEND_LINK', $this->getApiProtocol() . $website->getBaseDn()->getName());
-                        self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
-                        self::showOrHideBlock($objTemplate, 'showAdminButton', $status);
-                        
-                        //Show the Website Admin and Backend group users
-                        if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
-                            $websiteAdminUsers = $website->getAdminUsers();
-                            foreach ($websiteAdminUsers as $websiteAdminUser) {
-                                $objTemplate->setVariable(array(
-                                    'MULTISITE_WEBSITE_USER_NAME' => \FWUser::getParsedUserTitle($websiteAdminUser->id),
-                                    'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser->email,
-                                ));
-                                $objTemplate->parse('showWebsiteAdminUsers');
-                            }
-                        }
-
-                        //Show the Website Domain Alias name
-                        if ($objTemplate->blockExists('showWebsiteDomainAliases')) {
-                            $websiteDomainAliases = $website->getDomainAliases();
-                            foreach ($websiteDomainAliases as $domainAlias) {
-                                $objTemplate->setVariable(array(
-                                    'MULTISITE_WEBSITE_DOMAIN_ALIAS' => contrexx_raw2xhtml($domainAlias->getName()),
-                                ));
-                                $objTemplate->parse('showWebsiteDomainAliases');
-                            }
-                            self::showOrHideBlock($objTemplate, 'showWebsiteDomainAliasFound', !empty($websiteDomainAliases));
-                        }
-
-                        //show the website's domain name
-                        if ($objTemplate->blockExists('showWebsiteDomainName')) {
-                            $domain = $website->getBaseDn();
-                            if ($domain) {
-                                $objTemplate->setVariable(array(
-                                    'MULTISITE_WEBSITE_DOMAIN_NAME' => contrexx_raw2xhtml($domain->getName()),
-                                ));
-                            }
-                        }
-                        //show the website's resources
-                        if ($objTemplate->blockExists('showWebsiteResources')) {
-                            $resourceUsageStats = $website->getResourceUsageStats();
-                            $objTemplate->setVariable(array(
-                                'MULTISITE_WEBSITE_ADMIN_USERS_USAGE'   => $resourceUsageStats->accessAdminUser->usage,
-                                'MULTISITE_WEBSITE_ADMIN_USERS_QUOTA'   => $resourceUsageStats->accessAdminUser->quota,
-                                'MULTISITE_WEBSITE_CONTACT_FORMS_USAGE' => $resourceUsageStats->contactForm->usage,
-                                'MULTISITE_WEBSITE_CONTACT_FORMS_QUOTA' => $resourceUsageStats->contactForm->quota,
-                                'MULTISITE_WEBSITE_SHOP_PRODUCTS_USAGE' => $resourceUsageStats->shopProduct->usage,
-                                'MULTISITE_WEBSITE_SHOP_PRODUCTS_QUOTA' => $resourceUsageStats->shopProduct->quota,
-                                'MULTISITE_WEBSITE_CRM_CUSTOMERS_USAGE' => $resourceUsageStats->crmCustomer->usage,
-                                'MULTISITE_WEBSITE_CRM_CUSTOMERS_QUOTA' => $resourceUsageStats->crmCustomer->quota,
-                            ));
-                            $objTemplate->parse('showWebsiteResources');
-                        }
-                        $objTemplate->setGlobalVariable(array(
-                            'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($websiteId)
-                        ));
-
-                        echo $objTemplate->get();
+                        echo $this->executeCommandWebsite($objTemplate, $arguments);
                         break;
                         
                     case 'Payrexx':
-                        $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
-                        $subscription = !empty($_POST['subscription']) ? $_POST['subscription'] : array();
-                        if (!empty($transaction) && isset($transaction['status']) && $transaction['status'] === 'confirmed') {
-                            $invoice = $transaction['invoice'];
-                            $referenceId = !empty($subscription['id']) ? $invoice['referenceId'] . '-' . $subscription['id'] : $invoice['referenceId'];
-                            $payment = new \Cx\Modules\Order\Model\Entity\Payment();
-                            $payment->setAmount($invoice['amount']);
-                            $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
-                            $payment->setTransactionReference($referenceId);
-                            \Env::get('em')->persist($payment);
-                            \Env::get('em')->flush();
-                        }
-//                        $transaction   = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
-//                        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-//                        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
-//                        $paymentRequestId = $_POST['transaction']['invoice']['paymentRequestId'];
-//                        
-//                        $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
-//
-//                        $paymentRequest = new \Payrexx\Models\Request\PaymentRequest();
-//                        $paymentRequest->setId($paymentRequestId);
-//
-//                        try {
-//                            $response = $payrexx->getOne($paymentRequest);
-//                        } catch (\Payrexx\PayrexxException $e) {
-//                            throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
-//                        }
-//                        
-//                        if (!empty($transaction) && isset($transaction['status']) && ($transaction['status'] === 'confirmed')
-//                                && !empty($response) && isset($response['status']) && ($response['status'] === 'success')
-//                                && $transaction['invoice']['amount'] === $response['invoice']['amount']
-//                                && $transaction['invoice']['referenceId'] === $response['invoice']['referenceId']) {
-//                            $invoice = $transaction['invoice'];
-//                            $payment = new \Cx\Modules\Order\Model\Entity\Payment();
-//                            $payment->setAmount($invoice['amount']);
-//                            $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
-//                            $payment->setTransactionReference($invoice['referenceId']);
-//                            \Env::get('em')->persist($payment);
-//                            \Env::get('em')->flush();
-//                        }
+                        $this->executeCommandPayrexx();
                         break;
+                    
                     case 'Backup':
-                        try {
-                            $websiteId = isset($arguments['websiteId']) ? contrexx_input2raw($arguments['websiteId']) : 0;
-                            $backupLocation = isset($arguments['backupLocation']) ? contrexx_input2raw($arguments['backupLocation']) : '';
-
-                            if (!empty($websiteId)) {
-                                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                                $website = $websiteServiceRepo->findOneById($websiteId);
-
-                                if (!$website) {
-                                    return false;
-                                }
-
-                                $websiteServiceServer = $website->getWebsiteServiceServer();
-                                if ($websiteServiceServer) {
-                                    $params = array(
-                                        'websiteId' => $websiteId,
-                                        'websiteName' => $website->getName(),
-                                        'backupLocation' => $backupLocation
-                                    );
-                                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
-                                    if ($resp->status == 'success' && $resp->data->status = 'success') {
-                                        return array('status' => 'success', 'message' => $resp->data->message);
-                                    }
-                                    return array('status' => 'error', 'message' => $resp->data->message);
-                                }
-                                $this->cx->getEvents()->triggerEvent(
-                                        'SysLog/Add', array(
-                                            'severity' => 'WARNING',
-                                            'message' => 'This website doesnot exists in the service server',
-                                            'data' => ' ',
-                                ));
-                            }
-                        } catch (\Exception $e) {
-                            throw new MultiSiteException("Failed to backup the website:" . $e->getMessage());
-                        }
+                        $this->executeCommandBackup($arguments);
                         break;
                     default:
                         break;
@@ -639,6 +157,610 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
+    /**
+     * Api Signup command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandSignup($objTemplate, $arguments)
+    {
+        global $_ARRAYLANG;
+        
+        $websiteName = isset($arguments['multisite_address']) ? contrexx_input2xhtml($arguments['multisite_address']) : '';
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $mainDomain = $domainRepository->getMainDomain()->getName();
+        $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
+        $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
+        $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
+        $paymentUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl');
+        $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl'));
+        \LinkGenerator::parseTemplate($termsUrlValue);
+        $termsUrl = '<a href="'.$termsUrlValue.'" target="_blank">'.$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'].'</a>';
+        $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
+        $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
+        if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin')) {
+            $buildWebsiteMsg = $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'];
+        } else {
+            $buildWebsiteMsg = $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'];
+        }
+        $objTemplate->setVariable(array(
+            'TITLE'                         => $_ARRAYLANG['TXT_MULTISITE_TITLE'],
+            'TXT_MULTISITE_CLOSE'           => $_ARRAYLANG['TXT_MULTISITE_CLOSE'],
+            'TXT_MULTISITE_EMAIL_ADDRESS'   => $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS'],
+            'TXT_MULTISITE_SITE_ADDRESS'         => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
+            'TXT_MULTISITE_SITE_ADDRESS_SCHEME'  => sprintf($_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME'], $websiteNameMinLength, $websiteNameMaxLength),
+            'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
+            'TXT_MULTISITE_ORDER_NOW'       => $_ARRAYLANG['TXT_MULTISITE_ORDER_BUTTON'],
+            'MULTISITE_PATH'                => ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getWebsiteOffsetPath(),
+            'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+            'POST_URL'                      => '',
+            'MULTISITE_ADDRESS_MIN_LENGTH'  => $websiteNameMinLength,
+            'MULTISITE_ADDRESS_MAX_LENGTH'  => $websiteNameMaxLength,
+            'MULTISITE_ADDRESS'             => $websiteName,
+            'MULTISITE_SIGNUP_URL'          => $signUpUrl->toString(),
+            'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
+            'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
+            'MULTISITE_PAYMENT_URL'         => $paymentUrl->toString(),
+            'TXT_MULTISITE_ACCEPT_TERMS'    => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
+            'TXT_MULTISITE_BUILD_WEBSITE_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'],
+            'TXT_MULTISITE_BUILD_WEBSITE_MSG' => $buildWebsiteMsg,
+            'TXT_MULTISITE_REDIRECT_MSG'    => $_ARRAYLANG['TXT_MULTISITE_REDIRECT_MSG'],
+            'TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE'],
+            'TXT_MULTISITE_BUILD_ERROR_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_TITLE'],
+            'TXT_MULTISITE_BUILD_ERROR_MSG' => $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'],
+            'TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL'],
+            'TXT_MULTISITE_ACCEPT_TERMS_ERROR' => $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_ERROR'],
+    // TODO: add configuration option for contact details and replace the hard-coded e-mail address on the next line
+            'TXT_MULTISITE_EMAIL_INFO'      => sprintf($_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO'], 'info@cloudrexx.com'),
+        ));
+        $productId = !empty($arguments['product-id']) ? $arguments['product-id'] : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
+        if (!empty($productId)) {
+            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+            $product = $productRepository->findOneBy(array('id' => $productId));
+            $productPrice = $product->getPrice();
+            if (!empty($productPrice)) {
+                $additionalParameters = array(
+                    'invoice_amount'    => $productPrice,
+                    'invoice_currency'  => 'CHF',
+                    'invoice_number'    =>  $product->getName(),
+                    'contact_email'     => '',
+                    'referenceId'       => ''
+                );
+                $i = 1;
+                $params = '';
+                foreach ($additionalParameters as $key => $val) {
+                    $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
+                    $i++;
+                }
+                $objTemplate->setVariable(array(
+                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
+                ));
+            }
+            $objTemplate->setVariable(array(
+                'TXT_MULTISITE_PAYMENT_MODE' => !empty($productPrice) ? true : false,
+                'PRODUCT_NOTE_ENTITY'     => $product->getNoteEntity(),
+                'PRODUCT_NOTE_RENEWAL'    => $product->getNoteRenewal(),
+                'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
+                'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
+                'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
+                'PRODUCT_NAME'            => $product->getName(),
+                'PRODUCT_ID'              => $product->getId()
+            ));
+        }
+        return $objTemplate->get();
+    }
+    
+    /**
+     * Api Login command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandLogin($objTemplate)
+    {
+        global $objInit, $_ARRAYLANG;
+        
+        $langData = $objInit->loadLanguageData('Login');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $langData = $objInit->loadLanguageData('core');
+        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $objTemplate->setVariable(array(
+            'TITLE'                 => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
+            'TXT_LOGIN_PASSWORD'    => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
+            'TXT_LOGIN_USERNAME'    => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
+            'TXT_LOGIN_REMEMBER_ME' => $_ARRAYLANG['TXT_CORE_REMEMBER_ME'],
+            'TXT_LOGIN_LOGIN'       => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
+            'TXT_LOGIN_PASSWORD_LOST'=> $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
+        ));
+        
+        return $objTemplate->get();
+    }
+    
+    /**
+     * Api User command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandUser($objTemplate, $arguments) 
+    {
+        // profile attribute labels are stored in core-lang
+        global $objInit, $_CORELANG;
+        $langData = $objInit->loadLanguageData('core');
+        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
+        }
+        $objUser = \FWUser::getFWUserObject()->objUser;
+        
+        $blockName = 'multisite_user';
+        $placeholderPrefix = strtoupper($blockName).'_';
+        $objAccessLib = new \Cx\Core_Modules\Access\Controller\AccessLib($objTemplate);
+        $objAccessLib->setModulePrefix($placeholderPrefix);
+        $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+        $objAccessLib->setAccountAttributeNamePrefix($blockName.'_account_');
+
+        $objUser->objAttribute->first();
+        while (!$objUser->objAttribute->EOF) {
+            $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, $arguments[2] == 'Edit' ? true : false, false, false, false, false);
+            $objUser->objAttribute->next();
+        }
+        $objAccessLib->parseAccountAttributes($objUser);
+        $objTemplate->setVariable(array(
+            'MULTISITE_USER_PROFILE_SUBMIT_URL' => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
+        ));
+        
+        return $objTemplate->get();
+    }
+    
+    /**
+     * Api Subscription command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandSubscription($objTemplate, $arguments) {
+        global $_ARRAYLANG;
+        
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+        
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
+        }
+
+        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+        if (empty($crmContactId)) {
+            return ' '; // Do not show sbuscriptions
+        }
+
+        //Get the input values
+        $status         = isset($arguments['status']) ? contrexx_input2raw($arguments['status']) : '';
+        $excludeProduct = isset($arguments['exclude_product']) ? array_map('contrexx_input2raw', $arguments['exclude_product']) : '';
+        $includeProduct = isset($arguments['include_product']) ? array_map('contrexx_input2raw', $arguments['include_product']) : '';
+        //Get the orders based on CRM contact id and get params
+        $orderRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order');
+        $orders    = $orderRepo->getOrdersByCriteria($crmContactId, $status, $excludeProduct, $includeProduct);
+
+        //parse the Site Details
+        if (!empty($orders)) {            
+            foreach ($orders as $order) {
+                foreach ($order->getSubscriptions() as $subscription) {                                    
+                    $product = $subscription->getProduct();
+                    if (!$product) {
+                        continue;
+                    }
+                    $objTemplate->setVariable(array(
+                        'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
+                        'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
+                        'MULTISITE_WEBSITE_PLAN'             => contrexx_raw2xhtml($product->getName()),
+                        'MULTISITE_WEBSITE_INVOICE_DATE'     => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
+                        'MULTISITE_WEBSITE_EXPIRE_DATE'      => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',                                        
+                    ));
+
+                    if ($status == 'valid' && $objTemplate->blockExists('showUpgradeButton')) {
+                        $product->isUpgradable() ? $objTemplate->touchBlock('showUpgradeButton') : $objTemplate->hideBlock('showUpgradeButton');
+                    }
+
+                    if ($status != 'expired') {
+                        $websiteCollection = $subscription->getProductEntity();
+                        if ($websiteCollection) {
+                            if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                                foreach ($websiteCollection->getWebsites() as $website) {
+                                    if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                                        continue;
+                                    }
+                                    self::parseWebsiteDetails($objTemplate, $website);
+                                    $objTemplate->parse('showWebsites');
+                                }
+                                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
+                            } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                                self::parseWebsiteDetails($objTemplate, $websiteCollection);
+                            }
+                        }
+                    }
+
+                    $objTemplate->parse('showSiteDetails');
+                }
+            }
+        } else {
+            $objTemplate->hideBlock('showSiteTable');
+        }
+        return $objTemplate->get();
+    }
+    
+    /**
+     * Api SubscriptionSelection command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandSubscriptionSelection($objTemplate, $arguments) 
+    {
+        global $_ARRAYLANG;
+        
+        $websiteId = isset($arguments['id']) ? $arguments['id'] : 0;
+        $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
+
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+        
+        if ($products) {
+            if (!empty($websiteId)) {
+                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $website = $websiteServiceRepo->findOneById($websiteId);
+                $websiteName = ($website) ? $website->getName() : '';
+            }
+
+            $conatctEmail = (self::isUserLoggedIn()) ? \FWUser::getFWUserObject()->objUser->getEmail() : '';
+            foreach ($products as $product) {
+                $productName = contrexx_raw2xhtml($product->getName());
+                $productPrice = $product->getPrice();
+                if ($productPrice > 0) {
+                    $additionalParameters = array(
+                    'invoice_number'    => $productName . ' - ' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                    'contact_email'     => $conatctEmail,
+                    'invoice_amount'    => $productPrice,
+                    'invoice_currency'  => 'CHF',
+                    'referenceId'       => $product->getId() . '-' . $websiteName
+                    );
+                    $i = 1;
+                    $params = '';
+                    foreach ($additionalParameters as $key => $val) {
+                        $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
+                        $i++;
+                    }
+                    $objTemplate->setVariable(array(
+                        'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
+                    ));
+                }
+                $objTemplate->setVariable(array(
+                    'MULTISITE_WEBSITE_PRODUCT_NAME' => $productName,
+                    'MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID' => lcfirst($productName),
+                    'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $productPrice,
+                    'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => $productPrice * 12,
+                    'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $productPrice * 12 * 0.9,
+                    'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice()
+                ));
+                $objTemplate->parse('showProduct');
+            }
+        }
+        return $objTemplate->get();
+    }
+    
+    /**
+     * Api SubscriptionDetail command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandSubscriptionDetail($objTemplate, $arguments) 
+    {
+        global $_ARRAYLANG;
+        
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+        
+        $subscriptionId = isset($arguments['id']) ? contrexx_input2raw($arguments['id']) : 0;
+                        
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
+        }
+
+        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+        if (empty($crmContactId)) {
+            return ' '; // Do not show subscription detail
+        }
+        
+        if (empty($subscriptionId)) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'];
+        }
+
+        $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+        $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
+
+        if (!$subscriptionObj) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'];
+        }
+
+        $order = $subscriptionObj->getOrder();
+
+        if (!$order) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS'];
+        }
+
+        //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
+        if ($crmContactId != $order->getContactId()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+        }
+
+        $product = $subscriptionObj->getProduct();
+
+        if (!$product) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
+        }
+
+        $objTemplate->setVariable(array(
+            'MULTISITE_SUBSCRIPTION_ID'      => contrexx_raw2xhtml($subscriptionObj->getId()),
+            'MULTISITE_WEBSITE_PRODUCT_NAME' => contrexx_raw2xhtml($product->getName()),
+            'MULTISITE_WEBSITE_SUBSCRIPTION_DATE' => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
+            'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => $subscriptionObj->getExpirationDate() ? contrexx_raw2xhtml($subscriptionObj->getExpirationDate()->format('d.m.Y')) : '',
+        ));
+
+        self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
+
+        $websiteCollection = $subscriptionObj->getProductEntity();
+
+        if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+            foreach ($websiteCollection->getWebsites() as $website) {
+                if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                    continue;
+                }
+                self::parseWebsiteDetails($objTemplate, $website);
+
+                $objTemplate->parse('showWebsites');
+            }
+            self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
+        } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+            self::parseWebsiteDetails($objTemplate, $websiteCollection);
+        }
+
+        return $objTemplate->get();
+    }
+    
+    /**
+     * Api SubscriptionAddWebsite command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandSubscriptionAddWebsite($objTemplate, $arguments)
+    {
+        global $_ARRAYLANG;
+        
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+        
+        $subscriptionId = isset($arguments['id']) ? contrexx_input2raw($arguments['id']) : 0;
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
+        }
+        if (isset($arguments['addWebsite'])) {
+            $websiteName = isset($arguments['multisite_address']) ? contrexx_input2xhtml($arguments['multisite_address']) : '';
+            // TO-DO:: add new website code here
+
+            $json = new \Cx\Core\Json\JsonData();
+            echo $json->data(array(), true);
+            die();
+        } else {
+            $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+            $mainDomain = $domainRepository->getMainDomain()->getName();
+            $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
+
+            $objTemplate->setVariable(array(
+                'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
+                'MULTISITE_ADD_WEBSITE_URL'     => '/api/MultiSite/SubscriptionAddWebsite?addWebsite=1&id='.$subscriptionId,
+                'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
+            ));
+
+            return $objTemplate->get();
+        }
+    }
+    
+    /**
+     * Api Website command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandWebsite($objTemplate, $arguments) {
+        global $_ARRAYLANG;
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+        
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
+        }
+
+        $websiteId = isset($arguments['id']) ? contrexx_input2raw($arguments['id']) : '';
+        if (empty($websiteId)) {
+            return $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
+        }
+
+        $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website = $websiteServiceRepo->findOneById($websiteId);
+        if (!$website) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
+        }
+        if($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()){
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+        }
+
+        //show the frontend
+        $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
+        $objTemplate->setVariable('MULTISITE_WEBSITE_FRONTEND_LINK', $this->getApiProtocol() . $website->getBaseDn()->getName());
+        self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
+        self::showOrHideBlock($objTemplate, 'showAdminButton', $status);
+
+        //Show the Website Admin and Backend group users
+        if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
+            $websiteAdminUsers = $website->getAdminUsers();
+            foreach ($websiteAdminUsers as $websiteAdminUser) {
+                $objTemplate->setVariable(array(
+                    'MULTISITE_WEBSITE_USER_NAME' => \FWUser::getParsedUserTitle($websiteAdminUser->id),
+                    'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser->email,
+                ));
+                $objTemplate->parse('showWebsiteAdminUsers');
+            }
+        }
+
+        //Show the Website Domain Alias name
+        if ($objTemplate->blockExists('showWebsiteDomainAliases')) {
+            $websiteDomainAliases = $website->getDomainAliases();
+            foreach ($websiteDomainAliases as $domainAlias) {
+                $objTemplate->setVariable(array(
+                    'MULTISITE_WEBSITE_DOMAIN_ALIAS' => contrexx_raw2xhtml($domainAlias->getName()),
+                ));
+                $objTemplate->parse('showWebsiteDomainAliases');
+            }
+            self::showOrHideBlock($objTemplate, 'showWebsiteDomainAliasFound', !empty($websiteDomainAliases));
+        }
+
+        //show the website's domain name
+        if ($objTemplate->blockExists('showWebsiteDomainName')) {
+            $domain = $website->getBaseDn();
+            if ($domain) {
+                $objTemplate->setVariable(array(
+                    'MULTISITE_WEBSITE_DOMAIN_NAME' => contrexx_raw2xhtml($domain->getName()),
+                ));
+            }
+        }
+        //show the website's resources
+        if ($objTemplate->blockExists('showWebsiteResources')) {
+            $resourceUsageStats = $website->getResourceUsageStats();
+            $objTemplate->setVariable(array(
+                'MULTISITE_WEBSITE_ADMIN_USERS_USAGE'   => $resourceUsageStats->accessAdminUser->usage,
+                'MULTISITE_WEBSITE_ADMIN_USERS_QUOTA'   => $resourceUsageStats->accessAdminUser->quota,
+                'MULTISITE_WEBSITE_CONTACT_FORMS_USAGE' => $resourceUsageStats->contactForm->usage,
+                'MULTISITE_WEBSITE_CONTACT_FORMS_QUOTA' => $resourceUsageStats->contactForm->quota,
+                'MULTISITE_WEBSITE_SHOP_PRODUCTS_USAGE' => $resourceUsageStats->shopProduct->usage,
+                'MULTISITE_WEBSITE_SHOP_PRODUCTS_QUOTA' => $resourceUsageStats->shopProduct->quota,
+                'MULTISITE_WEBSITE_CRM_CUSTOMERS_USAGE' => $resourceUsageStats->crmCustomer->usage,
+                'MULTISITE_WEBSITE_CRM_CUSTOMERS_QUOTA' => $resourceUsageStats->crmCustomer->quota,
+            ));
+            $objTemplate->parse('showWebsiteResources');
+        }
+        $objTemplate->setGlobalVariable(array(
+            'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($websiteId)
+        ));
+
+        return $objTemplate->get();
+    }
+    
+    /**
+     * Api Payrexx command
+     */
+    public function executeCommandPayrexx() 
+    {
+        $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
+        $subscription = !empty($_POST['subscription']) ? $_POST['subscription'] : array();
+        if (!empty($transaction) && isset($transaction['status']) && $transaction['status'] === 'confirmed') {
+            $invoice = $transaction['invoice'];
+            $referenceId = !empty($subscription['id']) ? $invoice['referenceId'] . '-' . $subscription['id'] : $invoice['referenceId'];
+            $payment = new \Cx\Modules\Order\Model\Entity\Payment();
+            $payment->setAmount($invoice['amount']);
+            $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
+            $payment->setTransactionReference($referenceId);
+            \Env::get('em')->persist($payment);
+            \Env::get('em')->flush();
+        }
+//        $transaction   = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
+//        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+//        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+//        $paymentRequestId = $_POST['transaction']['invoice']['paymentRequestId'];
+//
+//        $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
+//
+//        $paymentRequest = new \Payrexx\Models\Request\PaymentRequest();
+//        $paymentRequest->setId($paymentRequestId);
+//
+//        try {
+//            $response = $payrexx->getOne($paymentRequest);
+//        } catch (\Payrexx\PayrexxException $e) {
+//            throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
+//        }
+//
+//        if (!empty($transaction) && isset($transaction['status']) && ($transaction['status'] === 'confirmed')
+//                && !empty($response) && isset($response['status']) && ($response['status'] === 'success')
+//                && $transaction['invoice']['amount'] === $response['invoice']['amount']
+//                && $transaction['invoice']['referenceId'] === $response['invoice']['referenceId']) {
+//            $invoice = $transaction['invoice'];
+//            $payment = new \Cx\Modules\Order\Model\Entity\Payment();
+//            $payment->setAmount($invoice['amount']);
+//            $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
+//            $payment->setTransactionReference($invoice['referenceId']);
+//            \Env::get('em')->persist($payment);
+//            \Env::get('em')->flush();
+//        }
+    }
+    
+    /**
+     * Api Backup command
+     */
+    public function executeCommandBackup($arguments) 
+    {
+        try {
+            $websiteId = isset($arguments['websiteId']) ? contrexx_input2raw($arguments['websiteId']) : 0;
+            $backupLocation = isset($arguments['backupLocation']) ? contrexx_input2raw($arguments['backupLocation']) : '';
+
+            if (!empty($websiteId)) {
+                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $website = $websiteServiceRepo->findOneById($websiteId);
+
+                if (!$website) {
+                    return false;
+                }
+
+                $websiteServiceServer = $website->getWebsiteServiceServer();
+                if ($websiteServiceServer) {
+                    $params = array(
+                        'websiteId' => $websiteId,
+                        'websiteName' => $website->getName(),
+                        'backupLocation' => $backupLocation
+                    );
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
+                    if ($resp->status == 'success' && $resp->data->status = 'success') {
+                        return array('status' => 'success', 'message' => $resp->data->message);
+                    }
+                    return array('status' => 'error', 'message' => $resp->data->message);
+                }
+                $this->cx->getEvents()->triggerEvent(
+                        'SysLog/Add', array(
+                            'severity' => 'WARNING',
+                            'message' => 'This website doesnot exists in the service server',
+                            'data' => ' ',
+                ));
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteException("Failed to backup the website:" . $e->getMessage());
+        }
+    }
+    
     /**
      * Parse the website details to the view page
      * 
