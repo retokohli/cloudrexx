@@ -151,7 +151,7 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
         global $objCache;
         if ($objCache) {
-            $objCache->clearCache();
+            //$objCache->clearCache();
         }
         
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {            
