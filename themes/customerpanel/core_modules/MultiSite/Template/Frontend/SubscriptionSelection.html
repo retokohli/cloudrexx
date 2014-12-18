@@ -590,13 +590,13 @@
                     if ((jQuery('.buy-now.subscriptionProduct').length < 0) || !validUrl(jQuery('.buy-now.subscriptionProduct').data("href"))) {
                         return e.preventDefault();
                     }
+                    jQuery('#SubscriptionSelection').modal('hide');
                     return true;
                 },
                 hidden: function(transaction) {
                     switch (transaction.status) {
                         case 'confirmed':
                             upgradeSubscription();
-                            jQuery('#SubscriptionSelection').modal('hide');
                             break;
                         default:
                             showMessage('{TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED}', 'error');
