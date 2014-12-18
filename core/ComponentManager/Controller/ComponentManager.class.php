@@ -210,7 +210,7 @@ class ComponentManager
             while (!$objResult->EOF) {
                 $class = (++$i % 2 ? 'row1' : 'row2');
                 if (   in_array($objResult->fields['id'], $arrayInstalledModules)
-                    || $objResult->fields['id'] == 6 ||  $objResult->fields['id'] == 101 ||  $objResult->fields['id'] == 102 ||  $objResult->fields['id'] == 905) {
+                    || $objResult->fields['id'] == 6 ||  $objResult->fields['id'] == 101 ||  $objResult->fields['id'] == 102 ||  $objResult->fields['id'] == 106) {
                     $moduleStatusLink = $objResult->fields['is_active'] 
                                         ? sprintf($statusLink, (int) $objResult->fields['id'], 0, sprintf($statusIcon, 'led_green.gif'))
                                         : sprintf($statusLink, (int) $objResult->fields['id'], 1, sprintf($statusIcon, 'led_red.gif'));
