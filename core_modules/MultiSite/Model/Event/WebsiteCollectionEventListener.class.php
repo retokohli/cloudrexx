@@ -41,34 +41,33 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
         $websiteCollection      = $subscription->getProductEntity();
         $entityAttributes       = $subscription->getProduct()->getEntityAttributes();
         
-        if(\FWValidator::isEmpty($websiteCollection) || \FWValidator::isEmpty($websiteCollection->getWebsites())) {
+        if (!($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection)) {
             return;
         }
         
-        if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-            foreach ($websiteCollection->getWebsites() as $website) {
-                if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
-                    continue;
-                }
+        foreach ($websiteCollection->getWebsites() as $website) {
+            if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                continue;
+            }
 
-                switch ($website->getStatus()) {
-                    case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
-                        $website->setup($entityAttributes);
-                        break;
+            switch ($website->getStatus()) {
+                case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
+                    $website->setup($entityAttributes);
+                    break;
 
-                    case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
+                case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
 // TODO: maybe add notification message to dashboard about extended subscription or send email about extended subscription
-                        break;
+                    break;
 
-                    case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
+                case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
 // TODO: reactivate website
-                        break;
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
             }
         }
+        
     }
     /**
      * Terminated Event Change the website status to offline
