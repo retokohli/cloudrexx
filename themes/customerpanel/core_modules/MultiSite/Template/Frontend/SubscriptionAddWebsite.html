@@ -9,13 +9,13 @@ jQuery(document).ready(function(){
         signUpUrl: '{MULTISITE_ADD_WEBSITE_URL}',
         addressUrl: '{MULTISITE_ADDRESS_URL}',
         multisiteDomain: '{MULTISITE_DOMAIN}',
-        headerInitTxt: '{TXT_MULTISITE_ADD_NEW_WEBSITE}',
-        headerSetupTxt: '{TXT_MULTISITE_BUILD_WEBSITE_TITLE} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />',
-        headerSuccessTxt: '{TXT_MULTISITE_BUILD_SUCCESSFUL_TITLE}',
-        headerErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_TITLE}',
-        messageErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_MSG}',
-        messageBuildTxt: '{TXT_MULTISITE_BUILD_WEBSITE_MSG}',
-        messageRedirectTxt: '{TXT_MULTISITE_REDIRECT_MSG}',
+        headerInitTxt: '',
+        headerSetupTxt: '',
+        headerSuccessTxt: '',
+        headerErrorTxt: '',
+        messageErrorTxt: '',
+        messageBuildTxt: '{TXT_MULTISITE_BUILD_WEBSITE_MSG} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />',
+        messageRedirectTxt: '',
         IsPayment: false
     };
     for (var option in options) {
@@ -57,11 +57,11 @@ var validateAdress = function (value, validator, $field) {
 /* ]]> */
 </style>
 <div class="grid-elm grid-align-1-1 grid-offset">
+    <div class="modal-body multisite-status"></div>
     <div class="modal-body multisite-form">
         <form role="form" id="multisite_signup_form">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <h2>{TXT_MULTISITE_ADD_NEW_WEBSITE}</h2>
-            <div class="modal-body multisite-status"></div>
             <fieldset>
                 <div class="row">
 
@@ -81,7 +81,7 @@ var validateAdress = function (value, validator, $field) {
 
             </fieldset>
         </form>
-     </div>
+    </div>
     <div class="modal-body multisite-progress">
         <div></div>
     </div>
