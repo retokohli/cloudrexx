@@ -420,7 +420,7 @@ CREATE TABLE `contrexx_core_module_multisite_domain` (
   `pleskId` int(11) default NULL,
   `coreNetDomainId` int(11) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `name` (`name`),
+  UNIQUE KEY `name` (`name`),
   KEY `componentId` (`componentId`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
