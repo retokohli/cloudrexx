@@ -1791,7 +1791,7 @@ throw new MultiSiteException('Refactor this method!');
 
         JsonMultiSite::loadLanguageData();
         $objTemplate = $this->cx->getTemplate();
-        $warning = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModuleWebPath() . '/MultiSite/View/Template/Backend');
+        $warning = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModulePath() . '/MultiSite/View/Template/Backend');
         $warning->loadTemplateFile('AccountActivation.html');
 
         $dueDate = '<span class="highlight">'.date(ASCMS_DATE_FORMAT_DATE, $websiteUser->getRestoreKeyTime()).'</span>';
@@ -1821,7 +1821,7 @@ throw new MultiSiteException('Refactor this method!');
     {
         global $_ARRAYLANG;
         
-        if (!$this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+        if (!($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND)) {
             return;
         }
         
@@ -1838,11 +1838,12 @@ throw new MultiSiteException('Refactor this method!');
             }
             
             $objTemplate = $this->cx->getTemplate();
-            $footer = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModuleWebPath() . '/MultiSite/View/Template/Backend');
+            $footer = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModulePath() . '/MultiSite/View/Template/Backend');
             $footer->loadTemplateFile('Footer.html');
             $footer->setVariable(array(
                 'MULTISITE_POWERED_BY_FOOTER_LINK' => $marketingWebsiteDomainName,
-                'MULTISITE_POWERED_BY_CONTENT'     => $_ARRAYLANG['TXT_MULTISITE_POWERED_BY_FOOTER'] . ' &nbsp;&nbsp;<img src="/core/Core/View/Media/login_contrexx_logo.png" />',
+                'MULTISITE_POWERED_BY_IMG_SRC'     => $this->cx->getCodeBaseCoreWebPath() .'/Core/View/Media/login_contrexx_logo.png',
+                'TXT_MULTISITE_POWERED_BY_FOOTER'  => $_ARRAYLANG['TXT_MULTISITE_POWERED_BY_FOOTER'],
             ));
 
             \JS::registerCSS('core_modules/MultiSite/View/Style/PoweredByFooterFrontend.css');                
