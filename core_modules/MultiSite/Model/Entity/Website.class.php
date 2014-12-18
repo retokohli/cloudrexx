@@ -1089,6 +1089,16 @@ throw new WebsiteException('implement secret-key algorithm first!');
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                    // remove the mail service of website
+                    $deleteMailService = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('deleteMailServiceAccount', array('websiteId' => $this->id));
+                    if (!$deleteMailService || $deleteMailService->status == 'error') {
+                        $errorMsg = isset($deleteMailService->message) ? $deleteMailService->message : '';
+                        if (isset($deleteMailService->log)) {
+                            \DBG::appendLogs(array_map(function($logEntry) {return '(Mail Service: '.$this->mailServiceServer->getLabel().') '.$logEntry;}, $deleteMailService->log));
+                        }
+                        throw new WebsiteException('Unable to delete the mail service: ' . serialize($errorMsg));
+                    }     
+                    
                     $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('destroyWebsite', array('websiteId' => $this->id), $this->websiteServiceServer);
                     if (!$resp || $resp->status == 'error') {
                         $errMsg = isset($resp->message) ? $resp->message : '';
