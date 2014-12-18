@@ -14,6 +14,9 @@
         padding-top: 24px;
         text-align: center;
     }
+    .prices h2 {
+        margin: 0.83em 0;
+    }
     .prices #free .header,
     .prices #non-profit .header,
     .prices #solo .header
@@ -451,7 +454,8 @@
          * PRICES
          ******************************************/
         .prices > div {
-            width: 16.2%;
+            /*width: 16.2%;*/
+            width: 24.7%;
             margin-right: 0%;
         }
         .modal-dialog {width: 80%;}
@@ -515,13 +519,11 @@
             return false;
         });
                 
-        function validPaymentUrl($this) {
+        function validUrl($url) {
             var urlPattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-            var url = $this.data('href');
-            if (!urlPattern.test(url)) {
+            if (!urlPattern.test($url)) {
                 return false;
             }
-
             return true;
         }
 
@@ -531,6 +533,39 @@
                 return productPrice;
             }
             return false;
+        }
+        
+        function upgradeSubscription() {
+            $ajaxUrl = jQuery('#subscriptionAjaxUrl').val();
+            $productId = jQuery('.buy-now.subscriptionProduct').data("productid");
+            $subscriptionId = jQuery('#subscriptionId').val();
+            
+            if ((jQuery.trim($ajaxUrl) == '') || (jQuery.trim($productId) == '') || (jQuery.trim($subscriptionId) != '')) {
+                showMessage('{TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS}', 'error');
+                return false;
+            }
+            
+            jQuery.ajax({
+                dataType: "json",
+                url: $ajaxUrl,
+                data: {
+                    product_id : $productId,
+                    subscription_id : $subscriptionId
+                },
+                type: "POST",
+                success: function(response){
+                    if (response.status == 'success') {
+                        $resp = response.data;
+                        if ($resp.status == 'success') {
+                            showMessage($resp.message, 'success');
+                        } else {
+                            showMessage($resp.message, 'error');
+                        }
+                    } else {
+                        showMessage(response.message, 'error');
+                    }
+                }
+            });
         }
         
         function modifyPaymentUrl($this) {
@@ -544,7 +579,7 @@
                 }
                 return v;
             });
-            $this.attr('data-href', hrefVal.join('&'));
+            $this.data("href", hrefVal.join('&'));
         }
         
         jQuery.getScript('https://media.payrexx.com/modal/v1/modal.js', function() {
@@ -552,14 +587,21 @@
                 hideObjects: ["#contact-details", ".contact"],
                 show: function(e) {
                     //Payrexx URL validation
-                    if ((jQuery('.buy-now.subscriptionProduct').length < 0) || !validPaymentUrl(jQuery('.buy-now.subscriptionProduct'))) {
+                    if ((jQuery('.buy-now.subscriptionProduct').length < 0) || !validUrl(jQuery('.buy-now.subscriptionProduct').data("href"))) {
                         return e.preventDefault();
                     }
-                    jQuery('#SubscriptionSelection').modal('hide');                    
                     return true;
                 },
                 hidden: function(transaction) {
-                    //TODO: Based on the transaction status to proceed further process
+                    switch (transaction.status) {
+                        case 'confirmed':
+                            upgradeSubscription();
+                            jQuery('#SubscriptionSelection').modal('hide');
+                            break;
+                        default:
+                            showMessage('{TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED}', 'error');
+                            break;
+                    }
                 }
             });
         });
@@ -576,7 +618,10 @@
     <h2 class="annual-prices amt" style="display: block;">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
 
     <h2 class="biannual-prices amt" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
-
+    
+    <input type ="hidden" name ="subscriptionId" id ="subscriptionId" value="{MULTISITE_SUBSCRIPTION_ID}" />
+    <input type ="hidden" name ="subscriptionAjaxUrl" id ="subscriptionAjaxUrl" value="{MULTISITE_SUBSCRIPTION_SELECTION_URL}" />
+    
     <!-- BEGIN showProduct -->
     <div id="{MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID}">
         <div class="header"><span class="name">{MULTISITE_WEBSITE_PRODUCT_NAME}</span>
@@ -586,7 +631,7 @@
             <div class="annual-prices amt" style="display: block;" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}.-</span><span class="currency">CHF</span></div>
 
             <div class="biannual-prices amt" style="display: none;" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}.-</span><span class="currency">CHF</span></div>
-            <a class="buy-now" href = "javascript:void(0)" data-href="{MULTISITE_OPTION_PAYREXXFORMURL}">{TXT_MULTISITE_WEBSITE_CHOOSE}</a></div>
+            <a class="buy-now" href = "javascript:void(0)" data-href="{MULTISITE_OPTION_PAYREXXFORMURL}" data-productid = "{MULTISITE_WEBSITE_PRODUCT_ID}">{TXT_MULTISITE_WEBSITE_CHOOSE}</a></div>
 
         <div class="features">
             {MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE}
