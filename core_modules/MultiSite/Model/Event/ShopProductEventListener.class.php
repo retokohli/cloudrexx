@@ -50,7 +50,7 @@ class ShopProductEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                         $products = \Cx\Modules\Shop\Controller\Products::getByShopParams($count, 0, null, null, null, null, false, false, null, null, true);
                         $productsCount = !empty($products) ? count($products) : 0;
                         if ($productsCount >= $options['Product']) {
-                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Product']));
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Product']).' <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
                     }
                     break;

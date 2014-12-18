@@ -99,7 +99,7 @@ $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_TRAIL']  = 'Trial';
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_EXPIRED'] = 'Abgelaufen';
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_REACTIVATE'] = 'Reaktivieren';
 
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'] = 'Sie haben die Limite von %s objekten ihres Abos erreicht.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'] = 'Sie haben die Limite von %s Objekten Ihres Abos erreicht.';
 
 // Subscription selection
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY'] = 'Monatlich';

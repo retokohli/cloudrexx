@@ -50,7 +50,7 @@ class CrmCustomerEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                         $usageCount = $objCrm->countRecordEntries($query);
                         $crmCustomerCount = !empty($usageCount) ? $usageCount : 0;
                         if ($crmCustomerCount >= $options['Customer']) {
-                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Customer']));
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Customer']).' <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
                     }
                     break;
