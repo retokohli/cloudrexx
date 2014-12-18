@@ -198,6 +198,5 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
      */
     public function addWebsiteCollection(WebsiteCollection $websiteCollection) {
         $this->websiteCollections[] = $websiteCollection;
-        $websiteCollection->setWebsiteTemplate($this);
     }
 }

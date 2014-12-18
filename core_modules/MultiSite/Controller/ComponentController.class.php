@@ -1418,6 +1418,7 @@ throw new MultiSiteException('Refactor this method!');
         
         $websiteCollectionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteCollectionEventListener();
         $evm->addModelListener('terminated', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
+        $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
         
     }
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {

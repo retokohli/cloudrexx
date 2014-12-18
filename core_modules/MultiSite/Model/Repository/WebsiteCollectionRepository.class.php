@@ -47,7 +47,7 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
         if (!$websiteTemplate) {
             throw new WebsiteCollectionRepositoryException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_TEMPLATE_FAILED']);    
         }
-        $websiteTemplate->addWebsiteCollection($websiteCollection);        
+        $websiteCollection->setWebsiteTemplate($websiteTemplate);
         
         //Initialize new website
         $websiteThemeId = isset($saleOptions['themeId']) ? $saleOptions['themeId'] : null;
