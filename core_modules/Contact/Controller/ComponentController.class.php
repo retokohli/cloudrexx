@@ -36,7 +36,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $contactObj = new \Cx\Core_Modules\Contact\Controller\Contact(\Env::get('cx')->getPage()->getContent());
                 \Env::get('cx')->getPage()->setContent($contactObj->getContactPage());
-                $moduleStyleFile = $this->getDirectory() . '/View/Style/frontend_style.css';
+                $moduleStyleFile = $this->cx->getCodeBaseOffsetPath() . self::getPathForType($this->getType()) . '/' . $this->getName() . '/View/Style/frontend_style.css';
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
