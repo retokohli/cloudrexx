@@ -11,6 +11,8 @@
 
 namespace Cx\Modules\Order\Model\Repository;
 
+class OrderRepositoryException extends \Exception {}
+
 /**
  * Class OrderRepository
  * 
@@ -77,5 +79,68 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
         $qb->setParameter('contactId', $crmId);
         
         return $qb->getQuery()->getSingleScalarResult();
+    }
+    
+    /**
+     * Create a new Order 
+     * 
+     * @param integer $productId            productId
+     * @param integer $contactId            contactId
+     * @param string  $transactionReference transactionReference
+     * @param array   $subscriptionOptions  subscriptionOptions
+     * 
+     * @return boolean
+     * @throws OrderRepositoryException
+     */
+    public function createOrder($productId, $contactId, $transactionReference, $subscriptionOptions = array()) {
+        if (\FWValidator::isEmpty($productId) 
+                || \FWValidator::isEmpty($contactId) 
+                || \FWValidator::isEmpty($subscriptionOptions) 
+                || \FWValidator::isEmpty($transactionReference)) {
+            
+            return;
+        }
+        
+        try {
+            $order = new \Cx\Modules\Order\Model\Entity\Order();
+            $order->setContactId($contactId);
+            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+            $product = $productRepository->findOneBy(array('id' => $productId));
+            
+            //create subscription
+            $subscription = $order->createSubscription($product, $subscriptionOptions);
+            $order->billSubscriptions();
+            $invoices = $order->getInvoices();
+            
+            if (!empty($invoices)) {
+                $paymentRepo = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Payment');
+                foreach ($invoices as $invoice) {
+                    if (!$invoice->getPaid()) {
+                        $payment     = $paymentRepo->findOneByCriteria(array('amount' => $invoice->getAmount(), 'transactionReference' => $transactionReference, 'invoice' => null));
+                        if ($payment) {
+                            //set subscription-id to Subscription::$externalSubscriptionId
+                            if ($subscription) {
+                                $referenceArry = explode('-', $payment->getTransactionReference());
+                                if (isset($referenceArry[2]) && !empty($referenceArry[2])) {
+                                    $subscription->setExternalSubscriptionId($referenceArry[2]);
+                                }
+                            }
+                            $invoice->addPayment($payment);
+                            $payment->setInvoice($invoice);
+                            \Env::get('em')->persist($invoice);
+                            \Env::get('em')->persist($payment);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            \Env::get('em')->persist($order);
+            \Env::get('em')->flush();
+            
+            return $order;
+        } catch (\Exception $e) {
+            throw new OrderRepositoryException($e->getMessage());
+        }
     }
 }

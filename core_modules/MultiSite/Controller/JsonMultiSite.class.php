@@ -123,6 +123,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'createMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'deleteMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'upgradeSubscription'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true)
+
         );  
     }
 
@@ -258,15 +260,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
             $crmContactId = $objCrmLibrary->addCrmContact($arrProfile);
         
-            // create a new order 
-            $order = new \Cx\Modules\Order\Model\Entity\Order();
-            $order->setContactId($crmContactId);
-
-// TODO: Product ID should be supplied by POST-data.
-//       If not set, then the ID should be taken from a MultiSite configuration option 'defaultProductId'
+            // TODO: Product ID should be supplied by POST-data.
+            //       If not set, then the ID should be taken from a MultiSite configuration option 'defaultProductId'
             $id = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
-            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
-            $product = $productRepository->findOneBy(array('id' => $id));
 
             // create new subscription of selected product
             $subscriptionOptions = array(
@@ -285,39 +281,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $subscriptionOptions['themeId'] = $websiteThemeId;
             }
             
-            //create subscription
-            $subscription = $order->createSubscription($product, $subscriptionOptions);
-            $order->billSubscriptions();
-            $invoices = $order->getInvoices();
-            if (!empty($invoices)) {
-                $paymentRepo = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Payment');
-                foreach ($invoices as $invoice) {
-                    if (!$invoice->getPaid()) {
-                        $payment     = $paymentRepo->findOneByCriteria(array('amount' => $invoice->getAmount(), 'transactionReference' => $product->getId() . '-' . $websiteName, 'invoice' => null));
-                        if ($payment) {
-                            //set subscription-id to Subscription::$externalSubscriptionId
-                            if ($subscription) {
-                                $referenceArry = explode('-', $payment->getTransactionReference());
-                                if (isset($referenceArry[2]) && !empty($referenceArry[2])) {
-                                    $subscription->setExternalSubscriptionId($referenceArry[2]);
-                                }
-                            }
-                            $invoice->addPayment($payment);
-                            $payment->setInvoice($invoice);
-                            \Env::get('em')->persist($invoice);
-                            \Env::get('em')->persist($payment);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            \Env::get('em')->persist($order);
-            \Env::get('em')->flush();
+            $transactionReference = $id . '-' . $websiteName;
             
-            // create the website in the payComplete event
-            $order->complete();
-
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $crmContactId, $transactionReference, $subscriptionOptions);
+            if (!$order) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
+            }
+            // create the website process in the payComplete event
+            $order->complete(); 
+            
             // fetch the newly build website from the repository
             $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $website   = $websiteRepository->findOneBy(array('name' => $websiteName));
@@ -402,6 +374,70 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
 
+    /**
+     * Upgrade Subscription 
+     * 
+     * @param array $params parameters
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function upgradeSubscription($params) {
+        global $_ARRAYLANG;
+        
+        // abort in case command has been requested without any data
+        if (empty($params['post'])) {
+            return;
+        }
+        
+        try {
+            // Load language variables of Multisite
+            self::loadLanguageData();
+            
+            $productId = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : 0;
+            $subscriptionId = isset($params['post']['subscription_id']) ? contrexx_input2raw($params['post']['subscription_id']) : 0;
+            $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
+            
+            if (\FWValidator::isEmpty($productId) || \FWValidator::isEmpty($subscriptionId) || \FWValidator::isEmpty($websiteName)) {
+                return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALIDPARAMETERS']);
+            }
+            
+            $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+            $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
+            
+            if (!$subscriptionObj) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_SUBSCRIPTIONID']);
+            }
+            $orderObj = $subscriptionObj->getOrder();
+
+            if (!$orderObj) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_ORDER']);
+            }
+
+            $crmContactId = $orderObj->getContactId();
+            $subscriptionOptions = array(
+                'baseSubscription' => $subscriptionObj,
+            );
+            $transactionReference = $productId . '-' . $websiteName;
+            
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $crmContactId, $transactionReference, $subscriptionOptions);
+            if (!$order) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
+            }
+            // create the website process in the payComplete event
+            $order->complete(); 
+            
+            return array ('status' => 'success','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']);
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED'],
+            ));
+        }
+    }
+    
     /**
      * Creates a new website
      * @param type $params  

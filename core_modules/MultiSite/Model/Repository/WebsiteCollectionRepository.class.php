@@ -38,6 +38,25 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
             $websiteCollection->setQuota($productOptions['websiteCollectionQuota']);
         }
         
+        $baseSubscription = isset($saleOptions['baseSubscription']) ? $saleOptions['baseSubscription'] : '';
+        if (!\FWValidator::isEmpty($baseSubscription)) {
+            $objProductEntity = $baseSubscription->getProductEntity();
+            if ($objProductEntity && $objProductEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {                
+                $websiteCollection->addWebsite($objProductEntity);                
+                \Env::get('em')->remove($baseSubscription);
+            } elseif ($objProductEntity && $objProductEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {                
+                $baseWebsites = $objProductEntity->getWebsites();
+                if (!\FWValidator::isEmpty($baseWebsites)) {
+                    foreach ($baseWebsites as $baseWebsite) {
+                        $websiteCollection->addWebsite($baseWebsite);
+                    }
+                }
+                $baseSubscription->setProductEntity(null);
+                $baseSubscription->terminate();
+            }
+            return $websiteCollection;
+        }
+        
         //If the $productOptions['websiteTemplate] is empty, take the value from multisite option defaultWebsiteTemplate
         if (empty($productOptions['websiteTemplate'])) {
             $productOptions['websiteTemplate'] = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate');
