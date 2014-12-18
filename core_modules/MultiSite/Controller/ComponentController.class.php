@@ -383,7 +383,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     self::parseWebsiteDetails($objTemplate, $website);
                                     $objTemplate->parse('showWebsites');
                                 }
-                                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
+                                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() > count($websiteCollection->getWebsites())));
                             } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                                 self::parseWebsiteDetails($objTemplate, $websiteCollection);
                                 $objTemplate->parse('showWebsites');
@@ -559,7 +559,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                     $objTemplate->parse('showWebsites');
                 }
-                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
+                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() > count($websiteCollection->getWebsites())));
             } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                 self::parseWebsiteDetails($objTemplate, $websiteCollection);
                 $objTemplate->parse('showWebsites');
