@@ -28,6 +28,10 @@ namespace {
 }
 
 namespace Cx\Core\Core\Controller {
+    /**
+     * This Exception can be used to abort the execution of the Cx object
+     */
+    class InstanceException extends \Exception {}
 
     /**
      * This loads and controls everything
@@ -647,7 +651,43 @@ namespace Cx\Core\Core\Controller {
                     return;
                 }
                 $this->loadContrexx();
-                
+            }    
+
+            /**
+             * Globally catch InstanceException
+             *
+             * InstanceException is used to abort the execution of Cx
+             *
+             * A reason for this might be that a component did initialize
+             * an other instance of Cx and does not want the original Cx
+             * object to proceed after the newly created instance of Cx
+             * has reached its execution end.
+             */
+            catch (InstanceException $e) {
+                return;
+            }
+
+            /**
+             * Globally catch ShinyException
+             *
+             * ShinyException is used for user-friendly error handling
+             *
+             * A usage case might be to perform an authorisation check
+             * on model level whereas the overlying component is not
+             * aware of such a check and won't handly it therefore.
+             */
+            catch (\Cx\Core\Error\Model\Entity\ShinyException $e) {
+                if ($this->mode != self::MODE_BACKEND) {
+                    throw new \Exception($e->getMessage());
+                }
+                // reset root of Cx\Core\Html\Sigma to backend template path
+                $this->template->setRoot($this->codeBaseAdminTemplatePath);
+                $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
+                $this->setPostContentLoadPlaceholders();
+                $this->finalize();
+                die;
+            }
+
             /**
              * Globally catch all exceptions and show offline.html
              * 
@@ -658,17 +698,7 @@ namespace Cx\Core\Core\Controller {
              * 
              * Enable \DBG to see what happened
              */
-            } catch (\Cx\Core\Error\Model\Entity\ShinyException $e) {
-                if ($this->mode != self::MODE_BACKEND) {
-                    throw new \Exception($e->getMessage());
-                }
-                // reset root of Cx\Core\Html\Sigma to backend template path
-                $this->template->setRoot($this->codeBaseAdminTemplatePath);
-                $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
-                $this->setPostContentLoadPlaceholders();
-                $this->finalize();
-                die;
-            } catch (\Exception $e) {
+            catch (\Exception $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
                 if (file_exists($this->websiteDocumentRootPath . '/offline.html')) {
                     $offlinePath = $this->websiteDocumentRootPath;
