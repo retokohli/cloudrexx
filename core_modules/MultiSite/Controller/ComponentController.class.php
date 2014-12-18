@@ -1548,15 +1548,18 @@ throw new MultiSiteException('Refactor this method!');
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
             // set SERVER_NAME to BaseDN of Website
             $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-            \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile, true);
+            \Cx\Core\Core\Controller\Cx::instanciate($cx->getMode(), true, $configFile, true);
 
-            // In cx-mode MODE_MINIMAL we need to proceed
-            // with the regular bootstrap process as the
-            // script that requested the minimal mode will
-            // most likely perform some additional operations
-            // after cx initialization.
+            // In cx-mode MODE_MINIMAL we must not abort
+            // script execution as the script that initialized
+            // the Cx object is most likely going to perform some
+            // additional operations after the Cx initialization
+            // has finished.
+            // To prevent that the bootstrap process of the service
+            // server is being proceeded, we must throw an
+            // InstanceException here.
             if ($cx->getMode() == $cx::MODE_MINIMAL) {
-                return true;
+                throw new \Cx\Core\Core\Controller\InstanceException();
             }
             exit;
         }
