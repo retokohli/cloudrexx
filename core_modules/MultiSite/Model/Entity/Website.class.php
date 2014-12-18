@@ -622,28 +622,46 @@ class Website extends \Cx\Model\Base\EntityBase {
             $websitePassword = '';
             $websitePasswordUrl = '';
             $websiteVerificationUrl = '';
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod')) {
-                case 'interactive':
-                    \DBG::msg('Website: generate reset password link for Cloudrexx user..');
-                    $passwordBlock = 'WEBSITE_PASSWORD_INTERACTIVE';
-                    $websitePasswordUrl = $this->generatePasswordRestoreUrl();
-                    break;
+            
+            if (isset($options['initialSignUp']) && $options['initialSignUp']) {
+                switch (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod')) {
+                    case 'interactive':
+                        \DBG::msg('Website: generate reset password link for Cloudrexx user..');
+                        $passwordBlock = 'WEBSITE_PASSWORD_INTERACTIVE';
+                        $websitePasswordUrl = $this->generatePasswordRestoreUrl();
+                        break;
 
-                case 'auto-with-verification':
-                    \DBG::msg('Website: set verification state to pending on Cloudrexx user..');
-                    // set state of user account to unverified
-                    $this->owner->setVerification(false);
-                    $this->owner->store();
-                    $websiteVerificationUrl = $this->generateVerificationUrl();
+                    case 'auto-with-verification':
+                        \DBG::msg('Website: set verification state to pending on Cloudrexx user..');
+                        // set state of user account to unverified
+                        $this->owner->setVerification(false);
+                        $this->owner->store();
+                        $websiteVerificationUrl = $this->generateVerificationUrl();
 
                     // important: intentionally no break for this case!
 
-                case 'auto':
-                default:
-                    \DBG::msg('Website: generate password for Cloudrexx user..');
-                    $passwordBlock = 'WEBSITE_PASSWORD_AUTO';
-                    $websitePassword = $this->generateAccountPassword();
-                    break;
+                    case 'auto':
+                    default:
+                        \DBG::msg('Website: generate password for Cloudrexx user..');
+                        $passwordBlock = 'WEBSITE_PASSWORD_AUTO';
+                        $websitePassword = $this->generateAccountPassword();
+                        break;
+                }
+                $mailTemplateKey = 'createInstance';
+                
+            } else {
+                $params = \Cx\Core_Modules\MultiSite\Model\Event\AccessUserEventListener::fetchUserData($this->owner);
+                switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateUser', $params, $this->websiteServiceServer);
+                        break;
+
+                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('updateUser', $params, $this);
+                        break;
+                }
+                $mailTemplateKey = 'newWebsiteCreated';
             }
 
             \DBG::msg('Website: SETUP COMPLETED > OK');
@@ -678,7 +696,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $info = array(
                 'section' => 'MultiSite',
                 'lang_id' => $langId,
-                'key' => 'createInstance',
+                'key' => $mailTemplateKey,
                 'to' => $websiteMail,
                 'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]'),
                 'replace' => array($websiteDomain, $websiteName, $websiteMail),

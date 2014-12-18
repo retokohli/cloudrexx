@@ -583,7 +583,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         if (isset($arguments['addWebsite'])) {
-            $websiteName = isset($_POST['multisite_address']) ? contrexx_input2xhtml($_POST['multisite_address']) : '';
+            $websiteName = isset($_POST['multisite_address']) ? contrexx_input2raw($_POST['multisite_address']) : '';
             $json = new \Cx\Core\Json\JsonData();
 
             $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
@@ -610,7 +610,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, \FWUser::getFWUserObject()->objUser);
                 $websiteCollection->addWebsite($website);
                 //website setup process
-                $website->setup();
+                $websiteStatus = $website->setup();
+                return $json->json(array(
+                        'status' => 'success',
+                        'message' => $websiteStatus
+                ));
             }
             die();
         } else {

@@ -446,8 +446,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
 
             $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
-            if (!empty($params['post']['userId'])) {
-                $objUser->setMultiSiteId($params['post']['userId']);
+            $userId  = contrexx_input2raw($params['post']['userId']);
+            if (!empty($userId)) {
+                $objFWUser = \FWUser::getFWUserObject();
+                $objUserExist = $objFWUser->objUser->getUser($userId);
+                if ($objUserExist) {
+                    return array(
+                        'userId' => $objUserExist->getId(),
+                        'log' => \DBG::getMemoryLogs(),
+                    );
+                }
+                $objUser->setMultiSiteId($userId);
             }
             $objUser->setEmail(!empty($params['post']['email']) ? contrexx_input2raw($params['post']['email']) : '');
             $objUser->setActiveStatus(!empty($params['post']['active']) ? (bool)$params['post']['active'] : false);
