@@ -1650,3 +1650,25 @@ a.cke_dialog_ui_button_ok:hover {
 .bs-callout a.alert-link {
     font-weight: bold;
 }
+/* maintenance page */
+.maintenance-content {
+    
+    background: #616161;
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 162px;
+    display: block;
+    text-align: center;
+    color: #fff;
+    padding: 23px 0 30px 0;
+}
+.maintenance-content h2 {
+    font-size: 40px;
+    font-weight: normal;
+    margin: 5px 0;
+}
+.maintenance-content span {
+    font-size: 18px;
+    font-weight: normal;
+}
