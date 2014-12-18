@@ -359,8 +359,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $product = $subscription->getProduct();
                     if (!$product) {
                         continue;
-                    }
-                    $objTemplate->setVariable(array(
+                    }                    
+                    $objTemplate->setGlobalVariable(array(
                         'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
                         'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
                         'MULTISITE_WEBSITE_PLAN'             => contrexx_raw2xhtml($product->getName()),
@@ -386,6 +386,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
                             } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                                 self::parseWebsiteDetails($objTemplate, $websiteCollection);
+                                $objTemplate->parse('showWebsites');
                             }
                         }
                     }
@@ -539,22 +540,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
 
-        $websiteCollection = $subscriptionObj->getProductEntity();
+        if ($objTemplate->blockExists('showWebsites')) {
+            $websiteCollection = $subscriptionObj->getProductEntity();
 
-        if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-            foreach ($websiteCollection->getWebsites() as $website) {
-                if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
-                    continue;
+            if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                foreach ($websiteCollection->getWebsites() as $website) {
+                    if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                        continue;
+                    }
+                    self::parseWebsiteDetails($objTemplate, $website);
+
+                    $objTemplate->parse('showWebsites');
                 }
-                self::parseWebsiteDetails($objTemplate, $website);
-
+                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
+            } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                self::parseWebsiteDetails($objTemplate, $websiteCollection);
                 $objTemplate->parse('showWebsites');
             }
-            self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() < count($websiteCollection->getWebsites())));
-        } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-            self::parseWebsiteDetails($objTemplate, $websiteCollection);
         }
-
+        
         return $objTemplate->get();
     }
     
