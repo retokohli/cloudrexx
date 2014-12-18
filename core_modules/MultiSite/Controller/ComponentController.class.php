@@ -1742,13 +1742,22 @@ throw new MultiSiteException('Refactor this method!');
     }
     
     /**
-     * Add the warning banner
+     * Post content load hook.
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        self::loadAccountActivationBar();
+        self::loadPoweredByFooter();
+    }
+    
+    /**
+     * Get the account activation bar if user is not verified
+     */
+    public function loadAccountActivationBar()
+    {
         global $_ARRAYLANG;
-
+        
         // only show account-activation-bar if user is signed-in
         if (!\FWUser::getFWUserObject()->objUser->login()) {
             return;
@@ -1764,14 +1773,14 @@ throw new MultiSiteException('Refactor this method!');
         if (!$websiteUser) {
             return;
         }
-
+        
         if ($websiteUser->isVerified()) {
             return;
         }
 
         JsonMultiSite::loadLanguageData();
         $objTemplate = $this->cx->getTemplate();
-        $warning = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Backend');
+        $warning = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModuleWebPath() . '/MultiSite/View/Template/Backend');
         $warning->loadTemplateFile('AccountActivation.html');
 
         $dueDate = '<span class="highlight">'.date(ASCMS_DATE_FORMAT_DATE, $websiteUser->getRestoreKeyTime()).'</span>';
@@ -1792,5 +1801,42 @@ throw new MultiSiteException('Refactor this method!');
             \JS::registerCSS('core_modules/MultiSite/View/Style/AccountActivationFrontend.css');
             $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $warning->get(), $objTemplate->_blocks['__global__']);
         }
+    }
+    
+    /**
+     * Get the powered by footer content.
+     */
+    public function loadPoweredByFooter()
+    {
+        global $_ARRAYLANG;
+        
+        if (!$this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        
+        $loadPoweredFooter = self::getModuleAdditionalDataByType('MultiSite', 'poweredbyfooter');
+        
+        if (empty($loadPoweredFooter)) {
+            return;
+        }
+        
+        if (isset($loadPoweredFooter['show']) && $loadPoweredFooter['show']) {
+            $marketingWebsiteDomainName = isset($loadPoweredFooter['marketingWebsiteDomain']) ? $loadPoweredFooter['marketingWebsiteDomain'] : '';
+            if (empty($marketingWebsiteDomainName)) {
+                return;
+            }
+            
+            $objTemplate = $this->cx->getTemplate();
+            $footer = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModuleWebPath() . '/MultiSite/View/Template/Backend');
+            $footer->loadTemplateFile('Footer.html');
+            $footer->setVariable(array(
+                'MULTISITE_POWERED_BY_FOOTER_LINK' => $marketingWebsiteDomainName,
+                'MULTISITE_POWERED_BY_CONTENT'     => $_ARRAYLANG['TXT_MULTISITE_POWERED_BY_FOOTER'] . ' &nbsp;&nbsp;<img src="/core/Core/View/Media/login_contrexx_logo.png" />',
+            ));
+
+            \JS::registerCSS('core_modules/MultiSite/View/Style/PoweredByFooterFrontend.css');                
+            $objTemplate->_blocks['__global__'] = preg_replace('/<\/body>/', '\\0' . $footer->get(), $objTemplate->_blocks['__global__']);
+        }
+        
     }
 }
