@@ -1,7 +1,6 @@
 <div class="grid-elm grid-align-1-1 grid-offset">
     <h2>{TXT_MULTISITE_WEBSITE_WEBSITES}</h2>
-
-    <!-- BEGIN showWebsites -->
+    
     <table>
         <thead>         
             <tr>
@@ -10,6 +9,7 @@
             </tr> 
         </thead>    
         <tbody>  
+            <!-- BEGIN showWebsites -->
             <tr>
                 <td>
                     <!-- BEGIN showWebsiteLink -->
@@ -17,7 +17,7 @@
                     <!-- END showWebsiteLink -->
 
                     <!-- BEGIN showWebsiteName -->
-                    &nbsp;{MULTISITE_WEBSITE_NAME}
+                    <span class="entypo-popup">&nbsp;{MULTISITE_WEBSITE_NAME}</span>
                     <!-- END showWebsiteName -->
                 </td>
                 <td> 
@@ -32,10 +32,10 @@
                     <!-- END showAdminButton -->
                 </td>
             </tr>
+            <!-- END showWebsites -->
         </tbody>
     </table>
-    <!-- END showWebsites -->
-
+    
     <!-- BEGIN showAddWebsiteButton -->
     <button type="button" class="add" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionAddWebsite" data-toggle="modal">{TXT_MULTISITE_WEBSITE_BUTTON_ADDNEW}</button>
     <div aria-hidden="true" class="modal fade" id="SubscriptionAddWebsite" role="dialog" tabindex="-1">

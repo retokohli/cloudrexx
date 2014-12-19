@@ -62,7 +62,7 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(document).ready(function() {
-    jQuery('.subscription').bind('click', function () { 
+    jQuery('.subscription').bind('click', function (event) {
         if (event.target.nodeName != 'BUTTON') {
             var refId = jQuery(this).attr('data-ref-id');
 
