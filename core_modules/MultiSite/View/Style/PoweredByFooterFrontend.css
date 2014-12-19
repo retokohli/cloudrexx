@@ -1,11 +1,8 @@
 div#PoweredByFooter {
     clear: both;
     width: 100%;
-    position: fixed;
-    bottom: 0px;
     height: 30px;
-    background: rgb(0, 113, 188);
-    z-index: 9999;
+    background: rgb(0, 113, 188);    
     color: rgb(255, 255, 255);
     padding: 2px 10px;
     text-align: right;
