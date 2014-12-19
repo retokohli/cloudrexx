@@ -1240,7 +1240,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         foreach ($params['post']['dashboardMessages'] as $key => $value) {
                             if (!empty($value) && $value != 'undefined') {
                                 $lang = !is_string($key) ? \FWLanguage::getLanguageCodeById($key) : $key;
-                                $dashboardMessages[$lang] = new \Cx\Core_Modules\License\Message($lang, $value['text'], $value['type'], $value['link'], $value['linkTarget'], true);
+                                $licenseText = isset($value['text']) ? $value['text'] : '';
+                                $licenseType = isset($value['type']) ? $value['type'] : '';
+                                $licenseLink = isset($value['link']) ? $value['link'] : '';
+                                $licenseLinkTarget = isset($value['linkTarget']) ? $value['linkTarget'] : '';
+                                $dashboardMessages[$lang] = new \Cx\Core_Modules\License\Message($lang, $licenseText, $licenseType, $licenseLink, $licenseLinkTarget, true);
                             }
                         }
                         $license->setDashboardMessages($dashboardMessages);
