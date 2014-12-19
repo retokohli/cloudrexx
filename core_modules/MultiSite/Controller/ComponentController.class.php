@@ -267,7 +267,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommandLogin($objTemplate)
     {
-        global $objInit, $_ARRAYLANG;
+        global $objInit, $_ARRAYLANG, $_CORELANG;
         
         $langData = $objInit->loadLanguageData('Login');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
@@ -296,7 +296,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function executeCommandUser($objTemplate, $arguments) 
     {
         // profile attribute labels are stored in core-lang
-        global $objInit, $_CORELANG;
+        global $objInit, $_CORELANG, $_ARRAYLANG;
         $langData = $objInit->loadLanguageData('core');
         $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
 
