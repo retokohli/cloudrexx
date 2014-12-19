@@ -322,7 +322,6 @@
         background-color: #FFF;
         font-weight: bold;
         /*opacity: 0.3;*/
-        cursor: not-allowed;
     }
 
     .prices {
@@ -496,6 +495,13 @@
     .biannual-prices {
         text-align: center;
     }
+    .biannual-discount{
+        font-size: 14px;
+        color: rgb(33, 111, 189);
+    }
+    .biannual-discount sub{
+        bottom: 0;
+    }
 </style>
 <script type="text/javascript">
     jQuery(document).ready(function() {
@@ -518,7 +524,7 @@
             jQuery('.buy-now').removeClass('subscriptionProduct');
             return false;
         });
-                
+        
         function validUrl($url) {
             var urlPattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
             if (!urlPattern.test($url)) {
@@ -539,8 +545,12 @@
             $ajaxUrl = jQuery('#subscriptionAjaxUrl').val();
             $productId = jQuery('.buy-now.subscriptionProduct').data("productid");
             $subscriptionId = jQuery('#subscriptionId').val();
+            $websiteName = jQuery('#websiteName').val();
             
-            if ((jQuery.trim($ajaxUrl) == '') || (jQuery.trim($productId) == '') || (jQuery.trim($subscriptionId) != '')) {
+            if ((jQuery.trim($ajaxUrl) == '') 
+                    || (jQuery.trim($productId) == '') 
+                    || (jQuery.trim($subscriptionId) == '') 
+                    || (jQuery.trim($websiteName) == '')) {
                 showMessage('{TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS}', 'error');
                 return false;
             }
@@ -550,7 +560,8 @@
                 url: $ajaxUrl,
                 data: {
                     product_id : $productId,
-                    subscription_id : $subscriptionId
+                    subscription_id : $subscriptionId,
+                    websiteName : $websiteName
                 },
                 type: "POST",
                 success: function(response){
@@ -610,7 +621,7 @@
     jQuery('.modal-backdrop').hide();
 </script>
 
-<div class="prices-periods"><a class="monthly" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a> <a class="annual active" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a> <a class="biannual" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}</a></div>
+<div class="prices-periods"><a class="monthly" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a> <a class="annual active" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a> <a class="biannual" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY} <span class="biannual-discount"><sub> - 10% </sub></span></a></div>
 
 <div class="prices">
     <h2 class="monthly-prices amt" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTH} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
@@ -621,6 +632,7 @@
     
     <input type ="hidden" name ="subscriptionId" id ="subscriptionId" value="{MULTISITE_SUBSCRIPTION_ID}" />
     <input type ="hidden" name ="subscriptionAjaxUrl" id ="subscriptionAjaxUrl" value="{MULTISITE_SUBSCRIPTION_SELECTION_URL}" />
+    <input type ="hidden" name ="websiteName" id ="websiteName" value="{MULTISITE_WEBSITE_NAME}" />
     
     <!-- BEGIN showProduct -->
     <div id="{MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID}">
