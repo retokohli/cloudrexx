@@ -692,15 +692,10 @@ class Website extends \Cx\Model\Base\EntityBase {
                     '<customer-name>',
                     '<subscription:trial / business>'),
             ));
+            
             // send CUSTOMER mail
-            $info = array(
-                'section' => 'MultiSite',
-                'lang_id' => $langId,
-                'key' => $mailTemplateKey,
-                'to' => $websiteMail,
-                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]'),
-                'replace' => array($websiteDomain, $websiteName, $websiteMail),
-                'substitution' => array(
+            if (isset($passwordBlock)) {
+                $substitution = array(
                     $passwordBlock => array(
                         '0' => array(
                             'WEBSITE_PASSWORD' => $websitePassword,
@@ -708,7 +703,19 @@ class Website extends \Cx\Model\Base\EntityBase {
                             'WEBSITE_PASSWORD_URL' => $websitePasswordUrl,
                         ),
                     )
-                ),
+                );
+            } else {
+                $substitution = array();
+            }
+
+            $info = array(
+                'section' => 'MultiSite',
+                'lang_id' => $langId,
+                'key' => $mailTemplateKey,
+                'to' => $websiteMail,
+                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]'),
+                'replace' => array($websiteDomain, $websiteName, $websiteMail),
+                'substitution' => $substitution
             );
             // If email verification is required,
             // parse related block in notification email.

@@ -598,50 +598,102 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         if (isset($arguments['addWebsite'])) {
+            
             $websiteName = isset($_POST['multisite_address']) ? contrexx_input2raw($_POST['multisite_address']) : '';
             $json = new \Cx\Core\Json\JsonData();
+            
+            try {
+                $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+                $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
 
-            $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-            $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
-
-            //check the subscription is exist
-            if (!$subscriptionObj) {
-                return $json->json(array(
-                        'status' => 'error',
-                        'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS']
-                ));
-            }
-
-            //get website collections
-            $websiteCollection = $subscriptionObj->getProductEntity();
-            if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-                if ($websiteCollection->getQuota() <= count($websiteCollection->getWebsites())) {
+                //check the subscription is exist
+                if (!$subscriptionObj) {
                     return $json->json(array(
-                            'status' => 'error',
-                            'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $websiteCollection->getQuota())
+                                'status' => 'error',
+                                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS']
                     ));
                 }
-                //create new website object and add to website
-                $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, \FWUser::getFWUserObject()->objUser);
-                $websiteCollection->addWebsite($website);
-                //website setup process
-                $websiteStatus = $website->setup();
+
+                //get sign-in user crm id!
+                $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+
+                if (empty($crmContactId)) {
+                    return $json->json(array(
+                                'status' => 'error',
+                                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']
+                    ));
+                }
+
+                $order = $subscriptionObj->getOrder();
+                if (!$order) {
+                    return $json->json(array(
+                                'status' => 'error',
+                                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS']
+                    ));
+                }
+
+                //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
+                if ($crmContactId != $order->getContactId()) {
+                    return $json->json(array(
+                                'status' => 'error',
+                                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']
+                    ));
+                }
+
+                //get website collections
+                $websiteCollection = $subscriptionObj->getProductEntity();
+                if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                    if ($websiteCollection->getQuota() <= count($websiteCollection->getWebsites())) {
+                        return $json->json(array(
+                                    'status' => 'error',
+                                    'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $websiteCollection->getQuota())
+                        ));
+                    }
+                    //create new website object and add to website
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, \FWUser::getFWUserObject()->objUser);
+                    $websiteCollection->addWebsite($website);
+
+                    $product = $subscriptionObj->getProduct();
+                    //check the product
+                    if (!$product) {
+                        return $json->json(array(
+                                    'status' => 'error',
+                                    'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS']
+                        ));
+                    }
+                    $productEntityAttributes = $product->getEntityAttributes();
+                    //pass the website template value
+                    $options = array(
+                        'websiteTemplate' => $productEntityAttributes['websiteTemplate']
+                    );
+                    //website setup process
+                    $websiteStatus = $website->setup($options);
+                    return $json->json(array(
+                                'status' => 'success',
+                                'message' => $websiteStatus
+                    ));
+                }
+            } catch (\Exception $e) {
                 return $json->json(array(
-                        'status' => 'success',
-                        'message' => $websiteStatus
-                ));
-            }
+                                'status' => 'error',
+                                'message' => "Failed to add website:" . $e->getMessage()
+                    ));
+                }
             die();
         } else {
             $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
             $mainDomain = $domainRepository->getMainDomain()->getName();
             $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
-
+            
+            $websiteNameMinLength = \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
+            $websiteNameMaxLength = \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
+            
             $objTemplate->setVariable(array(                
                 'MULTISITE_DOMAIN'             => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
                 'MULTISITE_ADDRESS_URL'        => $addressUrl->toString(),
                 'MULTISITE_ADD_WEBSITE_URL'    => '/api/MultiSite/SubscriptionAddWebsite?addWebsite=1&id=' . $subscriptionId,
                 'TXT_MULTISITE_CREATE_WEBSITE' => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
+                'TXT_MULTISITE_SITE_ADDRESS_INFO'  => sprintf($_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME'], $websiteNameMinLength, $websiteNameMaxLength)
             ));
 
             return $objTemplate->get();
