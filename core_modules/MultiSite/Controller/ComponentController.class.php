@@ -369,7 +369,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
                         'MULTISITE_WEBSITE_PLAN'             => contrexx_raw2xhtml($product->getName()),
                         'MULTISITE_WEBSITE_INVOICE_DATE'     => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
-                        'MULTISITE_WEBSITE_EXPIRE_DATE'      => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',                                        
+                        'MULTISITE_WEBSITE_EXPIRE_DATE'      => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',    
                     ));
 
                     if ($status == 'valid' && $objTemplate->blockExists('showUpgradeButton')) {
@@ -416,6 +416,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         global $_ARRAYLANG;
         
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
+        }
+        
         $websiteId = isset($arguments['id']) ? $arguments['id'] : 0;
         $subscriptionId = isset($arguments['subscriptionId']) ? $arguments['subscriptionId'] : 0;
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
@@ -424,40 +428,54 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         
+        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+        $contactEmail = \FWUser::getFWUserObject()->objUser->getEmail();
+        
+        if (\FWValidator::isEmpty($crmContactId)) {
+            return ' '; // Do not show subscription selection
+        }
+        
         if (!\FWValidator::isEmpty($subscriptionId)) {
             $subscription = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription')->findOneBy(array('id' => $subscriptionId));
             
             if (!$subscription) {
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'];                
             }
-            if ($subscription->getProductEntity() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                // if the user clicked on button "Abo wählen" from trial subscription means list all products
-                $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findBy(array('entityClass' => 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection'));
-            } else {
-                $product = $subscription->getProduct();
-                if (!$product) {
-                    return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
-                }
-                $products = $product->getUpgrades();
+            
+            $order = $subscription->getOrder();
+            if (!$order) {
+                return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS'];
             }
-            if (\FWValidator::isEmpty($products)) {
+            
+            //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
+            if ($crmContactId != $order->getContactId()) {
+                return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+            }
+            
+            // if the user clicked on button "Abo wählen" from trial subscription means list all products
+            $product = $subscription->getProduct();
+            if (!$product) {
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
             }
-
+            
+            $products = $product->getUpgrades();
+            if (\FWValidator::isEmpty($products)) {
+                return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'];
+            }
+            $websiteName = '';
             if (!\FWValidator::isEmpty($websiteId)) {
                 $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                 $website = $websiteServiceRepo->findOneById($websiteId);
                 $websiteName = $website ? $website->getName() : '';
             }
-
-            $conatctEmail = (self::isUserLoggedIn()) ? \FWUser::getFWUserObject()->objUser->getEmail() : '';
+            
             foreach ($products as $product) {
                 $productName = contrexx_raw2xhtml($product->getName());
                 $productPrice = $product->getPrice();
                 if ($productPrice > 0) {
                     $additionalParameters = array(
                         'invoice_number' => $productName . ' - ' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
-                        'contact_email' => $conatctEmail,
+                        'contact_email' => $contactEmail,
                         'invoice_amount' => $productPrice,
                         'invoice_currency' => 'CHF',
                         'referenceId' => $product->getId() . '-' . $websiteName
@@ -482,8 +500,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objTemplate->parse('showProduct');
             }
             $objTemplate->setVariable( array(
-                'MULTISITE_SUBSCRIPTION_SELECTION_URL' => $subscriptionUrl,
-                'MULTISITE_SUBSCRIPTION_ID'            => $subscriptionId
+                'MULTISITE_SUBSCRIPTION_SELECTION_URL' => $subscriptionUrl->toString(),
+                'MULTISITE_SUBSCRIPTION_ID'            => $subscriptionId,
+                'MULTISITE_WEBSITE_NAME'               => $websiteName
             ));
             return $objTemplate->get();
         }

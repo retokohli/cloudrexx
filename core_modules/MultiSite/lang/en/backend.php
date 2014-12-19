@@ -231,3 +231,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_SUBSCRIPTIONID']  = 'Invalid Subs
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_ORDER']  = 'Invalid Order for subscription.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']  = 'Successfully Upgraded the subscription.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']  = 'Failed to upgrade the website for the subscription selection.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND']  = 'Their is no upgrade products found.';
