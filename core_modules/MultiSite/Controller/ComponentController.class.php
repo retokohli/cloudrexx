@@ -148,6 +148,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     case 'Backup':
                         $this->executeCommandBackup($arguments);
                         break;
+                    
+                    case 'Cron':
+                        $this->executeCommandCron();
+                        break;
                     default:
                         break;
                 }
@@ -822,6 +826,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         } catch (\Exception $e) {
             throw new MultiSiteException("Failed to backup the website:" . $e->getMessage());
         }
+    }
+    
+    /**
+     * Api Cron command
+     */
+    public function executeCommandCron()
+    {
+        $cron = new CronController();
+        $cron->sendNotificationMails();
     }
     
     /**
