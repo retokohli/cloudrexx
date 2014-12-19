@@ -315,7 +315,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objUser->objAttribute->first();
         while (!$objUser->objAttribute->EOF) {
             $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, $arguments[2] == 'Edit' ? true : false, false, false, false, false);
+            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, (isset($arguments[2]) && $arguments[2] == 'Edit' ? true : false), false, false, false, false);
             $objUser->objAttribute->next();
         }
         $objAccessLib->parseAccountAttributes($objUser);
