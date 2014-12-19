@@ -374,12 +374,29 @@ class ViewGenerator {
                 if ($name == 'virtual') {
                     continue;
                 }
+
+                $fieldDefinition['type'] = null;
                 if (!\Env::get('em')->getClassMetadata($entityClass)->hasAssociation($name)) {
                     $fieldDefinition = $entityObject->getFieldMapping($name);
                 }
                 if ($name != $primaryKeyName) {
                     $this->options[$name]['type'] = $fieldDefinition['type'];
                     $renderArray[$name] = $value;
+                }
+            }
+
+            // load single-valued-associations
+            // this is used for those object fields that are associations, but no object has been assigned to yet
+            $associationMappings = \Env::get('em')->getClassMetadata($entityClass)->getAssociationMappings();
+            $classMethods = get_class_methods($entityObject->newInstance());
+            foreach ($associationMappings as $field => $associationMapping) {
+                if (!empty($renderArray[$field])) {
+                    continue;
+                }
+                if (   \Env::get('em')->getClassMetadata($entityClass)->isSingleValuedAssociation($field)
+                    && in_array('set'.ucfirst($field), $classMethods)
+                ) {
+                    $renderArray[$field] = new $associationMapping['targetEntity']();
                 }
             }
         } else {
