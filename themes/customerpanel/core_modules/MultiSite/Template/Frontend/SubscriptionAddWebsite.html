@@ -57,8 +57,8 @@ var validateAdress = function (value, validator, $field) {
 /* ]]> */
 </style>
 <div class="grid-elm grid-align-1-1 grid-offset">
-    <div class="modal-body multisite-status"></div>
-    <div class="modal-body multisite-form">
+    <div class="multisite-status"></div>
+    <div class="multisite-form">
         <form role="form" id="multisite_signup_form">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <h2>{TXT_MULTISITE_ADD_NEW_WEBSITE}</h2>
@@ -67,7 +67,7 @@ var validateAdress = function (value, validator, $field) {
 
                     <div class="form-group">
                         <div class="input-group multisite-address">
-                            <input  data-bv-notempty="true" data-bv-notempty-message=" " data-bv-callback="true" data-bv-callback-callback="validateAdress"  id="multisite_address" name="multisite_address" type="text" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" value="" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
+                            <input  data-bv-notempty="true" data-bv-notempty-message=" " data-bv-callback="true" data-bv-callback-callback="validateAdress"  id="multisite_address" name="multisite_address" type="text" title="{TXT_MULTISITE_SITE_ADDRESS_INFO}" class="form-control" value="" required="">
                             <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
                         </div>
                     </div>
@@ -75,7 +75,7 @@ var validateAdress = function (value, validator, $field) {
                 </div>
 
                 <div class="row">
-                    <button type="button" class="multisite_submit">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+                    <button type="button" class="add multisite_submit">{TXT_MULTISITE_CREATE_WEBSITE}</button>
                     <button type="button" data-dismiss="modal">{TXT_MULTISITE_CLOSE}</button>
                 </div>
 
