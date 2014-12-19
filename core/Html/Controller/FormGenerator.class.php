@@ -278,8 +278,13 @@ class FormGenerator {
                 
                 return $div;
                 break;
+
             case 'string':
             default:
+                // convert NULL to empty string
+                if (is_null($value)) {
+                    $value = '';
+                }
                 // input field with type text
                 $input = new \Cx\Core\Html\Model\Entity\DataElement($name, $value);
                 $input->setAttribute('type', 'text');
