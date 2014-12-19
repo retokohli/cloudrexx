@@ -93,6 +93,8 @@ class Subscription extends \Cx\Model\Base\EntityBase {
             list($this->renewalUnit, $this->renewalQuantifier) = $product->getRenewalDefinition($options['renewalUnit'], $options['renewalQuantifier']);
             $this->renewalDate = $product->getRenewalDate($this->renewalUnit, $this->renewalQuantifier);
         }
+        //Set state initialized to active.
+        $this->state = self::STATE_ACTIVE;
     }
     
     /**
