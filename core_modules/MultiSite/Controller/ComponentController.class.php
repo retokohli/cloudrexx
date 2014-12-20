@@ -918,6 +918,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $userId = \FWUser::getFWUserObject()->objUser->getId();
         
+        $websiteInitialStatus = array(
+            \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT,
+            \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_SETUP, 
+        );
+        
         $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
         $objTemplate->setVariable(array(
             'MULTISITE_WEBSITE_NAME'          => contrexx_raw2xhtml($website->getName()),
@@ -925,7 +930,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'MULTISITE_WEBSITE_LINK'          => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()),
             'MULTISITE_WEBSITE_BACKEND_LINK'  => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
             'MULTISITE_WEBSITE_FRONTEND_LINK' => self::getApiProtocol() . $website->getBaseDn()->getName(),
-            'MULTISITE_WEBSITE_STATE_CLASS'   => $status ? 'active' : 'inactive',
+            'MULTISITE_WEBSITE_STATE_CLASS'   => $status ? 'active' : (in_array($website->getStatus(), $websiteInitialStatus) ? 'init' : 'inactive'),
         ));
         
         self::showOrHideBlock($objTemplate, 'websiteLinkActive', $status);
@@ -933,7 +938,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         self::showOrHideBlock($objTemplate, 'showAdminButton', ($status && $website->getOwnerId() == $userId));
         self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
         self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
-        self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);                
+        self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
+        
+        if (in_array($website->getStatus(), $websiteInitialStatus)) {
+            self::showOrHideBlock($objTemplate, 'actionButtonsActive', false);
+            self::showOrHideBlock($objTemplate, 'websiteInitializing', true);            
+        }
     }
 
     /**
