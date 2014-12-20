@@ -516,11 +516,13 @@
 
         jQuery('.buy-now').on('click', function() {
             var $this = jQuery(this);
+            
+            $this.data('renewalOption', $this.parent().find('div:visible').attr('data-renewalOption'));
             if (getProductPrice($this)) {
-                modifyPaymentUrl($this);
+                modifyPaymentUrl($this);                
                 $this.addClass('subscriptionProduct');
                 return true;
-            }
+            }            
             jQuery('.buy-now').removeClass('subscriptionProduct');
             return false;
         });
@@ -546,7 +548,8 @@
             $productId = jQuery('.buy-now.subscriptionProduct').data("productid");
             $subscriptionId = jQuery('#subscriptionId').val();
             $websiteName = jQuery('#websiteName').val();
-            $renewalOption = jQuery('.buy-now.subscriptionProduct').parent().find('> div:visible').data("renewalOption");
+            $renewalOption = jQuery('.buy-now.subscriptionProduct').data("renewalOption");
+            
             if ((jQuery.trim($ajaxUrl) == '') 
                     || (jQuery.trim($productId) == '') 
                     || (jQuery.trim($subscriptionId) == '') 
