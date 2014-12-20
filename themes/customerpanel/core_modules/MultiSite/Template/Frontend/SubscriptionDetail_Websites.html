@@ -1,16 +1,17 @@
-<div class="grid-elm grid-align-1-1 grid-offset">
+<div class="grid-elm grid-align-1-1 grid-offset subscription-details">
     <h2>{TXT_MULTISITE_WEBSITE_WEBSITES}</h2>
     
     <table>
         <thead>         
             <tr>
-                <th width="99%" class="sort">{TXT_MULTISITE_WEBSITE_TITLE_NAME}</th>
+                <th width="99%" class="sort" colspan="2">{TXT_MULTISITE_WEBSITE_TITLE_NAME}</th>
                 <th width="1%" class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
             </tr> 
         </thead>    
         <tbody>  
             <!-- BEGIN showWebsites -->
-            <tr>
+            <tr class="website">
+                <td width="1%" class="center"><span class="{MULTISITE_WEBSITE_STATE_CLASS}"><!-- --></span></td>
                 <td>
                     <!-- BEGIN showWebsiteLink -->
                     <a href="{MULTISITE_WEBSITE_FRONTEND_LINK}" target = "_blank" class="entypo-popup" >&nbsp;{MULTISITE_WEBSITE_NAME}</a>
@@ -21,6 +22,7 @@
                     <!-- END showWebsiteName -->
                 </td>
                 <td> 
+                  <!-- BEGIN actionButtonsActive -->
                     <!-- BEGIN showWebsiteViewButton -->
                     <button type="button" onclick="window.open('{MULTISITE_WEBSITE_FRONTEND_LINK}', '_blank').focus();">{TXT_MULTISITE_WEBSITE_BUTTON_VIEW}</button>
                     <!-- END showWebsiteViewButton -->
@@ -30,6 +32,10 @@
                     <!-- BEGIN showAdminButton -->
                     <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
                     <!-- END showAdminButton -->
+                  <!-- END actionButtonsActive -->
+                  <!-- BEGIN websiteInitializing -->
+                    {TXT_MULTISITE_WEBSITE_INITIALIZING}
+                  <!-- END websiteInitializing -->
                 </td>
             </tr>
             <!-- END showWebsites -->

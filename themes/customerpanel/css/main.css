@@ -420,6 +420,9 @@ table tbody tr.subscription {
     cursor: pointer;
 }
 
+.subscription-details table tbody tr.website {
+    display: table-row;
+}
 table tbody tr.website {
     display: none;
 }
@@ -438,6 +441,12 @@ table tbody tr.website span.inactive:before {
     font-style: normal;
     font-weight: bold; 
     color: #d64830;
+}
+table tbody tr.website span.init {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url('../../../lib/javascript/jquery/jstree/themes/default/throbber.gif');    
 }
 
 table tbody tr td {

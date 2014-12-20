@@ -4,9 +4,22 @@
         <!-- BEGIN showSiteDetails -->
         <!-- BEGIN showWebsites -->
         <tr>
-            <td><a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;{MULTISITE_WEBSITE_NAME}</a></td>
-            <td class="actions">                               
-                <button type="button" onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Manage</button>   
+            <td>
+              <!-- BEGIN websiteLinkActive -->
+              <a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;{MULTISITE_WEBSITE_NAME}</a>
+              <!-- END websiteLinkActive -->
+
+              <!-- BEGIN websiteLinkInactive -->
+              <span class="entypo-popup">&nbsp;{MULTISITE_WEBSITE_NAME}</span>
+              <!-- END websiteLinkInactive -->
+            </td>
+            <td class="actions">
+              <!-- BEGIN actionButtonsActive -->
+              <button type="button" onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Manage</button>
+              <!-- END actionButtonsActive -->
+              <!-- BEGIN websiteInitializing -->
+              {TXT_MULTISITE_WEBSITE_INITIALIZING}
+              <!-- END websiteInitializing -->
             </td>
         </tr>
         <!-- END showWebsites -->

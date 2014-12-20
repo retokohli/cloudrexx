@@ -25,6 +25,7 @@
                     </td>
                     <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
                     <td class="actions">
+                        <!-- BEGIN actionButtonsActive -->
                         <button onclick="window.location.href = '{NODE_MULTISITE_WEBSITE}?id={MULTISITE_WEBSITE_ID}';">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
 
                         <!-- BEGIN showAdminButton -->
@@ -32,7 +33,10 @@
                         <!-- END showAdminButton -->
                        
                         <button class="save" data-remote="/api/MultiSite/SubscriptionSelection?id={MULTISITE_WEBSITE_ID}&subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionSelection" data-toggle="modal">{TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION}</button>
-                        
+                        <!-- END actionButtonsActive -->
+                        <!-- BEGIN websiteInitializing -->
+                        {TXT_MULTISITE_WEBSITE_INITIALIZING}
+                        <!-- END websiteInitializing -->
                     </td>
                 </tr>
                 <!-- END showWebsites -->
