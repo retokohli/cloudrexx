@@ -546,11 +546,12 @@
             $productId = jQuery('.buy-now.subscriptionProduct').data("productid");
             $subscriptionId = jQuery('#subscriptionId').val();
             $websiteName = jQuery('#websiteName').val();
-            
+            $renewalOption = jQuery('.buy-now.subscriptionProduct').parent().find('> div:visible').data("renewalOption");
             if ((jQuery.trim($ajaxUrl) == '') 
                     || (jQuery.trim($productId) == '') 
                     || (jQuery.trim($subscriptionId) == '') 
-                    || (jQuery.trim($websiteName) == '')) {
+                    || (jQuery.trim($renewalOption) == '') 
+                ) {
                 showMessage('{TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS}', 'error');
                 return false;
             }
@@ -561,7 +562,8 @@
                 data: {
                     product_id : $productId,
                     subscription_id : $subscriptionId,
-                    websiteName : $websiteName
+                    websiteName : $websiteName,
+                    renewalOption : $renewalOption
                 },
                 type: "POST",
                 success: function(response){
@@ -615,7 +617,7 @@
                     }
                 }
             });
-        });
+       });
     });
     
     jQuery('.modal-backdrop').hide();
@@ -638,11 +640,11 @@
     <div id="{MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID}">
         <div class="header"><span class="name">{MULTISITE_WEBSITE_PRODUCT_NAME}</span>
 
-            <div class="monthly-prices amt" style="display: none;" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}.-</span><span class="currency">CHF</span></div>
+            <div class="monthly-prices amt" style="display: none;" data-renewalOption = "monthly" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}.-</span><span class="currency">CHF</span></div>
 
-            <div class="annual-prices amt" style="display: block;" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}.-</span><span class="currency">CHF</span></div>
+            <div class="annual-prices amt" style="display: block;" data-renewalOption = "annually" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}.-</span><span class="currency">CHF</span></div>
 
-            <div class="biannual-prices amt" style="display: none;" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}.-</span><span class="currency">CHF</span></div>
+            <div class="biannual-prices amt" style="display: none;" data-renewalOption = "biannually" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}.-</span><span class="currency">CHF</span></div>
             <a class="buy-now" href = "javascript:void(0)" data-href="{MULTISITE_OPTION_PAYREXXFORMURL}" data-productid = "{MULTISITE_WEBSITE_PRODUCT_ID}">{TXT_MULTISITE_WEBSITE_CHOOSE}</a></div>
 
         <div class="features">
