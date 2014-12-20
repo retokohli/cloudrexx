@@ -222,7 +222,6 @@ $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'] = 'Unknown website requested.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'] = 'You have reached the maximum of %s entities that are included in your current plan.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TEMPLATE_FAILED'] = 'Failed to load a website template.';
 
-$_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_SELECTION']  = 'Subscription Selection';
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED']  = 'Transaction is failed/cancelled.';
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS']  = 'Invalid parameters.please try after sometime.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']  = 'Unable to create the order.';
@@ -231,5 +230,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_SUBSCRIPTIONID']  = 'Invalid Subs
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_ORDER']  = 'Invalid Order for subscription.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']  = 'Successfully Upgraded the subscription.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']  = 'Failed to upgrade the website for the subscription selection.';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND']  = 'Their is no upgrade products found.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND']  = 'Their are no upgradable products found.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_INITIALIZING'] = 'Initializing...';

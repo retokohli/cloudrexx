@@ -363,7 +363,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $product = $subscription->getProduct();
                     if (!$product) {
                         continue;
-                    }                    
+                    }
                     $objTemplate->setGlobalVariable(array(
                         'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
                         'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
@@ -430,6 +430,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
         $contactEmail = \FWUser::getFWUserObject()->objUser->getEmail();
+        $userId = \FWUser::getFWUserObject()->objUser->getId();
         
         if (\FWValidator::isEmpty($crmContactId)) {
             return ' '; // Do not show subscription selection
@@ -452,6 +453,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
             }
             
+            $websiteName = '';
+            if (!\FWValidator::isEmpty($websiteId)) {
+                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $website = $websiteServiceRepo->findOneById($websiteId);
+                if ($website) {
+                    if ($website->getOwnerId() != $userId)  {
+                        return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+                    }              
+                    $websiteName = $website->getName();
+                }
+            }
+            
             // if the user clicked on button "Abo wählen" from trial subscription means list all products
             $product = $subscription->getProduct();
             if (!$product) {
@@ -461,12 +474,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $products = $product->getUpgrades();
             if (\FWValidator::isEmpty($products)) {
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'];
-            }
-            $websiteName = '';
-            if (!\FWValidator::isEmpty($websiteId)) {
-                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                $website = $websiteServiceRepo->findOneById($websiteId);
-                $websiteName = $website ? $website->getName() : '';
             }
             
             foreach ($products as $product) {

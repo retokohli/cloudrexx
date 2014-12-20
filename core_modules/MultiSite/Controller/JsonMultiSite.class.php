@@ -397,8 +397,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $productId = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : 0;
             $subscriptionId = isset($params['post']['subscription_id']) ? contrexx_input2raw($params['post']['subscription_id']) : 0;
             $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
+            $renewalOption = isset($params['post']['renewalOption']) ? contrexx_input2raw($params['post']['renewalOption']) : '';
             
-            if (\FWValidator::isEmpty($productId) || \FWValidator::isEmpty($subscriptionId) || \FWValidator::isEmpty($websiteName)) {
+            if (   \FWValidator::isEmpty($productId) 
+                || \FWValidator::isEmpty($subscriptionId) 
+                || \FWValidator::isEmpty($renewalOption)
+            ) {
                 return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALIDPARAMETERS']);
             }
             
@@ -415,8 +419,26 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
 
             $crmContactId = $orderObj->getContactId();
+            
+            
+            switch($renewalOption) {
+                case 'annually':
+                    $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
+                    $renewalQuantifier = 1;
+                    break;
+                case 'biannually':
+                    $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
+                    $renewalQuantifier = 2;
+                    break;
+                default:
+                    $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
+                    $renewalQuantifier = 1;
+                    break;
+            }
             $subscriptionOptions = array(
-                'baseSubscription' => $subscriptionObj,
+                'baseSubscription'  => $subscriptionObj,
+                'renewalUnit'       => $renewalUnit,
+                'renewalQuantifier' => $renewalQuantifier,
             );
             $transactionReference = $productId . '-' . $websiteName;
             
