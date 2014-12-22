@@ -8,6 +8,7 @@ cx.ready(function() {
         loadContent('#multisite_website_info', '/api/MultiSite/Website/Info?id=' + id);
         loadContent('#multisite_website_admins', '/api/MultiSite/Website/Admins?id=' + id);
         loadContent('#multisite_website_domains', '/api/MultiSite/Website/Domains?id=' + id);
+        loadContent('#multisite_website_email', '/api/MultiSite/Website/Email?id=' + id);
         loadContent('#multisite_website_resources', '/api/MultiSite/Website/Resources?id=' + id);
     });
 });
@@ -31,6 +32,12 @@ cx.ready(function() {
 <div class="grid-elm grid-align-1-1 grid-offset">  
     <h2>{TXT_MULTISITE_WEBSITE_DOMAINS}</h2>
     <div id='multisite_website_domains'>
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
+</div>
+<div class="grid-elm grid-align-1-1 grid-offset">  
+    <h2>{TXT_MULTISITE_WEBSITE_EMAIL}</h2>
+    <div id='multisite_website_email'>
         <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
     </div>
 </div>
