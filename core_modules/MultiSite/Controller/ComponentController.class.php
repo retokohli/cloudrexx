@@ -795,6 +795,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 ));
             }
         }
+        
+        //show the website's mail service enable|disable button
+        if ($objTemplate->blockExists('activateMailService') && $objTemplate->blockExists('deactivateMailService')) {
+            $mailServiceServerStatus = $website->getMailServiceServer() 
+                                        && $website->getMailServiceServer() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer;
+            
+            self::showOrHideBlock($objTemplate, 'deactivateMailService', $mailServiceServerStatus);
+            self::showOrHideBlock($objTemplate, 'activateMailService', !$mailServiceServerStatus);            
+        }
+        
         //show the website's resources
         if ($objTemplate->blockExists('showWebsiteResources')) {
             $resourceUsageStats = $website->getResourceUsageStats();

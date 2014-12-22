@@ -3174,6 +3174,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */    
     public function enableMailService($params)
     {
+        global $_ARRAYLANG;
         if (empty($params['post']['websiteId'])) {
             throw new MultiSiteJsonException('JsonMultiSite::enableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
@@ -3200,7 +3201,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                            $mailServiceServer && $website->getMailAccountId()
                         && $mailServiceServer->enableService($website->getMailAccountId())
                     ) {
-                        return array('status' => 'success', 'message' => 'JsonException::enableMailService(): mail service enabled successfully.');
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY']);
                     }
                     break;
 
@@ -3209,7 +3210,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     // forward call to manager server. 
                     $response = self::executeCommandOnManager('enableMailService', $params);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return true;
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY']);
                     }
                     break;
                 default:
@@ -3231,6 +3232,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */    
     public function disableMailService($params)
     {
+        global $_ARRAYLANG;
         if (empty($params['post']['websiteId'])) {
             throw new MultiSiteJsonException('JsonMultiSite::disableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
@@ -3249,7 +3251,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                            self::validateWebsiteForMailService($website) 
                         && $website->getMailServiceServer()->disableService($website->getMailAccountId())
                     ) {
-                        return array('status' => 'success', 'message' => 'JsonException::disableMailService(): mail service disabled successfully.');
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_SUCCESSFULLY']);
                     }
                     break;
 
@@ -3258,7 +3260,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     // forward call to manager server. 
                     $response = self::executeCommandOnManager('disableMailService', $params);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return true;
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_SUCCESSFULLY']);
                     }
                     break;
                 default:

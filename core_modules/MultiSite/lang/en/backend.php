@@ -232,3 +232,10 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']  = 'Successfully Upgrad
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']  = 'Failed to upgrade the website for the subscription selection.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND']  = 'Their are no upgradable products found.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_INITIALIZING'] = 'Initializing...';
+
+//website email service
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE'] = 'Activate mail service';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_DEACTIVATE_MAIL_SERVICE'] = 'Deactivate mail service';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY'] = 'Mail service successfully activated.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_SUCCESSFULLY'] = 'Mail service successfully deactivated.';
+
