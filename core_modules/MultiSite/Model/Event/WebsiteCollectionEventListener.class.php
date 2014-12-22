@@ -40,9 +40,17 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
         $subscription           = $eventArgs->getEntity();
         $websiteCollection      = $subscription->getProductEntity();
         $entityAttributes       = $subscription->getProduct()->getEntityAttributes();
+        $websiteTemplate        = null;
         
         if (!($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection)) {
             return;
+        }
+        
+        if (isset($entityAttributes['websiteTemplate'])) {
+            $websiteTemplate = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate')->findOneById($entityAttributes['websiteTemplate']);
+            if ($websiteTemplate) {
+                $websiteCollection->setWebsiteTemplate($websiteTemplate);
+            }
         }
         
         foreach ($websiteCollection->getWebsites() as $website) {
@@ -58,10 +66,11 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
 
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
 // TODO: maybe add notification message to dashboard about extended subscription or send email about extended subscription
-                    break;
-
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
 // TODO: reactivate website
+                    if ($websiteTemplate instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate) {
+                        $website->setupLicense($entityAttributes);
+                    }
                     break;
 
                 default:

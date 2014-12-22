@@ -297,5 +297,35 @@ class Product extends \Cx\Model\Base\EntityBase {
         $this->upgrades[] = $upgrade;
     }
     
+    /**
+     * Get the payment amount based on the unit and quantifier
+     * 
+     * @param string $unit
+     * @param integer  $quantifier
+     * 
+     * return decimal $paymentAmount
+     */
+    public function getPaymentAmount($unit = self::UNIT_MONTH, $quantifier = 1) {
+        $paymentAmount = 0;
+        switch ($unit) {
+            case self::UNIT_DAY:
+                $paymentAmount = $this->price * ($quantifier / 30);
+                break;
+            case self::UNIT_WEEK:
+                $paymentAmount = $this->price * ($quantifier / 4);
+                break;
+            case self::UNIT_MONTH:
+                $paymentAmount = $this->price * $quantifier;
+                break;
+            case self::UNIT_YEAR:
+                $paymentAmount = $this->price * $quantifier * 12;
+                if ($quantifier > 1) {
+                    $paymentAmount *= 0.9;
+                }
+                break;
+        }
+        return $paymentAmount;
+    }
+
 }
 

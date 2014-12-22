@@ -11,6 +11,16 @@
 namespace Cx\Core_Modules\MultiSite\Model\Repository;
 
 /**
+ * WebsiteRepositoryException
+ *
+ * @copyright   Comvation AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_multisite
+ */
+class WebsiteRepositoryException extends \Exception {}
+
+/**
  * WebsiteRepository
  *
  * @copyright   Comvation AG
@@ -55,8 +65,20 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
     }
     
     public function findOneForSale($productOptions, $saleOptions) {
+        
+        $baseSubscription  = isset($saleOptions['baseSubscription']) ? $saleOptions['baseSubscription'] : '';
+        if ($baseSubscription instanceof \Cx\Modules\Order\Model\Entity\Subscription) {
+            $productEntity = $baseSubscription->getProductEntity();
+            if ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                \Env::get('em')->remove($baseSubscription);
+                return $productEntity;
+            }
+            throw new WebsiteRepositoryException('There is no product entity exists in the base subscription.');
+        }
+        
         $websiteThemeId = isset($saleOptions['themeId']) ? $saleOptions['themeId'] : null;
         $website = $this->initWebsite($saleOptions['websiteName'], $saleOptions['customer'], $websiteThemeId);
+        
         \Env::get('em')->persist($website);
         // flush $website to database -> subscription will need the ID of $website
         // to properly work

@@ -120,10 +120,12 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 break;
 
             case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
+                $website->setupLicense($entityAttributes);
 // TODO: maybe add notification message to dashboard about extended subscription or send email about extended subscription
                 break;
 
             case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
+                $website->setupLicense($entityAttributes);
 // TODO: reactivate website
                 break;
 

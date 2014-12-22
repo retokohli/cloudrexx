@@ -396,11 +396,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $productId = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : 0;
             $subscriptionId = isset($params['post']['subscription_id']) ? contrexx_input2raw($params['post']['subscription_id']) : 0;
-            $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
+            $websiteReference = isset($params['post']['websiteReference']) ? contrexx_input2raw($params['post']['websiteReference']) : '';
             $renewalOption = isset($params['post']['renewalOption']) ? contrexx_input2raw($params['post']['renewalOption']) : '';
             
             if (   \FWValidator::isEmpty($productId) 
                 || \FWValidator::isEmpty($subscriptionId) 
+                || \FWValidator::isEmpty($websiteReference) 
                 || \FWValidator::isEmpty($renewalOption)
             ) {
                 return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALIDPARAMETERS']);
@@ -438,9 +439,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $subscriptionOptions = array(
                 'baseSubscription'  => $subscriptionObj,
                 'renewalUnit'       => $renewalUnit,
-                'renewalQuantifier' => $renewalQuantifier,
+                'renewalQuantifier' => $renewalQuantifier
             );
-            $transactionReference = $productId . '-' . $websiteName;
+            $transactionReference = $productId . '-' . $websiteReference;
             
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $crmContactId, $transactionReference, $subscriptionOptions);
             if (!$order) {

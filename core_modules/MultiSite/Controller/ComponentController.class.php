@@ -448,23 +448,29 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS'];
             }
             
+            $website = null;
+            if (!\FWValidator::isEmpty($websiteId)) {
+                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $website = $websiteServiceRepo->findOneById($websiteId);
+                if (!$website) {
+                    return $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
+                }
+                
+                if ($website->getOwnerId() != $userId) {
+                    return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+                }
+            }
+            
             //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
             if ($crmContactId != $order->getContactId()) {
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
             }
             
-            $websiteName = '';
-            if (!\FWValidator::isEmpty($websiteId)) {
-                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                $website = $websiteServiceRepo->findOneById($websiteId);
-                if ($website) {
-                    if ($website->getOwnerId() != $userId)  {
-                        return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
-                    }              
-                    $websiteName = $website->getName();
-                }
-            }
             
+            $websiteReference = $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website ? 'name-' . $website->getName() : 
+                                                                                                      'owner-' . $userId;
+
+
             // if the user clicked on button "Abo wählen" from trial subscription means list all products
             $product = $subscription->getProduct();
             if (!$product) {
@@ -480,12 +486,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $productName = contrexx_raw2xhtml($product->getName());
                 $productPrice = $product->getPrice();
                 if ($productPrice > 0) {
+                    $invoiceNumber = $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website ? 
+                                        $productName . ' - ' . $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') :
+                                        $productName . ' - ' . \FWUser::getParsedUserTitle($userId);
                     $additionalParameters = array(
-                        'invoice_number' => $productName . ' - ' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
-                        'contact_email' => $contactEmail,
-                        'invoice_amount' => $productPrice,
+                        'invoice_number'   => contrexx_raw2xhtml($invoiceNumber),
+                        'contact_email'    => contrexx_raw2xhtml($contactEmail),
+                        'invoice_amount'   => contrexx_raw2xhtml($productPrice),
                         'invoice_currency' => 'CHF',
-                        'referenceId' => $product->getId() . '-' . $websiteName
+                        'referenceId'      => contrexx_raw2xhtml($product->getId() . '-' . $websiteReference)
                     );
                     $i = 1;
                     $params = '';
@@ -509,7 +518,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objTemplate->setVariable( array(
                 'MULTISITE_SUBSCRIPTION_SELECTION_URL' => $subscriptionUrl->toString(),
                 'MULTISITE_SUBSCRIPTION_ID'            => $subscriptionId,
-                'MULTISITE_WEBSITE_NAME'               => $websiteName
+                'MULTISITE_WEBSITE_REFERENCE'          => $websiteReference
             ));
             return $objTemplate->get();
         }

@@ -11,6 +11,14 @@
 
 namespace Cx\Modules\Order\Model\Repository;
 
+/**
+ * OrderRepositoryException
+ * 
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_order
+ */
 class OrderRepositoryException extends \Exception {}
 
 /**
@@ -93,7 +101,7 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
      * @throws OrderRepositoryException
      */
     public function createOrder($productId, $contactId, $transactionReference, $subscriptionOptions = array()) {
-        if (\FWValidator::isEmpty($productId) 
+        if (\FWValidator::isEmpty($productId)
                 || \FWValidator::isEmpty($contactId) 
                 || \FWValidator::isEmpty($subscriptionOptions) 
                 || \FWValidator::isEmpty($transactionReference)) {
@@ -116,7 +124,7 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                 $paymentRepo = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Payment');
                 foreach ($invoices as $invoice) {
                     if (!$invoice->getPaid()) {
-                        $payment     = $paymentRepo->findOneByCriteria(array('amount' => $invoice->getAmount(), 'transactionReference' => $transactionReference, 'invoice' => null));
+                        $payment = $paymentRepo->findOneByCriteria(array('amount' => $invoice->getAmount(), 'transactionReference' => $transactionReference, 'invoice' => null));
                         if ($payment) {
                             //set subscription-id to Subscription::$externalSubscriptionId
                             if ($subscription) {
