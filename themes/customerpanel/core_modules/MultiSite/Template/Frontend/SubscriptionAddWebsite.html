@@ -16,7 +16,22 @@ jQuery(document).ready(function(){
         messageErrorTxt: '',
         messageBuildTxt: '{TXT_MULTISITE_BUILD_WEBSITE_MSG} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />',
         messageRedirectTxt: '',
-        IsPayment: false
+        IsPayment: false,
+        callBackOnSuccess: function(response) {
+            jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
+                showMessage(response.message, 'success');//show success message 
+                jQuery('#multisite_active_site').html(
+                    jQuery('<div />')
+                    .addClass('grid-elm grid-align-1-1 grid-offset')
+                    .html('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading')
+                    );
+                loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+            });
+            jQuery("#SubscriptionAddWebsite").modal('hide');
+            jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
+              return true; //reset
+            });
+       }
     };
     for (var option in options) {
         if (!cx_multisite_options[option]) {
