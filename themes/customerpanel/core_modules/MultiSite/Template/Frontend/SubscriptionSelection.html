@@ -517,14 +517,15 @@
         jQuery('.buy-now').on('click', function() {
             var $this = jQuery(this);
             
-            $this.data('renewalOption', $this.parent().find('div:visible').attr('data-renewalOption'));
-            if (getProductPrice($this)) {
-                modifyPaymentUrl($this);                
-                $this.addClass('subscriptionProduct');
-                return true;
-            }            
             jQuery('.buy-now').removeClass('subscriptionProduct');
-            return false;
+            $this.data('renewalOption', $this.parent().find('div:visible').attr('data-renewalOption'));
+            $this.addClass('subscriptionProduct');
+            if (getProductPrice($this)) {
+                modifyPaymentUrl($this);     
+            } else {
+                jQuery('#SubscriptionSelection').modal('hide');
+                upgradeSubscription();
+            }
         });
         
         function validUrl($url) {
@@ -547,12 +548,13 @@
             $ajaxUrl = jQuery('#subscriptionAjaxUrl').val();
             $productId = jQuery('.buy-now.subscriptionProduct').data("productid");
             $subscriptionId = jQuery('#subscriptionId').val();
-            $websiteName = jQuery('#websiteName').val();
+            $websiteReference = jQuery('#websiteReference').val();
             $renewalOption = jQuery('.buy-now.subscriptionProduct').data("renewalOption");
             
             if ((jQuery.trim($ajaxUrl) == '') 
                     || (jQuery.trim($productId) == '') 
                     || (jQuery.trim($subscriptionId) == '') 
+                    || (jQuery.trim($websiteReference) == '') 
                     || (jQuery.trim($renewalOption) == '') 
                 ) {
                 showMessage('{TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS}', 'error');
@@ -565,7 +567,7 @@
                 data: {
                     product_id : $productId,
                     subscription_id : $subscriptionId,
-                    websiteName : $websiteName,
+                    websiteReference : $websiteReference,
                     renewalOption : $renewalOption
                 },
                 type: "POST",
@@ -578,7 +580,7 @@
                             showMessage($resp.message, 'error');
                         }
                     } else {
-                        showMessage(response.message, 'error');
+                        showMessage(response.message.message, 'error');
                     }
                 }
             });
@@ -637,7 +639,7 @@
     
     <input type ="hidden" name ="subscriptionId" id ="subscriptionId" value="{MULTISITE_SUBSCRIPTION_ID}" />
     <input type ="hidden" name ="subscriptionAjaxUrl" id ="subscriptionAjaxUrl" value="{MULTISITE_SUBSCRIPTION_SELECTION_URL}" />
-    <input type ="hidden" name ="websiteName" id ="websiteName" value="{MULTISITE_WEBSITE_NAME}" />
+    <input type ="hidden" name ="websiteReference" id ="websiteReference" value="{MULTISITE_WEBSITE_REFERENCE}" />
     
     <!-- BEGIN showProduct -->
     <div id="{MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID}">
