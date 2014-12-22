@@ -650,6 +650,12 @@ class CalendarSettings extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 
             $objResult = $objDatabase->Execute($query);
         }
+
+        if (isset($_POST['settings']['headlinesStatus'])) {
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'license','Yaml');
+            \Cx\Core\Setting\Controller\Setting::set('calendarheadlines', intval($_POST['settings']['headlinesStatus']));
+            \Cx\Core\Setting\Controller\Setting::update('calendarheadlines');
+        }
                 
         if ($objResult !== false) {
             $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_SETTINGS_SUCCESSFULLY_EDITED'];
