@@ -624,56 +624,40 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         if (isset($arguments['addWebsite'])) {
-            
+
             $websiteName = isset($_POST['multisite_address']) ? contrexx_input2raw($_POST['multisite_address']) : '';
-            $json = new \Cx\Core\Json\JsonData();
-            
+           
             try {
                 $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
                 $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
 
                 //check the subscription is exist
                 if (!$subscriptionObj) {
-                    return $json->json(array(
-                                'status' => 'error',
-                                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS']
-                    ));
+                    return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'], false);
                 }
 
                 //get sign-in user crm id!
                 $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
 
                 if (empty($crmContactId)) {
-                    return $json->json(array(
-                                'status' => 'error',
-                                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']
-                    ));
+                   return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'], false);
                 }
 
                 $order = $subscriptionObj->getOrder();
                 if (!$order) {
-                    return $json->json(array(
-                                'status' => 'error',
-                                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS']
-                    ));
+                    return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS'], false);
                 }
 
                 //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
                 if ($crmContactId != $order->getContactId()) {
-                    return $json->json(array(
-                                'status' => 'error',
-                                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']
-                    ));
+                    return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'], false);
                 }
 
                 //get website collections
                 $websiteCollection = $subscriptionObj->getProductEntity();
                 if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
                     if ($websiteCollection->getQuota() <= count($websiteCollection->getWebsites())) {
-                        return $json->json(array(
-                                    'status' => 'error',
-                                    'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $websiteCollection->getQuota())
-                        ));
+                        return $this->parseJsonMessage(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $websiteCollection->getQuota()), false);
                     }
                     //create new website object and add to website
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, \FWUser::getFWUserObject()->objUser);
@@ -682,10 +666,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $product = $subscriptionObj->getProduct();
                     //check the product
                     if (!$product) {
-                        return $json->json(array(
-                                    'status' => 'error',
-                                    'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS']
-                        ));
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'], false);
                     }
                     $productEntityAttributes = $product->getEntityAttributes();
                     //pass the website template value
@@ -694,17 +675,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     );
                     //website setup process
                     $websiteStatus = $website->setup($options);
-                    return $json->json(array(
-                                'status' => 'success',
-                                'message' => $websiteStatus
-                    ));
+                    if ($websiteStatus['status'] == 'success') {
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'], true);
+                    }
                 }
             } catch (\Exception $e) {
-                return $json->json(array(
-                                'status' => 'error',
-                                'message' => "Failed to add website:" . $e->getMessage()
-                    ));
-                }
+                return $this->parseJsonMessage("Failed to add website:" . $e->getMessage(), false);
+            }
             die();
         } else {
             $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
@@ -1862,6 +1839,33 @@ throw new MultiSiteException('Refactor this method!');
         }
         return $backendGroupIds;
     }
+        
+    /**
+     * Parse the message to the json output.
+     * 
+     * @param  string  $message message 
+     * @param  boolean $status  true | false (if status is true returns success json data)
+     *                          if status is false returns error message json.
+     * 
+     * @return string
+     */
+    public function parseJsonMessage($message, $status) {
+        $json = new \Cx\Core\Json\JsonData();
+
+        if ($status) {
+            return $json->json(array(
+                        'status' => 'success',
+                        'data'   => array('message' => $message)
+            ));
+        }
+
+        if (!$status) {
+            return $json->json(array(
+                        'status'  => 'error',
+                        'message' => $message
+            ));
+        }
+    }
     
     /**
      * Post content load hook.
@@ -1961,5 +1965,5 @@ throw new MultiSiteException('Refactor this method!');
             $objTemplate->_blocks['__global__'] = preg_replace('/<\/body>/', '\\0' . $footer->get(), $objTemplate->_blocks['__global__']);
         }
         
-    }
+    }    
 }
