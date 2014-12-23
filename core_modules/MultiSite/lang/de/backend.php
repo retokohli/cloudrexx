@@ -44,6 +44,7 @@ $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'] = 'Bitte haben Sie etwas Geduld. 
 $_ARRAYLANG['TXT_MULTISITE_REDIRECT_MSG'] = 'Ihre Website wurde erfolgreich erstellt. Sie werden nun in den Administrationsbereich weitergeleitet...';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'] = 'Vielen Dank für Ihre Anmeldung bei Cloudrexx!<br /><br />Bitte haben Sie etwas Geduld. Es kann bis zu 2 Minuten dauern, bis Ihre Website bereit ist. Danach werden Sie in den Administrationsbereich weitergeleitet. Sie sind automatisch angemeldet.<br /><br />Das Kennwort wird an %1$s gesendet. Ihre Cloudrexx-Adresse lautet %2$s.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'] = "Die Website wurde erfolgreich erstellt.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED'] = "Das Hinzufügen einer neuen Website schlug fehl.";
 
 //Reset FTP password status message
 $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG'] = 'Die Rücksetzung Ihres FTP Kennworts schlug fehl. Bitte versuchen Sie es erneut.';
