@@ -230,12 +230,15 @@ class Product extends \Cx\Model\Base\EntityBase {
         return \Env::get('em')->getRepository($this->entityClass)->findOneBy(array($entityIdKey => $entityId));
     }
 
-    public function getExpirationDate() {
+    public function getExpirationDate($expirationUnit = '', $expirationQuantifier = 0) {
         if (!$this->expirable) {
             throw new ProductException('Product is not expirable.');
         }
+        $unit = isset($expirationUnit) ? $expirationUnit : $this->expirationUnit;
+        $quantifier = isset($expirationQuantifier) ? $expirationQuantifier : $this->expirationQuantifier;
+        
         $expirationDate = new \DateTime();
-        $expirationDate->modify("+$this->expirationQuantifier $this->expirationUnit");
+        $expirationDate->modify("+$quantifier $unit");
         return $expirationDate;
     }
 
