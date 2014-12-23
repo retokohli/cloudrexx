@@ -404,19 +404,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 || \FWValidator::isEmpty($websiteReference) 
                 || \FWValidator::isEmpty($renewalOption)
             ) {
-                return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALIDPARAMETERS']);
+                \DBG::log('Invalid argument supplied.');
+                return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
             }
             
             $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
             $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
             
             if (!$subscriptionObj) {
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_SUBSCRIPTIONID']);
+                \DBG::log('Invalid Subscription ID.');
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
             }
             $orderObj = $subscriptionObj->getOrder();
 
             if (!$orderObj) {
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_ORDER']);
+                \DBG::log('Invalid Order for subscription.');
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
             }
 
             $crmContactId = $orderObj->getContactId();
@@ -445,7 +448,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $crmContactId, $transactionReference, $subscriptionOptions);
             if (!$order) {
-                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
+                \DBG::log('Unable to create the order.');
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
             }
             // create the website process in the payComplete event
             $order->complete(); 

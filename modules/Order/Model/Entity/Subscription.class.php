@@ -87,7 +87,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         $this->paymentAmount = $product->getPaymentAmount($options['renewalUnit'], $options['renewalQuantifier']);
         $this->paymentState = self::PAYMENT_OPEN;
         if ($product->isExpirable()) {
-            $this->expirationDate = $product->getExpirationDate();
+            $this->expirationDate = $product->getExpirationDate($options['renewalUnit'], $options['renewalQuantifier']);
         }
         if ($product->isRenewable()) {
             list($this->renewalUnit, $this->renewalQuantifier) = $product->getRenewalDefinition($options['renewalUnit'], $options['renewalQuantifier']);

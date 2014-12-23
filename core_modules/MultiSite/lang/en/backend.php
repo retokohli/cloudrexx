@@ -227,12 +227,9 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TEMPLATE_FAILED'] = 'Failed to load a website
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED']  = 'Transaction is failed/cancelled.';
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS']  = 'Invalid parameters.please try after sometime.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']  = 'Unable to create the order.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALIDPARAMETERS']  = 'Invalid argument supplied.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_SUBSCRIPTIONID']  = 'Invalid Subscription ID.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_ORDER']  = 'Invalid Order for subscription.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']  = 'Successfully Upgraded the subscription.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']  = 'Failed to upgrade the website for the subscription selection.';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND']  = 'Their are no upgradable products found.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']  = 'The upgrade of your subscription was successful.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']  = 'The upgrade of the subscription failed.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND']  = 'There are no upgrades available for the selected subscription.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_INITIALIZING'] = 'Initializing...';
 
 //website email service
