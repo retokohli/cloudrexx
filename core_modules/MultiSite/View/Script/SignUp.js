@@ -3,6 +3,7 @@
     var ongoingRequest = false;
     var ongoingSetup = false;
     var submitRequested = false;
+    var submitButtonRequested = false;
     var signUpForm;
     var objModal;
     var objMail;
@@ -10,7 +11,21 @@
     var objTerms;
 
     function initSignUpForm() {
-        jQuery('#multisite_signup_form').bootstrapValidator();
+        jQuery('#multisite_signup_form')
+                .bootstrapValidator()
+                .on('success.field.bv', function() {
+                  if (submitButtonRequested) {
+                    submitButtonRequested = false;
+                    if (options.IsPayment) {
+                      // jQuery('.multisite_pay').modal('show');
+                    } else {
+                      submitForm();
+                    }                    
+                  }
+                })
+                .on('error.field.bv', function() {
+                  submitButtonRequested = false;
+                });
         signUpForm = jQuery('#multisite_signup_form');
         objModal = signUpForm.parents('.modal');
         objModal.on('show.bs.modal', init);
@@ -230,6 +245,7 @@
         try {
             
             if (!formValidation()) {
+                submitButtonRequested = true;
                 return;
             }
 

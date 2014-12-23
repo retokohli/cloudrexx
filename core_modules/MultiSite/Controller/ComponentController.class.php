@@ -689,7 +689,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     }
                 }
             } catch (\Exception $e) {
-                return $this->parseJsonMessage("Failed to add website:" . $e->getMessage(), false);
+                \DBG::log("Failed to add website:" . $e->getMessage());
+                return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED'], false);
             }
             die();
         } else {

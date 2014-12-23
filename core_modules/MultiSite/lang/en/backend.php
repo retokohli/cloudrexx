@@ -186,6 +186,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_SUCCESS'] = 'The license o
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_FAILED'] = 'Failed to update The license Option "%s"  !';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'] = 'Successfully login to website: %s !';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'] = "The Website has been successfully added.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED'] = "Failed to adding a new website.";
 
 //cron mail error message
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CRON_MAIL_CRITERIA_EMPTY'] = "Please provide some conditions to setup the cron mail.";
