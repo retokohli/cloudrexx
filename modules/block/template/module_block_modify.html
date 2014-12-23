@@ -117,20 +117,21 @@
             }
         )
     }
+    var firstRun = true;
     function updateContent(newActiveLangId, invertChecked) {
         oldActiveLangId = $J('ul.blockLang a.active').attr('id').split('_')[2];
         wysiwygStatus = invertChecked ? !$J('#wysiwyg_editor').prop('checked') : $J('#wysiwyg_editor').prop('checked');
 
-        if (!CKEDITOR.instances.ckeditor) {
-            return;
-        }
         if (wysiwygStatus) {
             $J('#blockFormText_'+oldActiveLangId).val(CKEDITOR.instances.ckeditor.getData());
             if (newActiveLangId > 0) {
                 CKEDITOR.instances.ckeditor.setData($J('#blockFormText_'+newActiveLangId).val());
             }
         } else {
-            $J('#blockFormText_'+oldActiveLangId).val($J('#ckeditor').val());
+            if (!firstRun) {
+                $J('#blockFormText_'+oldActiveLangId).val($J('#ckeditor').val());
+            }
+            firstRun = false;
             if (newActiveLangId > 0) {
                 $J('#ckeditor').val($J('#blockFormText_'+newActiveLangId).val());
             }
