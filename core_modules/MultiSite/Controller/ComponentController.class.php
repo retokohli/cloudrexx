@@ -1972,7 +1972,7 @@ throw new MultiSiteException('Refactor this method!');
             ));
 
             \JS::registerCSS('core_modules/MultiSite/View/Style/PoweredByFooterFrontend.css');                
-            $objTemplate->_blocks['__global__'] = preg_replace('/<\/body>/', '\\0' . $footer->get(), $objTemplate->_blocks['__global__']);
+            $objTemplate->_blocks['__global__'] = preg_replace(array('/<body>/', '/<\/body>/'), array('\\0' . '<div id="preview-content">', $footer->get() .'</div>' . '\\0' ), $objTemplate->_blocks['__global__']);
         }
         
     }    
