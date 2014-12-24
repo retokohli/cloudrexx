@@ -902,6 +902,32 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     }
     
     /**
+     * Finds all <link>-Tags in the passed HTML content, strips them out
+     * and puts them in the internal CSS placeholder store.
+     * You can then retreive them all-in-one with JS::getCode().
+     * @param string $content - Reference to the HTML content. Note that it
+     *                          WILL be modified in-place.
+     */
+    public static function findCSS(&$content)
+    {
+        JS::grabComments($content);
+        /*
+         * $content = preg_replace_callback('/<link .*?href=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:\/>)?/i', array('CSS', 'registerFromRegex'), $content);
+         */
+        $css = array();
+        $dom = new domDocument;
+        $dom->loadHTML($content);
+        foreach($dom->getElementsByTagName('link') as $element) {
+            if(strpos($element->getAttribute('href'), '.css', strlen($element->getAttribute('href')) - strlen('.css')) !== FALSE) {
+                $css[] = $element->getAttribute('href');
+                JS::registerCSS($element->getAttribute('href'));
+            }
+        }
+        JS::restoreComments($content);
+        return $css;
+    }
+    
+    /**
      * Get an array of libraries which are ready to load in different versions
      * @return array the libraries which are ready to configure for skin
      */
