@@ -353,5 +353,15 @@ class FTPFile implements FileInterface
     
         $this->connected = true;
     }
+    
+    /**
+     * Get the absolute path of the file($this->file)
+     * 
+     * @return string absolute path of the file
+     */
+    public function getAbsoluteFilePath()
+    {
+        return $this->filePath;
+    }
 }
 

@@ -220,5 +220,15 @@ class FileSystemFile implements FileInterface
             throw new FileSystemFileException('Unable to delete file '.$this->filePath.'!');
         }
     }
+    
+    /**
+     * Get the absolute path of the file($this->file)
+     * 
+     * @return string absolute path of the file
+     */
+    public function getAbsoluteFilePath()
+    {
+        return $this->filePath;
+    }
 }
 

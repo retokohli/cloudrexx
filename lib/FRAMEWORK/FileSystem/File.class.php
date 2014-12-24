@@ -367,13 +367,15 @@ class File implements FileInterface
      */
     public function delete()
     {
+        $objFile = null;
+        
         // use PHP
         if (   $this->accessMode == self::PHP_ACCESS
             || $this->accessMode == self::UNKNOWN_ACCESS
         ) {
             try {
-                $fsFile = new FileSystemFile($this->file);
-                $fsFile->delete();
+                $objFile = new FileSystemFile($this->file);
+                $objFile->delete();
             } catch (FileSystemFileException $e) {
                 \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
@@ -384,15 +386,15 @@ class File implements FileInterface
             || $this->accessMode == self::UNKNOWN_ACCESS
         ) {
             try {
-                $ftpFile = new FTPFile($this->file);
-                $ftpFile->delete();
+                $objFile = new FTPFile($this->file);
+                $objFile->delete();
             } catch (FTPFileException $e) {
                 \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
 
         clearstatcache();
-        if (file_exists(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$this->file)) {
+        if ($objFile && file_exists($objFile->getAbsoluteFilePath())) {
             throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
         }
 
