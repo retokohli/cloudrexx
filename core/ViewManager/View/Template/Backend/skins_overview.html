@@ -61,7 +61,7 @@
     //Activate Theme
     function ajaxActivateTheme(themeId) {
         if (themeId) {
-            data = {themeId : themeId};
+            data = {themeId : themeId, themeType: $J('#selectedTab').val()};
         } else {
             data = $J('#activateThemeForm').serialize();
         }
