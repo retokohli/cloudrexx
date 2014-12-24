@@ -2645,7 +2645,7 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
                 cx.tools.StatusMessage.showMessage(page.message, null, 10000);
             }
             cx.cm.updateHistoryTableHighlighting();
-            cx.trigger("loadingEnd", "contentmanager", {});
+            cx.trigger("loadingEnd", "contentmanager", page);
         }
     });
 };
