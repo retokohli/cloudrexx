@@ -146,7 +146,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                     
                     case 'Backup':
-                        $this->executeCommandBackup($arguments);
+                        echo $this->executeCommandBackup($arguments);
                         break;
                     
                     case 'Cron':
@@ -875,30 +875,44 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                 $website = $websiteServiceRepo->findOneById($websiteId);
 
-                if (!$website) {
-                    return false;
+                if (!$website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                    return 'Website Not Exists.';
                 }
-
+                
                 $websiteServiceServer = $website->getWebsiteServiceServer();
-                if ($websiteServiceServer) {
-                    $params = array(
+                $params = array(
                         'websiteId' => $websiteId,
-                        'websiteName' => $website->getName(),
                         'backupLocation' => $backupLocation
-                    );
-                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
-                    if ($resp->status == 'success' && $resp->data->status = 'success') {
-                        return array('status' => 'success', 'message' => $resp->data->message);
-                    }
-                    return array('status' => 'error', 'message' => $resp->data->message);
+                );
+            } else {
+                $defaultServiceServerId = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer');
+                if (\FWValidator::isEmpty($defaultServiceServerId)) {
+                    return 'Invalid Service server Id.';
                 }
-                $this->cx->getEvents()->triggerEvent(
-                        'SysLog/Add', array(
-                            'severity' => 'WARNING',
-                            'message' => 'This website doesnot exists in the service server',
-                            'data' => ' ',
-                ));
+                
+                $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                $websiteServiceServer  = $websiteServiceServerRepo->findOneById($defaultServiceServerId);
+                $params = array(
+                    'backupLocation' => $backupLocation
+                );
             }
+                
+            if ($websiteServiceServer instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer) {
+                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
+                if ($resp->status == 'success' && $resp->data->status = 'success') {
+                     //TODO display success message when ajax success
+                   return $resp->data->message;
+                }
+                //TODO display error message when ajax fails
+                return $resp->data->message;
+            }
+            $this->cx->getEvents()->triggerEvent(
+                    'SysLog/Add', array(
+                        'severity' => 'WARNING',
+                        'message' => 'This website doesnot exists in the service server',
+                        'data' => ' ',
+            ));
+            return 'Unknown website service server';
         } catch (\Exception $e) {
             throw new MultiSiteException("Failed to backup the website:" . $e->getMessage());
         }

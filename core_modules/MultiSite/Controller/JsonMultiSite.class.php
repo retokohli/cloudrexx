@@ -2880,22 +2880,36 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      */
     public function websiteBackup($param) {
-        
-        $websiteName = isset($param['post']['websiteName']) ? contrexx_input2raw($param['post']['websiteName']) : '';
+        $websiteId = isset($param['post']['websiteId']) ? contrexx_input2raw($param['post']['websiteId']) : '';
         $backupLocation = !empty($param['post']['backupLocation']) ? $param['post']['backupLocation'] : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation');
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName;
+        $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $websites = (!\FWValidator::isEmpty($websiteId)) ? $websiteRepository->findBy(array('id' => $websiteId)) : $websiteRepository->findAll();
+
+        //change the backup location path to absolute location path
         \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($backupLocation);
-        
-        if (!empty($websiteName) && !\Cx\Lib\FileSystem\FileSystem::exists($websitePath)) {
-            return array('status' => 'error', 'message' => 'Failed to backup the website due to the website may not exists!.');
+
+        if (!\FWValidator::isEmpty($websites)) {
+            foreach ($websites as $website) {
+                if (!$website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                    \DBG::log('Unknown website requested');
+                    continue;
+                }
+
+                if (\FWValidator::isEmpty($website->getName())) {
+                    \DBG::log('Failed to backup the website due to website name is empty!.');
+                    continue;
+                }
+
+                if (!($this->websiteDataBackup($website->getName(), $backupLocation))) {
+                    \DBG::log('Failed to backup the ' . $website->getName() . ' !.');
+                    continue;
+                }
+            }
+            return array('status' => 'success', 'message' => 'Successfully Backup the website Repository');
         }
-        
-        if (!($this->websiteDataBackup($websiteName, $backupLocation))) {
-            return array('status' => 'error', 'message' => 'Failed to Backup the website Repository!.');
-        }
-        return array('status' => 'success','message' => 'Successfully Backup the website Repository');
+        return array('status' => 'error', 'message' => 'Failed to Backup the website Repository!');
     }
-    
+
     /**
      * Website Data Repository backup
      * 
@@ -2905,32 +2919,28 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return boolean
      */
-    public function websiteDataBackup($websiteName, $backupLocation) 
-    {
-        global $sessionObj;
-        
-        if (!isset($sessionObj)) {
-            $sessionObj = \cmsSession::getInstance();
+    public function websiteDataBackup($websiteName, $backupLocation) {
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName;
+
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($websitePath)) {
+            \DBG::log('Failed to backup the ' . $websiteName . ' due to the website may not exists in the repository!.');
+            return false;
         }
-        
-        $tempPath = $_SESSION->getTempPath();
-        $tempBackupPath = $tempPath.'/'.$websiteName;
-        
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($tempBackupPath)) {
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tempBackupPath)) {
-                return false; 
-            }
+        if (!$this->WebsiteDatabaseBackup($websiteName, $backupLocation)) {
+            \DBG::log('Failed to backup the database for  ' . $websiteName);
+            return false;
         }
-        if (!$this->WebsiteDatabaseBackup($websiteName, $tempBackupPath)) {
-            return false; 
+        if (!$this->websiteRepositoryBackup($websiteName, $backupLocation)) {
+            \DBG::log('Failed to backup the database for  ' . $websiteName);
+            return false;
         }
-        
-        if (!$this->createWebsiteArchive($websiteName, $backupLocation, $tempBackupPath)) {
-             return false;
+        if (!$this->createWebsiteArchive($websiteName, $backupLocation)) {
+            \DBG::log('Failed to create backup Archiev for  ' . $websiteName . ' in the location ' . $backupLocation);
+            return false;
         }
-        return true; 
+        return true;
     }
-    
+
     /**
      * Create Website Zip Archive for the given Location
      * 
@@ -2938,99 +2948,119 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param string $backupLocation websiteBackupLocation
      * 
-     * @param sting $tempBackupPath  session temp path for website
-     * 
      * @return boolean
      */
-    public function createWebsiteArchive($websiteName, $backupLocation, $tempBackupPath) 
-    {
-        $i = 1;
-        $websiteZipFileName = $backupLocation . '/' . $websiteName;
-        
-        if (!$this->websiteRepositoryBackup($websiteName, $tempBackupPath)) {
-            return false;
-        }
-        
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation)) {
-            return false;
-        }
-                
-        while (\Cx\Lib\FileSystem\FileSystem::exists($websiteZipFileName . '.zip')) {
-            $websiteZipFileName = $backupLocation . '/' . $websiteName . '_' . $i;
-            $i++;
-        }
-
+    public function createWebsiteArchive($websiteName, $backupLocation) {
+        $websiteZipFileName = $this->websiteZipArchiveName($backupLocation, $websiteName);
         $websiteZipArchive = new \PclZip($websiteZipFileName . '.zip');
-        if (\Cx\Lib\FileSystem\FileSystem::exists($tempBackupPath)) {
-            $websiteZipArchive->create($tempBackupPath, PCLZIP_OPT_REMOVE_PATH, $tempBackupPath);
+        $websiteBackupFolder = $backupLocation . '/' . $websiteName;
+        $websiteArchiveFileCount = $websiteZipArchive->add($websiteBackupFolder, PCLZIP_OPT_REMOVE_PATH, $websiteBackupFolder);
+
+        if ($websiteArchiveFileCount == 0) {
+            \DBG::log('Failed to create Zip Archiev' . $websiteZipArchive->errorInfo(true));
+            return false;
         }
 
-        $websiteZipArchive->delete(PCLZIP_OPT_BY_PREG, '/.ftpaccess$/');
+        $expodeFileCount = $websiteZipArchive->delete(PCLZIP_OPT_BY_PREG, '/.ftpaccess$/');
+        if ($expodeFileCount == 0) {
+            \DBG::log('Failed to explode .ftpaccess in the  Archiev' . $websiteZipArchive->errorInfo(true));
+            return false;
+        }
 
-        //clean up tmp session dir
-        \Cx\Lib\FileSystem\FileSystem::delete_folder($tempBackupPath, true);
+        //cleanup website Backup Folder
+        \Cx\Lib\FileSystem\FileSystem::delete_folder($websiteBackupFolder, true);
         return true;
     }
 
     /**
-     * Website Repository Backup to temp folder
+     * Set websiteZipArchiveName
      * 
+     * @param string $backupLocation website backupLocation
      * @param string $websiteName    websiteName
      * 
-     * @param string $tempBackupPath session temp path
-     * 
-     * @return boolean
+     * @return string
      */
-    public function websiteRepositoryBackup($websiteName, $tempBackupPath) 
-    {
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName;
-        if (!(\Cx\Lib\FileSystem\FileSystem::exists($websitePath) && \Cx\Lib\FileSystem\FileSystem::copy_folder($websitePath, $tempBackupPath.'/'.$websiteName, true))) {
-            return false; 
+    public function websiteZipArchiveName($backupLocation, $websiteName) {
+        $i = 1;
+        $websiteZipFileName = $backupLocation . '/' . $websiteName;
+
+        while (\Cx\Lib\FileSystem\FileSystem::exists($websiteZipFileName . '.zip')) {
+            $websiteZipFileName = $backupLocation . '/' . $websiteName . '_' . $i;
+            $i++;
         }
-        return true;        
+        return $websiteZipFileName;
     }
 
     /**
-     * Website Database Backup to session temp path
+     * Website Repository Backup
      * 
      * @param string $websiteName    websiteName
      * 
-     * @param string $tempBackupPath session temp path
+     * @param string $backupLocation websiteBackup Location
      * 
      * @return boolean
      */
-    public function WebsiteDatabaseBackup($websiteName, $tempBackupPath) 
-    {
-        $config = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName.'/config/configuration.php');
-        $configData = $config->getData();
-        $dbHost = $dbUserName = $dbPassword = $dbName = $matches = '';
-        $returnStatus = 0;
-        
-        if (preg_match('/\\$_DBCONFIG\\[\'host\'\\] = \'(.*?)\'/',$configData,$matches)) {
-            $dbHost = $matches[1];
-        }
-        if (preg_match('/\\$_DBCONFIG\\[\'user\'\\] = \'(.*?)\'/',$configData,$matches)) {
-            $dbUserName = $matches[1];
-        }
-        if (preg_match('/\\$_DBCONFIG\\[\'password\'\\] = \'(.*?)\'/',$configData,$matches)) {
-            $dbPassword = $matches[1];
-        }
-        if (preg_match('/\\$_DBCONFIG\\[\'database\'\\] = \'(.*?)\'/',$configData,$matches)) {
-            $dbName = $matches[1];
-        }
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($tempBackupPath.'/data')) {
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tempBackupPath.'/data')) {
-                return false;
-            }
-        }
-        if (!empty($dbHost) && !empty($dbUserName) && !empty($dbName)) {
-            exec('mysqldump -h '.$dbHost.' -u '.$dbName.' -p'.$dbPassword.' '.$dbName.' > '.$tempBackupPath.'/data/sql_dump.sql', $output = array(), $returnStatus);
-        }
-      
-        if (!$returnStatus) {
+    public function websiteRepositoryBackup($websiteName, $backupLocation) {
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName;
+        if (!(\Cx\Lib\FileSystem\FileSystem::exists($websitePath) && \Cx\Lib\FileSystem\FileSystem::copy_folder($websitePath, $backupLocation . '/' . $websiteName . '/' . $websiteName, true))) {
+            \DBG::log('Failed to copy the website from ' . $websitePath . 'to ' . $backupLocation);
             return false;
         }
-        
+        return true;
+    }
+
+    /**
+     * Website Database Backup 
+     * 
+     * @param string $websiteName    websiteName
+     * 
+     * @param string $backupLocation websiteBackup Location
+     * 
+     * @return boolean
+     */
+    public function WebsiteDatabaseBackup($websiteName, $backupLocation) {
+        $configFilePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName . '/config/configuration.php';
+
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($configFilePath)) {
+            \DBG::log('Website configuration file is not exists in ' . $websiteName);
+            return false;
+        }
+
+        $config = new \Cx\Lib\FileSystem\File($configFilePath);
+        $configData = $config->getData();
+        $dbHost = $dbUserName = $dbPassword = $dbName = $matches = '';
+
+        if (preg_match('/\\$_DBCONFIG\\[\'host\'\\] = \'(.*?)\'/', $configData, $matches)) {
+            $dbHost = $matches[1];
+        }
+        if (preg_match('/\\$_DBCONFIG\\[\'user\'\\] = \'(.*?)\'/', $configData, $matches)) {
+            $dbUserName = $matches[1];
+        }
+        if (preg_match('/\\$_DBCONFIG\\[\'password\'\\] = \'(.*?)\'/', $configData, $matches)) {
+            $dbPassword = $matches[1];
+        }
+        if (preg_match('/\\$_DBCONFIG\\[\'database\'\\] = \'(.*?)\'/', $configData, $matches)) {
+            $dbName = $matches[1];
+        }
+
+        if (!empty($dbHost) && !empty($dbUserName) && !empty($dbName)) {
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation)) {
+                \DBG::log('Failed to create the backup location Folder');
+                return false;
+            }
+
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation . '/' . $websiteName) && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation . '/' . $websiteName)) {
+                \DBG::log('Failed to create the website backup location Folder');
+                return false;
+            }
+
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation . '/' . $websiteName . '/data') && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation . '/' . $websiteName . '/data')) {
+                \DBG::log('Failed to create the website databse backup location Folder');
+                return false;
+            }
+
+            exec('mysqldump -h ' . $dbHost . ' -u ' . $dbName . ' -p' . $dbPassword . ' ' . $dbName . ' > ' . $backupLocation . '/' . $websiteName . '/data/sql_dump.sql');
+        }
         return true;
     }
 
