@@ -103,7 +103,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    \Permission::checkAccess(35, 'static', true) &&
                    (
                         !$this->cx->getPage()->isBackendProtected() ||
-                        \Permission::checkAccess($this->cx->getPage()->getId(), 'page_backend', true)
+                        \Permission::checkAccess($this->cx->getPage()->getBackendAccessId(), 'dynamic', true)
                    )
                );
     }
