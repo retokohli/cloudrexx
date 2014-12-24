@@ -137,4 +137,44 @@ function getRemoteLoginToken($this) {
             error: function() { }
         });
     }
+    
+    function pleskAutoLogin($this) {
+        var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=pleskAutoLoginUrl';    
+        var websiteId = $this.data('id');
+
+        jQuery.ajax({
+            dataType: "json",
+            url: url,
+            data: {
+                websiteId :  websiteId
+            },
+            type: "POST",
+            beforeSend: function (xhr, settings) {
+                $this.button('loading');
+                $this.prop('disabled', true);
+            },
+            success: function(response) {
+                if (response.status == 'success') {
+                    switch(response.data.status) {
+                        case 'success':
+                            showMessage(response.data.message, 'success');
+                            window.open(response.data.pleskAutoLoginUrl, '_blank');
+                            break;
+                        case 'error':
+                            showMessage(response.data.message, 'error');
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    showMessage(response.message, 'error');
+                }
+            },
+            complete: function (xhr, settings) {
+                $this.button('reset');
+                $this.prop('disabled', false);                
+            },
+            error: function() { }
+        });
+    }
 }

@@ -1313,5 +1313,53 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             throw new ApiRequestException("Error in disable mail service: {$error}");
         }
         return true;	
-    } 
+    }
+    
+    /**
+     * Create a new auto-login url for Plesk.
+     * 
+     * @param string $loginName
+     * @param string $ipAddress
+     * @param string $sourceAddress
+     * 
+     * @return string $pleskLoginUrl
+     * @throws ApiRequestException
+     */
+    public function pleskAutoLoginUrl($loginName, $ipAddress, $sourceAddress)
+    {
+        \DBG::msg("MultiSite (PleskController): Plesk auto login url.");
+        if (empty($loginName) || empty($ipAddress) || empty($sourceAddress)) {
+            return;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+
+        $server = $xmldoc->createElement('server');
+        $packet->appendChild($server);
+        $createSession = $xmldoc->createElement('create_session');
+        $server->appendChild($createSession);
+        
+        $login = $xmldoc->createElement('login', $loginName);
+        $createSession->appendChild($login);
+        $data = $xmldoc->createElement('data');
+        $createSession->appendChild($data);
+        
+        $userIp = $xmldoc->createElement('user_ip', $ipAddress);
+        $data->appendChild($userIp);
+        $sourceServer = $xmldoc->createElement('source_server', $sourceAddress);
+        $data->appendChild($sourceServer);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'server'}->{'create_session'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in plesk auto login url: {$error}");
+        }
+        $pleskLoginUrl = "https://{$this->host}:8443/enterprise/rsession_init.php?PHPSESSID=" . $resultNode->id;
+        return $pleskLoginUrl;
+    }
 }

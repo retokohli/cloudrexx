@@ -789,6 +789,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                         && $website->getMailServiceServer() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer;
             
             self::showOrHideBlock($objTemplate, 'deactivateMailService', $mailServiceServerStatus);
+            self::showOrHideBlock($objTemplate, 'openAdministration', $mailServiceServerStatus);
             self::showOrHideBlock($objTemplate, 'activateMailService', !$mailServiceServerStatus);            
         }
         
