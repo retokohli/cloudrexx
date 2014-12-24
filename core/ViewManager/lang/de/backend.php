@@ -181,3 +181,11 @@ $_ARRAYLANG['TXT_THEME_DELETE_ALERT'] = "Dieser Vorgang wird das ausgewählte Te
                                         <br><br>
                                         Bitte bestätigen Sie den Vorgang.";
 $_ARRAYLANG['TXT_THEME_DELETE_DIALOG_TITLE'] = "Ausgewählte Template löschen";
+$_ARRAYLANG['TXT_THEME_DELETE_CURRENT_ACTIVE_ALERT'] = "Dieses Template kann nicht gelöscht werden, da es zurzeit eingesetzt wird.";
+$_ARRAYLANG['TXT_THEME_FILE_RESET_SUCCESS'] = 'Die Datei wurde erfolgreich zurückgesetzt.';
+$_ARRAYLANG['TXT_THEME_FOLDER_RESET_SUCCESS'] = 'Das Verzeichnis wurde erfolgreich zurückgesetzt.';
+$_ARRAYLANG['TXT_THEME_RESET_FAILED']      = "Die Rücksetzung ist fehl geschlagen. Bitte versuchen Sie es erneut.";
+$_ARRAYLANG['TXT_THEME_FULLSCREEN'] = 'Vollbild';
+$_ARRAYLANG['TXT_THEME_EXIT_FULLSCREEN'] = 'Vollbild Modus verlassen';
+$_ARRAYLANG['TXT_THEME_ERROR_IN_INSERT_THEME'] = 'Das Template konnte nicht in der Datenbank gespeichert werden.';
+$_ARRAYLANG['TXT_UNABLE_TO_CONVERT_THEME_TO_COMPONENT'] = 'Das Template konnte nicht korrekt eingelesen werden. Stellen Sie sicher das auf das Verzeichnis im Dateisystem Schreibzugriff besteht.';
