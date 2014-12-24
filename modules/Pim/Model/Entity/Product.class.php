@@ -234,12 +234,14 @@ class Product extends \Cx\Model\Base\EntityBase {
         if (!$this->expirable) {
             throw new ProductException('Product is not expirable.');
         }
-        $unit = isset($expirationUnit) ? $expirationUnit : $this->expirationUnit;
-        $quantifier = isset($expirationQuantifier) ? $expirationQuantifier : $this->expirationQuantifier;
-        
-        $expirationDate = new \DateTime();
-        $expirationDate->modify("+$quantifier $unit");
-        return $expirationDate;
+        $defaultExpiration = new \DateTime("+$this->expirationQuantifier $this->expirationUnit");
+        $currentExpiration = new \DateTime("+$expirationQuantifier  $expirationUnit");
+
+        if ($defaultExpiration > $currentExpiration) {
+            return $defaultExpiration;
+        }
+
+        return $currentExpiration;
     }
 
     public function getRenewalDate($unit, $quantifier) {
