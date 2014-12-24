@@ -151,7 +151,12 @@ class JsonPage implements JsonAdapter {
         } else {
             throw new \Exception('cannot find that page');
         }
-
+        $additionalArguments = new \Cx\Core\Model\RecursiveArray();
+        //\Env::get('cx');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $evm = $cx->getEvents();
+        $evm->triggerEvent('wysiwygCssReload', array($pageArray, $additionalArguments));
+        $pageArray['wysiwygCssReload'] = $additionalArguments->toArray();
         return $pageArray;
     }
 

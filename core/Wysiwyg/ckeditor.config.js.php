@@ -17,6 +17,7 @@ $CSRF = '&'.\Cx\Core\Csrf\Controller\Csrf::key().'='.\Cx\Core\Csrf\Controller\Cs
 
 
 $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
+$pageId = !empty($_GET['pageId']) ? $_GET['pageId'] : null;
 
 //'&' must not be htmlentities, used in javascript
 $defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
@@ -25,12 +26,34 @@ $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
                    .'?cmd=FileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
 //$defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
+//\DBG::activate();
 
 $em = $cx->getDb()->getEntityManager();
 $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
 $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
-//Call the ComponentContrtollerMethod
+$themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
+$pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+$skin = $themeRepo->getDefaultTheme()->getFoldername();
+if(isset($_GET['pageId']) && !empty($_GET['pageId']) && $pageRepo->find($_GET['pageId'])->getSkin()>0){
+    $skin = $themeRepo->findById($pageRepo->find($_GET['pageId'])->getSkin())->getFoldername();
+}
+//getThemeFileContent
+$filePath = $skin.'/index.html';
+$content = '';
+
+if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath)) {
+    $content = file_get_contents(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath);
+} elseif (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath)) {
+    $content = file_get_contents(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath);
+}
+
+$cssArr = \JS::findCSS($content);
+
 ?>
+if(!cx.variables.get('wysiwygCss', 'wysiwyg')) {
+    cx.variables.set('wysiwygCss', [<?= '\'' . implode($cssArr, '\',\'') . '\'' ?>], 'wysiwyg')
+}
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/ckeditor-mediabrowser.js'   ?>' );
 CKEDITOR.editorConfig = function( config )
 {
@@ -103,12 +126,14 @@ CKEDITOR.editorConfig = function( config )
         ['Undo','Redo']
     ];
     config.extraPlugins = 'codemirror';
+    
+    //Set The CSS
+    config.contentsCss = cx.variables.get('wysiwygCss', 'wysiwyg');
 };
 
 CKEDITOR.on('instanceReady',function(){
     var loadingTemplates = <?=$wysiwyg->getWysiwygTempaltes();?>;
     for(var instanceName in CKEDITOR.instances) {
-    
         //console.log( CKEDITOR.instances[instanceName] );
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
         
@@ -117,7 +142,6 @@ CKEDITOR.on('instanceReady',function(){
         //var defaultPath = path.split("lib/ckeditor/")[0]+"customizing/lib/ckeditor"+path.split("lib/ckeditor")[1]+"templates/"
         //var defaultPath = path.split("lib/ckeditor")[0] //Path to Templates-Folder
         //var defaultPath = "/"
-        
         loadingTemplates.load = (function(){
             //this.defaultPath = defaultPath;
             this.button.setState(CKEDITOR.TRISTATE_DISABLED) // Disable "Template"-Button
@@ -173,9 +197,35 @@ if (<?php
             dialogDefinition.getContents('info').remove('browse');
             dialogDefinition.getContents('Link').remove('browse');
         }
-
+        
         if (dialogName == 'flash') {
             dialogDefinition.getContents('info').remove('browse');
         }
     });
 }
+
+//this script will not be executed at the first round (first wysiwyg call)
+cx.bind("loadingEnd", function(myArgs) {
+    if(myArgs.hasOwnProperty('data')) {
+        var data = myArgs['data'];
+        if(data.hasOwnProperty('wysiwygCssReload') && (data.wysiwygCssReload).hasOwnProperty('wysiwygCss')) {
+            for(var instanceName in CKEDITOR.instances) {
+                //CKEDITOR.instances[instanceName].config.contentsCss =  data.wysiwygCssReload.wysiwygCss;
+                var is_same = cx.variables.get('wysiwygCss', 'wysiwyg').length == (data.wysiwygCssReload.wysiwygCss).length && cx.variables.get('wysiwygCss', 'wysiwyg').every(function(element, index) {
+                    return element === data.wysiwygCssReload.wysiwygCss[index]; 
+                });
+                if(!is_same){
+                    //cant set the css on the run, so you must destroy the wysiwyg and recreate it
+                    CKEDITOR.instances[instanceName].destroy();
+                    cx.variables.set('wysiwygCss', data.wysiwygCssReload.wysiwygCss, 'wysiwyg')
+                    var config = {
+                        customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
+                        toolbar: 'Full',
+                        skin: 'moono',
+                    };
+                    CKEDITOR.replace('page[content]', config);
+                }
+            }
+        }
+    }
+}, "contentmanager");

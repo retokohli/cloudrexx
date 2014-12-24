@@ -40,6 +40,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\LogEntry', new \Cx\Core\ContentManager\Model\Event\LogEntryEventListener());
         
+        $evm->addEvent('wysiwygCssReload');
     }
     
     /**
