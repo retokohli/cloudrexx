@@ -509,8 +509,8 @@
     }
 </style>
 <script type="text/javascript">
-    jQuery(document).ready(function() {
-        jQuery('.prices-periods a').on('click', function(e) {
+    jQuery(document).ready(function () {
+        jQuery('.prices-periods a').on('click', function (e) {
             e.preventDefault();
             jQuery('.prices-periods a').removeClass('active');
             $class = jQuery(this).attr('class');
@@ -519,20 +519,20 @@
             jQuery('.' + $class + '-prices').show();
         });
 
-        jQuery('.buy-now').on('click', function() {
+        jQuery('.buy-now').on('click', function () {
             var $this = jQuery(this);
-            
+
             jQuery('.buy-now').removeClass('subscriptionProduct');
             $this.data('renewalOption', $this.parent().find('div:visible').attr('data-renewalOption'));
             $this.addClass('subscriptionProduct');
             if (getProductPrice($this)) {
-                modifyPaymentUrl($this);     
+                modifyPaymentUrl($this);
             } else {
                 jQuery('#SubscriptionSelection').modal('hide');
                 upgradeSubscription();
             }
         });
-        
+
         function validUrl($url) {
             var urlPattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
             if (!urlPattern.test($url)) {
@@ -548,7 +548,7 @@
             }
             return false;
         }
-        
+
         function upgradeSubscription() {
             $ajaxUrl = jQuery('#subscriptionAjaxUrl').val();
             $productId = jQuery('.buy-now.subscriptionProduct').data("productid");
@@ -556,27 +556,27 @@
             $websiteReference = jQuery('#websiteReference').val();
             $renewalOption = jQuery('.buy-now.subscriptionProduct').data("renewalOption");
             
-            if ((jQuery.trim($ajaxUrl) == '') 
-                    || (jQuery.trim($productId) == '') 
-                    || (jQuery.trim($subscriptionId) == '') 
-                    || (jQuery.trim($websiteReference) == '') 
-                    || (jQuery.trim($renewalOption) == '') 
+            if ((jQuery.trim($ajaxUrl) == '')
+                    || (jQuery.trim($productId) == '')
+                    || (jQuery.trim($subscriptionId) == '')
+                    || (jQuery.trim($websiteReference) == '')
+                    || (jQuery.trim($renewalOption) == '')
                 ) {
-                showMessage('{TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS}', 'error');
+                showMessage('{TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED}', 'error');
                 return false;
             }
-            
+
             jQuery.ajax({
                 dataType: "json",
                 url: $ajaxUrl,
                 data: {
-                    product_id : $productId,
-                    subscription_id : $subscriptionId,
-                    websiteReference : $websiteReference,
-                    renewalOption : $renewalOption
+                    product_id: $productId,
+                    subscription_id: $subscriptionId,
+                    websiteReference: $websiteReference,
+                    renewalOption: $renewalOption
                 },
                 type: "POST",
-                success: function(response){
+                success: function (response) {
                     if (response.status == 'success') {
                         $resp = response.data;
                         if ($resp.status == 'success') {
@@ -590,12 +590,12 @@
                 }
             });
         }
-        
+
         function modifyPaymentUrl($this) {
             var productPrice = getProductPrice($this);
             var href = $this.data('href');
             var hrefVal = href.split('&');
-            hrefVal = jQuery.map(hrefVal, function(v) {
+            hrefVal = jQuery.map(hrefVal, function (v) {
                 if (v.search('invoice_amount') !== -1) {
                     var modifyValue = v.split('=');
                     return (modifyValue[0] === 'invoice_amount') ? 'invoice_amount=' + productPrice : '';
@@ -604,7 +604,7 @@
             });
             $this.data("href", hrefVal.join('&'));
         }
-        
+
         jQuery.getScript('https://media.payrexx.com/modal/v1/modal.js', function() {
             jQuery('.buy-now').payrexxModal({
                 hideObjects: ["#contact-details", ".contact"],
@@ -627,7 +627,7 @@
                     }
                 }
             });
-       });
+        });
     });
     
     jQuery('.modal-backdrop').hide();
@@ -641,11 +641,11 @@
     <h2 class="annual-prices amt" style="display: block;">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
 
     <h2 class="biannual-prices amt" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
-    
+
     <input type ="hidden" name ="subscriptionId" id ="subscriptionId" value="{MULTISITE_SUBSCRIPTION_ID}" />
     <input type ="hidden" name ="subscriptionAjaxUrl" id ="subscriptionAjaxUrl" value="{MULTISITE_SUBSCRIPTION_SELECTION_URL}" />
     <input type ="hidden" name ="websiteReference" id ="websiteReference" value="{MULTISITE_WEBSITE_REFERENCE}" />
-    
+
     <!-- BEGIN showProduct -->
     <div id="{MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID}">
         <div class="header"><span class="name">{MULTISITE_WEBSITE_PRODUCT_NAME}</span>
