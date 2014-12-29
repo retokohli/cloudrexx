@@ -709,18 +709,21 @@ class InitCMS
         // check whether the language file exists
         $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';
 
+        $defaultLangId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
         if (!isset($this->arrLang[$langId])) {
-            $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
+            $langId = $defaultLangId;
         }
 
-        $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
-        if (!file_exists($path)) {
-            $path = \Env::get('ClassLoader')->getFilePath($path);
-            if (!file_exists($path)) {
-                return '';
-            }
+        // file path with requested language ($langId parameter)
+        $path = \Env::get('ClassLoader')->getFilePath($this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php');
+        if ($path) {
+            return $path;
         }
-        return $path;
+        // file path of default language (if not yet requested)
+        if ($langId == $defaultLangId) {
+            return '';
+        }
+        return $this->getLangFilePath($module, $defaultLangId);
     }
 
 
