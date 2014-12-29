@@ -393,6 +393,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 $objTemplate->parse('showWebsites');
                             }
                         }
+                    } else {
+                        $objTemplate->touchBlock('showWebsites');
                     }
 
                     $objTemplate->parse('showSiteDetails');
