@@ -224,7 +224,7 @@ $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'] = 'Unknown website requested.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'] = 'You have reached the maximum of %s entities that are included in your current plan.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TEMPLATE_FAILED'] = 'Failed to load a website template.';
 
-$_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED']  = 'Transaction is failed/cancelled.';
+$_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED']  = 'The upgrade of the subscription is getting canceled.';
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS']  = 'Invalid parameters.please try after sometime.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']  = 'Unable to create the order.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']  = 'The upgrade of your subscription was successful.';

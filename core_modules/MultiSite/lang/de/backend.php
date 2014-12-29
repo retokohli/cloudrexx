@@ -116,6 +116,7 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_INITIALIZING'] = 'Initialisierung...';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS'] = 'Die Umstellung auf das neue Abo wurde erfolgreich durchgeführt.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'] = 'Für das ausgewählte Abo stehen keine Upgrades zur Verfügung.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED'] = 'Die Aktivierung des Upgrades ist fehlgeschlagen.';
+$_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED']  = 'Der Upgradevorgang wird abgebrochen.';
 
 //website email service
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE'] = 'E-Mail Dienst aktivieren';

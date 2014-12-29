@@ -42,8 +42,8 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
                 \Env::get('em')->remove($baseSubscription);
                 $website = $productEntity;
             } else if ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-                $baseSubscription->setProductEntity(null);
                 $baseSubscription->terminate();
+                $baseSubscription->setProductEntity(null);
                 $websiteCollection = $productEntity;
             }
         } else {            
