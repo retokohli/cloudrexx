@@ -140,7 +140,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     case 'Website':
                         echo $this->executeCommandWebsite($objTemplate, $arguments);
                         break;
-                        
+                    
+                    case 'Domain':
+                        echo $this->executeCommandDomain($objTemplate, $arguments);
+                        break;
+                    
                     case 'Payrexx':
                         $this->executeCommandPayrexx();
                         break;
@@ -160,7 +164,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
-
+    
     /**
      * Api Signup command 
      * 
@@ -819,6 +823,57 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         return $objTemplate->get();
     }
+    
+    /**
+     * Api Domain command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandDomain($objTemplate, $arguments) {
+
+        global $_ARRAYLANG;
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
+        }
+
+        $websiteId = isset($arguments['website_id']) ? contrexx_input2raw($arguments['website_id']) : '';
+        if (empty($websiteId)) {
+            return $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
+        }
+
+        $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website = $websiteServiceRepo->findOneById($websiteId);
+        if (!$website) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
+        }
+        
+        if ($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+        }
+
+        if (isset($arguments['domain_name']) && $objTemplate->blockExists('showDeleteDomainInfo')) {
+            $objTemplate->setVariable(array(
+                'TXT_MULTISITE_DELETE_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE_INFO'], $arguments['domain_name']),
+                'MULTISITE_DOMAIN_NAME'            => $arguments['domain_name']
+            ));
+            $objTemplate->parse('showDeleteDomainInfo');
+        }
+        
+        if (isset($arguments['domain_name']) && $objTemplate->blockExists('showEditDomainName')) {
+            $objTemplate->setVariable(array(
+                'MULTISITE_DOMAIN_NAME' => $arguments['domain_name']
+            ));
+            $objTemplate->parse('showEditDomainName');
+        }
+
+        return $objTemplate->get();
+    }
+
     
     /**
      * Api Payrexx command

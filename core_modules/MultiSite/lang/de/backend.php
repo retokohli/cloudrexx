@@ -125,3 +125,14 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY'] = 'Der E-Mail Die
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_SUCCESSFULLY'] = 'Der E-Mail Dienst wurde erfolgreich deaktiviert.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_OPEN_ADMINISTRATION'] = 'Verwaltung öffnen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Abbrechen';
+
+
+//website domain
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_ADD_LABEL'] = 'Geben Sie den Domainnamen ein, welchen Sie mit Ihrer Website verknüpfen möchten.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD'] = 'Hinzufügen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'] = 'Speichern';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE'] = 'Entfernen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT'] = 'Domain bearbeiten';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE'] = 'Domain entfernen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE_INFO'] = 'Hiermit entfernen Sie den Domain %s von Ihrer Website. Danach wird Ihre Website über diese Domain nicht mehr erreichbar sein.';
+
