@@ -344,13 +344,15 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
 
         //get searchform
+        $searchTerm = null;
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
             $objSearch->getSearchform($this->_objTpl, 1);
+            $searchTerm = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : null;
         }
         
         $objEntries = new MediaDirectoryEntry($this->moduleName);         
-        $objEntries->getEntries(null,null,null,null,false,null,true);
+        $objEntries->getEntries(null,null,null,$searchTerm,false,null,true);
         $objEntries->listEntries($this->_objTpl,3);
     }
 
