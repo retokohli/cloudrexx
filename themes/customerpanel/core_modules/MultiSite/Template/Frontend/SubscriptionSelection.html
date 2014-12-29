@@ -397,9 +397,9 @@
             max-width: 100%;
             margin: 0 auto;
             border-left: 1px solid #D5D5D5;
-            border-bottom: 1px solid #D5D5D5;
             border-right: 1px solid #D5D5D5;
             padding: 20px;
+            padding-bottom: 0px;
         }
 
         .prices > div {
@@ -455,7 +455,7 @@
             width: 24.7%;
             margin-right: 0%;
         }
-        .modal-dialog {width: 80%;}
+        #SubscriptionSelection .modal-dialog {width: 80%;}
         #non-profit {
             margin-right: 0;
         }
@@ -506,6 +506,14 @@
     }
     .modal-backdrop {
       z-index: 1040;
+    }
+    .cancelBtn {
+        padding-bottom: 15px;
+        padding-left: 20px;
+        border-left: 1px solid #D5D5D5;
+        border-right: 1px solid #D5D5D5;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
     }
 </style>
 <script type="text/javascript">
@@ -662,5 +670,7 @@
         </div>
         <a class="toggle-features" href="#">?</a></div>
     <!-- END showProduct -->
+</div>
+<div class="cancelBtn">
     <input type="button" data-dismiss="modal" value="{TXT_CORE_MODULE_MULTISITE_CANCEL}" />
 </div>
