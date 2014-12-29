@@ -706,7 +706,6 @@ class InitCMS
     }
 
     protected function getLangFilePath($module, $langId) {
-        global $_CONFIG;
         // check whether the language file exists
         $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';
 
@@ -715,17 +714,10 @@ class InitCMS
         }
 
         $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
-        
         if (!file_exists($path)) {
-            $path = '';
-            $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
-            $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
-
-            if (!file_exists(\Env::get('ClassLoader')->getFilePath($path))) {
-                $path = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
-                if (!file_exists(\Env::get('ClassLoader')->getFilePath($path))) {
-                    return '';
-                }
+            $path = \Env::get('ClassLoader')->getFilePath($path);
+            if (!file_exists($path)) {
+                return '';
             }
         }
         return $path;
