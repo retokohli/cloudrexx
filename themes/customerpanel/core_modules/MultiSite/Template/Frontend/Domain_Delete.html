@@ -1,0 +1,19 @@
+<div class="grid-elm grid-align-1-1 grid-offset">
+  <form role="form" action="#" id="multisite_delete_domain_form">
+    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+
+    <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE}</h2>
+    <!-- BEGIN showDeleteDomainInfo -->
+    <fieldset>
+      <div class="row">
+        <label for="delete_domain">{TXT_MULTISITE_DELETE_DOMAIN_INFO}</label>
+        <input type="hidden" id="delete_domain" name="delete_domain" value="{MULTISITE_DOMAIN_NAME}">
+      </div>  
+      <div class="row">
+        <button type="submit" class="save">{TXT_CORE_MODULE_MULTISITE_DELETE}</button>
+        <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+      </div>
+    </fieldset>
+    <!-- END showDeleteDomainInfo -->
+  </form>
+</div>
