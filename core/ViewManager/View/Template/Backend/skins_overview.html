@@ -150,6 +150,14 @@
     });
 </script>
 <style type="text/css">
+    @media (min-width: 1050px) and (max-width: 1200px) { 
+        a.themePreview {
+            top: 62%;
+        }
+        .themeWrapper .themesActivate, .themePreview {
+            width: 48% !important;
+        }
+    }
     @media (min-width: 480px) and (max-width: 1499px) { 
         .themeWrapper {
             width: 49%;
@@ -168,7 +176,12 @@
         .themeWrapper:nth-child(3n+1) {
             margin-left: 0;
         }
-
+        .themePreview {
+            top: 64% !important;
+        }
+        .themeWrapper .themesActivate, .themePreview {
+            width: 48% !important;
+        }
     }
     @media (min-width: 1920px) and (max-width: 2399px) {
         .themeWrapper {
@@ -177,6 +190,12 @@
         }
         .themeWrapper:nth-child(4n+1) {
             margin-left: 0;
+        }
+        .themePreview {
+            top: 64% !important;
+        }
+        .themeWrapper .themesActivate, .themePreview {
+            width: 48% !important;
         }
     }
     @media (min-width: 2400px) and (max-width: 2899px) { 
@@ -314,6 +333,12 @@
         float: left;
         cursor: pointer;
     }
+    .themeAction a.themeCopy:hover, a.themeEdit:hover, a.themeExport:hover,
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeEdit:hover,
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeCopy:hover,
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeExport:hover {
+        background: #095080;
+    }
     .themeDelete {
         float: right;
         color: red !important;
@@ -321,6 +346,12 @@
         padding-right: 10px;
         padding-top: 3px;
         cursor: pointer;
+    }
+    .themeDelete:hover {
+        color: rgb(190, 5, 5) !important;
+    }
+    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeDelete:hover {
+        background: #fff !important;
     }
     .themePreview input {
         padding: 4px 6px 4px 6px !important;
@@ -344,7 +375,7 @@
         width: 92%;
     }
 
-     .themeWrapper .themesActivate, .themePreview {
+    .themeWrapper .themesActivate, .themePreview {
         position: absolute;
         font-size: 18px !important;
         display: block;
@@ -352,26 +383,28 @@
         text-shadow: none !important;
         text-align: center;
         color: #fff !important;
-        padding: 11px 14px !important;
+        padding: 11px 66px !important;
         cursor: pointer;
-     }
-     input.themesActivate:hover {
-         background: #408809 !important;
-     }
-     a.themePreview:hover {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        width: 40%;
+    }
+    input.themesActivate:hover {
+        background: #408809 !important;
+    }
+    a.themePreview:hover {
         background: #E5E4E4 !important;
     }
-     .themeWrapper .themesActivate {
+    .themeWrapper .themesActivate {
         top: 48%;
         left: 30%;
-        width: 40%;
         background: #499111 !important;
     }
-     
+
     .themePreview {
         top: 60%;
         left: 30%;
-        width: 35%;
         color: #1F2022 !important;
         background: #fff !important;
     }
