@@ -175,8 +175,11 @@ class Subscription extends \Cx\Model\Base\EntityBase {
 
     public function setProductEntity($productEntity) {
         $this->productEntity = $productEntity;
-        $entityIdKey = \Env::get('em')->getClassMetadata(get_class($productEntity))->getSingleIdentifierFieldName(); 
-        $this->productEntityId = $productEntity->{'get'.ucfirst($entityIdKey)}();
+        $this->productEntityId = null;
+        if ($productEntity instanceof \Cx\Model\Base\EntityBase) {
+            $entityIdKey = \Env::get('em')->getClassMetadata(get_class($productEntity))->getSingleIdentifierFieldName(); 
+            $this->productEntityId = $productEntity->{'get'.ucfirst($entityIdKey)}();
+        }
     }
 
     public function getPaymentAmount() {
