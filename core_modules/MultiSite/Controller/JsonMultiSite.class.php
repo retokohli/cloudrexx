@@ -3251,7 +3251,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 default:
                     break;
             }
-            return array('status' => 'error', 'message' => 'JsonException::enableMailService() failed: mail service not enable.');
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
         } catch (Exception $ex) {
             throw new MultiSiteJsonException('JsonMultiSite::enableMailService() failed: To enable mail service account.'. $ex->getMessage());
         }
@@ -3301,7 +3301,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 default:
                     break;
             }
-            return array('status' => 'error', 'message' => 'JsonException::disableMailService() failed: To disable mail service account.');
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
         } catch (Exception $ex) {
             throw new MultiSiteJsonException('JsonMultiSite::disableMailService() failed: To disable mail service'. $ex->getMessage());
         }
@@ -3442,7 +3442,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array login stats
      * @throws MultiSiteJsonException
      */
-    Public function pleskAutoLoginUrl($params)
+    public function pleskAutoLoginUrl($params)
     {
         global $_ARRAYLANG;
         if (empty($params['post']['websiteId'])) {
@@ -3453,13 +3453,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (!$website) {
                 throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown Website-ID: '.$params['post']['websiteId']);
             }
+            if ($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+            }
             $mailServiceServer = $website->getMailServiceServer();
             if (!$mailServiceServer) {
                 throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown mail service server.');
             }
             
-            $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
-            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn(), base64_encode($_SERVER['REMOTE_ADDR']), \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'Website', '', array(), ComponentController::getApiProtocol(), true ));
+            $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);            
+            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn(), base64_encode($_SERVER['REMOTE_ADDR']), ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
             if ($pleskLoginUrl) {
                 return array('status' => 'success', 'pleskAutoLoginUrl' => $pleskLoginUrl, 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_SUCCESSFULLY']);
             }
