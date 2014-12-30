@@ -527,7 +527,7 @@
             jQuery('.' + $class + '-prices').show();
         });
 
-        jQuery('.buy-now').on('click', function () {
+        jQuery('.buy-now.websiteCollection').on('click', function() {
             var $this = jQuery(this);
 
             jQuery('.buy-now').removeClass('subscriptionProduct');
@@ -541,6 +541,11 @@
             }
         });
 
+        jQuery('.buy-now.website').on('click', function() {
+          showAddNewWebsite('/api/MultiSite/SubscriptionAddWebsite?productId='+ jQuery(this).data('productid'))
+          jQuery("#SubscriptionSelection").modal('hide');
+        });
+        
         function validUrl($url) {
             var urlPattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
             if (!urlPattern.test($url)) {
@@ -663,7 +668,7 @@
             <div class="annual-prices amt" style="display: block;" data-renewalOption = "annually" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}.-</span><span class="currency">CHF</span></div>
 
             <div class="biannual-prices amt" style="display: none;" data-renewalOption = "biannually" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}.-</span><span class="currency">CHF</span></div>
-            <a class="buy-now" href = "javascript:void(0)" data-href="{MULTISITE_OPTION_PAYREXXFORMURL}" data-productid = "{MULTISITE_WEBSITE_PRODUCT_ID}">{TXT_MULTISITE_WEBSITE_CHOOSE}</a></div>
+            <a class="buy-now {MULTISITE_PRODUCT_TYPE}" href = "javascript:void(0)" data-href="{MULTISITE_OPTION_PAYREXXFORMURL}" data-productid = "{MULTISITE_WEBSITE_PRODUCT_ID}">{TXT_MULTISITE_WEBSITE_CHOOSE}</a></div>
 
         <div class="features">
             {MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE}

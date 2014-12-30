@@ -16,7 +16,7 @@ jQuery(document).ready(function(){
         messageErrorTxt: '',
         messageBuildTxt: '{TXT_MULTISITE_BUILD_WEBSITE_MSG} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />',
         messageRedirectTxt: '',
-        IsPayment: false,
+        IsPayment: '{TXT_MULTISITE_PAYMENT_MODE}',
         callBackOnSuccess: function(response) {
             jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
                 showMessage(response.message, 'success');//show success message 
@@ -34,9 +34,7 @@ jQuery(document).ready(function(){
        }
     };
     for (var option in options) {
-        if (!cx_multisite_options[option]) {
-            cx_multisite_options[option] = options[option];
-        }
+      cx_multisite_options[option] = options[option];
     }
     jQuery.getScript("{MULTISITE_PATH}/lib/javascript/jquery/bootstrapvalidator/js/bootstrapValidator.min.js", function() {
         jQuery.getScript('{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js');
@@ -75,6 +73,10 @@ var validateAdress = function (value, validator, $field) {
     <div class="multisite-status"></div>
     <div class="multisite-form">
         <form role="form" id="multisite_signup_form">
+            <input type="hidden" id="product_id" name="product_id" value="{PRODUCT_ID}">
+            <input type="hidden" id="product_name" value="{PRODUCT_NAME}">
+            <input type="hidden" id="multisite_domain" value="{MULTISITE_DOMAIN}">
+            
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <h2>{TXT_MULTISITE_ADD_NEW_WEBSITE}</h2>
             <fieldset>
@@ -91,6 +93,9 @@ var validateAdress = function (value, validator, $field) {
 
                 <div class="row">
                     <button type="button" class="add multisite_submit">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+                    <!-- BEGIN multisite_pay_button -->
+                    <button type="button" class="add multisite_pay" data-href="{MULTISITE_OPTION_PAYREXXFORMURL}">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+                    <!-- END multisite_pay_button -->
                     <button type="button" data-dismiss="modal">{TXT_MULTISITE_CLOSE}</button>
                 </div>
 

@@ -23,7 +23,7 @@
                         <button type="button" class="manage" onclick="window.location.href = '{NODE_MULTISITE_SUBSCRIPTIONDETAIL}?id={MULTISITE_SUBSCRIPTION_ID}'">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
                         <!-- BEGIN showUpgradeButton --><button class="upgrade" data-remote="/api/MultiSite/SubscriptionSelection?subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionSelection" data-toggle="modal">{TXT_MULTISITE_UPGRADE}</button><!-- END showUpgradeButton -->
                         <!-- BEGIN showAddWebsiteButton -->
-                        <button class="add" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionAddWebsite" data-toggle="modal">{TXT_MULTISITE_ADD_NEW_WEBSITE}</button>
+                        <button class="add add-website" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}" >{TXT_MULTISITE_ADD_NEW_WEBSITE}</button>
                         <!-- END showAddWebsiteButton -->
                     </td>
                 </tr> 
@@ -59,11 +59,6 @@
     </div>
 </div>
 
-<div aria-hidden="true" class="modal fade" id="SubscriptionAddWebsite" role="dialog" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">Loading Add Website form...</div>
-    </div>
-</div>
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(document).ready(function() {
@@ -77,6 +72,9 @@ jQuery(document).ready(function() {
             return false;
         }
     });
+    jQuery('.add-website').bind('click', function (event) {
+      showAddNewWebsite(jQuery(this).data('remote'));
+    });    
 });
 /* ]]> */
 </script>
