@@ -337,45 +337,47 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         //parse the Site Details
         if (!empty($orders)) {            
             foreach ($orders as $order) {
-                foreach ($order->getSubscriptions() as $subscription) {                                    
-                    $product = $subscription->getProduct();
-                    if (!$product) {
-                        continue;
-                    }
-                    $objTemplate->setGlobalVariable(array(
+                foreach ($order->getSubscriptions() as $subscription) {
+                    if ($subscription->getState() != \Cx\Modules\Order\Model\Entity\Subscription::STATE_TERMINATED) {
+                        $product = $subscription->getProduct();
+                        if (!$product) {
+                            continue;
+                        }
+                        $objTemplate->setGlobalVariable(array(
                         'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
                         'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
                         'MULTISITE_WEBSITE_PLAN'             => contrexx_raw2xhtml($product->getName()),
                         'MULTISITE_WEBSITE_INVOICE_DATE'     => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
                         'MULTISITE_WEBSITE_EXPIRE_DATE'      => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',    
-                    ));
+                        ));
 
-                    if ($status == 'valid' && $objTemplate->blockExists('showUpgradeButton')) {
-                        $product->isUpgradable() ? $objTemplate->touchBlock('showUpgradeButton') : $objTemplate->hideBlock('showUpgradeButton');
-                    }
+                        if ($status == 'valid' && $objTemplate->blockExists('showUpgradeButton')) {
+                            $product->isUpgradable() ? $objTemplate->touchBlock('showUpgradeButton') : $objTemplate->hideBlock('showUpgradeButton');
+                        }
 
-                    if ($status != 'expired') {
-                        $websiteCollection = $subscription->getProductEntity();
-                        if ($websiteCollection) {
-                            if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-                                foreach ($websiteCollection->getWebsites() as $website) {
-                                    if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
-                                        continue;
+                        if ($status != 'expired') {
+                            $websiteCollection = $subscription->getProductEntity();
+                            if ($websiteCollection) {
+                                if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                                    foreach ($websiteCollection->getWebsites() as $website) {
+                                        if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                                            continue;
+                                        }
+                                        self::parseWebsiteDetails($objTemplate, $website);
+                                        $objTemplate->parse('showWebsites');
                                     }
-                                    self::parseWebsiteDetails($objTemplate, $website);
+                                    self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() > count($websiteCollection->getWebsites())));
+                                } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                                    self::parseWebsiteDetails($objTemplate, $websiteCollection);
                                     $objTemplate->parse('showWebsites');
                                 }
-                                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() > count($websiteCollection->getWebsites())));
-                            } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                                self::parseWebsiteDetails($objTemplate, $websiteCollection);
-                                $objTemplate->parse('showWebsites');
                             }
+                        } else {
+                            $objTemplate->touchBlock('showWebsites');
                         }
-                    } else {
-                        $objTemplate->touchBlock('showWebsites');
-                    }
 
-                    $objTemplate->parse('showSiteDetails');
+                        $objTemplate->parse('showSiteDetails');
+                    }                    
                 }
             }
         } else {
