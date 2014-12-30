@@ -123,6 +123,9 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE'] = 'E-Mail Dienst akti
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DEACTIVATE_MAIL_SERVICE'] = 'E-Mail Dienst deaktivieren';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY'] = 'Der E-Mail Dienst wurde erfolgreich aktiviert.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_SUCCESSFULLY'] = 'Der E-Mail Dienst wurde erfolgreich deaktiviert.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED'] = 'Die Aktivierung der E-Mail Dienste schlug fehl.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED'] = 'Die Abschaltung der E-Mail Dienste schlug fehl.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] = 'Die E-Mail Verwaltung kann zur Zeit nicht geöffnet werden.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_OPEN_ADMINISTRATION'] = 'Verwaltung öffnen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Abbrechen';
 

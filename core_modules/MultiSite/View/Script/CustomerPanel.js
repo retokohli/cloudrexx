@@ -157,7 +157,6 @@ function getRemoteLoginToken($this) {
                 if (response.status == 'success') {
                     switch(response.data.status) {
                         case 'success':
-                            showMessage(response.data.message, 'success');
                             window.open(response.data.pleskAutoLoginUrl, '_blank');
                             break;
                         case 'error':

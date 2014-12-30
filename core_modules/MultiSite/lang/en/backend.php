@@ -240,8 +240,7 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_SUCCESSFULLY'] = 'Mail service 
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED'] = 'Mail service activation failed.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED'] = 'Mail service deactivation failed.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_OPEN_ADMINISTRATION'] = 'Open administration';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_SUCCESSFULLY'] = 'Successfully login to plesk controller.';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] = 'Failed to login plesk controller.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] = 'The email management console is currently not available.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Cancel';
 
 //website domain
