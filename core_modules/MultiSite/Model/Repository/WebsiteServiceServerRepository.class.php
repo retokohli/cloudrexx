@@ -12,4 +12,19 @@ use Doctrine\ORM\EntityRepository;
  */
 class WebsiteServiceServerRepository extends EntityRepository{
     
+    /**
+    * Get First Entity
+    * 
+    * @return mixed \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer or null
+    */
+    public function getFirstEntity() {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+                ->from('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer', 's')
+                ->orderBy('s.id')
+                ->setMaxResults(1);
+        $result = $qb->getQuery()->getResult();
+        return $result ? current($result) : null;
+    }
+    
 }

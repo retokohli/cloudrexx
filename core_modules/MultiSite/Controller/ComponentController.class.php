@@ -1542,18 +1542,21 @@ throw new MultiSiteException('Refactor this method!');
             }
             //manager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager','FileSystem');
-            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteServiceServer', 0, 1,
+            if (!\FWValidator::isEmpty(\Env::get('db'))
+                && \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteServiceServer', self::getDefaultEntityId('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer'), 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteServiceServerList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Default Website Service Server");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultMailServiceServer', 0, 2,
+            if (!\FWValidator::isEmpty(\Env::get('db'))
+                && \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultMailServiceServer', self::getDefaultEntityId('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer'), 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getMailServiceServerList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Default mail Service Server");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteTemplate', '0', 3,
+            if (!\FWValidator::isEmpty(\Env::get('db'))
+                && \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteTemplate', self::getDefaultEntityId('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate'), 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteTemplateList()}', 'manager')) {
                     throw new MultiSiteException("Failed to add Setting entry for default Website Template");
             }
@@ -1831,6 +1834,28 @@ throw new MultiSiteException('Refactor this method!');
     }
     
     /**
+     * Get the default entity id
+     * 
+     * @param string $entityClass entityClass
+     * 
+     * @return integer id
+     */
+    public static function getDefaultEntityId($entityClass) {
+        if (empty($entityClass)) {
+            return;
+        }
+
+        $repository = \Env::get('em')->getRepository($entityClass);
+        if ($repository) {
+            $defaultEntity = $repository->getFirstEntity();
+            if ($defaultEntity) {
+                return $defaultEntity->getId();
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Get the mail service servers
      * 
      * @return string  mail service servers list
@@ -1885,6 +1910,28 @@ throw new MultiSiteException('Refactor this method!');
         return implode(',', $display);
     }
     
+    /**
+     * get the product list
+     * 
+     * @return array products
+     */
+    public static function getProductList() 
+    {
+        $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+        $productList = $productRepository->findBy();
+        $productEntityClass = array(
+            'Cx\Core_Modules\MultiSite\Model\Entity\Website',
+            'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection'
+        );
+        $products = array();
+        
+        foreach ($productList as $product) {
+            if (in_array($product->getEntityClass(), $productEntityClass)) {
+                $products[] = $product->getId() . ':' . $product->getName();
+            }    
+        }
+        return $products;
+    }
     
     /**
      * Used to get all the admin users and backend group users
