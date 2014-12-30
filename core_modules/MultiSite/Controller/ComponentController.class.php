@@ -228,35 +228,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!empty($productId)) {
             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
             $product = $productRepository->findOneBy(array('id' => $productId));
-            $productPrice = $product->getPrice();
-            if (!empty($productPrice)) {
-                $additionalParameters = array(
-                    'invoice_amount'    => $productPrice,
-                    'invoice_currency'  => 'CHF',
-                    'invoice_number'    =>  $product->getName(),
-                    'contact_email'     => '',
-                    'referenceId'       => ''
-                );
-                $i = 1;
-                $params = '';
-                foreach ($additionalParameters as $key => $val) {
-                    $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
-                    $i++;
-                }
-                $objTemplate->setVariable(array(
-                    'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
-                ));
+            if ($product) {
+                self::parseProductForAddWebsite($objTemplate, $product);
             }
-            $objTemplate->setVariable(array(
-                'TXT_MULTISITE_PAYMENT_MODE' => !empty($productPrice) ? true : false,
-                'PRODUCT_NOTE_ENTITY'     => $product->getNoteEntity(),
-                'PRODUCT_NOTE_RENEWAL'    => $product->getNoteRenewal(),
-                'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
-                'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
-                'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
-                'PRODUCT_NAME'            => $product->getName(),
-                'PRODUCT_ID'              => $product->getId()
-            ));
         }
         return $objTemplate->get();
     }
@@ -521,7 +495,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => $productPrice * 12,
                 'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $productPrice * 24 * 0.9,
                 'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice(),
-                'MULTISITE_WEBSITE_PRODUCT_ID' => $product->getId()
+                'MULTISITE_WEBSITE_PRODUCT_ID' => $product->getId(),
+                'MULTISITE_PRODUCT_TYPE' => $product->getEntityClass() == 'Cx\Core_Modules\MultiSite\Model\Entity\Website' ? 'website' : 'websiteCollection'
             ));
             $objTemplate->parse('showProduct');
         }
@@ -632,12 +607,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         
         $subscriptionId = isset($arguments['id']) ? contrexx_input2raw($arguments['id']) : 0;
+        $productId      = isset($arguments['productId']) ? contrexx_input2raw($arguments['productId']) : 0;
 
         if (!self::isUserLoggedIn()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
         }
 
-        if (empty($subscriptionId)) {
+        if (\FWValidator::isEmpty($subscriptionId) && \FWValidator::isEmpty($productId)) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'];
         }
 
@@ -710,14 +686,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $websiteNameMinLength = \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
             $websiteNameMaxLength = \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
             
-            $objTemplate->setVariable(array(                
+            $queryArguments = array(
+                'addWebsite' => 1,
+                'id'         => $subscriptionId,
+                'productId'  => $productId
+            );
+            $objTemplate->setVariable(array(
                 'MULTISITE_DOMAIN'             => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
                 'MULTISITE_ADDRESS_URL'        => $addressUrl->toString(),
-                'MULTISITE_ADD_WEBSITE_URL'    => '/api/MultiSite/SubscriptionAddWebsite?addWebsite=1&id=' . $subscriptionId,
+                'MULTISITE_ADD_WEBSITE_URL'    => '/api/MultiSite/SubscriptionAddWebsite?' . http_build_query($queryArguments),
                 'TXT_MULTISITE_CREATE_WEBSITE' => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
                 'TXT_MULTISITE_SITE_ADDRESS_INFO'  => sprintf($_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME'], $websiteNameMinLength, $websiteNameMaxLength)
             ));
-
+            
+            if (!empty($productId)) {
+                $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+                $product = $productRepository->findOneBy(array('id' => $productId));
+                if ($product) {
+                    self::parseProductForAddWebsite($objTemplate, $product);
+                } else {
+                    return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
+                }
+            }
             return $objTemplate->get();
         }
     }
@@ -1023,6 +1013,47 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             self::showOrHideBlock($objTemplate, 'actionButtonsActive', false);
             self::showOrHideBlock($objTemplate, 'websiteInitializing', true);            
         }
+    }
+
+    /**
+     * Parse the product details to the view page
+     * 
+     * @param \Cx\Core\Html\Sigma $objTemplate              Template object
+     * @param \Cx\Modules\Pim\Model\Entity\Product $product Product object
+     */
+    public static function parseProductForAddWebsite(\Cx\Core\Html\Sigma $objTemplate, \Cx\Modules\Pim\Model\Entity\Product $product)
+    {
+        $productPrice = $product->getPrice();
+        if (!empty($productPrice)) {
+            $additionalParameters = array(
+                'invoice_amount'    => $productPrice,
+                'invoice_currency'  => 'CHF',
+                'invoice_number'    =>  $product->getName(),
+                'contact_email'     => self::isUserLoggedIn() ? \FWUser::getFWUserObject()->objUser->getEmail() : '',
+                'referenceId'       => ''
+            );
+            $i = 1;
+            $params = '';
+            foreach ($additionalParameters as $key => $val) {
+                $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
+                $i++;
+            }
+            $objTemplate->setVariable(array(
+                'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
+            ));
+        } else {
+            self::showOrHideBlock($objTemplate, 'multisite_pay_button', false);
+        }
+        $objTemplate->setVariable(array(
+            'TXT_MULTISITE_PAYMENT_MODE' => !empty($productPrice) ? true : false,
+            'PRODUCT_NOTE_ENTITY'     => $product->getNoteEntity(),
+            'PRODUCT_NOTE_RENEWAL'    => $product->getNoteRenewal(),
+            'PRODUCT_NOTE_UPGRADE'    => $product->getNoteUpgrade(),
+            'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
+            'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
+            'PRODUCT_NAME'            => $product->getName(),
+            'PRODUCT_ID'              => $product->getId()
+        ));
     }
 
     /**

@@ -178,3 +178,25 @@ function getRemoteLoginToken($this) {
         });
     }
 }
+
+function showAddNewWebsite(remoteUrl) {
+  if (!jQuery('#SubscriptionAddWebsite').length) {
+    return;
+  }
+  
+  jQuery('#SubscriptionAddWebsite .modal-content')
+    .html(
+      jQuery('<div />')
+        .addClass('grid-elm grid-align-1-1 grid-offset')
+        .html('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading')
+    );
+  jQuery('#SubscriptionAddWebsite')
+    .on("hidden.bs.modal",function() {
+      signUpForm = jQuery('#multisite_signup_form');
+      signUpModal = signUpForm.parents('.modal');
+      signUpModal.unbind();
+      jQuery(this).data('bs.modal', null);
+    }).modal({
+      remote : remoteUrl
+    });
+}
