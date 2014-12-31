@@ -93,89 +93,89 @@ function getRemoteLoginToken($this) {
             $this.prop('disabled', false);
         },
         error: function() { }
+    });   
+}
+    
+/**
+ * Enable | Disable mail service
+ * 
+ * @param object elm jQuery button object
+ */
+function enableOrDisableMailService($this) {
+    var act = $this.data('act');
+    var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act='+act;    
+    var websiteId = $this.data('id');
+    var message = '';
+
+    jQuery.ajax({
+        dataType: "json",
+        url: url,
+        data: {
+            websiteId :  websiteId
+        },
+        type: "POST",
+        beforeSend: function (xhr, settings) {
+            $this.button('loading');
+            $this.prop('disabled', true);
+        },
+        success: function(response) {
+            if (response.status == 'success') {
+                resp = response.data;
+                if (resp.status == 'success') {
+                    showMessage(resp.message, 'success');
+                    loadContent('#multisite_website_email', '/api/MultiSite/Website/Email?id=' + websiteId);
+                } else {
+                    showMessage(resp.message, 'error');
+                }
+            } else {
+                showMessage(response.message, 'error');
+            }
+        },
+        complete: function (xhr, settings) {
+            $this.button('reset');
+            $this.prop('disabled', false);                
+        },
+        error: function() { }
     });
+}
     
-    /**
-     * Enable | Disable mail service
-     * 
-     * @param object elm jQuery button object
-     */
-    function enableOrDisableMailService($this) {
-        var act = $this.data('act');
-        var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act='+act;    
-        var websiteId = $this.data('id');
-        var message = '';
+function pleskAutoLogin($this) {
+    var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=pleskAutoLoginUrl';    
+    var websiteId = $this.data('id');
 
-        jQuery.ajax({
-            dataType: "json",
-            url: url,
-            data: {
-                websiteId :  websiteId
-            },
-            type: "POST",
-            beforeSend: function (xhr, settings) {
-                $this.button('loading');
-                $this.prop('disabled', true);
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    resp = response.data;
-                    if (resp.status == 'success') {
-                        showMessage(resp.message, 'success');
-                        loadContent('#multisite_website_email', '/api/MultiSite/Website/Email?id=' + websiteId);
-                    } else {
-                        showMessage(resp.message, 'error');
-                    }
-                } else {
-                    showMessage(response.message, 'error');
+    jQuery.ajax({
+        dataType: "json",
+        url: url,
+        data: {
+            websiteId :  websiteId
+        },
+        type: "POST",
+        beforeSend: function (xhr, settings) {
+            $this.button('loading');
+            $this.prop('disabled', true);
+        },
+        success: function(response) {
+            if (response.status == 'success') {
+                switch(response.data.status) {
+                    case 'success':
+                        window.open(response.data.pleskAutoLoginUrl, '_blank');
+                        break;
+                    case 'error':
+                        showMessage(response.data.message, 'error');
+                        break;
+                    default:
+                        break;
                 }
-            },
-            complete: function (xhr, settings) {
-                $this.button('reset');
-                $this.prop('disabled', false);                
-            },
-            error: function() { }
-        });
-    }
-    
-    function pleskAutoLogin($this) {
-        var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=pleskAutoLoginUrl';    
-        var websiteId = $this.data('id');
-
-        jQuery.ajax({
-            dataType: "json",
-            url: url,
-            data: {
-                websiteId :  websiteId
-            },
-            type: "POST",
-            beforeSend: function (xhr, settings) {
-                $this.button('loading');
-                $this.prop('disabled', true);
-            },
-            success: function(response) {
-                if (response.status == 'success') {
-                    switch(response.data.status) {
-                        case 'success':
-                            window.open(response.data.pleskAutoLoginUrl, '_blank');
-                            break;
-                        case 'error':
-                            showMessage(response.data.message, 'error');
-                            break;
-                        default:
-                            break;
-                    }
-                } else {
-                    showMessage(response.message, 'error');
-                }
-            },
-            complete: function (xhr, settings) {
-                $this.button('reset');
-                $this.prop('disabled', false);                
-            },
-            error: function() { }
-        });
-    }
+            } else {
+                showMessage(response.message, 'error');
+            }
+        },
+        complete: function (xhr, settings) {
+            $this.button('reset');
+            $this.prop('disabled', false);                
+        },
+        error: function() { }
+    });
 }
 
 function showAddNewWebsite(remoteUrl) {

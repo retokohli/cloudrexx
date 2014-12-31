@@ -119,8 +119,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getResourceUsageStats' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'enableMailService'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),            
-            'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'enableMailService'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'checkMailServiceAccessPermission')),            
+            'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'checkMailServiceAccessPermission')),
             'createMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'deleteMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'upgradeSubscription'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
@@ -774,6 +774,46 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return true;
     }
 
+    /**
+     * callback authentication for verifing mail service access permission
+     * 
+     * @return boolean
+     */
+    public function  checkMailServiceAccessPermission($params)
+    { 
+        if (!isset($params['post']['auth'])) {
+            return false;
+        }
+        
+        //check the authentication for verifing secret key and installation id based on mode
+        if (!$this->auth($params)) {
+            return false;
+        }
+        
+        if (!isset($params['post']['websiteId'])) {
+            return false;
+        }
+        
+        //check the website exists or not based on $websiteId
+        $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+        if (!$website) {
+            \DBG::log('JsonMultiSite::checkMailServiceAccessPermission() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+            return false;
+        }
+        
+        //check the user logged in or not
+        if (!ComponentController::isUserLoggedIn()) {
+            return false;
+        }
+        
+        //check the logged in user is owner of website($websiteId)
+        if ($website->getOwnerId() == \FWUser::getFWUserObject()->objUser->getId()) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     /**
      * Callback authentication for checking the user's access permission
      * 
@@ -3217,18 +3257,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */    
     public function createMailServiceAccount($params)
     {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+
         if (empty($params['post']['websiteId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::createMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSite::createMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
-               
+
         try {
             // check the mode
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')
+                                              ->findOneBy(array('id' => $params['post']['websiteId']));
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonException::createMailServiceAccount() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        \DBG::log('JsonException::createMailServiceAccount() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
                     }
                     $defaultMailServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')
                                                                ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer')));
@@ -3236,23 +3282,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if ($accountId) {
                         $website->setMailAccountId($accountId);
                         \Env::get('em')->flush();
-                        return array('status' => 'success', 'message' => 'JsonException::createMailServiceAccount(): mail subscribtion created successfully.');
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY']);
                     } 
                     break;
                 case ComponentController::MODE_WEBSITE:
                 case ComponentController::MODE_SERVICE:
                     // forward call to manager server. 
-                    $response = self::executeCommandOnManager('createMailServiceAccount', $params);
+                    $response = self::executeCommandOnManager('createMailServiceAccount', array('websiteId' => $params['post']['websiteId']));
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return true;
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY']);
                     }
                     break;
                 default:
                     break;
             }
-            return array('status' => 'error', 'message' => 'JsonException::createMailServiceAccount() failed: Unable to create mail subscribtion.');
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATE_MAIL_ACCOUNT_FAILED']);
         } catch (Exception $ex) {
-            throw new MultiSiteJsonException('JsonMultiSite::createMailServiceAccount() failed: To create mail service server'. $ex->getMessage());
+            \DBG::log('JsonMultiSite::createMailServiceAccount() failed: To create mail service server'. $ex->getMessage());
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATE_MAIL_ACCOUNT_FAILED']);
         }
     }
     
@@ -3267,8 +3314,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function deleteMailServiceAccount($params)
     {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
         if (empty($params['post']['websiteId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::deleteMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSite::deleteMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
         try {
             // check the mode
@@ -3277,7 +3328,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonException::deleteMailServiceAccount() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        \DBG::log('JsonException::deleteMailServiceAccount() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
                     }
                     
                     if (
@@ -3288,14 +3340,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $website->setMailAccountId(null);
                         $website->setMailServiceServer(null);
                         \Env::get('em')->flush();
-                        return array('status' => 'success', 'message' => 'JsonException::deleteMailServiceAccount(): mail subscribtion deleted successfully.');
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETED_MAIL_ACCOUNT_SUCCESSFULLY']);
                     }                    
                 case ComponentController::MODE_WEBSITE:
                 case ComponentController::MODE_SERVICE:
                     // forward call to manager server. 
-                    $response = self::executeCommandOnManager('deleteMailServiceAccount', $params);
+                    $response = self::executeCommandOnManager('deleteMailServiceAccount', array('websiteId' => $params['post']['websiteId']));
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return true;
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETED_MAIL_ACCOUNT_SUCCESSFULLY']);
                     }
                     break;
                 default:
@@ -3303,13 +3355,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             return array(
                 'status' => 'error', 
+                'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETE_MAIL_ACCOUNT_FAILED'],
                 'log'    => \DBG::getMemoryLogs(),
             );
         } catch (Exception $e) {
-            throw new MultiSiteJsonException(array(
-                'log'       => \DBG::getMemoryLogs(),
-                'message'   =>'JsonMultiSite::deleteMailServiceAccount() failed: To delete mail service server'. $e->getMessage()
-            ));
+            throw new MultiSiteJsonException(
+                array(
+                    'log'       => \DBG::getMemoryLogs(),
+                    'message'   => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETE_MAIL_ACCOUNT_FAILED']. $e->getMessage()
+                )
+            );
         }
     }
     
@@ -3324,8 +3379,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function enableMailService($params)
     {
         global $_ARRAYLANG;
+        self::loadLanguageData();
+        
         if (empty($params['post']['websiteId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::enableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSite::enableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
                
         try {
@@ -3335,13 +3393,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonException::enableMailService() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        \DBG::log('JsonException::enableMailService() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
                     }
                     $mailServiceServer = $website->getMailServiceServer();
                     if (!$mailServiceServer) {
-                        $response = self::executeCommandOnManager('createMailServiceAccount', $params);
+                        $response = self::executeCommandOnManager('createMailServiceAccount', array('websiteId' => $params['post']['websiteId']));
                         if (!$response || $response->status == 'error' || $response->data->status == 'error') {
-                            throw new MultiSiteJsonException('JsonException::enableMailService() failed: Unable to create mail service account.');
+                            \DBG::log('JsonException::enableMailService() failed: Unable to create mail service account.');
+                            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
                         }
                         \Env::get('em')->refresh($website);
                         $mailServiceServer = $website->getMailServiceServer();
@@ -3357,7 +3417,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_WEBSITE:
                 case ComponentController::MODE_SERVICE:
                     // forward call to manager server. 
-                    $response = self::executeCommandOnManager('enableMailService', $params);
+                    $response = self::executeCommandOnManager('enableMailService', array('websiteId' => $params['post']['websiteId']));
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY']);
                     }
@@ -3367,7 +3427,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
         } catch (Exception $ex) {
-            throw new MultiSiteJsonException('JsonMultiSite::enableMailService() failed: To enable mail service account.'. $ex->getMessage());
+            \DBG::log('JsonMultiSite::enableMailService() failed: To enable mail service account.'. $ex->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
         }
     }
     
@@ -3382,8 +3443,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function disableMailService($params)
     {
         global $_ARRAYLANG;
+        self::loadLanguageData();
+        
         if (empty($params['post']['websiteId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::disableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSite::disableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
                
         try {
@@ -3393,7 +3457,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonException::disableMailService() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        \DBG::log('JsonException::disableMailService() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
                     }
                     
                     if (
@@ -3407,7 +3472,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_WEBSITE:
                 case ComponentController::MODE_SERVICE:
                     // forward call to manager server. 
-                    $response = self::executeCommandOnManager('disableMailService', $params);
+                    $response = self::executeCommandOnManager('disableMailService', array('websiteId' => $params['post']['websiteId']));
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_SUCCESSFULLY']);
                     }
@@ -3417,7 +3482,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
         } catch (Exception $ex) {
-            throw new MultiSiteJsonException('JsonMultiSite::disableMailService() failed: To disable mail service'. $ex->getMessage());
+            \DBG::log('JsonMultiSite::disableMailService() failed: To disable mail service'. $ex->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
         }
     }
     
