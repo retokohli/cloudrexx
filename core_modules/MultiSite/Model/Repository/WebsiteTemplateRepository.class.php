@@ -27,7 +27,7 @@ class WebsiteTemplateRepository extends \Doctrine\ORM\EntityRepository {
     * @return mixed \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate or null
     */
    public function getFirstEntity() {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('t')
                 ->from('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate', 't')
                 ->orderBy('t.id')

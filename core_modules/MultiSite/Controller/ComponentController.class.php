@@ -1564,8 +1564,9 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteTemplateList()}', 'manager')) {
                     throw new MultiSiteException("Failed to add Setting entry for default Website Template");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct') === NULL 
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultPimProduct', '0', 4,
+            if (!\FWValidator::isEmpty(\Env::get('db'))
+                && \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct') === NULL 
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultPimProduct', self::getDefaultPimProductId(), 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Product List");
             }
@@ -1844,7 +1845,8 @@ throw new MultiSiteException('Refactor this method!');
      * 
      * @return integer id
      */
-    public static function getDefaultEntityId($entityClass) {
+    public static function getDefaultEntityId($entityClass) 
+    {
         if (empty($entityClass)) {
             return;
         }
@@ -1922,19 +1924,27 @@ throw new MultiSiteException('Refactor this method!');
     public static function getProductList() 
     {
         $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
-        $productList = $productRepository->findBy();
-        $productEntityClass = array(
-            'Cx\Core_Modules\MultiSite\Model\Entity\Website',
-            'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection'
-        );
-        $products = array();
-        
-        foreach ($productList as $product) {
-            if (in_array($product->getEntityClass(), $productEntityClass)) {
-                $products[] = $product->getId() . ':' . $product->getName();
-            }    
+        $productList = $productRepository->getMultisiteProducts();
+        return $productList;
+    }
+    
+    /**
+     * Get default product id
+     * 
+     * @return int productId
+     */
+    public static function getDefaultPimProductId()
+    {
+        $products = self::getProductList();
+        if (\FWValidator::isEmpty($products)) {
+            return 0;
         }
-        return $products;
+        
+        $defaultProduct = current($products);
+        if ($defaultProduct) {
+            return $defaultProduct->getId();
+        }
+        return 0;
     }
     
     /**

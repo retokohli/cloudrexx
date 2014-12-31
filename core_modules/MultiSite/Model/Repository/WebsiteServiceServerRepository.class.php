@@ -18,7 +18,7 @@ class WebsiteServiceServerRepository extends EntityRepository{
     * @return mixed \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer or null
     */
     public function getFirstEntity() {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('s')
                 ->from('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer', 's')
                 ->orderBy('s.id')

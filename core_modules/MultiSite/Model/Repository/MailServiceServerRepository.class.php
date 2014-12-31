@@ -27,7 +27,7 @@ class MailServiceServerRepository extends \Doctrine\ORM\EntityRepository {
     * @return mixed \Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer or null
     */
    public function getFirstEntity() {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('m')
                 ->from('\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer', 'm')
                 ->orderBy('m.id')
