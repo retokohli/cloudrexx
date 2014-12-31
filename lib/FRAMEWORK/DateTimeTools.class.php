@@ -335,4 +335,44 @@ cx.jQuery(function() {
         return $re;
     }
 
+
+    /**
+     * Return the string representation of a DateInterval object
+     *
+     * @param   $dateInterval   DateInterval    The DateInterval object to fetch the string representation from.
+     * @return  string  An interval specification that can be interpreted by DateInterval
+     */
+    public static function getDateIntervalAsString($dateInterval) {
+        $sReturn = 'P';
+
+        if ($dateInterval->y) {
+            $sReturn .= $dateInterval->y . 'Y';
+        }
+
+        if ($dateInterval->m) {
+            $sReturn .= $dateInterval->m . 'M';
+        }
+
+        if ($dateInterval->d) {
+            $sReturn .= $dateInterval->d . 'D';
+        }
+
+        if ($dateInterval->h || $dateInterval->i || $dateInterval->s) {
+            $sReturn .= 'T';
+
+            if ($dateInterval->h) {
+                $sReturn .= $dateInterval->h . 'H';
+            }
+
+            if ($dateInterval->i) {
+                $sReturn .= $dateInterval->i . 'M';
+            }
+
+            if ($dateInterval->s) {
+                $sReturn .= $dateInterval->s . 'S';
+            }
+        }
+
+        return $sReturn;
+    }
 }
