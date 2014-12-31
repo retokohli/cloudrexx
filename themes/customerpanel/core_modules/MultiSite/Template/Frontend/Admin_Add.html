@@ -1,0 +1,44 @@
+<div class="grid-elm grid-align-1-1 grid-offset">   
+    <form role="form"  id="multisite_admin_user_add_form" action="{MULTISITE_ADMIN_USER_SUBMIT_URL}">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h2>{TXT_CORE_MODULE_MULTISITE_CREATE_ADMIN_USER}</h2>   
+        
+        <fieldset> 
+            <!-- BEGIN showAddAdminUser -->
+            <!-- BEGIN multisite_user_profile_attribute_firstname -->     
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}
+            </div>
+            <!-- END multisite_user_profile_attribute_firstname -->     
+                                          
+            <!-- BEGIN multisite_user_profile_attribute_lastname -->     
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}
+            </div>
+            <!-- END multisite_user_profile_attribute_lastname -->  
+            
+            <!-- BEGIN multisite_user_account_email -->
+            <div class="row">
+                <label for="{MULTISITE_USER_ACCOUNT_EMAIL_ID}">{MULTISITE_USER_ACCOUNT_EMAIL_DESC}</label>
+                <input type="text" id="{MULTISITE_USER_ACCOUNT_EMAIL_ID}" name="{MULTISITE_USER_ACCOUNT_EMAIL_NAME}">
+            </div>  
+            <!-- END multisite_user_account_email -->                         
+            <div class="row">
+                <button type="submit"  data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading"  class="save loadingProcess">{TXT_CORE_MODULE_MULTISITE_ADD}</button>
+                <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+            </div>
+            <!-- END showAddAdminUser -->
+        <fieldset>    
+    </form>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('#multisite_admin_user_add_form').submit(function() {
+          var apiUrl = '/api/MultiSite/Website?id=' + getQueryParams(document.location.search)['id']
+          sendApiFormRequest('#multisite_admin_user_add_form','#AdminAdd','#multisite_website_admins', apiUrl);
+          return false;
+    });
+});
+/* ]]> */
+</script>

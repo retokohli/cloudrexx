@@ -11,9 +11,32 @@
         <tr>
             <td>{MULTISITE_WEBSITE_USER_NAME}</td>
             <td><a title="{MULTISITE_WEBSITE_USER_EMAIL}" href="mailto:{MULTISITE_WEBSITE_USER_EMAIL}">{MULTISITE_WEBSITE_USER_EMAIL}</a></td>
-            <td class="actions"><a class="entypo-tools" href="#"></a>&nbsp;<a class="entypo-trash" href="#"></a></td>
+            
+            <td class="actions">
+                <!-- BEGIN showWebsiteUsersAction -->
+                <a class="entypo-tools" href="#" data-remote="/api/MultiSite/Admin/Edit?website_id={MULTISITE_WEBSITE_ID}&user_id={MULTISITE_WEBSITE_USER_ID}&email_id={MULTISITE_WEBSITE_USER_EMAIL}" data-target="#AdminEdit" data-toggle="modal"></a>&nbsp;
+                <a class="entypo-trash" href="#" data-remote="/api/MultiSite/Admin/Delete?website_id={MULTISITE_WEBSITE_ID}&user_id={MULTISITE_WEBSITE_USER_ID}&email_id={MULTISITE_WEBSITE_USER_EMAIL}" data-target="#AdminDelete" data-toggle="modal"></a>
+                <!-- END showWebsiteUsersAction -->
+            </td>
         </tr>     
         <!-- END showWebsiteAdminUsers -->
     </tbody> 
-</table>     
-<button type="button" class="add">{TXT_MULTISITE_WEBSITE_ADD_ACCOUNT}</button>
+</table> 
+<button class="add" data-remote="/api/MultiSite/Admin/Add?website_id={MULTISITE_WEBSITE_ID}" data-target="#AdminAdd" data-toggle="modal">{TXT_MULTISITE_WEBSITE_ADD_ACCOUNT}</button>
+<div aria-hidden="true" class="modal fade" id="AdminAdd" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">Loading Administrator hinzufügen...</div>
+    </div>
+</div>
+
+<div aria-hidden="true" class="modal fade" id="AdminEdit" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">Loading Administrator bearbeiten ...</div>
+    </div>
+</div>
+
+<div aria-hidden="true" class="modal fade" id="AdminDelete" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">Loading Administrator entfernen ...</div>
+    </div>
+</div>
