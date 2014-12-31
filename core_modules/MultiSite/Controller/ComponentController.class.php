@@ -625,63 +625,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             $websiteName = isset($_POST['multisite_address']) ? contrexx_input2raw($_POST['multisite_address']) : '';
            
-            try {
-                $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-                $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
-
-                //check the subscription is exist
-                if (!$subscriptionObj) {
-                    return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'], false);
-                }
-
-                //get sign-in user crm id!
-                $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
-
-                if (empty($crmContactId)) {
-                   return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'], false);
-                }
-
-                $order = $subscriptionObj->getOrder();
-                if (!$order) {
-                    return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS'], false);
-                }
-
-                //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
-                if ($crmContactId != $order->getContactId()) {
-                    return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'], false);
-                }
-
-                //get website collections
-                $websiteCollection = $subscriptionObj->getProductEntity();
-                if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-                    if ($websiteCollection->getQuota() <= count($websiteCollection->getWebsites())) {
-                        return $this->parseJsonMessage(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $websiteCollection->getQuota()), false);
-                    }
-                    //create new website object and add to website
-                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, \FWUser::getFWUserObject()->objUser);
-                    $websiteCollection->addWebsite($website);
-
-                    $product = $subscriptionObj->getProduct();
-                    //check the product
-                    if (!$product) {
-                        return $this->parseJsonMessage($_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'], false);
-                    }
-                    $productEntityAttributes = $product->getEntityAttributes();
-                    //pass the website template value
-                    $options = array(
-                        'websiteTemplate' => $productEntityAttributes['websiteTemplate']
-                    );
-                    //website setup process
-                    $websiteStatus = $website->setup($options);
-                    if ($websiteStatus['status'] == 'success') {
-                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'], true);
-                    }
-                }
-            } catch (\Exception $e) {
-                \DBG::log("Failed to add website:" . $e->getMessage());
-                return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED'], false);
+            $resp = array();
+            if (!\FWValidator::isEmpty($subscriptionId)) {
+                $resp = $this->createNewWebsiteInSubscription($subscriptionId, $websiteName);
+            } elseif (!\FWValidator::isEmpty($productId)) {
+                $resp = $this->createNewWebsiteByProduct($productId, $websiteName);
             }
-            die();
+            
+            $responseStatus  = isset($resp['status']) && $resp['status'] == 'success';
+            $responseMessage = isset($resp['message']) ? $resp['message'] : '';
+            return $this->parseJsonMessage($responseMessage, $responseStatus);
+            
         } else {
             $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
             $mainDomain = $domainRepository->getMainDomain()->getName();
@@ -698,7 +652,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objTemplate->setVariable(array(
                 'MULTISITE_DOMAIN'             => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
                 'MULTISITE_ADDRESS_URL'        => $addressUrl->toString(),
-                'MULTISITE_ADD_WEBSITE_URL'    => '/api/MultiSite/SubscriptionAddWebsite?' . http_build_query($queryArguments),
+                'MULTISITE_ADD_WEBSITE_URL'    => '/api/MultiSite/SubscriptionAddWebsite?' . self::buildHttpQueryString($queryArguments),
                 'TXT_MULTISITE_CREATE_WEBSITE' => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
                 'TXT_MULTISITE_SITE_ADDRESS_INFO'  => sprintf($_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME'], $websiteNameMinLength, $websiteNameMaxLength)
             ));
@@ -1046,6 +1000,126 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
     /**
+     * Create new website into the existing subscription
+     * 
+     * @param integer $subscriptionId Subscription id
+     * @param string  $websiteName    Name of the website
+     * 
+     * return array return's array that contains array('status' => success | error, 'message' => 'Status message')
+     */
+    public function createNewWebsiteInSubscription($subscriptionId, $websiteName)
+    {
+        global $_ARRAYLANG;
+        
+        try {
+            $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+            $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
+
+            //check the subscription is exist
+            if (!$subscriptionObj) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS']);
+            }
+
+            //get sign-in user crm id!
+            $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+
+            if (empty($crmContactId)) {
+               return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+            }
+
+            $order = $subscriptionObj->getOrder();
+            if (!$order) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ORDER_NOT_EXISTS']);
+            }
+
+            //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
+            if ($crmContactId != $order->getContactId()) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+            }
+
+            //get website collections
+            $websiteCollection = $subscriptionObj->getProductEntity();
+            if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                if ($websiteCollection->getQuota() <= count($websiteCollection->getWebsites())) {
+                    return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $websiteCollection->getQuota()));
+                }
+                //create new website object and add to website
+                $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, \FWUser::getFWUserObject()->objUser);
+                $websiteCollection->addWebsite($website);
+
+                $product = $subscriptionObj->getProduct();
+                //check the product
+                if (!$product) {
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS']);
+                }
+                $productEntityAttributes = $product->getEntityAttributes();
+                //pass the website template value
+                $options = array(
+                    'websiteTemplate' => $productEntityAttributes['websiteTemplate']
+                );
+                //website setup process
+                $websiteStatus = $website->setup($options);
+                if ($websiteStatus['status'] == 'success') {
+                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS']);
+                }
+            }
+        } catch (\Exception $e) {
+            \DBG::log("Failed to add website:" . $e->getMessage());
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
+        }
+    }
+    
+    /**
+     * Create new website based on the given product id and website name
+     * 
+     * @param integer $productId   Product id
+     * @param string  $websiteName Website name
+     * 
+     * return array return's array that contains array('status' => success | error, 'message' => 'Status message')
+     */
+    public function createNewWebsiteByProduct($productId, $websiteName)
+    {
+        global $_ARRAYLANG;
+        
+        try {
+            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+            $product = $productRepository->findOneBy(array('id' => $productId));
+            
+            if (!$product) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS']);
+            }
+            
+            //get sign-in user crm id!
+            $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+
+            if (empty($crmContactId)) {
+               return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+            }
+            
+            // create new subscription of selected product
+            $subscriptionOptions = array(
+                'renewalUnit'       => \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH,
+                'renewalQuantifier' => 1,
+                'websiteName'       => $websiteName,
+                'customer'          => \FWUser::getFWUserObject()->objUser,
+            );
+            
+            $transactionReference = $productId . '-' . $websiteName;
+            
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $crmContactId, $transactionReference, $subscriptionOptions);
+            if (!$order) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
+            }
+            
+            // create the website process in the payComplete event
+            $order->complete();
+        } catch (Exception $e) {
+            \DBG::log("Failed to add website:" . $e->getMessage());
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
+        }
+    }
+    
+    /**
      * Parse the website details to the view page
      * 
      * @param \Cx\Core\Html\Sigma $objTemplate                         Template object
@@ -1122,6 +1196,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'PRODUCT_NAME'            => $product->getName(),
             'PRODUCT_ID'              => $product->getId()
         ));
+    }
+    
+    /**
+     * returns the formatted query string
+     * 
+     * @param array $params parameters array 
+     * 
+     * @return string query string
+     */
+    public static function buildHttpQueryString($params = array())
+    {
+        $separator   = '';
+        $queryString = ''; 
+        foreach($params as $key => $value) {
+            $queryString .= $separator . $key . '=' . $value; 
+            $separator    = '&'; 
+        }
+        
+        return $queryString;
     }
 
     /**

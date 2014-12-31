@@ -178,25 +178,49 @@ function pleskAutoLogin($this) {
     });
 }
 
-function showAddNewWebsite(remoteUrl) {
-  if (!jQuery('#SubscriptionAddWebsite').length) {
+function showRemoteModal(options) {
+  var defaultOpts = {
+    modalId : '',
+    remoteUrl : '',
+    show: function(e) {},
+    shown: function() {},
+    hide: function() {},
+    hidden: function() {}
+  };
+  var opts = jQuery.extend({}, defaultOpts, options);
+  
+  if (!jQuery('#'+ opts.modalId).length) {
     return;
   }
   
-  jQuery('#SubscriptionAddWebsite .modal-content')
+  if (opts.remoteUrl == '') {
+    return;
+  }
+  
+  jQuery('#'+ opts.modalId + ' .modal-content')
     .html(
       jQuery('<div />')
         .addClass('grid-elm grid-align-1-1 grid-offset')
         .html('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading')
     );
-  jQuery('#SubscriptionAddWebsite')
-    .on("hidden.bs.modal",function() {
-      signUpForm = jQuery('#multisite_signup_form');
-      signUpModal = signUpForm.parents('.modal');
-      signUpModal.unbind();
+  jQuery('#'+ opts.modalId)
+    .on("show.bs.modal",
+      function() {
+        opts.show();
+      }
+    ).on("shown.bs.modal",
+      function() {
+        opts.shown();
+      }
+    ).on("hide.bs.modal",
+      function() {
+        opts.hide();
+      }
+    ).on("hidden.bs.modal",function() {
+      opts.hidden();
       jQuery(this).data('bs.modal', null);
     }).modal({
-      remote : remoteUrl
+      remote : opts.remoteUrl
     });
 }
 
