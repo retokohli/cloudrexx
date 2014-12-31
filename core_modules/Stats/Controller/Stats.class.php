@@ -202,13 +202,13 @@ class Stats extends StatsLibrary
             foreach ($this->arrVisitorsDetails as $stats) {
                 $this->_objTpl->setVariable(array(
                     'STATS_REQUESTS_CLIENT_ROW_CLASS'        => $rowClass%2 == 1 ? "row2" : "row1",
-                    'STATS_REQUESTS_CLIENT_HOST'            => empty($stats['client_host']) ? "-" : "<a href=\"?cmd=NetTools&amp;tpl=whois&amp;address=".$stats['client_host']."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".$stats['client_host']."</a>",
-                    'STATS_REQUESTS_CLIENT_IP'                => empty($stats['client_ip']) ? "-" : "<a href=\"?cmd=NetTools&amp;tpl=whois&amp;address=".$stats['client_ip']."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".$stats['client_ip']."</a>",
-                    'STATS_REQUESTS_CLIENT_LAST_REQUEST'    => empty($stats['last_request']) ? "-" : $stats['last_request'],
-                    'STATS_REQUESTS_CLIENT_USERAGENT'        => empty($stats['client_useragent']) ? "-" : $stats['client_useragent'],
-                    'STATS_REQUESTS_CLIENT_PROXY_USERAGENT'    => empty($stats['proxy_useragent']) ? "-" : $stats['proxy_useragent'],
-                    'STATS_REQUESTS_CLIENT_PROXY_IP'        => empty($stats['proxy_ip']) ? "-" : "<a href=\"?cmd=NetTools&amp;tpl=whois&amp;address=".$stats['proxy_ip']."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".$stats['proxy_ip']."</a>",
-                    'STATS_REQUESTS_CLIENT_PROXY_HOST'        => empty($stats['proxy_host']) ? "-" : "<a href=\"?cmd=NetTools&amp;tpl=whois&amp;address=".$stats['proxy_host']."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".$stats['proxy_host']."</a>",
+                    'STATS_REQUESTS_CLIENT_HOST'            => empty($stats['client_host']) ? "-" : "<a href=\"?cmd=NetTools&amp;tpl=whois&amp;address=".contrexx_raw2xhtml($stats['client_host'])."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".contrexx_raw2xhtml($stats['client_host'])."</a>",
+                    'STATS_REQUESTS_CLIENT_IP'                => empty($stats['client_ip']) ? "-" : "<a href=\"?cmd=NetTools&amp;tpl=whois&amp;address=".contrexx_raw2xhtml($stats['client_ip'])."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".contrexx_raw2xhtml($stats['client_ip'])."</a>",
+                    'STATS_REQUESTS_CLIENT_LAST_REQUEST'    => empty($stats['last_request']) ? "-" : contrexx_raw2xhtml($stats['last_request']),
+                    'STATS_REQUESTS_CLIENT_USERAGENT'        => empty($stats['client_useragent']) ? "-" : contrexx_raw2xhtml($stats['client_useragent']),
+                    'STATS_REQUESTS_CLIENT_PROXY_USERAGENT'    => empty($stats['proxy_useragent']) ? "-" : contrexx_raw2xhtml($stats['proxy_useragent']),
+                    'STATS_REQUESTS_CLIENT_PROXY_IP'        => empty($stats['proxy_ip']) ? "-" : "<a href=\"?cmd=NetTools&amp;tpl=whois&amp;address=".contrexx_raw2xhtml($stats['proxy_ip'])."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".contrexx_raw2xhtml($stats['proxy_ip'])."</a>",
+                    'STATS_REQUESTS_CLIENT_PROXY_HOST'        => empty($stats['proxy_host']) ? "-" : "<a href=\"?cmd=NetTools&amp;tpl=whois&amp;address=".contrexx_raw2xhtml($stats['proxy_host'])."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".contrexx_raw2xhtml($stats['proxy_host'])."</a>",
                     ));
                 $this->_objTpl->parse('stats_requests_today_clients');
                 $this->_objTpl->hideBlock('stats_requests_today_clients_list_nodata');
