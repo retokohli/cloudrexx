@@ -769,7 +769,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $websiteDomainAliases = $website->getDomainAliases();
             foreach ($websiteDomainAliases as $domainAlias) {
                 $objTemplate->setVariable(array(
-                    'MULTISITE_WEBSITE_DOMAIN_ALIAS' => contrexx_raw2xhtml($domainAlias->getName()),
+                    'MULTISITE_WEBSITE_DOMAIN_ALIAS'    => contrexx_raw2xhtml($domainAlias->getName()),
+                    'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => contrexx_raw2xhtml($domainAlias->getCoreNetDomainId()),
                 ));
                 $objTemplate->parse('showWebsiteDomainAliases');
             }
@@ -845,27 +846,90 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!$website) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
         }
-        
+
         if ($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
         }
-
-        if (isset($arguments['domain_name']) && $objTemplate->blockExists('showDeleteDomainInfo')) {
-            $objTemplate->setVariable(array(
-                'TXT_MULTISITE_DELETE_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE_INFO'], $arguments['domain_name']),
-                'MULTISITE_DOMAIN_NAME'            => $arguments['domain_name']
-            ));
-            $objTemplate->parse('showDeleteDomainInfo');
-        }
         
-        if (isset($arguments['domain_name']) && $objTemplate->blockExists('showEditDomainName')) {
-            $objTemplate->setVariable(array(
-                'MULTISITE_DOMAIN_NAME' => $arguments['domain_name']
-            ));
-            $objTemplate->parse('showEditDomainName');
-        }
+        $loadPageAction   = isset($arguments[1]) ? contrexx_input2raw($arguments[1]) : '';
+        $submitFormAction = isset($arguments['action']) ? contrexx_input2raw($arguments['action']) : '';
+        $domainId         = isset($arguments['domain_id']) ? contrexx_input2raw($arguments['domain_id']) : '';
+        $domainName       = isset($arguments['domain_name']) ? contrexx_input2raw($arguments['domain_name']):'';
+                
+        //processing form values after submit
+        if (!\FWValidator::isEmpty($submitFormAction)) {
+            try {
+                switch ($submitFormAction) {
+                    case 'Add':
+                        if (\FWValidator::isEmpty($_POST['add_domain'])) {
+                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
+                        }
+                        $command = 'mapNetDomain';
+                        $params = array(
+                            'domainName' => $_POST['add_domain']
+                        );
+                        break;
 
-        return $objTemplate->get();
+                    case 'Edit':
+                        if (\FWValidator::isEmpty($_POST['edit_domain']) || \FWValidator::isEmpty($domainId)) {
+                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
+                        }
+                        $command = 'updateNetDomain';
+                        $params = array(
+                            'domainName' => $_POST['edit_domain'],
+                            'domainId' => $domainId
+                        );
+                        break;
+
+                    case 'Delete':
+                        if (\FWValidator::isEmpty($domainId)) {
+                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
+                        }
+                        $command = 'unMapNetDomain';
+                        $params = array(
+                            'domainId' => $domainId
+                        );
+                        break;
+                    default :
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
+                        break;
+                }
+                if (isset($command) && isset($params)) {
+                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite($command, $params, $website);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'], true);
+                    } else {
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_FAILED'], false);
+                    }
+                }
+            } catch (\Exception $e) {
+                \DBG::log('Failed to '.$submitFormAction. 'Domain'. $e->message());
+                return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_FAILED'], false);
+            }
+        } else {
+            if(!empty($domainName) && !empty($domainId)){
+                if (($loadPageAction == 'Delete') && $objTemplate->blockExists('showDeleteDomainInfo')) {
+                    $objTemplate->setVariable(array(
+                        'TXT_MULTISITE_DELETE_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE_INFO'], $domainName),
+                        'MULTISITE_DOMAIN_NAME' => $domainName,
+                        'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => $domainId
+                    ));
+                }
+
+                if (($loadPageAction == 'Edit') && $objTemplate->blockExists('showEditDomainName')) {
+                    $objTemplate->setVariable(array(
+                        'MULTISITE_DOMAIN_NAME' => $domainName,
+                        'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => $domainId
+                    ));
+                }
+            }
+
+            $objTemplate->setVariable(array(
+                'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL' => '/api/MultiSite/Domain?action=' . $loadPageAction . '&website_id=' . $websiteId . '&domain_id=' . $domainId,
+            ));
+
+            return $objTemplate->get();
+        }
     }
 
     

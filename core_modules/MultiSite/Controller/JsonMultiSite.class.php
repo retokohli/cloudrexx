@@ -124,7 +124,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'createMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'deleteMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'upgradeSubscription'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
-            'pleskAutoLoginUrl'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true)
+            'pleskAutoLoginUrl'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'mapNetDomain'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
+            'unMapNetDomain'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
+            'updateNetDomain'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
         );  
     }
 
@@ -921,6 +924,117 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }        
     
+    /**
+     * Map Net Domain
+     * 
+     * @param  array $params supplied arguments from JsonData-request
+     * 
+     * @return array mapNetDomain stats 
+     * @throws MultiSiteJsonException
+     */
+    public function mapNetDomain($params) {
+        
+        global $_ARRAYLANG;
+        
+        self::loadLanguageData('MultiSite');
+        
+        if (empty($params['post']['domainName'])) {
+            \DBG::log('JsonMultiSite::mapNetDomain() failed: domainName is empty.');
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
+        }
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                
+                case ComponentController::MODE_WEBSITE:
+                    $domain = new \Cx\Core\Net\Model\Entity\Domain();
+                    $domain->setName(contrexx_input2raw($params['post']['domainName']));
+                
+                    $domainRepository = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
+                    $domainRepository->add($domain);
+                    $domainRepository->flush();
+                    return array(
+                        'status' => 'success'
+                    );
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::log('JsonMultiSite::mapNetDomain() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::mapNetDomain() failed:'. $e->getMessage());
+        }
+    }
+
+    /**
+     * UnMap Net Domain
+     * 
+     * @param  array $params supplied arguments from JsonData-request
+     * 
+     * @return array unMapNetDomain stats
+     * @throws MultiSiteJsonException
+     */
+    public function unMapNetDomain($params) {
+       
+        global $_ARRAYLANG;
+        
+        self::loadLanguageData('MultiSite');
+        
+        if (empty($params['post']['domainId'])) {
+            \DBG::log('JsonMultiSite::unMapNetDomain() failed: domainId is empty.');
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
+        }
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                
+                case ComponentController::MODE_WEBSITE:
+                    $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                    $domain = $domainRepo->findOneBy(array('id' => contrexx_input2raw($params['post']['domainId'])));
+                    
+                    if (!$domain) {
+                       \DBG::log('JsonMultiSite::unMapNetDomain() failed: Unknown DomainId:'. $params['post']['domainId']);
+                       throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
+                    }
+                    
+                    $domainRepository = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
+                    $domainRepository->remove($domain);
+                    $domainRepository->flush();
+                    return array(
+                        'status' => 'success'
+                    );
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::dump('JsonMultiSite::unMapNetDomain() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::unMapNetDomain() failed:'. $e->getMessage());
+        }
+    }
+
+    
+    /**
+     * Update Net Domain
+     * 
+     * @param  array $params supplied arguments from JsonData-request
+     * 
+     * @return array updateNetDomain stats
+     * @throws MultiSiteJsonException
+     */
+    public function updateNetDomain($params) {
+        if (empty($params['post']['domainName']) || empty($params['post']['domainId'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::updateNetDomain() failed: Insufficient mapping information supplied.');
+        }
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_WEBSITE:
+                    //TODO update net domain
+                    return array(
+                        'status' => 'success'
+                    );
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::dump($e->getMessage());
+            throw new MultiSiteJsonException($e->getMessage());
+        }
+    }
+
     /**
      * Unmap the website domain
      * 

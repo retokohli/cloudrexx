@@ -199,3 +199,34 @@ function showAddNewWebsite(remoteUrl) {
       remote : remoteUrl
     });
 }
+
+function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector, apiUrl) {
+  if (!jsFormSelector || !jsModalSelector || !loadContentSelector || !apiUrl) {
+    return;
+  }
+  
+  jQuery.ajax({
+    dataType: 'json',
+    url: jQuery(jsFormSelector).attr('action'),
+    data: jQuery(jsFormSelector).serialize(),
+    type: "POST",
+    beforeSend: function () {
+      jQuery('.loadingProcess').button('loading');
+      jQuery('.loadingProcess').prop('disabled', true);
+    },
+    success: function (response) {
+      message = (response.status == 'success') ? response.data.message : response.message;
+
+      jQuery(jsModalSelector).on('hidden.bs.modal', function () {
+        showMessage(message, response.status);//show status message 
+      });
+      jQuery(jsModalSelector).modal('hide');
+      if(response.status == 'success'){
+      loadContent(loadContentSelector, apiUrl );
+     }
+    },
+    fail: function (response) {
+    }
+  });
+
+}
