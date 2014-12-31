@@ -103,7 +103,8 @@ class MediaManager extends MediaLibrary
 
         // get variables
         $this->getAct  = (isset($_GET['act']) and !empty($_GET['act']))   ? trim($_GET['act'])  : '';
-        $this->getFile = (isset($_GET['file']) and !empty($_GET['file'])) ? trim($_GET['file']) : '';
+        $this->getFile = (isset($_GET['file']) and !empty($_GET['file'])) ? \Cx\Lib\FileSystem\FileSystem::sanitizeFile(trim($_GET['file'])) : '';
+        if ($this->getFile === false) $this->getFile = '';
         $this->sortBy = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
         $this->sortDesc = !empty($_GET['sort_desc']);
     }
