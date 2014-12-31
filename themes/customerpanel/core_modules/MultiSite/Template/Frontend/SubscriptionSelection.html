@@ -542,7 +542,15 @@
         });
 
         jQuery('.buy-now.website').on('click', function() {
-          showAddNewWebsite('/api/MultiSite/SubscriptionAddWebsite?productId='+ jQuery(this).data('productid'))
+          showRemoteModal({
+            modalId   : 'SubscriptionAddWebsite',
+            remoteUrl : '/api/MultiSite/SubscriptionAddWebsite?productId='+ jQuery(this).data('productid'),
+            hidden : function() {
+              var signUpForm = jQuery('#multisite_signup_form');
+              var signUpModal = signUpForm.parents('.modal');
+              signUpModal.unbind();
+            }
+          });
           jQuery("#SubscriptionSelection").modal('hide');
         });
         

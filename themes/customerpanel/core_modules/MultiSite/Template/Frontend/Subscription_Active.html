@@ -73,7 +73,15 @@ jQuery(document).ready(function() {
         }
     });
     jQuery('.add-website').bind('click', function (event) {
-      showAddNewWebsite(jQuery(this).data('remote'));
+      showRemoteModal({
+        modalId   : 'SubscriptionAddWebsite',
+        remoteUrl : jQuery(this).data('remote'),
+        hidden : function() {
+          var signUpForm = jQuery('#multisite_signup_form');
+          var signUpModal = signUpForm.parents('.modal');
+          signUpModal.unbind();
+        }
+      });
     });    
 });
 /* ]]> */
