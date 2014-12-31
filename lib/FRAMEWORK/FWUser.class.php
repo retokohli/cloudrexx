@@ -703,6 +703,12 @@ class FWUser extends User_Setting
     {
         global $_CORELANG;
 
+        // ensure the supplied $restoreKey is a valid restore key
+        if (!preg_match('/^[0-9a-f]+$/i', $restoreKey)) {
+            $this->arrStatusMsg['error'][] = $_CORELANG['TXT_INVALID_USER_ACCOUNT'];
+            return false;
+        }
+
         $userFilter = array(
             'restore_key'      => $restoreKey,
             'restore_key_time' => array(
