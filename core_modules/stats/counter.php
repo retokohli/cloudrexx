@@ -368,6 +368,13 @@ class counter
             $this->arrProxy['host'] = "";
             $this->arrProxy['useragent'] = "";
         }
+
+        foreach ($this->arrClient as &$client) {
+            $client = contrexx_raw2db(strip_tags($client));
+        }
+        foreach ($this->arrProxy as &$proxy) {
+            $proxy = contrexx_raw2db(strip_tags($proxy));
+        }
     }
 
     /**
