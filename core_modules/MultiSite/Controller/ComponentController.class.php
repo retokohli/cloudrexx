@@ -145,6 +145,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $this->executeCommandDomain($objTemplate, $arguments);
                         break;
                     
+                    case 'Admin':
+                        echo $this->executeCommandAdmin($objTemplate, $arguments);
+                        break;
+                    
                     case 'Payrexx':
                         $this->executeCommandPayrexx();
                         break;
@@ -710,9 +714,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
             $websiteAdminUsers = $website->getAdminUsers();
             foreach ($websiteAdminUsers as $websiteAdminUser) {
+                self::showOrHideBlock($objTemplate, 'showWebsiteUsersAction', ($websiteAdminUser->email != \FWUser::getFWUserObject()->objUser->getEmail()));
                 $objTemplate->setVariable(array(
-                    'MULTISITE_WEBSITE_USER_NAME' => \FWUser::getParsedUserTitle($websiteAdminUser->id),
+                    'MULTISITE_WEBSITE_USER_NAME' =>  $websiteAdminUser->username,
                     'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser->email,
+                    'MULTISITE_WEBSITE_USER_ID'    => $websiteAdminUser->id,
                 ));
                 $objTemplate->parse('showWebsiteAdminUsers');
             }
@@ -885,7 +891,128 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return $objTemplate->get();
         }
     }
+    
+    /**
+     * Api command Admin 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandAdmin($objTemplate, $arguments) {
+        global $objInit, $_CORELANG, $_ARRAYLANG;
+        
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+        $langData = $objInit->loadLanguageData('core');
+        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
+        }
+        
+        $objUser   = \FWUser::getFWUserObject()->objUser;
+        $websiteId = isset($arguments['website_id']) ? contrexx_input2raw($arguments['website_id']) : 0;
+        $userId    = isset($arguments['user_id']) ? contrexx_input2raw($arguments['user_id']) : 0;
+        $emailId   = isset($arguments['email_id']) ? contrexx_input2raw($arguments['email_id']) : '';        
+        $commandAction = isset($arguments['action']) ? $arguments['action'] : '';
+        
+        if (\FWValidator::isEmpty($websiteId)) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
+        }
+        
+        $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($websiteId);
+        if (!$website) {
+            return $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
+        }
+        
+        if ($website->getOwnerId() != $objUser->getId()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+        }
+        
+        if ($objTemplate->blockExists('showAddAdminUser') || $objTemplate->blockExists('showEditAdminUser')) {
+            $blockName = 'multisite_user';
+            $placeholderPrefix = strtoupper($blockName).'_';
+            $objAccessLib = new \Cx\Core_Modules\Access\Controller\AccessLib($objTemplate);
+            $objAccessLib->setModulePrefix($placeholderPrefix);
+            $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+            $objAccessLib->setAccountAttributeNamePrefix($blockName.'_account_');
+            
+            $userObj = null;
+            if ($arguments[1] == 'Edit') {
+                // TO-DO fetch user object from website
+            } else {
+               $userObj = new \User();
+            }
+            
+            if (!$userObj) {
+                return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_FAIL'];
+            }
+            
+            $userObj->objAttribute->first();
+            while (!$userObj->objAttribute->EOF) {
+                $objAttribute = $userObj->objAttribute->getById($userObj->objAttribute->getId());
+                $objAccessLib->parseAttribute($userObj, $objAttribute->getId(), 0, true, false, false, false, false);
+                $userObj->objAttribute->next();
+            }
+            $objAccessLib->parseAccountAttributes($userObj);
+        }
+        
+        $objTemplate->setVariable(array(
+            'MULTISITE_ADMIN_USER_SUBMIT_URL' => '/api/MultiSite/Admin?action=' . $arguments[1] . '&website_id=' . $websiteId . '&user_id=' . $userId,
+        ));
+        
+        if (isset($emailId) && $objTemplate->blockExists('showDeleteAdminUser')) {
+            $objTemplate->setVariable(array(
+               'MULTISITE_ADMIN_USER_DELETE_CONFIRM' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_CONFIRM'], $emailId) 
+            ));
+        }
+        
+        if (!\FWValidator::isEmpty($commandAction)) {
+            $userEmail    = isset($_POST['multisite_user_account_email']) 
+                           ? $_POST['multisite_user_account_email'] 
+                           : '';
+            $userProfile = isset($_POST['multisite_user_profile_attribute']) 
+                           ? $_POST['multisite_user_profile_attribute']
+                           : array();
+            
+            switch ($commandAction) {
+                case 'Add':
+                    $command = 'createAdminUser';
+                    $params = array(
+                        'multisite_user_account_email'     => $userEmail,
+                        'multisite_user_profile_attribute' => $userProfile
+                    );                    
+                    if (\FWValidator::isEmpty($userEmail)) {
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_EMAIL_EMPTY'], false);
+                    }
+                    if (!\FWValidator::isEmail($userEmail)) {
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_NOT_VALID_EMAIL'], false);
+                    }
+                    break;
+                case 'Edit':
+                    //TO-DO
+                    $command = 'updateUser';
+                    
+                    break;
+                case 'Delete':
+                    $command = 'removeUser';
+                    $params  = array('userId' => $userId);
+                    break;
+            }
+            
+            $resp = JsonMultiSite::executeCommandOnWebsite($command, $params, $website);
+            \DBG::dump($resp);
+            if ($resp->status == 'success') {
+                return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_'. strtoupper($commandAction) .'_SUCCESS'], true);
+            } else {                
+                return $this->parseJsonMessage($resp->message, false);
+            }
+            
+        }
 
+        return $objTemplate->get();
+    }
     
     /**
      * Api Payrexx command
@@ -2127,7 +2254,7 @@ throw new MultiSiteException('Refactor this method!');
                         $users[$objBackendGroupUser->getId()] = array(
                             'id' => contrexx_raw2xhtml($objBackendGroupUser->getId()),
                             'email' => contrexx_raw2xhtml($objBackendGroupUser->getEmail()),
-                            'username' => contrexx_raw2xhtml($objBackendGroupUser->getUsername()),
+                            'username' => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objBackendGroupUser->getId())),
                             'firstname' => contrexx_raw2xhtml($objBackendGroupUser->getProfileAttribute('firstname')),
                             'lastname' => contrexx_raw2xhtml($objBackendGroupUser->getProfileAttribute('lastname'))
                         );
@@ -2143,7 +2270,7 @@ throw new MultiSiteException('Refactor this method!');
                             $users[$objAdminUser->getId()] = array(
                                 'id' => contrexx_raw2xhtml($objAdminUser->getId()),
                                 'email' => contrexx_raw2xhtml($objAdminUser->getEmail()),
-                                'username' => contrexx_raw2xhtml($objAdminUser->getUsername()),
+                                'username' => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objAdminUser->getId())),
                                 'firstname' => contrexx_raw2xhtml($objAdminUser->getProfileAttribute('firstname')),
                                 'lastname' => contrexx_raw2xhtml($objAdminUser->getProfileAttribute('lastname'))
                             );

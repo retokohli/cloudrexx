@@ -139,3 +139,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT'] = 'Domain bearbeite
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE'] = 'Domain entfernen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE_INFO'] = 'Hiermit entfernen Sie den Domain %s von Ihrer Website. Danach wird Ihre Website über diese Domain nicht mehr erreichbar sein.';
 
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATE_ADMIN_USER'] = 'Administrator hinzufügen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EDIT_ADMIN_USER']   = 'Administrator bearbeiten';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_ADMIN_USER'] = 'Administrator entfernen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_CONFIRM'] = 'Hiermit entfernen Sie den Administrator %s von Ihrer Website';

@@ -103,7 +103,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'executeOnManager'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'generateAuthToken'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'executeSql'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkExecuteSqlAccess')),
-            'removeUser'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'removeUser'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'setWebsiteTheme'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getFtpUser'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getLicense'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
@@ -128,6 +128,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'mapNetDomain'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
             'unMapNetDomain'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
             'updateNetDomain'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
+            'createAdminUser'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -552,6 +553,66 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'log'       => \DBG::getMemoryLogs(),
                 'message'   => $e->getMessage(),
             ));
+        }
+    }
+
+    /**
+     * Create admin user
+     * 
+     * @global type $_ARRAYLANG
+     * @param array $params
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function createAdminUser($params) {
+        global $_ARRAYLANG;
+        
+        self::loadLanguageData();
+        try {
+            if (empty($params['post'])) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']);
+            }
+
+            $data = $params['post'];
+
+            $objUser = new \User();
+            //Check email validity
+            if (!\FWValidator::isEmail($data['multisite_user_account_email'])) {
+                \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL']);
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL']);
+            }
+
+            if (!\User::isUniqueEmail($data['multisite_user_account_email'])) {
+                \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE']);
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE']);
+            }
+            
+            // set user account email
+            if (isset($data['multisite_user_account_email'])) {
+                $objUser->setEmail(trim(contrexx_input2raw($data['multisite_user_account_email'])));
+            }
+            
+            // set profile data
+            if (isset($data['multisite_user_profile_attribute'])) {
+                $objUser->setProfile(contrexx_input2raw($data['multisite_user_profile_attribute']));
+            }
+            
+            //Set admin flag of User to true
+            $objUser->setAdminStatus(1);
+            
+            $objUser->setActiveStatus(1);
+
+            if (!$objUser->store()) {
+                \DBG::log('Adding Admin user failed: ' . $objUser->getErrorMsg());
+                throw new MultiSiteJsonException($objUser->getErrorMsg());
+            }
+            \DBG::log("JsonMultiSite (createAdminUser): User has been successfully added.");
+            return array(
+                'status' => 'success',
+                'log' => \DBG::getMemoryLogs(),
+            );
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException($e->getMessage());
         }
     }
 
@@ -2648,11 +2709,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException
      */
     public function removeUser($params) {
+        global $_ARRAYLANG;
+        
+        self::loadLanguageData();
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                 if (empty($params['post'])) {
-                    throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::removeUser.');
+                    \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']);
+                    throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']);
                 }
                 $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                 $website = $websiteRepository->findBy(array('ownerId' => $params['post']['userId']));
@@ -3641,7 +3707,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown mail service server.');
             }
             
-            $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);            
+            $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
             $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn(), base64_encode($_SERVER['REMOTE_ADDR']), ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
             if ($pleskLoginUrl) {
                 return array('status' => 'success', 'pleskAutoLoginUrl' => $pleskLoginUrl);
