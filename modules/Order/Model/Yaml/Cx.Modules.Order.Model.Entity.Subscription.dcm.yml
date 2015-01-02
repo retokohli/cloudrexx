@@ -41,10 +41,6 @@ Cx\Modules\Order\Model\Entity\Subscription:
       type: integer
       column: external_subscription_id
       nullable: true
-    externalCustomerId:
-      type: integer
-      column: external_customer_id
-      nullable: true
     description:
       type: string
     state:
