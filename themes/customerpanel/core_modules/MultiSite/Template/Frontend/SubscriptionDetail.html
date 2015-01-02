@@ -8,6 +8,11 @@
         <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
     </div>
 </div>
+<div id="multisite_subscription_detail_payments">
+    <div class="grid-elm grid-align-1-1 grid-offset">  
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+    </div>
+</div>
 <div aria-hidden="false" class="modal fade" id="SubscriptionSelection" role="dialog" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">Loading subscription form...</div>
@@ -18,11 +23,10 @@
 /* <![CDATA[ */
 cx.ready(function() {
     jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
-        var $_GET = getQueryParams(document.location.search);
-        var id    = $_GET['id'];
-        
+        var id = getQueryParams(document.location.search)['id'];
         loadContent('#multisite_subscription_detail_info', '/api/MultiSite/SubscriptionDetail/Info?id=' + id);
         loadContent('#multisite_subscription_detail_websites', '/api/MultiSite/SubscriptionDetail/Websites?id=' + id);
+        loadContent('#multisite_subscription_detail_payments', '/api/MultiSite/SubscriptionDetail/Payments?id=' + id);
     });
 });
 /* ]]> */
