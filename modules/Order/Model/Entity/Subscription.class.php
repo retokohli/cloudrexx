@@ -46,7 +46,6 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     protected $renewalQuantifier = null;
     protected $renewalDate = null;
     protected $externalSubscriptionId = null;
-    protected $externalCustomerId = null;
     protected $description = null;
     
     /**
@@ -220,24 +219,6 @@ class Subscription extends \Cx\Model\Base\EntityBase {
 
     public function setRenewalDate($renewalDate) {
         $this->renewalDate = $renewalDate;
-    }
-
-    /**
-     * Get the externalCustomerId
-     * 
-     * @return integer
-     */
-    public function getExternalCustomerId() {
-        return $this->externalCustomerId;
-    }
-
-    /**
-     * Set the externalCustomerId
-     * 
-     * @param integer $externalCustomerId
-     */
-    public function setExternalCustomerId($externalCustomerId) {
-        $this->externalCustomerId = $externalCustomerId;
     }
 
     /**

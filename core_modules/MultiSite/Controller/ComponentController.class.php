@@ -1868,6 +1868,27 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Product List");
             }
+            
+            if (!\FWValidator::isEmpty(\Env::get('db'))) {
+                $settingExternalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
+                $dbExternalPaymentCustomerIdProfileAttributeId      = self::getExternalPaymentCustomerIdProfileAttributeId();
+                
+                if ($settingExternalPaymentCustomerIdProfileAttributeId != $dbExternalPaymentCustomerIdProfileAttributeId) {
+                    \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager','FileSystem');
+                    if ($settingExternalPaymentCustomerIdProfileAttributeId === null) {
+                        if (!\Cx\Core\Setting\Controller\Setting::add('externalPaymentCustomerIdProfileAttributeId', $dbExternalPaymentCustomerIdProfileAttributeId, 5,
+                            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'manager')) {
+                                throw new MultiSiteException("Failed to add Setting entry for External Payment Customer Id Profile Attribute Id");
+                        }
+                    } else {
+                        if (!(\Cx\Core\Setting\Controller\Setting::set('externalPaymentCustomerIdProfileAttributeId', $dbExternalPaymentCustomerIdProfileAttributeId)
+                            && \Cx\Core\Setting\Controller\Setting::update('externalPaymentCustomerIdProfileAttributeId'))) {
+                            throw new \Cx\Lib\Update_DatabaseException(
+                                "Failed to update Setting for External Payment Customer Id Profile Attribute Id");
+                        }
+                    }
+                } 
+            }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
@@ -2247,6 +2268,42 @@ throw new MultiSiteException('Refactor this method!');
             return $defaultProduct->getId();
         }
         return 0;
+    }
+
+    /**
+     * Get the External Payment Customer Id Profile Attribute Id
+     * 
+     * @return integer attribute id
+     * @throws \Cx\Lib\Update_DatabaseException
+     */
+    public static function getExternalPaymentCustomerIdProfileAttributeId() {
+        $objUser = \FWUser::getFWUserObject()->objUser;
+        
+        $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
+        if ($externalPaymentCustomerIdProfileAttributeId) {
+            $objProfileAttribute = $objUser->objAttribute->getById($externalPaymentCustomerIdProfileAttributeId);
+            $attributeNames      = $objProfileAttribute->getAttributeNames($externalPaymentCustomerIdProfileAttributeId);
+            if (empty($attributeNames)) {
+                $externalPaymentCustomerIdProfileAttributeId = false;
+            }
+        }
+        if (!$externalPaymentCustomerIdProfileAttributeId) {
+            $objProfileAttribute = $objUser->objAttribute->getById(0);
+            $objProfileAttribute->setNames(array(
+                1 => 'MultiSite External Payment Customer ID',
+                2 => 'MultiSite External Payment Customer ID'
+            ));
+            $objProfileAttribute->setType('text');
+            $objProfileAttribute->setMultiline(true);
+            $objProfileAttribute->setParent(0);
+            $objProfileAttribute->setProtection(array(1));
+            if (!$objProfileAttribute->store()) {
+                throw new \Cx\Lib\Update_DatabaseException(
+                'Failed to create MultiSite External Payment Customer Id Profile Attribute Id');
+            }
+            
+        }
+        return $objProfileAttribute->getId();
     }
     
     /**
