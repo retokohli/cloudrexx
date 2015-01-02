@@ -1934,6 +1934,10 @@ throw new MultiSiteException('Refactor this method!');
         $evm->addModelListener('terminated', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
         $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
         
+        //OrderPayment event Listener
+        $orderPaymentEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderPaymentEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
+        
     }
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         global $_CONFIG;

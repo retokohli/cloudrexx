@@ -55,6 +55,12 @@ class Payment extends \Cx\Model\Base\EntityBase {
      */
     protected $handler;
     
+    /**
+     *
+     * @var array $transactionData
+     */
+    protected $transactionData = array();
+    
     const HANDLER_CASH = 'cash';
     const HANDLER_PAYREXX = 'payrexx';
 
@@ -166,5 +172,25 @@ class Payment extends \Cx\Model\Base\EntityBase {
      */
     public function setHandler($handler) {
         $this->handler = $handler;
+    }
+    
+    /**
+     * Set the transactionData
+     * 
+     * @param array $transactionData transactionData
+     */
+    public function setTransactionData($transactionData) 
+    {
+        $this->transactionData = $transactionData;
+    }
+    
+    /**
+     * Get transactionData
+     * 
+     * @return array
+     */
+    public function getTransactionData() 
+    {
+        return $this->transactionData;
     }
 }
