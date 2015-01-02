@@ -1020,48 +1020,59 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Api Payrexx command
      */
-    public function executeCommandPayrexx() 
+    public function executeCommandPayrexx()
     {
-        $transaction = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
-        $subscription = !empty($_POST['subscription']) ? $_POST['subscription'] : array();
-        if (!empty($transaction) && isset($transaction['status']) && $transaction['status'] === 'confirmed') {
-            $invoice = $transaction['invoice'];
-            $referenceId = !empty($subscription['id']) ? $invoice['referenceId'] . '-' . $subscription['id'] : $invoice['referenceId'];
+        $transaction = isset($_POST['transaction'])
+                       ? $_POST['transaction']
+                       : (isset($_POST['subscription'])
+                           ? $_POST['subscription']
+                           : array());
+        $invoice = isset($transaction['invoice']) ? $transaction['invoice'] : array();
+        $contact = isset($transaction['contact']) ? $transaction['contact'] : array();
+        $hasTransaction = isset($_POST['transaction']);
+        
+        if (
+               \FWValidator::isEmpty($transaction)
+            || \FWValidator::isEmpty($invoice)
+            || \FWValidator::isEmpty($contact)
+        ) {
+            return;
+        }
+        
+        $invoiceReferId = isset($invoice['referenceId']) ? $invoice['referenceId'] : '';
+        if (\FWValidator::isEmpty($invoiceReferId)) {
+            return;
+        }
+        
+        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+
+        $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
+
+        $invoiceRequest = new \Payrexx\Models\Request\Invoice();
+        $invoiceRequest->setReferenceId($invoiceReferId);
+
+        try {
+            $response = $payrexx->getOne($invoiceRequest);
+        } catch (\Payrexx\PayrexxException $e) {
+            throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
+        }
+
+        if (   isset($transaction['status']) && ($transaction['status'] === 'confirmed')
+            && !\FWValidator::isEmpty($response) && isset($response['status']) && ($response['status'] === 'success')
+            && $invoice['amount'] === $response['amount']
+            && $invoice['referenceId'] === $response['referenceId']
+        ) {
+            $subscriptionId = $hasTransaction ? $transaction['subscription']['id'] : $transaction['id'];
+            $transactionReference = $invoiceReferId . (!\FWValidator::isEmpty($subscriptionId) ? '-' . $subscriptionId : '');
             $payment = new \Cx\Modules\Order\Model\Entity\Payment();
             $payment->setAmount($invoice['amount']);
             $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
-            $payment->setTransactionReference($referenceId);
+            $payment->setTransactionReference($transactionReference);
+            $payment->setTransactionData($transaction);
             \Env::get('em')->persist($payment);
             \Env::get('em')->flush();
         }
-//        $transaction   = !empty($_POST['transaction']) ? $_POST['transaction'] : array();
-//        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-//        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
-//        $paymentRequestId = $_POST['transaction']['invoice']['paymentRequestId'];
-//
-//        $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
-//
-//        $paymentRequest = new \Payrexx\Models\Request\PaymentRequest();
-//        $paymentRequest->setId($paymentRequestId);
-//
-//        try {
-//            $response = $payrexx->getOne($paymentRequest);
-//        } catch (\Payrexx\PayrexxException $e) {
-//            throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
-//        }
-//
-//        if (!empty($transaction) && isset($transaction['status']) && ($transaction['status'] === 'confirmed')
-//                && !empty($response) && isset($response['status']) && ($response['status'] === 'success')
-//                && $transaction['invoice']['amount'] === $response['invoice']['amount']
-//                && $transaction['invoice']['referenceId'] === $response['invoice']['referenceId']) {
-//            $invoice = $transaction['invoice'];
-//            $payment = new \Cx\Modules\Order\Model\Entity\Payment();
-//            $payment->setAmount($invoice['amount']);
-//            $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
-//            $payment->setTransactionReference($invoice['referenceId']);
-//            \Env::get('em')->persist($payment);
-//            \Env::get('em')->flush();
-//        }
     }
     
     /**

@@ -2903,28 +2903,36 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
             $product = $productRepository->findOneBy(array('id' => $params['post']['product_id']));
             
+            if (\FWValidator::isEmpty($product)) {
+                return;
+            }
+            
             $productPrice  = $product->getPrice();
             $productName   = $product->getName();
             $invoiceNumber = $productName . ' - ' . $params['post']['multisite_address'] . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             $referenceId   = $product->getId() . '-' . $params['post']['multisite_address'];
+            
             $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
             $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
-            $payrexxFormId = \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId');
 
             $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
             
-            $paymentRequest = new \Payrexx\Models\Request\PaymentRequest();
-            $paymentRequest->setAmount($productPrice);
-            $paymentRequest->setCurrency(\Payrexx\Models\Request\PaymentRequest::CURRENCY_CHF);
-            $paymentRequest->setNumber(contrexx_input2raw($invoiceNumber));
-            $paymentRequest->setEmail(contrexx_input2raw($params['post']['multisite_email_address']));
-            $paymentRequest->setReferenceId(contrexx_input2raw($referenceId));
-            $paymentRequest->setFormId($payrexxFormId);
+            $invoice = new \Payrexx\Models\Request\Invoice();
+            $invoice->setReferenceId(contrexx_input2raw($referenceId));
+            $invoice->setTitle($invoiceNumber);
+            $invoice->setDescription('');
+            $invoice->setPurpose('');
+            $invoice->setPsp(1);
             
-            $response = $payrexx->create($paymentRequest);
-            if ($response['status'] == 'success' && !empty($response['data'])) {
+            $invoice->setAmount($productPrice);
+            $invoice->setCurrency(\Payrexx\Models\Request\PaymentRequest::CURRENCY_CHF);
+            
+            $invoice->addField('email', true, contrexx_input2raw($params['post']['multisite_email_address']));
+            
+            $response = $payrexx->create($invoice);
+            if ($response['status'] == 'success' && !\FWValidator::isEmpty($response['data'])) {
                 $data = $response['data'];
-                $link = $data['link'] . '&appview=1';
+                $link = $data['link'];
                 return array('status' => 'success', 'link' => $link);
             }
         } catch (\Payrexx\PayrexxException $e) {
