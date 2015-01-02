@@ -3718,6 +3718,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Get auto-login url for Payrexx.
      * 
      * @return array Payrexx auto-login url stats
+     * 
      */
     public function payrexxAutoLoginUrl()
     {
@@ -3754,7 +3755,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
             $response = $payrexx->create($authToken);
 
-            if ($response['status'] == 'success' && !\FWValidator::isEmpty($response['data'])) {
+            if ($response && $response['status'] == 'success' && !\FWValidator::isEmpty($response['data'])) {
                 return array('status' => 'success', 'autoLoginUrl' => $response['data']['link']);
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
