@@ -841,14 +841,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function  checkMailServiceAccessPermission($params)
-    { 
-        if (!isset($params['post']['auth'])) {
-            return false;
-        }
-        
+    {
         //check the authentication for verifing secret key and installation id based on mode
-        if (!$this->auth($params)) {
-            return false;
+        if ($this->auth($params)) {
+            return true;
         }
         
         if (!isset($params['post']['websiteId'])) {
@@ -871,7 +867,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if ($website->getOwnerId() == \FWUser::getFWUserObject()->objUser->getId()) {
             return true;
         }
-        
         return false;
     }
     
