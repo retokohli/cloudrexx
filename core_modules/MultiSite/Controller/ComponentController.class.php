@@ -596,6 +596,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objTemplate->parse('showWebsites');
             }
         }
+
+        //payments
+        self::showOrHideBlock($objTemplate, 'showPayments', !\FWValidator::isEmpty($subscriptionObj->getExternalSubscriptionId()));
         
         return $objTemplate->get();
     }

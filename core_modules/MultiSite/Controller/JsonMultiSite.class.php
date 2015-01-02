@@ -129,6 +129,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'unMapNetDomain'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
             'updateNetDomain'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
             'createAdminUser'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'payrexxAutoLoginUrl'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true)
         );  
     }
 
@@ -3705,11 +3706,62 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
             $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn(), base64_encode($_SERVER['REMOTE_ADDR']), ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
             if ($pleskLoginUrl) {
-                return array('status' => 'success', 'pleskAutoLoginUrl' => $pleskLoginUrl);
+                return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED']);
         } catch (Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed:'. $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] . $e->getMessage());
         }
     }
+    
+    /**
+     * Get auto-login url for Payrexx.
+     * 
+     * @return array Payrexx auto-login url stats
+     */
+    public function payrexxAutoLoginUrl()
+    {
+        global $_ARRAYLANG;
+
+        self::loadLanguageData('Multisite');
+        
+        if (!self::isUserLoggedIn()) {
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS']);
+        }
+
+        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+        if (\FWValidator::isEmpty($crmContactId)) {
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+        }
+
+        $profileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
+        if (\FWValidator::isEmpty($profileAttributeId)) {
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
+        }
+
+        $userId = \FWUser::getFWUserObject()->objUser->getProfileAttribute($profileAttributeId);
+        if (\FWValidator::isEmpty($userId)) {
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
+        }
+
+        $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+        $apiSecret = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+        
+        try {   
+            $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
+            $authToken = new \Payrexx\Models\Request\AuthToken();
+            $authToken->setUserId($userId);
+        
+            $response = $payrexx->create($authToken);
+
+            if ($response['status'] == 'success' && !\FWValidator::isEmpty($response['data'])) {
+                return array('status' => 'success', 'autoLoginUrl' => $response['data']['link']);
+            }
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
+        } catch (\Payrexx\PayrexxException $e) {
+            \DBG::log('JsonMultiSite::payrexxAutoLoginUrl() failed:' . $e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
+        }
+    }
+
 }

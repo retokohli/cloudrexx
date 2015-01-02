@@ -140,42 +140,9 @@ function enableOrDisableMailService($this) {
 }
     
 function pleskAutoLogin($this) {
-    var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=pleskAutoLoginUrl';    
-    var websiteId = $this.data('id');
-
-    jQuery.ajax({
-        dataType: "json",
-        url: url,
-        data: {
-            websiteId :  websiteId
-        },
-        type: "POST",
-        beforeSend: function (xhr, settings) {
-            $this.button('loading');
-            $this.prop('disabled', true);
-        },
-        success: function(response) {
-            if (response.status == 'success') {
-                switch(response.data.status) {
-                    case 'success':
-                        window.open(response.data.pleskAutoLoginUrl, '_blank');
-                        break;
-                    case 'error':
-                        showMessage(response.data.message, 'error');
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                showMessage(response.message, 'error');
-            }
-        },
-        complete: function (xhr, settings) {
-            $this.button('reset');
-            $this.prop('disabled', false);                
-        },
-        error: function() { }
-    });
+      var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=pleskAutoLoginUrl';
+      var data = {websiteId: $this.data('id')};
+      requestAutoLogin($this, url, data);
 }
 
 function showRemoteModal(options) {
@@ -253,4 +220,44 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
     }
   });
 
+}
+
+function payrexxAutoLogin($this) {
+  var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=payrexxAutoLoginUrl';
+  var data = {};
+  requestAutoLogin($this, url, data);
+}
+
+function requestAutoLogin($this, url, data) {
+    jQuery.ajax({
+        dataType: "json",
+        url: url,
+        data: data,
+        type: "POST",
+        beforeSend: function (xhr, settings) {
+            $this.button('loading');
+            $this.prop('disabled', true);
+        },
+        success: function(response) {
+            if (response.status == 'success') {
+                switch(response.data.status) {
+                    case 'success':
+                        window.open(response.data.autoLoginUrl, '_blank');
+                        break;
+                    case 'error':
+                        showMessage(response.data.message, 'error');
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                showMessage(response.message, 'error');
+            }
+        },
+        complete: function (xhr, settings) {
+            $this.button('reset');
+            $this.prop('disabled', false);                
+        },
+        error: function() { }
+    });
 }
