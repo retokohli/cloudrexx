@@ -21,8 +21,9 @@ class Communicator
     protected static $methods = array(
         'create' => 'POST',
         'cancel' => 'DELETE',
-//        'update' => 'PUT',
-//        'getAll' => 'GET',
+        'delete' => 'DELETE',
+        'update' => 'PUT',
+        'getAll' => 'GET',
         'getOne' => 'GET',
     );
     /**
@@ -73,13 +74,13 @@ class Communicator
      * Perform a simple API request by method name and Request model.
      *
      * @param string                       $method The name of the API method to call
-     * @param \Payrexx\Models\Request\Base $model  The model which has the same functionality like a filter.
+     * @param \Payrexx\Models\Base $model  The model which has the same functionality like a filter.
      *
-     * @return \Payrexx\Models\Response\Base[]|\Payrexx\Models\Response\Base An array of models or just one model which
+     * @return \Payrexx\Models\Base[]|\Payrexx\Models\Base An array of models or just one model which
      *                                                                       is the result of the API call
      * @throws \Payrexx\PayrexxException An error occurred during the Payrexx Request
      */
-    public function performApiRequest($method, \Payrexx\Models\Request\Base $model)
+    public function performApiRequest($method, \Payrexx\Models\Base $model)
     {
         $params = $model->toArray($method);
         $params['ApiSignature'] =
@@ -95,6 +96,9 @@ class Communicator
 
         $convertedResponse = array();
         if (!isset($response['data']) || !is_array($response['data'])) {
+            if (!isset($response['message'])) {
+                throw new \Payrexx\PayrexxException('Payrexx PHP: Configuration is wrong! Check instance name and API secret');
+            }
             throw new \Payrexx\PayrexxException($response['message']);
         }
 
@@ -102,7 +106,10 @@ class Communicator
             $responseModel = $model->getResponseModel();
             $convertedResponse[] = $responseModel->fromArray($object);
         }
-        if (strpos($method, 'One') !== false) {
+        if (
+            strpos($method, 'One') !== false ||
+            strpos($method, 'create') !== false
+        ) {
             $convertedResponse = current($convertedResponse);
         }
         return $convertedResponse;
