@@ -396,13 +396,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         try {
-            // Load language variables of Multisite
+            // Load language variables of MultisiteexternalPayment
             self::loadLanguageData();
             
             $productId = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : 0;
             $subscriptionId = isset($params['post']['subscription_id']) ? contrexx_input2raw($params['post']['subscription_id']) : 0;
             $websiteReference = isset($params['post']['websiteReference']) ? contrexx_input2raw($params['post']['websiteReference']) : '';
             $renewalOption = isset($params['post']['renewalOption']) ? contrexx_input2raw($params['post']['renewalOption']) : '';
+            $externalPayment = isset($params['post']['externalPaymentAccount']) ? contrexx_input2raw($params['post']['externalPaymentAccount']) : '';
             
             if (   \FWValidator::isEmpty($productId) 
                 || \FWValidator::isEmpty($subscriptionId) 
@@ -429,21 +430,56 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             $crmContactId = $orderObj->getContactId();
             
+            list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($renewalOption);
             
-            switch($renewalOption) {
-                case 'annually':
-                    $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
-                    $renewalQuantifier = 1;
-                    break;
-                case 'biannually':
-                    $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
-                    $renewalQuantifier = 2;
-                    break;
-                default:
-                    $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
-                    $renewalQuantifier = 1;
-                    break;
+            //Update subscription details if the user has an external payment account
+            if (!\FWValidator::isEmpty($externalPayment)) {
+                $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+                $apiSecret    = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+                $payrexx      = new \Payrexx\Payrexx($instanceName, $apiSecret);
+                $subscription = new \Payrexx\Models\Request\Subscription();
+                $externalSubscriptionId = isset($subscriptionObj->getExternalSubscriptionId()) ? $subscriptionObj->getExternalSubscriptionId() : '';
+                
+                if (\FWValidator::isEmpty($externalSubscriptionId)) {
+                    \DBG::log('Invalid externalSubscriptionId.');
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+                }
+                
+                $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+                $product = $productRepository->findOneBy(array('id' => $productId));
+                
+                if (\FWValidator::isEmpty($product)) {
+                    \DBG::log('Invalid Product Requested.');
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+                }
+                
+                $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
+                if (\FWValidator::isEmpty($productPrice)) {
+                    \DBG::log('Product Price should not Empty.');
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+                }
+                
+                $subscription->setId($externalSubscriptionId);
+                $subscription->setAmount($productPrice);
+                $subscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);
+                
+                try {
+                    $response = $payrexx->update($subscription);
+                    if ($response->status != 'success') {
+                        \DBG::log('Failed to update the subscription details.');
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+                    }
+                    
+                    if ($response->data->invoice->amount != $productPrice) {
+                        \DBG::log('Payment details are not matched.');
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+                    }
+                } catch (\Payrexx\PayrexxException $e) {
+                    \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED'].': '.$e->getMessage());
+                    throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+                }
             }
+            
             $subscriptionOptions = array(
                 'baseSubscription'  => $subscriptionObj,
                 'renewalUnit'       => $renewalUnit,
@@ -470,6 +506,30 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
+    /**
+     * Get Product renewalUnit and quantifier by using renewalOption
+     * 
+     * @param string $renewalOption renewalOption
+     * @return array renewalUnit and quantifier
+     */
+    public static function getProductRenewalUnitAndQuantifier($renewalOption = 'monthly')
+    {
+        switch ($renewalOption) {
+            case 'annually':
+                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
+                $renewalQuantifier = 1;
+                break;
+            case 'biannually':
+                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
+                $renewalQuantifier = 2;
+                break;
+            default:
+                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
+                $renewalQuantifier = 1;
+                break;
+        }
+        return array($renewalUnit, $renewalQuantifier);
+    }
     /**
      * Creates a new website
      * @param type $params  

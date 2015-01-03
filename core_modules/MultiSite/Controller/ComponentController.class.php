@@ -413,13 +413,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $mainDomain = $domainRepository->getMainDomain()->getName();
         $subscriptionUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=upgradeSubscription');
-        
+        $paymentUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl');
+
         $objTemplate->setGlobalVariable($_ARRAYLANG);
-        
-        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
-        $contactEmail = \FWUser::getFWUserObject()->objUser->getEmail();
-        $userId = \FWUser::getFWUserObject()->objUser->getId();
-        
+        $objUser = \FWUser::getFWUserObject()->objUser;
+        $crmContactId = $objUser->getCrmUserId();
+        $userId = $objUser->getId();
         if (\FWValidator::isEmpty($crmContactId)) {
             return ' '; // Do not show subscription selection
         }
@@ -473,29 +472,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (\FWValidator::isEmpty($products)) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'];
         }
-            
+        
+        $payrexxModelUrl = '';
+        // user has external payment account
+        if (\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId')))) {
+            $payrexxModelUrl = $paymentUrl->toString();
+        }
+        
         foreach ($products as $product) {
             $productName = contrexx_raw2xhtml($product->getName());
             $productPrice = $product->getPrice();
-            if ($productPrice > 0) {
-                $invoiceNumber = $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website ? 
-                                    $productName . ' - ' . $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') :
-                                    $productName . ' - ' . \FWUser::getParsedUserTitle($userId);
-                $additionalParameters = array(
-                    'invoice_number'   => contrexx_raw2xhtml($invoiceNumber),
-                    'contact_email'    => contrexx_raw2xhtml($contactEmail),
-                    'invoice_amount'   => contrexx_raw2xhtml($productPrice),
-                    'invoice_currency' => 'CHF',
-                    'referenceId'      => contrexx_raw2xhtml($product->getId() . '-' . $websiteReference)
-                );
-                $i = 1;
-                $params = '';
-                foreach ($additionalParameters as $key => $val) {
-                    $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
-                    $i++;
-                }
-                $objTemplate->setVariable('MULTISITE_OPTION_PAYREXXFORMURL' , contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params));                   
-            }
             $objTemplate->setVariable(array(
                 'MULTISITE_WEBSITE_PRODUCT_NAME' => $productName,
                 'MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID' => lcfirst($productName),
@@ -511,7 +497,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setVariable( array(
             'MULTISITE_SUBSCRIPTION_SELECTION_URL' => $subscriptionUrl->toString(),
             'MULTISITE_SUBSCRIPTION_ID'            => $subscriptionId,
-            'MULTISITE_WEBSITE_REFERENCE'          => $websiteReference
+            'MULTISITE_WEBSITE_REFERENCE'          => $websiteReference,
+            'MULTISITE_OPTION_PAYMENTURL'          => $payrexxModelUrl
         ));
         return $objTemplate->get();
     }
