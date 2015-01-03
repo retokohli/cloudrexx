@@ -476,7 +476,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function createWebsite($params) {
 // TODO: what do we actually need the language data for? We should load the language data at the certain place where it is actually being used
-        self::loadLanguageData('MultiSite');
+        self::loadLanguageData();
         
         $objFWUser   = \FWUser::getFWUserObject();
         $objUser     = $objFWUser->objUser->getUser(contrexx_input2raw($params['post']['userId']));
@@ -1033,7 +1033,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
         global $_ARRAYLANG;
         
-        self::loadLanguageData('MultiSite');
+        self::loadLanguageData();
         
         if (empty($params['post']['domainName'])) {
             \DBG::log('JsonMultiSite::mapNetDomain() failed: domainName is empty.');
@@ -1072,7 +1072,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
        
         global $_ARRAYLANG;
         
-        self::loadLanguageData('MultiSite');
+        self::loadLanguageData();
         
         if (empty($params['post']['domainId'])) {
             \DBG::log('JsonMultiSite::unMapNetDomain() failed: domainId is empty.');
@@ -2328,7 +2328,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $objDatabase, $_ARRAYLANG;
         
         //load the multisite language
-        self::loadLanguageData('MultiSite');
+        self::loadLanguageData();
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_MANAGER:
