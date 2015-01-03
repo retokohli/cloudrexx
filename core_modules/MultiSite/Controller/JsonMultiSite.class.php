@@ -3731,10 +3731,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function payrexxAutoLoginUrl()
     {
         global $_ARRAYLANG;
-
-        self::loadLanguageData('Multisite');
         
-        if (!self::isUserLoggedIn()) {
+        if (!ComponentController::isUserLoggedIn()) {
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS']);
         }
 
