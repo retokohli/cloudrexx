@@ -1113,22 +1113,35 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array updateNetDomain stats
      * @throws MultiSiteJsonException
      */
-    public function updateNetDomain($params) {
+    public function updateNetDomain($params)
+    {
+        global $_ARRAYLANG;
+        
+        self::loadLanguageData();
+        
         if (empty($params['post']['domainName']) || empty($params['post']['domainId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::updateNetDomain() failed: Insufficient mapping information supplied.');
+            \DBG::log('JsonMultiSite::updateNetDomain() failed: domainName or domainId is empty.');
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_WEBSITE:
-                    //TODO update net domain
+                    $domainRepo  = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
+                    $objDomain   = $domainRepo->findOneBy(array('id' => $params['post']['domainId']));
+                    if (!$objDomain) {
+                       \DBG::log('JsonMultiSite::updateNetDomain() failed: Unknown DomainId:'. $params['post']['domainId']);
+                       throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
+                    }
+                    $objDomain->setName(contrexx_input2raw($params['post']['domainName']));
+                    $domainRepo->flush();
                     return array(
                         'status' => 'success'
                     );
                     break;
             }
         } catch (\Exception $e) {
-            \DBG::dump($e->getMessage());
-            throw new MultiSiteJsonException($e->getMessage());
+            \DBG::dump('JsonMultiSite::updateNetDomain() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::updateNetDomain() failed:'. $e->getMessage());
         }
     }
 
