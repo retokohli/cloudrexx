@@ -2998,7 +2998,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $invoice->setPsp(1);
             
             $invoice->setAmount($productPrice);
-            $invoice->setCurrency(\Payrexx\Models\Request\PaymentRequest::CURRENCY_CHF);
+            $invoice->setCurrency(\Payrexx\Models\Request\Invoice::CURRENCY_CHF);
             
             $invoice->addField('email', true, contrexx_input2raw($params['post']['multisite_email_address']));
             
