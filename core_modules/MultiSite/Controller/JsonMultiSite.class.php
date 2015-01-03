@@ -438,7 +438,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $apiSecret    = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
                 $payrexx      = new \Payrexx\Payrexx($instanceName, $apiSecret);
                 $subscription = new \Payrexx\Models\Request\Subscription();
-                $externalSubscriptionId = isset($subscriptionObj->getExternalSubscriptionId()) ? $subscriptionObj->getExternalSubscriptionId() : '';
+                $externalSubscriptionId = !\FWValidator::isEmpty($subscriptionObj->getExternalSubscriptionId()) ? $subscriptionObj->getExternalSubscriptionId() : '';
                 
                 if (\FWValidator::isEmpty($externalSubscriptionId)) {
                     \DBG::log('Invalid externalSubscriptionId.');
