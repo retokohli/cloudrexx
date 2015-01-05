@@ -588,7 +588,7 @@
         }
         
         jQuery('.buy-now.website').on('click', function() {
-          if (jQuery.trim(jQuery('#subscriptionId').val()) != '') {
+          if (jQuery.trim(jQuery('#subscriptionId').val()) != '0') {
               buySubscription(jQuery(this));
               return;
           }
