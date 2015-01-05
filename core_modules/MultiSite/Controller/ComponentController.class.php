@@ -1296,24 +1296,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public static function parseProductForAddWebsite(\Cx\Core\Html\Sigma $objTemplate, \Cx\Modules\Pim\Model\Entity\Product $product)
     {
         $productPrice = $product->getPrice();
-        if (!empty($productPrice)) {
-            $additionalParameters = array(
-                'invoice_amount'    => $productPrice,
-                'invoice_currency'  => 'CHF',
-                'invoice_number'    =>  $product->getName(),
-                'contact_email'     => self::isUserLoggedIn() ? \FWUser::getFWUserObject()->objUser->getEmail() : '',
-                'referenceId'       => ''
-            );
-            $i = 1;
-            $params = '';
-            foreach ($additionalParameters as $key => $val) {
-                $params .= $key . '=' . $val . ($i != count($additionalParameters) ? '&' : '');
-                $i++;
-            }
-            $objTemplate->setVariable(array(
-                'MULTISITE_OPTION_PAYREXXFORMURL' => contrexx_raw2xhtml('https://'.\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount').'.payrexx.com/pay?tid=' . \Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') . '&appview=1&'.$params),
-            ));
-        } else {
+        if (\FWValidator::isEmpty($productPrice)) {
             self::showOrHideBlock($objTemplate, 'multisite_pay_button', false);
         }
         $objTemplate->setVariable(array(

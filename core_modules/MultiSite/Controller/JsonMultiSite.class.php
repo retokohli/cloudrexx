@@ -2980,10 +2980,29 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 return;
             }
             
+            $objUser = null;
+            if (ComponentController::isUserLoggedIn()) {
+                $objUser = \FWUser::getFWUserObject()->objUser;
+            }
+            
             $productPrice  = $product->getPrice();
-            $productName   = $product->getName();
-            $invoiceNumber = $productName . ' - ' . $params['post']['multisite_address'] . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-            $referenceId   = $product->getId() . '-' . $params['post']['multisite_address'];
+            $productName   = $product->getName();            
+
+            if (isset($params['post']['renewalOption'])) {
+                list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($params['post']['renewalOption']);
+                $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
+            }
+            
+            $referenceId = '';
+            $purpose     = '';
+            if (isset($params['post']['multisite_address'])) {
+                $referenceId = $product->getId() . '-' . 'name-' . $params['post']['multisite_address'];
+                $purpose     = $productName . ' - ' . $params['post']['multisite_address'] . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+            } elseif ($objUser) {
+                $userId      = $objUser->getId();
+                $referenceId = $product->getId() . '-' . 'owner-' . $userId;
+                $purpose     = $productName . '-' . \FWUser::getFWUserObject()->getParsedUserTitle($objUser);
+            }
             
             $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
             $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
@@ -2991,22 +3010,20 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
             
             $invoice = new \Payrexx\Models\Request\Invoice();
-            $invoice->setReferenceId(contrexx_input2raw($referenceId));
-            $invoice->setTitle($invoiceNumber);
+            $invoice->setReferenceId($referenceId);
+            $invoice->setTitle($purpose);
             $invoice->setDescription('');
-            $invoice->setPurpose('');
+            $invoice->setPurpose($purpose);
             $invoice->setPsp(1);
             
-            $invoice->setAmount($productPrice);
+            $invoice->setAmount($productPrice * 100);
             $invoice->setCurrency(\Payrexx\Models\Request\Invoice::CURRENCY_CHF);
             
-            $invoice->addField('email', true, contrexx_input2raw($params['post']['multisite_email_address']));
+            $invoice->addField('email', true, (isset($params['post']['multisite_email_address']) ? $params['post']['multisite_email_address'] : ($objUser ? $objUser->getEmail() : '')));
             
-            $response = $payrexx->create($invoice);
-            if ($response['status'] == 'success' && !\FWValidator::isEmpty($response['data'])) {
-                $data = $response['data'];
-                $link = $data['link'];
-                return array('status' => 'success', 'link' => $link);
+            $response = $payrexx->create($invoice);            
+            if ($response instanceof \Payrexx\Models\Response\Invoice && !\FWValidator::isEmpty($response->getLink())) {
+                return array('status' => 'success', 'link' => $response->getLink());
             }
         } catch (\Payrexx\PayrexxException $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: to get the payrexx url: ' . $e->getMessage());
