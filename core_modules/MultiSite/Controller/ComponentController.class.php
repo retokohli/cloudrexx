@@ -64,8 +64,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    public function executeCommand($command, $arguments) {
-        global $objInit, $_ARRAYLANG;
+    public function executeCommand($command, $arguments) {       
+        
+        // Event Listener must be registered before preContentLoad event
+        $this->registerEventListener();
 
         $subcommand = null;
         if (!empty($arguments[0])) {
@@ -1885,7 +1887,13 @@ throw new MultiSiteException('Refactor this method!');
 
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         // Event Listener must be registered before preContentLoad event
-
+        $this->registerEventListener();
+    }
+    
+    /**
+     * Register the Event listeners
+     */
+    public function registerEventListener(){
         // do not register any Event Listeners in case MultiSite mode is not set
         if (!\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             return;
@@ -1956,8 +1964,9 @@ throw new MultiSiteException('Refactor this method!');
         //OrderPayment event Listener
         $orderPaymentEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderPaymentEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
-        
     }
+    
+    
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         global $_CONFIG;
 
