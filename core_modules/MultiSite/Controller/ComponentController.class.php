@@ -2242,9 +2242,14 @@ throw new MultiSiteException('Refactor this method!');
      */
     public static function getProductList() 
     {
-        $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
-        $productList = $productRepository->getMultisiteProducts();
-        return $productList;
+        $qb = \Env::get('em')->createQueryBuilder();
+        $qb->select('p')
+                ->from('\Cx\Modules\Pim\Model\Entity\Product', 'p')
+                ->where("p.entityClass = 'Cx\Core_Modules\MultiSite\Model\Entity\Website'")
+                ->orWhere("p.entityClass = 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection'")
+                ->orderBy('p.id');
+        $result =  $qb->getQuery()->getResult();
+        return $result;
     }
     
     /**
