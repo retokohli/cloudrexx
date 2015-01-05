@@ -233,6 +233,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']  = 'The upgrade of your
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']  = 'The upgrade of the subscription failed.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND']  = 'There are no upgrades available for the selected subscription.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_INITIALIZING'] = 'Initializing...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_INPROGRESS'] = 'The upgrade of your subscription is under progress...';
 
 //website email service
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE'] = 'Activate mail service';
