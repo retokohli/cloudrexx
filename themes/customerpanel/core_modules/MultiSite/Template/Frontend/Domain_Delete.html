@@ -21,7 +21,7 @@
 /* <![CDATA[ */
 jQuery(document).ready(function() {
     jQuery('#multisite_delete_domain_form').submit(function() {
-          var apiUrl = '/api/MultiSite/Website?id=' + getQueryParams(document.location.search)['id'];
+          var apiUrl = '/api/MultiSite/Website/Domains?id=' + getQueryParams(document.location.search)['id'];
           sendApiFormRequest('#multisite_delete_domain_form', '#DomainDelete', '#multisite_website_domains', apiUrl);
           return false;
     });

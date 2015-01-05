@@ -11,8 +11,8 @@
         <tr>
             <td>{MULTISITE_WEBSITE_DOMAIN_ALIAS}</td>
             <td class="actions">
-              <a class="entypo-tools" data-remote="/api/MultiSite/Domain/Edit?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN_ALIAS}&domain_id={MULTISITE_WEBSITE_DOMAIN_ALIAS_ID}" data-target="#DomainEdit" data-toggle="modal"></a>&nbsp;
-              <a class="entypo-trash" data-remote="/api/MultiSite/Domain/Delete?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN_ALIAS}&domain_id={MULTISITE_WEBSITE_DOMAIN_ALIAS_ID}" data-target="#DomainDelete" data-toggle="modal"></a>
+              <a class="entypo-tools domainModal" data-remote="/api/MultiSite/Domain/Edit?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN_ALIAS}&domain_id={MULTISITE_WEBSITE_DOMAIN_ALIAS_ID}" data-target="DomainEdit" ></a>&nbsp;
+              <a class="entypo-trash domainModal" data-remote="/api/MultiSite/Domain/Delete?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN_ALIAS}&domain_id={MULTISITE_WEBSITE_DOMAIN_ALIAS_ID}" data-target="DomainDelete" ></a>
             </td>
         </tr>
         <!-- END showWebsiteDomainAliases -->
@@ -20,19 +20,32 @@
     </tbody>
 </table>
 <!-- END showWebsiteDomainAliasFound -->
-<button class="add" data-remote="/api/MultiSite/Domain/Add?website_id={MULTISITE_WEBSITE_ID}" data-target="#DomainAdd" data-toggle="modal">{TXT_MULTISITE_WEBSITE_ADD_DOMAIN}</button>
+<button class="add domainModal" data-remote="/api/MultiSite/Domain/Add?website_id={MULTISITE_WEBSITE_ID}" data-target="DomainAdd" >{TXT_MULTISITE_WEBSITE_ADD_DOMAIN}</button>
 <div aria-hidden="true" class="modal fade" id="DomainAdd" role="dialog" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">Loading Add Domain form...</div>
+        <div class="modal-content"></div>
     </div>
 </div>
 <div aria-hidden="true" class="modal fade" id="DomainEdit" role="dialog" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">Loading Edit Domain form...</div>
+        <div class="modal-content"></div>
     </div>
 </div>
 <div aria-hidden="true" class="modal fade" id="DomainDelete" role="dialog" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">Loading Delete Domain form...</div>
+        <div class="modal-content"></div>
     </div>
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('.domainModal').bind('click', function (event) {
+      showRemoteModal({
+        modalId   : jQuery(this).data('target'),
+        remoteUrl : jQuery(this).data('remote'),
+      });
+    });    
+});
+/* ]]> */
+</script>
+

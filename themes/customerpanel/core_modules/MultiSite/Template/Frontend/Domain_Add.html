@@ -18,7 +18,7 @@
 /* <![CDATA[ */
 jQuery(document).ready(function() {
     jQuery('#multisite_add_domain_form').submit(function() {
-          var apiUrl = '/api/MultiSite/Website?id=' + getQueryParams(document.location.search)['id'];
+          var apiUrl = '/api/MultiSite/Website/Domains?id=' + getQueryParams(document.location.search)['id'];
           sendApiFormRequest('#multisite_add_domain_form','#DomainAdd','#multisite_website_domains', apiUrl);
           return false;
     });
