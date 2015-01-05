@@ -143,6 +143,13 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE'] = 'Entfernen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT'] = 'Domain bearbeiten';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE'] = 'Domain entfernen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE_INFO'] = 'Hiermit entfernen Sie den Domain %s von Ihrer Website. Danach wird Ihre Website über diese Domain nicht mehr erreichbar sein.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_ADD_SUCCESS_MSG'] = 'Die Domain wurde erfolgreich der Website zugewiesen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT_SUCCESS_MSG'] = 'Die Domain wurde erfolgreich umbenannt.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_DELETE_SUCCESS_MSG'] = 'Die Domain wurde erfolgreich von der Website entfernt.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_ADD_FAILED'] = 'Die Zuweisung der Domain schlug fehl.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT_FAILED'] = 'Die Änderung der Domain schlug fehl.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_DELETE_FAILED'] = 'Die Entfernung der Domain schlug fehl.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'] = 'Ungültige Anfrage.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATE_ADMIN_USER'] = 'Administrator hinzufügen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EDIT_ADMIN_USER']   = 'Administrator bearbeiten';

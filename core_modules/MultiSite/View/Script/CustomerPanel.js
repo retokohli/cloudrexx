@@ -185,6 +185,7 @@ function showRemoteModal(options) {
       }
     ).on("hidden.bs.modal",function() {
       opts.hidden();
+      jQuery(this).unbind();
       jQuery(this).data('bs.modal', null);
     }).modal({
       remote : opts.remoteUrl
@@ -207,14 +208,14 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
     },
     success: function (response) {
       message = (response.status == 'success') ? response.data.message : response.message;
-
+      
       jQuery(jsModalSelector).on('hidden.bs.modal', function () {
         showMessage(message, response.status);//show status message 
       });
       jQuery(jsModalSelector).modal('hide');
-      if(response.status == 'success'){
-      loadContent(loadContentSelector, apiUrl );
-     }
+      if (response.status == 'success') {
+        loadContent(loadContentSelector, apiUrl);
+      }
     },
     fail: function (response) {
     }
