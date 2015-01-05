@@ -128,6 +128,10 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED'] = 'Die Aktivierung der 
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED'] = 'Die Abschaltung der E-Mail Dienste schlug fehl.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] = 'Die E-Mail Verwaltung kann zur Zeit nicht geöffnet werden.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_OPEN_ADMINISTRATION'] = 'Verwaltung öffnen';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATE_MAIL_ACCOUNT_FAILED'] = 'Die Erstellung eines E-Mail Kontos schlug fehl.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETE_MAIL_ACCOUNT_FAILED'] = 'Die Löschung des E-Mail Kontos schlug fehl.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY'] = 'Das E-Mail Konto wurde erfolgreich erstellt.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETED_MAIL_ACCOUNT_SUCCESSFULLY'] = 'Das E-Mail Konto wurde erfolgreich gelöscht.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Abbrechen';
 
 
