@@ -41,8 +41,8 @@ class OrderPaymentEventListener implements \Cx\Core\Event\Model\Entity\EventList
      */
     public function postPersist($eventArgs)
     {
-        $transaction = $eventArgs->getEntity();
-        $transactionData = $transaction->getTransactionData();
+        $payment = $eventArgs->getEntity();
+        $transactionData = $payment->getTransactionData();
         
         if (\FWValidator::isEmpty($transactionData)) {
             return;
