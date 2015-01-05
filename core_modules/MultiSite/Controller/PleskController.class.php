@@ -526,7 +526,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * 
      * @return subscription id
      */
-    public function createSubscription ($domain, $subscriptionStatus = 0, $customerId = null, $planId = null) 
+    public function createSubscription ($domain, $ipAddress, $subscriptionStatus = 0, $customerId = null, $planId = null) 
     {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);       
@@ -540,6 +540,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $addTag->appendChild($genSetup);
         $subscriptionName = $xmldoc->createElement('name', $domain);
         $genSetup->appendChild($subscriptionName);
+        $ip = $xmldoc->createElement('ip_address', $ipAddress);
+        $genSetup->appendChild($ip);
         if ($customerId) {
             $ownerId = $xmldoc->createElement('owner-id', $customerId);
             $genSetup->appendChild($ownerId);

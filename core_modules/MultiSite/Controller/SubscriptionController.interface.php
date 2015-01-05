@@ -18,13 +18,14 @@ interface SubscriptionController {
      * Creates a subscription
      * 
      * @param string  $domain
+     * @param integer $ipAddress
      * @param integer $subscriptionStatus
      * @param integer $customerId default null
      * @param integer $planId default null
      * 
      * @return subcription id
      */
-    public function createSubscription($domain, $subscriptionStatus = 0, $customerId = null, $planId = null);
+    public function createSubscription($domain, $ipAddress, $subscriptionStatus = 0, $customerId = null, $planId = null);
     
     /**
      * Removes a subscription

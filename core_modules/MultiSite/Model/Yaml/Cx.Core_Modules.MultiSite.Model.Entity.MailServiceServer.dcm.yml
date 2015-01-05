@@ -21,7 +21,10 @@ Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer:
       type: string
     config:
       type: array
-        
+    ipAddress:
+      type: string
+      length: 45
+
   oneToMany: # inverse side
     websites:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website

@@ -308,9 +308,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'hostname' => array(
                             'header' => 'HostName',
-                            )
+                        ),
+                        'ipAddress' => array(
+                            'header' => 'Ip Address',
                         )
                     )
+                )
             );
             $template->setVariable('TABLE', $mailServiceServersView->render());
         } else {

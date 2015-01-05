@@ -133,15 +133,16 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * Create a subscription
      * 
      * @param string $domain             domain name
+     * @param integer $ipAddress         ip address
      * @param string $subscriptionStatus status
      * @param int    $customerId         customer id
      * @param int    $planId             plan
      * 
      * @return null
      */
-    public function createSubscription($domain, $subscriptionStatus = 0, $customerId = null, $planId = null)
+    public function createSubscription($domain, $ipAddress, $subscriptionStatus = 0, $customerId = null, $planId = null)
     {
-        \DBG::msg("MultiSite (XamppController): create a subscription: $domain / $subscriptionStatus / $customerId /$planId");
+        \DBG::msg("MultiSite (XamppController): create a subscription: $domain / $ipAddress / $subscriptionStatus / $customerId /$planId");
         return null;
     }
     

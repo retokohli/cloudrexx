@@ -54,6 +54,12 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     protected $authPassword;
     
     /**
+     *
+     * @var string $ipAddress
+     */
+    protected $ipAddress;
+    
+    /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Website
      */
     protected $websites;
@@ -196,7 +202,28 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     {
         return $this->authPassword;
     }
+            
+    /**
+     * Get ipAddress
+     * 
+     * @return string $ipAddress
+     */
+    public function getIpAddress() 
+    {
+        return $this->ipAddress;
+    }
     
+    /**
+     * Set ipAddress
+     * 
+     * @param string $ipAddress
+     */
+    public function setIpAddress($ipAddress)
+    {
+        $this->ipAddress = $ipAddress;
+    }
+    
+
     /**
      * Set config
      * 
@@ -264,7 +291,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         $domain = $website->getBaseDn();
         $planId = isset($this->config['planId']) ? $this->config['planId'] : null;
-        $subscriptionId = $hostingController->createSubscription($domain, 1, $customerId = null, $planId);
+        $subscriptionId = $hostingController->createSubscription($domain, $this->ipAddress, 1, $customerId = null, $planId);
         if ($subscriptionId) {
             $this->addWebsite($website);
             $role = isset($this->config['userRoleId']) ? $this->config['userRoleId'] : null;
