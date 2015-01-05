@@ -588,9 +588,9 @@
         }
         
         jQuery('.buy-now.website').on('click', function() {
-          if (jQuery.trim(jQuery('#subscriptionId').val()) != '0') {
-              buySubscription(jQuery(this));
-              return;
+          if ((jQuery.trim(jQuery('#subscriptionId').val()) != '0') && jQuery.trim(jQuery('#subscriptionId').val()) != '') {
+            buySubscription(jQuery(this));
+            return;
           }
             
           showRemoteModal({
@@ -637,7 +637,9 @@
                 showMessage('{TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED}', 'error');
                 return false;
             }
-
+            
+            showMessage('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" />   {TXT_CORE_MODULE_MULTISITE_UPGRADE_INPROGRESS}',  'info');
+            
             jQuery.ajax({
                 dataType: "json",
                 url: $ajaxUrl,
@@ -660,6 +662,7 @@
                     } else {
                         showMessage(response.message.message, 'error');
                     }
+                    location.reload(true);
                 }
             });
         }
