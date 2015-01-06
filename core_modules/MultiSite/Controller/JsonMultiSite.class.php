@@ -401,16 +401,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $productId = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : 0;
             $subscriptionId = isset($params['post']['subscription_id']) ? contrexx_input2raw($params['post']['subscription_id']) : 0;
-            $websiteReference = isset($params['post']['websiteReference']) ? contrexx_input2raw($params['post']['websiteReference']) : '';
+            $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
             $renewalOption = isset($params['post']['renewalOption']) ? contrexx_input2raw($params['post']['renewalOption']) : '';
             $externalPayment = isset($params['post']['externalPaymentAccount']) ? contrexx_input2raw($params['post']['externalPaymentAccount']) : '';
             
-            if (   \FWValidator::isEmpty($productId) 
+            if (   \FWValidator::isEmpty($productId)
                 || \FWValidator::isEmpty($subscriptionId) 
-                || \FWValidator::isEmpty($websiteReference) 
                 || \FWValidator::isEmpty($renewalOption)
             ) {
                 \DBG::log('Invalid argument supplied.');
+                return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+            }
+            
+            $objUser = \FWUser::getFWUserObject()->objUser;
+            
+            if (!\FWValidator::isEmpty($objUser)) {
+                \DBG::log('Not a valid user');
                 return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
             }
             
@@ -485,7 +491,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'renewalUnit'       => $renewalUnit,
                 'renewalQuantifier' => $renewalQuantifier
             );
-            $transactionReference = $productId . '-' . $websiteReference;
+                        
+            if (!\FWValidator::isEmpty($websiteName)) {
+                $transactionReference = $productId . '-name-'. $websiteName;
+            } else {
+                $transactionReference = $productId . '-owner-' . $objUser->getId();
+            }
             
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $crmContactId, $transactionReference, $subscriptionOptions);
             if (!$order) {

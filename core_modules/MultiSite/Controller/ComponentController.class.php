@@ -457,8 +457,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
 
-        $websiteReference = $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website ? 'name-' . $website->getName() : 
-                                                                                                  'owner-' . $userId;
+        $websiteName = $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website ? $website->getName() : '';
 
         if ($subscription) {
             $product = $subscription->getProduct();
@@ -499,7 +498,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setVariable( array(
             'MULTISITE_SUBSCRIPTION_SELECTION_URL' => $subscriptionUrl->toString(),
             'MULTISITE_SUBSCRIPTION_ID'            => $subscriptionId,
-            'MULTISITE_WEBSITE_REFERENCE'          => $websiteReference,
+            'MULTISITE_WEBSITE_NAME'               => $websiteName,
             'MULTISITE_OPTION_PAYMENTURL'          => $payrexxModelUrl
         ));
         return $objTemplate->get();

@@ -118,6 +118,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS'] = 'Die Umstellung auf d
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'] = 'Für das ausgewählte Abo stehen keine Upgrades zur Verfügung.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED'] = 'Die Aktivierung des Upgrades ist fehlgeschlagen.';
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED']  = 'Der Upgradevorgang wird abgebrochen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_INPROGRESS'] = 'Das Upgrade Ihres Abos wird ausgeführt...';
+
 
 //website email service
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE'] = 'E-Mail Dienst aktivieren';
