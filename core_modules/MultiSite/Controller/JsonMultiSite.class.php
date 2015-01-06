@@ -1943,13 +1943,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
         try {
             $resp = self::executeCommandOnWebsite($params['post']['command'], $passedParams, $website);
-            if ($resp && $resp->data->status == 'success') {
+            if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 return $resp->data;
             } else {
-                throw new MultiSiteJsonException(var_export($resp, true));
+                \DBG::dump($resp);
+                throw new MultiSiteJsonException($resp->message);
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::executeOnWebsite() failed: ' . $e->getMessage());
+            \DBG::msg(__METHOD__.': ' . $e->getMessage());
+            throw new MultiSiteJsonException($e->getMessage());
         }
     }
 
