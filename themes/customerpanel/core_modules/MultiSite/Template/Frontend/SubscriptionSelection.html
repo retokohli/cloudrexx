@@ -532,10 +532,8 @@
         {
             $productId = $this.data('productid');
             $renewalOption = $this.data("renewalOption");
-            $websiteReference = jQuery('#websiteReference').val();
             if ((jQuery.trim($productId) == '')
                 || (jQuery.trim($renewalOption) == '')
-                || (jQuery.trim($websiteReference) == '')
             ) {
                 showMessage('{TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED}', 'error');
                 return false;
@@ -547,7 +545,7 @@
                 data: {
                     product_id : $productId,
                     renewalOption : $renewalOption,
-                    multisite_address : $websiteReference
+                    multisite_address : jQuery('#websiteName').val()
                 },
                 type: "POST",
                 success: function(response){
@@ -625,13 +623,11 @@
             $ajaxUrl = jQuery('#subscriptionAjaxUrl').val();
             $productId = $this.data("productid");
             $subscriptionId = jQuery('#subscriptionId').val();
-            $websiteReference = jQuery('#websiteReference').val();
             $renewalOption = $this.data("renewalOption");
             $externalPaymentAccount = (externalPaymentAccount) ? 1 : 0;
             if ((jQuery.trim($ajaxUrl) == '')
                     || (jQuery.trim($productId) == '')
                     || (jQuery.trim($subscriptionId) == '')
-                    || (jQuery.trim($websiteReference) == '')
                     || (jQuery.trim($renewalOption) == '')
                 ) {
                 showMessage('{TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED}', 'error');
@@ -646,7 +642,7 @@
                 data: {
                     product_id: $productId,
                     subscription_id: $subscriptionId,
-                    websiteReference: $websiteReference,
+                    websiteName: jQuery('#websiteName').val(),
                     renewalOption: $renewalOption,
                     externalPaymentAccount: $externalPaymentAccount
                 },
@@ -708,7 +704,7 @@
 
     <input type ="hidden" name ="subscriptionId" id ="subscriptionId" value="{MULTISITE_SUBSCRIPTION_ID}" />
     <input type ="hidden" name ="subscriptionAjaxUrl" id ="subscriptionAjaxUrl" value="{MULTISITE_SUBSCRIPTION_SELECTION_URL}" />
-    <input type ="hidden" name ="websiteReference" id ="websiteReference" value="{MULTISITE_WEBSITE_REFERENCE}" />
+    <input type ="hidden" name ="websiteName" id ="websiteName" value="{MULTISITE_WEBSITE_NAME}" />
     <input type ="hidden" name ="subscriptionPaymentUrl" id ="subscriptionPaymentUrl" value="{MULTISITE_OPTION_PAYMENTURL}" />
 
     <!-- BEGIN showProduct -->
