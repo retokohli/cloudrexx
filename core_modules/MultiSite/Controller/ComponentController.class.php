@@ -1009,7 +1009,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Api Payrexx command
      */
     public function executeCommandPayrexx()
-    {
+    {                
         $transaction = isset($_POST['transaction'])
                        ? $_POST['transaction']
                        : (isset($_POST['subscription'])
@@ -1028,7 +1028,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         $invoiceReferId = isset($invoice['referenceId']) ? $invoice['referenceId'] : '';
-        if (\FWValidator::isEmpty($invoiceReferId)) {
+        $invoiceId      = isset($invoice['paymentRequestId']) ? $invoice['paymentRequestId'] : 0;
+        if (\FWValidator::isEmpty($invoiceReferId) || \FWValidator::isEmpty($invoiceId)) {
             return;
         }
         
@@ -1038,20 +1039,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
 
         $invoiceRequest = new \Payrexx\Models\Request\Invoice();
-        $invoiceRequest->setReferenceId($invoiceReferId);
+        $invoiceRequest->setId($invoiceId);
 
         try {
             $response = $payrexx->getOne($invoiceRequest);
         } catch (\Payrexx\PayrexxException $e) {
             throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
         }
-
+        
         if (   isset($transaction['status']) && ($transaction['status'] === 'confirmed')
-            && !\FWValidator::isEmpty($response) && isset($response['status']) && ($response['status'] === 'success')
-            && $invoice['amount'] === $response['amount']
-            && $invoice['referenceId'] === $response['referenceId']
+            && !\FWValidator::isEmpty($response)
+            && $response instanceof \Payrexx\Models\Response\Invoice
+            && $invoice['amount'] == ($response->getAmount() / 100)
+            && $invoice['referenceId'] == $response->getReferenceId()
         ) {
-            $subscriptionId = $hasTransaction ? $transaction['subscription']['id'] : $transaction['id'];
+            $subscriptionId = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['id'] : '')  : $transaction['id'];
             $transactionReference = $invoiceReferId . (!\FWValidator::isEmpty($subscriptionId) ? '-' . $subscriptionId : '');
             $payment = new \Cx\Modules\Order\Model\Entity\Payment();
             $payment->setAmount($invoice['amount']);
@@ -1059,7 +1061,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $payment->setTransactionReference($transactionReference);
             $payment->setTransactionData($transaction);
             \Env::get('em')->persist($payment);
-            \Env::get('em')->flush();
+            \Env::get('em')->flush();            
         }
     }
     
