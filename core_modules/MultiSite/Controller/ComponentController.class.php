@@ -1838,7 +1838,7 @@ throw new MultiSiteException('Refactor this method!');
             if (!\FWValidator::isEmpty(\Env::get('db'))
                 && \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct') === NULL 
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultPimProduct', self::getDefaultPimProductId(), 4,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\Cx\Modules\Pim\Controller\BackendController::getProductList()}', 'manager') ) {
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getProductList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Product List");
             }
             
@@ -2219,11 +2219,13 @@ throw new MultiSiteException('Refactor this method!');
     }
     
     /**
-     * get the product list
+     * Get the product list
+     * 
+     * @param string $returntype Type of return value (array | dropDownOption)
      * 
      * @return array products
      */
-    public static function getProductList() 
+    public static function getProductList($returntype = 'dropDownOption') 
     {
         $qb = \Env::get('em')->createQueryBuilder();
         $qb->select('p')
@@ -2231,8 +2233,24 @@ throw new MultiSiteException('Refactor this method!');
                 ->where("p.entityClass = 'Cx\Core_Modules\MultiSite\Model\Entity\Website'")
                 ->orWhere("p.entityClass = 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection'")
                 ->orderBy('p.id');
-        $result =  $qb->getQuery()->getResult();
-        return $result;
+        $products =  $qb->getQuery()->getResult();
+        
+        $response = null;
+        switch ($returntype) {
+            case 'array':
+                $response = $products;
+                break;
+            case 'dropDownOption':
+            default:
+                // Get all products to display in the dropdown.
+                $productsList = array();
+                foreach ($products as $product) {
+                    $productsList[] = $product->getId() . ':' . $product->getName();
+                }
+                $response = implode(',', $productsList);
+        }
+        
+        return $response;        
     }
     
     /**
@@ -2242,7 +2260,7 @@ throw new MultiSiteException('Refactor this method!');
      */
     public static function getDefaultPimProductId()
     {
-        $products = self::getProductList();
+        $products = self::getProductList('array');
         if (\FWValidator::isEmpty($products)) {
             return 0;
         }
