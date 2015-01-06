@@ -616,18 +616,18 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @return integer id
      * @throws ApiRequestException
      */
-    public function createUserAccount($name, $password, $role = null, $accountId = null)
+    public function createUserAccount($name, $password, $role, $accountId = null)
     {
                 
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $user = $xmldoc->createElement('user');
-        $packet->appendChild($user);       
+        $packet->appendChild($user);
         $addTag = $xmldoc->createElement('add');
         $user->appendChild($addTag);
         
-        /*--gen_info data Start--*/
-        $genInfo = $xmldoc->createElement('gen_info');
+        /*--gen-info data Start--*/
+        $genInfo = $xmldoc->createElement('gen-info');
         $addTag->appendChild($genInfo);              
         $login = $xmldoc->createElement('login', $name);
         $genInfo->appendChild($login);
@@ -639,13 +639,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $accountId = $xmldoc->createElement('subscription-domain-id', $accountId);
             $genInfo->appendChild($accountId);
         }
-        /*--gen_info data End--*/
-        if ($role) {
-            $roles = $xmldoc->createElement('roles');
-            $addTag->appendChild($roles);
-            $roleName = $xmldoc->createElement('name', $role);
-            $roles->appendChild($roleName);
-        }
+        /*--gen-info data End--*/
+        $roles = $xmldoc->createElement('roles');
+        $addTag->appendChild($roles);
+        $roleName = $xmldoc->createElement('name', $role);
+        $roles->appendChild($roleName);
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->user->{'add'}->result;
         $systemError = $response->system->errtext;

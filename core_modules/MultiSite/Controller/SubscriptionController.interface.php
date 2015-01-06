@@ -46,7 +46,7 @@ interface SubscriptionController {
      * 
      * @return id
      */
-    public function createUserAccount($domain, $password, $role = null, $accountId = null);
+    public function createUserAccount($domain, $password, $role, $accountId = null);
     
     /**
      * Delete a user account

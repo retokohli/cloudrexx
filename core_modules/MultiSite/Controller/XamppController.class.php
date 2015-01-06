@@ -170,7 +170,7 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * 
      * @return null
      */
-    public function createUserAccount($name, $password, $role = null, $accountId = null)
+    public function createUserAccount($name, $password, $role, $accountId = null)
     {
         \DBG::msg("MultiSite (XamppController): create user account: $name / $password / $role / $accountId");
         return null;

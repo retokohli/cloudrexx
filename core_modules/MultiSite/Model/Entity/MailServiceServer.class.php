@@ -289,12 +289,15 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     public function createAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
-        $domain = $website->getBaseDn();
+        $domain = $website->getBaseDn()->getName();
         $planId = isset($this->config['planId']) ? $this->config['planId'] : null;
+        $role = isset($this->config['userRoleId']) ? $this->config['userRoleId'] : null;
+        if (empty($domain) || empty($role) || empty($this->ipAddress)) {
+            return false;
+        }
         $subscriptionId = $hostingController->createSubscription($domain, $this->ipAddress, 1, $customerId = null, $planId);
         if ($subscriptionId) {
             $this->addWebsite($website);
-            $role = isset($this->config['userRoleId']) ? $this->config['userRoleId'] : null;
             $hostingController->createUserAccount('info@'.$domain, \User::make_password(8, true), $role, $subscriptionId);
             return $subscriptionId;
         }

@@ -3814,7 +3814,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             
             $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
-            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn(), base64_encode($_SERVER['REMOTE_ADDR']), ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
+            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn()->getName(), base64_encode($_SERVER['REMOTE_ADDR']), ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
             if ($pleskLoginUrl) {
                 return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
             }
