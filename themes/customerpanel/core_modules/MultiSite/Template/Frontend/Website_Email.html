@@ -1,17 +1,14 @@
-<table>
-    <tr>
-        <td>
-            <!-- BEGIN activateMailService -->
-            <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-act="enableMailService" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="enableOrDisableMailService(jQuery(this));">{TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE}</button>
-            <!-- END activateMailService -->
-            <!-- BEGIN deactivateMailService -->
-            <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-act="disableMailService" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="enableOrDisableMailService(jQuery(this));">{TXT_MULTISITE_WEBSITE_DEACTIVATE_MAIL_SERVICE}</button>
-            <!-- END deactivateMailService -->
-        </td>
-        <td>
-            <!-- BEGIN openAdministration -->
-            <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="pleskAutoLogin(jQuery(this));">{TXT_MULTISITE_WEBSITE_OPEN_ADMINISTRATION}</button>
-            <!-- END openAdministration -->
-        </td>
-    </tr>
-</table>
+
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">
+    <!-- BEGIN activateMailService -->
+    <button class="add" type="button" data-id="{MULTISITE_WEBSITE_ID}" data-act="enableMailService" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="enableOrDisableMailService(jQuery(this));">{TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE}</button>
+    <!-- END activateMailService -->
+    <!-- BEGIN deactivateMailService -->
+    <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-act="disableMailService" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="enableOrDisableMailService(jQuery(this));">{TXT_MULTISITE_WEBSITE_DEACTIVATE_MAIL_SERVICE}</button>
+    <!-- END deactivateMailService -->
+        
+    <!-- BEGIN openAdministration -->
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="pleskAutoLogin(jQuery(this));">{TXT_MULTISITE_WEBSITE_OPEN_ADMINISTRATION}</button>
+    <!-- END openAdministration -->
+</div>
