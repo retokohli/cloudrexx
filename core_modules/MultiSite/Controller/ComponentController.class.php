@@ -1843,7 +1843,7 @@ throw new MultiSiteException('Refactor this method!');
             if (!\FWValidator::isEmpty(\Env::get('db'))) {
                 $settingExternalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
                 $dbExternalPaymentCustomerIdProfileAttributeId      = self::getExternalPaymentCustomerIdProfileAttributeId();
-                
+              
                 if ($settingExternalPaymentCustomerIdProfileAttributeId != $dbExternalPaymentCustomerIdProfileAttributeId) {
                     \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager','FileSystem');
                     if ($settingExternalPaymentCustomerIdProfileAttributeId === null) {
@@ -1854,8 +1854,7 @@ throw new MultiSiteException('Refactor this method!');
                     } else {
                         if (!(\Cx\Core\Setting\Controller\Setting::set('externalPaymentCustomerIdProfileAttributeId', $dbExternalPaymentCustomerIdProfileAttributeId)
                             && \Cx\Core\Setting\Controller\Setting::update('externalPaymentCustomerIdProfileAttributeId'))) {
-                            throw new \Cx\Lib\Update_DatabaseException(
-                                "Failed to update Setting for External Payment Customer Id Profile Attribute Id");
+                            throw new MultiSiteException("Failed to update Setting for External Payment Customer Id Profile Attribute Id");
                         }
                     }
                 } 
@@ -2257,7 +2256,7 @@ throw new MultiSiteException('Refactor this method!');
      * Get the External Payment Customer Id Profile Attribute Id
      * 
      * @return integer attribute id
-     * @throws \Cx\Lib\Update_DatabaseException
+     * @throws MultiSiteException
      */
     public static function getExternalPaymentCustomerIdProfileAttributeId() {
         $objUser = \FWUser::getFWUserObject()->objUser;
@@ -2265,8 +2264,7 @@ throw new MultiSiteException('Refactor this method!');
         $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
         if ($externalPaymentCustomerIdProfileAttributeId) {
             $objProfileAttribute = $objUser->objAttribute->getById($externalPaymentCustomerIdProfileAttributeId);
-            $attributeNames      = $objProfileAttribute->getAttributeNames($externalPaymentCustomerIdProfileAttributeId);
-            if (empty($attributeNames)) {
+            if ($objProfileAttribute->getId() != $externalPaymentCustomerIdProfileAttributeId) {
                 $externalPaymentCustomerIdProfileAttributeId = false;
             }
         }
@@ -2277,11 +2275,9 @@ throw new MultiSiteException('Refactor this method!');
                 2 => 'MultiSite External Payment Customer ID'
             ));
             $objProfileAttribute->setType('text');
-            $objProfileAttribute->setMultiline(true);
             $objProfileAttribute->setParent(0);
-            $objProfileAttribute->setProtection(array(1));
             if (!$objProfileAttribute->store()) {
-                throw new \Cx\Lib\Update_DatabaseException(
+                throw new MultiSiteException(
                 'Failed to create MultiSite External Payment Customer Id Profile Attribute Id');
             }
             
