@@ -2968,7 +2968,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException
      */
     public function getPayrexxUrl($params) {
-        if (!isset($params['post']['product_id']) || !isset($params['post']['multisite_email_address']) || !isset($params['post']['multisite_address'])) {
+        if (!isset($params['post']['product_id'])) {
             throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: Insufficient mapping information supplied: ' . var_export($params, true));
         }
 
@@ -3013,8 +3013,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $invoice->setReferenceId($referenceId);
             $invoice->setTitle($purpose);
             $invoice->setDescription('');
-            $invoice->setPurpose($purpose);
-            $invoice->setPsp(1);
+            $invoice->setPurpose($purpose);            
             
             $invoice->setAmount($productPrice * 100);
             $invoice->setCurrency(\Payrexx\Models\Request\Invoice::CURRENCY_CHF);
@@ -3023,7 +3022,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $response = $payrexx->create($invoice);            
             if ($response instanceof \Payrexx\Models\Response\Invoice && !\FWValidator::isEmpty($response->getLink())) {
-                return array('status' => 'success', 'link' => $response->getLink());
+                return array('status' => 'success', 'link' => $response->getLink() . '&appview=1');
             }
         } catch (\Payrexx\PayrexxException $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: to get the payrexx url: ' . $e->getMessage());
