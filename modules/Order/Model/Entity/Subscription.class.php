@@ -166,7 +166,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
 
     public function getProductEntity() {
-        if (!$this->productEntity && $this->productEntityId) {
+        if (!$this->productEntity && $this->productEntityId && $this->product) {
             $this->productEntity = $this->product->getEntityById($this->productEntityId);
         }
         return $this->productEntity;
