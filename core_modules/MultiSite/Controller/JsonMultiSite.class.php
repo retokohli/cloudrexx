@@ -415,7 +415,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $objUser = \FWUser::getFWUserObject()->objUser;
             
-            if (!\FWValidator::isEmpty($objUser)) {
+            if (\FWValidator::isEmpty($objUser->getCrmUserId())) {
                 \DBG::log('Not a valid user');
                 return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
             }
