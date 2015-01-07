@@ -5,4 +5,54 @@
 <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
 <!-- END showAdminButton -->
 <button type="button">{TXT_MULTISITE_WEBSITE_BUTTON_DEACTIVATE}</button>
-<button type="button">{TXT_MULTISITE_WEBSITE_BUTTON_DELETE}</button>
+<button type="button"  data-target="#WebsiteDelete" data-toggle="modal">{TXT_MULTISITE_WEBSITE_BUTTON_DELETE}</button>
+
+<div aria-hidden="true" class="modal fade" id="WebsiteDelete" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="grid-elm grid-align-1-1 grid-offset">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              
+              <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_TITLE}</h2>
+              <div class="content">
+                <div class="row">
+                    {TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_CONFIRM_ALERT}
+                </div>  
+
+                <div class="row">
+                    <button type="submit" class="save" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="deleteWebsite(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_DELETE}</button>
+                    <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+                </div>
+              </div>
+          </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+    function deleteWebsite() {
+        jQuery.ajax({
+            dataType: 'json',
+            url: '{MULTISITE_WEBSITE_DELETE_SUBMIT_URL}',
+            data: {websiteId: '{MULTISITE_WEBSITE_ID}' },
+            type: 'POST',
+            beforeSend: function() {
+                text = '{TXT_CORE_MODULE_WEBSITE_DELETE_LOADING_ANIMATION} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />';
+                jQuery('#WebsiteDelete').find('.modal-content .content').html(text);
+            },
+            success: function(data) {
+               message = (data.status == 'success') ? '{TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_SUCCESS_MSG}' :                
+                                        '{TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_ERROR_MSG}';
+                
+                jQuery('#WebsiteDelete').on('hidden.bs.modal', function () {
+                    showMessage(message, data.status);//show status message 
+                });
+                jQuery('#WebsiteDelete').modal('hide');
+                window.location.replace('{MULTISITE_WEBSITE_REDIRECT_URL}');
+            },
+            fail: function(data) {}
+        });
+    }
+    
+/* ]]> */
+</script>
