@@ -542,14 +542,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $genSetup->appendChild($subscriptionName);
         $ip = $xmldoc->createElement('ip_address', $ipAddress);
         $genSetup->appendChild($ip);
+        $status = $xmldoc->createElement('status', $subscriptionStatus);      
+        $genSetup->appendChild($status);
         if ($customerId) {
             $ownerId = $xmldoc->createElement('owner-id', $customerId);
             $genSetup->appendChild($ownerId);
-        }
-        
-        if ($subscriptionStatus) {
-            $status = $xmldoc->createElement('status', $subscriptionStatus);      
-            $genSetup->appendChild($status);
         }
         /*--gen_setup data End--*/
                 
@@ -618,7 +615,6 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      */
     public function createUserAccount($name, $password, $role, $accountId = null)
     {
-                
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $user = $xmldoc->createElement('user');
@@ -631,8 +627,12 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $addTag->appendChild($genInfo);              
         $login = $xmldoc->createElement('login', $name);
         $genInfo->appendChild($login);
-        $password = $xmldoc->createElement('passwd', $password);
+
+        $passwordValue = $xmldoc->createTextNode($password);
+        $password = $xmldoc->createElement('passwd');
+        $password->appendChild($passwordValue);
         $genInfo->appendChild($password);
+
         $name = $xmldoc->createElement('name', $name);
         $genInfo->appendChild($name);
         if ($accountId) {
