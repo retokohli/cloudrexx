@@ -43,6 +43,16 @@ class Product extends \Cx\Model\Base\EntityBase {
     protected $notePrice = null;
     
     /**
+     * @var integer
+     */
+    protected $cancellationQuantifier = null;
+    
+    /**
+     * @var string
+     */
+    protected $cancellationUnit = null;
+
+    /**
      * @var array $upgrades
      */
     protected $upgrades;
@@ -155,6 +165,46 @@ class Product extends \Cx\Model\Base\EntityBase {
 
     public function setExpirationQuantifier($expirationQuantifier) {
         $this->expirationQuantifier = $expirationQuantifier;
+    }
+    
+    /**
+     * Getter for $this->cancellationQuantifier
+     * 
+     * @return integer
+     */
+    public function getCancellationQuantifier()
+    {
+        return $this->cancellationQuantifier;
+    }
+    
+    /**
+     * Setter for $this->cancellationQuantifier
+     * 
+     * @param integer $cancellationQuantifier
+     */
+    public function setCancellationQuantifier($cancellationQuantifier)
+    {
+        $this->cancellationQuantifier = $cancellationQuantifier;
+    }
+    
+    /**
+     * Getter for $this->cancellationUnit
+     * 
+     * @return string
+     */
+    public function getCancellationUnit()
+    {
+        return $this->cancellationUnit;
+    }
+    
+    /**
+     * Setter for $this->cancellationUnit
+     * 
+     * @param string $cancellationUnit
+     */
+    public function setCancellationUnit($cancellationUnit)
+    {
+        $this->cancellationUnit = $cancellationUnit;
     }
 
     public function getUpgradableProducts() {

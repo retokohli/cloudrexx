@@ -33,6 +33,13 @@ Cx\Modules\Pim\Model\Entity\Product:
     expirationQuantifier:
       type: integer
       column: expiration_quantifier
+    cancellationUnit:
+      type: string
+      length: 5
+      column: cancellation_unit
+    cancellationQuantifier:
+      type: integer
+      column: cancellation_quantifier
     price:
       type: decimal
     noteEntity:
