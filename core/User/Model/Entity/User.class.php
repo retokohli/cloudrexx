@@ -12,9 +12,9 @@ class User extends \Cx\Model\Base\EntityBase {
     private $id;
 
     /**
-     * @var integer $is_admin
+     * @var integer $isAdmin
      */
-    private $is_admin;
+    private $isAdmin;
 
     /**
      * @var string $username
@@ -27,14 +27,14 @@ class User extends \Cx\Model\Base\EntityBase {
     private $password;
 
     /**
-     * @var string $auth_token
+     * @var string $authToken
      */
-    private $auth_token;
+    private $authToken;
 
     /**
-     * @var integer $auth_token_timeout
+     * @var integer $authTokenTimeout
      */
-    private $auth_token_timeout;
+    private $authTokenTimeout;
 
     /**
      * @var integer $regdate
@@ -52,19 +52,19 @@ class User extends \Cx\Model\Base\EntityBase {
     private $validity;
 
     /**
-     * @var integer $last_auth
+     * @var integer $lastAuth
      */
-    private $last_auth;
+    private $lastAuth;
 
     /**
-     * @var integer $last_auth_status
+     * @var integer $lastAuthStatus
      */
-    private $last_auth_status;
+    private $lastAuthStatus;
 
     /**
-     * @var integer $last_activity
+     * @var integer $lastActivity
      */
-    private $last_activity;
+    private $lastActivity;
 
     /**
      * @var string $email
@@ -72,19 +72,19 @@ class User extends \Cx\Model\Base\EntityBase {
     private $email;
 
     /**
-     * @var string $email_access
+     * @var string $emailAccess
      */
-    private $email_access;
+    private $emailAccess;
 
     /**
-     * @var integer $frontend_lang_id
+     * @var integer $frontendLangId
      */
-    private $frontend_lang_id;
+    private $frontendLangId;
 
     /**
-     * @var integer $backend_lang_id
+     * @var integer $backendLangId
      */
-    private $backend_lang_id;
+    private $backendLangId;
 
     /**
      * @var integer $active
@@ -97,29 +97,29 @@ class User extends \Cx\Model\Base\EntityBase {
     private $verified;
 
     /**
-     * @var integer $primary_group
+     * @var integer $primaryGroup
      */
-    private $primary_group;
+    private $primaryGroup;
 
     /**
-     * @var string $profile_access
+     * @var string $profileAccess
      */
-    private $profile_access;
+    private $profileAccess;
 
     /**
-     * @var string $restore_key
+     * @var string $restoreKey
      */
-    private $restore_key;
+    private $restoreKey;
 
     /**
-     * @var integer $restore_key_time
+     * @var integer $restoreKeyTime
      */
-    private $restore_key_time;
+    private $restoreKeyTime;
 
     /**
-     * @var string $u2u_active
+     * @var string $u2uActive
      */
-    private $u2u_active;
+    private $u2uActive;
 
     /**
      * @var Cx\Core\User\Model\Entity\UserProfile
@@ -147,23 +147,23 @@ class User extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set is_admin
+     * Set isAdmin
      *
      * @param integer $isAdmin
      */
     public function setIsAdmin($isAdmin)
     {
-        $this->is_admin = $isAdmin;
+        $this->isAdmin = $isAdmin;
     }
 
     /**
-     * Get is_admin
+     * Get isAdmin
      *
      * @return integer $isAdmin
      */
     public function getIsAdmin()
     {
-        return $this->is_admin;
+        return $this->isAdmin;
     }
 
     /**
@@ -207,43 +207,43 @@ class User extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set auth_token
+     * Set authToken
      *
      * @param string $authToken
      */
     public function setAuthToken($authToken)
     {
-        $this->auth_token = $authToken;
+        $this->authToken = $authToken;
     }
 
     /**
-     * Get auth_token
+     * Get authToken
      *
      * @return string $authToken
      */
     public function getAuthToken()
     {
-        return $this->auth_token;
+        return $this->authToken;
     }
 
     /**
-     * Set auth_token_timeout
+     * Set $authTokenTimeout
      *
      * @param integer $authTokenTimeout
      */
     public function setAuthTokenTimeout($authTokenTimeout)
     {
-        $this->auth_token_timeout = $authTokenTimeout;
+        $this->authTokenTimeout = $authTokenTimeout;
     }
 
     /**
-     * Get auth_token_timeout
+     * Get authTokenTimeout
      *
      * @return integer $authTokenTimeout
      */
     public function getAuthTokenTimeout()
     {
-        return $this->auth_token_timeout;
+        return $this->authTokenTimeout;
     }
 
     /**
@@ -307,63 +307,63 @@ class User extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set last_auth
+     * Set lastAuth
      *
      * @param integer $lastAuth
      */
     public function setLastAuth($lastAuth)
     {
-        $this->last_auth = $lastAuth;
+        $this->lastAuth = $lastAuth;
     }
 
     /**
-     * Get last_auth
+     * Get lastAuth
      *
      * @return integer $lastAuth
      */
     public function getLastAuth()
     {
-        return $this->last_auth;
+        return $this->lastAuth;
     }
 
     /**
-     * Set last_auth_status
+     * Set lastAuthStatus
      *
      * @param integer $lastAuthStatus
      */
     public function setLastAuthStatus($lastAuthStatus)
     {
-        $this->last_auth_status = $lastAuthStatus;
+        $this->lastAuthStatus = $lastAuthStatus;
     }
 
     /**
-     * Get last_auth_status
+     * Get lastAuthStatus
      *
      * @return integer $lastAuthStatus
      */
     public function getLastAuthStatus()
     {
-        return $this->last_auth_status;
+        return $this->lastAuthStatus;
     }
 
     /**
-     * Set last_activity
+     * Set lastActivity
      *
      * @param integer $lastActivity
      */
     public function setLastActivity($lastActivity)
     {
-        $this->last_activity = $lastActivity;
+        $this->lastActivity = $lastActivity;
     }
 
     /**
-     * Get last_activity
+     * Get lastActivity
      *
      * @return integer $lastActivity
      */
     public function getLastActivity()
     {
-        return $this->last_activity;
+        return $this->lastActivity;
     }
 
     /**
@@ -387,63 +387,63 @@ class User extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set email_access
+     * Set emailAccess
      *
      * @param string $emailAccess
      */
     public function setEmailAccess($emailAccess)
     {
-        $this->email_access = $emailAccess;
+        $this->emailAccess = $emailAccess;
     }
 
     /**
-     * Get email_access
+     * Get emailAccess
      *
      * @return string $emailAccess
      */
     public function getEmailAccess()
     {
-        return $this->email_access;
+        return $this->emailAccess;
     }
 
     /**
-     * Set frontend_lang_id
+     * Set frontendLangId
      *
      * @param integer $frontendLangId
      */
     public function setFrontendLangId($frontendLangId)
     {
-        $this->frontend_lang_id = $frontendLangId;
+        $this->frontendLangId = $frontendLangId;
     }
 
     /**
-     * Get frontend_lang_id
+     * Get frontendLangId
      *
      * @return integer $frontendLangId
      */
     public function getFrontendLangId()
     {
-        return $this->frontend_lang_id;
+        return $this->frontendLangId;
     }
 
     /**
-     * Set backend_lang_id
+     * Set backendLangId
      *
      * @param integer $backendLangId
      */
     public function setBackendLangId($backendLangId)
     {
-        $this->backend_lang_id = $backendLangId;
+        $this->backendLangId = $backendLangId;
     }
 
     /**
-     * Get backend_lang_id
+     * Get backendLangId
      *
      * @return integer $backendLangId
      */
     public function getBackendLangId()
     {
-        return $this->backend_lang_id;
+        return $this->backendLangId;
     }
 
     /**
@@ -487,103 +487,103 @@ class User extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set primary_group
+     * Set primaryGroup
      *
      * @param integer $primaryGroup
      */
     public function setPrimaryGroup($primaryGroup)
     {
-        $this->primary_group = $primaryGroup;
+        $this->primaryGroup = $primaryGroup;
     }
 
     /**
-     * Get primary_group
+     * Get primaryGroup
      *
      * @return integer $primaryGroup
      */
     public function getPrimaryGroup()
     {
-        return $this->primary_group;
+        return $this->primaryGroup;
     }
 
     /**
-     * Set profile_access
+     * Set profileAccess
      *
      * @param string $profileAccess
      */
     public function setProfileAccess($profileAccess)
     {
-        $this->profile_access = $profileAccess;
+        $this->profileAccess = $profileAccess;
     }
 
     /**
-     * Get profile_access
+     * Get profileAccess
      *
      * @return string $profileAccess
      */
     public function getProfileAccess()
     {
-        return $this->profile_access;
+        return $this->profileAccess;
     }
 
     /**
-     * Set restore_key
+     * Set restoreKey
      *
      * @param string $restoreKey
      */
     public function setRestoreKey($restoreKey)
     {
-        $this->restore_key = $restoreKey;
+        $this->restoreKey = $restoreKey;
     }
 
     /**
-     * Get restore_key
+     * Get restoreKey
      *
      * @return string $restoreKey
      */
     public function getRestoreKey()
     {
-        return $this->restore_key;
+        return $this->restoreKey;
     }
 
     /**
-     * Set restore_key_time
+     * Set restoreKeyTime
      *
      * @param integer $restoreKeyTime
      */
     public function setRestoreKeyTime($restoreKeyTime)
     {
-        $this->restore_key_time = $restoreKeyTime;
+        $this->restoreKeyTime = $restoreKeyTime;
     }
 
     /**
-     * Get restore_key_time
+     * Get restoreKeyTime
      *
      * @return integer $restoreKeyTime
      */
     public function getRestoreKeyTime()
     {
-        return $this->restore_key_time;
+        return $this->restoreKeyTime;
     }
 
     /**
-     * Set u2u_active
+     * Set u2uActive
      *
      * @param string $u2uActive
      */
     public function setU2uActive($u2uActive)
     {
-        $this->u2u_active = $u2uActive;
+        $this->u2uActive = $u2uActive;
     }
 
     /**
-     * Get u2u_active
+     * Get u2uActive
      *
      * @return string $u2uActive
      */
     public function getU2uActive()
     {
-        return $this->u2u_active;
+        return $this->u2uActive;
     }
 
     /**

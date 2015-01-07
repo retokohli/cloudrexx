@@ -7,24 +7,24 @@ namespace Cx\Core\User\Model\Entity;
  */
 class Group extends \Cx\Model\Base\EntityBase {
     /**
-     * @var integer $group_id
+     * @var integer $groupId
      */
-    private $group_id;
+    private $groupId;
 
     /**
-     * @var string $group_name
+     * @var string $groupName
      */
-    private $group_name;
+    private $groupName;
 
     /**
-     * @var string $group_description
+     * @var string $groupDescription
      */
-    private $group_description;
+    private $groupDescription;
 
     /**
-     * @var integer $is_active
+     * @var integer $isActive
      */
-    private $is_active;
+    private $isActive;
 
     /**
      * @var string $type
@@ -59,73 +59,73 @@ class Group extends \Cx\Model\Base\EntityBase {
     }
     
     /**
-     * Get group_id
+     * Get groupId
      *
      * @return integer $groupId
      */
     public function getGroupId()
     {
-        return $this->group_id;
+        return $this->groupId;
     }
 
     /**
-     * Set group_name
+     * Set groupName
      *
      * @param string $groupName
      */
     public function setGroupName($groupName)
     {
-        $this->group_name = $groupName;
+        $this->groupName = $groupName;
     }
 
     /**
-     * Get group_name
+     * Get groupName
      *
      * @return string $groupName
      */
     public function getGroupName()
     {
-        return $this->group_name;
+        return $this->groupName;
     }
 
     /**
-     * Set group_description
+     * Set groupDescription
      *
      * @param string $groupDescription
      */
     public function setGroupDescription($groupDescription)
     {
-        $this->group_description = $groupDescription;
+        $this->groupDescription = $groupDescription;
     }
 
     /**
-     * Get group_description
+     * Get groupDescription
      *
      * @return string $groupDescription
      */
     public function getGroupDescription()
     {
-        return $this->group_description;
+        return $this->groupDescription;
     }
 
     /**
-     * Set is_active
+     * Set isActive
      *
      * @param integer $isActive
      */
     public function setIsActive($isActive)
     {
-        $this->is_active = $isActive;
+        $this->isActive = $isActive;
     }
 
     /**
-     * Get is_active
+     * Get isActive
      *
      * @return integer $isActive
      */
     public function getIsActive()
     {
-        return $this->is_active;
+        return $this->isActive;
     }
 
     /**

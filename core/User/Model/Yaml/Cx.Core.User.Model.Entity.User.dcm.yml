@@ -9,11 +9,12 @@ Cx\Core\User\Model\Entity\User:
       unsigned: true
       generator:
         strategy: AUTO
-    is_admin:
+    isAdmin:
       type: integer
       length: 1
       nullable: false
       unsigned: true
+      column: is_admin
     username:
       type: string
       length: 255
@@ -22,15 +23,17 @@ Cx\Core\User\Model\Entity\User:
       type: string
       length: 32
       nullable: true
-    auth_token:
+    authToken:
       type: string
       length: 32
       nullable: false
-    auth_token_timeout:
+      column: auth_token
+    authTokenTimeout:
       type: integer
       length: 14
       nullable: false
       unsigned: true
+      column: auth_token_timeout
     regdate:
       type: integer
       length: 14
@@ -46,37 +49,43 @@ Cx\Core\User\Model\Entity\User:
       length: 10
       nullable: false
       unsigned: true
-    last_auth:
+    lastAuth:
       type: integer
       length: 14
       nullable: false
       unsigned: true
-    last_auth_status:
+      column: last_auth
+    lastAuthStatus:
       type: integer
       length: 1
       nullable: false
-    last_activity:
+      column: last_auth_status
+    lastActivity:
       type: integer
       length: 14
       nullable: false
       unsigned: true
+      column: last_activity
     email:
       type: string
       length: 255
       nullable: true
-    email_access:
+    emailAccess:
       type: string
       nullable: false
-    frontend_lang_id:
+      column: email_access
+    frontendLangId:
       type: integer
       length: 2
       nullable: false
       unsigned: true
-    backend_lang_id:
+      column: frontend_lang_id
+    backendLangId:
       type: integer
       length: 2
       nullable: false
       unsigned: true
+      column: backend_lang_id
     active:
       type: integer
       length: 1
@@ -86,26 +95,31 @@ Cx\Core\User\Model\Entity\User:
       length: 1
       nullable: false
       unsigned: true
-    primary_group:
+    primaryGroup:
       type: integer
       length: 6
       nullable: false
       unsigned: true
-    profile_access:
+      column: primary_group
+    profileAccess:
       type: string
       nullable: false
-    restore_key:
+      column: profile_access
+    restoreKey:
       type: string
       length: 32
       nullable: false
-    restore_key_time:
+      column: restore_key
+    restoreKeyTime:
       type: integer
       length: 14
       nullable: false
       unsigned: true
-    u2u_active:
+      column: restore_key_time
+    u2uActive:
       type: string
       nullable: false
+      column: u2u_active
   indexes:
     username:
       columns: [username]
