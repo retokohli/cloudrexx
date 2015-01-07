@@ -1039,6 +1039,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         
+        //For cancelling the subscription
+        $subscriptionId = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['id'] : '')  : $transaction['id'];
+        $subscriptionStatus = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['status'] : '')  : $transaction['status'];
+        $subscriptionEnd  = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['end'] : '')  : $transaction['end'];
+        
+        if (!\FWValidator::isEmpty($subscriptionId)
+            && !\FWValidator::isEmpty($subscriptionEnd)    
+            && $subscriptionStatus === \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED
+           ) {
+            $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+            $subscription = $subscriptionRepo->findOneBy(array('externalSubscriptionId' => $subscriptionId));
+            if (!\FWValidator::isEmpty($subscription)) {
+                $subscription->setExpirationDate(new \DateTime($subscriptionEnd));
+                $subscription->setState(\Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
+                \Env::get('em')->flush();
+                return;
+            }
+        }
+        
         $invoiceReferId = isset($invoice['referenceId']) ? $invoice['referenceId'] : '';
         $invoiceId      = isset($invoice['paymentRequestId']) ? $invoice['paymentRequestId'] : 0;
         if (\FWValidator::isEmpty($invoiceReferId) || \FWValidator::isEmpty($invoiceId)) {
@@ -1066,7 +1085,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             && $invoice['amount'] == ($response->getAmount() / 100)
             && $invoice['referenceId'] == $response->getReferenceId()
         ) {
-            $subscriptionId = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['id'] : '')  : $transaction['id'];
             $transactionReference = $invoiceReferId . (!\FWValidator::isEmpty($subscriptionId) ? '-' . $subscriptionId : '');
             $payment = new \Cx\Modules\Order\Model\Entity\Payment();
             $payment->setAmount($invoice['amount']);
