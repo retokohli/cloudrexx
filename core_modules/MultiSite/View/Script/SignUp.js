@@ -216,10 +216,8 @@
                     }
                     
                     if (response.status == 'success' && response.data.link) {
-                        objPayButton.data('href', response.data.link);
-                        if (formValidation()) {
-                          objPayButton.trigger('click');
-                        }
+                        objPayButton.data('href', response.data.link);                        
+                        objPayButton.trigger('click');
                     }
                 }
             });
