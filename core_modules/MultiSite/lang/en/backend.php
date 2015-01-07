@@ -285,4 +285,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_TITLE'] = 'Delete website'
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_CONFIRM_ALERT'] = 'Please confirm to delete the website. This operation can\'t be undone. All data of the website will be erased permanently.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_LOADING_ANIMATION'] = 'The website is being removed...';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_SUCCESS_MSG'] = 'The Website has been deleted successfully';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_ERROR_MSG'] = 'Failed to remove the website'
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_ERROR_MSG'] = 'Failed to remove the website';
