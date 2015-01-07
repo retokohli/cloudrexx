@@ -3004,6 +3004,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $productPrice  = $product->getPrice();
             $productName   = $product->getName();            
 
+            $renewalUnit       = 1;
+            $renewalQuantifier = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
             if (isset($params['post']['renewalOption'])) {
                 list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($params['post']['renewalOption']);
                 $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
@@ -3036,6 +3038,30 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $invoice->addField('email', true, (isset($params['post']['multisite_email_address']) ? $params['post']['multisite_email_address'] : ($objUser ? $objUser->getEmail() : '')));
             
+            $invoice->setSubscriptionState(true);
+
+            // set payment interval
+            $subscriptionInterval = \DateInterval::createFromDateString($renewalUnit .' '. $renewalQuantifier);
+            $invoice->setSubscriptionInterval(\DateTimeTools::getDateIntervalAsString($subscriptionInterval));
+
+            // set subscription period
+            $expirationInterval = \DateInterval::createFromDateString("{$product->getExpirationQuantifier()} {$product->getExpirationUnit()}");
+            $subscriptionIntervalDateTime = new \DateTime();
+            $expirationIntervalDateTime = clone $subscriptionIntervalDateTime;
+            $subscriptionIntervalDateTime->add($subscriptionInterval);
+            $expirationIntervalDateTime->add($expirationInterval);
+            // in case the subscription interval is greater than the subscription period (expiration interval), then we shall extend the subscription period accordingly
+            if ($subscriptionIntervalDateTime > $expirationIntervalDateTime) {
+                $subscriptionPeriod = $subscriptionInterval;
+            } else {
+                $subscriptionPeriod = $expirationInterval;
+            }
+            $invoice->setSubscriptionPeriod(\DateTimeTools::getDateIntervalAsString($subscriptionPeriod));
+
+            // set cancellation period
+            $cancellationInterval = \DateInterval::createFromDateString("{$product->getCancellationQuantifier()} {$product->getCancellationUnit()}");
+            $invoice->setSubscriptionCancellationInterval(\DateTimeTools::getDateIntervalAsString($cancellationInterval));
+
             $response = $payrexx->create($invoice);            
             if ($response instanceof \Payrexx\Models\Response\Invoice && !\FWValidator::isEmpty($response->getLink())) {
                 return array('status' => 'success', 'link' => $response->getLink() . '&appview=1');
