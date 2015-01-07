@@ -2,12 +2,13 @@ Cx\Core\User\Model\Entity\UserProfile:
   type: entity
   table: access_user_profile
   fields:
-    user_id:
+    userId:
       id: true
       type: integer
       length: 11
       associationKey: true
       unsigned: true
+      column: user_id
     gender:
       type: string
       nullable: false
@@ -40,22 +41,26 @@ Cx\Core\User\Model\Entity\UserProfile:
       length: 2
       nullable: false
       unsigned: true
-    phone_office:
+    phoneOffice:
       type: string
       length: 20
       nullable: false
-    phone_private:
+      column: phone_office
+    phonePrivate:
       type: string
       length: 20
       nullable: false
-    phone_mobile:
+      column: phone_private
+    phoneMobile:
       type: string
       length: 20
       nullable: false
-    phone_fax:
+      column: phone_mobile
+    phoneFax:
       type: string
       length: 20
       nullable: false
+      column: phone_fax
     birthday:
       type: string
       length: 11

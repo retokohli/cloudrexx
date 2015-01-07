@@ -7,9 +7,9 @@ namespace Cx\Core\User\Model\Entity;
  */
 class UserProfile extends \Cx\Model\Base\EntityBase {
     /**
-     * @var integer $user_id
+     * @var integer $userId
      */
-    private $user_id;
+    private $userId;
 
     /**
      * @var string $gender
@@ -52,24 +52,24 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     private $country;
 
     /**
-     * @var string $phone_office
+     * @var string $phoneOffice
      */
-    private $phone_office;
+    private $phoneOffice;
 
     /**
-     * @var string $phone_private
+     * @var string $phonePrivate
      */
-    private $phone_private;
+    private $phonePrivate;
 
     /**
-     * @var string $phone_mobile
+     * @var string $phoneMobile
      */
-    private $phone_mobile;
+    private $phoneMobile;
 
     /**
-     * @var string $phone_fax
+     * @var string $phoneFax
      */
-    private $phone_fax;
+    private $phoneFax;
 
     /**
      * @var string $birthday
@@ -122,23 +122,23 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     }
     
     /**
-     * Set user_id
+     * Set userId
      *
      * @param integer $userId
      */
     public function setUserId($userId)
     {
-        $this->user_id = $userId;
+        $this->userId = $userId;
     }
 
     /**
-     * Get user_id
+     * Get userId
      *
      * @return integer $userId
      */
     public function getUserId()
     {
-        return $this->user_id;
+        return $this->userId;
     }
 
     /**
@@ -302,83 +302,83 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set phone_office
+     * Set phoneOffice
      *
      * @param string $phoneOffice
      */
     public function setPhoneOffice($phoneOffice)
     {
-        $this->phone_office = $phoneOffice;
+        $this->phoneOffice = $phoneOffice;
     }
 
     /**
-     * Get phone_office
+     * Get phoneOffice
      *
      * @return string $phoneOffice
      */
     public function getPhoneOffice()
     {
-        return $this->phone_office;
+        return $this->phoneOffice;
     }
 
     /**
-     * Set phone_private
+     * Set phonePrivate
      *
      * @param string $phonePrivate
      */
     public function setPhonePrivate($phonePrivate)
     {
-        $this->phone_private = $phonePrivate;
+        $this->phonePrivate = $phonePrivate;
     }
 
     /**
-     * Get phone_private
+     * Get phonePrivate
      *
      * @return string $phonePrivate
      */
     public function getPhonePrivate()
     {
-        return $this->phone_private;
+        return $this->phonePrivate;
     }
 
     /**
-     * Set phone_mobile
+     * Set phoneMobile
      *
      * @param string $phoneMobile
      */
     public function setPhoneMobile($phoneMobile)
     {
-        $this->phone_mobile = $phoneMobile;
+        $this->phoneMobile = $phoneMobile;
     }
 
     /**
-     * Get phone_mobile
+     * Get phoneMobile
      *
      * @return string $phoneMobile
      */
     public function getPhoneMobile()
     {
-        return $this->phone_mobile;
+        return $this->phoneMobile;
     }
 
     /**
-     * Set phone_fax
+     * Set phoneFax
      *
      * @param string $phoneFax
      */
     public function setPhoneFax($phoneFax)
     {
-        $this->phone_fax = $phoneFax;
+        $this->phoneFax = $phoneFax;
     }
 
     /**
-     * Get phone_fax
+     * Get phoneFax
      *
      * @return string $phoneFax
      */
     public function getPhoneFax()
     {
-        return $this->phone_fax;
+        return $this->phoneFax;
     }
 
     /**

@@ -2,25 +2,29 @@ Cx\Core\User\Model\Entity\Group:
   type: entity
   table: access_user_groups
   fields:
-    group_id:
+    groupId:
       id: true
       type: integer
       length: 11
       unsigned: true
       generator:
         strategy: AUTO
-    group_name:
+      column: group_id   
+    groupName:
       type: string
       length: 100
       nullable: false
-    group_description:
+      column: group_name
+    groupDescription:
       type: string
       length: 255
       nullable: false
-    is_active:
+      column: group_description
+    isActive:
       type: integer
       length: 1
       nullable: false
+      column: is_active
     type:
       type: string
       nullable: false
