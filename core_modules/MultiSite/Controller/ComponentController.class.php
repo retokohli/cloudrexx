@@ -1050,6 +1050,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (   isset($transaction['status']) && ($transaction['status'] === 'confirmed')
             && !\FWValidator::isEmpty($response)
             && $response instanceof \Payrexx\Models\Response\Invoice
+            && $response->getStatus() == 'confirmed'
             && $invoice['amount'] == ($response->getAmount() / 100)
             && $invoice['referenceId'] == $response->getReferenceId()
         ) {
