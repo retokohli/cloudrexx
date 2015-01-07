@@ -226,14 +226,18 @@ $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'] = 'Unknown website requested.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'] = 'You have reached the maximum of %s entities that are included in your current plan.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TEMPLATE_FAILED'] = 'Failed to load a website template.';
 
-$_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED']  = 'The upgrade of the subscription is getting canceled.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED']  = 'The upgrade of the subscription is getting canceled.';
 $_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_INVALIDPARAMETERS']  = 'Invalid parameters.please try after sometime.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']  = 'Unable to create the order.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']  = 'The upgrade of your subscription was successful.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']  = 'The upgrade of the subscription failed.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_SUCCESS']  = 'The upgrade of your subscription was successful.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_FAILED']  = 'The upgrade of the subscription failed.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND']  = 'There are no upgrades available for the selected subscription.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_INITIALIZING'] = 'Initializing...';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_INPROGRESS'] = 'Your subscription is being upgraded...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_INPROGRESS'] = 'Your subscription is being upgraded...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_INPROGRESS'] = 'Your subscription is being added...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_SUCCESS']  = 'The subscription was successfully added.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_FAILED']  = 'Failed to add the new subscription.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED']  = 'Adding the new subscription is getting canceled.';
 
 //website email service
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE'] = 'Activate mail service';

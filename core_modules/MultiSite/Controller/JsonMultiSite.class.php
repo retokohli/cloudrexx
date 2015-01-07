@@ -123,7 +123,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'checkMailServiceAccessPermission')),
             'createMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'deleteMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'upgradeSubscription'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'manageSubscription'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'pleskAutoLoginUrl'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'mapNetDomain'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
             'unMapNetDomain'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
@@ -380,14 +380,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
-     * Upgrade Subscription 
+     * Manage Subscription 
      * 
      * @param array $params parameters
      * 
      * @return array
      * @throws MultiSiteJsonException
      */
-    public function upgradeSubscription($params) {
+    public function manageSubscription($params) {
         global $_ARRAYLANG;
         
         // abort in case command has been requested without any data
@@ -395,105 +395,108 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return;
         }
         
+        
+        $subscriptionId = isset($params['post']['subscription_id']) ? contrexx_input2raw($params['post']['subscription_id']) : 0;
+        $subscriptionType = !\FWValidator::isEmpty($subscriptionId) ? 'UPGRADE' : 'ADD';
+        $objUser = \FWUser::getFWUserObject()->objUser;
+        $crmContactId = $objUser->getCrmUserId();
+
+        //validate Crm user
+        if (\FWValidator::isEmpty($crmContactId)) {
+            \DBG::log('Not a valid user');
+            return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
+        }
+        
         try {
             // Load language variables of MultisiteexternalPayment
             self::loadLanguageData();
             
             $productId = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : 0;
-            $subscriptionId = isset($params['post']['subscription_id']) ? contrexx_input2raw($params['post']['subscription_id']) : 0;
             $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
             $renewalOption = isset($params['post']['renewalOption']) ? contrexx_input2raw($params['post']['renewalOption']) : '';
-            $externalPayment = isset($params['post']['externalPaymentAccount']) ? contrexx_input2raw($params['post']['externalPaymentAccount']) : '';
             
-            if (   \FWValidator::isEmpty($productId)
-                || \FWValidator::isEmpty($subscriptionId) 
+            if (   \FWValidator::isEmpty($productId) 
                 || \FWValidator::isEmpty($renewalOption)
             ) {
                 \DBG::log('Invalid argument supplied.');
-                return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+                return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
             }
             
-            $objUser = \FWUser::getFWUserObject()->objUser;
+            $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+            $product = $productRepository->findOneBy(array('id' => $productId));
             
-            if (\FWValidator::isEmpty($objUser->getCrmUserId())) {
-                \DBG::log('Not a valid user');
-                return array ('status' => 'error','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+            //validate selected product
+            if (\FWValidator::isEmpty($product)) {
+                \DBG::log('Invalid Product Requested.');
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
             }
-            
-            $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-            $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
-            
-            if (!$subscriptionObj) {
-                \DBG::log('Invalid Subscription ID.');
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
-            }
-            $orderObj = $subscriptionObj->getOrder();
-
-            if (!$orderObj) {
-                \DBG::log('Invalid Order for subscription.');
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
-            }
-
-            $crmContactId = $orderObj->getContactId();
             
             list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($renewalOption);
             
-            //Update subscription details if the user has an external payment account
-            if (!\FWValidator::isEmpty($externalPayment)) {
-                $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-                $apiSecret    = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
-                $payrexx      = new \Payrexx\Payrexx($instanceName, $apiSecret);
-                $subscription = new \Payrexx\Models\Request\Subscription();
-                $externalSubscriptionId = !\FWValidator::isEmpty($subscriptionObj->getExternalSubscriptionId()) ? $subscriptionObj->getExternalSubscriptionId() : '';
-                
-                if (\FWValidator::isEmpty($externalSubscriptionId)) {
-                    \DBG::log('Invalid externalSubscriptionId.');
-                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
-                }
-                
-                $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
-                $product = $productRepository->findOneBy(array('id' => $productId));
-                
-                if (\FWValidator::isEmpty($product)) {
-                    \DBG::log('Invalid Product Requested.');
-                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
-                }
-                
-                $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
-                if (\FWValidator::isEmpty($productPrice)) {
-                    \DBG::log('Product Price should not Empty.');
-                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
-                }
-                
-                $subscription->setId($externalSubscriptionId);
-                $subscription->setAmount($productPrice);
-                $subscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);
-                
-                try {
-                    $response = $payrexx->update($subscription);
-                    if ($response->status != 'success') {
-                        \DBG::log('Failed to update the subscription details.');
-                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
-                    }
-                    
-                    if ($response->data->invoice->amount != $productPrice) {
-                        \DBG::log('Payment details are not matched.');
-                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
-                    }
-                } catch (\Payrexx\PayrexxException $e) {
-                    \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED'].': '.$e->getMessage());
-                    throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
-                }
-            }
-            
             $subscriptionOptions = array(
-                'baseSubscription'  => $subscriptionObj,
                 'renewalUnit'       => $renewalUnit,
                 'renewalQuantifier' => $renewalQuantifier
             );
+            
+            // upgrade subscription 
+            if (!\FWValidator::isEmpty($subscriptionId)) {
+                $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+                $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
+
+                if (!$subscriptionObj) {
+                    \DBG::log('Invalid Subscription ID.');
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
+                }
+                
+                $externalSubscriptionId = !\FWValidator::isEmpty($subscriptionObj->getExternalSubscriptionId()) ? $subscriptionObj->getExternalSubscriptionId() : '';
+                $orderObj = $subscriptionObj->getOrder();
+                if (!$orderObj) {
+                    \DBG::log('Invalid Order for subscription.');
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
+                }
+                
+                //Verify the owner of the associated Order of the Subscription is actually owned by the currently sign-in user
+                if ($crmContactId != $orderObj->getContactId()) {
+                     \DBG::log('Access denied Invalid Crm User');
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
+                }
+                
+                //Update subscription details if the user has an external payment account
+                if (   !\FWValidator::isEmpty($externalSubscriptionId)
+                    && !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId')))) {
+                    $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
+                    $apiSecret    = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+                    $payrexx      = new \Payrexx\Payrexx($instanceName, $apiSecret);
+                    $requestSubscription = new \Payrexx\Models\Request\Subscription();
+                    $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
+                    
+                    if (\FWValidator::isEmpty($productPrice)) {
+                        \DBG::log('Product Price should not Empty.');
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
+                    }
+                    
+                    //update amount deatails in subscription
+                    $requestSubscription->setId($externalSubscriptionId);
+                    $requestSubscription->setAmount($productPrice);
+                    $requestSubscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);
+
+                    try {
+                        $subscription = $payrexx->update($requestSubscription);
+                        
+                        if ($subscription->getAmount() != $productPrice * 100) {
+                            \DBG::log('Payment details are not matched.');
+                            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
+                        }
+                    } catch (\Payrexx\PayrexxException $e) {
+                        \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED'].': '.$e->getMessage());
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
+                    }
+                }
+                $subscriptionOptions['baseSubscription'] = $subscriptionObj;
+            }
                         
             if (!\FWValidator::isEmpty($websiteName)) {
-                $transactionReference = $productId . '-name-'. $websiteName;
+                $transactionReference = $productId. '-name-'. $websiteName;
             } else {
                 $transactionReference = $productId . '-owner-' . $objUser->getId();
             }
@@ -501,18 +504,18 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $crmContactId, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 \DBG::log('Unable to create the order.');
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED']);
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
             }
             // create the website process in the payComplete event
             $order->complete(); 
             
-            return array ('status' => 'success','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS']);
+            return array ('status' => 'success','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_SUCCESS']);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             throw new MultiSiteJsonException(array(
                 'object'    => 'form',
                 'type'      => 'danger',
-                'message'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED'],
+                'message'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED'],
             ));
         }
     }
@@ -3026,7 +3029,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $invoice->setReferenceId($referenceId);
             $invoice->setTitle($purpose);
             $invoice->setDescription('');
-            $invoice->setPurpose($purpose);            
+            $invoice->setPurpose($purpose);
             
             $invoice->setAmount($productPrice * 100);
             $invoice->setCurrency(\Payrexx\Models\Request\Invoice::CURRENCY_CHF);

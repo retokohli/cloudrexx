@@ -114,11 +114,11 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUAL'] = 'Zweijährliches';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL'] = 'Preismodell';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CHOOSE'] = 'w&auml;hlen';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_INITIALIZING'] = 'Initialisierung...';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_SUCCESS'] = 'Die Umstellung auf das neue Abo wurde erfolgreich durchgeführt.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_SUCCESS'] = 'Die Umstellung auf das neue Abo wurde erfolgreich durchgeführt.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'] = 'Für das ausgewählte Abo stehen keine Upgrades zur Verfügung.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_FAILED'] = 'Die Aktivierung des Upgrades ist fehlgeschlagen.';
-$_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_PAYMENT_FAILED']  = 'Der Upgradevorgang wird abgebrochen.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPGRADE_INPROGRESS'] = 'Das Upgrade Ihres Abos wird ausgeführt...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_FAILED'] = 'Die Aktivierung des Upgrades ist fehlgeschlagen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED']  = 'Der Upgradevorgang wird abgebrochen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_INPROGRESS'] = 'Das Upgrade Ihres Abos wird ausgeführt...';
 
 
 //website email service

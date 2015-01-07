@@ -414,7 +414,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $subscriptionId = isset($arguments['subscriptionId']) ? $arguments['subscriptionId'] : 0;
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $mainDomain = $domainRepository->getMainDomain()->getName();
-        $subscriptionUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=upgradeSubscription');
+        $subscriptionUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=manageSubscription');
         $paymentUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl');
 
         $objTemplate->setGlobalVariable($_ARRAYLANG);
