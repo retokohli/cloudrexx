@@ -66,6 +66,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     const STATE_ACTIVE      = 'active';
     const STATE_INACTIVE    = 'inactive';
     const STATE_TERMINATED  = 'terminated';
+    const STATE_CANCELLED  = 'cancelled';
 
     /**
      * Constructor
