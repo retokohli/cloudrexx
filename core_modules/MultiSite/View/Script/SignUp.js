@@ -9,6 +9,8 @@
     var objMail;
     var objAddress;
     var objTerms;
+    var objPayButton;
+    var isPaymentUrlRequested = false;
 
     function initSignUpForm() {
         jQuery('#multisite_signup_form')
@@ -45,6 +47,7 @@
         objModal.find('.multisite_submit').on('click', submitForm);
         objModal.find('.multisite_pay').on('click', setPaymentUrl);
         
+        objPayButton = objModal.find('.multisite_pay_button');
         init();
         
     }
@@ -88,7 +91,7 @@
         setFormButtonState('close', false);
         setFormButtonState('cancel', true, true);
         if (options.IsPayment) {
-            jQuery('.multisite_pay').payrexxModal({
+            objPayButton.payrexxModal({
                 hideObjects: ["#contact-details", ".contact"],
                 show: function(e) {
                     //signup form validation
@@ -180,7 +183,7 @@
     
     function isPaymentUrlValid() {
         var urlPattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-        var url = jQuery('.multisite_pay').data('href');
+        var url = objPayButton.data('href');
         
         jQuery('.alert-danger').remove();
         if (!urlPattern.test(url)) {
@@ -192,6 +195,10 @@
     }
     
     function setPaymentUrl() {
+        if (isPaymentUrlRequested) {
+          return;
+        }
+        isPaymentUrlRequested = true;
         try {
             jQuery.ajax({
                 dataType: "json",
@@ -203,12 +210,16 @@
                 },
                 type: "POST",
                 success: function(response){
+                    isPaymentUrlRequested = false;
                     if (response.status == 'error') {
                         return;
                     }
                     
                     if (response.status == 'success' && response.data.link) {
-                        jQuery('.multisite_pay').data('href', response.data.link);
+                        objPayButton.data('href', response.data.link);
+                        if (formValidation()) {
+                          objPayButton.trigger('click');
+                        }
                     }
                 }
             });
