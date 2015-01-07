@@ -911,7 +911,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
-     * callback authentication for verifing mail service access permission
+     * callback authentication for verifing website owner
      * 
      * @return boolean
      */
