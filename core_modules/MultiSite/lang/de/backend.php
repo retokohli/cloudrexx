@@ -160,3 +160,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_CONFIRM'] = 'Hiermit en
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCEL_LABEL'] = 'Abo kündigen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCEL_CONTENT'] = 'Hiermit kündigen Sie dieses Abo. Das Abo wird bis am %s noch weiterlaufen. Danach werden alle Websites, welche diesem Abo zugeordnet sind, nicht mehr funktionieren und erreichbar sein.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_BUTTON_CANCEL'] = 'Kündigen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_TITLE'] = 'Website löschen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_CONFIRM_ALERT'] = 'Bitte bestätigen Sie den Löschung der Website. Dieser Vorgang kann nicht Rückgängig gemacht werden. Die Daten der Website gehen werden dabei unwiderruflich gelöscht.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_LOADING_ANIMATION'] = 'Die Website wird gelöscht...';

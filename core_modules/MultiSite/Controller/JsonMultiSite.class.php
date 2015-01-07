@@ -98,7 +98,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setDefaultLanguage'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'resetFtpPassword'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkResetFtpPasswordAccess')),
             'updateServiceServerSetup' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
-            'destroyWebsite'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'destroyWebsite'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
             'executeOnWebsite'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'executeOnManager'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'generateAuthToken'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
@@ -119,8 +119,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getResourceUsageStats' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'enableMailService'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'checkMailServiceAccessPermission')),            
-            'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'checkMailServiceAccessPermission')),
+            'enableMailService'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),            
+            'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
             'createMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'deleteMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'manageSubscription'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
@@ -915,7 +915,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return boolean
      */
-    public function  checkMailServiceAccessPermission($params)
+    public function  verifyWebsiteOwnerOrIscRequest($params)
     {
         //check the authentication for verifing secret key and installation id based on mode
         if ($this->auth($params)) {
@@ -929,7 +929,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         //check the website exists or not based on $websiteId
         $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
         if (!$website) {
-            \DBG::log('JsonMultiSite::checkMailServiceAccessPermission() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+            \DBG::log('JsonMultiSite::verifyWebsiteOwnerOrIscRequest() failed: Unkown Website-ID: '.$params['post']['websiteId']);
             return false;
         }
         
