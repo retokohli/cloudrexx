@@ -519,7 +519,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         
         $subscriptionId = isset($arguments['id']) ? contrexx_input2raw($arguments['id']) : 0;
-                        
+        $action         = isset($arguments['action']) ? contrexx_input2raw($arguments['action']) : '';
+
         if (!self::isUserLoggedIn()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
         }
@@ -551,20 +552,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
         }
 
+        if (!\FWValidator::isEmpty($action) && $action == 'subscriptionCancel') {
+            $subscriptionObj->setState(\Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
+            \Env::get('em')->flush();
+            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCELLED_SUCCESS_MSG'], true);
+        }
+        
         $product = $subscriptionObj->getProduct();
 
         if (!$product) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
         }
 
+        $subscriptionExpirationDate = $subscriptionObj->getExpirationDate() ? $subscriptionObj->getExpirationDate()->format(ASCMS_DATE_FORMAT_DATE) : '';
         $objTemplate->setVariable(array(
             'MULTISITE_SUBSCRIPTION_ID'      => contrexx_raw2xhtml($subscriptionObj->getId()),
             'MULTISITE_WEBSITE_PRODUCT_NAME' => contrexx_raw2xhtml($product->getName()),
             'MULTISITE_WEBSITE_SUBSCRIPTION_DATE' => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
-            'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => $subscriptionObj->getExpirationDate() ? contrexx_raw2xhtml($subscriptionObj->getExpirationDate()->format('d.m.Y')) : '',
+            'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => contrexx_raw2xhtml($subscriptionExpirationDate),
+            'MULTISITE_SUBSCRIPTION_CANCEL_CONTENT' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCEL_CONTENT'], $subscriptionExpirationDate),
+            'MULTISITE_SUBSCRIPTION_CANCEL_SUBMIT_URL' => '/api/MultiSite/SubscriptionDetail?action=subscriptionCancel&id=' . $subscriptionId
         ));
 
+        $cancelButtonStatus = ($subscriptionObj->getState() !== \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
         self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
+        self::showOrHideBlock($objTemplate, 'showSubscriptionCancelButton', $cancelButtonStatus);
 
         if ($objTemplate->blockExists('showWebsites')) {
             $websiteCollection = $subscriptionObj->getProductEntity();

@@ -157,3 +157,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATE_ADMIN_USER'] = 'Administrator hinz
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EDIT_ADMIN_USER']   = 'Administrator bearbeiten';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_ADMIN_USER'] = 'Administrator entfernen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_CONFIRM'] = 'Hiermit entfernen Sie den Administrator %s von Ihrer Website';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCEL_LABEL'] = 'Abo kündigen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCEL_CONTENT'] = 'Hiermit kündigen Sie dieses Abo. Das Abo wird bis am %s noch weiterlaufen. Danach werden alle Websites, welche diesem Abo zugeordnet sind, nicht mehr funktionieren und erreichbar sein.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_BUTTON_CANCEL'] = 'Kündigen';

@@ -276,3 +276,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']        = 'Unknown u
 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EXTERNALPAYMENTCUSTOMERIDPROFILEATTRIBUTEID'] = 'Payment user profile attribute ID';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EXTERNALPAYMENTCUSTOMERIDPROFILEATTRIBUTEID_TOOLTIP']='The user profile attribute Id used to store the customer ID of the external payment provider.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCEL_LABEL'] = 'Cancel subscription';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_BUTTON_CANCEL'] = 'Cancel';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCEL_CONTENT'] = 'You are about to cancel this subscription. The subscription will be terminated by the %s. After this date, all websites associated to this subscription will no longer be accessible.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_BUTTON_CANCEL'] = 'Cancel subscription';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCELLED_SUCCESS_MSG'] = 'The subscription cancelled sucessfully.';
