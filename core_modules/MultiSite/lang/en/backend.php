@@ -207,6 +207,9 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ADD_DOMAIN'] = 'Add domain';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TITLE_USED_LIMIT'] = 'Used / Limit';
 $_ARRAYLANG['TXT_MULTISITE_UNLIMITED'] = 'Unlimited';
 
+//website subscription detail
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION'] = 'Subscription';
+
 //website subscription detail template message
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'] = 'Access denied';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'] = 'Unknown subscription requested.';
