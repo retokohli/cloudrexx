@@ -131,6 +131,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateNetDomain'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
             'createAdminUser'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'payrexxAutoLoginUrl'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'updateOwnWebsiteState'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
             'getMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
         );  
     }
@@ -1519,6 +1520,54 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_WEBSITE:
                     break;
             }
+        }
+    }
+    
+    /**
+     * updateOwnWebsiteState
+     * 
+     * @param  array $params supplied arguments from JsonData-request
+     * 
+     * @return array
+     */
+    public function updateOwnWebsiteState($params) 
+    {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
+        if (\FWValidator::isEmpty($params) || \FWValidator::isEmpty($params['post']['websiteId'])) {
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_FAILED']);
+        }
+
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($params['post']['websiteId']);
+
+                    if (!$website) {
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_FAILED']);
+                    }
+
+                    $status = $website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE ? 'DEACTIVATED' : 'ACTIVATED';
+                    switch ($website->getStatus()) {
+                        case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
+                            $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
+                            break;
+                        case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
+                            $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
+                            break;
+                        default:
+                            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_' . $status . '_FAILED']);
+                            break;
+                    }
+
+                    \Env::get('em')->flush();
+                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_' . $status . '_SUCCESSFUL']);
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_FAILED']);
         }
     }
     

@@ -24,6 +24,11 @@ class Website extends \Cx\Model\Base\EntityBase {
      * Status setup
      */
     const STATE_SETUP =  'setup';
+    
+    /**
+     * Status disabled
+     */
+    const STATE_DISABLED =  'disabled';
         
     protected $basepath = null;
   

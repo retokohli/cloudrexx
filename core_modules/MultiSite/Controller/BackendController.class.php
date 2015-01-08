@@ -478,11 +478,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             }
                             $stateOnline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE;
                             $stateOffline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE;
+                            $stateDisable = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED;
                             $stateOnlineSelected = ($value == $stateOnline) ? 'selected' : '';
                             $stateOfflineSelected = ($value == $stateOffline) ? 'selected' : '';
-                            if ($value == $stateOnline || $value == $stateOffline) {
-                                $dropDownDisplay = '<select class="changeWebsiteStatus" data-websiteDetails= "'.$arrData['id'].'-'.$arrData['name'].'"><option value = ' . $stateOnline . ' ' . $stateOnlineSelected . '>' . $stateOnline . '</option>'
-                                        . '<option value = ' . $stateOffline . ' ' . $stateOfflineSelected . '>' . $stateOffline . '</option>';
+                            $stateDisableSelected = ($value == $stateDisable) ? 'selected' : '';
+                            if ($value == $stateOnline || $value == $stateOffline || $value == $stateDisable) {
+                                $dropDownDisplay = '<select class="changeWebsiteStatus" data-websiteDetails= "'.$arrData['id'].'-'.$arrData['name'].'">'
+                                        . '<option value = ' . $stateOnline . ' ' . $stateOnlineSelected . '>' . $stateOnline . '</option>'
+                                        . '<option value = ' . $stateOffline . ' ' . $stateOfflineSelected . '>' . $stateOffline . '</option>'
+                                        . '<option value = ' . $stateDisable . ' ' . $stateDisableSelected . '>' . $stateDisable . '</option>';
                                 return $dropDownDisplay;
                             } else {
                                 return $value;

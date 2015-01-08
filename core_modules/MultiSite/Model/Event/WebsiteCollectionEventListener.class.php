@@ -63,7 +63,10 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
                     $entityAttributes['initialSignUp'] = true;
                     $website->setup($entityAttributes);
                     break;
-
+                
+                case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED:
+                    $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
+                    
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
 // TODO: maybe add notification message to dashboard about extended subscription or send email about extended subscription
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
@@ -92,7 +95,7 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
         //Set all the associated websiteCollections website to offline
         if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
             foreach ($websiteCollection->getWebsites() as $website) {
-                $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
+                $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED);
             }
         }
         
