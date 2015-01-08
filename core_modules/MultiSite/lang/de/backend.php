@@ -167,3 +167,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_BUTTON_CANCEL'] = 'Kündigen
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_TITLE'] = 'Website löschen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_CONFIRM_ALERT'] = 'Bitte bestätigen Sie den Löschung der Website. Dieser Vorgang kann nicht Rückgängig gemacht werden. Die Daten der Website gehen werden dabei unwiderruflich gelöscht.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_LOADING_ANIMATION'] = 'Die Website wird gelöscht...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_SUCCESS_MSG'] = 'Die Website wurde erfolgreich gelöscht.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_ERROR_MSG'] = 'Der Löschvorgang der Website schlug fehl.';
