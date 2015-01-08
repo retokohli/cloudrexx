@@ -735,16 +735,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         //Show the Website Domain Alias name
-        if ($objTemplate->blockExists('showWebsiteDomainAliases')) {
-            $websiteDomainAliases = $website->getDomainAliases();
-            foreach ($websiteDomainAliases as $domainAlias) {
+        if ($objTemplate->blockExists('showWebsiteDomains')) {
+            $resp = JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
+            $mainDomainName = '';
+            if ($resp->status == 'success' && $resp->data->status == 'success') {
+                $mainDomainName = $resp->data->mainDomain;
+            }             
+            $domains = array_merge(array($website->getBaseDn()), $website->getDomainAliases());
+            foreach ($domains as $domain) {
+                $isBaseDomain = $domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN;        
+                $domainId     = $isBaseDomain ? $domain->getId() : $domain->getCoreNetDomainId();                
+
                 $objTemplate->setVariable(array(
-                    'MULTISITE_WEBSITE_DOMAIN_ALIAS'    => contrexx_raw2xhtml($domainAlias->getName()),
-                    'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => contrexx_raw2xhtml($domainAlias->getCoreNetDomainId()),
+                        'MULTISITE_WEBSITE_DOMAIN'                    => contrexx_raw2xhtml($domain->getName()),
+                        'MULTISITE_WEBSITE_DOMAIN_ID'                 => contrexx_raw2xhtml($domainId),
+                        'MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED' => ($domain->getName() === $mainDomainName) ? 'checked' : '',
                 ));
-                $objTemplate->parse('showWebsiteDomainAliases');
+                self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', !$isBaseDomain);
+                $objTemplate->parse('showWebsiteDomains');                
             }
-            self::showOrHideBlock($objTemplate, 'showWebsiteDomainAliasFound', !empty($websiteDomainAliases));
         }
 
         //show the website's domain name
@@ -788,7 +797,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         return $objTemplate->get();
     }
-    
+  
     /**
      * Api Domain command 
      * 

@@ -130,7 +130,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'unMapNetDomain'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
             'updateNetDomain'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')), 
             'createAdminUser'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'payrexxAutoLoginUrl'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true)
+            'payrexxAutoLoginUrl'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'getMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
         );  
     }
 
@@ -3956,5 +3957,29 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
         }
     }
-
+    
+    /**
+     * Get the main domain of the Website
+     * 
+     * @return string main domain of the website
+     * @throws MultiSiteJsonException
+     */
+    public function getMainDomain() {
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_WEBSITE:
+                    $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                    $mainDomain       = $domainRepository->getMainDomain()->getName();
+                    if (!\FWValidator::isEmpty($mainDomain)) {
+                        return array('status' => 'success', 'mainDomain' => $mainDomain);
+                    }
+                break;
+            }
+            return array('status' => 'error');       
+        } catch (\Exception $e) {
+            \DBG::log('JsonMultiSite::getMainDomain() failed:' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::getMainDomain() failed: to get the main domain');
+        }
+        
+    }
 }

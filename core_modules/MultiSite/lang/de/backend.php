@@ -169,3 +169,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_CONFIRM_ALERT'] = 'Bitte b
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_LOADING_ANIMATION'] = 'Die Website wird gelöscht...';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_SUCCESS_MSG'] = 'Die Website wurde erfolgreich gelöscht.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_ERROR_MSG'] = 'Der Löschvorgang der Website schlug fehl.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN'] = 'Hauptdomain';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_SELECT_MAIN_DOMAIN'] = 'Hauptdomain auswählen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT'] = 'Bitte bestätigen Sie die Auswahl der Domain %s als neue Hauptdomain dieser Website. Diese Domain wird dann die neue primäre Adresse dieser Website sein.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SELECT'] = 'Auswählen';
