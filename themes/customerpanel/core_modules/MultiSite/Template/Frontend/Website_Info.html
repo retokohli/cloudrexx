@@ -10,21 +10,22 @@
 <div aria-hidden="true" class="modal fade" id="WebsiteDelete" role="dialog" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="grid-elm grid-align-1-1 grid-offset">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              
-              <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_TITLE}</h2>
-              <div class="content">
-                <div class="row">
-                    {TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_CONFIRM_ALERT}
-                </div>  
+            <div class="modal-body">
+                <div class="grid-elm grid-align-1-1 grid-offset">
+                    <div class="row">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 
-                <div class="row">
-                    <button type="submit" class="save" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="deleteWebsite(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_DELETE}</button>
-                    <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+                        <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_TITLE}</h2>
+
+                        <div class="grid-offset-bottom">
+                            {TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_CONFIRM_ALERT}
+                        </div>
+
+                        <button type="submit" class="save"  onclick="deleteWebsite();">{TXT_MULTISITE_WEBSITE_BUTTON_DELETE}</button>
+                        <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+                    </div>
                 </div>
-              </div>
-          </div>
+            </div>
         </div>
     </div>
 </div>
@@ -37,8 +38,8 @@
             data: {websiteId: '{MULTISITE_WEBSITE_ID}' },
             type: 'POST',
             beforeSend: function() {
-                text = '{TXT_CORE_MODULE_WEBSITE_DELETE_LOADING_ANIMATION} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />';
-                jQuery('#WebsiteDelete').find('.modal-content .content').html(text);
+                text = '<span>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_LOADING_ANIMATION}</span> <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />';
+                jQuery('#WebsiteDelete').find('.modal-content .modal-body').html(text);
             },
             success: function(data) {
                message = (data.status == 'success') ? '{TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_SUCCESS_MSG}' :                
@@ -48,7 +49,7 @@
                     showMessage(message, data.status);//show status message 
                 });
                 jQuery('#WebsiteDelete').modal('hide');
-                window.location.replace('{MULTISITE_WEBSITE_REDIRECT_URL}');
+                window.location.replace('{MULTISITE_WEBSITE_DELETE_REDIRECT_URL}');
             },
             fail: function(data) {}
         });
