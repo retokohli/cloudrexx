@@ -119,6 +119,10 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'] = 'Für das ausgewählte
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_FAILED'] = 'Die Aktivierung des Upgrades ist fehlgeschlagen.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED']  = 'Der Upgradevorgang wird abgebrochen.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_INPROGRESS'] = 'Das Upgrade Ihres Abos wird ausgeführt...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_INPROGRESS'] = 'Ihr neues Abo wird eingerichtet...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_SUCCESS']  = 'Ihr neues Abo wurde erfolgreich eingerichtet.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_FAILED']  = 'Die Einrichtung des neuen Abos schlug fehl.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED']  = 'Die Einrichtung des neuen Abos wird abgebrochen.';
 
 
 //website email service
