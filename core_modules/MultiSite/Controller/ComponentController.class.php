@@ -713,9 +713,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $deleteUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=destroyWebsite');
         $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
         $objTemplate->setVariable(array(
-            'MULTISITE_WEBSITE_FRONTEND_LINK'     => $this->getApiProtocol() . $website->getBaseDn()->getName(),
-            'MULTISITE_WEBSITE_DELETE_SUBMIT_URL' => $deleteUrl->toString(),
-            'MULTISITE_WEBSITE_REDIRECT_URL'      => \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'Subscription')->toString(),
+            'MULTISITE_WEBSITE_FRONTEND_LINK'       => $this->getApiProtocol() . $website->getBaseDn()->getName(),
+            'MULTISITE_WEBSITE_DELETE_SUBMIT_URL'   => $deleteUrl->toString(),
+            'MULTISITE_WEBSITE_DELETE_REDIRECT_URL' => \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'Subscription')->toString(),
         ));
         self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
         self::showOrHideBlock($objTemplate, 'showAdminButton', $status);
