@@ -121,6 +121,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getResourceUsageStats' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'enableMailService'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),            
             'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
+            'getMailServiceStatus'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
             'createMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'deleteMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'manageSubscription'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
@@ -3685,6 +3686,60 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (Exception $ex) {
             \DBG::log('JsonMultiSite::disableMailService() failed: To disable mail service'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
+        }
+    }
+    
+    /**
+     * Get the mail service status
+     * 
+     * @param array $params
+     * 
+     * @return string mail service status
+     * @throws MultiSiteJsonException
+     */    
+    public function getMailServiceStatus($params)
+    {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
+        if (empty($params['post']['websiteId'])) {
+            \DBG::log('JsonMultiSite::getMailServiceStatus() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
+        }
+               
+        try {
+            // check the mode
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    if (!$website) {
+                        \DBG::log('JsonException::getMailServiceStatus() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
+                    }
+                    $mailServiceServer = $website->getMailServiceServer();
+                    if ($mailServiceServer && !\FWValidator::isEmpty($website->getMailAccountId())) {
+                        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
+                        $status = $hostingController->getMailServiceStatus($website->getMailAccountId());
+                        return array('status' => 'success', 'mailServiceStatus' => $status);
+                    }
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                case ComponentController::MODE_SERVICE:
+                    // forward call to manager server. 
+                    $response = self::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $params['post']['websiteId']));
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return array('status' => 'success', 'mailServiceStatus' => $response->data->mailServiceStatus);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return array('status' => 'error');
+        } catch (Exception $ex) {
+            \DBG::log('JsonMultiSite::getMailServiceStatus() failed: To get mail service status.'. $ex->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
     }
     
