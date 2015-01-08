@@ -93,19 +93,24 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
      * Create a new Order 
      * 
      * @param integer $productId            productId
-     * @param integer $contactId            contactId
+     * @param object  $objUser              \User object
      * @param string  $transactionReference transactionReference
      * @param array   $subscriptionOptions  subscriptionOptions
      * 
      * @return boolean
      * @throws OrderRepositoryException
      */
-    public function createOrder($productId, $contactId, $transactionReference, $subscriptionOptions = array()) {
-        if (\FWValidator::isEmpty($productId)
-                || \FWValidator::isEmpty($contactId) 
-                || \FWValidator::isEmpty($subscriptionOptions) 
-                || \FWValidator::isEmpty($transactionReference)) {
-            
+    public function createOrder($productId, \User $objUser , $transactionReference, $subscriptionOptions = array()) {
+        if (
+               \FWValidator::isEmpty($productId)
+            || \FWValidator::isEmpty($subscriptionOptions)
+            || \FWValidator::isEmpty($transactionReference)
+        ) {
+            return;
+        }
+        
+        $contactId = $objUser->getCrmUserId();
+        if (\FWValidator::isEmpty($contactId)) {
             return;
         }
         
@@ -131,6 +136,13 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                                 $referenceArry = explode('-', $payment->getTransactionReference());
                                 if (isset($referenceArry[2]) && !empty($referenceArry[2])) {
                                     $subscription->setExternalSubscriptionId($referenceArry[2]);
+                                }
+                            }
+                            $transactionData = $payment->getTransactionData();
+                            if (!\FWValidator::isEmpty($transactionData) && !\FWValidator::isEmpty($transactionData['contact']['id'])) {
+                                $objUser->setProfile(array(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId') => $subscription['contact']['id']));
+                                if (!$objUser->store()) {
+                                    \DBG::msg('Order::createOrder() Updating user failed: '.$objUser->getErrorMsg());
                                 }
                             }
                             $invoice->addPayment($payment);

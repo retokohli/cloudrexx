@@ -1275,7 +1275,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             $transactionReference = $productId . '-' . $websiteName;
             
-            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $crmContactId, $transactionReference, $subscriptionOptions);
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, \FWUser::getFWUserObject()->objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
             }

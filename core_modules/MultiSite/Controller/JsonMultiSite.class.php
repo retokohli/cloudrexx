@@ -288,7 +288,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $transactionReference = $id . '-' . $websiteName;
             
-            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $crmContactId, $transactionReference, $subscriptionOptions);
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
             }
@@ -501,7 +501,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $transactionReference = $productId . '-owner-' . $objUser->getId();
             }
             
-            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $crmContactId, $transactionReference, $subscriptionOptions);
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 \DBG::log('Unable to create the order.');
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
