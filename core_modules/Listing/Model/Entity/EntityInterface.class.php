@@ -103,7 +103,7 @@ class EntityInterface implements Exportable, Importable {
         }
 
         $em = \Env::get('em');
-        $associationEntityColumns = $entityColumns = array();
+        $associationEntityColumns = array();
 
         $entityClassMetaData = $em->getClassMetadata(get_class($object));
         $associationMappings = $entityClassMetaData->getAssociationMappings();
@@ -113,14 +113,14 @@ class EntityInterface implements Exportable, Importable {
                     $associationObject = $object->{'get' . ucfirst($field)}();
                     if ($associationObject) {
                         //get association columns
-                        $associationEntityColumn = $this->getColumnsNamesByEntity($associationObject);
+                        $associationEntityColumn = $this->getColumnNamesByEntity($associationObject);
                         $associationEntityColumns[$field] = !\FWValidator::isEmpty($associationEntityColumn) ? $associationEntityColumn : '';
                     }
                 }
             }
         }
         //get entity columns    
-        $entityColumns = $this->getColumnsNamesByEntity($object);
+        $entityColumns = $this->getColumnNamesByEntity($object);
         $resultData = array_merge($entityColumns, $associationEntityColumns);
         $resultData['virtual'] = $object->isVirtual();
 
@@ -130,11 +130,11 @@ class EntityInterface implements Exportable, Importable {
     /**
      * get column name and values form the given entity object
      * 
-     * @param  object $entityObject  
+     * @param object $entityObject  
      * 
      * @return array
      */
-    public function getColumnsNamesByEntity($entityObject) {
+    public function getColumnNamesByEntity($entityObject) {
         $data = array();
         $entityClassMetaData  =  \Env::get('em')->getClassMetadata(get_class($entityObject));
         foreach ($entityClassMetaData->getColumnNames() as $column) {
