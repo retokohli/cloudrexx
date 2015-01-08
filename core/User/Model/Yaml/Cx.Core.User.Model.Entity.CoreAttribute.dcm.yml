@@ -9,17 +9,20 @@ Cx\Core\User\Model\Entity\CoreAttribute:
     mandatory:
       type: string
       nullable: false
-    sort_type:
+    sortType:
       type: string
       nullable: false
-    order_id:
+      column: sort_type
+    orderId:
       type: integer
       length: 10
       nullable: false
       unsigned: true
-    access_special:
+      column: order_id
+    accessSpecial:
       type: string
       nullable: false
+      column: access_special
   manyToOne:
     accessId:
       targetEntity: Cx\Core_Modules\Access\Model\Entity\AccessId

@@ -13,11 +13,12 @@ Cx\Core\User\Model\Entity\ProfileTitle:
       type: string
       length: 255
       nullable: false
-    order_id:
+    orderId:
       type: integer
       length: 10
       nullable: false
       unsigned: true
+      column: order_id
   uniqueConstraints:
     title:
       columns: [title]
