@@ -3666,7 +3666,7 @@ CREATE TABLE `contrexx_module_order_payment` (
   `transaction_reference` varchar(255) NOT NULL,
   `invoice_id` int(11) default NULL,
   `handler` varchar(12) NOT NULL,
-  `transaction_data` text NOT NULL,
+  `transaction_data` longtext NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `invoice_id` (`invoice_id`),
   CONSTRAINT `contrexx_module_order_payment_ibfk_2` FOREIGN KEY (`invoice_id`) REFERENCES `contrexx_module_order_invoice` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
