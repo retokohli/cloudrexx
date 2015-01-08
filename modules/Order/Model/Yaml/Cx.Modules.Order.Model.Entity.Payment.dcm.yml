@@ -20,7 +20,7 @@ Cx\Modules\Order\Model\Entity\Payment:
     handler:
       type: string
     transactionData:
-      type: text
+      type: array
       column: transaction_data
 
   manyToOne: # owning side
