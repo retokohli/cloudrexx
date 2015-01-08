@@ -47,6 +47,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         parent::__construct($systemComponent, $cx);
         //multisite configuration setting
         self::errorHandler();
+
+        // add marketing website as valid redirection after logout
+        \FWUser::$allowedHosts[] = 'http://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
+        \FWUser::$allowedHosts[] = 'https://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
     }
     
     public function getControllersAccessableByJson() { 
