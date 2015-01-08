@@ -7,14 +7,14 @@ namespace Cx\Core\User\Model\Entity;
  */
 class UserAttributeName extends \Cx\Model\Base\EntityBase {
     /**
-     * @var integer $attribute_id
+     * @var integer $attributeId
      */
-    private $attribute_id;
+    private $attributeId;
 
     /**
-     * @var integer $lang_id
+     * @var integer $langId
      */
-    private $lang_id;
+    private $langId;
 
     /**
      * @var string $name
@@ -28,43 +28,43 @@ class UserAttributeName extends \Cx\Model\Base\EntityBase {
 
 
     /**
-     * Set attribute_id
+     * Set attributeId
      *
      * @param integer $attributeId
      */
     public function setAttributeId($attributeId)
     {
-        $this->attribute_id = $attributeId;
+        $this->attributeId = $attributeId;
     }
 
     /**
-     * Get attribute_id
+     * Get attributeId
      *
      * @return integer $attributeId
      */
     public function getAttributeId()
     {
-        return $this->attribute_id;
+        return $this->attributeId;
     }
 
     /**
-     * Set lang_id
+     * Set langId
      *
      * @param integer $langId
      */
     public function setLangId($langId)
     {
-        $this->lang_id = $langId;
+        $this->langId = $langId;
     }
 
     /**
-     * Get lang_id
+     * Get langId
      *
      * @return integer $langId
      */
     public function getLangId()
     {
-        return $this->lang_id;
+        return $this->langId;
     }
 
     /**

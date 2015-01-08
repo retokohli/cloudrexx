@@ -17,9 +17,9 @@ class ProfileTitle extends \Cx\Model\Base\EntityBase {
     private $title;
 
     /**
-     * @var integer $order_id
+     * @var integer $orderId
      */
-    private $order_id;
+    private $orderId;
 
     /**
      * @var Cx\Core\User\Model\Entity\UserProfile
@@ -62,23 +62,23 @@ class ProfileTitle extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set order_id
+     * Set orderId
      *
      * @param integer $orderId
      */
     public function setOrderId($orderId)
     {
-        $this->order_id = $orderId;
+        $this->orderId = $orderId;
     }
 
     /**
-     * Get order_id
+     * Get orderId
      *
      * @return integer $orderId
      */
     public function getOrderId()
     {
-        return $this->order_id;
+        return $this->orderId;
     }
 
     /**

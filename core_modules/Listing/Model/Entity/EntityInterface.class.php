@@ -103,24 +103,43 @@ class EntityInterface implements Exportable, Importable {
         }
 
         $em = \Env::get('em');
-        $data = array();
+        $associationEntityColumns = $entityColumns = array();
 
         $entityClassMetaData = $em->getClassMetadata(get_class($object));
         $associationMappings = $entityClassMetaData->getAssociationMappings();
         if (!empty($associationMappings)) {
             foreach ($associationMappings as $field => $associationMapping) {
                 if ($entityClassMetaData->isSingleValuedAssociation($field) && in_array('get' . ucfirst($field), get_class_methods($object))) {
-                    $associationObj = $object->{'get' . ucfirst($field)}();
-                    if ($associationObj) {
-                        $primaryKeyName = $em->getClassMetadata(get_class($associationObj))->getSingleIdentifierFieldName();
-                        $data[$field] = $associationObj->{'get' . ucfirst($primaryKeyName)}();
+                    $associationObject = $object->{'get' . ucfirst($field)}();
+                    if ($associationObject) {
+                        //get association columns
+                        $associationEntityColumn = $this->getColumnsNamesByEntity($associationObject);
+                        $associationEntityColumns[$field] = !\FWValidator::isEmpty($associationEntityColumn) ? $associationEntityColumn : '';
                     }
                 }
             }
         }
+        //get entity columns    
+        $entityColumns = $this->getColumnsNamesByEntity($object);
+        $resultData = array_merge($entityColumns, $associationEntityColumns);
+        $resultData['virtual'] = $object->isVirtual();
+
+        return array($resultData);
+    }
+    
+    /**
+     * get column name and values form the given entity object
+     * 
+     * @param  object $entityObject  
+     * 
+     * @return array
+     */
+    public function getColumnsNamesByEntity($entityObject) {
+        $data = array();
+        $entityClassMetaData  =  \Env::get('em')->getClassMetadata(get_class($entityObject));
         foreach ($entityClassMetaData->getColumnNames() as $column) {
             $field = $entityClassMetaData->getFieldName($column);
-            $value = $entityClassMetaData->getFieldValue($object, $field);
+            $value = $entityClassMetaData->getFieldValue($entityObject, $field);
             if ($value instanceof \DateTime) {
                 $value = $value->format('d.M.Y H:i:s');
             } elseif (is_array($value)) {
@@ -128,8 +147,7 @@ class EntityInterface implements Exportable, Importable {
             }
             $data[$field] = $value;
         }
-        $data['virtual'] = $object->isVirtual();
-        return array($data);
+        return $data;
     }
 
 }

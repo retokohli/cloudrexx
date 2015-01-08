@@ -17,19 +17,19 @@ class CoreAttribute extends \Cx\Model\Base\EntityBase {
     private $mandatory;
 
     /**
-     * @var string $sort_type
+     * @var string $sortType
      */
-    private $sort_type;
+    private $sortType;
 
     /**
-     * @var integer $order_id
+     * @var integer $orderId
      */
-    private $order_id;
+    private $orderId;
 
     /**
-     * @var string $access_special
+     * @var string $accessSpecial
      */
-    private $access_special;
+    private $accessSpecial;
 
     /**
      * @var Cx\Core_Modules\Access\Model\Entity\AccessId
@@ -78,63 +78,63 @@ class CoreAttribute extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set sort_type
+     * Set sortType
      *
      * @param string $sortType
      */
     public function setSortType($sortType)
     {
-        $this->sort_type = $sortType;
+        $this->sortType = $sortType;
     }
 
     /**
-     * Get sort_type
+     * Get sortType
      *
      * @return string $sortType
      */
     public function getSortType()
     {
-        return $this->sort_type;
+        return $this->sortType;
     }
 
     /**
-     * Set order_id
+     * Set orderId
      *
      * @param integer $orderId
      */
     public function setOrderId($orderId)
     {
-        $this->order_id = $orderId;
+        $this->orderId = $orderId;
     }
 
     /**
-     * Get order_id
+     * Get orderId
      *
      * @return integer $orderId
      */
     public function getOrderId()
     {
-        return $this->order_id;
+        return $this->orderId;
     }
 
     /**
-     * Set access_special
+     * Set accessSpecial
      *
      * @param string $accessSpecial
      */
     public function setAccessSpecial($accessSpecial)
     {
-        $this->access_special = $accessSpecial;
+        $this->accessSpecial = $accessSpecial;
     }
 
     /**
-     * Get access_special
+     * Get accessSpecial
      *
      * @return string $accessSpecial
      */
     public function getAccessSpecial()
     {
-        return $this->access_special;
+        return $this->accessSpecial;
     }
 
     /**

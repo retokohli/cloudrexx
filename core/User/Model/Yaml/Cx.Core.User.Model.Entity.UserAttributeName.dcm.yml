@@ -2,17 +2,19 @@ Cx\Core\User\Model\Entity\UserAttributeName:
   type: entity
   table: access_user_attribute_name
   fields:
-    attribute_id:
+    attributeId:
       id: true
       type: integer
       length: 10
       associationKey: true
       unsigned: true
-    lang_id:
+      column: attribute_id
+    langId:
       id: true
       type: integer
       length: 10
       unsigned: true
+      column: lang_id
     name:
       type: string
       length: 255
