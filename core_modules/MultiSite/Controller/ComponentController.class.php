@@ -64,7 +64,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    public function executeCommand($command, $arguments) {       
+    public function executeCommand($command, $arguments) {
         
         // Event Listener must be registered before preContentLoad event
         $this->registerEventListener();
@@ -1166,8 +1166,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $cron = new CronController();
         $cron->sendNotificationMails();
+        
+        //  Terminate the cancelled subscription.
+        $this->disableCancelledWebsites();
     }
     
+    /**
+     * Terminate the cancelled subscription.
+     * 
+     * @return null
+     */
+    public function disableCancelledWebsites()
+    {
+        $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+        $subscriptions    = $subscriptionRepo->getAllCancelledSubscriptions();
+        
+        if (\FWValidator::isEmpty($subscriptions)) {
+            return;
+        }
+        
+        foreach ($subscriptions as $subscription) {
+            $subscription->terminate();
+        }
+        \Env::get('em')->flush();
+    }
+
     /**
      * Create new website into the existing subscription
      * 
@@ -2538,5 +2561,5 @@ throw new MultiSiteException('Refactor this method!');
             $objTemplate->_blocks['__global__'] = preg_replace(array('/<body>/', '/<\/body>/'), array('\\0' . '<div id="preview-content">', $footer->get() .'</div>' . '\\0' ), $objTemplate->_blocks['__global__']);
         }
         
-    }    
+    }
 }
