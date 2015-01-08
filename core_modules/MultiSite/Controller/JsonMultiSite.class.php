@@ -287,7 +287,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $subscriptionOptions['themeId'] = $websiteThemeId;
             }
             
-            $transactionReference = $id . '-' . $websiteName;
+            $transactionReference = $id . '-name-' . $websiteName;
             
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
@@ -3015,7 +3015,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $referenceId = '';
             $purpose     = '';
             if (isset($params['post']['multisite_address'])) {
-                $referenceId = $product->getId() . '-' . 'name-' . $params['post']['multisite_address'];
+                $referenceId = $product->getId() . '-name-' . $params['post']['multisite_address'];
                 $purpose     = $productName . ' - ' . $params['post']['multisite_address'] . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             } elseif ($objUser) {
                 $userId      = $objUser->getId();
