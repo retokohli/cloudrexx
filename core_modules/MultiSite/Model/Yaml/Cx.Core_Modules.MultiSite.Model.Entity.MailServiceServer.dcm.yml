@@ -24,6 +24,9 @@ Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer:
     ipAddress:
       type: string
       length: 45
+    apiVersion:
+      type: string
+      length: 45
 
   oneToMany: # inverse side
     websites:

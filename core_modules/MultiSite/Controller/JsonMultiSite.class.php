@@ -3773,7 +3773,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if ($mailServiceServer && !\FWValidator::isEmpty($website->getMailAccountId())) {
                         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
                         $status = $hostingController->getMailServiceStatus($website->getMailAccountId());
-                        return array('status' => 'success', 'mailServiceStatus' => $status);
+                        return array('status' => 'success', 'mailServiceStatus' => ($status == 'true') ? true : false);
                     }
                     break;
 

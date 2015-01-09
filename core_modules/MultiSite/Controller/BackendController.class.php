@@ -311,6 +311,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'ipAddress' => array(
                             'header' => 'Ip Address',
+                        ),
+                        'apiVersion' => array(
+                            'header' => 'Api Version',
                         )
                     )
                 )

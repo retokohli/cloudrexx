@@ -70,6 +70,11 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     protected $config = array();
     
     /**
+     * @var string $apiVersion
+     */
+    protected $apiVersion;
+    
+    /**
      * Constructor
      */
     public function __construct() {
@@ -80,6 +85,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         $this->authUsername = '';
         $this->authPassword = '';
         $this->config = '';
+        $this->apiVersion = '';
         $this->websites = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
@@ -242,6 +248,26 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     public function getConfig() 
     {
         return $this->config;
+    }
+    
+    /**
+     * Set apiVersion
+     *
+     * @param string $apiVersion
+     */
+    public function setApiVersion($apiVersion)
+    {
+        $this->apiVersion = $apiVersion;
+    }
+
+    /**
+     * Get apiVersion
+     *
+     * @return string $apiVersion
+     */
+    public function getApiVersion()
+    {
+        return $this->apiVersion;
     }
 
     /**

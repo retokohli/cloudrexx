@@ -777,14 +777,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         //show the website's mail service enable|disable button
-        if ($objTemplate->blockExists('activateMailService') && $objTemplate->blockExists('deactivateMailService')) {
-            $mailServiceServerStatus = $website->getMailServiceServer() 
-                                        && $website->getMailServiceServer() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer;
-            
-            self::showOrHideBlock($objTemplate, 'deactivateMailService', $mailServiceServerStatus);
-            self::showOrHideBlock($objTemplate, 'openAdministration', $mailServiceServerStatus);
-            self::showOrHideBlock($objTemplate, 'activateMailService', !$mailServiceServerStatus);            
+    if ($objTemplate->blockExists('activateMailService') && $objTemplate->blockExists('deactivateMailService')) {
+        $mailServiceServerStatus = false;
+        if ($website->getMailServiceServer() && !\FWValidator::isEmpty($website->getMailAccountId())) {
+            $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
+            if (!\FWValidator::isEmpty($response)
+                    && $response->status == 'success' 
+                    && $response->data->status == 'success'
+                ) {
+                $mailServiceServerStatus = $response->data->mailServiceStatus;
+            }
         }
+        self::showOrHideBlock($objTemplate, 'deactivateMailService', $mailServiceServerStatus);
+        self::showOrHideBlock($objTemplate, 'openAdministration', $mailServiceServerStatus);
+        self::showOrHideBlock($objTemplate, 'activateMailService', !$mailServiceServerStatus);            
+    }
         
         //show the website's resources
         if ($objTemplate->blockExists('showWebsiteResources')) {
@@ -1618,7 +1625,7 @@ throw new MultiSiteException('Refactor this method!');
     public static function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer) {
         switch ($mailServiceServer->getType()) {
             case 'plesk':
-                $hostingController = new PleskController($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword());
+                $hostingController = new PleskController($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword(), $mailServiceServer->getApiVersion());
                 break;
 
             case 'xampp':
@@ -1884,6 +1891,11 @@ throw new MultiSiteException('Refactor this method!');
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskPassword','', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_PASSWORD,'plesk')){
                     throw new MultiSiteException("Failed to add Setting entry for Database user plesk Password");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskApiVersion') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('pleskApiVersion','', 4,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT,'plesk')){
+                    throw new MultiSiteException("Failed to add Setting entry for Plesk Api Version");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskWebsitesSubscriptionId',0, 5,

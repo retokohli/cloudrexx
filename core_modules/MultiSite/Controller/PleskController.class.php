@@ -61,15 +61,16 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Version of the plesk api rpc
      */
-    const API_RPC_VERSION = '1.6.5.0';
+    protected $apiVersion;
     
     /**
      * Constructor
      */
-    public function __construct($host, $login, $password){
+    public function __construct($host, $login, $password, $apiVersion = null){
         $this->host = $host;
         $this->login = $login;
         $this->password = $password;
+        $this->apiVersion = !\FWValidator::isEmpty($apiVersion) ? $apiVersion : ''; 
     }
 
     /**
@@ -847,7 +848,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     
     protected function getRpcPacket($xmldoc){
         $packet = $xmldoc->createElement('packet');
-        $packet->setAttribute('version', self::API_RPC_VERSION);
+        $packet->setAttribute('version', $this->apiVersion);
         $xmldoc->appendChild($packet);
         return $packet;
     }
@@ -1312,7 +1313,47 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
             throw new ApiRequestException("Error in disable mail service: {$error}");
         }
-        return true;	
+        return true;
+    }
+
+    /**
+     * Get the Mail Service status
+     * 
+     * @param integer $id
+     * 
+     * @return string Mail Service status
+     * @throws ApiRequestException
+     */
+    public function getMailServiceStatus($id)
+    {
+        \DBG::msg("MultiSite (PleskController): Get Mail Service status.");
+        if (empty($id)) {
+            return;
+        }
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+
+        $mail = $xmldoc->createElement('mail');
+        $packet->appendChild($mail);
+        
+        $getPrefs = $xmldoc->createElement('get_prefs');
+        $mail->appendChild($getPrefs);
+        
+        $filter = $xmldoc->createElement('filter');
+        $getPrefs->appendChild($filter);
+        $siteId = $xmldoc->createElement('site-id', $id);
+        $filter->appendChild($siteId);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'mail'}->{'get_prefs'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in get mail service status: {$error}");
+        }
+        return $resultNode->prefs->mailservice;	
     }
     
     /**
