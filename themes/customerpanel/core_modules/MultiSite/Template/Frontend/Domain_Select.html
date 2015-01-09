@@ -1,0 +1,28 @@
+<!--  BEGIN showSelectMainDomain -->
+<div class="grid-elm grid-align-1-1 grid-offset">
+    <form role="form" action="{MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL}" id="multisite_website_domain_select">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_SELECT_MAIN_DOMAIN}</h2>
+        <fieldset>
+            <div class="row">
+                {TXT_CORE_MODULE_MULTISITE_SELECT_DOMAIN_INFO}
+            </div>
+            <div class="row">
+                <button type="submit"  class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" >{TXT_CORE_MODULE_MULTISITE_SELECT}</button>
+                <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('#multisite_website_domain_select').submit(function() {
+          var apiUrl = '/api/MultiSite/Website/Domains?id=' + getQueryParams(document.location.search)['id'];
+          sendApiFormRequest('#multisite_website_domain_select', '#SetMainDomain','#multisite_website_domains', apiUrl);
+          return false;
+    });
+});
+/* ]]> */
+</script>  
+<!-- END showSelectMainDomain -->

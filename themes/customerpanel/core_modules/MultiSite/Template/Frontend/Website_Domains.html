@@ -10,7 +10,7 @@
         <!-- BEGIN showWebsiteDomains -->
         <tr>
             <td>{MULTISITE_WEBSITE_DOMAIN}</td>
-            <td><input type="radio" name="mainDomain" {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-target="#SetMainDomain" data-toggle="modal" /></td>
+            <td><input type="radio" name="mainDomain" class="domainModal"  {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-remote="/api/MultiSite/Domain/Select?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="SetMainDomain" /></td>
             <td class="actions">
               <!-- BEGIN showWebsiteDomainActions -->
               <a class="entypo-tools domainModal" data-remote="/api/MultiSite/Domain/Edit?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainEdit" ></a>&nbsp;
@@ -41,23 +41,7 @@
 
 <div aria-hidden="true" class="modal fade" id="SetMainDomain" role="dialog" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="grid-elm grid-align-1-1 grid-offset">
-                    <div class="row">
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-
-                        <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_SELECT_MAIN_DOMAIN}</h2>
-                        
-                        <div class="grid-offset-bottom">
-                            {TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT}
-                        </div>
-                        <button type="submit"  class="save">{TXT_CORE_MODULE_MULTISITE_SELECT}</button>
-                        <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="modal-content"></div>
     </div>
 </div>
 <script type="text/javascript">
@@ -68,7 +52,7 @@ jQuery(document).ready(function() {
         modalId   : jQuery(this).data('target'),
         remoteUrl : jQuery(this).data('remote'),
       });
-    });  
+    }); 
 });
 /* ]]> */
 </script>
