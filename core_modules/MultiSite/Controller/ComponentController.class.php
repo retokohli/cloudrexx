@@ -555,11 +555,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($crmContactId != $order->getContactId()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
         }
-
-        if (!\FWValidator::isEmpty($action) && $action == 'subscriptionCancel') {
-            $subscriptionObj->setState(\Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
-            \Env::get('em')->flush();
-            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCELLED_SUCCESS_MSG'], true);
+        
+        if (!\FWValidator::isEmpty($action)) {
+            switch ($action) {
+                case 'subscriptionCancel':
+                   $subscriptionObj->setState(\Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
+                    \Env::get('em')->flush();
+                    return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCELLED_SUCCESS_MSG'], true);
+                    break;
+                
+                case 'updateDescription':
+                    $description = isset($_POST['description']) 
+                                        ? contrexx_input2raw($_POST['description']) 
+                                        : '';
+                    $subscriptionObj->setDescription($description);
+                    \Env::get('em')->flush();
+                    return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_DESCRIPTION_SUCCESS_MSG'], true);
+                    break;
+                default :
+                    break;
+            }
         }
         
         $product = $subscriptionObj->getProduct();
@@ -574,8 +589,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'MULTISITE_WEBSITE_PRODUCT_NAME' => contrexx_raw2xhtml($product->getName()),
             'MULTISITE_WEBSITE_SUBSCRIPTION_DATE' => $subscriptionObj->getSubscriptionDate() ? contrexx_raw2xhtml($subscriptionObj->getSubscriptionDate()->format('d.m.Y')) : '',
             'MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRATIONDATE' => contrexx_raw2xhtml($subscriptionExpirationDate),
+            'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscriptionObj->getDescription()),
             'MULTISITE_SUBSCRIPTION_CANCEL_CONTENT' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_CANCEL_CONTENT'], $subscriptionExpirationDate),
-            'MULTISITE_SUBSCRIPTION_CANCEL_SUBMIT_URL' => '/api/MultiSite/SubscriptionDetail?action=subscriptionCancel&id=' . $subscriptionId
+            'MULTISITE_SUBSCRIPTION_CANCEL_SUBMIT_URL' => '/api/MultiSite/SubscriptionDetail?action=subscriptionCancel&id=' . $subscriptionId,
+            'MULTISITE_SUBSCRIPTION_DESCRIPTION_SUBMIT_URL' => '/api/MultiSite/SubscriptionDetail?action=updateDescription&id=' . $subscriptionId,            
         ));
 
         $cancelButtonStatus = ($subscriptionObj->getState() !== \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
