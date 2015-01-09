@@ -134,8 +134,8 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                             //set subscription-id to Subscription::$externalSubscriptionId
                             if ($subscription) {
                                 $referenceArry = explode('-', $payment->getTransactionReference());
-                                if (isset($referenceArry[2]) && !empty($referenceArry[2])) {
-                                    $subscription->setExternalSubscriptionId($referenceArry[2]);
+                                if (isset($referenceArry[3]) && !empty($referenceArry[3])) {
+                                    $subscription->setExternalSubscriptionId($referenceArry[3]);
                                 }
                             }
                             $transactionData = $payment->getTransactionData();
