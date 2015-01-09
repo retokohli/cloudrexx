@@ -26,7 +26,7 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return array
      */
-    function getAllCancelledSubscriptions() 
+    function getExpiredCancelledSubscriptions() 
     {
         $now = new \DateTime('now');
         $qb  = \Env::get('em')->createQueryBuilder();
