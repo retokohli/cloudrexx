@@ -132,7 +132,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'createAdminUser'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'payrexxAutoLoginUrl'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'updateOwnWebsiteState'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
-            'getMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
+            'getMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'setMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -4035,5 +4036,36 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::getMainDomain() failed: to get the main domain');
         }
         
+    }
+    
+    /**
+     * Set the Main Domain
+     * 
+     * @param  array  $params
+     * @return string status
+     * @throws MultiSiteJsonException
+     */
+    public function setMainDomain($params) {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
+        if (empty($params['post']) || empty($params['post']['mainDomainId'])) {
+            \DBG::log('JsonMultiSite::setMainDomain() failed: mainDomainId is empty');
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
+        }
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_WEBSITE:
+                    \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
+                    \Cx\Core\Setting\Controller\Setting::storeFromPost();
+                    return array(
+                        'status' => 'success'
+                    );
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::dump('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
+        }
     }
 }

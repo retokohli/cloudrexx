@@ -886,6 +886,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'domainId' => $domainId
                         );
                         break;
+                        
+                    case 'Select':
+                        $command = 'setMainDomain';
+                        $params = array(
+                          'mainDomainId'   => $domainId
+                        );
+                        break;
+                    
                     default :
                         return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
                         break;
@@ -906,16 +914,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if(!empty($domainName) && !empty($domainId)){
                 if (($loadPageAction == 'Delete') && $objTemplate->blockExists('showDeleteDomainInfo')) {
                     $objTemplate->setVariable(array(
-                        'TXT_MULTISITE_DELETE_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE_INFO'], $domainName),
-                        'MULTISITE_DOMAIN_NAME' => $domainName,
-                        'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => $domainId
+                        'TXT_MULTISITE_DELETE_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_REMOVE_INFO'], contrexx_raw2xhtml($domainName)),
+                        'MULTISITE_DOMAIN_NAME' => contrexx_raw2xhtml($domainName),
+                        'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => contrexx_raw2xhtml($domainId)
                     ));
                 }
 
                 if (($loadPageAction == 'Edit') && $objTemplate->blockExists('showEditDomainName')) {
                     $objTemplate->setVariable(array(
-                        'MULTISITE_DOMAIN_NAME' => $domainName,
-                        'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => $domainId
+                        'MULTISITE_DOMAIN_NAME' => contrexx_raw2xhtml($domainName),
+                        'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => contrexx_raw2xhtml($domainId)
+                    ));
+                }
+                
+                if (($loadPageAction == 'Select') && $objTemplate->blockExists('showSelectMainDomain')) {
+                    $objTemplate->setVariable(array(
+                        'TXT_CORE_MODULE_MULTISITE_SELECT_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT'], contrexx_raw2xhtml($domainName)),
                     ));
                 }
             }
