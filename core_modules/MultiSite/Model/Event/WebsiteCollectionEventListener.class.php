@@ -101,6 +101,30 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
         
     }
 
+    /**
+     * Remove the websites under the websiteCollection
+     * 
+     * @param object $eventArgs
+     * @throws WebsiteCollectionEventListenerException
+     */
+    public function preRemove($eventArgs) {
+        \DBG::msg('MultiSite (WebsiteCollectionEventListener): preRemove');
+        $websiteCollection = $eventArgs->getEntity();
+        $websites = $websiteCollection->getWebsites();
+
+        try {
+            if (!\FWValidator::isEmpty($websites)) {
+                foreach ($websites as $website) {
+                    \Env::get('em')->remove($website);
+                }
+                \Env::get('em')->flush();
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new WebsiteCollectionEventListenerException('Unable to delete the website.');
+        }
+    }
+
     public function onEvent($eventName, array $eventArgs) {        
         $this->$eventName(current($eventArgs));
     }

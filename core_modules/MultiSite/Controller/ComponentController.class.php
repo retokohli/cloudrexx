@@ -1189,7 +1189,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         //  Terminate the cancelled subscription.
         $this->disableCancelledWebsites();
     }
-    
+
     /**
      * Terminate the cancelled subscription.
      * 
@@ -2023,7 +2023,9 @@ throw new MultiSiteException('Refactor this method!');
         $websiteCollectionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteCollectionEventListener();
         $evm->addModelListener('terminated', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
         $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
-        
+
+        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection', $websiteCollectionEventListener);
+
         //OrderPayment event Listener
         $orderPaymentEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderPaymentEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
