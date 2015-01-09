@@ -1198,7 +1198,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function disableCancelledWebsites()
     {
         $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-        $subscriptions    = $subscriptionRepo->getAllCancelledSubscriptions();
+        $subscriptions    = $subscriptionRepo->getExpiredCancelledSubscriptions();
         
         if (\FWValidator::isEmpty($subscriptions)) {
             return;
