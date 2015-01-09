@@ -137,10 +137,15 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                                 if (isset($referenceArry[2]) && !empty($referenceArry[2])) {
                                     $subscription->setExternalSubscriptionId($referenceArry[2]);
                                 }
-                            }                            
-                            $transactionData = $payment->getTransactionData();                            
-                            if (!\FWValidator::isEmpty($transactionData) && !\FWValidator::isEmpty($transactionData['contact']['id'])) {                                
-                                $objUser->setProfile(array(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId') => $transactionData['contact']['id']));
+                            }
+                            $transactionData = $payment->getTransactionData();
+                            if (!\FWValidator::isEmpty($transactionData) && !\FWValidator::isEmpty($transactionData['contact']['id'])) {
+                                $objUser->setProfile(
+                                        array(
+                                            \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId') => array(0 => $transactionData['contact']['id'])
+                                        )
+                                );
+                                
                                 if (!$objUser->store()) {
                                     \DBG::msg('Order::createOrder() Updating user failed: '.$objUser->getErrorMsg());
                                 }
