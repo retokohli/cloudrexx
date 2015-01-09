@@ -3997,8 +3997,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
             $response = $payrexx->create($authToken);
 
-            if ($response && $response['status'] == 'success' && !\FWValidator::isEmpty($response['data'])) {
-                return array('status' => 'success', 'autoLoginUrl' => $response['data']['link']);
+            if (   !\FWValidator::isEmpty($response)
+                && $response instanceof \Payrexx\Models\Response\AuthToken
+                && !\FWValidator::isEmpty($response->getLink())
+            ) {
+                return array('status' => 'success', 'autoLoginUrl' => $response->getLink());
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
         } catch (\Payrexx\PayrexxException $e) {

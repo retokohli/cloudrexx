@@ -86,6 +86,7 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'] = 'Die angeforderte Website ist 
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'] = 'Zugriff verweigert';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_WEBSITES'] = 'Webseiten';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_PAYMENTS'] = 'Zahlungen';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED'] = 'Die Verwaltung der Zahlungen kann zur Zeit nicht geöffnet werden.';
 
 // Subscription active
 $_ARRAYLANG['TXT_MULTISITE_REFERENCE_NUMBER'] = 'Referenz-Nr.';
