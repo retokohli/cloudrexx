@@ -22,14 +22,16 @@ namespace Cx\Core_Modules\Listing\Model\Entity;
  * @package     contrexx
  * @subpackage  coremodule_listing
  */
-class EntityInterface implements Exportable, Importable {
+class EntityInterface implements Exportable, Importable
+{
 
     protected $entityClass;
 
     /**
      * constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         
     }
 
@@ -40,44 +42,62 @@ class EntityInterface implements Exportable, Importable {
      * 
      * @return array return as entity object array
      */
-    public function export($data) {
+    public function export($data) 
+    {
         if (empty($data)) {
             return;
         }
-        $em = \Env::get('em');
-        $entityClassMetaData = $em->getClassMetadata($this->entityClass);
-        $repository = $em->getRepository($this->entityClass);
-
-        $entityArray = current($data);
         
-        $entityObj = null;
-        $primaryKeyName = $entityClassMetaData->getSingleIdentifierFieldName();
+        $em = \Env::get('em');
+        $entityClassMetaData    = $em->getClassMetadata($this->entityClass);
+        $repository             = $em->getRepository($this->entityClass);
+        
+        foreach ($data as $entityArray) {
+            
+            $entityObj = null;
+            $primaryKeyName = $entityClassMetaData->getSingleIdentifierFieldName();
 
-        if (!empty($entityArray[$primaryKeyName])) {
-            $entityObj = $repository->findOneBy(array($primaryKeyName => $entityArray[$primaryKeyName]));
-        }
-        if (!$entityObj) {
-            $entityObj = new $this->entityClass();
-        }
-        //get the association mappings
-        $associationMappings = $entityClassMetaData->getAssociationMappings();
-        //class methods
-        $classMethods = get_class_methods($entityObj);
-
-        foreach ($entityArray as $field => $methodValue) {
-            if (!array_key_exists($field, $associationMappings)) {
-                $entityObj->{'set' . ucfirst($field)}($methodValue);
-            } else {
-                if ($entityClassMetaData->isSingleValuedAssociation($field) && in_array('set' . ucfirst($field), $classMethods)) {
-                    $col = $associationMappings[$field]['joinColumns'][0]['referencedColumnName'];
-                    $association = \Env::get('em')->getRepository($associationMappings[$field]['targetEntity'])->findOneBy(array($col => $methodValue));
-                    if ($association) {
-                        $entityObj->{'set' . ucfirst($field)}($association);
-                    }
-                }
+            if (!empty($entityArray[$primaryKeyName])) {
+                $entityObj = $repository->findOneBy(array($primaryKeyName => $entityArray[$primaryKeyName]));
             }
+
+            if (!$entityObj) {
+                $entityObj = new $this->entityClass();
+            }
+            //get the association mappings
+            $associationMappings = $entityClassMetaData->getAssociationMappings();
+            //class methods
+            $classMethods = get_class_methods($entityObj);
+
+            foreach ($entityArray as $entityField => $entityValue) {
+                $associationObj = null;
+                
+                if (!in_array('set' . ucfirst($entityField), $classMethods)) {
+                    continue;
+                }
+                
+                if ($entityClassMetaData->isSingleValuedAssociation($entityField)) {  
+                    
+                    $targetEntity = $associationMappings[$entityField]['targetEntity'];
+                    
+                    $mappingEntityField = $em->getClassMetadata($targetEntity)->getSingleIdentifierFieldName();
+                    $mappingEntityValue = is_array($entityValue) ? $entityValue[$mappingEntityField] : $entityValue;                    
+                    $associationObj = $em->getRepository($targetEntity)->findOneBy(array($mappingEntityField => $mappingEntityValue));
+                    
+                    if (!$associationObj) {
+                        $associationObj = new $targetEntity();
+                    }
+                    foreach ($entityValue as $method => $value) {
+                        $associationObj->{'set' . ucfirst($method)}($value);
+                    }
+                    $entityValue = $associationObj;
+                }
+                
+                $entityObj->{'set' . ucfirst($entityField)}($entityValue);
+                
+            }
+            $entities[] = $entityObj;
         }
-        $entities[] = $entityObj;
         return $entities;
     }
 
@@ -86,7 +106,8 @@ class EntityInterface implements Exportable, Importable {
      * 
      * @param string $entityClass
      */
-    public function setEntityClass($entityClass) {
+    public function setEntityClass($entityClass) 
+    {
         $this->entityClass = $entityClass;
     }
 
@@ -96,12 +117,13 @@ class EntityInterface implements Exportable, Importable {
      * @param  object $object entity object
      * @return array  return as array
      */
-    public function import($object) {
+    public function import($object)
+    {
 
         if (!is_object($object)) {
             return;
         }
-
+            
         $em = \Env::get('em');
         $associationEntityColumns = array();
 
@@ -134,7 +156,8 @@ class EntityInterface implements Exportable, Importable {
      * 
      * @return array
      */
-    public function getColumnNamesByEntity($entityObject) {
+    public function getColumnNamesByEntity($entityObject) 
+    {
         $data = array();
         $entityClassMetaData  =  \Env::get('em')->getClassMetadata(get_class($entityObject));
         foreach ($entityClassMetaData->getColumnNames() as $column) {
