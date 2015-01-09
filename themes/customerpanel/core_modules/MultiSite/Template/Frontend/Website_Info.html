@@ -32,12 +32,16 @@
 </div>
 <script type="text/javascript">
 /* <![CDATA[ */
-    jQuery(document).ready(function() {
-      if (jQuery('.websiteView').length > 0) {
+    var websiteStatusUrl;
+    var cadminPath;
+    cx.ready(function() {
+        cadminPath      = cx.variables.get('cadminPath', 'contrexx');
+        websiteStatusUrl = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=updateOwnWebsiteState';
+        if (jQuery('.websiteView').length > 0) {
           jQuery('.website_activate').hide();
-      } else {
-          jQuery('.website_deactivate').hide();
-      }
+        } else {
+            jQuery('.website_deactivate').hide();
+        }
     });
     
     function deleteWebsite() {
@@ -68,7 +72,7 @@
       var buttonStatus = ($this.data('status') == 'offline') ? true : false;
         jQuery.ajax({
           dataType: 'json',
-          url     : '{MULTISITE_WEBSITE_STATUS_CHANGE_URL}',
+          url     : websiteStatusUrl,
           data: { websiteId : '{MULTISITE_WEBSITE_ID}'},
           type: 'POST',
           beforeSend: function () {
