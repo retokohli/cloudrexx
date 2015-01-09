@@ -526,7 +526,7 @@
             jQuery('.amt').hide();
             jQuery('.' + $class + '-prices').show();
         });
-        
+        // cadminPath => available in customerPanel.js
         var subscriptionOptions = {
           id : '{MULTISITE_SUBSCRIPTION_ID}',
           addErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_FAILED}',
@@ -536,8 +536,9 @@
           upgradePaymentErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED}',
           upgradeHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED}',
           websiteName : '{MULTISITE_WEBSITE_NAME}',
-          paymentUrl  : '{MULTISITE_OPTION_PAYMENTURL}',
-          ajaxUrl  : '{MULTISITE_SUBSCRIPTION_SELECTION_URL}'
+          paymentUrl  : cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl',
+          ajaxUrl  : cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=manageSubscription',
+          hasPayrexxAccount : '{MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT}'
         };
        
        var subscriptionType = ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') ? 'upgrade' : 'add';
@@ -589,14 +590,13 @@
             $this.addClass('subscriptionProduct');
             
             if (getProductPrice($this)) {
-                if (!validUrl(subscriptionOptions.paymentUrl)) {
+                if (subscriptionOptions.hasPayrexxAccount) {
                     manageSubscription($this);
                     return;
                 } else {
                     setPaymentUrl($this);
                 }
-            } else {
-                jQuery('#SubscriptionSelection').modal('hide');
+            } else {                
                 manageSubscription($this);
             }
         }
@@ -644,11 +644,10 @@
                     || (jQuery.trim($productId) == '')
                     || (jQuery.trim($renewalOption) == '')
                 ) {
+                jQuery('#SubscriptionSelection').modal('hide');
                 showMessage(subscriptionOptions[subscriptionType+'ErrorTxt'], 'error');
                 return false;
             }
-            
-            showMessage('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" />   '+subscriptionOptions[subscriptionType+'HeaderErrorTxt'],  'info');
             
             jQuery.ajax({
                 dataType: "json",
@@ -660,6 +659,10 @@
                     renewalOption: $renewalOption
                 },
                 type: "POST",
+                beforeSend: function() {
+                  jQuery('#SubscriptionSelection').modal('hide');
+                  showMessage('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" />   '+subscriptionOptions[subscriptionType+'HeaderErrorTxt'],  'info');
+                },
                 success: function (response) {
                     if (response.status == 'success') {
                         $resp = response.data;
