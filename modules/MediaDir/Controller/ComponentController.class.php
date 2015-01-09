@@ -38,7 +38,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objMediaDirectory->pageTitle = \Env::get('cx')->getPage()->getTitle();
                     $objMediaDirectory->metaTitle = $page_metatitle;
                     \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
-                    if ($objMediaDirectory->getPageTitle() != '') {
+                    if ($objMediaDirectory->getPageTitle() != '' && $objMediaDirectory->getPageTitle() != \Env::get('cx')->getPage()->getTitle()) {
                         \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
                         \Env::get('cx')->getPage()->setContentTitle($objMediaDirectory->getPageTitle());
                         \Env::get('cx')->getPage()->setMetaTitle($objMediaDirectory->getPageTitle());
