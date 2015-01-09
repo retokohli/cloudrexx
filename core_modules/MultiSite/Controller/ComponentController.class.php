@@ -416,11 +416,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $websiteId = isset($arguments['id']) ? $arguments['id'] : 0;
         $subscriptionId = isset($arguments['subscriptionId']) ? $arguments['subscriptionId'] : 0;
-        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $mainDomain = $domainRepository->getMainDomain()->getName();
-        $subscriptionUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=manageSubscription');
-        $paymentUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl');
-
+        
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         $objUser = \FWUser::getFWUserObject()->objUser;
         $crmContactId = $objUser->getCrmUserId();
@@ -478,12 +474,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'];
         }
         
-        $payrexxModelUrl = '';
-        // user has external payment account
-        if (\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId')))) {
-            $payrexxModelUrl = $paymentUrl->toString();
-        }
-        
         foreach ($products as $product) {
             $productName = contrexx_raw2xhtml($product->getName());
             $productPrice = $product->getPrice();
@@ -499,11 +489,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             ));
             $objTemplate->parse('showProduct');
         }
-        $objTemplate->setVariable( array(
-            'MULTISITE_SUBSCRIPTION_SELECTION_URL' => $subscriptionUrl->toString(),
-            'MULTISITE_SUBSCRIPTION_ID'            => $subscriptionId,
-            'MULTISITE_WEBSITE_NAME'               => $websiteName,
-            'MULTISITE_OPTION_PAYMENTURL'          => $payrexxModelUrl
+        $objTemplate->setVariable(array(
+            'MULTISITE_SUBSCRIPTION_ID'             => $subscriptionId,
+            'MULTISITE_WEBSITE_NAME'                => $websiteName,            
+            'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => \FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'))) ? '1' : '0',
         ));
         return $objTemplate->get();
     }
