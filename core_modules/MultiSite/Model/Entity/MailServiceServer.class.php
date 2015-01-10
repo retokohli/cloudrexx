@@ -315,7 +315,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     public function createAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
-        $resp = JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
+        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
         $mainDomain = '';
         if ($resp->status == 'success' && $resp->data->status == 'success') {
             $mainDomain = $resp->data->mainDomain;
