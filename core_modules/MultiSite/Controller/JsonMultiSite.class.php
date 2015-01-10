@@ -134,6 +134,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateOwnWebsiteState'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
             'getMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'setMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'deleteAccount'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),            
         );  
     }
 
@@ -4034,6 +4035,61 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (\Exception $e) {
             \DBG::log('JsonMultiSite::getMainDomain() failed:' . $e->getMessage());
             throw new MultiSiteJsonException('JsonMultiSite::getMainDomain() failed: to get the main domain');
+        }
+        
+    }
+    
+    /**
+     * Delete the website Account
+     * 
+     * @return array
+     */
+    public function deleteAccount() 
+    {
+        global $_ARRAYLANG;
+        
+        try {
+            if (!ComponentController::isUserLoggedIn()) {
+            \DBG::log($_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS']);
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_FAILED']);
+            }
+
+            $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+            if (\FWValidator::isEmpty($crmContactId)) {
+                \DBG::log($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_FAILED']);
+            }
+
+            $orders = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->findBy(array('contactId' => $crmContactId));
+            if (\FWValidator::isEmpty($orders)) {
+                \DBG::log('Their is no order for this user.');
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_FAILED']);
+            }
+            
+            foreach ($orders as $order) {
+                $subscriptions = $order->getSubscriptions();
+                if (\FWValidator::isEmpty($subscriptions)) {
+                    continue;
+                }
+                foreach ($subscriptions as $subscription) {
+
+                    if ($subscription->getState() != \Cx\Modules\Order\Model\Entity\Subscription::STATE_TERMINATED) {
+                        $subscription->terminate();
+                    }
+                    
+                    $productEntity = $subscription->getProductEntity();
+                    if (!\FWValidator::isEmpty($productEntity)) {
+                        \Env::get('em')->remove($productEntity);
+                    }
+                }
+            }
+            
+            \Env::get('em')->flush();
+            $marketingWebsiteUrl = ComponentController::getApiProtocol().\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
+            return array('status' => 'success', 'marketingWebsiteUrl' => $marketingWebsiteUrl);
+        } catch (\Exception $e) {
+             \DBG::log('JsonMultiSite::deleteAccount() failed:' . $e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_FAILED']);
         }
         
     }

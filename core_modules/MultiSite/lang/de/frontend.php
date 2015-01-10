@@ -18,3 +18,12 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_EMAIL'] = 'E-Mail';
 
 // customer panel
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION'] = 'Abo';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE'] = 'Konto löschen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_CONFIRM_CONTENT'] = 'Sie sind dabei Ihr Konto zu löschen. Dieser Vorgang wird all Ihre Daten und allfällig zu diesem Konto dazugehörende Websites löschen. Allfällige noch aktive Abos werden weiterhin bis zu deren ordentlichen Kündigungstermin in Rechnung gestellt. 
+                                                                                       Ihre Bestellungen und der Transaktionsverlauf wird zu buchhalterischen Zwecken archiviert. Dieser Vorgang kann nicht rückgängig gemacht werden. All Ihre Daten werden unwiderruflich gelöscht. Bitte aktivieren Sie das folgende Auswahlkästchen zur Bestätigung der Löschung Ihres Kontos.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_CONFIRM_LABEL'] = 'Ich bestätige mein Konto und die dazugehörigen Daten und Websites unwiderruflich zu löschen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_INPROGRESS'] = 'Ihr Konto wird gelöscht...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETED'] = 'Konto geöscht';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETED_SUCCESS'] = 'Ihr Konto wurde gelöscht. Sie werden vom System nun abgemeldet.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BUTTON_OK'] = 'Ok';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Abbrechen';

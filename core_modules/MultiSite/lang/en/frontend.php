@@ -57,3 +57,12 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_EMAIL'] = 'E-Mail';
 
 // customer panel
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION'] = 'Subscription';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE'] = 'Delete account';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_CONFIRM_CONTENT'] = "You are about to delete your account. This will delete all of your data including any websites associated to this account. Any active subscriptions will still be billed until the next termination date. Your orders and associated transaction history will be archived. 
+                                                                                       This operation can't be undone. All of your data will be permanently erased. Check the following box to confirm to delete your account.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_CONFIRM_LABEL'] = 'I confirm to delete my account and to permanently erase all of my data and websites';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_INPROGRESS'] = 'Your account is being erased...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETED'] = 'Account deleted';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETED_SUCCESS'] = 'Your account has been erased. You will now be sign-off from the system.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BUTTON_OK'] = 'Ok';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Cancel';
