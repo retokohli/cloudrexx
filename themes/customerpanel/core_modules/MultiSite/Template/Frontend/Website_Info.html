@@ -33,10 +33,12 @@
 <script type="text/javascript">
 /* <![CDATA[ */
     var websiteStatusUrl;
+    var websiteDeleteUrl;
     var cadminPath;
     cx.ready(function() {
         cadminPath      = cx.variables.get('cadminPath', 'contrexx');
         websiteStatusUrl = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=updateOwnWebsiteState';
+        websiteDeleteUrl = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=destroyWebsite';
         if (jQuery('.websiteView').length > 0) {
           jQuery('.website_activate').hide();
         } else {
@@ -47,7 +49,7 @@
     function deleteWebsite() {
         jQuery.ajax({
             dataType: 'json',
-            url: '{MULTISITE_WEBSITE_DELETE_SUBMIT_URL}',
+            url: websiteDeleteUrl,
             data: {websiteId: '{MULTISITE_WEBSITE_ID}' },
             type: 'POST',
             beforeSend: function() {
