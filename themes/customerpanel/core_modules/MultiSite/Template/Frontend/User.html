@@ -17,7 +17,7 @@
 </div>
 
 <div class="grid-elm grid-align-1-1 grid-offset">
-    <button type="button">Delete account</button>
+    <button type="button" data-target="#deleteWebsiteAccount" data-toggle="modal">{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE}</button>
 </div>
 
 <div class="modal fade" id="multisite_settings_contact" tabindex="-1" role="dialog" aria-labelledby="multisite_settings_contact_label" aria-hidden="true">
@@ -32,25 +32,103 @@
         </div>
     </div>
 </div>   
+
+<div aria-hidden="true" class="modal fade" id="deleteWebsiteAccount" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="grid-elm grid-align-1-1 grid-offset">
+                    <div class="row">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+
+                        <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE}</h2>
+                        <div class="grid-offset-bottom">
+                            {TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_CONFIRM_CONTENT}
+                            <span class="grid-align-1-1 grid-offset-top" ><label> <input type="checkbox" id="delete_account_confirm"/> {TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_CONFIRM_LABEL}</label></span>
+                        </div>
+
+                        <button type="submit" class="save"  onclick="deleteAccount();">{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE}</button>
+                        <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
   
 <script type="text/javascript">
 /* <![CDATA[ */
-jQuery(document).ready(function() {
-    function  loadContent(jQuerySelector, url) {
-        jQuery.ajax({
-            dataType: 'html',
-            url: url,
-            type: 'GET',
-            success: function(data) {
-                if (data) {
-                    jQuery(jQuerySelector).html(data);
-                }
-            },
-            fail: function(data) {}
-        });
-    }                                                                       
-    loadContent('#multisite_user_address', '/api/MultiSite/User/Address');
-    loadContent('#multisite_user_contact', '/api/MultiSite/User/Contact');
+var websiteAccountDeleteUrl ='';
+cx.ready(function() {
+    jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
+        loadContent('#multisite_user_address', '/api/MultiSite/User/Address');
+        loadContent('#multisite_user_contact', '/api/MultiSite/User/Contact');
+    });
+  cadminPath      = cx.variables.get('cadminPath', 'contrexx');
+  websiteAccountDeleteUrl = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=deleteAccount';
 });
+
+function deleteAccount() {
+      if (jQuery('#delete_account_confirm:checked').length < 1) {
+         return false;
+      }
+      
+      $oldModalText = jQuery('#deleteWebsiteAccount').find('.modal-content .modal-body').html();
+      jQuery.ajax({
+            dataType: 'json',
+            url: websiteAccountDeleteUrl,
+            type: 'POST',
+            beforeSend: function() {
+                text = '<span>{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_INPROGRESS}</span> <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />';
+                jQuery('#deleteWebsiteAccount').find('.modal-content .modal-body').html(text);
+            },
+            success: function(response) {
+              $this = jQuery('#deleteWebsiteAccount').find('.modal-content .modal-body');
+              $this.html('');
+              if (response.status == 'success' && response.data.status == 'success') {
+                  modifyModalContent($this);
+                  jQuery('#deleteWebsiteAccount').on('hidden.bs.modal', function () {
+                    window.location.href = response.data.marketingWebsiteUrl;
+                  });
+              } else {
+                  message = (response.status == 'error') ? response.message : response.data.message;
+                  jQuery('#deleteWebsiteAccount').modal('hide');
+                  showMessage(message, 'error');//show status message
+                  $this.append($oldModalText);
+              }
+            }
+        });
+    }
+    
+    function modifyModalContent($this) {
+      var responseModal = jQuery('<div />');
+      var closeButton   = jQuery('<button />');
+      var row           = jQuery('<div />').addClass('row');    
+      
+      responseModal
+              .addClass('grid-elm grid-align-1-1 grid-offset');
+      closeButton.addClass('close')
+                 .attr('data-dismiss', 'modal');
+      jQuery('<span />')
+              .attr('aria-hidden',true)
+              .html('&times;')
+              .appendTo(closeButton);
+      jQuery('<span />')
+              .addClass('sr-only')
+              .html('Close')
+              .appendTo(closeButton);
+      closeButton.appendTo(row);
+      jQuery('<h2 />').html('{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETED}')
+              .appendTo(row);
+      jQuery('<div />')
+              .addClass('grid-offset-bottom')
+              .html('{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETED_SUCCESS}').appendTo(row);
+      jQuery('<button />')
+              .attr('data-dismiss', 'modal')
+              .html('{TXT_CORE_MODULE_MULTISITE_WEBSITE_BUTTON_OK}')
+              .appendTo(row);
+      row.appendTo(responseModal);
+      return $this.append(responseModal);
+    }
 /* ]]> */
 </script>
