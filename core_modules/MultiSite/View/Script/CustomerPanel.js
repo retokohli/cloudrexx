@@ -22,7 +22,8 @@ function showMessage(msgTxt, type) {
     $content  = $objModal.find('.msg_text');
     
     $content.html(msgTxt);
-    $objModal.modal('show');
+    $objModal.modal({backdrop: false, show: true});
+    setTimeout(function() {$objModal.modal('hide');}, 5000);
 }
 
 function getQueryParams(qs) {
