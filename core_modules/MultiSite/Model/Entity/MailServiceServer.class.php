@@ -315,16 +315,33 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     public function createAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        $resp = JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
+        $mainDomain = '';
+        if ($resp->status == 'success' && $resp->data->status == 'success') {
+            $mainDomain = $resp->data->mainDomain;
+        }           
         $domain = $website->getBaseDn()->getName();
         $planId = isset($this->config['planId']) ? $this->config['planId'] : null;
         $role = isset($this->config['userRoleId']) ? $this->config['userRoleId'] : null;
-        if (empty($domain) || empty($role) || empty($this->ipAddress)) {
+        if (empty($domain) || empty($mainDomain) || empty($role) || empty($this->ipAddress)) {
+            \DBG::log('MailServiceServer(createAccount) Failed: Insufficent argument supplied.');
             return false;
         }
-        $subscriptionId = $hostingController->createSubscription($domain, $this->ipAddress, 1, $customerId = null, $planId);
+        $subscriptionId = $hostingController->createSubscription($mainDomain, $this->ipAddress, 1, $customerId = null, $planId);
         if ($subscriptionId) {
+            if ($hostingController instanceof \Cx\Core_Modules\MultiSite\Controller\PleskController) {
+                $hostingController->setWebspaceId($subscriptionId);
+            }
             $this->addWebsite($website);
             $hostingController->createUserAccount('info@'.$domain, \User::make_password(8, true), $role, $subscriptionId);
+            $domains = $website->getDomainAliases();
+            if (!\FWValidator::isEmpty($domains)) {
+                foreach ($domains as $domain) {
+                    if ($domain->getName() != $mainDomain) {
+                        $hostingController->createDomainAlias($domain->getName());
+                    }
+                }
+            }
             return $subscriptionId;
         }
         return false;

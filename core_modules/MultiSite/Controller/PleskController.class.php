@@ -848,7 +848,9 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     
     protected function getRpcPacket($xmldoc){
         $packet = $xmldoc->createElement('packet');
-        $packet->setAttribute('version', $this->apiVersion);
+        if (!\FWValidator::isEmpty($this->apiVersion)) {
+            $packet->setAttribute('version', $this->apiVersion);
+        }
         $xmldoc->appendChild($packet);
         return $packet;
     }
