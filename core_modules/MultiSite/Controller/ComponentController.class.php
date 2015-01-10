@@ -731,11 +731,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
             $websiteAdminUsers = $website->getAdminUsers();
             foreach ($websiteAdminUsers as $websiteAdminUser) {
-                self::showOrHideBlock($objTemplate, 'showWebsiteUsersAction', ($websiteAdminUser->email != \FWUser::getFWUserObject()->objUser->getEmail()));
+                self::showOrHideBlock($objTemplate, 'showWebsiteUsersAction', ($websiteAdminUser->getEmail() != \FWUser::getFWUserObject()->objUser->getEmail()));
                 $objTemplate->setVariable(array(
-                    'MULTISITE_WEBSITE_USER_NAME' =>  $websiteAdminUser->username,
-                    'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser->email,
-                    'MULTISITE_WEBSITE_USER_ID'    => $websiteAdminUser->id,
+                    'MULTISITE_WEBSITE_USER_NAME'  => $websiteAdminUser->getUsername(),
+                    'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser->getEmail(),
+                    'MULTISITE_WEBSITE_USER_ID'    => $websiteAdminUser->getId(),
                 ));
                 $objTemplate->parse('showWebsiteAdminUsers');
             }
@@ -958,7 +958,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         $langData = $objInit->loadLanguageData('core');
         $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-        
+                    
         if (!self::isUserLoggedIn()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
         }
@@ -1006,7 +1006,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objAttribute = $userObj->objAttribute->getById($userObj->objAttribute->getId());
                 $objAccessLib->parseAttribute($userObj, $objAttribute->getId(), 0, true, false, false, false, false);
                 $userObj->objAttribute->next();
-            }
+        }
             $objAccessLib->parseAccountAttributes($userObj);
         }
         
@@ -2420,51 +2420,34 @@ throw new MultiSiteException('Refactor this method!');
      * 
      * @return array returns admin users
      */
-    public static function getAllAdminUsers() {
+    public static function getAllAdminUsers()
+    {
         // check the mode
+        $adminUsers = array();
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_WEBSITE:
 
-                $objFWUser = \FWUser::getFWUserObject();
-                $users = array();
+                $userRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User');
+                $users = $userRepo->findBy(array('isAdmin' => '1'));
 
-                //get the backend group ids
-                $backendGroupIds = self::getBackendGroupIds();
                 
-                //get backend group users
-                $objBackendGroupUser = $objFWUser->objUser->getUsers(array('group_id' => $backendGroupIds));
-                if ($objBackendGroupUser) {
-                    while (!$objBackendGroupUser->EOF) {
-                        $users[$objBackendGroupUser->getId()] = array(
-                            'id' => contrexx_raw2xhtml($objBackendGroupUser->getId()),
-                            'email' => contrexx_raw2xhtml($objBackendGroupUser->getEmail()),
-                            'username' => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objBackendGroupUser->getId())),
-                            'firstname' => contrexx_raw2xhtml($objBackendGroupUser->getProfileAttribute('firstname')),
-                            'lastname' => contrexx_raw2xhtml($objBackendGroupUser->getProfileAttribute('lastname'))
-                        );
-                        $objBackendGroupUser->next();
-                    }
+                foreach ($users as $user) {
+                    $adminUsers[$user->getId()] = $user;
                 }
 
-                //get Admin users
-                $objAdminUser = $objFWUser->objUser->getUsers(array('is_admin' => 1));
-                if ($objAdminUser) {
-                    while (!$objAdminUser->EOF) {
-                        if (!array_key_exists($objAdminUser->getId(), $users)) {
-                            $users[$objAdminUser->getId()] = array(
-                                'id' => contrexx_raw2xhtml($objAdminUser->getId()),
-                                'email' => contrexx_raw2xhtml($objAdminUser->getEmail()),
-                                'username' => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objAdminUser->getId())),
-                                'firstname' => contrexx_raw2xhtml($objAdminUser->getProfileAttribute('firstname')),
-                                'lastname' => contrexx_raw2xhtml($objAdminUser->getProfileAttribute('lastname'))
-                            );
+                $groupRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\Group');
+                $groups = $groupRepo->findBy(array('type' => 'backend'));
+
+                foreach ($groups as $group) {
+                    foreach ($group->getUser() as $user) {
+                        if (!array_key_exists($user->getId(), $adminUsers)) {
+                            $adminUsers[$user->getId()] = $user;
                         }
-                        $objAdminUser->next();
                     }
-                }
-                return $users;
+                }                
                 break;
         }
+        return $adminUsers;
     }
     
     /**

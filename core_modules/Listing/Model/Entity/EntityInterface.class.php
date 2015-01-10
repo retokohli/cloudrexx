@@ -51,6 +51,7 @@ class EntityInterface implements Exportable, Importable
         $em = \Env::get('em');
         $entityClassMetaData    = $em->getClassMetadata($this->entityClass);
         $repository             = $em->getRepository($this->entityClass);
+        $entities    = array();
         
         foreach ($data as $entityArray) {
             
@@ -114,39 +115,51 @@ class EntityInterface implements Exportable, Importable
     /**
      * This function is used to convert the entity object into array.
      * 
-     * @param  object $object entity object
+     * @param  mixed Single or array of entity objects     
+     * 
      * @return array  return as array
      */
-    public function import($object)
+    public function import($data)
     {
-
-        if (!is_object($object)) {
-            return;
+        // convert data into a array if its not an array
+        if (!is_array($data)) {
+            $data = array($data);
         }
-            
-        $em = \Env::get('em');
-        $associationEntityColumns = array();
 
-        $entityClassMetaData = $em->getClassMetadata(get_class($object));
-        $associationMappings = $entityClassMetaData->getAssociationMappings();
-        if (!empty($associationMappings)) {
-            foreach ($associationMappings as $field => $associationMapping) {
-                if ($entityClassMetaData->isSingleValuedAssociation($field) && in_array('get' . ucfirst($field), get_class_methods($object))) {
-                    $associationObject = $object->{'get' . ucfirst($field)}();
-                    if ($associationObject) {
-                        //get association columns
-                        $associationEntityColumn = $this->getColumnNamesByEntity($associationObject);
-                        $associationEntityColumns[$field] = !\FWValidator::isEmpty($associationEntityColumn) ? $associationEntityColumn : '';
+        //create array from objects 
+        $resultArr = array();
+        foreach ($data as $object) {
+
+            if (!is_object($object) && !$object instanceof \Cx\Model\Base\EntityBase) {
+                return;
+            }
+
+            $em = \Env::get('em');
+            $associationEntityColumns = array();
+
+            $entityClassMetaData = $em->getClassMetadata(get_class($object));
+            $associationMappings = $entityClassMetaData->getAssociationMappings();
+            if (!empty($associationMappings)) {
+                foreach ($associationMappings as $field => $associationMapping) {
+                    if ($entityClassMetaData->isSingleValuedAssociation($field) && in_array('get' . ucfirst($field), get_class_methods($object))) {
+                        $associationObject = $object->{'get' . ucfirst($field)}();
+                        if ($associationObject) {
+                            //get association columns
+                            $associationEntityColumn = $this->getColumnNamesByEntity($associationObject);
+                            $associationEntityColumns[$field] = !\FWValidator::isEmpty($associationEntityColumn) ? $associationEntityColumn : '';
+                        }
                     }
                 }
             }
-        }
-        //get entity columns    
-        $entityColumns = $this->getColumnNamesByEntity($object);
-        $resultData = array_merge($entityColumns, $associationEntityColumns);
-        $resultData['virtual'] = $object->isVirtual();
+            //get entity columns    
+            $entityColumns = $this->getColumnNamesByEntity($object);
+            $resultData = array_merge($entityColumns, $associationEntityColumns);
+            $resultData['virtual'] = $object->isVirtual();
 
-        return array($resultData);
+            $resultArr[] = $resultData;
+        }
+        
+        return $resultArr;
     }
     
     /**

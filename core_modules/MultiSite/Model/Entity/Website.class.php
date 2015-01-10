@@ -1733,14 +1733,32 @@ throw new WebsiteException('implement secret-key algorithm first!');
     /**
      * get the website admin and backend group users
      * 
-     * @return array data
+     * @return object $adminUsers return adminusers as objects.
+     * 
      * @throws WebsiteException
      */
-    public function getAdminUsers() {
+    public function getAdminUsers() 
+    {
+        $adminUsers = array();
+        $usersArray = array();
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getAdminUsers', array(), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
-                return $resp->data->users;
+                
+                // convert the json object to array
+                foreach ($resp->data->users as $user) {
+                    $usersArray[] = (array) $user;            
+                }
+                
+                if (\FWValidator::isEmpty($usersArray)) {
+                    return;
+                }
+                
+                $objDataSet         = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($usersArray);
+                $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
+                $objEntityInterface->setEntityClass('Cx\Core\User\Model\Entity\User');
+                $adminUsers = $objDataSet->export($objEntityInterface);
+                return $adminUsers;
             }
         } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
             throw new WebsiteException('Unable get admin users: '.$e->getMessage());

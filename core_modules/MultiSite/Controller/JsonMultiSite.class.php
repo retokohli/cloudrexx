@@ -3849,11 +3849,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return array users
      */
-    public function getAdminUsers() {
+    public function getAdminUsers() 
+    {
         try {
-            $users = ComponentController::getAllAdminUsers();
-            if (!empty($users)) {
-                return array('status' => 'success', 'users' => $users);
+            $adminUsers         = ComponentController::getAllAdminUsers();            
+            $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
+            
+            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::import($objEntityInterface, $adminUsers);
+            
+            if (!\FWValidator::isEmpty($objDataSet)) {                
+                return array('status' => 'success', 'users' => $objDataSet->toArray());
             }
             return array('status' => 'error');
         } catch (Exception $e) {
