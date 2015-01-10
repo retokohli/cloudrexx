@@ -468,11 +468,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 
                 $subscriptionOptions['baseSubscription'] = $subscriptionObj;
             }
-                        
+
             if (!\FWValidator::isEmpty($websiteName)) {
-                $transactionReference = $productId. '-name-'. $websiteName;
+                $transactionReference = $product->getId(). '-name-'. $websiteName;
             } else {
-                $transactionReference = $productId . '-owner-' . $objUser->getId();
+                $transactionReference = $product->getId() . '-owner-' . $objUser->getId();
             }
             
             $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
@@ -484,27 +484,36 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $apiSecret    = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
                 $payrexx      = new \Payrexx\Payrexx($instanceName, $apiSecret);
 
-                if (!\FWValidator::isEmpty($externalSubscriptionId)) {
-                    $requestSubscription = new \Payrexx\Models\Request\Subscription();
-                
-                    //update amount deatails in subscription
-                    $requestSubscription->setId($externalSubscriptionId);
-                    $requestSubscription->setAmount($productPrice);
-                    $requestSubscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);                
+                $subscription = new \Payrexx\Models\Request\Subscription();
+                $subscription->setUserId(1);
+                $subscription->setPurpose($transactionReference);
+                //update amount deatails in subscription                                
+                $subscription->setAmount($productPrice * 100);
+                $subscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);                
 
-                    try {
-                        $subscription = $payrexx->update($requestSubscription);
+                list($subscriptionPeriod, $subscriptionInterval, $cancellationInterval)
+                        = self::getSubscriptionPeriodAndIntervalsByProduct($product, $renewalUnit, $renewalQuantifier);
+                // set payment interval
+                $subscription->setPaymentInterval(\DateTimeTools::getDateIntervalAsString($subscriptionInterval));
 
-                        if ($subscription->getAmount() != $productPrice * 100) {
-                            \DBG::log('Payment details are not matched.');
-                            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
-                        }
-                    } catch (\Payrexx\PayrexxException $e) {
-                        \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED'].': '.$e->getMessage());
-                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
+                // set subscription period
+                $subscription->setPeriod(\DateTimeTools::getDateIntervalAsString($subscriptionPeriod));
+
+                // set cancellation period
+                $subscription->setSubscriptionCancellationInterval(\DateTimeTools::getDateIntervalAsString($cancellationInterval));
+            
+                try {
+                    $response = $payrexx->create($subscription);
+                    
+                    if (   !$response
+                        || !$response instanceof \Payrexx\Models\Response\Subscription
+                        || $response->getAmount() != $productPrice * 100) {
+                        \DBG::log('Payment details are not matched.');
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
                     }
-                } else {
-                    // TO-DO: Create new subscription
+                } catch (\Payrexx\PayrexxException $e) {
+                    \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED'].': '.$e->getMessage());
+                    throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
                 }
             }
             
@@ -525,6 +534,41 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'message'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED'],
             ));
         }
+    }
+    
+    /**
+     * Get the subscription period and intervals by given product
+     * 
+     * @param \Cx\Modules\Pim\Model\Entity\Product $product
+     * @param string                               $renewalUnit
+     * @param integer                              $renewalQuantifier
+     * 
+     * @return array returns array 
+     *               \DateInterval $subscriptionPeriod => subscription period
+     *               \DateInterval $subscriptionInterval => subscription interval
+     *               \DateInterval $cancellationInterval => subscriptio cancellation interval
+     */
+    public static function getSubscriptionPeriodAndIntervalsByProduct(\Cx\Modules\Pim\Model\Entity\Product $product, $renewalUnit, $renewalQuantifier)
+    {
+        $subscriptionInterval = \DateInterval::createFromDateString($renewalUnit .' '. $renewalQuantifier);
+        
+        // set subscription period
+        $expirationInterval = \DateInterval::createFromDateString("{$product->getExpirationQuantifier()} {$product->getExpirationUnit()}");
+        $subscriptionIntervalDateTime = new \DateTime();
+        $expirationIntervalDateTime = clone $subscriptionIntervalDateTime;
+        $subscriptionIntervalDateTime->add($subscriptionInterval);
+        $expirationIntervalDateTime->add($expirationInterval);
+        // in case the subscription interval is greater than the subscription period (expiration interval), then we shall extend the subscription period accordingly
+        if ($subscriptionIntervalDateTime > $expirationIntervalDateTime) {
+            $subscriptionPeriod = $subscriptionInterval;
+        } else {
+            $subscriptionPeriod = $expirationInterval;
+        }
+
+        // set cancellation period
+        $cancellationInterval = \DateInterval::createFromDateString("{$product->getCancellationQuantifier()} {$product->getCancellationUnit()}");        
+        
+        return array($subscriptionPeriod, $subscriptionInterval, $cancellationInterval);
     }
     
     /**
@@ -3095,31 +3139,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $invoice->setSubscriptionState(true);
 
+            list($subscriptionPeriod, $subscriptionInterval, $cancellationInterval)
+                        = self::getSubscriptionPeriodAndIntervalsByProduct($product, $renewalUnit, $renewalQuantifier);
+            
             // set payment interval
-            $subscriptionInterval = \DateInterval::createFromDateString($renewalUnit .' '. $renewalQuantifier);
             $invoice->setSubscriptionInterval(\DateTimeTools::getDateIntervalAsString($subscriptionInterval));
 
             // set subscription period
-            $expirationInterval = \DateInterval::createFromDateString("{$product->getExpirationQuantifier()} {$product->getExpirationUnit()}");
-            $subscriptionIntervalDateTime = new \DateTime();
-            $expirationIntervalDateTime = clone $subscriptionIntervalDateTime;
-            $subscriptionIntervalDateTime->add($subscriptionInterval);
-            $expirationIntervalDateTime->add($expirationInterval);
-            // in case the subscription interval is greater than the subscription period (expiration interval), then we shall extend the subscription period accordingly
-            if ($subscriptionIntervalDateTime > $expirationIntervalDateTime) {
-                $subscriptionPeriod = $subscriptionInterval;
-            } else {
-                $subscriptionPeriod = $expirationInterval;
-            }
             $invoice->setSubscriptionPeriod(\DateTimeTools::getDateIntervalAsString($subscriptionPeriod));
 
             // set cancellation period
-            $cancellationInterval = \DateInterval::createFromDateString("{$product->getCancellationQuantifier()} {$product->getCancellationUnit()}");
             $invoice->setSubscriptionCancellationInterval(\DateTimeTools::getDateIntervalAsString($cancellationInterval));
 
             $response = $payrexx->create($invoice);            
             if ($response instanceof \Payrexx\Models\Response\Invoice && !\FWValidator::isEmpty($response->getLink())) {
-                return array('status' => 'success', 'link' => $response->getLink() . '&appview=1');
+                return array('status' => 'success', 'link' => $response->getLink());
             }
         } catch (\Payrexx\PayrexxException $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: to get the payrexx url: ' . $e->getMessage());
