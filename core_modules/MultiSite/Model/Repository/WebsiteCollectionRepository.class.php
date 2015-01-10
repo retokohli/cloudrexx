@@ -49,7 +49,9 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
         } else {            
             //Initialize new website
             $websiteThemeId = isset($saleOptions['themeId']) ? $saleOptions['themeId'] : null;
-            $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($saleOptions['websiteName'], $saleOptions['customer'], $websiteThemeId);
+            $websiteName = isset($saleOptions['websiteName']) ? $saleOptions['websiteName'] : null;
+            $customer = isset($saleOptions['customer']) ? $saleOptions['customer'] : null;
+            $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, $customer, $websiteThemeId);
         }
         
         if (!($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection)) {
