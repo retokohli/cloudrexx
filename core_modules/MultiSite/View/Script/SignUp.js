@@ -94,8 +94,8 @@
             objPayButton.payrexxModal({
                 hideObjects: ["#contact-details", ".contact"],
                 show: function(e) {
-                    //signup form validation
-                    if (!formValidation()) {
+                    //signup form validation and check valid payment
+                    if (!formValidation() || !isPaymentUrlValid()) {
                         return e.preventDefault();
                     }
 
@@ -174,10 +174,6 @@
             return false;
         }
         
-        if (options.IsPayment && !isPaymentUrlValid()) {
-            return false;
-        }
-
         return true;
     }
     
@@ -198,6 +194,9 @@
         if (isPaymentUrlRequested) {
           return;
         }
+        if (!formValidation()) {
+            return;
+        }
         isPaymentUrlRequested = true;
         try {
             jQuery.ajax({
@@ -209,6 +208,10 @@
                     product_id : jQuery("#product_id").val()
                 },
                 type: "POST",
+                beforeSend: function (xhr, settings) {
+                    objModal.find('.multisite_pay').button('loading');
+                    objModal.find('.multisite_pay').prop('disabled', true);
+                },
                 success: function(response){
                     isPaymentUrlRequested = false;
                     if (response.status == 'error') {
@@ -219,6 +222,10 @@
                         objPayButton.data('href', response.data.link);                        
                         objPayButton.trigger('click');
                     }
+                },
+                complete: function (xhr, settings) {
+                    objModal.find('.multisite_pay').button('reset');
+                    objModal.find('.multisite_pay').prop('disabled', false);
                 }
             });
         } catch (e) {
