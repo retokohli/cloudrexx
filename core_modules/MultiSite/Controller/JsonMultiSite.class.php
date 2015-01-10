@@ -4112,8 +4112,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case ComponentController::MODE_WEBSITE:
-                    \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
-                    \Cx\Core\Setting\Controller\Setting::storeFromPost();
+                    \Cx\Core\Setting\Controller\Setting::init('Config', 'site', 'Yaml');
+                    \Cx\Core\Setting\Controller\Setting::set('mainDomainId', $params['post']['mainDomainId']);
+                    \Cx\Core\Setting\Controller\Setting::update('mainDomainId');
                     return array(
                         'status' => 'success'
                     );

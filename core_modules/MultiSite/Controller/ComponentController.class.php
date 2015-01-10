@@ -2,6 +2,7 @@
 /**
  * Class ComponentController
  *
+ * 
  * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @author      Sudhir Parmar <sudhirparmar@cdnsol.com>
@@ -851,6 +852,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         //processing form values after submit
         if (!\FWValidator::isEmpty($submitFormAction)) {
             try {
+                if (\FWValidator::isEmpty($domainId) && $submitFormAction != 'Add') {
+                    return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
+                }
                 switch ($submitFormAction) {
                     case 'Add':
                         if (\FWValidator::isEmpty($_POST['add_domain'])) {
@@ -863,7 +867,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
 
                     case 'Edit':
-                        if (\FWValidator::isEmpty($_POST['edit_domain']) || \FWValidator::isEmpty($domainId)) {
+                        if (\FWValidator::isEmpty($_POST['edit_domain'])) {
                             return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
                         }
                         $command = 'updateNetDomain';
@@ -874,9 +878,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
 
                     case 'Delete':
-                        if (\FWValidator::isEmpty($domainId)) {
-                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
-                        }
                         $command = 'unMapNetDomain';
                         $params = array(
                             'domainId' => $domainId
@@ -897,7 +898,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (isset($command) && isset($params)) {
                     $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite($command, $params, $website);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'], true);
+                        $message = ($submitFormAction == 'Select') 
+                                    ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'], contrexx_raw2xhtml($domainName))
+                                    : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'];
+                                
+                        return $this->parseJsonMessage($message, true);
                     } else {
                         return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_FAILED'], false);
                     }
@@ -925,6 +930,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 
                 if (($loadPageAction == 'Select') && $objTemplate->blockExists('showSelectMainDomain')) {
                     $objTemplate->setVariable(array(
+                        'MULTISITE_DOMAIN_NAME'                        => contrexx_raw2xhtml($domainName),
                         'TXT_CORE_MODULE_MULTISITE_SELECT_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT'], contrexx_raw2xhtml($domainName)),
                     ));
                 }
