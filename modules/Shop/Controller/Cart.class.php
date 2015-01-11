@@ -514,6 +514,7 @@ class Cart
                 'weight' => $weight,
                 'group_id' => $objProduct->group_id(),
                 'article_id' => $objProduct->article_id(),
+                'product_images' => $objProduct->pictures(),
             );
 //DBG::log("Cart::update(): Loop 1: Product: ".var_export(self::$products[$cart_id], true));
         }
@@ -782,6 +783,18 @@ die("Cart::view(): ERROR: No template");
                     $groupCustomerId, $groupArticleId,
                     $groupCountId, $arrProduct['quantity']
                 );
+
+                // product image
+                $arrProductImg = Products::get_image_array_from_base64($arrProduct['product_images']);
+                $shopImagesWebPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesWebPath() . '/Shop/';
+                $thumbnailPath = $shopImagesWebPath.ShopLibrary::noPictureName;
+                foreach($arrProductImg as $productImg) {
+                    if (!empty($productImg['img']) && $productImg['img'] != ShopLibrary::noPictureName) {
+                        $thumbnailPath = $shopImagesWebPath.\ImageManager::getThumbnailFilename($productImg['img']);
+                        break;
+                    }
+                }
+
 /* UNUSED (and possibly obsolete, too)
                 if (isset($arrProduct['discount_string'])) {
 //DBG::log("Shop::view_cart(): Product ID ".$arrProduct['id'].": ".$arrProduct['discount_string']);
@@ -796,6 +809,7 @@ die("Cart::view(): ERROR: No template");
                     'SHOP_PRODUCT_ROW' => 'row'.(++$i % 2 + 1),
                     'SHOP_PRODUCT_ID' => $arrProduct['id'],
                     'SHOP_PRODUCT_CODE' => $arrProduct['product_id'],
+                    'SHOP_PRODUCT_THUMBNAIL' => $thumbnailPath, 
                     'SHOP_PRODUCT_CART_ID' => $arrProduct['cart_id'],
                     'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', contrexx_raw2xhtml($arrProduct['title'])),
                     'SHOP_PRODUCT_PRICE' => $arrProduct['price'],  // items * qty
