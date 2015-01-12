@@ -1,6 +1,7 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 cx.ready(function() {
+    cx.variables.set('loadingText', '{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}', 'multisite/lang');
     jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
         var $_GET = getQueryParams(document.location.search);
         var id    = $_GET['id'];
@@ -19,30 +20,30 @@ cx.ready(function() {
     <h1>{MULTISITE_WEBSITE_DOMAIN_NAME}</h1>
     <!-- END showWebsiteDomainName -->
     <div class="grid-elm grid-align-1-1 grid-offset">
-        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}
     </div>
 </div>
 <div class="grid-elm grid-align-1-1 grid-offset">  
     <h2>{TXT_MULTISITE_WEBSITE_ADMINISTRATORS}</h2> 
     <div id='multisite_website_admins'>
-        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}
     </div>
 </div>
 <div class="grid-elm grid-align-1-1 grid-offset">  
     <h2>{TXT_MULTISITE_WEBSITE_DOMAINS}</h2>
     <div id='multisite_website_domains'>
-        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}
     </div>
 </div>
 <div class="grid-elm grid-align-1-1 grid-offset">  
     <h2>{TXT_MULTISITE_WEBSITE_EMAIL}</h2>
     <div id='multisite_website_email'>
-        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}
     </div>
 </div>
 <div class="grid-elm grid-align-1-1 grid-offset">  
     <h2>{TXT_MULTISITE_WEBSITE_RESOURCES}</h2>
     <div id='multisite_website_resources'>
-        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> Loading
+        <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}
     </div>
 </div>
