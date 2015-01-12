@@ -12,7 +12,7 @@
             <td>{MULTISITE_WEBSITE_DOMAIN}</td>
             <td>
             <!-- BEGIN showWebsiteMainDomain -->
-            <input type="radio" name="mainDomain" class="domainModal"  {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-remote="/api/MultiSite/Domain/Select?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="SetMainDomain" />
+            <input type="radio" name="mainDomain" class="mainDomainModal"  {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-domain="{MULTISITE_WEBSITE_DOMAIN}" data-url="{MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL}" data-target="#SetMainDomain" data-toggle="modal"/>
             <!-- END showWebsiteMainDomain -->
             </td>
             <td class="actions">
@@ -47,12 +47,51 @@
 
 <div aria-hidden="true" class="modal fade" id="SetMainDomain" role="dialog" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content"></div>
+        <div class="modal-content">
+            <div class="grid-elm grid-align-1-1 grid-offset">
+                <form role="form" action="" id="multisite_website_domain_select">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_SELECT_MAIN_DOMAIN}</h2>
+                    <fieldset>
+                        <div class="row">
+                            {TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT}
+                        </div>
+                        <div class="row">
+                            <button type="submit"  class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" >{TXT_CORE_MODULE_MULTISITE_SELECT}</button>
+                            <button type="button" class="cancel" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(document).ready(function() {
+    jQuery('#multisite_website_domain_select').submit(function() {
+          var apiUrl = '/api/MultiSite/Website/Domains?id=' + getQueryParams(document.location.search)['id'];
+          sendApiFormRequest('#multisite_website_domain_select', '#SetMainDomain','#multisite_website_domains', apiUrl);
+          return false;
+    });
+    
+    jQuery('.mainDomainModal').bind('click', function (event) {
+        var domainName = jQuery(this).data('domain'),
+            url        = jQuery(this).data('url');
+        jQuery('#multisite_website_domain_select').attr('action', url);
+        jQuery('#domainName').text(domainName);
+    });
+    
+    var defaultDomainId = jQuery('input:radio[name=mainDomain]:checked').data('domain');
+    jQuery('#SetMainDomain .close, #SetMainDomain .cancel').bind('click', function (event) {
+        jQuery('.mainDomainModal').each(function(){
+           if (jQuery(this).data('domain') === defaultDomainId) {
+               jQuery(this).prop('checked', true);
+               return false;
+           } 
+        });
+    });
+    
     jQuery('.domainModal').bind('click', function (event) {
       showRemoteModal({
         modalId   : jQuery(this).data('target'),
