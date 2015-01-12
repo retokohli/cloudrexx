@@ -42,9 +42,10 @@
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 
                         <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE}</h2>
-                        <div class="grid-offset-bottom">
+                        <div class="grid-offset-bottom account_confirm">
                             {TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_CONFIRM_CONTENT}
                             <span class="grid-align-1-1 grid-offset-top" ><label> <input type="checkbox" id="delete_account_confirm"/> {TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_CONFIRM_LABEL}</label></span>
+                            <div class="alert alert-danger account_delete" style="display: none;">{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_PLEASE_CONFIRM}</div>
                         </div>
 
                         <button type="submit" class="save"  onclick="deleteAccount();">{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE}</button>
@@ -68,11 +69,17 @@ cx.ready(function() {
   websiteAccountDeleteUrl = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=deleteAccount';
 });
 
+jQuery('#deleteWebsiteAccount').on('hidden.bs.modal', function () {
+   jQuery('div.alert.account_delete').hide();
+});
+
 function deleteAccount() {
       if (jQuery('#delete_account_confirm:checked').length < 1) {
+        jQuery('div.alert.account_delete').show();
          return false;
       }
       
+      jQuery('div.alert.account_delete').hide();
       $oldModalText = jQuery('#deleteWebsiteAccount').find('.modal-content .modal-body').html();
       jQuery.ajax({
             dataType: 'json',
