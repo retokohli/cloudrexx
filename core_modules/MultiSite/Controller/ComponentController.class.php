@@ -720,6 +720,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         //show the frontend
         $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
+        $statusDisabled = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED);
+        
         $objTemplate->setVariable(array(
             'MULTISITE_WEBSITE_FRONTEND_LINK'       => $this->getApiProtocol() . $website->getBaseDn()->getName(),
             'MULTISITE_WEBSITE_DELETE_REDIRECT_URL' => \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'Subscription')->toString(),
@@ -731,7 +733,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
             $websiteAdminUsers = $website->getAdminUsers();
             foreach ($websiteAdminUsers as $websiteAdminUser) {
-                self::showOrHideBlock($objTemplate, 'showWebsiteUsersAction', ($websiteAdminUser->getEmail() != \FWUser::getFWUserObject()->objUser->getEmail()));
+                $userActionStatus = !$statusDisabled ? ($websiteAdminUser->getEmail() != \FWUser::getFWUserObject()->objUser->getEmail()) : false;
+                self::showOrHideBlock($objTemplate, 'showWebsiteUsersAction', $userActionStatus);
+                
                 $objTemplate->setVariable(array(
                     'MULTISITE_WEBSITE_USER_NAME'  => $websiteAdminUser->getUsername(),
                     'MULTISITE_WEBSITE_USER_EMAIL' => $websiteAdminUser->getEmail(),
@@ -740,7 +744,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objTemplate->parse('showWebsiteAdminUsers');
             }
         }
-
+        
         //Show the Website Domain Alias name
         if ($objTemplate->blockExists('showWebsiteDomains')) {
             $resp = JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
@@ -758,11 +762,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'MULTISITE_WEBSITE_DOMAIN_ID'                 => contrexx_raw2xhtml($domainId),
                         'MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED' => ($domain->getName() === $mainDomainName) ? 'checked' : '',
                 ));
-                self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', !$isBaseDomain);
+                $domainActionStatus = !$statusDisabled ? !$isBaseDomain : false;
+                self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', $domainActionStatus);
+                //hide the selection websiteMainDomain if the website is disabled
+                self::showOrHideBlock($objTemplate, 'showWebsiteMainDomain', !$statusDisabled);
                 $objTemplate->parse('showWebsiteDomains');                
             }
         }
-
+        
         //show the website's domain name
         if ($objTemplate->blockExists('showWebsiteDomainName')) {
             $domain = $website->getBaseDn();
@@ -787,7 +794,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         self::showOrHideBlock($objTemplate, 'deactivateMailService', $mailServiceServerStatus);
         self::showOrHideBlock($objTemplate, 'openAdministration', $mailServiceServerStatus);
-        self::showOrHideBlock($objTemplate, 'activateMailService', !$mailServiceServerStatus);            
+        self::showOrHideBlock($objTemplate, 'activateMailService', !$mailServiceServerStatus);
+        
+        $objTemplate->setVariable('MULTISITE_WEBSITE_MAIL_SERVICE_STATUS', $statusDisabled ? ($mailServiceServerStatus 
+                                                                                              ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_ENABLED']
+                                                                                              : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_DISABLED']
+                                                                                             )
+                                                                                           : '');
+            
     }
         
         //show the website's resources
@@ -808,7 +822,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setGlobalVariable(array(
             'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($websiteId)
         ));
-
+        
+        //hide the website info if the website is disabled
+        self::showOrHideBlock($objTemplate, 'showWebsiteInfo', !$statusDisabled);
+         //hide the website add user button if the website is disabled
+        self::showOrHideBlock($objTemplate, 'showWebsiteAdminAddUser', !$statusDisabled);
+        //hide the  add domain button if the website is disabled
+        self::showOrHideBlock($objTemplate, 'showWebsiteAddDomain', !$statusDisabled);
+        //hide the  website mail service if the website is disabled
+        self::showOrHideBlock($objTemplate, 'showWebsiteMailService', !$statusDisabled);
+        
         return $objTemplate->get();
     }
   

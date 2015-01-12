@@ -58,8 +58,16 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         \DBG::msg('MultiSite (WebsiteEventListener): postUpdate');
         $em      = $eventArgs->getEntityManager();
         $website = $eventArgs->getEntity();
+        $isWebsiteInactive = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED
+                            || $website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
+        
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                //disable website mail service
+                if ($isWebsiteInactive) {
+                    $this->disableWebsiteMailService($website);
+                }
+                
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                 $websiteConfigPath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $website->getName() . \Env::get('cx')->getConfigFolderName();
                 if (!file_exists($websiteConfigPath)) {
@@ -74,12 +82,17 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
 // TODO: updating ip address of domain is somehow redundant. it should only be done if ip address of website has changed
+                //disable website mail services
+                if ($isWebsiteInactive) {
+                    $this->disableWebsiteMailService($website);
+                }
+                
                 $domains = $website->getDomains();
                 foreach ($domains as $domain) {
                     \DBG::msg('Update domain (map to new IP of Website): '.$domain->getName());
                     \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($domain, $em)));
                 }
-
+                
                 //hostName
                 $websiteServiceServer = $website->getWebsiteServiceServer();
 
@@ -89,6 +102,37 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 );
                 \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('setWebsiteState', $params, $websiteServiceServer);
                 break;
+        }
+    }
+    
+    /**
+     * Disable website mail service
+     * 
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website $website website
+     * 
+     * @return boolean
+     * @throws \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException
+     */
+    public function disableWebsiteMailService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website) {
+        if (\FWValidator::isEmpty($website)) {
+            return;
+        }
+        try {
+            $mailServiceServer = $website->getMailServiceServer();
+            $mailAccountId     = $website->getMailAccountId();
+
+            if (\FWValidator::isEmpty($mailServiceServer) || \FWValidator::isEmpty($mailAccountId)) {
+                return;
+            }
+            
+            $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
+            $status = $hostingController->getMailServiceStatus($mailAccountId);
+            if ($status == 'true') {
+                $mailServiceServer->disableService($mailAccountId);
+            }
+        } catch (Exception $e) {
+            \DBG::log('Unable to disable the website mail service: ' . $e->getMessage());
+            throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Unable to disable the website mail service');
         }
     }
     

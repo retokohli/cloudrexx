@@ -37,7 +37,7 @@ class MultiSiteJsonException extends \Exception {
         // overwrite $message to pass exception data to JsonData
         $this->message=$message;
     }
-
+    
     public function getObject() {
         return $this->object;
     }
@@ -1844,7 +1844,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             ));
         }
     }
-
+                
     /**
      * Returns the $isIscRequest value
      * 
