@@ -567,6 +567,51 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
         return $resultNode->id;	
     }
+        
+    /**
+     * Rename a subscription
+     * 
+     * @param string $domain         domain name
+     * @param int    $subscriptionId subscription id 
+     * 
+     * @return subscription id
+     */
+    public function renameSubscription ($domain) 
+    {
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);       
+        $webspace = $xmldoc->createElement('webspace');
+        $packet->appendChild($webspace);
+        $setTag = $xmldoc->createElement('set');
+        $webspace->appendChild($setTag);
+
+        $filter = $xmldoc->createElement('filter');
+        $setTag->appendChild($filter);
+        
+        $id = $xmldoc->createElement('id', $this->webspaceId);
+        $filter->appendChild($id);
+
+        $values = $xmldoc->createElement('values');
+        $setTag->appendChild($values);
+        
+        /*--gen_setup data Start--*/
+        $genSetup = $xmldoc->createElement('gen_setup');
+        $values->appendChild($genSetup);
+        $subscriptionName = $xmldoc->createElement('name', $domain);
+        $genSetup->appendChild($subscriptionName);
+        /*--gen_setup data End--*/
+                
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->webspace->{'set'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError)?$systemError:$resultNode->errtext);
+            throw new ApiRequestException("Error in rename Subscription: {$error}");
+        }
+        return $resultNode->id;	
+    }
     
     /**
      * Remove a subscription

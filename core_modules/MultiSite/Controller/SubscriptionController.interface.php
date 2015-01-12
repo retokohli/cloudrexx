@@ -35,8 +35,18 @@ interface SubscriptionController {
      * @throws MultiSiteDbException On error
      */
     public function removeSubscription($subscriptionId);
+        
+    /**
+     * Rename a subscription
+     * 
+     * @param string $domain         domain name
+     * @param int    $subscriptionId subscription id 
+     * 
+     * @return subscription id
+     */
+    public function renameSubscription($domain, $subscriptionId);
     
-     /**
+    /**
      * Creates a user account
      * 
      * @param string  $domain

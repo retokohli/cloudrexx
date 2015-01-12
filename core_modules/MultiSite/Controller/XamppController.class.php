@@ -147,6 +147,20 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
+     * Rename a subscription
+     * 
+     * @param string $domain         domain name
+     * @param int    $subscriptionId subscription id 
+     * 
+     * @return subscription id
+     */
+    public function renameSubscription($domain, $subscriptionId)
+    {
+        \DBG::msg("MultiSite (XamppController): rename a subscription: $domain / $subscriptionId");
+        return null;
+    }
+
+    /**
      * Removes a subscription
      * 
      * @param int $subscriptionId id
