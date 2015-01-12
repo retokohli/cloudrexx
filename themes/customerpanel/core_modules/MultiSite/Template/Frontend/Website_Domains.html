@@ -10,7 +10,11 @@
         <!-- BEGIN showWebsiteDomains -->
         <tr>
             <td>{MULTISITE_WEBSITE_DOMAIN}</td>
-            <td><input type="radio" name="mainDomain" class="domainModal"  {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-remote="/api/MultiSite/Domain/Select?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="SetMainDomain" /></td>
+            <td>
+            <!-- BEGIN showWebsiteMainDomain -->
+            <input type="radio" name="mainDomain" class="domainModal"  {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-remote="/api/MultiSite/Domain/Select?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="SetMainDomain" />
+            <!-- END showWebsiteMainDomain -->
+            </td>
             <td class="actions">
               <!-- BEGIN showWebsiteDomainActions -->
               <a class="entypo-tools domainModal" data-remote="/api/MultiSite/Domain/Edit?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainEdit" ></a>&nbsp;
@@ -22,7 +26,9 @@
 
     </tbody>
 </table>
+<!-- BEGIN showWebsiteAddDomain -->
 <button class="add domainModal" data-remote="/api/MultiSite/Domain/Add?website_id={MULTISITE_WEBSITE_ID}" data-target="DomainAdd" >{TXT_MULTISITE_WEBSITE_ADD_DOMAIN}</button>
+<!-- END showWebsiteAddDomain -->
 <div aria-hidden="true" class="modal fade" id="DomainAdd" role="dialog" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content"></div>

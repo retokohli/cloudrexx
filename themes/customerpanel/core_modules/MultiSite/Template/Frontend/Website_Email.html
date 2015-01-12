@@ -1,5 +1,7 @@
 
-<div class="grid-elm grid-align-1-1 grid-offset-bottom">
+ <div class="grid-elm grid-align-1-1 grid-offset-bottom">
+   {MULTISITE_WEBSITE_MAIL_SERVICE_STATUS}
+  <!-- BEGIN showWebsiteMailService  -->
     <!-- BEGIN activateMailService -->
     <button class="add" type="button" data-id="{MULTISITE_WEBSITE_ID}" data-act="enableMailService" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="enableOrDisableMailService(jQuery(this));">{TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE}</button>
     <!-- END activateMailService -->
@@ -11,4 +13,5 @@
     &nbsp;&nbsp;&nbsp;&nbsp;
     <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading" onclick="pleskAutoLogin(jQuery(this));">{TXT_MULTISITE_WEBSITE_OPEN_ADMINISTRATION}</button>
     <!-- END openAdministration -->
+  <!-- END showWebsiteMailService  -->
 </div>
