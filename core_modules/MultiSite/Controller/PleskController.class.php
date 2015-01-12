@@ -572,7 +572,6 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * Rename a subscription
      * 
      * @param string $domain         domain name
-     * @param int    $subscriptionId subscription id 
      * 
      * @return subscription id
      */
