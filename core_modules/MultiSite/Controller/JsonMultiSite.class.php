@@ -474,22 +474,25 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             } else {
                 $transactionReference = $product->getId() . '-owner-' . $objUser->getId();
             }
-            
+           
             $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
 
+            $externalPaymentCustomerId = $objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'));
             if (   !\FWValidator::isEmpty($productPrice)
-                && !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId')))) {
+                && !\FWValidator::isEmpty($externalPaymentCustomerId)
+            ) {
                 
                 $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
                 $apiSecret    = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
                 $payrexx      = new \Payrexx\Payrexx($instanceName, $apiSecret);
 
                 $subscription = new \Payrexx\Models\Request\Subscription();
-                $subscription->setUserId(1);
+                $subscription->setUserId($externalPaymentCustomerId);
                 $subscription->setPurpose($transactionReference);
-                //update amount deatails in subscription                                
+                $subscription->setReferenceId($transactionReference);
+                //update amount deatails in subscription
                 $subscription->setAmount($productPrice * 100);
-                $subscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);                
+                $subscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);
 
                 list($subscriptionPeriod, $subscriptionInterval, $cancellationInterval)
                         = self::getSubscriptionPeriodAndIntervalsByProduct($product, $renewalUnit, $renewalQuantifier);
@@ -500,15 +503,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $subscription->setPeriod(\DateTimeTools::getDateIntervalAsString($subscriptionPeriod));
 
                 // set cancellation period
-                $subscription->setSubscriptionCancellationInterval(\DateTimeTools::getDateIntervalAsString($cancellationInterval));
-            
+                $subscription->setCancellationInterval(\DateTimeTools::getDateIntervalAsString($cancellationInterval));
+
                 try {
                     $response = $payrexx->create($subscription);
-                    
+
                     if (   !$response
                         || !$response instanceof \Payrexx\Models\Response\Subscription
-                        || $response->getAmount() != $productPrice * 100) {
-                        \DBG::log('Payment details are not matched.');
+                        || $response->getStatus() != 'active'
+                    ) {
+                        \DBG::log('JsonMultiSite::manageSubscription() - Could not create a subscription.');
                         return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
                     }
                 } catch (\Payrexx\PayrexxException $e) {
@@ -550,7 +554,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public static function getSubscriptionPeriodAndIntervalsByProduct(\Cx\Modules\Pim\Model\Entity\Product $product, $renewalUnit, $renewalQuantifier)
     {
-        $subscriptionInterval = \DateInterval::createFromDateString($renewalUnit .' '. $renewalQuantifier);
+        $subscriptionInterval = \DateInterval::createFromDateString($renewalQuantifier .' '. $renewalUnit);
         
         // set subscription period
         $expirationInterval = \DateInterval::createFromDateString("{$product->getExpirationQuantifier()} {$product->getExpirationUnit()}");
