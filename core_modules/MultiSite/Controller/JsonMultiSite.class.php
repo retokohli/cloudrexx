@@ -4124,6 +4124,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             
             \Env::get('em')->flush();
+            
+            //delete currently sign-in user
+            if (!\FWUser::getFWUserObject()->objUser->delete(true)) {
+                \DBG::log('Failed to delete the user account');
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_FAILED']);
+            }
+            
             $marketingWebsiteUrl = ComponentController::getApiProtocol().\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
             return array('status' => 'success', 'marketingWebsiteUrl' => $marketingWebsiteUrl);
         } catch (\Exception $e) {
