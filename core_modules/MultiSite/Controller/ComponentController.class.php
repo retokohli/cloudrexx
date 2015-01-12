@@ -755,14 +755,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $domains = array_merge(array($website->getBaseDn()), $website->getDomainAliases());
             foreach ($domains as $domain) {
                 $isBaseDomain = $domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN;        
-                $domainId     = $isBaseDomain ? $domain->getId() : $domain->getCoreNetDomainId();                
-
+                $domainId     = $isBaseDomain ? $domain->getId() : $domain->getCoreNetDomainId(); 
                 $objTemplate->setVariable(array(
                         'MULTISITE_WEBSITE_DOMAIN'                    => contrexx_raw2xhtml($domain->getName()),
                         'MULTISITE_WEBSITE_DOMAIN_ID'                 => contrexx_raw2xhtml($domainId),
                         'MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED' => ($domain->getName() === $mainDomainName) ? 'checked' : '',
+                        'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL'         => '/api/MultiSite/Domain?action=Select&website_id=' . $website->getId() . '&domain_id=' . contrexx_raw2xhtml($domainId) . '&domain_name=' . contrexx_raw2xhtml($domain->getName())
                 ));
-                $domainActionStatus = !$statusDisabled ? !$isBaseDomain : false;
+                $domainActionStatus = !$statusDisabled ? (!$isBaseDomain || $domain->getName() !== $mainDomainName) : false;
                 self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', $domainActionStatus);
                 //hide the selection websiteMainDomain if the website is disabled
                 self::showOrHideBlock($objTemplate, 'showWebsiteMainDomain', !$statusDisabled);
@@ -910,7 +910,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     case 'Select':
                         $command = 'setMainDomain';
                         $params = array(
-                          'mainDomainId'   => $domainId
+                          'mainDomainId'   => ($website->getBaseDn()->getName() === $domainName) ? 0 : $domainId
                         );
                         break;
                     
@@ -948,13 +948,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objTemplate->setVariable(array(
                         'MULTISITE_DOMAIN_NAME' => contrexx_raw2xhtml($domainName),
                         'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => contrexx_raw2xhtml($domainId)
-                    ));
-                }
-                
-                if (($loadPageAction == 'Select') && $objTemplate->blockExists('showSelectMainDomain')) {
-                    $objTemplate->setVariable(array(
-                        'MULTISITE_DOMAIN_NAME'                        => contrexx_raw2xhtml($domainName),
-                        'TXT_CORE_MODULE_MULTISITE_SELECT_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT'], contrexx_raw2xhtml($domainName)),
                     ));
                 }
             }

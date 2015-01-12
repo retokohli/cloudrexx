@@ -295,7 +295,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_SUCCESS_MSG'] = 'Th
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DELETE_STATUS_ERROR_MSG'] = 'Failed to remove the website.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN'] = 'Main domain';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_SELECT_MAIN_DOMAIN'] = 'Select main domain';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT'] = 'Please confirm to select the domain %s as the main domain of this website. This will then be the primary address of this website.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT'] = 'Please confirm to select the domain <span id="domainName"></span> as the main domain of this website. This will then be the primary address of this website.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SELECT'] = 'Select';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_DEACTIVATED_SUCCESSFUL'] = 'Website was successfully deactivated.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_ACTIVATED_SUCCESSFUL'] = 'Website was successfully activated.';

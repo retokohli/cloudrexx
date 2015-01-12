@@ -4155,7 +4155,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $_ARRAYLANG;
         self::loadLanguageData();
         
-        if (empty($params['post']) || empty($params['post']['mainDomainId'])) {
+        if (empty($params['post']) || !isset($params['post']['mainDomainId'])) {
             \DBG::log('JsonMultiSite::setMainDomain() failed: mainDomainId is empty');
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
