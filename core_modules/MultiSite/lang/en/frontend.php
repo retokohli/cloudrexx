@@ -66,4 +66,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETED'] = 'Account
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETED_SUCCESS'] = 'Your account has been erased. You will now be sign-off from the system.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BUTTON_OK'] = 'Ok';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Cancel';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_PLEASE_CONFIRM'] = 'Please check the above checkbox to confirm to delete my account.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_PLEASE_CONFIRM'] = 'Please check the above checkbox to confirm to delete your account.';
