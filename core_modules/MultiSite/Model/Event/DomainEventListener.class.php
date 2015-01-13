@@ -55,12 +55,30 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         //update the domain cache file
                         $this->updateDomainRepositoryCache($em);
                         break;
-
+                    
                     default:
                         break;
                 }
             } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
                 $this->domainMapping($domain, $mode, 'unMapDomain');
+                
+                switch ($mode) {
+                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                        if (\FWValidator::isEmpty($websiteName)) {
+                            break;
+                        }
+                        $params = array(
+                                'websiteName' => $websiteName, 
+                                'command'     => 'deleteDomainAlias', 
+                                'domainName'  => $domain->getName()
+                                ); 
+                        $this->domainManipulation($params);
+                        break;
+                        
+                    default :
+                        break;
+                }
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -90,6 +108,31 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 }
             } elseif ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
                 $this->domainMapping($domain, $mode, 'updateDomain');
+                
+                switch ($mode) {
+                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                        if (\FWValidator::isEmpty($websiteName)) {
+                            break;
+                        }
+                        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                        $oldDomain = $domainRepository->findOneBy(array('id' => $domain->getId()));
+                        $mainDomainName = $domainRepository->getMainDomain()->getName();
+                        if ($domain->getName() == $mainDomainName) {
+                            break;
+                        }
+                        $params = array(
+                                'websiteName' => $websiteName, 
+                                'command'     => 'renameDomainAlias', 
+                                'domainName'  => $domain->getName(),
+                                'oldDomainName' => $oldDomain->getName()
+                                ); 
+                        $this->domainManipulation($params);                        
+                        break;
+                    
+                    default:
+                        break;
+                }
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -141,11 +184,61 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $this->updateDomainRepositoryCache($em);
                     break;
+                
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                    $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                    if (!($domain instanceof \Cx\Core\Net\Model\Entity\Domain) || \FWValidator::isEmpty($websiteName)) {
+                        break;
+                    }
+                    
+                    $params = array(
+                            'websiteName' => $websiteName, 
+                            'command'     => 'createDomainAlias', 
+                            'domainName'  => $domain->getName()
+                            ); 
+                    $this->domainManipulation($params);
+                    break;
+                    
                 default:
                     break;
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
+        }
+    }
+    
+    public function postUpdate($eventArgs) {
+        try {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $domain  = $eventArgs->getEntity();
+            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
+                switch ($mode) {
+                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                        if (\FWValidator::isEmpty($websiteName)) {
+                            break;
+                        }
+                        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                        $mainDomainName = $domainRepository->getMainDomain()->getName();
+                        if ($domain->getName() !== $mainDomainName) {
+                            break;
+                        }
+                        $params = array(
+                                'websiteName' => $websiteName, 
+                                'command'     => 'renameSubscriptionName', 
+                                'domainName'  => $domain->getName()
+                                ); 
+                        $this->domainManipulation($params);
+                        break;
+                    
+                    default :
+                        break;
+                }
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            throw new DomainEventListenerException($e->getMessage());
         }
     }
 
@@ -339,6 +432,20 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
     }
 
+    private function domainManipulation($params)
+    {
+        if (\FWValidator::isEmpty($params) || !is_array($params)) {
+            return;
+        }
+        
+        $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('domainManipulation', $params);
+        if ($result->status == 'error' && $result->data->status == 'error') {
+            \DBG::log($result->data->message);
+            throw new DomainEventListenerException('MultiSite (DomainEventListener): domainManipulation() Failed.');
+        }
+        return true;
+    }
+    
     protected function logEvent($eventName, $domain) {
         \DBG::msg("MultiSite (DomainEventListener): $eventName ({$domain->getName()} / ".get_class($domain).")");
     }

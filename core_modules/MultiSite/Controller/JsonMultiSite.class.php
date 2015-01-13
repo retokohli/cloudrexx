@@ -135,11 +135,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateOwnWebsiteState'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
             'getMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'setMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'deleteAccount'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
+            'deleteAccount'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),   
             'isComponentLicensed'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'updateMainDomain'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getModuleAdditionalData' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
-            'changePlanOfMailSubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
+            'changePlanOfMailSubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'domainManipulation'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -1999,7 +2000,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         );
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
-
+    
     /**
      * This method will be used by the Website Manager to execute commands on the Website Service
      * Fetch connection data to Service and pass it to the method executeCommand()
@@ -4264,6 +4265,91 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (\Exception $e) {
             \DBG::dump('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
             throw new MultiSiteJsonException('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
+        }
+    }
+    
+    /**
+     * Create|Delete|Rename domain alias or rename subscription in plesk.
+     * 
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function domainManipulation($params)
+    {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
+        if (empty($params['post']) || empty($params['post']['websiteName']) || empty($params['post']['command']) || empty($params['post']['domainName'])) {
+            \DBG::log('JsonMultiSite::domainManipulation() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
+        }
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $websiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $website = $websiteRepo->findOneBy(array('name' => $params['post']['websiteName']));
+                    
+                    if (!$website) {
+                        \DBG::log('JsonMultiSite::domainManipulation() failed: Unknown website.');
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
+                    }
+                    $mailServiceServer = $website->getMailServiceServer();
+                    if ( !\FWValidator::isEmpty($mailServiceServer) && !\FWValidator::isEmpty($website->getMailAccountId())) {
+                        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
+                        if (!$hostingController) {
+                            \DBG::msg('Failed to get the hosting controller.');
+                            throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
+                        }
+                        $hostingController->setWebspaceId($website->getMailAccountId());
+                        switch ($params['post']['command']) {
+                            case 'renameDomainAlias':
+                                if (!$hostingController->renameDomainAlias($params['post']['oldDomainName'], $params['post']['domainName'])) {
+                                    \DBG::msg('Failed to process the method renameDomainAlias().');
+                                    throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
+                                }
+                                break;
+                            case 'deleteDomainAlias':
+                            case 'createDomainAlias':
+                            case 'renameSubscriptionName':
+                                if (!$hostingController->renameDomainAlias($params['post']['domainName'])) {
+                                    \DBG::msg('Failed to process the method '.$params['post']['command'] . '().');
+                                    throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
+                                }
+                                break;
+                            default :
+                                break;
+                        }
+                    }
+                    return array('status' => 'success');
+                    break;
+                    
+                case ComponentController::MODE_SERVICE:
+                    // forward call to manager server.                     
+                    $response = self::executeCommandOnManager('domainManipulation', $params['post']);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return array('status' => 'success');
+                    }
+                    break;
+                    
+                case ComponentController::MODE_WEBSITE:
+                    // forward call to manager server.                     
+                    $response = self::executeCommandOnMyServiceServer('domainManipulation', $params['post']);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return array('status' => 'success');
+                    }                    
+                    break;
+                    
+                default :
+                    break;
+            }
+            return array('status' => 'error', 'message' => 'JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
+        } catch (\Exception $e) {
+            \DBG::dump('JsonMultiSite::domainManipulation() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::domainManipulation() failed:');
         }
     }
     

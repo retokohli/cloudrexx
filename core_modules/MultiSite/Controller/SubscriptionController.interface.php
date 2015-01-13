@@ -39,11 +39,11 @@ interface SubscriptionController {
     /**
      * Rename a subscription
      * 
-     * @param string $domain         domain name
+     * @param string $domain domain name
      * 
      * @return subscription id
      */
-    public function renameSubscription($domain);
+    public function renameSubscriptionName($domain);
     
     /**
      * Creates a user account

@@ -571,11 +571,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Rename a subscription
      * 
-     * @param string $domain         domain name
+     * @param string $domain domain name
      * 
      * @return subscription id
      */
-    public function renameSubscription ($domain) 
+    public function renameSubscriptionName ($domain) 
     {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);       
