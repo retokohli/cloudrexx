@@ -321,4 +321,16 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): disable mail service");
         return null;
     } 
+    
+    /**
+     * Change the plan of the subscription
+     * 
+     * @param id     $subscriptionId  subcription id
+     * @param string $planGuid        planGuid
+     * @param string $planExternalId  planExternalId
+     */
+    public function changePlanOfSubscription($subscriptionId, $planGuid, $planExternalId) {
+        \DBG::msg("MultiSite (XamppController): changePlanOfSubscription");
+        return null;
+    }
 }

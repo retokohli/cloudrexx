@@ -91,4 +91,13 @@ interface SubscriptionController {
      * @param string $aliasName alias name to delete
      */
     public function deleteDomainAlias($aliasName);
+    
+    /**
+     * Change the plan of the subscription
+     * 
+     * @param id     $subscriptionId  subcription id
+     * @param string $planGuid        planGuid
+     * @param string $planExternalId  planExternalId
+     */
+    public function changePlanOfSubscription($subscriptionId, $planGuid, $planExternalId);
 }

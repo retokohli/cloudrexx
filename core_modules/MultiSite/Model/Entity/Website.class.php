@@ -1454,6 +1454,46 @@ throw new WebsiteException('implement secret-key algorithm first!');
         
         $legalComponents   = $websiteTemplate->getLicensedComponents();
         $dashboardMessages = $websiteTemplate->getLicenseMessage();
+        $mailServiceServer = $this->getMailServiceServer();
+
+        if (!\FWValidator::isEmpty($mailServiceServer) && !\FWValidator::isEmpty($this->getMailAccountId())) {
+            $mailServiceConfig = $mailServiceServer->getConfig();
+            $additionalData = null;
+            $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $this);
+            if ($response->status == 'success' && $response->data->status == 'success') {
+                $additionalData = $response->data->additionalData;
+            }
+            
+            $showMailService   = (   !\FWValidator::isEmpty($additionalData) 
+                                  && isset($additionalData['service']) 
+                                  && !\FWValidator::isEmpty($additionalData['service']));
+            $mailServiceStatus = ($showMailService) ? 'enableMailService' : 'disableMailService';
+            $mailServicePlan   = (!\FWValidator::isEmpty($additionalData) && isset($additionalData['plan'])) ? $additionalData['plan'] : null;
+            $planId            = (!\FWValidator::isEmpty($mailServiceConfig) 
+                                    && isset($mailServiceConfig['planId'][$mailServicePlan])) 
+                                        ? $mailServiceConfig['planId'][$mailServicePlan] : null;
+            
+            $mailServiceStatusResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($mailServiceStatus, array('websiteId' => $this->id), $this);
+            if ($mailServiceStatusResp && $mailServiceStatusResp->status == 'error' || $mailServiceStatusResp->data->status == 'error') {
+                \DBG::log('Failed to '.$mailServiceStatus);
+                throw new WebsiteException('Failed to '.$mailServiceStatus);
+            }
+
+            if(!\FWValidator::isEmpty($mailServicePlan) && !\FWValidator::isEmpty($planId)) {
+                $paramsData = array(
+                    'planId'         => $planId,
+                    'websiteId'      => $this->id,
+                    'planExternalId' => $mailServicePlan
+                );
+
+                $mailServicePlanResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('changePlanOfMailSubscription', $paramsData, $this);
+                if ($mailServicePlanResp && $mailServicePlanResp->status == 'error' || $mailServicePlanResp->data->status == 'error') {
+                    \DBG::log('Failed to change the plan of the subscription.');
+                    throw new WebsiteException('Failed to change the plan of the subscription.');
+                }
+            }
+           
+        }
         
         if (!empty($legalComponents)) {
             $params = array(

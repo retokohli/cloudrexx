@@ -137,6 +137,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'deleteAccount'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
             'isComponentLicensed'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'getModuleAdditionalData' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
+            'changePlanOfMailSubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
         );  
     }
 
@@ -4261,6 +4263,109 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (\Exception $e) {
             \DBG::dump('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
             throw new MultiSiteJsonException('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get Module AdditionalData
+     * 
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    function getModuleAdditionalData($params) {
+        if (\FWValidator::isEmpty($params['post']) || \FWValidator::isEmpty($params['post']['moduleName'])) {
+            throw new MultiSiteJsonException('JsonMultiSite::getModuleAdditionalData() failed: Insufficient arguments supplied: ' . var_export($params, true));
+        }
+        
+        $moduleName     = isset($params['post']['moduleName']) ? $params['post']['moduleName'] : '';
+        $additionalType = isset($params['post']['additionalType']) ? $params['post']['additionalType'] : '';
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_WEBSITE:
+                    $additionalData = ComponentController::getModuleAdditionalDataByType($moduleName, $additionalType);
+                    if (\FWValidator::isEmpty($additionalData)) {
+                        return array('status' => 'error'); 
+                    }
+                    return array('status' => 'success', 'additionalData' => $additionalData);
+                    break;
+                default :
+                    break;
+            }
+            
+        } catch (\Exception $e) {
+            \DBG::dump('JsonMultiSite::getModuleAdditionalData() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::getModuleAdditionalData() failed: Failed to get the Module additional data.');
+        }
+    }
+    
+    /**
+     * Change Plan Of MailSubscription
+     * 
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function changePlanOfMailSubscription($params)
+    {
+        if (   \FWValidator::isEmpty($params['post']) 
+            || \FWValidator::isEmpty($params['post']['planId'])
+            || \FWValidator::isEmpty($params['post']['websiteId'])
+            || \FWValidator::isEmpty($params['post']['planExternalId'])
+        ) {
+            throw new MultiSiteJsonException('JsonMultiSite::changePlanOfMailSubscription() failed: Insufficient arguments supplied: ' . var_export($params, true));
+        }
+        
+        $planId = isset($params['post']['planId']) ? $params['post']['planId'] : '';
+        $planExternalId = isset($params['post']['planExternalId']) ? $params['post']['planExternalId'] : '';
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    if (\FWValidator::isEmpty($website)) {
+                        \DBG::log('Unkown Website-ID: '.$params['post']['websiteId']);
+                        return array('status' => 'error');
+                    }
+                    
+                    $mailServiceServer = $website->getMailServiceServer();
+                    $mailAccountId     = $website->getMailAccountId();
+                    if (\FWValidator::isEmpty($mailServiceServer) || \FWValidator::isEmpty($mailAccountId)) {
+                        \DBG::log('Mailserver/Mail account not valid.');
+                        return array('status' => 'error');
+                    }
+                    
+                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
+                    if (!$hostingController) {
+                        \DBG::log('Failed to Fetch the hosting controller.');
+                        return array('status' => 'error');
+                    }
+                    
+                    if (!$hostingController->changePlanOfSubscription($mailAccountId, $planId, $planExternalId)) {
+                        \DBG::log('Failed to change plan of the subscription');
+                        return array('status' => 'error');
+                    }
+                    return array('status' => 'success');
+                    break;
+                    
+                case ComponentController::MODE_SERVICE:
+                    $response = self::executeCommandOnManager('changePlanOfMailSubscription', $params['post']);                
+                    break;
+                    
+                case ComponentController::MODE_WEBSITE:
+                    $response = self::executeCommandOnMyServiceServer('changePlanOfMailSubscription', $params['post']);              
+                    break;
+            }
+            if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                return array('status' => 'success');
+            }
+            return array('status' => 'error');
+        } catch (Exception $e) {
+            \DBG::log('JsonMultiSite::changePlanOfMailSubscription() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::changePlanOfMailSubscription() failed: Failed to change the plan of mail subscription.');
         }
     }
     

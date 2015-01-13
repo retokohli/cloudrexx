@@ -648,6 +648,48 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
+     * Change plan of the subscription 
+     * 
+     * @param integer $subscriptionId subscription Id
+     * @param string  $planGuid        planGuid
+     * @param string  $planExternalId  planExternalId
+     * @return integer
+     * @throws ApiRequestException
+     */
+    function changePlanOfSubscription($subscriptionId, $planGuid, $planExternalId)
+    {
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        $webspace = $xmldoc->createElement('webspace');
+        $packet->appendChild($webspace);
+        $switchSubscription = $xmldoc->createElement('switch-subscription');
+        $webspace->appendChild($switchSubscription);
+        $filter = $xmldoc->createElement('filter');
+        $switchSubscription->appendChild($filter);
+        
+        $id = $xmldoc->createElement('id', $subscriptionId);
+        $filter->appendChild($id);
+        
+        $planGuidTag = $xmldoc->createElement('plan-guid', $planGuid);
+        $switchSubscription->appendChild($planGuidTag);
+        $planExternalIdTag = $xmldoc->createElement('plan-external-id', $planExternalId);
+        $switchSubscription->appendChild($planExternalIdTag);
+        $noPlan = $xmldoc->createElement('no-plan');
+        $switchSubscription->appendChild($noPlan);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->webspace->{'switch-subscription'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError)?$systemError:$resultNode->errtext);
+            throw new ApiRequestException("Error in change plan of Subscription: {$error}");
+        }
+        return $resultNode->id;	
+    }
+    
+    /**
      * Create user account
      * 
      * @param string $name      name 

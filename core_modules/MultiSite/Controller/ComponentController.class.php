@@ -874,28 +874,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         //show the website's mail service enable|disable button
-    if ($objTemplate->blockExists('activateMailService') && $objTemplate->blockExists('deactivateMailService')) {
-        $mailServiceServerStatus = false;
-        if ($website->getMailServiceServer() && !\FWValidator::isEmpty($website->getMailAccountId())) {
-            $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
-            if (!\FWValidator::isEmpty($response)
-                    && $response->status == 'success' 
-                    && $response->data->status == 'success'
-                ) {
-                $mailServiceServerStatus = $response->data->mailServiceStatus;
+        if ($objTemplate->blockExists('activateMailService') && $objTemplate->blockExists('deactivateMailService')) {
+            $mailServiceServerStatus = false;
+            $additionalDataResp = JsonMultiSite::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $website);
+            $additionalData     = null;
+            if ($additionalDataResp->status == 'success' && $additionalDataResp->data->status == 'success') {
+                $additionalData = $additionalDataResp->data->additionalData;
             }
+
+            $showMailService = (   !\FWValidator::isEmpty($additionalData)
+                                && isset($additionalData['service']) 
+                                && !\FWValidator::isEmpty($additionalData['service']));
+            if ($website->getMailServiceServer() && !\FWValidator::isEmpty($website->getMailAccountId())) {
+                $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
+                if (!\FWValidator::isEmpty($response)
+                        && $response->status == 'success' 
+                        && $response->data->status == 'success'
+                ) {
+                    $mailServiceServerStatus = $response->data->mailServiceStatus;
+                }
+            }
+            self::showOrHideBlock($objTemplate, 'deactivateMailService', $mailServiceServerStatus);
+            self::showOrHideBlock($objTemplate, 'openAdministration', $mailServiceServerStatus);
+            self::showOrHideBlock($objTemplate, 'activateMailService', !$mailServiceServerStatus);
+
+            $objTemplate->setVariable('MULTISITE_WEBSITE_MAIL_SERVICE_STATUS', $statusDisabled ? ($mailServiceServerStatus 
+                                                                                                  ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_ENABLED']
+                                                                                                  : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_DISABLED']
+                                                                                                 )
+                                                                                               : '');
+
         }
-        self::showOrHideBlock($objTemplate, 'deactivateMailService', $mailServiceServerStatus);
-        self::showOrHideBlock($objTemplate, 'openAdministration', $mailServiceServerStatus);
-        self::showOrHideBlock($objTemplate, 'activateMailService', !$mailServiceServerStatus);
-        
-        $objTemplate->setVariable('MULTISITE_WEBSITE_MAIL_SERVICE_STATUS', $statusDisabled ? ($mailServiceServerStatus 
-                                                                                              ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_ENABLED']
-                                                                                              : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_DISABLED']
-                                                                                             )
-                                                                                           : '');
-            
-    }
         
         //show the website's resources
         if ($objTemplate->blockExists('showWebsiteResources')) {
@@ -924,6 +933,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         self::showOrHideBlock($objTemplate, 'showWebsiteAddDomain', !$statusDisabled);
         //hide the  website mail service if the website is disabled
         self::showOrHideBlock($objTemplate, 'showWebsiteMailService', !$statusDisabled);
+         // show/hide the  website mail service
+        self::showOrHideBlock($objTemplate, 'showMailServiceSection', $showMailService);
         
         return $objTemplate->get();
     }

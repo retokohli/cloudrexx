@@ -319,9 +319,17 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         $mainDomain = '';
         if ($resp->status == 'success' && $resp->data->status == 'success') {
             $mainDomain = $resp->data->mainDomain;
-        }           
+        }
+        
+        $additionalData = null;
+        $response = JsonMultiSite::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $website);
+        if ($response->status == 'success' && $response->data->status == 'success') {
+            $additionalData = $response->data->additionalData;
+        }
+        
+        $mailServicePlan = !\FWValidator::isEmpty($additionalData) && isset($additionalData['plan']) ? $additionalData['plan'] : null;
         $domain = $website->getBaseDn()->getName();
-        $planId = isset($this->config['planId']) ? $this->config['planId'] : null;
+        $planId = isset($this->config['planId'][$mailServicePlan]) ? $this->config['planId'][$mailServicePlan] : null;
         $role = isset($this->config['userRoleId']) ? $this->config['userRoleId'] : null;
         if (empty($domain) || empty($mainDomain) || empty($role) || empty($this->ipAddress)) {
             \DBG::log('MailServiceServer(createAccount) Failed: Insufficent argument supplied.');
