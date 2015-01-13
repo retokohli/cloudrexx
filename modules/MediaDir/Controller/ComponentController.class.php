@@ -123,7 +123,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     }
                 }
                 if ($mediadirCheck) {
-                    $objMediadir = new MediaDirectory($this->getName());
+                    $objMediadir = new MediaDirectory('', $this->getName());
                     $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
                     $objMediadir->getHeadlines($mediadirCheck);
                 }
