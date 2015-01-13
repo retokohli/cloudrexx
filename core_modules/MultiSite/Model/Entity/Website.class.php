@@ -1761,6 +1761,40 @@ throw new WebsiteException('implement secret-key algorithm first!');
         
     }
 
+    
+    /**
+     * get the user
+     * 
+     * @param  integer $id user id
+     * @return object  $user return user as objects.
+     * 
+     * @throws WebsiteException
+     */
+    public function getUser($id) 
+    {
+        if(\FWValidator::isEmpty($id)){
+            return;
+        }
+        try {
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getUser', array('id' => $id), $this);
+            if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
+                
+                if (\FWValidator::isEmpty($resp->data->user)) {
+                    return;
+                }
+                $objDataSet         = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($resp->data->user));
+                $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
+                $objEntityInterface->setEntityClass('Cx\Core\User\Model\Entity\User');
+                $user = $objDataSet->export($objEntityInterface);
+                return $user;
+            }
+        } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
+            throw new WebsiteException('Unable get user: '.$e->getMessage());
+        }
+        
+    }
+    
+    
     /**
      * This function used to get the website resource usage stats on website.
      * 

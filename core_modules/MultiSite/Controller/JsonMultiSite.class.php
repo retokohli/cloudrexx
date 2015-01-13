@@ -118,6 +118,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'getUser'               => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getResourceUsageStats' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'enableMailService'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),            
             'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
@@ -3957,6 +3958,40 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
+    /**
+     * get user by id
+     * 
+     * @param  array $params supplied arguments from JsonData-request
+     * 
+     * @return array
+     */
+    public function getUser($params){
+
+        $userId = isset($params['post']['id']) ? contrexx_input2raw($params['post']['id']) : '';
+        if (\FWValidator::isEmpty($userId)) {
+            return;
+        }
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_WEBSITE:
+                    $userRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User');
+                    $user = $userRepo->findBy(array('id' => $userId));
+
+                    $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
+
+                    $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::import($objEntityInterface, $user);
+
+                    if (!\FWValidator::isEmpty($objDataSet)) {
+                        return array('status' => 'success', 'user' => $objDataSet->toArray());
+                    }
+                    return array('status' => 'error');
+                    break;
+            }
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::getUser() failed: To get the user' . $e->getMessage());
+        }
+    }
+
     /**
      * This function used to get the resource usage stats
      * 
