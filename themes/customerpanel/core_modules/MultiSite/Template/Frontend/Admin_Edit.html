@@ -1,34 +1,39 @@
+<!-- BEGIN showEditAdminUser -->
 <div class="grid-elm grid-align-1-1 grid-offset">   
-    <form role="form" action="#" id="multisite_admin_user_edit_form">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h2>{TXT_CORE_MODULE_MULTISITE_EDIT_ADMIN_USER}</h2>   
-        
-        <fieldset> 
-            <!-- BEGIN showEditAdminUser -->
-            <!-- BEGIN multisite_user_profile_attribute_firstname -->     
-            <div class="row">
-                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}
-            </div>
-            <!-- END multisite_user_profile_attribute_firstname -->     
-                                          
-            <!-- BEGIN multisite_user_profile_attribute_lastname -->     
-            <div class="row">
-                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}
-            </div>
-            <!-- END multisite_user_profile_attribute_lastname -->   
-            
-            <!-- BEGIN multisite_user_account_email -->
-            <div class="row">
-                <label for="{MULTISITE_USER_ACCOUNT_EMAIL_ID}">{MULTISITE_USER_ACCOUNT_EMAIL_DESC}</label>
-                <input type="text" id="{MULTISITE_USER_ACCOUNT_EMAIL_ID}" name="{MULTISITE_USER_ACCOUNT_EMAIL_NAME}" value="{MULTISITE_USER_ACCOUNT_EMAIL_VALUE}">
-            </div>  
-            <!-- END multisite_user_account_email -->  
-                                                       
-            <div class="row">
-                <button type="submit" class="save">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
-                <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
-            </div>
-            <!-- END showEditAdminUser -->
-        <fieldset>    
-    </form>
+  <form role="form" action="{MULTISITE_ADMIN_USER_SUBMIT_URL}" id="multisite_admin_user_edit_form">
+    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <h2>{TXT_CORE_MODULE_MULTISITE_EDIT_ADMIN_USER}</h2>   
+
+    <fieldset> 
+      <div class="row">
+        <label for="first_name">{TXT_USER_FIRSTNAME}:</label>
+        <input type="text" name="first_name" id="first_name" value="{MULTISITE_ADMIN_USER_FIRSTNAME}">
+      </div>  
+      <div class="row">
+        <label for="last_name">{TXT_USER_LASTNAME}:</label>
+        <input type="text" name="last_name" id="last_name" value="{MULTISITE_ADMIN_USER_LASTNAME}">
+      </div>  
+      <div class="row">
+        <label for="email">{TXT_USER_EMAIL}:</label>
+        <input type="text" name="email" id="email" value="{MULTISITE_ADMIN_USER_EMAIL}">
+      </div>   
+      <div class="row">
+        <button type="submit" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading"  class="save loadingProcess">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+        <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+      </div>
+    </fieldset>    
+  </form>
 </div>
+<script type="text/javascript">
+  /* <![CDATA[ */
+  jQuery(document).ready(function () {
+    jQuery('#multisite_admin_user_edit_form').submit(function () {
+      var apiUrl = '/api/MultiSite/Website/Admin?id=' + getQueryParams(document.location.search)['id']
+      sendApiFormRequest('#multisite_admin_user_edit_form', '#AdminEdit', '#multisite_website_admins', apiUrl);
+      return false;
+    });
+  });
+  /* ]]> */
+</script>
+
+<!-- END showEditAdminUser -->

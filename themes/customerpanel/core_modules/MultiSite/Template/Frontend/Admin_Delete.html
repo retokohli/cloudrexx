@@ -1,13 +1,12 @@
+<!-- BEGIN showDeleteAdminUser -->
 <div class="grid-elm grid-align-1-1 grid-offset">   
     <form role="form"  id="multisite_admin_user_delete_form" action="{MULTISITE_ADMIN_USER_SUBMIT_URL}">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <h2>{TXT_CORE_MODULE_MULTISITE_DELETE_ADMIN_USER}</h2> 
         <fieldset> 
-            <!-- BEGIN showDeleteAdminUser -->
             <div class="row">
-                <label for="">{MULTISITE_ADMIN_USER_DELETE_CONFIRM}</label>
+                <label for="delete_admin">{MULTISITE_ADMIN_USER_DELETE_CONFIRM}</label>
             </div>
-            <!-- END showDeleteAdminUser -->
             <div class="row">
                 <button type="submit"  data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" class="save loadingProcess">{TXT_CORE_MODULE_MULTISITE_DELETE}</button>
                 <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
@@ -20,10 +19,11 @@
 /* <![CDATA[ */
 jQuery(document).ready(function() {
     jQuery('#multisite_admin_user_delete_form').submit(function() {
-          var apiUrl = '/api/MultiSite/Website?id=' + getQueryParams(document.location.search)['id']
+          var apiUrl = '/api/MultiSite/Website/Admin?id=' + getQueryParams(document.location.search)['id']
           sendApiFormRequest('#multisite_admin_user_delete_form','#AdminDelete','#multisite_website_admins', apiUrl);
           return false;
     });
 });
 /* ]]> */
 </script>
+<!-- END showDeleteAdminUser -->

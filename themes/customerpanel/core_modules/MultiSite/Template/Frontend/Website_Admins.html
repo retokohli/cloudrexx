@@ -1,44 +1,37 @@
-<table>
-    <thead>
-        <tr>     
-            <th class="sort">{TXT_MULTISITE_WEBSITE_TITLE_NAME}</th>
-            <th class="sort">{TXT_MULTISITE_WEBSITE_TITLE_EMAIL}</th>
-            <th class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- BEGIN showWebsiteAdminUsers -->
-        <tr>
-            <td>{MULTISITE_WEBSITE_USER_NAME}</td>
-            <td><a title="{MULTISITE_WEBSITE_USER_EMAIL}" href="mailto:{MULTISITE_WEBSITE_USER_EMAIL}">{MULTISITE_WEBSITE_USER_EMAIL}</a></td>
-            
-            <td class="actions">
-                <!-- BEGIN showWebsiteUsersAction -->
-                <a class="entypo-tools" href="#" data-remote="/api/MultiSite/Admin/Edit?website_id={MULTISITE_WEBSITE_ID}&user_id={MULTISITE_WEBSITE_USER_ID}&email_id={MULTISITE_WEBSITE_USER_EMAIL}" data-target="#AdminEdit" data-toggle="modal"></a>&nbsp;
-                <a class="entypo-trash" href="#" data-remote="/api/MultiSite/Admin/Delete?website_id={MULTISITE_WEBSITE_ID}&user_id={MULTISITE_WEBSITE_USER_ID}&email_id={MULTISITE_WEBSITE_USER_EMAIL}" data-target="#AdminDelete" data-toggle="modal"></a>
-                <!-- END showWebsiteUsersAction -->
-            </td>
-        </tr>     
-        <!-- END showWebsiteAdminUsers -->
-    </tbody> 
-</table> 
+<!-- BEGIN showWebsiteAdminUsers -->
+{ADMIN_USERS}
+<!-- END showWebsiteAdminUsers -->
+
 <!-- BEGIN showWebsiteAdminAddUser -->
-<button class="add" data-remote="/api/MultiSite/Admin/Add?website_id={MULTISITE_WEBSITE_ID}" data-target="#AdminAdd" data-toggle="modal">{TXT_MULTISITE_WEBSITE_ADD_ACCOUNT}</button>
+<button class="add" data-page="Add" data-user_id="" >{TXT_MULTISITE_WEBSITE_ADD_ACCOUNT}</button>
 <!-- END showWebsiteAdminAddUser -->
 <div aria-hidden="true" class="modal fade" id="AdminAdd" role="dialog" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}</div>
-    </div>
+  <div class="modal-dialog">
+    <div class="modal-content"></div>
+  </div>
 </div>
 
 <div aria-hidden="true" class="modal fade" id="AdminEdit" role="dialog" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}</div>
-    </div>
+  <div class="modal-dialog">
+    <div class="modal-content"></div>
+  </div>
 </div>
 
 <div aria-hidden="true" class="modal fade" id="AdminDelete" role="dialog" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}</div>
-    </div>
+  <div class="modal-dialog">
+    <div class="modal-content"></div>
+  </div>
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('.entypo-tools, .entypo-trash, .add ').bind('click', function (event) {
+      var remoteUrl = '/api/MultiSite/Admin/' + jQuery(this).data('page') +'?website_id={MULTISITE_WEBSITE_ID}&user_id='+ jQuery(this).data('user_id');
+      showRemoteModal({
+        modalId   : 'Admin' + jQuery(this).data('page'),
+        remoteUrl : remoteUrl,
+      });
+    });  
+});
+/* ]]> */
+</script>
