@@ -300,8 +300,8 @@ class ViewGenerator {
         }
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $addBtn = '';
-            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             if (!empty($this->options['functions']['add'])) {
+                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', 1);
                 $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
             }
