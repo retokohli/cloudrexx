@@ -1740,21 +1740,16 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function getAdminUsers() 
     {
         $adminUsers = array();
-        $usersArray = array();
+        
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getAdminUsers', array(), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 
-                // convert the json object to array
-                foreach ($resp->data->users as $user) {
-                    $usersArray[] = (array) $user;            
-                }
-                
-                if (\FWValidator::isEmpty($usersArray)) {
+                if (\FWValidator::isEmpty($resp->data->users)) {
                     return;
                 }
                 
-                $objDataSet         = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($usersArray);
+                $objDataSet         = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($resp->data->users);
                 $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
                 $objEntityInterface->setEntityClass('Cx\Core\User\Model\Entity\User');
                 $adminUsers = $objDataSet->export($objEntityInterface);
@@ -1765,7 +1760,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         }
         
     }
-    
+
     /**
      * This function used to get the website resource usage stats on website.
      * 
