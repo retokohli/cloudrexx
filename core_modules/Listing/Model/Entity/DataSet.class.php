@@ -171,8 +171,6 @@ class DataSet implements \Iterator {
 
     public function export(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface) {
         try {
-            print_r($this->data);
-            exit();
             return $exportInterface->export($this->data);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
