@@ -137,6 +137,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'setMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'deleteAccount'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
             'isComponentLicensed'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'updateMainDomain'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getModuleAdditionalData' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
             'changePlanOfMailSubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
         );  
@@ -4394,6 +4395,82 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (\Exception $e) {
             \DBG::dump('JsonMultiSite::isComponentLicensed() failed:'. $e->getMessage());
             throw new MultiSiteJsonException('JsonMultiSite::isComponentLicensed() failed:'. $e->getMessage());
+        }
+    }
+    
+    /**
+     *  Update the main domain
+     * 
+     * @global array $_ARRAYLANG
+     * 
+     * @param type $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function updateMainDomain($params) {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
+        if (\FWValidator::isEmpty($params) 
+                || \FWValidator::isEmpty($params['post']['websiteName'])
+                || \FWValidator::isEmpty($params['post']['preMainDomainName'])
+                || \FWValidator::isEmpty($params['post']['mainDomainName'])) {
+            \DBG::log('JsonMultiSite::updateMainDomain() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
+        }
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('name' => $params['post']['websiteName']));
+                    if (!$website) {
+                        \DBG::log('JsonException::updateMainDomain() failed: Unkown Website-ID: '.$params['post']['websiteName']);
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
+                    }
+                    //check the website has a mail service
+                    $mailServiceServer = $website->getMailServiceServer();
+                    if (!\FWValidator::isEmpty($mailServiceServer)
+                            && $website->getMailAccountId()) {
+                        $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                        if (!$hostingController || !($hostingController instanceof PleskController)) {
+                            throw new MultiSiteJsonException('Failed to set the main domain.');
+                        }
+                        
+                        //remove the Domain Alias of the newly selected Main Domain
+                        if (!$hostingController->deleteDomainAlias($params['post']['mainDomainName'])) {
+                            \DBG::msg('JsonMultiSite::updateMainDomain() failed to remove the domain alias.');
+                            throw new MultiSiteJsonException('Failed to set the main domain.');
+                        }
+                        
+                        //rename the plesk subscription to the name of the newly selected Main Domain
+                        if (!$hostingController->renameSubscriptionName($params['post']['mainDomainName'])) {
+                            \DBG::msg('JsonMultiSite::updateMainDomain() failed to rename the subscription.');
+                            throw new MultiSiteJsonException('Failed to set the main domain.');
+                        }
+                        
+                        //add previous Main Domain as Domain Alias
+                        if (!$hostingController->createDomainAlias($params['post']['preMainDomainName'])) {
+                            \DBG::msg('JsonMultiSite::updateMainDomain() failed to create domain alias.');
+                            throw new MultiSiteJsonException('Failed to set the main domain.');
+                        }
+                        return array('status' => 'success', 'message' => 'Main Domian Updated successfully.');
+                    }
+                    break;
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    // forward the call to manager server. 
+                    $response = self::executeCommandOnManager('updateMainDomain', $params['post']);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return array('status' => 'success', 'message' => $response->data->message);
+                    }
+                    break;
+            }
+            \DBG::msg('JsonMultiSite::updateMainDomain() failed: Updating the main domain process failed.');
+            return array('status' => 'error', 'message' => 'Failed to set the main domain.');
+        } catch (\Exception $e) {
+            \DBG::msg('JsonMultiSite::updateMainDomain() failed: Updating the main domain process failed:' . $e->getMessage());
+            throw new MultiSiteJsonException('Failed to set the main domain.');
         }
     }
 }

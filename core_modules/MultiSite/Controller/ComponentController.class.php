@@ -2205,6 +2205,10 @@ throw new MultiSiteException('Refactor this method!');
         //OrderPayment event Listener
         $orderPaymentEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderPaymentEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
+        
+        //CoreYamlSetting event Listener
+        $coreYamlSettingEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CoreYamlSettingEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\Setting\\Model\\Entity\\YamlSetting', $coreYamlSettingEventListener);
     }
     
     
