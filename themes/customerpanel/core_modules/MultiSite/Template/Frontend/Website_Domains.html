@@ -1,3 +1,5 @@
+<!-- BEGIN showDomainsSection -->
+<h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAINS}</h2>
 <table>
     <thead>
         <tr>
@@ -12,7 +14,7 @@
             <td>{MULTISITE_WEBSITE_DOMAIN}</td>
             <td>
             <!-- BEGIN showWebsiteMainDomain -->
-            <input type="radio" name="mainDomain" class="mainDomainModal"  {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-domain="{MULTISITE_WEBSITE_DOMAIN}" data-url="{MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL}" data-target="#SetMainDomain" data-toggle="modal"/>
+            <input type="radio" name="mainDomain" class="mainDomainModal"  {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-domain="{MULTISITE_WEBSITE_DOMAIN}" data-url="{MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL}" data-target="#SetMainDomain" />
             <!-- END showWebsiteMainDomain -->
             </td>
             <td class="actions">
@@ -74,7 +76,10 @@ jQuery(document).ready(function() {
           sendApiFormRequest('#multisite_website_domain_select', '#SetMainDomain','#multisite_website_domains', apiUrl);
           return false;
     });
-    
+    jQuery('#SetMainDomain').modal('hide');
+    jQuery("input[name=mainDomain]:radio").change(function () {
+        jQuery('#SetMainDomain').modal('show');
+    });   
     jQuery('.mainDomainModal').bind('click', function (event) {
         var domainName = jQuery(this).data('domain'),
             url        = jQuery(this).data('url');
@@ -101,4 +106,5 @@ jQuery(document).ready(function() {
 });
 /* ]]> */
 </script>
+<!-- END showDomainsSection -->
 
