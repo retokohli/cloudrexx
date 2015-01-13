@@ -661,20 +661,20 @@
                 type: "POST",
                 beforeSend: function() {
                   jQuery('#SubscriptionSelection').modal('hide');
-                  showMessage('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" />   '+subscriptionOptions[subscriptionType+'HeaderErrorTxt'],  'info');
+                  showMessage('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" />   '+subscriptionOptions[subscriptionType+'HeaderErrorTxt'],  'info', false);
                 },
                 success: function (response) {
                     if (response.status == 'success') {
                         $resp = response.data;
                         if ($resp.status == 'success') {
                             showMessage($resp.message, 'success');
+                            location.reload(true);
                         } else {
                             showMessage($resp.message, 'error');
                         }
                     } else {
                         showMessage(response.message.message, 'error');
                     }
-                    location.reload(true);
                 }
             });
         }
