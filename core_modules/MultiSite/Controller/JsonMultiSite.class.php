@@ -134,7 +134,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateOwnWebsiteState'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'verifyWebsiteOwnerOrIscRequest')),
             'getMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'setMainDomain'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'deleteAccount'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),            
+            'deleteAccount'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true),
+            'isComponentLicensed'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
         );  
     }
 
@@ -4225,6 +4226,34 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (\Exception $e) {
             \DBG::dump('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
             throw new MultiSiteJsonException('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
+        }
+    }
+    
+    /**
+     * Check whether the website component is licensed or not.
+     * 
+     * @param  array  $params
+     * @return string $status
+     * @throws MultiSiteJsonException
+     */
+    public function isComponentLicensed($params) 
+    {
+        if (empty($params['post']) || !isset($params['post']['component'])) {
+            \DBG::log('JsonMultiSite::isComponentLicensed() failed: component is empty');
+            throw new MultiSiteJsonException('Unknown component requested.');
+        }
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_WEBSITE:
+                    if((in_array($params['post']['component'], \Env::get('cx')->getLicense()->getLegalComponentsList()))) {
+                        return array('status' => 'success');
+                    }
+                    break;
+            }
+            return array('status' => 'error');
+        } catch (\Exception $e) {
+            \DBG::dump('JsonMultiSite::isComponentLicensed() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::isComponentLicensed() failed:'. $e->getMessage());
         }
     }
 }

@@ -745,8 +745,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
         
-        //Show the Website Domain Alias name
-        if ($objTemplate->blockExists('showWebsiteDomains')) {
+        //show section Domains if component NetManager is licensed on Website.
+        $response = JsonMultiSite::executeCommandOnWebsite('isComponentLicensed', array('component' => 'NetManager'), $website);
+        $showDomainSectionStatus = ($response->status == 'success' && $response->data->status == 'success');
+        self::showOrHideBlock($objTemplate, 'showDomainsSection', $showDomainSectionStatus);
+        
+        //show website base domain and domain aliases
+        if ($showDomainSectionStatus && $objTemplate->blockExists('showWebsiteDomains')) {
             $resp = JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
             $mainDomainName = '';
             if ($resp->status == 'success' && $resp->data->status == 'success') {
@@ -762,13 +767,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED' => ($domain->getName() === $mainDomainName) ? 'checked' : '',
                         'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL'         => '/api/MultiSite/Domain?action=Select&website_id=' . $website->getId() . '&domain_id=' . contrexx_raw2xhtml($domainId) . '&domain_name=' . contrexx_raw2xhtml($domain->getName())
                 ));
-                $domainActionStatus = !$statusDisabled ? (!$isBaseDomain || $domain->getName() !== $mainDomainName) : false;
+                // hide the edit/delete icons if the domain is selected as main domain or  base domain.
+                $domainActionStatus = !$statusDisabled ? ($domain->getName() !== $mainDomainName && !$isBaseDomain) : false;
                 self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', $domainActionStatus);
                 //hide the selection websiteMainDomain if the website is disabled
                 self::showOrHideBlock($objTemplate, 'showWebsiteMainDomain', !$statusDisabled);
                 $objTemplate->parse('showWebsiteDomains');                
             }
-        }
+        }        
         
         //show the website's domain name
         if ($objTemplate->blockExists('showWebsiteDomainName')) {

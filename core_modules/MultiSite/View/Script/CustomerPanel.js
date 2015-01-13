@@ -217,7 +217,7 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
     url: jQuery(jsFormSelector).attr('action'),
     data: jQuery(jsFormSelector).serialize(),
     type: "POST",
-    beforeSend: function () {
+    beforeSend: function (xhr, settings) {
       jQuery('.loadingProcess').button('loading');
       jQuery('.loadingProcess').prop('disabled', true);
     },
@@ -231,6 +231,10 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
       if (response.status == 'success') {
         loadContent(loadContentSelector, apiUrl);
       }
+    },
+    complete: function (xhr, settings) {
+        jQuery('.loadingProcess').button('reset');
+        jQuery('.loadingProcess').prop('disabled', false);                
     },
     fail: function (response) {
     }
