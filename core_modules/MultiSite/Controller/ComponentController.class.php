@@ -833,7 +833,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         //show section Domains if component NetManager is licensed on Website.
-        $response = JsonMultiSite::executeCommandOnWebsite('isComponentLicensed', array('component' => 'NetManager'), $website);
+        $response = JsonMultiSite::executeCommandOnWebsite('isComponentLicensed', array('component' => 'DomainManager'), $website);
         $showDomainSectionStatus = ($response->status == 'success' && $response->data->status == 'success');
         self::showOrHideBlock($objTemplate, 'showDomainsSection', $showDomainSectionStatus);
         
