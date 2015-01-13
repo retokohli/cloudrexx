@@ -444,6 +444,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             );
             
             // upgrade subscription 
+            $subscriptionObj = null;
             if (!\FWValidator::isEmpty($subscriptionId)) {
                 $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
                 $subscriptionObj = $subscriptionRepo->findOneBy(array('id' => $subscriptionId));
@@ -490,8 +491,28 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $subscription->setUserId($externalPaymentCustomerId);
                 $subscription->setPurpose($transactionReference);
                 $subscription->setReferenceId($transactionReference);
+                
+                $credit = 0;
+                if (   !\FWValidator::isEmpty($subscriptionId)
+                    && $subscriptionObj
+                    && !\FWValidator::isEmpty($subscriptionObj->getPaymentAmount())
+                    && !\FWValidator::isEmpty($subscriptionObj->getRenewalDate())
+                ) {
+                    $today = new \DateTime();
+                    $renewalStartDate = $renewalDate = $subscriptionObj->getRenewalDate();
+                    
+                    $oldSubscriptionInterval = \DateInterval::createFromDateString($subscriptionObj->getRenewalQuantifier() .' '. $subscriptionObj->getRenewalUnit());
+                    $renewalStartDate->sub($oldSubscriptionInterval);
+                    
+                    $renewalPeriodDays        = $renewalDate->diff($renewalStartDate)->days;
+                    $subscriptionPricePerDay  = $subscriptionObj->getPaymentAmount() / $renewalPeriodDays;
+                    $daysLeftInCurrentRenewal = $renewalDate->diff($today)->days;
+                    
+                    $credit                   = number_format($subscriptionPricePerDay * $daysLeftInCurrentRenewal, 2, '.', '');
+                }
                 //update amount deatails in subscription
-                $subscription->setAmount($productPrice * 100);
+                $subscription->setAmount(($productPrice - $credit) * 100);
+                
                 $subscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);
 
                 list($subscriptionPeriod, $subscriptionInterval, $cancellationInterval)
@@ -512,15 +533,27 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         && $response instanceof \Payrexx\Models\Response\Subscription
                         && $response->getStatus() == 'active'
                     ) {
+                        $newExternalSubscriptionId = $response->getId();
+                        // if credit applied, update the subscription price for the next renewal
+                        if (!\FWValidator::isEmpty($credit)) {
+                            $updateSubscription = new \Payrexx\Models\Request\Subscription();
+                            $updateSubscription->setId($newExternalSubscriptionId);
+                            $updateSubscription->setAmount($productPrice * 100);
+                            try {
+                                $payrexx->update($updateSubscription);
+                            } catch (\Payrexx\PayrexxException $e) {
+                                \DBG::log('JsonMultiSite::manageSubscription() - Could not update the a subscription ID => '. $newExternalSubscriptionId);
+                            }
+                        }
                         
-                        $transactionReference .= '-'. $response->getId();
+                        $transactionReference .= '-'. $newExternalSubscriptionId;
                         
                         // transaction data needed for OrderPaymentEventListener::postPersist()
                         $subscriptionValidDate = new \DateTime();
                         $subscriptionValidDate->add($subscriptionPeriod);
                         $transactionData = array(
                           'subscription' => array(
-                              'id'          => $response->getId(),
+                              'id'          => $newExternalSubscriptionId,
                               'valid_until' => $subscriptionValidDate->format('Y-m-d')
                           )
                         );
