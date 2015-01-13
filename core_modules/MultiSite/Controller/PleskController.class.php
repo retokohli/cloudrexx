@@ -656,7 +656,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @return integer
      * @throws ApiRequestException
      */
-    function changePlanOfSubscription($subscriptionId, $planGuid, $planExternalId)
+    public function changePlanOfSubscription($subscriptionId, $planGuid, $planExternalId)
     {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);

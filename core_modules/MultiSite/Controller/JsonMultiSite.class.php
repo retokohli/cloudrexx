@@ -4275,7 +4275,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      * @throws MultiSiteJsonException
      */
-    function getModuleAdditionalData($params) {
+    public function getModuleAdditionalData($params) {
         if (\FWValidator::isEmpty($params['post']) || \FWValidator::isEmpty($params['post']['moduleName'])) {
             throw new MultiSiteJsonException('JsonMultiSite::getModuleAdditionalData() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
