@@ -1105,17 +1105,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         //For cancelling the subscription
-        $subscriptionId = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['id'] : '')  : $transaction['id'];
+        $subscriptionId     = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['id'] : '')  : $transaction['id'];
         $subscriptionStatus = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['status'] : '')  : $transaction['status'];
-        $subscriptionEnd  = $hasTransaction ? (isset($transaction['subscription']) ? $transaction['subscription']['end'] : '')  : $transaction['end'];
+        $subscriptionEnd    = $hasTransaction
+                                ? (isset($transaction['subscription']) && isset($transaction['subscription']['end'])
+                                     ? $transaction['subscription']['end']
+                                     : ''
+                                  )
+                                : $transaction['end'];
         
-        if (!\FWValidator::isEmpty($subscriptionId)
-            && !\FWValidator::isEmpty($subscriptionEnd)    
+        if (   !\FWValidator::isEmpty($subscriptionId)
+            && !\FWValidator::isEmpty($subscriptionEnd)
             && $subscriptionStatus === \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED
-           ) {
+        ) {
             $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
             $subscription = $subscriptionRepo->findOneBy(array('externalSubscriptionId' => $subscriptionId));
             if (!\FWValidator::isEmpty($subscription)) {
+                // TO-DO:check the payrexx account to confirm whether the subscription is cancelled
+                
                 $subscription->setExpirationDate(new \DateTime($subscriptionEnd));
                 $subscription->setState(\Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
                 \Env::get('em')->flush();
@@ -1151,13 +1158,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             && $invoice['referenceId'] == $response->getReferenceId()
         ) {
             $transactionReference = $invoiceReferId . (!\FWValidator::isEmpty($subscriptionId) ? '-' . $subscriptionId : '');
-            $payment = new \Cx\Modules\Order\Model\Entity\Payment();
-            $payment->setAmount($invoice['amount']);
-            $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
-            $payment->setTransactionReference($transactionReference);
-            $payment->setTransactionData($transaction);
-            \Env::get('em')->persist($payment);
-            \Env::get('em')->flush();            
+            self::createPayrexxPayment($transactionReference, $invoice['amount'], $transaction);
         }
     }
     
@@ -1229,6 +1230,30 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->disableCancelledWebsites();
     }
 
+    /**
+     * Create new payment (handler Payrexx)
+     * 
+     * @param string $transactionReference
+     * @param string $amount
+     * @param array  $transactionData
+     * 
+     * @return null
+     */
+    public static function createPayrexxPayment($transactionReference, $amount, $transactionData)
+    {
+        if (\FWValidator::isEmpty($transactionReference) || \FWValidator::isEmpty($amount) || \FWValidator::isEmpty($transactionData)) {
+            return;
+        }
+        
+        $payment = new \Cx\Modules\Order\Model\Entity\Payment();
+        $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
+        $payment->setAmount($amount);
+        $payment->setTransactionReference($transactionReference);
+        $payment->setTransactionData($transactionData);
+        \Env::get('em')->persist($payment);
+        \Env::get('em')->flush();
+    }
+    
     /**
      * Terminate the cancelled subscription.
      * 

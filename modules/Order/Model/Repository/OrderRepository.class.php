@@ -139,7 +139,10 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                                 }
                             }
                             $transactionData = $payment->getTransactionData();
-                            if (!\FWValidator::isEmpty($transactionData) && !\FWValidator::isEmpty($transactionData['contact']['id'])) {
+                            if (   !\FWValidator::isEmpty($transactionData)
+                                && isset($transactionData['contact'])
+                                && isset($transactionData['contact']['id'])
+                            ) {
                                 $objUser->setProfile(
                                         array(
                                             \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId') => array(0 => $transactionData['contact']['id'])

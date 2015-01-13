@@ -508,10 +508,26 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 try {
                     $response = $payrexx->create($subscription);
 
-                    if (   !$response
-                        || !$response instanceof \Payrexx\Models\Response\Subscription
-                        || $response->getStatus() != 'active'
+                    if (   $response
+                        && $response instanceof \Payrexx\Models\Response\Subscription
+                        && $response->getStatus() == 'active'
                     ) {
+                        
+                        $transactionReference .= '-'. $response->getId();
+                        
+                        // transaction data needed for OrderPaymentEventListener::postPersist()
+                        $subscriptionValidDate = new \DateTime();
+                        $subscriptionValidDate->add($subscriptionPeriod);
+                        $transactionData = array(
+                          'subscription' => array(
+                              'id'          => $response->getId(),
+                              'valid_until' => $subscriptionValidDate->format('Y-m-d')
+                          )
+                        );
+                        
+                        // create payment for order
+                        ComponentController::createPayrexxPayment($transactionReference, $productPrice, $transactionData);
+                    } else {
                         \DBG::log('JsonMultiSite::manageSubscription() - Could not create a subscription.');
                         return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
                     }
@@ -528,6 +544,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             // create the website process in the payComplete event
             $order->complete();
+            
+            // update the changes to database
+            \Env::get('em')->flush();
             
             return array ('status' => 'success','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_SUCCESS']);
         } catch (\Exception $e) {

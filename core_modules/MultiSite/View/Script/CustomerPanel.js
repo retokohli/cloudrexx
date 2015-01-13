@@ -1,29 +1,43 @@
 var websiteLoginUrl;
 var cadminPath;
-cx.ready(function() {
-    cadminPath      = cx.variables.get('cadminPath', 'contrexx');
-    websiteLoginUrl = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=websiteLogin';    
-});
-
 var customerPanel = {
   messageTypes : ['error', 'warning', 'info', 'success']  
 };
+cx.ready(function() {
+    cadminPath      = cx.variables.get('cadminPath', 'contrexx');
+    websiteLoginUrl = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=websiteLogin';
+    // init all message modal's
+    jQuery.each(customerPanel.messageTypes, function( index, value ) {
+      jQuery('#'+ value + '_msg_container').modal({backdrop: false, show: false});
+    });
+});
 
 /**
  * Show messages to the user
  * uses bootstrap modal and predefined modal boxes
  * 
- * @param html   msgTxt Html format message text
- * @param string type   Type of message(error, warning, info, success)
+ * @param html    msgTxt         Html format message text
+ * @param string  type           Type of message(error, warning, info, success)
+ * @param boolean hideAfterDelay Hide the modal after a delay, default true
  */
-function showMessage(msgTxt, type) {
-    type      = jQuery.inArray(type, customerPanel.messageTypes) !== -1 ? type : 'error';
+function showMessage(msgTxt, type, hideAfterDelay) {    
+    type           = jQuery.inArray(type, customerPanel.messageTypes) !== -1 ? type : 'error';
+    hideAfterDelay = typeof hideAfterDelay !== 'undefined' ? hideAfterDelay : true;
+    
+    // hide all message modals
+    jQuery.each(customerPanel.messageTypes, function( index, value ) {      
+      jQuery('#'+ value + '_msg_container').modal('hide');
+    });
+    
     $objModal = jQuery('#'+ type + '_msg_container');
     $content  = $objModal.find('.msg_text');
     
     $content.html(msgTxt);
-    $objModal.modal({backdrop: false, show: true});
-    setTimeout(function() {$objModal.modal('hide');}, 5000);
+    $objModal.modal('show');
+
+    if (hideAfterDelay) {
+      setTimeout(function() {$objModal.modal('hide');}, 5000);
+    }
 }
 
 function getQueryParams(qs) {
