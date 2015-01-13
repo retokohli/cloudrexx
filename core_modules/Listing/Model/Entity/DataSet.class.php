@@ -122,9 +122,13 @@ class DataSet implements \Iterator {
             $data['virtual'] = $object->isVirtual();
             return $data;
         }
-        foreach ($object as $attribute=>$property) {
-            $data[$attribute] = $property;
-        }
+       foreach ($object as $attribute => $property) {
+            if (is_object($property)) {
+                $data[$attribute] = $this->convertObject($property, $key);
+            } else {
+                $data[$attribute] = $property;
+            }
+        } 
         return $data;
     }
     
@@ -167,6 +171,8 @@ class DataSet implements \Iterator {
 
     public function export(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface) {
         try {
+            print_r($this->data);
+            exit();
             return $exportInterface->export($this->data);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
