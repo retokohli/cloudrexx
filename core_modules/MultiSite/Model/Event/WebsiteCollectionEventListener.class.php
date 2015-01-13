@@ -58,6 +58,7 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
                 continue;
             }
 
+            $entityAttributes['initialSignUp'] = false;
             switch ($website->getStatus()) {
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
                     $entityAttributes['initialSignUp'] = true;
