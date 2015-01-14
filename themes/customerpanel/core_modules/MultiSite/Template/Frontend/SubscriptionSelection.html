@@ -538,7 +538,8 @@
           websiteName : '{MULTISITE_WEBSITE_NAME}',
           paymentUrl  : cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl',
           ajaxUrl  : cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=manageSubscription',
-          hasPayrexxAccount : {MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT}
+          hasPayrexxAccount : {MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT},
+          isPaymentUrlRequested : false
         };
        
        var subscriptionType = ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') ? 'upgrade' : 'add';
@@ -546,6 +547,9 @@
         //Set Payment Url
         function setPaymentUrl($this) 
         {
+            if (subscriptionOptions.isPaymentUrlRequested) {
+              return;
+            }
             $productId = $this.data('productid');
             $renewalOption = $this.data("renewalOption");
             if ((jQuery.trim($productId) == '')
@@ -554,7 +558,7 @@
                 showMessage(subscriptionOptions[subscriptionType+'ErrorTxt'], 'error');
                 return false;
             }
-
+            subscriptionOptions.isPaymentUrlRequested = true;
             jQuery.ajax({
                 dataType: "json",
                 url: subscriptionOptions.paymentUrl,
@@ -565,6 +569,7 @@
                 },
                 type: "POST",
                 success: function(response){
+                    subscriptionOptions.isPaymentUrlRequested = false;
                     if (response.status == 'error') {
                         jQuery("#SubscriptionSelection").modal('hide');
                         showMessage(subscriptionOptions[subscriptionType+'ErrorTxt'], 'error');
