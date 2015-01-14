@@ -4281,7 +4281,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $_ARRAYLANG;
         self::loadLanguageData();
         
-        if (empty($params['post']) || empty($params['post']['websiteName']) || empty($params['post']['command']) || empty($params['post']['domainName'])) {
+        if (   \FWValidator::isEmpty($params['post']) 
+            || \FWValidator::isEmpty($params['post']['websiteName'])
+            || \FWValidator::isEmpty($params['post']['command'])
+            || \FWValidator::isEmpty($params['post']['domainName'])
+        ) {
             \DBG::log('JsonMultiSite::domainManipulation() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
@@ -4305,9 +4309,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
                         }
                         $hostingController->setWebspaceId($website->getMailAccountId());
-                        switch ($params['post']['command']) {
+                        $methodName = $params['post']['command'];
+                        switch ($methodName) {
                             case 'renameDomainAlias':
-                                if (!$hostingController->renameDomainAlias($params['post']['oldDomainName'], $params['post']['domainName'])) {
+                                if (!$hostingController->$methodName($params['post']['oldDomainName'], $params['post']['domainName'])) {
                                     \DBG::msg('Failed to process the method renameDomainAlias().');
                                     throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
                                 }
@@ -4315,7 +4320,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             case 'deleteDomainAlias':
                             case 'createDomainAlias':
                             case 'renameSubscriptionName':
-                                if (!$hostingController->renameDomainAlias($params['post']['domainName'])) {
+                                if (!$hostingController->$methodName($params['post']['domainName'])) {
                                     \DBG::msg('Failed to process the method '.$params['post']['command'] . '().');
                                     throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
                                 }
