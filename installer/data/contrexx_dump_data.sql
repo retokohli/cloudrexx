@@ -411,6 +411,7 @@ INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandat
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (2,NULL,'text','0','asc',0,'',57);
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (3,NULL,'uri','0','asc',0,'',0);
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (4,0,'text','0','asc',0,'',0);
+INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (5,0,'text','0','asc',0,'',0);
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (1,1,'Notizen');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (1,2,'Notes');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (1,3,'Notes');
@@ -432,6 +433,12 @@ INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `n
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (4,4,'MultiSite External Payment Customer ID');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (4,5,'MultiSite External Payment Customer ID');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (4,6,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (5,1,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (5,2,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (5,3,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (5,4,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (5,5,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (5,6,'MultiSite External Payment Customer ID');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`, `homepage`) VALUES (1,'Manager','Administrator',1,'backend','');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`, `homepage`) VALUES (3,'Community','Community',1,'frontend','');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`, `homepage`) VALUES (9,'Moderator','Inhaltspflege und Statistiken',1,'backend','');
@@ -6061,10 +6068,10 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (97,'LicenseManager','Comvation AG','TXT_LICENSE','n',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (98,'Test','Comvation AG','TXT_TEST_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (99,'Routing','Comvation AG','TXT_ROUTING_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (904,'User','Comvation AG','TXT_CORE_USER_DESCRIPTION','y',1,1,1,0,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (100,'Support','Comvation AG','TXT_MODULE_SUPPORT_DESCRIPTION','n',1,0,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (904,'User','Comvation AG','TXT_CORE_USER_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (100,'Support','Comvation AG','TXT_MODULE_SUPPORT_DESCRIPTION','n',1,0,1,0,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (103,'Cron','Comvation AG','TXT_CORE_MODULE_CRON_DESCRIPTION','y',1,1,1,1,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (104,'SysLog','Comvation AG','TXT_CORE_MODULE_SYSLOG_DESCRIPTION','y',0,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (104,'SysLog','Comvation AG','TXT_CORE_MODULE_SYSLOG_DESCRIPTION','y',0,1,1,0,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (105,'NetManager','Comvation AG','TXT_NETMANAGER_MODULE_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (101,'Uploader','Comvation AG','TXT_CORE_MODULE_UPLOADER_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (102,'MediaBrowser','Comvation AG','TXT_CORE_MODULE_MEDIABROWSER_DESCRIPTION','y',1,1,1,1,NULL);
