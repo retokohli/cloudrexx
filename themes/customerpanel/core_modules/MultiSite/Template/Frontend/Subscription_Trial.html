@@ -32,7 +32,7 @@
                         <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
                         <!-- END showAdminButton -->
                        
-                        <button class="save" data-remote="/api/MultiSite/SubscriptionSelection?id={MULTISITE_WEBSITE_ID}&subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionSelection" data-toggle="modal">{TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION}</button>
+                        <button class="save remoteModal" data-remote="/api/MultiSite/SubscriptionSelection?id={MULTISITE_WEBSITE_ID}&subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="SubscriptionSelection">{TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION}</button>
                         <!-- END actionButtonsActive -->
                         <!-- BEGIN websiteInitializing -->
                         {TXT_MULTISITE_WEBSITE_INITIALIZING}

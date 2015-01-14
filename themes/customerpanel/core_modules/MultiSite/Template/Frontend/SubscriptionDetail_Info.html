@@ -29,7 +29,7 @@ td.subscription-desc {
         </tbody>
     </table>
     <!-- BEGIN showUpgradeButton -->
-    <button class="upgrade" data-remote="/api/MultiSite/SubscriptionSelection?subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionSelection" data-toggle="modal">{TXT_MULTISITE_UPGRADE}</button> 
+    <button class="upgrade remoteModal" data-remote="/api/MultiSite/SubscriptionSelection?subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="SubscriptionSelection">{TXT_MULTISITE_UPGRADE}</button> 
     <!-- END showUpgradeButton -->
     <!-- BEGIN showSubscriptionCancelButton -->
     <button type="button" data-target="#SubscriptionCancel" data-toggle="modal">{TXT_MULTISITE_WEBSITE_BUTTON_CANCEL}</button><br /> 

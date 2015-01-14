@@ -538,7 +538,7 @@
           websiteName : '{MULTISITE_WEBSITE_NAME}',
           paymentUrl  : cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl',
           ajaxUrl  : cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=manageSubscription',
-          hasPayrexxAccount : '{MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT}'
+          hasPayrexxAccount : {MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT}
         };
        
        var subscriptionType = ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') ? 'upgrade' : 'add';
