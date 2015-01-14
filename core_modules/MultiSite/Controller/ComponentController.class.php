@@ -1072,72 +1072,60 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @return string 
      */
-    public function executeCommandAdmin($objTemplate, $arguments)
+    public function executeCommandAdmin($objTemplate, $arguments) 
     {
         global $objInit, $_CORELANG, $_ARRAYLANG;
-        
+
         $langData = $objInit->loadLanguageData('core');
         $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         if (!self::isUserLoggedIn()) {
-            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
         }
-        
+
         $objUser   = \FWUser::getFWUserObject()->objUser;
         $websiteId = isset($arguments['website_id']) ? contrexx_input2raw($arguments['website_id']) : 0;
         $userId    = isset($arguments['user_id']) ? contrexx_input2raw($arguments['user_id']) : 0;
-        
+
         if (\FWValidator::isEmpty($websiteId)) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
         }
-        
+
         $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($websiteId);
         if (!$website) {
             return $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
         }
-        
+
         if ($website->getOwnerId() != $objUser->getId()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
         }
-        
+
         $loadPageAction   = isset($arguments[1]) ? contrexx_input2raw($arguments[1]) : '';
         $submitFormAction = isset($arguments['action']) ? contrexx_input2raw($arguments['action']) : '';
-                
+
         if (!\FWValidator::isEmpty($submitFormAction)) {
             try {
                 if (\FWValidator::isEmpty($userId) && $submitFormAction != 'Add') {
-                   
+
                     return; //TODO RETURN MESSAGE
                 }
-                $firstName   = isset($_POST['first_name']) ? $_POST['first_name']: '';
-                $lastName    = isset($_POST['last_name'])? contrexx_input2raw($_POST['last_name']):'';
-                $email       = isset($_POST['email'])? contrexx_input2raw($_POST['email']):'';
-                
+
                 switch ($submitFormAction) {
 
                     case 'Add' :
-                    case 'Edit':    
+                    case 'Edit':
+                        $email = isset($_POST['adminUser']['email']) ? contrexx_input2raw($_POST['adminUser']['email']) : '';
                         if (\FWValidator::isEmpty($email)) {
                             return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_EMAIL_EMPTY'], false);
                         }
                         if (!\FWValidator::isEmail($email)) {
                             return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_NOT_VALID_EMAIL'], false);
                         }
-                          
-                        $formValues = array(
-                            'id'          => $userId,
-                            'email'       => $email,
-                            'userProfile' => array(
-                                                 'userId'    => $userId,
-                                                 'firstname' => $firstName,       
-                                                 'lastname'  => $lastName    
-                                            )
-                        );
                         $command = 'push';
-                        $params['data']      = $formValues;
-                        $params['dataType']  = 'Cx\Core\User\Model\Entity\User';
+                        $params['data']     = $_POST['adminUser'];
+                        $params['dataType'] = 'Cx\Core\User\Model\Entity\User';
                         break;
-                        
+
                     case 'Delete':
                         $command = 'removeUser';
                         $params  = array('userId' => $userId);
@@ -1146,7 +1134,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         return; //TODO return message
                         break;
                 }
-
+                
                 if (isset($command) && isset($params)) {
                     $response = JsonMultiSite::executeCommandOnWebsite($command, $params, $website);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
@@ -1161,7 +1149,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         } else {
 
-            if(!\FWValidator::isEmpty($userId) && $loadPageAction != 'Add'){
+            if (!\FWValidator::isEmpty($userId) && $loadPageAction != 'Add') {
                 //get admin user from website by id
                 $adminUser = current($website->getUser($userId));
                 if (\FWValidator::isEmpty($adminUser)) {
@@ -1174,12 +1162,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'MULTISITE_ADMIN_USER_FIRSTNAME'=> $adminUser->getUserProfile()->getFirstname(),
                     'MULTISITE_ADMIN_USER_LASTNAME' => $adminUser->getUserProfile()->getLastname(),
                     'MULTISITE_ADMIN_USER_EMAIL'    => $adminUser->getEmail(),
+                    'MULTISITE_ADMIN_USER_ID'       => $adminUser->getId()
                 ));
             }
 
             if ($objTemplate->blockExists('showDeleteAdminUser')) {
                 $objTemplate->setVariable(array(
                     'MULTISITE_ADMIN_USER_DELETE_CONFIRM' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_CONFIRM'], $adminUser->getEmail()),
+                    'MULTISITE_ADMIN_USER_ID' => $adminUser->getId()
                 ));
             }
             $objTemplate->setVariable(array(
@@ -1188,7 +1178,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         return $objTemplate->get();
     }
-    
+
     /**
      * Api Payrexx command
      */
