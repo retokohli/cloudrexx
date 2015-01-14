@@ -15,7 +15,8 @@
             </td>
             <td class="actions">
               <!-- BEGIN actionButtonsActive -->
-              <button type="button" onclick="window.open('{MULTISITE_WEBSITE_BACKEND_LINK}', '_blank').focus();">Manage</button>
+              <button type="button" onclick="window.open('{NODE_MULTISITE_WEBSITE}?id={MULTISITE_WEBSITE_ID}', '_self').focus();">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
+              <button type="button" data-id="{MULTISITE_WEBSITE_ID}"  data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
               <!-- END actionButtonsActive -->
               <!-- BEGIN websiteInitializing -->
               {TXT_MULTISITE_WEBSITE_INITIALIZING}
@@ -26,8 +27,23 @@
         <!-- END showSiteDetails -->
     </tbody>
 </table>
-<button onclick="location.href='{NODE_MULTISITE_SUBSCRIPTION}';">Weitere</button>   
+<button type="button" class="add remoteModal" data-remote="/api/MultiSite/SubscriptionSelection" data-target="SubscriptionSelection">{TXT_CORE_MODULE_MULTISITE_WEBSITE_ADD_NEW_BUTTON}</button>
+<button onclick="location.href='{NODE_MULTISITE_SUBSCRIPTION}';">{TXT_CORE_MODULE_MULTISITE_WEBSITE_OVERVIEW} </button>   
 <!-- END showSiteTable -->
 <!-- BEGIN noSiteFound -->
 <div>Currently none</div>
 <!-- END noSiteFound -->
+<div aria-hidden="false" class="modal fade " id="SubscriptionSelection" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}</div>
+    </div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+cx.ready(function() {
+    cx.variables.set('loadingText', '{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}', 'multisite/lang');
+    jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js");
+});
+
+/* ]]> */
+</script>
