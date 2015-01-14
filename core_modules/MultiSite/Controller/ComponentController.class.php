@@ -883,8 +883,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             $showMailService = (   !\FWValidator::isEmpty($additionalData)
-                                && isset($additionalData['service']) 
-                                && !\FWValidator::isEmpty($additionalData['service']));
+                                && isset($additionalData->service) 
+                                && !\FWValidator::isEmpty($additionalData->service));
             if ($website->getMailServiceServer() && !\FWValidator::isEmpty($website->getMailAccountId())) {
                 $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
                 if (!\FWValidator::isEmpty($response)

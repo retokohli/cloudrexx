@@ -327,7 +327,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             $additionalData = $response->data->additionalData;
         }
         
-        $mailServicePlan = !\FWValidator::isEmpty($additionalData) && isset($additionalData['plan']) ? $additionalData['plan'] : null;
+        $mailServicePlan = !\FWValidator::isEmpty($additionalData) && isset($additionalData->plan) ? $additionalData->plan : null;
         $domain = $website->getBaseDn()->getName();
         $planId = isset($this->config['planId'][$mailServicePlan]) ? $this->config['planId'][$mailServicePlan] : null;
         $role = isset($this->config['userRoleId']) ? $this->config['userRoleId'] : null;
