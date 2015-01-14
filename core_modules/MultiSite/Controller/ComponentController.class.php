@@ -1485,6 +1485,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             // create the website process in the payComplete event
             $order->complete();
+            return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS']);
         } catch (Exception $e) {
             \DBG::log("Failed to add website:" . $e->getMessage());
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
