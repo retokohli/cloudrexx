@@ -4450,6 +4450,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_WEBSITE:
                     $response = self::executeCommandOnMyServiceServer('changePlanOfMailSubscription', $params['post']);              
                     break;
+                default :
+                    break;
             }
             if ($response && $response->status == 'success' && $response->data->status == 'success') {
                 return array('status' => 'success');

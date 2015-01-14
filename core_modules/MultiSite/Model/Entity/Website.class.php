@@ -1436,7 +1436,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * 
      * @return boolean
      */
-    public function setupLicense($options) 
+    public function setupLicense($options)
     {
         $websiteTemplateRepo    = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate');
         $defaultWebsiteTemplate = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate');
@@ -1459,11 +1459,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
         if (!\FWValidator::isEmpty($mailServiceServer) && !\FWValidator::isEmpty($this->getMailAccountId())) {
             $mailServiceConfig = $mailServiceServer->getConfig();
             $additionalData = null;
-            $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $this);
-            if ($response->status == 'success' && $response->data->status == 'success') {
-                $additionalData = $response->data->additionalData;
+            if (!\FWValidator::isEmpty($legalComponents)) {
+                foreach ($legalComponents as $legalComponent) {
+                    if (isset($legalComponent['MultiSite']) && isset($legalComponent['MultiSite']['Mail'])) {
+                        $additionalData = $legalComponent['MultiSite']['Mail'];
+                    }
+                }
             }
-            
+
             $showMailService   = (   !\FWValidator::isEmpty($additionalData) 
                                   && isset($additionalData['service']) 
                                   && !\FWValidator::isEmpty($additionalData['service']));
@@ -1479,7 +1482,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 throw new WebsiteException('Failed to '.$mailServiceStatus);
             }
 
-            if(!\FWValidator::isEmpty($mailServicePlan) && !\FWValidator::isEmpty($planId)) {
+            if (!\FWValidator::isEmpty($mailServicePlan) && !\FWValidator::isEmpty($planId)) {
                 $paramsData = array(
                     'planId'         => $planId,
                     'websiteId'      => $this->id,
