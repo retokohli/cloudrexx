@@ -3,7 +3,7 @@
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
  * @copyright   Comvation AG
- * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @author      Sebastian Brand <sebastian.brand@comvation.com>
  * @package     contrexx
  * @subpackage  core_wysiwyg
  */
@@ -12,9 +12,9 @@ namespace Cx\Core\Wysiwyg\Controller;
 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
- *x
+ *
  * @copyright   Comvation AG
- * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @author      Sebastian Brand <sebastian.brand@comvation.com>
  * @package     contrexx
  * @subpackage  core_wysiwyg
  */

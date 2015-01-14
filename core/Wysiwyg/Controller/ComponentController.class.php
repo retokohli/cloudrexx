@@ -54,6 +54,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('Backend');
     }
     
+    /*
+     * find all wysiwyg templates and retrun it in the correct format for the ckeditor
+     */
     public function getWysiwygTempaltes() {
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\Wysiwyg');
