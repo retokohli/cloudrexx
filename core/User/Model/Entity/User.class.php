@@ -133,6 +133,27 @@ class User extends \Cx\Model\Base\EntityBase {
 
     public function __construct()
     {
+        $arrSettings = \FWUser::getSettings();
+        $this->isAdmin = 0;
+        $this->authToken = 0;
+        $this->authTokenTimeout = 0;
+        $this->regdate = 0;
+        $this->expiration = 0;
+        $this->validity = 0;
+        $this->lastAuth = 0;
+        $this->lastAuthStatus = 0;
+        $this->lastActivity = 0;
+        $this->emailAccess = $arrSettings['default_email_access']['value'];
+        $this->frontendLangId = 0;
+        $this->backendLangId = 0;
+        $this->active = false;
+        $this->verified = true;
+        $this->primaryGroup = 0;
+        $this->profileAccess = $arrSettings['default_profile_access']['value'];
+        $this->restoreKey = '';
+        $this->restoreKeyTime = '';
+        $this->u2uActive = 0;
+        
         $this->group = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
