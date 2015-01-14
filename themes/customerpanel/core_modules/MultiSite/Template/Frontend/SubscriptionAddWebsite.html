@@ -26,6 +26,8 @@ jQuery(document).ready(function(){
                     .html('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}')
                     );
                 loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+                loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
+                loadContent('#multisite_expired_site', '/api/MultiSite/Subscription/Expired?status=expired');
             });
             jQuery("#SubscriptionAddWebsite").modal('hide');
             jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
