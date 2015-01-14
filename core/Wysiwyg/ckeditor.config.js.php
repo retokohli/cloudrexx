@@ -28,6 +28,7 @@ $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
 //$defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
 //\DBG::activate();
 
+//find the right css files and put it into the wysiwyg
 $em = $cx->getDb()->getEntityManager();
 $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
 $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
@@ -51,9 +52,11 @@ if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath)) {
 $cssArr = \JS::findCSS($content);
 
 ?>
+//if the wysiwyg css not defined in the session, then load the css files and put it into the session
 if(!cx.variables.get('wysiwygCss', 'wysiwyg')) {
     cx.variables.set('wysiwygCss', [<?= '\'' . implode($cssArr, '\',\'') . '\'' ?>], 'wysiwyg')
 }
+
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/ckeditor-mediabrowser.js'   ?>' );
 CKEDITOR.editorConfig = function( config )
 {
@@ -127,10 +130,11 @@ CKEDITOR.editorConfig = function( config )
     ];
     config.extraPlugins = 'codemirror';
     
-    //Set The CSS
+    //Set the CSS
     config.contentsCss = cx.variables.get('wysiwygCss', 'wysiwyg');
 };
 
+//loading the templates
 CKEDITOR.on('instanceReady',function(){
     var loadingTemplates = <?=$wysiwyg->getWysiwygTempaltes();?>;
     for(var instanceName in CKEDITOR.instances) {
