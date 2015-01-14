@@ -439,7 +439,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             $page->setModule('MediaDir');
             $page->setCmd('detail');
             // load source code
-            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page));
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
         }
         
         //get navtree
