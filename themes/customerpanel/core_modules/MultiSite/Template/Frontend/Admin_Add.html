@@ -7,18 +7,19 @@
     <fieldset> 
       <div class="row">
         <label for="first_name">{TXT_USER_FIRSTNAME}:</label>
-        <input type="text" name="first_name" id="first_name" value="">
+        <input type="text" name="adminUser[userProfile][firstname]" id="first_name" value="">
       </div>  
       <div class="row">
         <label for="last_name">{TXT_USER_LASTNAME}:</label>
-        <input type="text" name="last_name" id="last_name" value="">
+        <input type="text" name="adminUser[userProfile][lastname]" id="last_name" value="">
       </div>  
       <div class="row">
         <label for="email">{TXT_USER_EMAIL}:</label>
-        <input type="text" name="email" id="email" value="">
+        <input type="text" name="adminUser[email]" id="email" value="">
       </div>  
+        <input type="hidden" name="adminUser[id]" id="userId" value="">
       <div class="row">
-        <button type="submit"  data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> Loading"  class="save loadingProcess">{TXT_CORE_MODULE_MULTISITE_ADD}</button>
+        <button type="submit"  data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}"  class="save loadingProcess">{TXT_CORE_MODULE_MULTISITE_ADD}</button>
         <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
       </div>
     </fieldset>   
