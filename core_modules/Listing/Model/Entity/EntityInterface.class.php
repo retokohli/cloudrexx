@@ -77,20 +77,32 @@ class EntityInterface implements Exportable, Importable
                     continue;
                 }
                 
-                if ($entityClassMetaData->isSingleValuedAssociation($entityField)) {  
+                if ($entityClassMetaData->isSingleValuedAssociation($entityField)) {
                     
                     $targetEntity = $associationMappings[$entityField]['targetEntity'];
                     
                     $mappingEntityField = $em->getClassMetadata($targetEntity)->getSingleIdentifierFieldName();
-                    $mappingEntityValue = is_array($entityValue) ? $entityValue[$mappingEntityField] : $entityValue;                    
-                    $associationObj = $em->getRepository($targetEntity)->findOneBy(array($mappingEntityField => $mappingEntityValue));
+                    //check the association entity 
+                    $mappingEntityValue = is_array($entityValue) 
+                                            ? (isset($entityValue[$mappingEntityField]) ? $entityValue[$mappingEntityField] : 0) 
+                                            : $entityValue;
+                    if (!\FWValidator::isEmpty($mappingEntityValue)) {
+                        $associationObj = $em->getRepository($targetEntity)->findOneBy(array($mappingEntityField => $mappingEntityValue));
+                    }
                     
                     if (!$associationObj) {
-                        $associationObj = new $targetEntity();
+                        $associationObj = new $targetEntity();                        
                     }
-                    foreach ($entityValue as $method => $value) {
-                        $associationObj->{'set' . ucfirst($method)}($value);
+                    if(is_array($entityValue)){
+                        foreach ($entityValue as $method => $value) {
+                            $associationObj->{'set' . ucfirst($method)}($value);
+                        }
+                    } else {
+                        $entityObj->{'set' . ucfirst($entityField)}($associationObj);
                     }
+                    
+                    \Env::get('em')->persist($associationObj);
+                                        
                     $entityValue = $associationObj;
                 }
                 
