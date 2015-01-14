@@ -493,7 +493,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setVariable(array(
             'MULTISITE_SUBSCRIPTION_ID'             => $subscriptionId,
             'MULTISITE_WEBSITE_NAME'                => $websiteName,            
-            'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => \FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'))) ? '1' : '0',
+            'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'))) ? 'true' : 'false',
         ));
         return $objTemplate->get();
     }

@@ -281,3 +281,10 @@ function requestAutoLogin($this, url, data) {
         error: function() { }
     });
 }
+
+jQuery('body').on('click', '.remoteModal', function() {
+  showRemoteModal({
+    modalId   : jQuery(this).data('target'),
+    remoteUrl : jQuery(this).data('remote')    
+  });
+});
