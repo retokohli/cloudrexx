@@ -264,17 +264,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
 
             // create a new CRM Contact and link it to the User account
-            $objUser->objAttribute->first();
-            while (!$objUser->objAttribute->EOF) {
-                $arrProfile['fields'][] = array('special_type' => 'access_'.$objUser->objAttribute->getId());
-                $arrProfile['data'][] = $objUser->getProfileAttribute($objUser->objAttribute->getId());
-                $objUser->objAttribute->next();
-            }
-            
-            $arrProfile['fields'][] = array('special_type' => 'access_email');
-            $arrProfile['data'][] = $objUser->getEmail();
-            $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-            $crmContactId = $objCrmLibrary->addCrmContact($arrProfile);
+            \Cx\Modules\Crm\Controller\CrmLibrary::addCrmContactFromAccessUser($objUser);
         
             // TODO: Product ID should be supplied by POST-data.
             //       If not set, then the ID should be taken from a MultiSite configuration option 'defaultProductId'
