@@ -54,7 +54,8 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                 ->leftJoin('s.product', 'p')
                 ->where('o.contactId = :contactId');
         if ($status == 'valid') {
-            $qb->andWhere("s.expirationDate > '" . $now->format("Y-m-d H:i:s") . "'");
+            // verify that in case expirationDate is set, it must be sometime in the future
+            $qb->andWhere($qb->expr()->orX("s.expirationDate > '" . $now->format("Y-m-d H:i:s"). "'", 's.expirationDate is NULL'));
             if (!empty($excludeProduct)) {
                 $qb->andWhere($qb->expr()->notIn('p.id', $excludeProduct));
             } elseif (!empty($includeProduct)) {
