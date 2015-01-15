@@ -2532,6 +2532,27 @@ class CrmLibrary
     }
 
     /**
+     * Create a CRM contact based on an object of \User
+     *
+     * @param User  $user
+     * @return  integer The ID of the newly created CRM contact
+     */
+    public static function addCrmContactFromAccessUser(\User $user) {
+        $arrProfile = array();
+        $user->objAttribute->first();
+        while (!$user->objAttribute->EOF) {
+            $arrProfile['fields'][] = array('special_type' => 'access_'.$user->objAttribute->getId());
+            $arrProfile['data'][] = $user->getProfileAttribute($user->objAttribute->getId());
+            $user->objAttribute->next();
+        }
+        
+        $arrProfile['fields'][] = array('special_type' => 'access_email');
+        $arrProfile['data'][] = $user->getEmail();
+        $objCrmLibrary = new self('Crm');
+        return $objCrmLibrary->addCrmContact($arrProfile);
+    }
+
+    /**
      * Adding Crm Contact
      *
      * @param Array $arrFormData form data's
