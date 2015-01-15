@@ -34,7 +34,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                 $website = $websiteRepository->findOneById($websiteId);
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setTitle($website->getName());
-                \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setContentTitle('Website - '.$website->getBaseDn()->getName());
+                \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setContentTitle('Website - '.$website->getBaseDn()->getName() . ComponentController::getWebsiteNonOnlineStateAsLiteral($website));
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setMetaTitle($website->getName());
                 break;
             case 'SubscriptionDetail':

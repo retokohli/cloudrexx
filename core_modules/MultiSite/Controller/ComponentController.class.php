@@ -1509,7 +1509,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
         $objTemplate->setVariable(array(
-            'MULTISITE_WEBSITE_NAME'          => contrexx_raw2xhtml($website->getName()),
+            'MULTISITE_WEBSITE_NAME'          => contrexx_raw2xhtml($website->getName()).self::getWebsiteNonOnlineStateAsLiteral($website),
             'MULTISITE_WEBSITE_ID'            => contrexx_raw2xhtml($website->getId()),
             'MULTISITE_WEBSITE_LINK'          => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()),
             'MULTISITE_WEBSITE_BACKEND_LINK'  => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
@@ -1528,6 +1528,34 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             self::showOrHideBlock($objTemplate, 'actionButtonsActive', false);
             self::showOrHideBlock($objTemplate, 'websiteInitializing', true);            
         }
+    }
+
+    /**
+     * Return the status of a website as literal
+     * I.e. if website::$status is STATE_OFFLINE, it will return ' (offline)'
+     *
+     * @param   \Cx\Core_Modules\MultiSite\Model\Entity\Website $website
+     * @global  array   $_ARRAYLANG
+     * @return  string
+     */
+    public static function getWebsiteNonOnlineStateAsLiteral(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website) {
+        global $_ARRAYLANG;
+
+        $status = '';
+        switch ($website->getStatus()) {
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
+                $status = ' ('.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OFFLINE'].')';
+                break;
+
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED:
+                $status = ' ('.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DISABLED'].')';
+                break;
+
+            default:
+                break;
+        }
+
+        return $status;
     }
 
     /**
