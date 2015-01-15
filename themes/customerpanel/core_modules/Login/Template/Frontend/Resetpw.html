@@ -1,0 +1,18 @@
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">   
+    <p >{LOGIN_STATUS_MESSAGE}</p>   
+    <form class="resetForm" method="post" action="{NODE_LOGIN_RESETPW}">
+        <input type="hidden" name="restore_key" value="{LOGIN_RESTORE_KEY}" /> 
+        <input type="hidden" name="email" value="{LOGIN_USERNAME}" />
+        <!-- BEGIN login_reset_password -->
+        <fieldset> 
+            <div class="row"><label>{TXT_EMAIL}</label>{LOGIN_USERNAME}</div>
+            <div class="row"><label for="password">{TXT_PASSWORD}&nbsp;{TXT_PASSWORD_MINIMAL_CHARACTERS}</label><input class="form-control" type="password" maxlength="50"  name="password" /></div>
+            <div class="row"><i>{TXT_SET_PASSWORD_TEXT}</i></div>
+            <div class="row"><label for="password2">{TXT_VERIFY_PASSWORD}</label><input class="form-control" type="password" maxlength="50" name="password2" /></div>
+        </fieldset>
+        <div class="grid-elm grid-align-1-2"> 
+            <input class="btn btn-default" type="submit" value="{TXT_SET_NEW_PASSWORD}" name="reset_password" />
+        </div>
+        <!-- END login_reset_password -->
+    </form>
+</div>

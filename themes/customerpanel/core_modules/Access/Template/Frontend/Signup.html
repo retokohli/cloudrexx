@@ -1,0 +1,89 @@
+<!-- BEGIN access_social_networks --> 
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">              
+    <!-- BEGIN access_social_networks_facebook --><button class="facebook entypo-facebook" onclick="location.href='{ACCESS_SOCIALLOGIN_FACEBOOK}'">&nbsp;Facebook</button><!-- END access_social_networks_facebook -->
+    <!-- BEGIN access_social_networks_google --><button class="google entypo-gplus" onclick="location.href='{ACCESS_SOCIALLOGIN_GOOGLE}'">&nbsp;Google Plus</button><!-- END access_social_networks_google -->
+    <!-- BEGIN access_social_networks_twitter --><button class="twitter entypo-twitter" onclick="location.href='{ACCESS_SOCIALLOGIN_TWITTER}'">&nbsp;Twitter</button><!-- END access_social_networks_twitter -->         
+</div>
+<div class="grid-elm grid-align-1-1 grid-offset-bottom center">ODER</div> 
+<!-- END access_social_networks -->
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">   
+    
+    <!-- BEGIN access_signup_form -->
+    <p>Hier haben Sie die M&ouml;glichkeit sich f&uuml;r dieses Portal zu registrieren und ein Benutzerkonto zu er&ouml;ffnen.</div>
+    <div class="text-danger">{ACCESS_SIGNUP_MESSAGE}</div>  
+    <form class="resetForm" role="form" action="{NODE_ACCESS_SIGNUP}" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <!-- BEGIN access_profile_attribute_gender -->
+            <div class="row"> <label>{ACCESS_PROFILE_ATTRIBUTE_GENDER_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_GENDER}</div>
+            <!-- END access_profile_attribute_gender -->                 
+            <!-- BEGIN access_profile_attribute_firstname -->
+            <div class="row"> <label>{ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME}</div>
+            <!-- END access_profile_attribute_firstname -->             
+            <!-- BEGIN access_profile_attribute_lastname -->
+            <div class="row"> <label>{ACCESS_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{ACCESS_PROFILE_ATTRIBUTE_LASTNAME}</div>
+            <!-- END access_profile_attribute_lastname -->     
+        </fieldset>
+        <fieldset>
+            <!-- BEGIN access_user_email -->
+            <div class="row"><label>{ACCESS_USER_EMAIL_DESC}</label>{ACCESS_USER_EMAIL}
+            <i>Sie m&uuml;ssen eine g&uuml;ltige E-Mail Adresse angeben, um Ihren Account zu nutzen</i></div>
+            <!-- END access_user_email -->
+            <!-- BEGIN access_logindata -->
+            <!-- BEGIN access_user_username -->
+            <div class="row"> <label>{ACCESS_USER_USERNAME_DESC}</label>{ACCESS_USER_USERNAME}<i>Bitte w&auml;hlen Sie einen Benutzername</i></div>
+            <!-- END access_user_username --><!-- BEGIN access_user_password -->
+            <div class="row"> <label>{ACCESS_USER_PASSWORD_DESC}</label>{ACCESS_USER_PASSWORD}<i>Bitte gew&uuml;nschtes Passwort eingeben</i></div>
+            <!-- END access_user_password --><!-- BEGIN access_user_password_confirmed -->
+            <div class="row"> <label>{ACCESS_USER_PASSWORD_CONFIRMED_DESC}</label>{ACCESS_USER_PASSWORD_CONFIRMED}<i>Zur Ihrer Sicherheit wiederholen Sie bitte Ihr Passwort</i></div>
+            <!-- END access_user_password_confirmed --> 
+            <!-- END access_logindata -->
+        </fieldset>
+        <fieldset>
+            <div class="row"> <label>{ACCESS_USER_FRONTEND_LANGUAGE_DESC}</label>{ACCESS_USER_FRONTEND_LANGUAGE}</div>                                            
+            <!-- BEGIN access_captcha -->
+            <div class="row"> <label>{TXT_ACCESS_CAPTCHA}</label>{ACCESS_CAPTCHA_CODE}</div>
+            <!-- END access_captcha -->
+        </fieldset>
+        <!-- BEGIN access_newsletter -->
+        <fieldset>
+            <!-- BEGIN access_newsletter_list -->
+            <div class="row"> 
+                <label>Newsletter</label>
+                <span class="checkbox">
+                    <label for="access_user_newsletters-{ACCESS_NEWSLETTER_ID}">
+                        <input type="checkbox" name="access_user_newsletters[]" id="access_user_newsletters-{ACCESS_NEWSLETTER_ID}" value="{ACCESS_NEWSLETTER_ID}"{ACCESS_NEWSLETTER_SELECTED} />
+                        {ACCESS_NEWSLETTER_NAME}
+                    </label>
+                </span>
+            </div>
+            <!-- END access_newsletter_list -->
+        </fieldset>
+        <!-- END access_newsletter -->
+        <!-- BEGIN access_tos -->
+        <fieldset>     
+            <div class="row"> 
+                <label>{TXT_ACCESS_TOS}</label>
+                <span class="checkbox">  
+                {ACCESS_TOS}
+                </span> 
+            </div>
+        </fieldset>
+        <!-- END access_tos -->
+        <div class="grid-elm grid-align-1-2">{ACCESS_SIGNUP_BUTTON}</div> 
+    </form>
+    <!-- END access_signup_form -->  
+    
+    <!-- BEGIN access_signup_store_success -->
+    <div class="text-success">{ACCESS_SIGNUP_MESSAGE}</div>
+    <!-- END access_signup_store_success -->       
+    <!-- BEGIN access_signup_store_error -->
+    <div class="text-danger">{ACCESS_SIGNUP_MESSAGE}</div>
+    <!-- END access_signup_store_error -->       
+    <!-- BEGIN access_signup_confirm_success -->
+    <div class="text-success">{ACCESS_SIGNUP_MESSAGE}</div>
+    <!-- END access_signup_confirm_success -->       
+    <!-- BEGIN access_signup_confirm_error -->
+    <div class="text-danger">{ACCESS_SIGNUP_MESSAGE}</div>
+    <!-- END access_signup_confirm_error -->        
+    {ACCESS_JAVASCRIPT_FUNCTIONS} 
+</div>      

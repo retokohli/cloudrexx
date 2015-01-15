@@ -1,17 +1,9 @@
 
 <!-- BEGIN login_social_networks -->
-<div class="login-social col-md-6 col-sm-12 col-xs-12">
-    <div id="sociallogin">
-        <!-- BEGIN login_social_networks_facebook -->
-        <a class="facebook loginbutton btn-social btn-facebook" href="{LOGIN_SOCIALLOGIN_FACEBOOK}"><i class="fa fa-facebook-square"></i>Facebook-Anmeldung</a>
-        <!-- END login_social_networks_facebook -->
-        <!-- BEGIN login_social_networks_google -->
-        <a class="google loginbutton btn-social btn-google-plus" href="{LOGIN_SOCIALLOGIN_GOOGLE}"><i class="fa fa-google-plus"></i>Mit Google amelden</a>
-        <!-- END login_social_networks_google -->
-        <!-- BEGIN login_social_networks_twitter -->
-        <a class="twitter loginbutton btn-social btn-twitter" href="{LOGIN_SOCIALLOGIN_TWITTER}"><i class="fa fa-twitter"></i>Mit Twitter anmelden</a>
-        <!-- END login_social_networks_twitter -->
-    </div>
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">              
+    <!-- BEGIN login_social_networks_facebook --><button class="facebook entypo-facebook" onclick="location.href='{LOGIN_SOCIALLOGIN_FACEBOOK}'">&nbsp;Facebook</button><!-- END login_social_networks_facebook -->
+    <!-- BEGIN login_social_networks_google --><button class="google entypo-gplus" onclick="location.href='{LOGIN_SOCIALLOGIN_GOOGLE}'">&nbsp;Google Plus</button><!-- END login_social_networks_google -->
+    <!-- BEGIN login_social_networks_twitter --><button class="twitter entypo-twitter" onclick="location.href='{LOGIN_SOCIALLOGIN_TWITTER}'">&nbsp;Twitter</button><!-- END login_social_networks_twitter -->         
 </div>
 <!-- END login_social_networks -->
 <div class="grid-elm grid-align-1-1 grid-offset-bottom">                
@@ -32,7 +24,7 @@
             <!-- END captcha -->              
         </fieldset>
         <div class="grid-elm grid-align-1-2">  
-            <input class="btn btn-default" type="submit" name="login" value="{TXT_LOGIN}" />
+            <input type="submit" name="login" value="{TXT_LOGIN}" />
         </div><div class="grid-elm grid-align-1-2 right">  
             <label for="remember_me" class="remember_me checkbox-radio">
                 <input type="checkbox" value="1" name="remember_me" class="remember_me" id="remember_me" />
