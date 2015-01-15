@@ -423,7 +423,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $crmContactId = $objUser->getCrmUserId();
         $userId = $objUser->getId();
         if (\FWValidator::isEmpty($crmContactId)) {
-            return ' '; // Do not show subscription selection
+            // create a new CRM Contact and link it to the User account
+            \Cx\Modules\Crm\Controller\CrmLibrary::addCrmContactFromAccessUser($objUser);
         }
         
         $subscription = null;
