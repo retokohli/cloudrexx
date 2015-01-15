@@ -40,7 +40,7 @@ class CoreYamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventL
      */
     public function postUpdate($eventArgs) {
         \DBG::msg('MultiSite (CoreYamlSettingEventListener): postUpdate');
-        $entity = $eventArgs->getEvent();
+        $entity = $eventArgs->getEntity();
         
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
