@@ -228,9 +228,6 @@ class LegacyClassLoader {
             $path = $this->cx->getCodeBaseDocumentRootPath();
         }
         $files = glob($path . '/*.php');
-        if (!$files) {
-            return false;
-        }
         foreach ($files as $file) {
             $fileParts = explode('/', $file);
             if (substr(end($fileParts), 0, 1) == '!') {
