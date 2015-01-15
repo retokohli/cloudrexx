@@ -156,6 +156,9 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         $this->domains = new \Doctrine\Common\Collections\ArrayCollection();      
         $this->language = $userObj->getFrontendLanguage();
+        if (!$this->language) {
+            $this->language = \FWLanguage::getDefaultLangId();
+        }
         $this->status = self::STATE_INIT;
         $this->websiteServiceServerId = 0;
         $this->owner = $userObj;
@@ -1340,6 +1343,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
         $baseDn = new Domain($this->name.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
         $baseDn->setType(Domain::TYPE_BASE_DOMAIN);
         $baseDn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
+            return;
+        }
         $this->mapDomain($baseDn);
         \Env::get('em')->persist($baseDn);
     }
@@ -1357,6 +1363,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     break;
                 }
             }
+        }
+        if (!$this->baseDn) {
+            return $this->getFqdn();
         }
 
         return $this->baseDn;
