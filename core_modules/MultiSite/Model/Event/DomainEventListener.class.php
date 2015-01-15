@@ -447,7 +447,8 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
     
     protected function logEvent($eventName, $domain) {
-        \DBG::msg("MultiSite (DomainEventListener): $eventName ({$domain->getName()} / ".get_class($domain).")");
+        $type = method_exists($domain, 'getType') ? ' / '.$domain->getType() : '';
+        \DBG::msg("MultiSite (DomainEventListener): $eventName ({$domain->getName()} / ".get_class($domain).$type.")");
     }
     
     public function onEvent($eventName, array $eventArgs) {        
