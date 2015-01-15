@@ -104,7 +104,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             ($langId != null ? '_lang_'.$arrLangs[$langId]['lang'] : '').
             '.csv"', true);
 
-        $arrFields = array ('active', 'frontend lang', 'backend lang', 'gender', 'title', 'firstname', 'lastname', 'username', 'email');
+        $arrFields = array ('active', 'frontend lang', 'backend lang', 'gender', 'title', 'firstname', 'lastname', 'username', 'email', 'regdate');
         foreach ($arrFields as $field) {
             print $this->_escapeCsvValue($field).$csvSeparator;
         }
@@ -121,7 +121,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $filter['frontend_lang_id'] = $langId;
             }
         }
-        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array('active', 'frontend_lang_id', 'backend_lang_id', 'gender', 'title', 'firstname', 'lastname', 'username', 'email'));
+        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array('active', 'frontend_lang_id', 'backend_lang_id', 'gender', 'title', 'firstname', 'lastname', 'username', 'email', 'regdate'));
         if ($objUser) {
             while (!$objUser->EOF) {
                 $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
@@ -173,6 +173,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 print $this->_escapeCsvValue($objUser->getProfileAttribute('lastname')).$csvSeparator;
                 print $this->_escapeCsvValue($objUser->getUsername()).$csvSeparator;
                 print $this->_escapeCsvValue($objUser->getEmail()).$csvSeparator;
+                print $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
                 print "\n";
 
                 $objUser->next();
