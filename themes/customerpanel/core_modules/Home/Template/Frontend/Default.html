@@ -47,7 +47,7 @@ jQuery(document).ready(function() {
             fail: function(data) {}
         });
     }
-    loadContent('#multisite_sites', '/api/MultiSite/Subscription/Summary?status=valid', true);
+    loadContent('#multisite_sites', '/api/MultiSite/Subscription/Summary?status=valid&website_status=online', true);
     //loadContent('#multisite_invoice', '/api/MultiSite/Invoice');
     loadContent('#multisite_user', '/api/MultiSite/User/Summary');
 });
