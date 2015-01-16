@@ -1,520 +1,380 @@
 <style type="text/css">
-    .prices > div {
-        display: inline-block;
-        width: 100%;
-        vertical-align: top;
-        margin-bottom: 30px;
-    }
+/*background-color: rgba(33, 111, 189, 0.9);*/
+.prices > div {
+    width: 100%;
+}
+.prices h2 {
+    margin: 0.83em 0;
+}
+.prices-periods h2 {
+    background: none;
+    margin: 0;
+    border: none;
+}
+.prices #business .header {
+    background-color: rgb(33, 111, 189);
+    margin-top: -10px;
+    color: white;
+}
+.monthly-prices,
+.annual-prices,
+.biannual-prices {
+    text-align: center;
+    padding-right: 15px;
+}
+.prices-new .prices #business .header {
+    background-color: rgb(136, 189, 19);
+}
+#trial {
+     margin-bottom: 5px;
+}
+#business .buy-now {
+    color: black;
+    background: white;
+    width: 80%;
+}
+.prices > div .header:empty {
+    background-color: transparent;
+}
+.header{
+    border-bottom: 1px solid #dddddd;
+    text-align: center;
+}
+.prices .header .name {
+    font-size: 21px;
+    text-transform: uppercase;
+    width: 100%;
+    display: inline-block;
+    vertical-align: top;
+    padding: 32px 5px;
+    font-weight: 500;
+}
+.features {
+    width: 100%;
+    display: inline-block;
+}
+.features ul{
+    padding: 0;
+    vertical-align: middle;
+    margin-top: 10px;
+}
+.features ul li{
+    width: 100%;
+    float: left;
+    list-style: none;
+}
+.product_price {
+    width: 100%;
+    display: inline-block;
+    margin-top: 25px;
+}
+.prices .header .amount {
+    font-size: 28px;
+}
 
-    .prices > div .header {
-        /*background-color: #216fbd;*/
-        background-color: rgba(33, 111, 189, 0.9);
-        height: 200px;
-        color: white;
-        padding-top: 24px;
-        text-align: center;
-    }
-    .prices h2 {
-        margin: 0.83em 0;
-    }
-    .prices #free .header,
-    .prices #non-profit .header,
-    .prices #solo .header
-    .prices #non-profit .header
-    .prices #enterprise .header 
-    .prices #trial .header {
-        /*margin-top: 10px;*/
-        margin-bottom: 10px;
-    }
+.prices .header .currency {
+    vertical-align: super;
+    position: relative;
+    margin-left: -13px;
+    top: -10px;
+}
 
-    .prices #free .header {
-        /*background-color: black;*/
-        /* background-color: rgba(107, 107, 107, 0.7); */
-        background-color: rgba(33, 111, 189, 0.7);
-    }
-    .prices #business .header {
-        height: 210px;
-        /*background-color: rgb(136, 189, 19);*/
-        background-color: rgb(33, 111, 189);
-        /*margin-left: -10px;*/
-        /*margin-right: -10px;*/
-        margin-top: -10px;
-        padding-top: 34px;
-    }
-    .prices #solo .header {
-        /*background-color: rgba(79, 184, 218, 0.8);*/
-        background-color: rgba(33, 111, 189, 0.8);
-    }
+.prices > div.description > span {
+    text-align: left;
+}
 
-    .prices-new #free .header {
-        background-color: rgba(107, 107, 107, 0.7);
-    }
-    .prices-new .prices #business .header {
-        background-color: rgb(136, 189, 19);
-    }
-    .prices-new .prices #solo .header {
-        background-color: rgba(79, 184, 218, 0.8);
-    }
+.prices h2 .priceplan {
+    font-weight: lighter;
+}
 
-    .prices > div .header:empty {
-        background-color: transparent;
-    }
+.prices-periods {
+    width: 100%;
+    text-align: center;
+    background-color: #F1F1F1;
+    padding-top: 18px;
+    border-bottom: 1px solid #D5D5D5;
+}
 
-    .prices .header .name {
-        font-size: 20px;
-        text-transform: uppercase;
-        display: block;
-        text-align: center;
-        margin-bottom: 18px;
-    }
+.prices-new .prices-periods {
+    background-color: #FFF;
+    border: 1px solid #dadada;
+    border-left: none;
+    border-right: none;
+    height: 50px;
+    margin-top: 35px;
+    margin-left: 1%;
+    max-width: 950px;
+    padding: 0;
+}
 
-    .prices .header .monthly {
-        /*padding: 0 2px;*/
-    }
+.prices-periods a {
+    display: inline-block;
+    width: 33%;
+    height: 50px;
+    line-height: 50px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    margin-left: -10px;
+    vertical-align: bottom;
+    font-size: 1.4em;
+    position: relative;
+    color: rgb(51, 51, 51);
+    bottom: -1px;
+    border-top: 1px solid #F1F1F1;
+    font-size: 14px
+}
 
-    .prices .header .amount {
-        font-size: 35px;
-    }
+.prices-periods a.active {
+    border-left: 1px solid #dadada;
+    border-top: 1px solid #dadada;
+    border-right: 1px solid #dadada;
+    background-color: white;
+    opacity: 1;
+}
 
-    .prices .header .currency {
-        vertical-align: super;
-        position: relative;
-        margin-left: -13px;
-        top: -10px;
-    }
+.prices-periods a.monthly:after,
+.prices-periods a.biannually:after {
+    font-size: 12px;
+    line-height: 12px;
+    color: #428bca;
+    margin-left: 5px;
+}
 
-    .prices > div.description > span {
-        text-align: left;
-    }
+.prices-periods a.biannually:after {
+    content: '-10%';
+}
 
-    .prices .features span {
-        display: block;
-        height: 26px;
-        line-height: 26px;
-        padding: 0px 15px;
-        text-align: left;
-        font-size: 14px;
-        /*background-color: #f5f5f5;*/
-        border-bottom: 1px solid #dadada;
-        position: relative;
-        /*border-left: 1px solid #dadada;*/
-    }
+.prices-periods > span {
+    padding: 15px 5px 5px 5px;
+    display: inline-block;
+}
 
-    .prices .features p {
-        padding: 15px;
-        font-size: 14px;
-    }
+.prices-periods span:hover,
+.prices-periods span label:hover {
+    cursor: pointer;
+}
 
-    /*.prices > div:last-child > span {*/
-    /*border-right: 1px solid #dadada;*/
-    /*}*/
+.prices-periods label {
+    font-weight: 100;
+    margin-bottom: 0;
+    vertical-align: top;
+}
 
-    /*.prices .features span.yes:before,*/
-    /*.prices .features span.no:before {*/
-    /*position: absolute;*/
-    /*left: 10%;*/
-    /*font-family: FontAwesome;*/
-    /*}*/
+.prices-periods input[type="radio"] {
+    margin: 3px 5px 0 15px;
+}
 
-    /*.prices .features span.yes:before {*/
-    /*content: '\f00c';*/
-    /*color: #84b408;*/
-    /*}*/
+.prices-periods label[for="biannually"]:after {
+    content: "-10%";
+    font-size: 10px;
+    vertical-align: middle;
+    margin-left: 5px;
+    color: #428bca;
+}
 
-    /*.prices .features span.no:before {*/
-    /*content: '\f00d';*/
-    /*color: #fc920a;*/
-    /*}*/
+.prices-new h2.annual-prices {
+    margin-bottom: 0;
+    padding: 0 15px;
+}
 
-    .prices .features {
-        min-height: 400px;
-        /* overflow: hidden; */
-        box-sizing: border-box;
-        margin-top: 15px;
-    }
-    .features ul li {
-        line-height: 25px;
-        white-space: normal;
-        padding-right: 10px;
-        font-size: 14px;
-        text-align: left;
-    }
-    #business .features {
-        margin-top: 13px;
-    }
-    .prices .features ul {
-        list-style: square;
-        margin-top: 11px;
-        padding-left: 30px;
-    }
-    .text-block.prices {
-        border: none;
-    }   
-    .prices .order {
-        height: 50px;
-        line-height: 50px;
-        display: block;
-        background-color: #95c700;
-        width: 90%;
-        margin:30px auto 15px auto;
-        text-align: center;
-        color: white;
-        text-transform: uppercase;
-        max-width: 350px;
-    }
+.prices-new .prices {
+    border: none;
+}
 
-    .prices .toggle-features {
-        text-align: center;
-        background-color: #dadada;
-        font-family: FontAwesome;
-        height: 32px;
-        line-height: 32px;
-        font-size: 28px;
-        display: block;
-        border-top: 1px solid #dadada;
-        color: white;
-        margin-top: 12px;
-        display: none;
-    }
+.monthly-prices,
+.biannual-prices {
+    display: none;
+}
 
-    .prices h2 .priceplan {
-        font-weight: lighter;
-    }
+.monthly-prices, .biannual-prices, .annual-prices {
+    min-height: 50px;
+}
+.prices {
+    position: relative;
+    padding-top: 30px;
+}
 
-    .prices-periods {
-        width: 100%;
-        text-align: center;
-        /*border-bottom: 1px solid #dadada;*/
-        background-color: #F1F1F1;
-        padding-top: 18px;
-        border-bottom: 1px solid #D5D5D5;
-    }
-    .periods-wrapper {
-        max-width: 1024px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-    .prices-new .prices-periods {
-        background-color: #FFF;
-        border: 1px solid #dadada;
-        border-left: none;
-        border-right: none;
-        height: 50px;
-        margin-top: 35px;
-        margin-left: 1%;
-        max-width: 950px;
-        padding: 0;
-    }
-    .prices-periods a {
-        display: inline-block;
-        width: 33%;
-        height: 50px;
-        line-height: 50px;
-        border-top-left-radius: 3px;
-        border-top-right-radius: 3px;
-        margin-left: -10px;
-        /*background-color: white;*/
-        vertical-align: bottom;
-        font-size: 1.4em;
-        position: relative;
-        color: rgb(51, 51, 51);
-        bottom: -1px;
-        border-top: 1px solid #F1F1F1;
-    }
+.prices:before {
+    position: absolute;
+    content: 'Coming Soon';
+    padding-top: 48%;
+    box-sizing: border-box;
+    color: white;
+    font-size: 80px;
+    text-align: center;
+    left: -2%;
+    top: -2%;
+    width: 104%;
+    height: 104%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 99;
+    display: none;
+}
+.prices .buy-now {
+    height: 50px;
+    line-height: 50px;
+    color: white;
+    margin: 10px auto;
+    font-weight: bold;
+    background: #216fbd;
+    width: 80%;
+    display: inline-block;
+    text-align: center;
+}
+.prices > .partner-button a,
+.prices > .enterprise-button a {
+    color: #000;
+    display: inline-block;
+    padding: 24px 0px;
+    width: 100%;
+    height: 100%;
+    border-box: padding-box;
+}
 
-    .prices-periods a.active {
-        border-left: 1px solid #dadada;
-        border-top: 1px solid #dadada;
-        border-right: 1px solid #dadada;
+.prices > .partner-button a:hover,
+.prices > .enterprise-button a:hover {
+    color: #FFF;
+    background-color: rgb(149, 199, 0);
+}
 
-        /*height: 54px;*/
-        /*line-height: 58px;*/
-        background-color: white;
-        opacity: 1;
-    }
-
-    .prices-periods a.monthly:after,
-    .prices-periods a.biannually:after {
-        /*position: absolute;*/
-        /*top: 5px;*/
-        /*left: 10px;*/
-        /*height: 35px;*/
-        /*line-height: 10px;*/
-        font-size: 12px;
-        line-height: 12px;
-        /*font-weight: bold;*/
-        /*width: 35px;*/
-        /*background-color: #81ad00;*/
-        /*display: block;*/
-        /*border-radius: 35px;*/
-        /*line-height: 35px;*/
-        /*color: white;*/
-        color: #428bca;
-        margin-left: 5px;
-    }
-
-    .prices-periods a.biannually:after {
-        content: '-10%';
-    }
-
-    .prices-periods a.monthly:after {
-        /*content: '+10%';*/
-    }
-
-    /* prices-periods new */
-    .prices-periods > span {
-        padding: 15px 5px 5px 5px;
+@media (min-width: 601px) {
+    /******************************************
+    * PRICES
+    ******************************************/
+    .contact input[type="submit"],
+    .contact input[type="reset"] {
+        width: 49.5%;
         display: inline-block;
     }
 
-    .prices-periods span:hover,
-    .prices-periods span label:hover {
-        cursor: pointer;
-    }
-
-    .prices-periods label {
-        font-weight: 100;
-        margin-bottom: 0;
-        vertical-align: top;
-    }
-
-    .prices-periods input[type="radio"] {
-        margin: 3px 5px 0 15px;
-    }
-
-    .prices-periods label[for="biannually"]:after {
-        content: "-10%";
-        font-size: 10px;
-        vertical-align: middle;
-        margin-left: 5px;
-        color: #428bca;
-    }
-
-    .prices-new h2.annual-prices {
-        margin-bottom: 0;
-        padding: 0 15px;
-    }
-
-    .prices-new .prices {
-        border: none;
-    }
-
-    .monthly-prices,
-    .biannual-prices {
-        display: none;
-    }
-
-    .monthly-prices, .biannual-prices, .annual-prices {
-        min-height: 50px;
-    }
-
-    .prices .buy-now {
-        width: 90%;
-        display: block;
-        height: 50px;
-        line-height: 50px;
-        color: rgb(51,51,51);
-        /*color: white;*/
-        margin: 15px auto;
-        /*background-color: #95c700;*/
-        background-color: #FFF;
-        font-weight: bold;
-        /*opacity: 0.3;*/
-    }
-
+    /******************************************
+    * PRICES
+    ******************************************/
     .prices {
-        position: relative;
-        padding-top: 30px;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        padding-bottom: 0px;
     }
 
-    .prices:before {
-        position: absolute;
-        content: 'Coming Soon';
-        padding-top: 48%;
-        box-sizing: border-box;
-        color: white;
-        font-size: 80px;
-        text-align: center;
-        left: -2%;
-        top: -2%;
-        width: 104%;
-        height: 104%;
-        background-color: rgba(0, 0, 0, 0.6);
-        /*opacity: 0.6;*/
-        z-index: 99;
-        /*border: 1px solid rgb(90,90,90);*/
-        display: none;
-    }
-
-    .prices > .comment {
-        border: none;
-        width: 100%;
-    }
-
-    .prices > .partner-button,
-    .prices > .enterprise-button
-    {
+    .prices > div.description:first-child {
         display: inline-block;
-        border: 1px solid rgb(218, 218, 218);
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 1.5em;
-        background-color: rgb(241, 241, 241);
-        /*padding: 24px 0px;*/
     }
 
-    .prices > .partner-button a,
-    .prices > .enterprise-button a
-    {
-        color: #000;
-        display: inline-block;
-        padding: 24px 0px;
-        width: 100%;
-        height: 100%;
-        border-box: padding-box;
+    .prices-periods a {
+        width: 30%;
+        font-size: 1.4em;
     }
 
-    .prices > .partner-button a:hover,
-    .prices > .enterprise-button a:hover {
-        color: #FFF;
-        background-color: rgb(149, 199, 0);
+    .important-questions h4 {
+        text-align: left;
+    }
+    #SubscriptionSelection .modal-dialog {
+        width: 98%;
+    }
+}
+
+@media (min-width: 1025px) {
+    /******************************************
+     * PRICES
+     ******************************************/
+    #SubscriptionSelection .modal-dialog {
+        width: 90%;
     }
 
-    @media (min-width: 601px) {
-        /******************************************
-        * PRICES
-        ******************************************/
-        .contact input[type="submit"],
-        .contact input[type="reset"] {
-            width: 49.5%;
-            display: inline-block;
-        }
-
-        /******************************************
-        * PRICES
-        ******************************************/
-        .prices {
-            max-width: 100%;
-            margin: 0 auto;
-            border-left: 1px solid #D5D5D5;
-            border-right: 1px solid #D5D5D5;
-            padding: 20px;
-            padding-bottom: 0px;
-        }
-
-        .prices > div {
-            width: 49%;
-            border-left: 1px solid #dadada;
-            /*border-bottom: 1px solid #dadada;*/
-            border-right: 1px solid #dadada;
-            border-radius: 3px;
-        }
-
-        /*.prices > div:last-of-type {*/
-        /**/
-        /*}*/
-        .prices > div.description {
-            display: none;
-        }
-
-        .prices > div.description:first-child {
-            display: inline-block;
-        }
-
-        .prices #business,
-        .prices #solo {
-        }
-
-        .prices-periods a {
-            width: 25%;
-        }
-
-        .important-questions {
-            margin-bottom: 100px;
-            margin-top: 70px;
-        }
-
-        .important-questions h4 {
-            text-align: left;
-        }
-
-        .prices > .partner-button,
-        .prices > .enterprise-button
-        {
-            width: calc(98% + 3px);
-            margin-left: 0;
-        }
+    #non-profit {
+        margin-right: 0;
     }
-
-    @media (min-width: 1025px) {
-        /******************************************
-         * PRICES
-         ******************************************/
-        .prices > div {
-            /*width: 16.2%;*/
-            width: 24.7%;
-            margin-right: 0%;
-        }
-        #SubscriptionSelection .modal-dialog {width: 80%;}
-        #non-profit {
-            margin-right: 0;
-        }
-
-        .prices > .partner-button,
-        .prices > .enterprise-button 
-        {
-            width: calc(48.8% - 4px);
-        }
-
-        .prices > .partner-button {
-            margin-right: 14px;
-        }
-
-        #download .prices > div {
-            width: 32%;
-        }
-
-        #download .prices .description {
-            max-width: 25%;
-            margin: 0 auto;
-        }
-
-        #download .prices .features ul {
-            max-width: 80%;
-        }
-    }
-
-    .features {
-        border-bottom: 1px solid #dadada;
-    }
-
     .monthly-prices,
     .annual-prices,
     .biannual-prices {
-        text-align: center;
+        text-align: right;
     }
-    .biannual-discount{
+    .prices > .partner-button,
+    .prices > .enterprise-button {
+        width: calc(48.8% - 4px);
+    }
+
+    .prices > .partner-button {
+        margin-right: 14px;
+    }
+
+    #download .prices .description {
+        max-width: 25%;
+        margin: 0 auto;
+    }
+    .features {
+        width: 46%;
+    }
+    .features ul li{
+        width: 49.5%;
+        list-style-type: disc;
         font-size: 14px;
-        color: rgb(33, 111, 189);
     }
-    .biannual-discount sub{
-        bottom: 0;
+    .header{
+        text-align: left;
     }
-    .modal-backdrop.in {
-      opacity:.5;
-      filter:alpha(opacity=50);
+    .prices .buy-now{
+        width: 18%;
+        vertical-align: top;
+        margin-top: 20px;
     }
-    .modal-backdrop {
-      z-index: 1040;
+    .product_price {
+        width: 19%;
+        margin-top: 0px;
+        vertical-align: bottom;
     }
-    .cancelBtn {
-        padding-bottom: 15px;
-        padding-left: 20px;
-        border-left: 1px solid #D5D5D5;
-        border-right: 1px solid #D5D5D5;
-        border-bottom-left-radius: 6px;
-        border-bottom-right-radius: 6px;
+    .prices .header .name {
+        width: 15%;
     }
+    #business .buy-now {
+        width: 18%;
+    }
+}
+@media (min-width: 1600px) {
+    #SubscriptionSelection .modal-dialog {
+        width: 60%;
+    }
+}
+@media (min-width: 1900px) {
+    .features {
+        width: 50%;
+    }
+    .product_price {
+        width: 15%;
+    }
+}
+
+
+.biannual-discount {
+    font-size: 14px;
+    color: rgb(33, 111, 189);
+}
+
+.biannual-discount sub {
+    bottom: 0;
+}
+
+.modal-backdrop.in {
+    opacity: .5;
+    filter: alpha(opacity=50);
+}
+
+.modal-backdrop {
+    z-index: 1040;
+}
+
+.cancelBtn {
+    padding-bottom: 15px;
+    padding-left: 20px;
+    border-left: 1px solid #D5D5D5;
+    border-right: 1px solid #D5D5D5;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+.prices{
+    margin-bottom: 20px ;
+}
 </style>
 <script type="text/javascript">
     jQuery(document).ready(function () {
@@ -528,34 +388,33 @@
         });
         // cadminPath => available in customerPanel.js
         var subscriptionOptions = {
-          id : '{MULTISITE_SUBSCRIPTION_ID}',
-          addErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_FAILED}',
-          addPaymentErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED}',
-          addHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED}',
-          upgradeErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_FAILED}',
-          upgradePaymentErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED}',
-          upgradeHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED}',
-          websiteName : '{MULTISITE_WEBSITE_NAME}',
-          paymentUrl  : cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl',
-          ajaxUrl  : cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=manageSubscription',
-          hasPayrexxAccount : {MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT},
-          isPaymentUrlRequested : false
+            id: '{MULTISITE_SUBSCRIPTION_ID}',
+            addErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_FAILED}',
+            addPaymentErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED}',
+            addHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED}',
+            upgradeErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_FAILED}',
+            upgradePaymentErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED}',
+            upgradeHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED}',
+            websiteName: '{MULTISITE_WEBSITE_NAME}',
+            paymentUrl: cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl',
+            ajaxUrl: cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=manageSubscription',
+            hasPayrexxAccount: {MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT},
+            isPaymentUrlRequested: false
         };
-       
-       var subscriptionType = ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') ? 'upgrade' : 'add';
-       
+
+        var subscriptionType = ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') ? 'upgrade' : 'add';
+
         //Set Payment Url
-        function setPaymentUrl($this) 
-        {
+        function setPaymentUrl($this) {
             if (subscriptionOptions.isPaymentUrlRequested) {
-              return;
+                return;
             }
             $productId = $this.data('productid');
             $renewalOption = $this.data("renewalOption");
             if ((jQuery.trim($productId) == '')
-                || (jQuery.trim($renewalOption) == '')
+                    || (jQuery.trim($renewalOption) == '')
             ) {
-                showMessage(subscriptionOptions[subscriptionType+'ErrorTxt'], 'error');
+                showMessage(subscriptionOptions[subscriptionType + 'ErrorTxt'], 'error');
                 return false;
             }
             subscriptionOptions.isPaymentUrlRequested = true;
@@ -563,16 +422,16 @@
                 dataType: "json",
                 url: subscriptionOptions.paymentUrl,
                 data: {
-                    product_id : $productId,
-                    renewalOption : $renewalOption,
-                    multisite_address : subscriptionOptions.websiteName
+                    product_id: $productId,
+                    renewalOption: $renewalOption,
+                    multisite_address: subscriptionOptions.websiteName
                 },
                 type: "POST",
-                success: function(response){
+                success: function (response) {
                     subscriptionOptions.isPaymentUrlRequested = false;
                     if (response.status == 'error') {
                         jQuery("#SubscriptionSelection").modal('hide');
-                        showMessage(subscriptionOptions[subscriptionType+'ErrorTxt'], 'error');
+                        showMessage(subscriptionOptions[subscriptionType + 'ErrorTxt'], 'error');
                         return;
                     }
 
@@ -584,8 +443,8 @@
                 }
             });
         }
-   
-        jQuery('.buy-now.websiteCollection').on('click', function() {
+
+        jQuery('.buy-now.websiteCollection').on('click', function () {
             buySubscription(jQuery(this));
         });
 
@@ -593,7 +452,7 @@
             jQuery('.buy-now').removeClass('subscriptionProduct');
             $this.data('renewalOption', $this.parent().find('div:visible').attr('data-renewalOption'));
             $this.addClass('subscriptionProduct');
-            
+
             if (getProductPrice($this)) {
                 if (subscriptionOptions.hasPayrexxAccount) {
                     manageSubscription($this);
@@ -601,29 +460,29 @@
                 } else {
                     setPaymentUrl($this);
                 }
-            } else {                
+            } else {
                 manageSubscription($this);
             }
         }
-        
-        jQuery('.buy-now.website').on('click', function() {
-          if ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') {
-            buySubscription(jQuery(this));
-            return;
-          }
-            
-          showRemoteModal({
-            modalId   : 'SubscriptionAddWebsite',
-            remoteUrl : '/api/MultiSite/SubscriptionAddWebsite?productId='+ jQuery(this).data('productid'),
-            hidden : function() {
-              var signUpForm = jQuery('#multisite_signup_form');
-              var signUpModal = signUpForm.parents('.modal');
-              signUpModal.unbind();
+
+        jQuery('.buy-now.website').on('click', function () {
+            if ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') {
+                buySubscription(jQuery(this));
+                return;
             }
-          });
-          jQuery("#SubscriptionSelection").modal('hide');
+
+            showRemoteModal({
+                modalId: 'SubscriptionAddWebsite',
+                remoteUrl: '/api/MultiSite/SubscriptionAddWebsite?productId=' + jQuery(this).data('productid'),
+                hidden: function () {
+                    var signUpForm = jQuery('#multisite_signup_form');
+                    var signUpModal = signUpForm.parents('.modal');
+                    signUpModal.unbind();
+                }
+            });
+            jQuery("#SubscriptionSelection").modal('hide');
         });
-        
+
         function validUrl($url) {
             var urlPattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
             if (!urlPattern.test($url)) {
@@ -644,16 +503,16 @@
             $ajaxUrl = subscriptionOptions.ajaxUrl;
             $productId = $this.data("productid");
             $renewalOption = $this.data("renewalOption");
-            
+
             if ((jQuery.trim($ajaxUrl) == '')
                     || (jQuery.trim($productId) == '')
                     || (jQuery.trim($renewalOption) == '')
-                ) {
+            ) {
                 jQuery('#SubscriptionSelection').modal('hide');
-                showMessage(subscriptionOptions[subscriptionType+'ErrorTxt'], 'error');
+                showMessage(subscriptionOptions[subscriptionType + 'ErrorTxt'], 'error');
                 return false;
             }
-            
+
             jQuery.ajax({
                 dataType: "json",
                 url: $ajaxUrl,
@@ -664,9 +523,9 @@
                     renewalOption: $renewalOption
                 },
                 type: "POST",
-                beforeSend: function() {
-                  jQuery('#SubscriptionSelection').modal('hide');
-                  showMessage('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" />   '+subscriptionOptions[subscriptionType+'HeaderErrorTxt'],  'info', false);
+                beforeSend: function () {
+                    jQuery('#SubscriptionSelection').modal('hide');
+                    showMessage('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" />   ' + subscriptionOptions[subscriptionType + 'HeaderErrorTxt'], 'info', false);
                 },
                 success: function (response) {
                     if (response.status == 'success') {
@@ -684,10 +543,10 @@
             });
         }
 
-        jQuery.getScript('https://media.payrexx.com/modal/v1/modal.js', function() {
+        jQuery.getScript('https://media.payrexx.com/modal/v1/modal.js', function () {
             jQuery('#payrexxModal').payrexxModal({
                 hideObjects: ["#contact-details", ".contact"],
-                show: function(e) {
+                show: function (e) {
                     $this = jQuery('.buy-now.subscriptionProduct');
                     //Payrexx URL validation
                     if (($this.length < 0) || !validUrl(jQuery('#payrexxModal').data("href"))) {
@@ -696,13 +555,13 @@
                     jQuery('#SubscriptionSelection').modal('hide');
                     return true;
                 },
-                hidden: function(transaction) {
+                hidden: function (transaction) {
                     switch (transaction.status) {
                         case 'confirmed':
                             manageSubscription($this);
                             break;
                         default:
-                            showMessage(subscriptionOptions[subscriptionType+'PaymentErrorTxt'], 'error');
+                            showMessage(subscriptionOptions[subscriptionType + 'PaymentErrorTxt'], 'error');
                             break;
                     }
                 }
@@ -711,35 +570,49 @@
     });
 </script>
 
-<div class="prices-periods"><a class="monthly" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a> <a class="annual active" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a> <a class="biannual" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY} <span class="biannual-discount"><sub> - 10% </sub></span></a></div>
+<div class="prices-periods">
+    <h2><span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
+    <a class="monthly" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a>
+    <a class="annual active" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a>
+    <a class="biannual" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}
+        <span class="biannual-discount">
+            <sub> - 10% </sub>
+        </span>
+    </a>
+</div>
 
 <div class="prices">
-    <h2 class="monthly-prices amt" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTH} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
+    <input type="hidden" name="subscriptionId" id="subscriptionId" value="{MULTISITE_SUBSCRIPTION_ID}"/>
+    <a id="payrexxModal" class="hide" href="javascript:void(0)" data-href=""></a>
 
-    <h2 class="annual-prices amt" style="display: block;">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
-
-    <h2 class="biannual-prices amt" style="display: none;">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUAL} <span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
-
-    <input type ="hidden" name ="subscriptionId" id ="subscriptionId" value="{MULTISITE_SUBSCRIPTION_ID}" />
-    <a id ="payrexxModal" class = "hide" href = "javascript:void(0)" data-href = ""></a>
-    
     <!-- BEGIN showProduct -->
     <div id="{MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID}">
-        <div class="header"><span class="name">{MULTISITE_WEBSITE_PRODUCT_NAME}</span>
+        <div class="header">
+            <span class="name">{MULTISITE_WEBSITE_PRODUCT_NAME}</span>
+            <div class="features">
+                {MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE}
+            </div>
+            <div class="product_price">
+                <div class="monthly-prices amt" style="display: none;" data-renewalOption="monthly" data-price="{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}">
+                    <span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}.-</span>
+                    <span class="currency">CHF</span>
+                </div>
 
-            <div class="monthly-prices amt" style="display: none;" data-renewalOption = "monthly" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY}.-</span><span class="currency">CHF</span></div>
+                <div class="annual-prices amt" style="display: block;" data-renewalOption="annually" data-price="{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}">
+                    <span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}.-</span>
+                    <span class="currency">CHF</span>
+                </div>
 
-            <div class="annual-prices amt" style="display: block;" data-renewalOption = "annually" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY}.-</span><span class="currency">CHF</span></div>
-
-            <div class="biannual-prices amt" style="display: none;" data-renewalOption = "biannually" data-price = "{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}"><span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}.-</span><span class="currency">CHF</span></div>
-            <a class="buy-now {MULTISITE_PRODUCT_TYPE}" href = "javascript:void(0)" data-productid = "{MULTISITE_WEBSITE_PRODUCT_ID}">{TXT_MULTISITE_WEBSITE_CHOOSE}</a></div>
-
-        <div class="features">
-            {MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE}
+                <div class="biannual-prices amt" style="display: none;" data-renewalOption="biannually" data-price="{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}">
+                    <span class="amount">{MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY}.-</span>
+                    <span class="currency">CHF</span>
+                </div>
+            </div>
+            <a class="buy-now {MULTISITE_PRODUCT_TYPE}" href="javascript:void(0)" data-productid="{MULTISITE_WEBSITE_PRODUCT_ID}">{TXT_MULTISITE_WEBSITE_CHOOSE}</a>
         </div>
-        <a class="toggle-features" href="#">?</a></div>
+    </div>
     <!-- END showProduct -->
 </div>
 <div class="cancelBtn">
-    <input type="button" data-dismiss="modal" value="{TXT_CORE_MODULE_MULTISITE_CANCEL}" />
+    <input type="button" data-dismiss="modal" value="{TXT_CORE_MODULE_MULTISITE_CANCEL}"/>
 </div>
