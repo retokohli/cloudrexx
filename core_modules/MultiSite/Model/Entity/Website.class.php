@@ -1801,7 +1801,16 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     return;
                 }
                 
-                $objDataSet         = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($resp->data->users);
+// TODO: DataSet must be extended, that it can handle objects
+                //because DataSet cannot handle objects, we parse the object to an array
+                $json = json_encode($resp->data->users);
+                $arr = json_decode($json,true);
+                //because the array must be multidimensional for the export function, you must add a level, when its have only one
+                if(!is_array(current($arr))){
+                    $arr = array($arr);
+                }
+                
+                $objDataSet         = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($arr);
                 $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
                 $objEntityInterface->setEntityClass('Cx\Core\User\Model\Entity\User');
                 $adminUsers = $objDataSet->export($objEntityInterface);
