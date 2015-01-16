@@ -339,6 +339,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         //Get the input values
         $status         = isset($arguments['status']) ? contrexx_input2raw($arguments['status']) : '';
+        $website_status = isset($arguments['website_status']) ? contrexx_input2raw($arguments['website_status']) : '';
         $excludeProduct = isset($arguments['exclude_product']) ? array_map('contrexx_input2raw', $arguments['exclude_product']) : '';
         $includeProduct = isset($arguments['include_product']) ? array_map('contrexx_input2raw', $arguments['include_product']) : '';
         //Get the orders based on CRM contact id and get params
@@ -377,12 +378,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                     if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
                                         continue;
                                     }
-                                    self::parseWebsiteDetails($objTemplate, $website);
+                                    self::parseWebsiteDetails($objTemplate, $website, $website_status);
                                     $objTemplate->parse('showWebsites');
                                 }
                                 self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() > count($websiteCollection->getWebsites())));
                             } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                                self::parseWebsiteDetails($objTemplate, $websiteCollection);
+                                self::parseWebsiteDetails($objTemplate, $websiteCollection, $website_status);
                                 $objTemplate->parse('showWebsites');
                             }
                         }
@@ -1499,7 +1500,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Html\Sigma $objTemplate                         Template object
      * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website $website website object
      */
-    public function parseWebsiteDetails(\Cx\Core\Html\Sigma $objTemplate, \Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
+    public function parseWebsiteDetails(\Cx\Core\Html\Sigma $objTemplate, \Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $demandedStatus='')
     {
         $userId = \FWUser::getFWUserObject()->objUser->getId();
         
@@ -1509,25 +1510,28 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         );
         
         $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
-        $objTemplate->setVariable(array(
-            'MULTISITE_WEBSITE_NAME'          => contrexx_raw2xhtml($website->getName()).self::getWebsiteNonOnlineStateAsLiteral($website),
-            'MULTISITE_WEBSITE_ID'            => contrexx_raw2xhtml($website->getId()),
-            'MULTISITE_WEBSITE_LINK'          => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()),
-            'MULTISITE_WEBSITE_BACKEND_LINK'  => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
-            'MULTISITE_WEBSITE_FRONTEND_LINK' => self::getApiProtocol() . $website->getBaseDn()->getName(),
-            'MULTISITE_WEBSITE_STATE_CLASS'   => $status ? 'active' : (in_array($website->getStatus(), $websiteInitialStatus) ? 'init' : 'inactive'),
-        ));
-        
-        self::showOrHideBlock($objTemplate, 'websiteLinkActive', $status);
-        self::showOrHideBlock($objTemplate, 'websiteLinkInactive', !$status);
-        self::showOrHideBlock($objTemplate, 'showAdminButton', ($status && $website->getOwnerId() == $userId));
-        self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
-        self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
-        self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
-        
-        if (in_array($website->getStatus(), $websiteInitialStatus)) {
-            self::showOrHideBlock($objTemplate, 'actionButtonsActive', false);
-            self::showOrHideBlock($objTemplate, 'websiteInitializing', true);            
+
+        if($demandedStatus == '' || $demandedStatus == $website->getStatus()){
+            $objTemplate->setVariable(array(
+                'MULTISITE_WEBSITE_NAME'          => contrexx_raw2xhtml($website->getName()).self::getWebsiteNonOnlineStateAsLiteral($website),
+                'MULTISITE_WEBSITE_ID'            => contrexx_raw2xhtml($website->getId()),
+                'MULTISITE_WEBSITE_LINK'          => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()),
+                'MULTISITE_WEBSITE_BACKEND_LINK'  => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
+                'MULTISITE_WEBSITE_FRONTEND_LINK' => self::getApiProtocol() . $website->getBaseDn()->getName(),
+                'MULTISITE_WEBSITE_STATE_CLASS'   => $status ? 'active' : (in_array($website->getStatus(), $websiteInitialStatus) ? 'init' : 'inactive'),
+            ));
+
+            self::showOrHideBlock($objTemplate, 'websiteLinkActive', $status);
+            self::showOrHideBlock($objTemplate, 'websiteLinkInactive', !$status);
+            self::showOrHideBlock($objTemplate, 'showAdminButton', ($status && $website->getOwnerId() == $userId));
+            self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
+            self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
+            self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
+
+            if (in_array($website->getStatus(), $websiteInitialStatus)) {
+                self::showOrHideBlock($objTemplate, 'actionButtonsActive', false);
+                self::showOrHideBlock($objTemplate, 'websiteInitializing', true);
+            }
         }
     }
 
