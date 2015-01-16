@@ -480,12 +480,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         foreach ($products as $product) {
             $productName = contrexx_raw2xhtml($product->getName());
             $productPrice = $product->getPrice();
+            $priceAnnually = number_format($productPrice * 12, 2, '.', "'");
+            $priceBiannually = number_format($productPrice * 24 * 0.90, 2, '.', "'");
             $objTemplate->setVariable(array(
                 'MULTISITE_WEBSITE_PRODUCT_NAME' => $productName,
                 'MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID' => lcfirst($productName),
                 'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $productPrice,
-                'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => $productPrice * 12,
-                'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => $productPrice * 24 * 0.9,
+                'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => (substr($priceAnnually, -3) == '.00' ? substr($priceAnnually, 0 , -3) : $priceAnnually),
+                'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => (substr($priceBiannually, -3) == '.00' ? substr($priceBiannually, 0 , -3) : $priceBiannually),
                 'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice(),
                 'MULTISITE_WEBSITE_PRODUCT_ID' => $product->getId(),
                 'MULTISITE_PRODUCT_TYPE' => $product->getEntityClass() == 'Cx\Core_Modules\MultiSite\Model\Entity\Website' ? 'website' : 'websiteCollection'
