@@ -33,6 +33,7 @@ class DataSet implements \Iterator {
     protected $data = array();
     protected $dataType = 'array';
 
+// TODO: DataSet must be extended, that it can handle objects
     public function __construct($data = array(), callable $converter = null) {
         if (!count($data)) {
             return;
