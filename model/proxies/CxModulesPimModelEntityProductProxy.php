@@ -177,6 +177,30 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setExpirationQuantifier($expirationQuantifier);
     }
 
+    public function getCancellationQuantifier()
+    {
+        $this->_load();
+        return parent::getCancellationQuantifier();
+    }
+
+    public function setCancellationQuantifier($cancellationQuantifier)
+    {
+        $this->_load();
+        return parent::setCancellationQuantifier($cancellationQuantifier);
+    }
+
+    public function getCancellationUnit()
+    {
+        $this->_load();
+        return parent::getCancellationUnit();
+    }
+
+    public function setCancellationUnit($cancellationUnit)
+    {
+        $this->_load();
+        return parent::setCancellationUnit($cancellationUnit);
+    }
+
     public function getUpgradableProducts()
     {
         $this->_load();
@@ -285,10 +309,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getEntityById($entityId);
     }
 
-    public function getExpirationDate()
+    public function getExpirationDate($expirationUnit = '', $expirationQuantifier = 0)
     {
         $this->_load();
-        return parent::getExpirationDate();
+        return parent::getExpirationDate($expirationUnit, $expirationQuantifier);
     }
 
     public function getRenewalDate($unit, $quantifier)
@@ -301,6 +325,24 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
     {
         $this->_load();
         return parent::getRenewalDefinition($unit, $quantifier);
+    }
+
+    public function getUpgrades()
+    {
+        $this->_load();
+        return parent::getUpgrades();
+    }
+
+    public function addUpgrade(\Cx\Modules\Pim\Model\Entity\Product $upgrade)
+    {
+        $this->_load();
+        return parent::addUpgrade($upgrade);
+    }
+
+    public function getPaymentAmount($unit = 'month', $quantifier = 1)
+    {
+        $this->_load();
+        return parent::getPaymentAmount($unit, $quantifier);
     }
 
     public function __get($name)
@@ -342,7 +384,7 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'price', 'noteEntity', 'noteRenewal', 'noteUpgrade', 'noteExpiration', 'notePrice', 'subscriptions');
+        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'cancellationUnit', 'cancellationQuantifier', 'price', 'noteEntity', 'noteRenewal', 'noteUpgrade', 'noteExpiration', 'notePrice', 'subscriptions', 'upgrades');
     }
 
     public function __clone()

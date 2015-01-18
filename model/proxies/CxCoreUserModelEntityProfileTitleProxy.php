@@ -108,7 +108,7 @@ class CxCoreUserModelEntityProfileTitleProxy extends \Cx\Core\User\Model\Entity\
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'title', 'order_id', 'userProfile');
+        return array('__isInitialized__', 'id', 'title', 'orderId', 'userProfile');
     }
 
     public function __clone()

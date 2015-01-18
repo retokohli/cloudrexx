@@ -33,6 +33,12 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteServiceServerProxy extends \Cx\Co
         return parent::getId();
     }
 
+    public function setId($id)
+    {
+        $this->_load();
+        return parent::setId($id);
+    }
+
     public function setHostname($hostname)
     {
         $this->_load();
