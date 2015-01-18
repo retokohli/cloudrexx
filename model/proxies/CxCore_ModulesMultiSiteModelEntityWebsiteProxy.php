@@ -333,6 +333,60 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::__toString();
     }
 
+    public function getMailServiceServer()
+    {
+        $this->_load();
+        return parent::getMailServiceServer();
+    }
+
+    public function setMailServiceServer($mailServiceServer)
+    {
+        $this->_load();
+        return parent::setMailServiceServer($mailServiceServer);
+    }
+
+    public function getMailAccountId()
+    {
+        $this->_load();
+        return parent::getMailAccountId();
+    }
+
+    public function setMailAccountId($mailAccountId)
+    {
+        $this->_load();
+        return parent::setMailAccountId($mailAccountId);
+    }
+
+    public function getWebsiteCollection()
+    {
+        $this->_load();
+        return parent::getWebsiteCollection();
+    }
+
+    public function setWebsiteCollection(\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection)
+    {
+        $this->_load();
+        return parent::setWebsiteCollection($websiteCollection);
+    }
+
+    public function getAdminUsers()
+    {
+        $this->_load();
+        return parent::getAdminUsers();
+    }
+
+    public function getUser($id)
+    {
+        $this->_load();
+        return parent::getUser($id);
+    }
+
+    public function getResourceUsageStats()
+    {
+        $this->_load();
+        return parent::getResourceUsageStats();
+    }
+
     public function __get($name)
     {
         $this->_load();
@@ -360,7 +414,7 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'creationDate', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'ownerId', 'themeId', 'installationId', 'ftpUser', 'websiteServiceServer', 'domains');
+        return array('__isInitialized__', 'id', 'name', 'creationDate', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'ownerId', 'themeId', 'installationId', 'ftpUser', 'mailAccountId', 'websiteServiceServer', 'mailServiceServer', 'websiteCollection', 'domains');
     }
 
     public function __clone()

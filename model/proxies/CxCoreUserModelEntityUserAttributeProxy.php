@@ -192,7 +192,7 @@ class CxCoreUserModelEntityUserAttributeProxy extends \Cx\Core\User\Model\Entity
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'type', 'mandatory', 'sort_type', 'order_id', 'access_special', 'parent', 'userAttributeName', 'children', 'accessId', 'userProfile');
+        return array('__isInitialized__', 'id', 'type', 'mandatory', 'sortType', 'orderId', 'accessSpecial', 'parent', 'userAttributeName', 'children', 'accessId', 'userProfile');
     }
 
     public function __clone()
