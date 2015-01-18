@@ -394,10 +394,10 @@
             id: '{MULTISITE_SUBSCRIPTION_ID}',
             addErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_FAILED}',
             addPaymentErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED}',
-            addHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED}',
+            addHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_INPROGRESS}',
             upgradeErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_FAILED}',
             upgradePaymentErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED}',
-            upgradeHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_PAYMENT_FAILED}',
+            upgradeHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_UPGRADE_INPROGRESS}',
             websiteName: '{MULTISITE_WEBSITE_NAME}',
             paymentUrl: cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl',
             ajaxUrl: cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=manageSubscription',
@@ -453,7 +453,7 @@
 
         function buySubscription($this) {
             jQuery('.buy-now').removeClass('subscriptionProduct');
-            $this.data('renewalOption', $this.parent().find('div:visible').attr('data-renewalOption'));
+            $this.data('renewalOption', $this.parent().find('.product_price').find('div:visible').attr('data-renewalOption'));
             $this.addClass('subscriptionProduct');
 
             if (getProductPrice($this)) {
