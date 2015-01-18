@@ -33,6 +33,12 @@ class CxCoreUserModelEntityUserProxy extends \Cx\Core\User\Model\Entity\User imp
         return parent::getId();
     }
 
+    public function setId($id)
+    {
+        $this->_load();
+        return parent::setId($id);
+    }
+
     public function setIsAdmin($isAdmin)
     {
         $this->_load();
@@ -360,7 +366,7 @@ class CxCoreUserModelEntityUserProxy extends \Cx\Core\User\Model\Entity\User imp
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'is_admin', 'username', 'password', 'auth_token', 'auth_token_timeout', 'regdate', 'expiration', 'validity', 'last_auth', 'last_auth_status', 'last_activity', 'email', 'email_access', 'frontend_lang_id', 'backend_lang_id', 'active', 'verified', 'primary_group', 'profile_access', 'restore_key', 'restore_key_time', 'u2u_active', 'userProfile', 'group');
+        return array('__isInitialized__', 'id', 'isAdmin', 'username', 'password', 'authToken', 'authTokenTimeout', 'regdate', 'expiration', 'validity', 'lastAuth', 'lastAuthStatus', 'lastActivity', 'email', 'emailAccess', 'frontendLangId', 'backendLangId', 'active', 'verified', 'primaryGroup', 'profileAccess', 'restoreKey', 'restoreKeyTime', 'u2uActive', 'userProfile', 'group');
     }
 
     public function __clone()

@@ -117,6 +117,42 @@ class CxCoreContentManagerModelEntityPageProxy extends \Cx\Core\ContentManager\M
         return parent::getCustomContent();
     }
 
+    public function setUseCustomContentForAllChannels($useCustomContentForAllChannels)
+    {
+        $this->_load();
+        return parent::setUseCustomContentForAllChannels($useCustomContentForAllChannels);
+    }
+
+    public function getUseCustomContentForAllChannels()
+    {
+        $this->_load();
+        return parent::getUseCustomContentForAllChannels();
+    }
+
+    public function setApplicationTemplate($applicationTemplate)
+    {
+        $this->_load();
+        return parent::setApplicationTemplate($applicationTemplate);
+    }
+
+    public function getApplicationTemplate()
+    {
+        $this->_load();
+        return parent::getApplicationTemplate();
+    }
+
+    public function setUseCustomApplicationTemplateForAllChannels($useCustomApplicationTemplateForAllChannels)
+    {
+        $this->_load();
+        return parent::setUseCustomApplicationTemplateForAllChannels($useCustomApplicationTemplateForAllChannels);
+    }
+
+    public function getUseCustomApplicationTemplateForAllChannels()
+    {
+        $this->_load();
+        return parent::getUseCustomApplicationTemplateForAllChannels();
+    }
+
     public function setCssName($cssName)
     {
         $this->_load();
@@ -343,6 +379,18 @@ class CxCoreContentManagerModelEntityPageProxy extends \Cx\Core\ContentManager\M
     {
         $this->_load();
         return parent::getSkin();
+    }
+
+    public function setUseSkinForAllChannels($useSkinForAllChannels)
+    {
+        $this->_load();
+        return parent::setUseSkinForAllChannels($useSkinForAllChannels);
+    }
+
+    public function getUseSkinForAllChannels()
+    {
+        $this->_load();
+        return parent::getUseSkinForAllChannels();
     }
 
     public function setCaching($caching)
@@ -669,10 +717,28 @@ class CxCoreContentManagerModelEntityPageProxy extends \Cx\Core\ContentManager\M
         return parent::unserialize($data);
     }
 
+    public function __get($name)
+    {
+        $this->_load();
+        return parent::__get($name);
+    }
+
+    public function getComponentController()
+    {
+        $this->_load();
+        return parent::getComponentController();
+    }
+
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
+    }
+
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'nodeIdShadowed', 'lang', 'type', 'caching', 'updatedAt', 'updatedBy', 'title', 'linkTarget', 'contentTitle', 'slug', 'content', 'sourceMode', 'customContent', 'cssName', 'cssNavName', 'skin', 'metatitle', 'metadesc', 'metakeys', 'metarobots', 'start', 'end', 'editingStatus', 'protection', 'frontendAccessId', 'backendAccessId', 'display', 'active', 'target', 'module', 'cmd', 'node');
+        return array('__isInitialized__', 'id', 'nodeIdShadowed', 'lang', 'type', 'caching', 'updatedAt', 'updatedBy', 'title', 'linkTarget', 'contentTitle', 'slug', 'content', 'sourceMode', 'customContent', 'useCustomContentForAllChannels', 'applicationTemplate', 'useCustomApplicationTemplateForAllChannels', 'cssName', 'cssNavName', 'skin', 'useSkinForAllChannels', 'metatitle', 'metadesc', 'metakeys', 'metarobots', 'start', 'end', 'editingStatus', 'protection', 'frontendAccessId', 'backendAccessId', 'display', 'active', 'target', 'module', 'cmd', 'node');
     }
 
     public function __clone()
@@ -690,9 +756,5 @@ class CxCoreContentManagerModelEntityPageProxy extends \Cx\Core\ContentManager\M
             unset($this->_entityPersister, $this->_identifier);
         }
         
-    }
-    
-    public function __toString() {
-        return strval($this->getId());
     }
 }
