@@ -29,7 +29,7 @@ class License {
     private $frontendLocked = false;
     private $editionName;
     private $availableComponents;
-    private $legalComponents;
+    private $legalComponents = array();
     private $legalComponentsAdditionalData = array();
     private $legalFrontendComponents;
     private $validTo;
