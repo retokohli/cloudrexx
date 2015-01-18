@@ -56,7 +56,10 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
      * @global array $_ARRAYLANG
      */
     public function showDomains() {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $objInit;
+
+        $langData = $objInit->loadLanguageData('Config');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $domains = $domainRepository->findAll();
