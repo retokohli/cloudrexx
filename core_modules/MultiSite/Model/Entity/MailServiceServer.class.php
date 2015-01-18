@@ -322,7 +322,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         }
         
         $additionalData = null;
-        $response = JsonMultiSite::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $website);
+        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $website);
         if ($response->status == 'success' && $response->data->status == 'success') {
             $additionalData = $response->data->additionalData;
         }
