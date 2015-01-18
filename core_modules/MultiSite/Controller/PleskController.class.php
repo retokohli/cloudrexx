@@ -786,7 +786,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @param integer   $zoneId Id of plesk subscription to add the record to
      */
     public function addDnsRecord($type = 'A', $host, $value, $zone, $zoneId){
-        \DBG::msg("MultiSite (PleskController): add DNS-record: $type / $host / $value / $zone / $zoneId");
+        \DBG::msg("MultiSite (PleskController): add DNS-record: $type (type) / $host (host) / $value (value) / $zone (zone) / $zoneId (zone-id)");
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $dns = $xmldoc->createElement('dns');
@@ -868,7 +868,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
 
     public function updateDnsRecord($type, $host, $value, $zone, $zoneId, $recordId){
-        \DBG::msg("MultiSite (PleskController): update DNS-record: $type / $host / $value / $zone / $zoneId / $recordId");
+        \DBG::msg("MultiSite (PleskController): update DNS-record: $type (type) / $host (host) / $value (value) / $zone (zone) / $zoneId (zone-id) / $recordId (record-id)");
 
         if (!$recordId) {
             \DBG::msg("MultiSite (PleskController): None existant DNS-record -> going to add DNS-record");
@@ -1474,9 +1474,9 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $data = $xmldoc->createElement('data');
         $createSession->appendChild($data);
         
-        $userIp = $xmldoc->createElement('user_ip', $ipAddress);
+        $userIp = $xmldoc->createElement('user_ip', base64_encode($ipAddress));
         $data->appendChild($userIp);
-        $sourceServer = $xmldoc->createElement('source_server', $sourceAddress);
+        $sourceServer = $xmldoc->createElement('source_server', base64_encode($sourceAddress));
         $data->appendChild($sourceServer);
         
         $response = $this->executeCurl($xmldoc);
