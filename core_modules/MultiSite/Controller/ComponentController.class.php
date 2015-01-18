@@ -471,6 +471,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $products = $product->getUpgrades();
         } else {
             $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
+            uasort($products, function($a, $b){
+// customizing: list subscription Non-Profit always at the end
+// TODO: implement some sort of sorting ability to the model collection
+            if ($a->getName() == 'Non-Profit') {
+                return 1;
+            }
+            if ($a->getPrice() == $b->getPrice()) {
+                return 0;
+            }
+                return ($a->getPrice()< $b->getPrice()) ? -1 : 1;
+            });
         }
 
         if (\FWValidator::isEmpty($products)) {
@@ -478,6 +489,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         foreach ($products as $product) {
+// customizing: do not list Enterprise product 
+// TODO: implement some sort of selective product selection in the multisite configuration
+            if ($product->getName() == 'Enterprise') {
+                continue;
+            }
             $productName = contrexx_raw2xhtml($product->getName());
             $productPrice = $product->getPrice();
             $priceAnnually = number_format($productPrice * 12, 2, '.', "'");
