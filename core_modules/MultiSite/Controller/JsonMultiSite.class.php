@@ -1936,7 +1936,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
         }
         if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
-            \DBG::msg('JsonMultiSite: execut directly on manager');
+            \DBG::msg(__METHOD__. " ($command): executing locally on manager (not going to execute through JsonData adapter)");
             $config = \Env::get('config');
             $params['auth'] = json_encode(array('sender' => $config['domainUrl']));
             try {
@@ -4065,8 +4065,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown mail service server.');
             }
             
+            $clientIp = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
             $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
-            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn()->getName(), base64_encode($_SERVER['REMOTE_ADDR']), ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
+            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn()->getName(), $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
             if ($pleskLoginUrl) {
                 return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
             }
