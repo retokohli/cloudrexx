@@ -660,20 +660,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         if (isset($arguments['addWebsite'])) {
-
             $websiteName = isset($_POST['multisite_address']) ? contrexx_input2raw($_POST['multisite_address']) : '';
-           
+
             $resp = array();
             if (!\FWValidator::isEmpty($subscriptionId)) {
                 $resp = $this->createNewWebsiteInSubscription($subscriptionId, $websiteName);
             } elseif (!\FWValidator::isEmpty($productId)) {
                 $resp = $this->createNewWebsiteByProduct($productId, $websiteName);
             }
-            
+
             $responseStatus  = isset($resp['status']) && $resp['status'] == 'success';
             $responseMessage = isset($resp['message']) ? $resp['message'] : '';
             return $this->parseJsonMessage($responseMessage, $responseStatus);
-            
         } else {
             $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
             $mainDomain = $domainRepository->getMainDomain()->getName();
@@ -854,7 +852,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         //show section Domains if component NetManager is licensed on Website.
         $response = JsonMultiSite::executeCommandOnWebsite('isComponentLicensed', array('component' => 'NetManager'), $website);
-        $showDomainSectionStatus = ($response->status == 'success' && $response->data->status == 'success');
+        $showDomainSectionStatus = isset($response->status) && $response->status == 'success' && isset($response->data) && $response->data->status == 'success';
         self::showOrHideBlock($objTemplate, 'showDomainsSection', $showDomainSectionStatus);
         
         //show website base domain and domain aliases
@@ -1230,7 +1228,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                      ? $transaction['subscription']['end']
                                      : ''
                                   )
-                                : $transaction['end'];
+                                : (isset($transaction['end']) ? $transaction['end'] : '');
         
         if (   !\FWValidator::isEmpty($subscriptionId)
             && !\FWValidator::isEmpty($subscriptionEnd)
@@ -2146,9 +2144,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
 
             case self::MODE_WEBSITE:
+                $requestCmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : null;
                 // handle MultiSite-API requests
                 if (   $cx->getMode() == $cx::MODE_BACKEND
-                    && $_REQUEST['cmd'] == 'JsonData'
+                    && $requestCmd == 'JsonData'
                 ) {
                     // Set domainUrl to requeted website's domain alias.
                     // This is required in case optino 'forceDomainUrl' is set.
