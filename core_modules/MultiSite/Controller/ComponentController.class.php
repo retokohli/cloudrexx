@@ -1437,6 +1437,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 //create new website object and add to website
                 $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, \FWUser::getFWUserObject()->objUser);
                 $websiteCollection->addWebsite($website);
+                \Env::get('em')->persist($website);
+                // flush $website to database -> subscription will need the ID of $website
+                // to properly work
+                \Env::get('em')->flush();
 
                 $product = $subscriptionObj->getProduct();
                 //check the product
