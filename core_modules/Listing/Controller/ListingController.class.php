@@ -114,7 +114,9 @@ class ListingController {
      * @param array $options (Unused)
      */
     public function __construct($entities, $crit = array(), $options = array()) {
-        $this->paging = $options['paging'];
+        if (isset($options['paging'])) {
+            $this->paging = $options['paging'];
+        }
         // init handlers (filtering, paging and sorting)
         $this->handlers = array(
             new FilteringController(),
