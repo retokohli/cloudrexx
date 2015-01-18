@@ -69,6 +69,48 @@ class CxModulesOrderModelEntityInvoiceProxy extends \Cx\Modules\Order\Model\Enti
         return parent::setPayments($payments);
     }
 
+    public function getInvoiceItems()
+    {
+        $this->_load();
+        return parent::getInvoiceItems();
+    }
+
+    public function setInvoiceItems($invoiceItems)
+    {
+        $this->_load();
+        return parent::setInvoiceItems($invoiceItems);
+    }
+
+    public function addInvoiceItem(\Cx\Modules\Order\Model\Entity\InvoiceItem $invoiceItem)
+    {
+        $this->_load();
+        return parent::addInvoiceItem($invoiceItem);
+    }
+
+    public function getAmount()
+    {
+        $this->_load();
+        return parent::getAmount();
+    }
+
+    public function getPaid()
+    {
+        $this->_load();
+        return parent::getPaid();
+    }
+
+    public function __get($name)
+    {
+        $this->_load();
+        return parent::__get($name);
+    }
+
+    public function getComponentController()
+    {
+        $this->_load();
+        return parent::getComponentController();
+    }
+
     public function setVirtual($virtual)
     {
         $this->_load();
@@ -96,7 +138,7 @@ class CxModulesOrderModelEntityInvoiceProxy extends \Cx\Modules\Order\Model\Enti
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'payments', 'order');
+        return array('__isInitialized__', 'id', 'invoiceItems', 'order');
     }
 
     public function __clone()

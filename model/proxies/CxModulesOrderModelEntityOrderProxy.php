@@ -87,6 +87,12 @@ class CxModulesOrderModelEntityOrderProxy extends \Cx\Modules\Order\Model\Entity
         return parent::setInvoices($invoices);
     }
 
+    public function addInvoice(\Cx\Modules\Order\Model\Entity\Invoice $invoice)
+    {
+        $this->_load();
+        return parent::addInvoice($invoice);
+    }
+
     public function complete()
     {
         $this->_load();
