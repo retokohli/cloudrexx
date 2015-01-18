@@ -504,6 +504,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         global $_DBCONFIG, $_ARRAYLANG;
         
         \DBG::msg('Website::setup()');
+        \DBG::msg('change Website::$status from "'.$this->status.'" to "'.self::STATE_SETUP.'"');
         $this->status = self::STATE_SETUP;
         \Env::get('em')->persist($this);
         \Env::get('em')->flush();
