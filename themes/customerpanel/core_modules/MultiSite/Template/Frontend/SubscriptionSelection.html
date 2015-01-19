@@ -495,7 +495,7 @@
         }
 
         function getProductPrice($this) {
-            var productPrice = $this.parent().find('> div:visible').data('price');
+            var productPrice = $this.parent().find('.product_price > div:visible').data('price');
             if (productPrice > 0) {
                 return productPrice;
             }
