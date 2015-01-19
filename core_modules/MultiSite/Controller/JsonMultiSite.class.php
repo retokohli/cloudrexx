@@ -494,8 +494,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     && !\FWValidator::isEmpty($subscriptionObj->getPaymentAmount())
                     && !\FWValidator::isEmpty($subscriptionObj->getRenewalDate())
                 ) {
-                    $today = new \DateTime();
-                    $renewalStartDate = $renewalDate = $subscriptionObj->getRenewalDate();
+                    $today            = new \DateTime();
+                    $renewalDate      = $subscriptionObj->getRenewalDate();
+                    $renewalStartDate = clone $renewalDate;
                     
                     $oldSubscriptionInterval = \DateInterval::createFromDateString($subscriptionObj->getRenewalQuantifier() .' '. $subscriptionObj->getRenewalUnit());
                     $renewalStartDate->sub($oldSubscriptionInterval);
