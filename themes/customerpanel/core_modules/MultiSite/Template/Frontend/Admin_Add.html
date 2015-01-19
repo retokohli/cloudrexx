@@ -29,7 +29,7 @@
   /* <![CDATA[ */
   jQuery(document).ready(function () {
     jQuery('#multisite_admin_user_add_form').submit(function () {
-      var apiUrl = '/api/MultiSite/Website/Admin?id=' + getQueryParams(document.location.search)['id']
+      var apiUrl = '/api/MultiSite/Website/Admins?id=' + getQueryParams(document.location.search)['id'];
       sendApiFormRequest('#multisite_admin_user_add_form', '#AdminAdd', '#multisite_website_admins', apiUrl);
       return false;
     });
