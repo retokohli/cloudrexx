@@ -12,7 +12,24 @@ html {
     min-height: 100%;
     position: relative;
 }
-
+th.headerSortUp:after {
+    content: "\0020\e74f";
+    font-family: 'entypo';
+    font-style: normal;
+    font-weight: normal;
+}
+th.headerSortDown:after {
+    content: "\0020\e74f";
+    font-family: 'entypo';
+    font-style: normal;
+    font-weight: normal;
+}
+th.header:after {
+    content: "\0020\e74f";
+    font-family: 'entypo';
+    font-style: normal;
+    font-weight: normal;
+}
 
 fieldset, p { border: 0; margin: 0; padding: 0; }
 textarea { resize: vertical; }
