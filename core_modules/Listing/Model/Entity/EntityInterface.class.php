@@ -101,8 +101,6 @@ class EntityInterface implements Exportable, Importable
                         $entityObj->{'set' . ucfirst($entityField)}($associationObj);
                     }
                     
-                    \Env::get('em')->persist($associationObj);
-                                        
                     $entityValue = $associationObj;
                 }
                 
