@@ -3144,8 +3144,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $productPrice  = $product->getPrice();
             $productName   = $product->getName();            
 
-            $renewalUnit       = 1;
-            $renewalQuantifier = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
+            $renewalUnit       = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
+            $renewalQuantifier = 1;
             if (isset($params['post']['renewalOption'])) {
                 list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($params['post']['renewalOption']);
                 $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
