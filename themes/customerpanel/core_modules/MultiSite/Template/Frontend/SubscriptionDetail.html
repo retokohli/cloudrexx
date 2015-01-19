@@ -22,6 +22,7 @@
     
 /* <![CDATA[ */
 cx.ready(function() {
+    cx.variables.set('loadingText', '{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}', 'multisite/lang');
     jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
         var id = getQueryParams(document.location.search)['id'];
         loadContent('#multisite_subscription_detail_info', '/api/MultiSite/SubscriptionDetail/Info?id=' + id);
