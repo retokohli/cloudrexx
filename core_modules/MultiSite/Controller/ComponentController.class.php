@@ -326,7 +326,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommandSubscription($objTemplate, $arguments) {
         global $_ARRAYLANG;
-        
+
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         
         if (!self::isUserLoggedIn()) {
@@ -412,7 +412,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function executeCommandSubscriptionSelection($objTemplate, $arguments) 
     {
         global $_ARRAYLANG;
-        
+
         if (!self::isUserLoggedIn()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
         }
@@ -530,7 +530,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function executeCommandSubscriptionDetail($objTemplate, $arguments) 
     {
         global $_ARRAYLANG;
-        
+
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         
         $subscriptionId = isset($arguments['id']) ? contrexx_input2raw($arguments['id']) : 0;
@@ -612,26 +612,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         if ($objTemplate->blockExists('showWebsites')) {
             $websiteCollection = $subscriptionObj->getProductEntity();
+            if($websiteCollection != null){
+                if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                    foreach ($websiteCollection->getWebsites() as $website) {
+                        if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                            continue;
+                        }
+                        self::parseWebsiteDetails($objTemplate, $website);
 
-            if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-                foreach ($websiteCollection->getWebsites() as $website) {
-                    if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
-                        continue;
+                        $objTemplate->parse('showWebsites');
                     }
-                    self::parseWebsiteDetails($objTemplate, $website);
-
+                    self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() > count($websiteCollection->getWebsites())));
+                } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                    self::parseWebsiteDetails($objTemplate, $websiteCollection);
                     $objTemplate->parse('showWebsites');
                 }
-                self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() > count($websiteCollection->getWebsites())));
-            } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                self::parseWebsiteDetails($objTemplate, $websiteCollection);
-                $objTemplate->parse('showWebsites');
+                $objTemplate->touchBlock('showWebsitesHeader');
+            }else{
+                if($objTemplate->blockExists('showWebsitesHeader')){
+                        $objTemplate->hideBlock('showWebsitesHeader');
+                    }
             }
         }
 
         //payments
         self::showOrHideBlock($objTemplate, 'showPayments', !\FWValidator::isEmpty($subscriptionObj->getExternalSubscriptionId()));
-        
+
         return $objTemplate->get();
     }
     
