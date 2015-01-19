@@ -2,13 +2,13 @@
 <div  class="grid-elm grid-align-1-1 grid-offset">
     <h2>{TXT_MULTISITE_SUBSCRIPTION_ACTIVE}</h2>
     <div class="subscription-table">
-        <table>
+        <table class="tablesort">
             <thead>
                 <tr>
-                    <th width="5%" class="sort asc">{TXT_MULTISITE_REFERENCE_NUMBER}</th>
-                    <th width="30%" class="sort asc">{TXT_MULTISITE_TITLE}</th>
-                    <th width="20%" class="sort">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
-                    <th width="20%" class="sort">{TXT_MULTISITE_NEXT_BILL_DATE}</th>
+                    <th width="5%" >{TXT_MULTISITE_REFERENCE_NUMBER}</th>
+                    <th width="30%">{TXT_MULTISITE_TITLE}</th>
+                    <th width="20%" >{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
+                    <th width="20%" >{TXT_MULTISITE_NEXT_BILL_DATE}</th>
                     <th width="25%" class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
                 </tr>
             </thead>
@@ -19,14 +19,14 @@
                     <td>{MULTISITE_SUBSCRIPTION_DESCRIPTION}</td>
                     <td>{MULTISITE_WEBSITE_PLAN}</td>
                     <td>{MULTISITE_WEBSITE_INVOICE_DATE}</td>
-                    <td class="actions"> 
+                    <td class="actions">
                         <button type="button" class="manage" onclick="window.location.href = '{NODE_MULTISITE_SUBSCRIPTIONDETAIL}?id={MULTISITE_SUBSCRIPTION_ID}'">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
                         <!-- BEGIN showUpgradeButton --><button class="upgrade remoteModal" data-remote="/api/MultiSite/SubscriptionSelection?subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="SubscriptionSelection">{TXT_MULTISITE_UPGRADE}</button><!-- END showUpgradeButton -->
                         <!-- BEGIN showAddWebsiteButton -->
                         <button class="add add-website" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}" >{TXT_MULTISITE_ADD_NEW_WEBSITE}</button>
                         <!-- END showAddWebsiteButton -->
                     </td>
-                </tr> 
+                </tr>
                 <!-- BEGIN showWebsites -->
                 <tr class="website {MULTISITE_SUBSCRIPTION_ID}">
                     <td class="center"><span class="{MULTISITE_WEBSITE_STATE_CLASS}"><!-- --></span></td>
@@ -66,8 +66,8 @@ jQuery(document).ready(function() {
         if (event.target.nodeName != 'BUTTON') {
             var refId = jQuery(this).attr('data-ref-id');
 
-            jQuery(this).find('a.show-websites').toggleClass('open'); 
-            jQuery('.website.'+refId).toggle(); 
+            jQuery(this).find('a.show-websites').toggleClass('open');
+            jQuery('.website.'+refId).toggle();
 
             return false;
         }
@@ -82,7 +82,10 @@ jQuery(document).ready(function() {
           signUpModal.unbind();
         }
       });
-    });    
+    });
+});
+jQuery(document).ready(function(){
+    jQuery('.tablesort').tablesorter();
 });
 /* ]]> */
 </script>
