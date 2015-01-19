@@ -174,7 +174,9 @@ class Livecam extends LivecamLibrary
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
             $page->setModule('Livecam');
             // load source code
-            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page));
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
         }
         
         $this->_objTpl->setVariable(array(
