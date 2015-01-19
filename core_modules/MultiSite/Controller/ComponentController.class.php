@@ -1096,8 +1096,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         global $objInit, $_CORELANG, $_ARRAYLANG;
 
-        $langData = $objInit->loadLanguageData('core');
-        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $coreLangData   = $objInit->loadLanguageData('core');
+        $accessLangData = $objInit->loadLanguageData('Access');
+        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $coreLangData, $accessLangData );
         $objTemplate->setGlobalVariable($_ARRAYLANG);
         if (!self::isUserLoggedIn()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
@@ -1126,22 +1127,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!\FWValidator::isEmpty($submitFormAction)) {
             try {
                 if (\FWValidator::isEmpty($userId) && $submitFormAction != 'Add') {
-
-                    return; //TODO RETURN MESSAGE
+                    return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST'], false);
                 }
 
+                $successMsg = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_' . strtoupper($submitFormAction) . '_SUCCESS'];
+                $errorMsg = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_' . strtoupper($submitFormAction) . '_FAILED'];
                 switch ($submitFormAction) {
 
-                    case 'Add' :
                     case 'Edit':
+                        $successMsg = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
+                        $errorMsg = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
+                    case 'Add' :
                         $email = isset($_POST['adminUser']['email']) ? contrexx_input2raw($_POST['adminUser']['email']) : '';
-                        if (\FWValidator::isEmpty($email)) {
-                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_EMAIL_EMPTY'], false);
+                        if (\FWValidator::isEmpty($email) || !\FWValidator::isEmail($email)) {
+                            return $this->parseJsonMessage($_ARRAYLANG['TXT_ACCESS_INVALID_ENTERED_EMAIL_ADDRESS'], false);
                         }
-                        if (!\FWValidator::isEmail($email)) {
-                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_NOT_VALID_EMAIL'], false);
-                        }
-                        $command = 'push';
+                        
+                        $command            = 'push';
                         $params['data']     = $_POST['adminUser'];
                         $params['dataType'] = 'Cx\Core\User\Model\Entity\User';
                         break;
@@ -1151,21 +1153,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $params  = array('userId' => $userId);
                         break;
                     default:
-                        return; //TODO return message
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST'], false);
                         break;
                 }
                 
                 if (isset($command) && isset($params)) {
                     $response = JsonMultiSite::executeCommandOnWebsite($command, $params, $website);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_' . strtoupper($submitFormAction) . '_SUCCESS'], true);
+                        return $this->parseJsonMessage($successMsg, true);
                     } else {
                         return $this->parseJsonMessage($response->message, false);
                     }
                 }
             } catch (\Exception $e) {
-                \DBG::log('Failed to ' . $submitFormAction . $e->message());
-                return $this->parseJsonMessage($submitFormAction . '_FAILED', false);
+                \DBG::log('Failed to ' . $submitFormAction . 'administrator account' . $e->message());
+                return $this->parseJsonMessage($errorMsg, false);
             }
         } else {
 
@@ -1173,7 +1175,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 //get admin user from website by id
                 $adminUser = current($website->getUser($userId));
                 if (\FWValidator::isEmpty($adminUser)) {
-                    return; //TODO RETURN MESSAGE
+                    return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
                 }
             }
 

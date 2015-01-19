@@ -273,13 +273,12 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT_FAILED'] = 'Failed to
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_DELETE_FAILED'] = 'Failed to remove the domain.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'] = 'Invalid request.';
 
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_SUCCESS']  = 'Successfully deleted the selected admin user';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_FAIL']     = 'Failed to delete the selected admin user';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_SUCCESS']     = 'Successfully Added the admin user';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_FAIL']        = 'Failed to add a admin user';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_EMAIL_EMPTY']     = 'Email id is empty';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_NOT_VALID_EMAIL'] = 'Email id is not a valid email';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']        = 'Unknown user requested';
+//website admin user
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_SUCCESS']  = 'Successfully deleted the selected administrator account.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_FAILED']   = 'Failed to delete the selected administrator account.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_SUCCESS']     = 'The new administrator account has been added successfully.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_FAILED']      = 'The creation of the new administrator account failed.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']        = 'Invalid request.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EXTERNALPAYMENTCUSTOMERIDPROFILEATTRIBUTEID'] = 'Payment user profile attribute ID';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EXTERNALPAYMENTCUSTOMERIDPROFILEATTRIBUTEID_TOOLTIP']='The user profile attribute Id used to store the customer ID of the external payment provider.';

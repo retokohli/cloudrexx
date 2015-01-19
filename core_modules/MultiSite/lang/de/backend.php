@@ -161,6 +161,13 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT_FAILED'] = 'Die Ände
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_DELETE_FAILED'] = 'Die Entfernung der Domain schlug fehl.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'] = 'Ungültige Anfrage.';
 
+//website admin user
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_SUCCESS']  = 'Das ausgewählte Administrator-Konto wurde gelöscht.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_FAILED']   = 'Das Entfernen des ausgewählten Administrator-Kontos schlug fehl.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_SUCCESS']     = 'Das Administrator-Konto wurde erfolgreich hinzugefügt.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_FAILED']      = 'Das Hinzufügen des Administrator-Kontos schlug fehl.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']        = 'Ungültige Anfrage.';
+
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATE_ADMIN_USER'] = 'Administrator hinzufügen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EDIT_ADMIN_USER']   = 'Administrator bearbeiten';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DELETE_ADMIN_USER'] = 'Administrator entfernen';
