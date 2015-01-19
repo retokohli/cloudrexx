@@ -36,7 +36,7 @@ function showMessage(msgTxt, type, hideAfterDelay) {
     $objModal.modal('show');
 
     if (hideAfterDelay) {
-      setTimeout(function() {$objModal.modal('hide');}, 5000);
+      setTimeout(function() {$objModal.modal('hide');}, 2000);
     }
 }
 
@@ -52,7 +52,7 @@ function getQueryParams(qs) {
 
     return params;
 }
-    
+count = 0;
 function  loadContent(jQuerySelector, url) {
     jQuery.ajax({
         dataType: 'html',
@@ -63,7 +63,12 @@ function  loadContent(jQuerySelector, url) {
                 jQuery(jQuerySelector).html(data);
             }
         },
-        fail: function(data) {}
+        error: function(xhr, textStatus, errorThrown) {
+            if (xhr.status == 500 && count <= 3) {
+                ++count;
+                jQuery.ajax(this);
+            }
+        }
     });
 }
 
@@ -86,6 +91,7 @@ function getRemoteLoginToken($this) {
         beforeSend: function (xhr, settings) {
             $this.button('loading');
             $this.prop('disabled', true);
+            $this.removeClass('add');
         },
         success: function(response) {
             if (response.status == 'success') {
@@ -106,6 +112,7 @@ function getRemoteLoginToken($this) {
         complete: function (xhr, settings) {
             $this.button('reset');
             $this.prop('disabled', false);
+            $this.addClass('add');
         },
         error: function() { }
     });   
@@ -132,6 +139,7 @@ function enableOrDisableMailService($this) {
         beforeSend: function (xhr, settings) {
             $this.button('loading');
             $this.prop('disabled', true);
+            $this.removeClass('add');
         },
         success: function(response) {
             if (response.status == 'success') {
@@ -148,7 +156,8 @@ function enableOrDisableMailService($this) {
         },
         complete: function (xhr, settings) {
             $this.button('reset');
-            $this.prop('disabled', false);                
+            $this.prop('disabled', false);
+            $this.addClass('add');
         },
         error: function() { }
     });
@@ -220,6 +229,7 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
     beforeSend: function (xhr, settings) {
       jQuery('.loadingProcess').button('loading');
       jQuery('.loadingProcess').prop('disabled', true);
+      jQuery('.loadingProcess').removeClass('save');
     },
     success: function (response) {
       message = (response.status == 'success') ? response.data.message : response.message;
@@ -234,7 +244,8 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
     },
     complete: function (xhr, settings) {
         jQuery('.loadingProcess').button('reset');
-        jQuery('.loadingProcess').prop('disabled', false);                
+        jQuery('.loadingProcess').prop('disabled', false);
+        jQuery('.loadingProcess').addClass('save');
     },
     fail: function (response) {
     }
@@ -257,6 +268,7 @@ function requestAutoLogin($this, url, data) {
         beforeSend: function (xhr, settings) {
             $this.button('loading');
             $this.prop('disabled', true);
+            $this.removeClass('add');
         },
         success: function(response) {
             if (response.status == 'success') {
@@ -276,7 +288,8 @@ function requestAutoLogin($this, url, data) {
         },
         complete: function (xhr, settings) {
             $this.button('reset');
-            $this.prop('disabled', false);                
+            $this.prop('disabled', false);
+            $this.addClass('add');
         },
         error: function() { }
     });
