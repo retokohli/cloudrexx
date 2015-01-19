@@ -4068,7 +4068,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             $clientIp = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
             $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
-            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' . $website->getBaseDn()->getName(), $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
+            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' .$website->getBaseDn()->getName(), $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
             if ($pleskLoginUrl) {
                 return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
             }
@@ -4326,7 +4326,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $response = self::executeCommandOnMyServiceServer('domainManipulation', $params['post']);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return array('status' => 'success');
-                    }                    
+                    }
                     break;
                     
                 default :

@@ -335,7 +335,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             \DBG::log('MailServiceServer(createAccount) Failed: Insufficent argument supplied.');
             return false;
         }
-        $subscriptionId = $hostingController->createSubscription($mainDomain, $this->ipAddress, 1, $customerId = null, $planId);
+        $subscriptionId = $hostingController->createSubscription($mainDomain, $this->ipAddress, 0, $customerId = null, $planId);
         if ($subscriptionId) {
             if ($hostingController instanceof \Cx\Core_Modules\MultiSite\Controller\PleskController) {
                 $hostingController->setWebspaceId($subscriptionId);
