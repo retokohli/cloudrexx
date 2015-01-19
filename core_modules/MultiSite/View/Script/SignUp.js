@@ -307,6 +307,9 @@
                 },
                 type: "POST",
                 success: function(response){parseResponse(response, null);},
+                complete: function (xhr, settings) {
+                    location.reload();
+                },
                 error: function() {
                     showSystemError();
                 }
