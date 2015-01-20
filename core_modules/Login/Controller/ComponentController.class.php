@@ -33,13 +33,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $page_metatitle, $objTemplate, $sessionObj;
+        global $objTemplate, $sessionObj;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = \cmsSession::getInstance();
                 $objLogin = new \Cx\Core_Modules\Login\Controller\Login(\Env::get('cx')->getPage()->getContent());
                 $pageTitle = \Env::get('cx')->getPage()->getTitle();
-                \Env::get('cx')->getPage()->setContent($objLogin->getContent($page_metatitle, $pageTitle));
+                $pageMetaTitle = \Env::get('cx')->getPage()->getMetatitle();
+                \Env::get('cx')->getPage()->setContent($objLogin->getContent($pageMetaTitle, $pageTitle));
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:

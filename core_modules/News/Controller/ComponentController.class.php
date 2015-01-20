@@ -31,7 +31,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $page, $objTemplate, $page_metatitle, $subMenuTitle;
+        global $_CORELANG, $page, $objTemplate, $subMenuTitle;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $newsObj = new News(\Env::get('cx')->getPage()->getContent());
@@ -45,7 +45,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
                 \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
                 \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
-                $page_metatitle = $newsObj->newsTitle;
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:

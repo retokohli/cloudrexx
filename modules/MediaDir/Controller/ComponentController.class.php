@@ -31,12 +31,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $subMenuTitle, $objTemplate, $page_metatitle;
+        global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                     $objMediaDirectory = new MediaDirectory(\Env::get('cx')->getPage()->getContent(), $this->getName());
                     $objMediaDirectory->pageTitle = \Env::get('cx')->getPage()->getTitle();
-                    $objMediaDirectory->metaTitle = $page_metatitle;
+                    $pageMetaTitle = \Env::get('cx')->getPage()->getMetatitle();
+                    $objMediaDirectory->metaTitle = $pageMetaTitle;
                     \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
                     if ($objMediaDirectory->getPageTitle() != '' && $objMediaDirectory->getPageTitle() != \Env::get('cx')->getPage()->getTitle()) {
                         \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
@@ -44,7 +45,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         \Env::get('cx')->getPage()->setMetaTitle($objMediaDirectory->getPageTitle());
                     }
                     if ($objMediaDirectory->getMetaTitle() != '') {
-                        $page_metatitle = $objMediaDirectory->getMetaTitle();
+                        \Env::get('cx')->getPage()->setMetatitle($objMediaDirectory->getMetaTitle());
                     }
                     
                 break;

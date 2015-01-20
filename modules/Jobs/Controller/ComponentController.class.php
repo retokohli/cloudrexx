@@ -33,7 +33,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $subMenuTitle, $objTemplate, $page_metatitle;
+        global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objJobs = new Jobs(\Env::get('cx')->getPage()->getContent());
@@ -42,7 +42,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Env::get('cx')->getPage()->setTitle($objJobs->jobsTitle);
                 \Env::get('cx')->getPage()->setContentTitle($objJobs->jobsTitle);
                 \Env::get('cx')->getPage()->setMetaTitle($objJobs->jobsTitle);
-                $page_metatitle = $objJobs->jobsTitle;
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:

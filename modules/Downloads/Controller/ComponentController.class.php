@@ -31,14 +31,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $subMenuTitle, $objTemplate, $page_metatitle;
+        global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objDownloadsModule = new Downloads(\Env::get('cx')->getPage()->getContent());
                 \Env::get('cx')->getPage()->setContent($objDownloadsModule->getPage());
                 $downloads_pagetitle = $objDownloadsModule->getPageTitle();
                 if ($downloads_pagetitle) {
-                    $page_metatitle = $downloads_pagetitle;
                     \Env::get('cx')->getPage()->setTitle($downloads_pagetitle);
                     \Env::get('cx')->getPage()->setContentTitle($downloads_pagetitle);
                     \Env::get('cx')->getPage()->setMetaTitle($downloads_pagetitle);

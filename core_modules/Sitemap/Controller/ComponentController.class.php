@@ -31,7 +31,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $page_metatitle;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objSitemap = new \Cx\Core_Modules\Sitemap\Controller\Sitemap(\Env::get('cx')->getPage()->getContent(), \Env::get('cx')->getLicense());

@@ -31,7 +31,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $page_metatitle, $_CORELANG, $subMenuTitle, $objTemplate, $plainSection;
+        global $_CORELANG, $subMenuTitle, $objTemplate, $plainSection;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objMedia = new Media(\Env::get('cx')->getPage()->getContent(), $plainSection.MODULE_INDEX);

@@ -33,12 +33,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $subMenuTitle, $objTemplate, $page_metatitle;
+        global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-
+                
                 $objU2u = new U2u(\Env::get('cx')->getPage()->getContent());
-                \Env::get('cx')->getPage()->setContent($objU2u->getPage($page_metatitle, \Env::get('cx')->getPage()->getTitle()));
+                \Env::get('cx')->getPage()->setContent($objU2u->getPage(\Env::get('cx')->getPage()->getMetatitle(), \Env::get('cx')->getPage()->getTitle()));
 
                 break;
 

@@ -31,7 +31,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $subMenuTitle, $objTemplate, $page_metatitle;
+        global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objGallery = new Gallery(\Env::get('cx')->getPage()->getContent());
@@ -42,7 +42,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('cx')->getPage()->setTitle($topGalleryName);
                     \Env::get('cx')->getPage()->setContentTitle($topGalleryName);
                     \Env::get('cx')->getPage()->setMetaTitle($topGalleryName);
-                    $page_metatitle = $topGalleryName;
                 }
                
                 break;
