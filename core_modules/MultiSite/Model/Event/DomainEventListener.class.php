@@ -439,8 +439,8 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
         
         $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('domainManipulation', $params);
-        if ($result->status == 'error' && $result->data->status == 'error') {
-            \DBG::log($result->data->message);
+        if ($result && $result->status == 'error') {
+            \DBG::dump($result->message);
             throw new DomainEventListenerException('MultiSite (DomainEventListener): domainManipulation() Failed.');
         }
         return true;

@@ -4076,7 +4076,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown mail service server.');
             }
             
-            $clientIp = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+            $clientIp = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))) : $_SERVER['REMOTE_ADDR'];
             $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
             $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' .$website->getBaseDn()->getName(), $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
             if ($pleskLoginUrl) {

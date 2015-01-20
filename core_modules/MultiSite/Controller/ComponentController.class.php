@@ -2073,8 +2073,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
 
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         
         $websiteEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
