@@ -836,6 +836,27 @@ cx.cm = function(target) {
         cx.jQuery('#page .type_'+cx.jQuery(event.target).val()).show();
         cx.jQuery('#page #type_toggle label').text(cx.jQuery(this).next().text());
         if (cx.jQuery(this).val() == 'application') {
+            var pattern = /\[\[APPLICATION_DATA\]\]/;
+            if (cx.jQuery('#page_sourceMode').prop('checked')) {
+                var content = cx.jQuery('#cm_ckeditor').val();
+
+                //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
+                if (!pattern.test(content)) {
+                    cx.jQuery("#cm_ckeditor").val(content + '[[APPLICATION_DATA]]');
+                }
+            } else if (CKEDITOR.instances.cm_ckeditor != null) {
+                var content = CKEDITOR.instances.cm_ckeditor.getData();
+
+                //check whether the application type contains the placeholder [[APPLICATION_DATA]] in ckeditor
+                if (!pattern.test(content)) {
+                    var range = CKEDITOR.instances['cm_ckeditor'].createRange();
+                    if (range) {
+                        range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);
+                        CKEDITOR.instances['cm_ckeditor'].getSelection().selectRanges([range]);
+                    }
+                    CKEDITOR.instances['cm_ckeditor'].insertText('[[APPLICATION_DATA]]');
+                }
+            }
             cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
         }
         if (cx.jQuery(this).val() == 'redirect') {
