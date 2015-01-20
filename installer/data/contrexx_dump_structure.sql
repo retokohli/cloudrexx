@@ -1270,9 +1270,8 @@ CREATE TABLE `contrexx_module_crm_currency` (
   `hourly_rate` text NOT NULL,
   `default_currency` tinyint(1) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `name` (`name`(333)),
-  FULLTEXT KEY `name_2` (`name`)
-) ENGINE=MyISAM ;
+  KEY `name` (`name`(255))
+) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -3655,7 +3654,10 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_order_order` (
   `id` int(11) NOT NULL auto_increment,
   `contact_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`id`)
+  `currency_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `IDX_CC1257B838248176` (`currency_id`),
+  CONSTRAINT `contrexx_module_order_order_ibfk_1` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3700,6 +3702,20 @@ CREATE TABLE `contrexx_module_order_subscription` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_pim_price` (
+  `id` int(11) NOT NULL auto_increment,
+  `currency_id` int(11) default NULL,
+  `product_id` int(11) default NULL,
+  `amount` decimal(10,0) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `IDX_2E2646EA38248176` (`currency_id`),
+  KEY `IDX_2E2646EA4584665A` (`product_id`),
+  CONSTRAINT `contrexx_module_pim_price_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`),
+  CONSTRAINT `contrexx_module_pim_price_ibfk_1` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_pim_product` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
@@ -3710,7 +3726,6 @@ CREATE TABLE `contrexx_module_pim_product` (
   `upgradable` tinyint(1) NOT NULL,
   `expiration_unit` varchar(5) NOT NULL,
   `expiration_quantifier` int(11) NOT NULL,
-  `price` decimal(10,0) NOT NULL,
   `note_entity` text NOT NULL,
   `note_renewal` text NOT NULL,
   `note_upgrade` text NOT NULL,
