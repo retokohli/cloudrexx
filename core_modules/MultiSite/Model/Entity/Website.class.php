@@ -1497,7 +1497,6 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 $paramsData = array(
                     'planId'         => $planId,
                     'websiteId'      => $this->id,
-                    'planExternalId' => $mailServicePlan
                 );
 
                 $mailServicePlanResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('changePlanOfMailSubscription', $paramsData);

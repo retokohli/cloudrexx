@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class ComponentController
  *
@@ -1467,6 +1468,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if ($websiteStatus['status'] == 'success') {
                     return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS']);
                 }
+                
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
             }
         } catch (\Exception $e) {
             \DBG::log("Failed to add website:" . $e->getMessage());

@@ -4396,13 +4396,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (   \FWValidator::isEmpty($params['post']) 
             || \FWValidator::isEmpty($params['post']['planId'])
             || \FWValidator::isEmpty($params['post']['websiteId'])
-            || \FWValidator::isEmpty($params['post']['planExternalId'])
         ) {
             throw new MultiSiteJsonException('JsonMultiSite::changePlanOfMailSubscription() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         
         $planId = isset($params['post']['planId']) ? $params['post']['planId'] : '';
-        $planExternalId = isset($params['post']['planExternalId']) ? $params['post']['planExternalId'] : '';
         
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
@@ -4427,7 +4425,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         return array('status' => 'error');
                     }
                     
-                    if (!$hostingController->changePlanOfSubscription($mailAccountId, $planId, $planExternalId)) {
+                    if (!$hostingController->changePlanOfSubscription($mailAccountId, $planId)) {
                         \DBG::log('Failed to change plan of the subscription');
                         return array('status' => 'error');
                     }

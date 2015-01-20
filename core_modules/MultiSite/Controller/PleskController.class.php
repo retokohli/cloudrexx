@@ -552,7 +552,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         /*--gen_setup data End--*/
                 
         if ($planId) {
-            $planId = $xmldoc->createElement('plan-id', $planId);
+            $planId = $xmldoc->createElement('plan-guid', $planId);
             $addTag->appendChild($planId);
         }
 
@@ -652,11 +652,10 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * 
      * @param integer $subscriptionId subscription Id
      * @param string  $planGuid        planGuid
-     * @param string  $planExternalId  planExternalId
      * @return integer
      * @throws ApiRequestException
      */
-    public function changePlanOfSubscription($subscriptionId, $planGuid, $planExternalId)
+    public function changePlanOfSubscription($subscriptionId, $planGuid)
     {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
@@ -672,10 +671,6 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         
         $planGuidTag = $xmldoc->createElement('plan-guid', $planGuid);
         $switchSubscription->appendChild($planGuidTag);
-        $planExternalIdTag = $xmldoc->createElement('plan-external-id', $planExternalId);
-        $switchSubscription->appendChild($planExternalIdTag);
-        $noPlan = $xmldoc->createElement('no-plan');
-        $switchSubscription->appendChild($noPlan);
         
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->webspace->{'switch-subscription'}->result;

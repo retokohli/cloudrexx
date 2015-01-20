@@ -97,7 +97,6 @@ interface SubscriptionController {
      * 
      * @param id     $subscriptionId  subcription id
      * @param string $planGuid        planGuid
-     * @param string $planExternalId  planExternalId
      */
-    public function changePlanOfSubscription($subscriptionId, $planGuid, $planExternalId);
+    public function changePlanOfSubscription($subscriptionId, $planGuid);
 }

@@ -327,9 +327,10 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * 
      * @param id     $subscriptionId  subcription id
      * @param string $planGuid        planGuid
-     * @param string $planExternalId  planExternalId
+     * 
+     * @return null
      */
-    public function changePlanOfSubscription($subscriptionId, $planGuid, $planExternalId) {
+    public function changePlanOfSubscription($subscriptionId, $planGuid) {
         \DBG::msg("MultiSite (XamppController): changePlanOfSubscription");
         return null;
     }
