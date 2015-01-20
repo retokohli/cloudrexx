@@ -21,3 +21,10 @@ Cx\Modules\Order\Model\Entity\Order:
     invoices:
       targetEntity: Cx\Modules\Order\Model\Entity\Invoice
       mappedBy: order
+      
+  manyToOne:
+    currency:
+      targetEntity: Cx\Modules\Crm\Model\Entity\Currency
+      joinColumn:
+        name: currency_id
+        referencedColumnName: id

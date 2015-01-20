@@ -1,0 +1,27 @@
+Cx\Modules\Pim\Model\Entity\Price:
+  type: entity
+  repositoryClass: Cx\Modules\Pim\Model\Repository\PriceRepository
+  table: module_pim_price
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    amount:
+      type: decimal
+
+  manyToOne:
+    currency:
+      targetEntity: Cx\Modules\Crm\Model\Entity\Currency
+      joinColumn:
+        name: currency_id
+        referencedColumnName: id
+    product:
+      targetEntity: Cx\Modules\Pim\Model\Entity\Product
+      joinColumn:
+        name: product_id
+        referencedColumnName: id
+        cascade: [remove]

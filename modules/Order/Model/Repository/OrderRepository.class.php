@@ -101,11 +101,12 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
      * @return boolean
      * @throws OrderRepositoryException
      */
-    public function createOrder($productId, \User $objUser , $transactionReference, $subscriptionOptions = array()) {
+    public function createOrder($productId, \Cx\Modules\Crm\Model\Entity\Currency $currency, \User $objUser , $transactionReference, $subscriptionOptions = array()) {
         if (
                \FWValidator::isEmpty($productId)
             || \FWValidator::isEmpty($subscriptionOptions)
             || \FWValidator::isEmpty($transactionReference)
+            || \FWValidator::isEmpty($currency)
         ) {
             return;
         }
@@ -118,6 +119,7 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
         try {
             $order = new \Cx\Modules\Order\Model\Entity\Order();
             $order->setContactId($contactId);
+            $order->setCurrency($currency);
             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
             $product = $productRepository->findOneBy(array('id' => $productId));
             

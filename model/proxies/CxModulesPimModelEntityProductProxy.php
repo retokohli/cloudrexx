@@ -33,10 +33,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getId();
     }
 
-    public function setId($id)
+    public function setName($name)
     {
         $this->_load();
-        return parent::setId($id);
+        return parent::setName($name);
     }
 
     public function getName()
@@ -45,34 +45,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getName();
     }
 
-    public function setName($name)
+    public function setEntityClass($entityClass)
     {
         $this->_load();
-        return parent::setName($name);
-    }
-
-    public function getRenewalOptions()
-    {
-        $this->_load();
-        return parent::getRenewalOptions();
-    }
-
-    public function setRenewalOptions($renewalOptions)
-    {
-        $this->_load();
-        return parent::setRenewalOptions($renewalOptions);
-    }
-
-    public function getDefaultRenewalOption()
-    {
-        $this->_load();
-        return parent::getDefaultRenewalOption();
-    }
-
-    public function setDefaultRenewalOption($defaultRenewalOption)
-    {
-        $this->_load();
-        return parent::setDefaultRenewalOption($defaultRenewalOption);
+        return parent::setEntityClass($entityClass);
     }
 
     public function getEntityClass()
@@ -81,10 +57,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getEntityClass();
     }
 
-    public function setEntityClass($entityClass)
+    public function setEntityAttributes($entityAttributes)
     {
         $this->_load();
-        return parent::setEntityClass($entityClass);
+        return parent::setEntityAttributes($entityAttributes);
     }
 
     public function getEntityAttributes()
@@ -93,10 +69,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getEntityAttributes();
     }
 
-    public function setEntityAttributes($entityAttributes)
+    public function setRenewable($renewable)
     {
         $this->_load();
-        return parent::setEntityAttributes($entityAttributes);
+        return parent::setRenewable($renewable);
     }
 
     public function getRenewable()
@@ -105,16 +81,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getRenewable();
     }
 
-    public function isRenewable()
+    public function setExpirable($expirable)
     {
         $this->_load();
-        return parent::isRenewable();
-    }
-
-    public function setRenewable($renewable)
-    {
-        $this->_load();
-        return parent::setRenewable($renewable);
+        return parent::setExpirable($expirable);
     }
 
     public function getExpirable()
@@ -123,16 +93,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getExpirable();
     }
 
-    public function isExpirable()
+    public function setUpgradable($upgradable)
     {
         $this->_load();
-        return parent::isExpirable();
-    }
-
-    public function setExpirable($expirable)
-    {
-        $this->_load();
-        return parent::setExpirable($expirable);
+        return parent::setUpgradable($upgradable);
     }
 
     public function getUpgradable()
@@ -141,16 +105,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getUpgradable();
     }
 
-    public function isUpgradable()
+    public function setExpirationUnit($expirationUnit)
     {
         $this->_load();
-        return parent::isUpgradable();
-    }
-
-    public function setUpgradable($upgradable)
-    {
-        $this->_load();
-        return parent::setUpgradable($upgradable);
+        return parent::setExpirationUnit($expirationUnit);
     }
 
     public function getExpirationUnit()
@@ -159,10 +117,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getExpirationUnit();
     }
 
-    public function setExpirationUnit($expirationUnit)
+    public function setExpirationQuantifier($expirationQuantifier)
     {
         $this->_load();
-        return parent::setExpirationUnit($expirationUnit);
+        return parent::setExpirationQuantifier($expirationQuantifier);
     }
 
     public function getExpirationQuantifier()
@@ -171,22 +129,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getExpirationQuantifier();
     }
 
-    public function setExpirationQuantifier($expirationQuantifier)
+    public function setCancellationUnit($cancellationUnit)
     {
         $this->_load();
-        return parent::setExpirationQuantifier($expirationQuantifier);
-    }
-
-    public function getCancellationQuantifier()
-    {
-        $this->_load();
-        return parent::getCancellationQuantifier();
-    }
-
-    public function setCancellationQuantifier($cancellationQuantifier)
-    {
-        $this->_load();
-        return parent::setCancellationQuantifier($cancellationQuantifier);
+        return parent::setCancellationUnit($cancellationUnit);
     }
 
     public function getCancellationUnit()
@@ -195,52 +141,16 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getCancellationUnit();
     }
 
-    public function setCancellationUnit($cancellationUnit)
+    public function setCancellationQuantifier($cancellationQuantifier)
     {
         $this->_load();
-        return parent::setCancellationUnit($cancellationUnit);
+        return parent::setCancellationQuantifier($cancellationQuantifier);
     }
 
-    public function getUpgradableProducts()
+    public function getCancellationQuantifier()
     {
         $this->_load();
-        return parent::getUpgradableProducts();
-    }
-
-    public function setUpgradableProducts($upgradableProducts)
-    {
-        $this->_load();
-        return parent::setUpgradableProducts($upgradableProducts);
-    }
-
-    public function getPrice()
-    {
-        $this->_load();
-        return parent::getPrice();
-    }
-
-    public function setPrice($price)
-    {
-        $this->_load();
-        return parent::setPrice($price);
-    }
-
-    public function getSubscriptions()
-    {
-        $this->_load();
-        return parent::getSubscriptions();
-    }
-
-    public function setSubscriptions($subscriptions)
-    {
-        $this->_load();
-        return parent::setSubscriptions($subscriptions);
-    }
-
-    public function getNoteEntity()
-    {
-        $this->_load();
-        return parent::getNoteEntity();
+        return parent::getCancellationQuantifier();
     }
 
     public function setNoteEntity($noteEntity)
@@ -249,10 +159,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setNoteEntity($noteEntity);
     }
 
-    public function getNoteRenewal()
+    public function getNoteEntity()
     {
         $this->_load();
-        return parent::getNoteRenewal();
+        return parent::getNoteEntity();
     }
 
     public function setNoteRenewal($noteRenewal)
@@ -261,10 +171,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setNoteRenewal($noteRenewal);
     }
 
-    public function getNoteUpgrade()
+    public function getNoteRenewal()
     {
         $this->_load();
-        return parent::getNoteUpgrade();
+        return parent::getNoteRenewal();
     }
 
     public function setNoteUpgrade($noteUpgrade)
@@ -273,10 +183,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setNoteUpgrade($noteUpgrade);
     }
 
-    public function getNoteExpiration()
+    public function getNoteUpgrade()
     {
         $this->_load();
-        return parent::getNoteExpiration();
+        return parent::getNoteUpgrade();
     }
 
     public function setNoteExpiration($noteExpiration)
@@ -285,10 +195,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setNoteExpiration($noteExpiration);
     }
 
-    public function getNotePrice()
+    public function getNoteExpiration()
     {
         $this->_load();
-        return parent::getNotePrice();
+        return parent::getNoteExpiration();
     }
 
     public function setNotePrice($notePrice)
@@ -297,34 +207,40 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::setNotePrice($notePrice);
     }
 
-    public function getNewEntityForSale($saleOptions)
+    public function getNotePrice()
     {
         $this->_load();
-        return parent::getNewEntityForSale($saleOptions);
+        return parent::getNotePrice();
     }
 
-    public function getEntityById($entityId)
+    public function addSubscriptions(\Cx\Modules\Order\Model\Entity\Subscription $subscriptions)
     {
         $this->_load();
-        return parent::getEntityById($entityId);
+        return parent::addSubscriptions($subscriptions);
     }
 
-    public function getExpirationDate($expirationUnit = '', $expirationQuantifier = 0)
+    public function getSubscriptions()
     {
         $this->_load();
-        return parent::getExpirationDate($expirationUnit, $expirationQuantifier);
+        return parent::getSubscriptions();
     }
 
-    public function getRenewalDate($unit, $quantifier)
+    public function addPrices(\Cx\Modules\Pim\Model\Entity\Price $prices)
     {
         $this->_load();
-        return parent::getRenewalDate($unit, $quantifier);
+        return parent::addPrices($prices);
     }
 
-    public function getRenewalDefinition($unit, $quantifier)
+    public function getPrices()
     {
         $this->_load();
-        return parent::getRenewalDefinition($unit, $quantifier);
+        return parent::getPrices();
+    }
+
+    public function addUpgrades(\Cx\Modules\Pim\Model\Entity\Product $upgrades)
+    {
+        $this->_load();
+        return parent::addUpgrades($upgrades);
     }
 
     public function getUpgrades()
@@ -333,16 +249,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getUpgrades();
     }
 
-    public function addUpgrade(\Cx\Modules\Pim\Model\Entity\Product $upgrade)
+    public function __toString()
     {
         $this->_load();
-        return parent::addUpgrade($upgrade);
-    }
-
-    public function getPaymentAmount($unit = 'month', $quantifier = 1)
-    {
-        $this->_load();
-        return parent::getPaymentAmount($unit, $quantifier);
+        return parent::__toString();
     }
 
     public function __get($name)
@@ -375,16 +285,10 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::validate();
     }
 
-    public function __toString()
-    {
-        $this->_load();
-        return parent::__toString();
-    }
-
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'cancellationUnit', 'cancellationQuantifier', 'price', 'noteEntity', 'noteRenewal', 'noteUpgrade', 'noteExpiration', 'notePrice', 'subscriptions', 'upgrades');
+        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'cancellationUnit', 'cancellationQuantifier', 'noteEntity', 'noteRenewal', 'noteUpgrade', 'noteExpiration', 'notePrice', 'subscriptions', 'prices', 'upgrades');
     }
 
     public function __clone()

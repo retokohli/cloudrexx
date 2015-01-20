@@ -32,6 +32,11 @@ class Order extends \Cx\Model\Base\EntityBase {
     protected $contactId;
 
     /**
+     * @var \Cx\Modules\Crm\Model\Entity\Currency
+     */
+    protected $currency;
+
+    /**
      * @var \Doctrine\Common\Collections\ArrayCollection $subscriptions
      */
     protected $subscriptions;
@@ -82,6 +87,26 @@ class Order extends \Cx\Model\Base\EntityBase {
      */
     public function getContactId() {
         return $this->contactId;
+    }
+
+    /**
+     * Set currency
+     *
+     * @param \Cx\Modules\Crm\Model\Entity\Currency $currency
+     */
+    public function setCurrency(\Cx\Modules\Crm\Model\Entity\Currency $currency)
+    {
+        $this->currency = $currency;
+    }
+
+    /**
+     * Get currency
+     *
+     * @return \Cx\Modules\Crm\Model\Entity\Currency $currency
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
     }
 
     /**

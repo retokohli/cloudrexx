@@ -40,8 +40,6 @@ Cx\Modules\Pim\Model\Entity\Product:
     cancellationQuantifier:
       type: integer
       column: cancellation_quantifier
-    price:
-      type: decimal
     noteEntity:
       type: string
       column: note_entity
@@ -61,6 +59,9 @@ Cx\Modules\Pim\Model\Entity\Product:
   oneToMany: # inverse side
     subscriptions:
       targetEntity: Cx\Modules\Order\Model\Entity\Subscription
+      mappedBy: product
+    prices:
+      targetEntity: Cx\Modules\Pim\Model\Entity\Price
       mappedBy: product
   manyToMany:
     upgrades:
