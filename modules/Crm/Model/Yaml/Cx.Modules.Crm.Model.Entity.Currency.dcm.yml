@@ -1,0 +1,23 @@
+Cx\Modules\Crm\Model\Entity\Currency:
+  type: entity
+  table: module_crm_currency
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    name:
+      type: string
+      length: 400
+    active:
+      type: boolean
+    pos:
+      type: integer
+      length: 5
+    hourly_rate:
+      type: text
+    default_currency:
+      type: boolean

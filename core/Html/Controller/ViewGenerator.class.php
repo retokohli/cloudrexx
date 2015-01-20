@@ -68,7 +68,7 @@ class ViewGenerator {
                     \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
                     return;
                 }
-                if (!$form->isValid()) {
+                if (!$form->isValid() || (isset($this->options['validate']) && !$this->options['validate']($form))) {
                     // data validation failed, stay in add view
                     \Message::add('Cannot save, validation failed', \Message::CLASS_ERROR);
                     return;
@@ -165,7 +165,7 @@ class ViewGenerator {
                     \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
                     return;
                 }
-                if (!$form->isValid()) {
+                if (!$form->isValid() || (isset($this->options['validate']) && !$this->options['validate']($form))) {
                     // data validation failed, stay in edit view
                     \Message::add('Cannot save, validation failed', \Message::CLASS_ERROR);
                     return;

@@ -34,7 +34,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     protected $expirationUnit = null;
     protected $expirationQuantifier = null;
     protected $upgradableProducts = array();
-    protected $price = null;
+	protected $prices;
     protected $subscriptions;
     protected $noteEntity = null;
     protected $noteRenewal = null;
@@ -64,7 +64,8 @@ class Product extends \Cx\Model\Base\EntityBase {
 
     public function __construct() {
         $this->initRenewalConfig();
-        $this->upgrades = new \Doctrine\Common\Collections\ArrayCollection();
+    	$this->upgrades = new \Doctrine\Common\Collections\ArrayCollection();
+    	$this->prices = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getId() {
@@ -351,29 +352,38 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         $this->upgrades[] = $upgrade;
     }
-    
+
     /**
      * Get the payment amount based on the unit and quantifier
-     * 
+     *
      * @param string $unit
-     * @param integer  $quantifier
-     * 
-     * return decimal $paymentAmount
+     * @param integer $quantifier
+     * @param \Cx\Modules\Crm\Model\Entity\Currency $currency
+     *
+     * @return \Cx\Core\Core\Controller\Cx|float|int
      */
-    public function getPaymentAmount($unit = self::UNIT_MONTH, $quantifier = 1) {
+    public function getPaymentAmount($unit = self::UNIT_MONTH, $quantifier = 1, $currency = null) {
         $paymentAmount = 0;
+        $prices = $this->getPrices();
+        $amount = 0;
+        foreach ($prices as $price) {
+            if ($price->getCurrency() != $currency) {
+                continue;
+            }
+            $amount = $price->getAmount();
+        }
         switch ($unit) {
             case self::UNIT_DAY:
-                $paymentAmount = $this->price * ($quantifier / 30);
+                $paymentAmount = $amount * ($quantifier / 30);
                 break;
             case self::UNIT_WEEK:
-                $paymentAmount = $this->price * ($quantifier / 4);
+                $paymentAmount = $amount * ($quantifier / 4);
                 break;
             case self::UNIT_MONTH:
-                $paymentAmount = $this->price * $quantifier;
+                $paymentAmount = $amount * $quantifier;
                 break;
             case self::UNIT_YEAR:
-                $paymentAmount = $this->price * $quantifier * 12;
+                $paymentAmount = $amount * $quantifier * 12;
                 if ($quantifier > 1) {
                     $paymentAmount *= 0.9;
                 }
@@ -382,5 +392,28 @@ class Product extends \Cx\Model\Base\EntityBase {
         return $paymentAmount;
     }
 
-}
+    /**
+     * Add prices
+     *
+     * @param \Cx\Modules\Pim\Model\Entity\Price $prices
+     */
+    public function addPrices(\Cx\Modules\Pim\Model\Entity\Price $prices)
+    {
+        $this->prices[] = $prices;
+    }
 
+    /**
+     * Get prices
+     *
+     * @return \Doctrine\Common\Collections\Collection $prices
+     */
+    public function getPrices()
+    {
+        return $this->prices;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
+}

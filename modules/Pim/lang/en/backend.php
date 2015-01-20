@@ -11,3 +11,4 @@ global $_ARRAYLANG;
 // Here come the ACTs:
 $_ARRAYLANG['TXT_MODULE_PIM_PRODUCTS'] = 'Products';
 $_ARRAYLANG['TXT_MODULE_PIM_ACT_DEFAULT'] = 'Products';
+$_ARRAYLANG['TXT_MODULE_PIM_ACT_PRICE'] = 'Price';

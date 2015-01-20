@@ -51,6 +51,18 @@ class CxModulesOrderModelEntityOrderProxy extends \Cx\Modules\Order\Model\Entity
         return parent::getContactId();
     }
 
+    public function setCurrency(\Cx\Modules\Crm\Model\Entity\Currency $currency)
+    {
+        $this->_load();
+        return parent::setCurrency($currency);
+    }
+
+    public function getCurrency()
+    {
+        $this->_load();
+        return parent::getCurrency();
+    }
+
     public function addSubscription(\Cx\Modules\Order\Model\Entity\Subscription $subscription)
     {
         $this->_load();
@@ -150,7 +162,7 @@ class CxModulesOrderModelEntityOrderProxy extends \Cx\Modules\Order\Model\Entity
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'contactId', 'subscriptions', 'invoices');
+        return array('__isInitialized__', 'id', 'contactId', 'subscriptions', 'invoices', 'currency');
     }
 
     public function __clone()
