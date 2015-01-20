@@ -466,6 +466,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
                 
                 $subscriptionOptions['baseSubscription'] = $subscriptionObj;
+                $subscriptionOptions['description']      = $subscriptionObj->getDescription();
             }
 
             if (!\FWValidator::isEmpty($websiteName)) {
@@ -582,7 +583,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             // update the changes to database
             \Env::get('em')->flush();
             
-            return array ('status' => 'success','message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_SUCCESS']);
+            $newSubscriptionId = 0;
+            foreach ($order->getSubscriptions() as $newSubscription) {
+                $newSubscriptionId = $newSubscription->getId();
+                break; // break the loop after getting the subscription id from the first entry
+            }
+            return array ('status' => 'success', 'id' => $newSubscriptionId, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_SUCCESS']);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             throw new MultiSiteJsonException(array(
