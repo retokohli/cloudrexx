@@ -401,6 +401,7 @@
             websiteName: '{MULTISITE_WEBSITE_NAME}',
             paymentUrl: cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl',
             ajaxUrl: cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=manageSubscription',
+            subscriptionDetailUrl: '{MULTISITE_SUBSCRIPTION_DETAIL_URL}',
             hasPayrexxAccount: {MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT},
             isPaymentUrlRequested: false
         };
@@ -535,7 +536,14 @@
                         $resp = response.data;
                         if ($resp.status == 'success') {
                             showMessage($resp.message, 'success');
-                            location.reload(true);
+                            var id = getQueryParams(document.location.search)['id'];                            
+                            if (id != undefined) {
+                              // we are in subscription details page.
+                              // Redirect to the new subscription page after upgrade
+                              window.location.href = subscriptionOptions.subscriptionDetailUrl + '?id=' + $resp.id;
+                            } else {
+                              location.reload(true);
+                            }
                         } else {
                             showMessage($resp.message, 'error');
                         }
