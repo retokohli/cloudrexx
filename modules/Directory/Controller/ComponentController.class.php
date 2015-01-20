@@ -33,14 +33,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_CORELANG, $subMenuTitle, $objTemplate, $page_metatitle;
+        global $_CORELANG, $subMenuTitle, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objDirectory = new Directory(\Env::get('cx')->getPage()->getContent());
                 \Env::get('cx')->getPage()->setContent($objDirectory->getPage());
                 $directory_pagetitle = $objDirectory->getPageTitle();
                 if (!empty($directory_pagetitle)) {
-                    $page_metatitle = $directory_pagetitle;
                     \Env::get('cx')->getPage()->setTitle($directory_pagetitle);
                     \Env::get('cx')->getPage()->setContentTitle($directory_pagetitle);
                     \Env::get('cx')->getPage()->setMetaTitle($directory_pagetitle);

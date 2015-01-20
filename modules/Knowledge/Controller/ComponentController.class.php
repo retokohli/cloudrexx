@@ -31,7 +31,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $subMenuTitle, $_CORELANG, $objTemplate, $page_metatitle;
+        global $subMenuTitle, $_CORELANG, $objTemplate;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objKnowledge = new Knowledge(\Env::get('cx')->getPage()->getContent());
@@ -40,7 +40,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('cx')->getPage()->setTitle($objKnowledge->pageTitle);
                     \Env::get('cx')->getPage()->setContentTitle($objKnowledge->pageTitle);
                     \Env::get('cx')->getPage()->setMetaTitle($objKnowledge->pageTitle);
-                    $page_metatitle = $objKnowledge->pageTitle;
                 }
                 break;
 

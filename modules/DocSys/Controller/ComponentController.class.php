@@ -34,7 +34,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $page_metatitle, $objTemplate, $_CORELANG, $subMenuTitle;
+        global $objTemplate, $_CORELANG, $subMenuTitle;
                 
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:               
@@ -44,7 +44,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Env::get('cx')->getPage()->setTitle($docSysObj->docSysTitle);
                 \Env::get('cx')->getPage()->setContentTitle($docSysObj->docSysTitle);
                 \Env::get('cx')->getPage()->setMetaTitle($docSysObj->docSysTitle);
-                $page_metatitle = $docSysObj->docSysTitle;
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
