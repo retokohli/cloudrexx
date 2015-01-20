@@ -3656,7 +3656,7 @@ CREATE TABLE `contrexx_module_order_order` (
   `contact_id` int(10) unsigned NOT NULL,
   `currency_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `IDX_CC1257B838248176` (`currency_id`),
+  KEY `currency_id` (`currency_id`),
   CONSTRAINT `contrexx_module_order_order_ibfk_1` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
@@ -3708,10 +3708,10 @@ CREATE TABLE `contrexx_module_pim_price` (
   `product_id` int(11) default NULL,
   `amount` decimal(10,0) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `IDX_2E2646EA38248176` (`currency_id`),
-  KEY `IDX_2E2646EA4584665A` (`product_id`),
-  CONSTRAINT `contrexx_module_pim_price_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`),
-  CONSTRAINT `contrexx_module_pim_price_ibfk_1` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`)
+  KEY `currency_id` (`currency_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `contrexx_module_pim_price_ibfk_1` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`),
+  CONSTRAINT `contrexx_module_pim_price_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
