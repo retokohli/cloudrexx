@@ -37,14 +37,17 @@ class CrmCrmContactEventListener implements \Cx\Core\Event\Model\Entity\EventLis
      * @param \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs
      */
     public function preRemove($eventArgs) {
-        global $_ARRAYLANG;
+        global $objInit, $_ARRAYLANG;
+        
+        $langData = $objInit->loadLanguageData('Order');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
         $em = $eventArgs->getEntityManager();
         $crmEntity = $eventArgs->getEntity();
         if ($crmEntity->contactType == 2) {
             $orderRepo = $em->getRepository('\Cx\Modules\Order\Model\Entity\Order');
             if ($orderRepo->hasOrderByCrmId($crmEntity->id)) {
-                throw new \Cx\Core\Error\Model\Entity\ShinyException($_ARRAYLANG['TXT_MODULE_CRM_DELETE_USER_ERROR_MSG']);
+                throw new \Cx\Core\Error\Model\Entity\ShinyException($_ARRAYLANG['TXT_MODULE_ORDER_DELETE_USER_ERROR_MSG']);
             }
         }
         

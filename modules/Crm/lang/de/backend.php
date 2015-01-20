@@ -578,4 +578,3 @@ $_ARRAYLANG['TXT_CRM_CONTACT_SALUTATION'] = 'Anrede des im CRM ausgewählten Ges
 $_ARRAYLANG['TXT_CRM_CONTACT_GENDER'] = 'Geschlecht des Kontaktes im CRM';
 $_ARRAYLANG['TXT_CRM_CONTACT_KEY'] = 'Schlüssel: ';
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR'] = 'Enter a valid quoted price.';
-$_ARRAYLANG['TXT_MODULE_CRM_DELETE_USER_ERROR_MSG'] = 'Der Kunde kann nicht entfernt werden, da von diesem noch Bestellungen vorhanden sind.';
