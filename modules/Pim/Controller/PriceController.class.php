@@ -92,8 +92,9 @@ class PriceController extends \Cx\Core\Core\Model\Entity\Controller
 
                 $currency = $data['currency'];
                 $product = $data['product'];
+                $priceRepository = \Env::get('cx')->getDb()->getEntityManager()->getRepository('Cx\Modules\Pim\Model\Entity\Price');
                 $prices =
-                    $this->priceRepository->createQueryBuilder('p')
+                    $priceRepository->createQueryBuilder('p')
                     ->where('p.currency = ?1')->setParameter(1, $currency)
                     ->andWhere('p.product = ?2')->setParameter(2, $product);
                 $prices = $prices->getQuery()->getResult();
