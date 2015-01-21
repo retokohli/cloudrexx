@@ -515,8 +515,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setVariable(array(
             'MULTISITE_SUBSCRIPTION_ID'             => $subscriptionId,
             'MULTISITE_WEBSITE_NAME'                => $websiteName,            
-            'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'))) ? 'true' : 'false',
-            'MULTISITE_SUBSCRIPTION_DETAIL_URL'     => \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'SubscriptionDetail')->toString(),
+            'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'))) ? 'true' : 'false',            
         ));
         return $objTemplate->get();
     }
