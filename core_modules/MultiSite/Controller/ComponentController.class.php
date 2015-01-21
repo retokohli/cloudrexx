@@ -461,7 +461,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS'];
             }
         }
-
+        $currency = self::getUserCurrency($crmContactId);
         $websiteName = $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website ? $website->getName() : '';
 
         if ($subscription) {
@@ -479,10 +479,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if ($a->getName() == 'Non-Profit') {
                 return 1;
             }
-            if ($a->getPrice() == $b->getPrice()) {
+            if ($a->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency) == $b->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency)) {
                 return 0;
             }
-                return ($a->getPrice()< $b->getPrice()) ? -1 : 1;
+                return ($a->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency) < $b->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency)) ? -1 : 1;
             });
         }
 
@@ -497,13 +497,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 continue;
             }
             $productName = contrexx_raw2xhtml($product->getName());
-            $productPrice = $product->getPrice();
-            $priceAnnually = number_format($productPrice * 12, 2, '.', "'");
-            $priceBiannually = number_format($productPrice * 24 * 0.90, 2, '.', "'");
+            $priceMonthly = $product->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency);
+            $priceAnnually = number_format($product->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR, 1, $currency), 2, '.', "'");
+            $priceBiannually = number_format($product->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR, 2, $currency), 2, '.', "'");
             $objTemplate->setVariable(array(
                 'MULTISITE_WEBSITE_PRODUCT_NAME' => $productName,
                 'MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID' => lcfirst($productName),
-                'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $productPrice,
+                'MULTISITE_WEBSITE_PRODUCT_PRICE_MONTHLY' => $priceMonthly,
                 'MULTISITE_WEBSITE_PRODUCT_PRICE_ANNUALLY' => (substr($priceAnnually, -3) == '.00' ? substr($priceAnnually, 0 , -3) : $priceAnnually),
                 'MULTISITE_WEBSITE_PRODUCT_PRICE_BIANNUALLY' => (substr($priceBiannually, -3) == '.00' ? substr($priceBiannually, 0 , -3) : $priceBiannually),
                 'MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE' => $product->getNotePrice(),
@@ -663,6 +663,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
         }
 
+        $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
         if (\FWValidator::isEmpty($subscriptionId) && \FWValidator::isEmpty($productId)) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTIONID_EMPTY'];
         }
@@ -705,7 +706,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
                 $product = $productRepository->findOneBy(array('id' => $productId));
                 if ($product) {
-                    self::parseProductForAddWebsite($objTemplate, $product);
+                    self::parseProductForAddWebsite($objTemplate, $product, $crmContactId);
                 } else {
                     return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
                 }
@@ -1512,10 +1513,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             );
             
             $transactionReference = $productId . '-' . $websiteName;
-
-            $em = \Env::get('em');
-            $currency = $em->getRepository('Cx\Modules\Crm\Model\Entity\Currency')->findOneBy(array('name' => 'CHF-Swiss Franc'));
-            $order = $em->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $currency, \FWUser::getFWUserObject()->objUser, $transactionReference, $subscriptionOptions);
+            $currency = self::getUserCurrency($crmContactId);
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $currency, \FWUser::getFWUserObject()->objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
             }
@@ -1603,10 +1602,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @param \Cx\Core\Html\Sigma $objTemplate              Template object
      * @param \Cx\Modules\Pim\Model\Entity\Product $product Product object
+     * @param integer $crmContactId crmContactId
      */
-    public static function parseProductForAddWebsite(\Cx\Core\Html\Sigma $objTemplate, \Cx\Modules\Pim\Model\Entity\Product $product)
+    public static function parseProductForAddWebsite(\Cx\Core\Html\Sigma $objTemplate, \Cx\Modules\Pim\Model\Entity\Product $product, $crmContactId = 0)
     {
-        $productPrice = $product->getPrice();
+        $currency = self::getUserCurrency($crmContactId);
+        $productPrice = $product->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency);
         if (\FWValidator::isEmpty($productPrice)) {
             self::showOrHideBlock($objTemplate, 'multisite_pay_button', false);
         }
@@ -2670,5 +2671,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objTemplate->_blocks['__global__'] = preg_replace(array('/<body>/', '/<\/body>/'), array('\\0' . '<div id="preview-content">', $footer->get() .'</div>' . '\\0' ), $objTemplate->_blocks['__global__']);
         }
         
+    }
+    
+    /**
+     * Get User Currency Object
+     * 
+     * @param type $crmContactId crmContactId
+     * 
+     * @return mixed  \Cx\Modules\Crm\Model\Entity\Currency or null
+     */
+    public static function getUserCurrency($crmContactId = 0)
+    {
+        $crmCurrencyId = 0;
+        
+        if (!\FWValidator::isEmpty($crmContactId)) {
+            $crmCurrencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getCurrencyIdByCrmId($crmContactId);
+        }
+        
+        $currencyId = !\FWValidator::isEmpty($crmCurrencyId)
+                       ? $crmCurrencyId
+                       : \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
+        
+        if (\FWValidator::isEmpty($currencyId)) {
+            return null;
+        }
+        
+        $currency = \Env::get('em')->getRepository('Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
+        return $currency;
     }
 }

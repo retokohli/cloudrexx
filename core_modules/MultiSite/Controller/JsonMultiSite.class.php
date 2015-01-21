@@ -288,10 +288,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             
             $transactionReference = $id . '-name-' . $websiteName;
-            
-            $em = \Env::get('em');
-            $currency = $em->getRepository('Cx\Modules\Crm\Model\Entity\Currency')->findOneBy(array('name' => 'CHF-Swiss Franc'));
-            $order = $em->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $currency, $objUser, $transactionReference, $subscriptionOptions);
+            $currency = ComponentController::getUserCurrency($objUser->getCrmUserId());
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $currency, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
             }
@@ -435,6 +433,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             
             list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($renewalOption);
+            $currency = ComponentController::getUserCurrency($crmContactId);
             
             $subscriptionOptions = array(
                 'renewalUnit'       => $renewalUnit,
@@ -477,7 +476,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $purpose              = $product->getName();
             }
            
-            $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
+            $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier, $currency);
 
             $externalPaymentCustomerId = $objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'));
             if (   !\FWValidator::isEmpty($productPrice)
@@ -572,9 +571,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
             }
             
-            $em = \Env::get('em');
-            $currency = $em->getRepository('Cx\Modules\Crm\Model\Entity\Currency')->findOneBy(array('name' => 'CHF-Swiss Franc'));
-            $order = $em->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $currency, $objUser, $transactionReference, $subscriptionOptions);
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $currency, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 \DBG::log('Unable to create the order.');
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
@@ -3154,16 +3151,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $objUser = \FWUser::getFWUserObject()->objUser;
             }
             
-            $productPrice  = $product->getPrice();
-            $productName   = $product->getName();            
-
-            $renewalUnit       = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
+            $productName = $product->getName();            
+            $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
             $renewalQuantifier = 1;
             if (isset($params['post']['renewalOption'])) {
                 list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($params['post']['renewalOption']);
-                $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
             }
             
+            $currency = ComponentController::getUserCurrency($objUser->getCrmUserId());
+            $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier, $currency);
             $referenceId = '';
             $purpose     = '';
             if (isset($params['post']['multisite_address'])) {
