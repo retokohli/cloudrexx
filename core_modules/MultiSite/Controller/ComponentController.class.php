@@ -613,7 +613,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         if ($objTemplate->blockExists('showWebsites')) {
             $websiteCollection = $subscriptionObj->getProductEntity();
-            if($websiteCollection != null){
                 if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
                     foreach ($websiteCollection->getWebsites() as $website) {
                         if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
@@ -628,12 +627,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     self::parseWebsiteDetails($objTemplate, $websiteCollection);
                     $objTemplate->parse('showWebsites');
                 }
-                $objTemplate->touchBlock('showWebsitesHeader');
-            }else{
-                if($objTemplate->blockExists('showWebsitesHeader')){
-                        $objTemplate->hideBlock('showWebsitesHeader');
-                    }
-            }
+                if(array_key_exists('showWebsites', $objTemplate->_parsedBlocks) && $objTemplate->blockExists('showWebsitesHeader')){
+                    $objTemplate->touchBlock('showWebsitesHeader');
+                }else{
+                    $objTemplate->hideBlock('showWebsitesHeader');
+                }
         }
 
         //payments
@@ -727,7 +725,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         global $_ARRAYLANG;
         $objTemplate->setGlobalVariable($_ARRAYLANG);
-        
+
         if (!self::isUserLoggedIn()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
         }
@@ -1537,7 +1535,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function parseWebsiteDetails(\Cx\Core\Html\Sigma $objTemplate, \Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $demandedStatus='')
     {
         $userId = \FWUser::getFWUserObject()->objUser->getId();
-        
+
         $websiteInitialStatus = array(
             \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT,
             \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_SETUP, 
