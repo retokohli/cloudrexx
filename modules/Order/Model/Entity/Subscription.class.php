@@ -85,9 +85,14 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         $this->product = $product;
         $this->setProductEntity($product->getNewEntityForSale($options));
         
-        $objCurrency = $this->getOrder() 
-                        ? $this->getOrder()->getCurrency() 
-                        : \Cx\Core_Modules\MultiSite\Controller\ComponentController::getUserCurrency(0);
+        $objCurrency = null;
+        if ($this->getOrder()) {
+            $objCurrency = $this->getOrder()->getCurrency();
+        } else {
+            $defaultCurrencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
+            $objCurrency = $defaultCurrencyId ? \Env::get('em')->getRepository('Cx\Modules\Crm\Model\Entity\Currency')->findOneById($defaultCurrencyId) : null;
+        }
+        
         $this->paymentAmount = $product->getPaymentAmount($options['renewalUnit'], $options['renewalQuantifier'], $objCurrency);
         $this->paymentState = self::PAYMENT_OPEN;
         if ($product->isExpirable()) {
