@@ -3260,5 +3260,38 @@ CODE;
         \JS::registerJS("modules/Crm/View/Script/main.js");
         \JS::registerCSS("modules/Crm/View/Style/main.css");
     }
+    
+    /**
+     * Get currencyId by crm id
+     * 
+     * @param integer $crmId crm id
+     * 
+     * @return mixed null or currencyId
+     */
+    public static function getCurrencyIdByCrmId($crmId) 
+    {
+        if (\FWValidator::isEmpty($crmId)) {
+            return null;
+        }
+        
+        $db = \Env::get('cx')->getDb()->getAdoDb();
+        $currencyId = $db->GetOne("SELECT `customer_currency` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `id` = " . intval($crmId));
+        
+        return $currencyId;
+    }
+    
+    /**
+     * Get default currencyId
+     * 
+     * @return integer defaultCurrencyId
+     */
+    public static function getDefaultCurrencyId()
+    {
+        $db = \Env::get('cx')->getDb()->getAdoDb();
+        
+        $defaultCurrencyId = $db->GetOne("SELECT `id` FROM `".DBPREFIX."module_crm_currency` WHERE `default_currency` = 1");
+        
+        return $defaultCurrencyId;
+    }
 
 }
