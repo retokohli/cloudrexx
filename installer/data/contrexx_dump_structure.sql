@@ -484,8 +484,8 @@ CREATE TABLE `contrexx_core_module_multisite_website_domain` (
   `domain_id` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`website_id`,`domain_id`),
   UNIQUE KEY `domain_id` (`domain_id`),
-  CONSTRAINT `contrexx_core_module_multisite_website_domain_ibfk_2` FOREIGN KEY (`domain_id`) REFERENCES `contrexx_core_module_multisite_domain` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `contrexx_core_module_multisite_website_domain_ibfk_1` FOREIGN KEY (`website_id`) REFERENCES `contrexx_core_module_multisite_website` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `contrexx_core_module_multisite_website_domain_ibfk_1` FOREIGN KEY (`website_id`) REFERENCES `contrexx_core_module_multisite_website` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `contrexx_core_module_multisite_website_domain_ibfk_2` FOREIGN KEY (`domain_id`) REFERENCES `contrexx_core_module_multisite_domain` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3744,8 +3744,8 @@ CREATE TABLE `contrexx_module_pim_product_upgrade` (
   PRIMARY KEY  (`product_id`,`upgrade_product_id`),
   KEY `IDX_8541336E4584665A` (`product_id`),
   KEY `IDX_8541336E667E081F` (`upgrade_product_id`),
-  CONSTRAINT `contrexx_module_pim_product_upgrade_ibfk_2` FOREIGN KEY (`upgrade_product_id`) REFERENCES `contrexx_module_pim_product` (`id`),
-  CONSTRAINT `contrexx_module_pim_product_upgrade_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`)
+  CONSTRAINT `contrexx_module_pim_product_upgrade_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `contrexx_module_pim_product` (`id`),
+  CONSTRAINT `contrexx_module_pim_product_upgrade_ibfk_2` FOREIGN KEY (`upgrade_product_id`) REFERENCES `contrexx_module_pim_product` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
