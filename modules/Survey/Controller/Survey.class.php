@@ -264,7 +264,7 @@ END;
      * @access Authendicated
      */
     function surveyById() {
-        global $_ARRAYLANG,$objDatabase, $page_title;
+        global $_ARRAYLANG,$objDatabase;
 
         // Getting the id of the particular survey from the request
         $idOfSurvey = isset($_REQUEST['id']) ? contrexx_input2raw($_REQUEST['id']) : 0;
@@ -432,7 +432,8 @@ END;
                     $SurveyOptionTexts  = $text_row;
                     $question_wrap      = "";
                 }
-                $page_title     = $QuestionDatas->fields['title'];
+                //set page title
+                \Env::get('cx')->getPage()->setTitle($QuestionDatas->fields['title']);
                 //set page metatitle
                 \Env::get('cx')->getPage()->setMetatitle($QuestionDatas->fields['title']);
                 $this->_objTpl->setVariable(array(
@@ -898,7 +899,7 @@ END;
      * @access Authendicated
      */
     function surveyOverview() {
-        global $_ARRAYLANG,$objDatabase, $page_title;
+        global $_ARRAYLANG,$objDatabase;
         //Query to get the Question and answer details.
         $QuestionDatas = $objDatabase->Execute('SELECT groups.title As title,
                                                         groups.*,
@@ -1062,7 +1063,8 @@ END;
                     $SurveyOptionTexts  = $text_row;
                     $question_wrap      = "";
                 }
-                $page_title     = $QuestionDatas->fields['title'];
+                //set page title
+                \Env::get('cx')->getPage()->setTitle($QuestionDatas->fields['title']);
                 //set the page metatitle
                 \Env::get('cx')->getPage()->setMetatitle($QuestionDatas->fields['title']);
                 $this->_objTpl->setVariable(array(
@@ -1462,7 +1464,7 @@ END;
      * @access Authendicated
      */
     function surveypreview() {
-        global $_ARRAYLANG,$objDatabase, $page_title;
+        global $_ARRAYLANG,$objDatabase;
         $id = isset($_REQUEST['id']) ? contrexx_input2raw($_REQUEST['id']) : 0;
         
         //Query to get the Question and answer details.
@@ -1600,7 +1602,8 @@ END;
                 $SurveyOptionTexts = $text_row;
                 $question_wrap = "";
             }
-            $page_title     = contrexx_raw2xhtml($QuestionDatas->fields['title']);
+            //set the page title
+            \Env::get('cx')->getPage()->setTitle(contrexx_raw2xhtml($QuestionDatas->fields['title']));
             //set the page metatitle
             \Env::get('cx')->getPage()->setMetatitle(contrexx_raw2xhtml($QuestionDatas->fields['title']));
             $this->_objTpl->setVariable(array(
@@ -1639,7 +1642,7 @@ END;
      * @access Authendicated
      */
     function QuestionPreview() {
-        global $_ARRAYLANG,$objDatabase, $page_title;
+        global $_ARRAYLANG,$objDatabase;
         $id = isset($_REQUEST['id']) ? contrexx_input2raw($_REQUEST['id']) : '';
         //Query to get the Question and answer details.
         $QuestionDatas = $objDatabase->Execute('SELECT groups.title As title,
@@ -1774,7 +1777,8 @@ END;
                 $SurveyOptionTexts  = $text_row;
                 $question_wrap      = "";
             }
-            $page_title     = $QuestionDatas->fields['title'];
+            //set the page title
+            \Env::get('cx')->getPage()->setTitle($QuestionDatas->fields['title']);
             //set the page metatitle
             \Env::get('cx')->getPage()->setMetatitle($QuestionDatas->fields['title']);
             $this->_objTpl->setVariable(array(
