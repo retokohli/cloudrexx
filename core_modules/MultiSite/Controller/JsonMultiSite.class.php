@@ -4062,30 +4062,40 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         try {
-            $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
-            if (!$website) {
-                throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    if (!$website) {
+                        throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown Website-ID: ' . $params['post']['websiteId']);
+                    }
+                    if ($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()) {
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+                    }
+                    $mailServiceServer = $website->getMailServiceServer();
+                    if (!$mailServiceServer) {
+                        throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown mail service server.');
+                    }
+
+                    $clientIp = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))) : $_SERVER['REMOTE_ADDR'];
+                    $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                    $subscriptionGuid = $hostingController->getSubscriptionGuid($website->getMailAccountId());
+                    $loginName = $subscriptionGuid ? $hostingController->getAuxilaryUserName($subscriptionGuid) : '';
+
+                    $pleskLoginUrl = $loginName ? $hostingController->pleskAutoLoginUrl('info@' . $loginName, $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')) : '';
+                    if ($pleskLoginUrl) {
+                        return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
+                    }
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED']);
+                    break;
+
+                default:
+                    break;
             }
-            if ($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()) {
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
-            }
-            $mailServiceServer = $website->getMailServiceServer();
-            if (!$mailServiceServer) {
-                throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown mail service server.');
-            }
-            
-            $clientIp = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))) : $_SERVER['REMOTE_ADDR'];
-            $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
-            $pleskLoginUrl = $hostingController->pleskAutoLoginUrl('info@' .$website->getBaseDn()->getName(), $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
-            if ($pleskLoginUrl) {
-                return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
-            }
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED']);
         } catch (Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed:'. $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed:' . $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] . $e->getMessage());
         }
     }
-    
+
     /**
      * Get auto-login url for Payrexx.
      * 

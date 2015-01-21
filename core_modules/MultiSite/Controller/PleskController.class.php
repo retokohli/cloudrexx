@@ -648,6 +648,103 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
+     * Get a subscription GUID 
+     * 
+     * @param  integer $subscriptionId subscription id
+     * 
+     * @return string subscription GUID
+     * @throws ApiRequestException on error
+     * 
+     */
+    public function getSubscriptionGuid($subscriptionId)
+    {
+        \DBG::msg("MultiSite (PleskController): get subscription GUID: $subscriptionId");
+        if (empty($subscriptionId)) {
+            return false;
+        }
+
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+
+        $webspace = $xmldoc->createElement('webspace');
+        $packet->appendChild($webspace);
+
+        $get = $xmldoc->createElement('get');
+        $webspace->appendChild($get);
+
+        $filter = $xmldoc->createElement('filter');
+        $get->appendChild($filter);
+
+        $id = $xmldoc->createElement('id', $subscriptionId);
+        $filter->appendChild($id);
+
+        $dataSet = $xmldoc->createElement('dataset');
+        $get->appendChild($dataSet);
+
+        $genInfo = $xmldoc->createElement('gen_info');
+        $dataSet->appendChild($genInfo);
+
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->webspace->{'get'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in get Subscription GUID: {$error}");
+        }
+        return $resultNode->data->{'gen_info'}->guid;
+    }
+
+    /**
+     * Get an auxilary user name
+     * 
+     * @param string $ownerGuid
+     * 
+     * @return string auxilary user name
+     * @throws ApiRequestException on error
+     */
+    public function getAuxilaryUserName($ownerGuid)
+    {
+        \DBG::msg("MultiSite (PleskController): get auxilary user name: $ownerGuid");
+        if (empty($ownerGuid)) {
+            return false;
+        }
+
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+
+        $user = $xmldoc->createElement('user');
+        $packet->appendChild($user);
+
+        $get = $xmldoc->createElement('get');
+        $user->appendChild($get);
+
+        $filter = $xmldoc->createElement('filter');
+        $get->appendChild($filter);
+
+        $ownerGuidTag = $xmldoc->createElement('owner-guid', $ownerGuid);
+        $filter->appendChild($ownerGuidTag);
+
+        $dataSet = $xmldoc->createElement('dataset');
+        $get->appendChild($dataSet);
+
+        $genInfo = $xmldoc->createElement('gen-info');
+        $dataSet->appendChild($genInfo);
+
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->user->{'get'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in get Auxilary user name : {$error}");
+        }
+        return $resultNode->data->{'gen-info'}->name;
+    }
+
+    /**
      * Change plan of the subscription 
      * 
      * @param integer $subscriptionId subscription Id

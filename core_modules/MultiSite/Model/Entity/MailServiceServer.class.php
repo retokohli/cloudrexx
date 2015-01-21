@@ -328,10 +328,9 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         }
         
         $mailServicePlan = !\FWValidator::isEmpty($additionalData) && isset($additionalData->plan) ? $additionalData->plan : null;
-        $domain = $website->getBaseDn()->getName();
         $planId = isset($this->config['planId'][$mailServicePlan]) ? $this->config['planId'][$mailServicePlan] : null;
         $role = isset($this->config['userRoleId']) ? $this->config['userRoleId'] : null;
-        if (empty($domain) || empty($mainDomain) || empty($role) || empty($this->ipAddress)) {
+        if (empty($mainDomain) || empty($role) || empty($this->ipAddress)) {
             \DBG::log('MailServiceServer(createAccount) Failed: Insufficent argument supplied.');
             return false;
         }
@@ -341,7 +340,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
                 $hostingController->setWebspaceId($subscriptionId);
             }
             $this->addWebsite($website);
-            $hostingController->createUserAccount('info@'.$domain, \User::make_password(8, true), $role, $subscriptionId);
+            $hostingController->createUserAccount('info@'.$mainDomain, \User::make_password(8, true), $role, $subscriptionId);
             $domains = $website->getDomainAliases();
             if (!\FWValidator::isEmpty($domains)) {
                 foreach ($domains as $domain) {
