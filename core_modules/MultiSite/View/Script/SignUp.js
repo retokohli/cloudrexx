@@ -307,9 +307,6 @@
                 },
                 type: "POST",
                 success: function(response){parseResponse(response, null);},
-                complete: function (xhr, settings) {
-                    location.reload();
-                },
                 error: function() {
                     showSystemError();
                 }
@@ -386,6 +383,8 @@
                     setFormStatus('success', options.messageRedirectTxt);
                     window.location.href = response.data.loginUrl;
                     return;
+                }else{
+                    location.reload();
                 }
 
                 setMessage(message, 'success');
