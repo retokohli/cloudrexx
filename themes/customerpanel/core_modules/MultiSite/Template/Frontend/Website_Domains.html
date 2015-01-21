@@ -1,11 +1,11 @@
 <!-- BEGIN showDomainsSection -->
 <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAINS}</h2>
-<table>
+<table class="tablesort website-domains">
     <thead>
         <tr>
-            <th class="sort">{TXT_MULTISITE_WEBSITE_TITLE_NAME}</th>
-            <th class="sort">{TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN}</th>
-            <th class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+            <th>{TXT_MULTISITE_WEBSITE_TITLE_NAME}</th>
+            <th>{TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN}</th>
+            <th class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
         </tr>
     </thead>
     <tbody> 
@@ -103,6 +103,9 @@ jQuery(document).ready(function() {
         remoteUrl : jQuery(this).data('remote'),
       });
     }); 
+    
+    var sorterTable   = ['website-domains']; // define unique classes for table sorter
+    addTableSorting(sorterTable); // init the table sorting
 });
 /* ]]> */
 </script>

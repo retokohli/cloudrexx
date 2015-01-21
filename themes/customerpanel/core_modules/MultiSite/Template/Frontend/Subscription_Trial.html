@@ -2,12 +2,12 @@
 <div  class="grid-elm grid-align-1-1 grid-offset">
     <h2>{TXT_MULTISITE_SUBSCRIPTION_TRAIL}</h2>
     <div class="subscription-table">
-        <table>
+        <table class="tablesort subscription-trial">
             <thead>
                 <tr>
-                    <th width="55%" class="sort asc">{TXT_MULTISITE_WEBSITE}</th>
-                    <th width="20%" class="sort">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRED}</th>
-                    <th width="25%" class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+                    <th width="55%">{TXT_MULTISITE_WEBSITE}</th>
+                    <th width="20%">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRED}</th>
+                    <th width="25%" class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,3 +46,9 @@
     </div>
 </div>
 <!-- END showSiteTable -->
+<script type="text/javascript">
+/* <![CDATA[ */
+var sorterTable   = ['subscription-trial']; // define unique classes for table sorter
+addTableSorting(sorterTable); // init the table sorting  
+/* ]]> */
+</script>

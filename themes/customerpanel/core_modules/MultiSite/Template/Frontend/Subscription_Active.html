@@ -2,14 +2,14 @@
 <div  class="grid-elm grid-align-1-1 grid-offset">
     <h2>{TXT_MULTISITE_SUBSCRIPTION_ACTIVE}</h2>
     <div class="subscription-table">
-        <table class="tablesort">
+        <table class="tablesort subscription-active-table">
             <thead>
                 <tr>
                     <th width="5%" >{TXT_MULTISITE_REFERENCE_NUMBER}</th>
                     <th width="30%">{TXT_MULTISITE_TITLE}</th>
                     <th width="20%" >{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
                     <th width="20%" >{TXT_MULTISITE_NEXT_BILL_DATE}</th>
-                    <th width="25%" class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+                    <th width="25%" class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,10 +83,11 @@ jQuery(document).ready(function() {
         }
       });
     });
+    
+    var sorterTable   = ['subscription-active-table']; // define unique classes for table sorter
+    addTableSorting(sorterTable); // init the table sorting    
 });
-jQuery(document).ready(function(){
-    jQuery('.tablesort').tablesorter();
-});
+
 /* ]]> */
 </script>
 

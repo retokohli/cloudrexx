@@ -1,12 +1,12 @@
 <div class="grid-elm grid-align-1-1 grid-offset subscription-details">
     <h2>{TXT_MULTISITE_WEBSITE_WEBSITES}</h2>
     
-    <table>
+    <table class="tablesort subscription-detail-websites">
         <!-- BEGIN showWebsitesHeader -->
         <thead>
         <tr>
-            <th width="99%" class="sort" colspan="2">{TXT_MULTISITE_WEBSITE_TITLE_NAME}</th>
-            <th width="1%" class="actions">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+            <th width="99%" colspan="2">{TXT_MULTISITE_WEBSITE_TITLE_NAME}</th>
+            <th width="1%" class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
         </tr>
         </thead>
         <!-- END showWebsitesHeader -->
@@ -54,3 +54,9 @@
     <!-- END showAddWebsiteButton -->
     
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+var sorterTable   = ['subscription-detail-websites']; // define unique classes for table sorter
+addTableSorting(sorterTable); // init the table sorting  
+/* ]]> */
+</script>

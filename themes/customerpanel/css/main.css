@@ -433,6 +433,34 @@ table tr th.sort.desc:after {
     color: #121212;
 }
 
+table thead th.header:hover {
+background-color: #EDEDED;
+}
+
+table tr th.header {
+cursor: pointer;
+}
+
+table tr th.header:after {
+content: "\0020\e74f";
+font-family: 'entypo';
+font-style: normal;
+font-weight: normal;
+color: #dddddd;
+}
+
+table thead th.header:hover:after {
+content: "\0020\e74f";
+font-family: 'entypo';
+font-style: normal;
+font-weight: normal;
+color: #121212;
+}
+
+th.actions.header::after {
+display: none;
+}
+
 table tbody tr.subscription {
     cursor: pointer;
 }
