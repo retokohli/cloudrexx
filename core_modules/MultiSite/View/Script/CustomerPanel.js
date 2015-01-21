@@ -313,3 +313,16 @@ jQuery('body').on('click', '.remoteModal', function() {
     remoteUrl : jQuery(this).data('remote')    
   });
 });
+
+function addTableSorting(sorterTables) {
+    jQuery.each(sorterTables, function(i, v) {
+        var headers = new Object();
+        jQuery('.' + v + ' th').each(function(index, elm){
+            if(jQuery(this).hasClass('noSorting')) {
+                headers[index] = {sorter : false};
+            }
+        });
+        var headerSetting = {headers: headers};
+        jQuery('.' + v ).tablesorter(headerSetting);
+    });
+}
