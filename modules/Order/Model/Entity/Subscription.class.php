@@ -84,7 +84,11 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         $this->subscriptionDate = new \DateTime();
         $this->product = $product;
         $this->setProductEntity($product->getNewEntityForSale($options));
-        $this->paymentAmount = $product->getPaymentAmount($options['renewalUnit'], $options['renewalQuantifier'], $this->getOrder()->getCurrency());
+        
+        $objCurrency = $this->getOrder() 
+                        ? $this->getOrder()->getCurrency() 
+                        : \Cx\Core_Modules\MultiSite\Controller\ComponentController::getUserCurrency(0);
+        $this->paymentAmount = $product->getPaymentAmount($options['renewalUnit'], $options['renewalQuantifier'], $objCurrency);
         $this->paymentState = self::PAYMENT_OPEN;
         if ($product->isExpirable()) {
             $this->expirationDate = $product->getExpirationDate($options['renewalUnit'], $options['renewalQuantifier']);
@@ -124,6 +128,10 @@ class Subscription extends \Cx\Model\Base\EntityBase {
      */
     public function setOrder(Order $order) {
         $this->order = $order;
+        if (!$this->getProduct()) {
+            return;
+        }
+        $this->paymentAmount = $this->getProduct()->getPaymentAmount($this->getRenewalUnit(), $this->getRenewalQuantifier(), $order->getCurrency());
     }
     
     /**
