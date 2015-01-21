@@ -471,8 +471,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             if (!\FWValidator::isEmpty($websiteName)) {
                 $transactionReference = $product->getId(). '-name-'. $websiteName;
+                $purpose              = $product->getName() . ' - ' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             } else {
                 $transactionReference = $product->getId() . '-owner-' . $objUser->getId();
+                $purpose              = $product->getName();
             }
            
             $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier);
@@ -488,7 +490,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
                 $subscription = new \Payrexx\Models\Request\Subscription();
                 $subscription->setUserId($externalPaymentCustomerId);
-                $subscription->setPurpose($transactionReference);
+                $subscription->setPurpose($purpose);
                 $subscription->setReferenceId($transactionReference);
                 
                 $credit = 0;
@@ -3170,7 +3172,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             } elseif ($objUser) {
                 $userId      = $objUser->getId();
                 $referenceId = $product->getId() . '-' . 'owner-' . $userId;
-                $purpose     = $productName . '-' . \FWUser::getFWUserObject()->getParsedUserTitle($objUser);
+                $purpose     = $productName;
             }
             
             $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
