@@ -343,7 +343,7 @@ class BlogLibrary {
 
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active']   = $objLangResult->fields['is_active'];
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['subject']     = htmlentities(stripslashes($objLangResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['content']     = $objLangResult->fields['content'];
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['content']     = contrexx_raw2xhtml($objLangResult->fields['content']);
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['tags']        = htmlentities(stripslashes($objLangResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['image']       = htmlentities(stripslashes($objLangResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
 
