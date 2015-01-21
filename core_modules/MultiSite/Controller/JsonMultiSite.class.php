@@ -471,7 +471,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             if (!\FWValidator::isEmpty($websiteName)) {
                 $transactionReference = $product->getId(). '-name-'. $websiteName;
-                $purpose              = $product->getName() . ' - ' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+                $purpose              = $product->getName() . ' - ' . $websiteName;
             } else {
                 $transactionReference = $product->getId() . '-owner-' . $objUser->getId();
                 $purpose              = $product->getName();
@@ -3168,7 +3168,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $purpose     = '';
             if (isset($params['post']['multisite_address'])) {
                 $referenceId = $product->getId() . '-name-' . $params['post']['multisite_address'];
-                $purpose     = $productName . ' - ' . $params['post']['multisite_address'] . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+                $purpose     = $productName . ' - ' . $params['post']['multisite_address'];
             } elseif ($objUser) {
                 $userId      = $objUser->getId();
                 $referenceId = $product->getId() . '-' . 'owner-' . $userId;
