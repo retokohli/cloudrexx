@@ -401,7 +401,6 @@
             websiteName: '{MULTISITE_WEBSITE_NAME}',
             paymentUrl: cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl',
             ajaxUrl: cadminPath + 'index.php?cmd=JsonData&object=MultiSite&act=manageSubscription',
-            subscriptionDetailUrl: '{MULTISITE_SUBSCRIPTION_DETAIL_URL}',
             hasPayrexxAccount: {MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT},
             isPaymentUrlRequested: false
         };
@@ -540,7 +539,8 @@
                             if (id != undefined) {
                               // we are in subscription details page.
                               // Redirect to the new subscription page after upgrade
-                              window.location.href = subscriptionOptions.subscriptionDetailUrl + '?id=' + $resp.id;
+                              var detailUrl = updateQueryStringParameter('id', $resp.id);
+                              location.replace(detailUrl);
                             } else {
                               location.reload(true);
                             }
