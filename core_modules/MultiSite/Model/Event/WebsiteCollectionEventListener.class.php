@@ -61,7 +61,8 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
             $entityAttributes['initialSignUp'] = false;
             switch ($website->getStatus()) {
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
-                    $entityAttributes['initialSignUp'] = true;
+                    // perform initial sign-up in case the user has not yet been verified
+                    $entityAttributes['initialSignUp'] = !$website->getOwner()->isVerified();
                     $website->setup($entityAttributes);
                     break;
                 
@@ -69,9 +70,7 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
                     $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
                     
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
-// TODO: maybe add notification message to dashboard about extended subscription or send email about extended subscription
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
-// TODO: reactivate website
                     if ($websiteTemplate instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate) {
                         $website->setupLicense($entityAttributes);
                     }
