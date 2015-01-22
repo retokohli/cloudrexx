@@ -463,28 +463,39 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         $currency = self::getUserCurrency($crmContactId);
         $websiteName = $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website ? $website->getName() : '';
-
+        $products = array();
         if ($subscription) {
             $product = $subscription->getProduct();
             if (!$product) {
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
             }
 
-            $products = $product->getUpgrades();
+            $productCollection = $product->getUpgrades();
+            // cast $productCollection into an array -> this is required as uasort() only works with arrays
+            foreach ($productCollection as $product) {
+                $products[] = $product; 
+            }
         } else {
             $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
-            uasort($products, function($a, $b){
+        }
+
+        uasort($products, function($a, $b){
 // customizing: list subscription Non-Profit always at the end
 // TODO: implement some sort of sorting ability to the model collection
-            if ($a->getName() == 'Non-Profit') {
-                return 1;
-            }
+            # list Non-Profit at last position
+            if ($a->getName() == 'Non-Profit') return 1;
+            if ($b->getName() == 'Non-Profit') return -1;
+
+            # list Trial at first position
+            if ($a->getName() == 'Trial') return -1;
+            if ($b->getName() == 'Trial') return 1;
+
+            $currency = self::getUserCurrency($crmContactId);
             if ($a->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency) == $b->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency)) {
                 return 0;
             }
-                return ($a->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency) < $b->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency)) ? -1 : 1;
-            });
-        }
+            return ($a->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency) < $b->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency)) ? -1 : 1;
+        });
 
         if (\FWValidator::isEmpty($products)) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCTS_NOT_FOUND'];
