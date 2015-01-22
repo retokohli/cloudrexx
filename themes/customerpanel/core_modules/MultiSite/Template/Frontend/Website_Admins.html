@@ -37,6 +37,14 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(document).ready(function() {
+    jQuery('table.adminlist tr').find('th').last().addClass('actions noSorting');    
+    jQuery('table.adminlist').prepend(
+        jQuery('<thead></thead>').append(jQuery('.adminlist tr:first').remove())
+    );
+    
+    var sorterTable   = ['adminlist']; // define unique classes for table sorter
+    addTableSorting(sorterTable); // init the table sorting  
+    
     jQuery('.entypo-tools, .entypo-trash, .add ').bind('click', function (event) {
       var remoteUrl = '/api/MultiSite/Admin/' + jQuery(this).data('page') +'?website_id={MULTISITE_WEBSITE_ID}&user_id='+ jQuery(this).data('user_id');
       showRemoteModal({
