@@ -625,6 +625,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', ($websiteCollection->getQuota() > count($websiteCollection->getWebsites())));
                 } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                     self::parseWebsiteDetails($objTemplate, $websiteCollection);
+                    self::showOrHideBlock($objTemplate, 'showAddWebsiteButton', false);
                     $objTemplate->parse('showWebsites');
                 }
                 if(array_key_exists('showWebsites', $objTemplate->_parsedBlocks) && $objTemplate->blockExists('showWebsitesHeader')){
