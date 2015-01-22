@@ -3582,7 +3582,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         \DBG::deactivate(DBG_LOG);
         if (\DBG::getMode() ^ DBG_PHP || \DBG::getMode() ^ DBG_LOG_MEMORY) {
-            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY);
+            \DBG::activate(DBG_PHP | DBG_LOG_MEMORY | DBG_LOG);
         }
     }
     
