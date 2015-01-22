@@ -648,18 +648,18 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
-     * Get a subscription GUID 
+     * Get a subscription owner GUID 
      * 
      * @param  integer $subscriptionId subscription id
      * 
-     * @return string subscription GUID
+     * @return string subscription owner GUID
      * @throws ApiRequestException on error
      * 
      */
-    public function getSubscriptionGuid($subscriptionId)
+    public function getSubscriptionOwnerGuid($subscriptionId)
     {
-        \DBG::msg("MultiSite (PleskController): get subscription GUID: $subscriptionId");
-        if (empty($subscriptionId)) {
+        \DBG::msg("MultiSite (PleskController): get subscription owner GUID: $subscriptionId");
+        if (\FWValidator::isEmpty($subscriptionId)) {
             return false;
         }
 
@@ -693,21 +693,21 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
             throw new ApiRequestException("Error in get Subscription GUID: {$error}");
         }
-        return $resultNode->data->{'gen_info'}->guid;
+        return $resultNode->data->{'gen_info'}->{'vendor-guid'};
     }
 
     /**
-     * Get an auxilary user name
+     * Get an auxilary user login name
      * 
      * @param string $ownerGuid
+     * @param integer $subscriptionDomainId
      * 
-     * @return string auxilary user name
+     * @return string auxilary user login name
      * @throws ApiRequestException on error
      */
-    public function getAuxilaryUserName($ownerGuid)
-    {
-        \DBG::msg("MultiSite (PleskController): get auxilary user name: $ownerGuid");
-        if (empty($ownerGuid)) {
+    public function getAuxilaryUserLoginName($ownerGuid, $subscriptionDomainId) {
+        \DBG::msg("MultiSite (PleskController): get auxilary user login name: $ownerGuid  / $subscriptionDomainId");
+        if (\FWValidator::isEmpty($subscriptionDomainId) || \FWValidator::isEmpty($ownerGuid)) {
             return false;
         }
 
@@ -734,6 +734,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
 
         $response = $this->executeCurl($xmldoc);
         $resultNode = $response->user->{'get'}->result;
+
         $systemError = $response->system->errtext;
         if ('error' == (string) $resultNode->status || $systemError) {
             \DBG::dump($xmldoc->saveXML());
@@ -741,7 +742,16 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
             throw new ApiRequestException("Error in get Auxilary user name : {$error}");
         }
-        return $resultNode->data->{'gen-info'}->name;
+
+        $responseJson = json_encode($response->user->{'get'});
+        $responseArr = json_decode($responseJson, true);
+        foreach ($responseArr['result'] as $value) {
+            $getInfo = $value['data']['gen-info'];
+            if (isset($getInfo['subscription-domain-id']) && $getInfo['subscription-domain-id'] == $subscriptionDomainId) {
+                return $getInfo['login'];
+            }
+        }
+        return false;
     }
 
     /**

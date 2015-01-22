@@ -4058,7 +4058,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function pleskAutoLoginUrl($params)
     {
         global $_ARRAYLANG;
-        if (empty($params['post']['websiteId'])) {
+        if (!\FWValidator::isEmpty($params['post']['websiteId'])) {
             throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         try {
@@ -4076,12 +4076,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Unkown mail service server.');
                     }
 
-                    $clientIp = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))) : $_SERVER['REMOTE_ADDR'];
+                    $clientIp = !\FWValidator::isEmpty($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))) : $_SERVER['REMOTE_ADDR'];
                     $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
-                    $subscriptionGuid = $hostingController->getSubscriptionGuid($website->getMailAccountId());
-                    $loginName = $subscriptionGuid ? $hostingController->getAuxilaryUserName($subscriptionGuid) : '';
+                    $subscriptionOwnerGuid = $hostingController->getSubscriptionOwnerGuid($website->getMailAccountId());
+                    $loginName = !\FWValidator::isEmpty($subscriptionOwnerGuid) ? $hostingController->getAuxilaryUserLoginName($subscriptionOwnerGuid, $website->getMailAccountId()) : '';
 
-                    $pleskLoginUrl = $loginName ? $hostingController->pleskAutoLoginUrl('info@' . $loginName, $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')) : '';
+                    $pleskLoginUrl = !\FWValidator::isEmpty($loginName) ? $hostingController->pleskAutoLoginUrl($loginName, $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')) : '';
                     if ($pleskLoginUrl) {
                         return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
                     }
