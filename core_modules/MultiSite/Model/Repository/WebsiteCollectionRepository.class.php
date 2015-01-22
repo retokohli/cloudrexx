@@ -42,8 +42,10 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
                 \Env::get('em')->remove($baseSubscription);
                 $website = $productEntity;
             } else if ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
-                $baseSubscription->terminate();
+                // We have to unset WebsiteCollection from subscription before we call Subscription::terminate().
+                // Otherwise the associated Websites will all be disabled due to the 'terminated' model event
                 $baseSubscription->setProductEntity(null);
+                $baseSubscription->terminate();
                 $websiteCollection = $productEntity;
             }
         } else {            
