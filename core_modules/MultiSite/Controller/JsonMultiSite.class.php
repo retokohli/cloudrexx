@@ -4058,7 +4058,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function pleskAutoLoginUrl($params)
     {
         global $_ARRAYLANG;
-        if (!\FWValidator::isEmpty($params['post']['websiteId'])) {
+        if (\FWValidator::isEmpty($params['post']['websiteId'])) {
             throw new MultiSiteJsonException('JsonMultiSite::pleskAutoLoginUrl() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         try {
