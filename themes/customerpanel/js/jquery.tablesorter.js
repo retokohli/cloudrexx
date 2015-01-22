@@ -113,7 +113,7 @@
                 cssHeader: "header",
                 cssAsc: "headerSortUp",
                 cssDesc: "headerSortDown",
-                cssChildRow: "website",
+                cssChildRow: "child-row",
                 sortInitialOrder: "asc",
                 sortMultiSortKey: "shiftKey",
                 sortForce: null,
@@ -257,7 +257,6 @@
                         row: [],
                         normalized: []
                     };
-                console.log(totalRows);
                 for (var i = 0; i < totalRows; ++i) {
 
                     /** Add the table data to main data array */
