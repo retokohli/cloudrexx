@@ -13,7 +13,7 @@
 global $_ARRAYLANG;
 
 // Let's start with module info:
-$_ARRAYLANG['TXT_CORE_WYSIWYG'] = 'Wysiwyg';
+$_ARRAYLANG['TXT_CORE_WYSIWYG'] = 'WYSIWYG';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_DESCRIPTION'] = 'This is a new module with some sample content to show how to start.';
 
 // Now our content specific values:

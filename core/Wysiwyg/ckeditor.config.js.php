@@ -54,7 +54,7 @@ $cssArr = \JS::findCSS($content);
 ?>
 //if the wysiwyg css not defined in the session, then load the css files and put it into the session
 if(!cx.variables.get('wysiwygCss', 'wysiwyg')) {
-    cx.variables.set('wysiwygCss', [<?= '\'' . implode($cssArr, '\',\'') . '\'' ?>], 'wysiwyg')
+    cx.variables.set('wysiwygCss', [<?php echo '\'' . implode($cssArr, '\',\'') . '\'' ?>], 'wysiwyg')
 }
 
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/ckeditor-mediabrowser.js'   ?>' );
@@ -136,7 +136,7 @@ CKEDITOR.editorConfig = function( config )
 
 //loading the templates
 CKEDITOR.on('instanceReady',function(){
-    var loadingTemplates = <?=$wysiwyg->getWysiwygTempaltes();?>;
+    var loadingTemplates = <?php echo $wysiwyg->getWysiwygTempaltes();?>;
     for(var instanceName in CKEDITOR.instances) {
         //console.log( CKEDITOR.instances[instanceName] );
         loadingTemplates.button = CKEDITOR.instances[instanceName].getCommand("templates") //Reference to Template-Button
