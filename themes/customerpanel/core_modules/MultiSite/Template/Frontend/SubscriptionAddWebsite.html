@@ -31,7 +31,10 @@ jQuery(document).ready(function(){
             });
             jQuery("#SubscriptionAddWebsite").modal('hide');
             jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
-              return true; //reset
+                if (response.websiteId) {
+                    window.location.href = '{NODE_MULTISITE_WEBSITE}?id='+response.websiteId;
+                }
+                return true;
             });
        }
     };
