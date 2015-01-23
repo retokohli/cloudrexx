@@ -612,6 +612,7 @@ $_ARRAYLANG['TXT_USER_USERNAME'] = "Username";
 $_ARRAYLANG['TXT_USER_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_USER_FIRSTNAME'] = "First name";
 $_ARRAYLANG['TXT_USER_LASTNAME'] = "Last name";
+$_ARRAYLANG['TXT_USER_NOTIFICATION_EMAIL'] = "Send an e-mail notification with a new password.";
 $_ARRAYLANG['TXT_USER_GROUP_INVERT_RESULT'] = "Reverse group filter";
 $_ARRAYLANG['TXT_WORKFLOW_CLEAN_DESCRIPTION'] = "This function gives you the possibility to remove all workflow entries which are older than a specific value. We recommend you to remove your workflow only if your database uses extensive memory. In this case it is advisable to let the script remove not longer needed entries from database. Specify in the following field how old the entries have to be at least to be allowed for deleting. Please note that the currelty used versions can not be deleted. Thus it is is possible that your workflow still uses some memory. This is no error.";
 $_ARRAYLANG['TXT_WORKFLOW_CLEAN_OCCUPIED'] = "Used memory";
