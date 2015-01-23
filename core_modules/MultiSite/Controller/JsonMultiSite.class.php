@@ -4524,6 +4524,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (!\FWValidator::isEmpty($mailServiceServer)
                             && $website->getMailAccountId()) {
                         $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                        $hostingController->setWebspaceId($website->getMailAccountId());
                         if (!$hostingController || !($hostingController instanceof PleskController)) {
                             throw new MultiSiteJsonException('Failed to set the main domain.');
                         }
