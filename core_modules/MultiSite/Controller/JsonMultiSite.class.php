@@ -114,7 +114,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'modifyMultisiteConfig' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'sendAccountActivation' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkSendAccountActivation')),
             'getPayrexxUrl'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
-            'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
             'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
@@ -787,6 +787,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $objUser->setProfile(contrexx_input2raw($data['multisite_user_profile_attribute']));
             }
             
+            // set new plain text password
+            if (!empty($data['multisite_user_account_password'])) {
+                $password = contrexx_input2raw($data['multisite_user_account_password']);
+                $confirmedPassword = !empty($data['multisite_user_account_password_confirmed']) ? contrexx_input2raw($data['multisite_user_account_password_confirmed']) : '';
+                if (!$objUser->setPassword($password, $confirmedPassword)) {
+                    \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
+                    throw new MultiSiteJsonException($objUser->getErrorMsg());
+                }
+            }
+            
             //Set admin flag of User to true
             $objUser->setAdminStatus(1);
             
@@ -831,7 +841,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 break;
 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                if(isset($params['post']['websiteUserId'])){
+                    $websiteUserId = $params['post']['websiteUserId'];
+                } else {
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                }
                 $objUser = $objFWUser->objUser->getUser(intval($websiteUserId), true);
                 break;
 
@@ -893,12 +907,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $confirmedPassword = !empty($data['multisite_user_account_password_confirmed']) ? contrexx_input2raw($data['multisite_user_account_password_confirmed']) : '';
             if (!$objUser->setPassword($password, $confirmedPassword)) {
                 \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
-                throw new MultiSiteJsonException(array(
-                    'object'    => 'password',
-                    'type'      => 'danger',
-                    'message'   => join("\n", $objUser->getErrorMsg()),
-                    'log'       => \DBG::getMemoryLogs(),
-                ));
+                throw new MultiSiteJsonException($objUser->getErrorMsg());
             }
         }
 
@@ -3344,29 +3353,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException
      */
     public function push($param) {
-        try {
+	try {
             if (empty($param['post']['dataType']) && empty($param['post']['data'])) {
-                return;
+                    return;
             }
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-                case ComponentController::MODE_SERVICE:
-                    
-                    $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($param['post']['data']);
-                    $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
-                    $objEntityInterface->setEntityClass($param['post']['dataType']);
-                    
-                    $entity = current($objDataSet->export($objEntityInterface));
-                    
-                    \Env::get('em')->persist($entity);
-                    $entityObject = \Env::get('em')->getClassMetadata(get_class($entity));  
-                    $entityObject->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
-                    \Env::get('em')->flush();
-                    break;
-            }
-        } catch (\Exception $e) {
+            $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($param['post']['data']);
+            $objEntityInterface = new \Cx\Core_Modules\Listing\Model\Entity\EntityInterface();
+            $objEntityInterface->setEntityClass($param['post']['dataType']);
+
+            $entity = current($objDataSet->export($objEntityInterface));
+
+            \Env::get('em')->persist($entity);
+            $entityObject = \Env::get('em')->getClassMetadata(get_class($entity));  
+            $entityObject->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+            \Env::get('em')->flush();
+	} catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::push() failed: To add / update the repository'. $e->getMessage());
-        }
-    }
+	}
+}
 
     /**
      * To take websiteBackup to specified location in service server
