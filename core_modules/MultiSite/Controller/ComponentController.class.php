@@ -1491,7 +1491,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 //website setup process
                 $websiteStatus = $website->setup($options);
                 if ($websiteStatus['status'] == 'success') {
-                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'], 'reload' => (isset($_GET['page_reload']) && $_GET['page_reload'] == 'reload_page' ? true : false));
+                    return array('status' => 'success', 'message' => array('message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'], 'websiteId' => $website->getId()), 'reload' => (isset($_GET['page_reload']) && $_GET['page_reload'] == 'reload_page' ? true : false));
                 }
                 
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
@@ -2583,11 +2583,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function parseJsonMessage($message, $status, $reload=false) {
         $json = new \Cx\Core\Json\JsonData();
-
+        if (is_array($message)) {
+            $data = $message;
+        } else {
+            $data['message'] = $message;
+        }
+        $data['reload'] = $reload;
+        
         if ($status) {
             return $json->json(array(
                         'status' => 'success',
-                        'data'   => array('message' => $message, 'reload' => $reload),
+                        'data'   => $data
             ));
         }
 
