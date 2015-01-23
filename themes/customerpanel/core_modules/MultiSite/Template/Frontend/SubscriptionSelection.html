@@ -275,6 +275,10 @@
     #SubscriptionSelection .modal-dialog {
         width: 98%;
     }
+    
+    #order_subscription .modal-dialog {
+        width: 58%;
+    }
 }
 
 @media (min-width: 1025px) {
@@ -285,6 +289,10 @@
         width: 90%;
     }
 
+    #order_subscription .modal-dialog {
+        width: 50%;
+    }
+    
     #non-profit {
         margin-right: 0;
     }
@@ -338,6 +346,10 @@
     #SubscriptionSelection .modal-dialog {
         width: 60%;
     }
+    
+    #order_subscription .modal-dialog {
+        width: 25%;
+    }
 }
 @media (min-width: 1900px) {
     .features {
@@ -378,6 +390,17 @@
 .prices{
     margin-bottom: 20px ;
 }
+
+#order_confirm {
+    width: 3%;
+    margin-top: 3px;
+}
+#confirmOrder {
+    margin-right: 5px;
+}
+.confirm_subscription label {
+    font-weight: 300;
+}
 </style>
 <script type="text/javascript">
     jQuery(document).ready(function () {
@@ -406,7 +429,7 @@
         };
 
         var subscriptionType = ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') ? 'upgrade' : 'add';
-
+        
         //Set Payment Url
         function setPaymentUrl($this) {
             if (subscriptionOptions.isPaymentUrlRequested) {
@@ -450,24 +473,37 @@
         jQuery('.buy-now.websiteCollection').on('click', function () {
             buySubscription(jQuery(this));
         });
-
+        
+        subscriptionConfirmModalContent();
+        
         function buySubscription($this) {
             jQuery('.buy-now').removeClass('subscriptionProduct');
             $this.data('renewalOption', $this.parent().find('.product_price').find('div:visible').attr('data-renewalOption'));
             $this.addClass('subscriptionProduct');
-
+            
             if (getProductPrice($this)) {
-                if (subscriptionOptions.hasPayrexxAccount) {
-                    manageSubscription($this);
-                    return;
-                } else {
-                    setPaymentUrl($this);
-                }
+                jQuery('#order_subscription').modal('show');
+                jQuery('#confirmOrder').click(function() {
+                  if (jQuery('#order_confirm:checked').length < 1) {
+                      jQuery('div.alert.order_confirm').show();
+                      return false;
+                  }
+                  
+                  jQuery('#order_subscription').modal('hide');
+                  jQuery('#SubscriptionSelection').modal('hide');
+                  if (subscriptionOptions.hasPayrexxAccount) {
+                      manageSubscription($this);
+                      return;
+                  } else {
+                      setPaymentUrl($this);
+                  }
+                });
+                
             } else {
                 manageSubscription($this);
             }
         }
-
+        
         jQuery('.buy-now.website').on('click', function () {
             if ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') {
                 buySubscription(jQuery(this));
@@ -495,9 +531,12 @@
         }
 
         function getProductPrice($this) {
-            var productPrice = $this.parent().find('.product_price > div:visible').data('price');
-            if (productPrice > 0) {
-                return productPrice;
+            var selectedProduct = $this.parent().find('.product_price > div:visible');
+            var productPriceAmount = selectedProduct.data('price');
+            if (productPriceAmount != 0) {
+                jQuery('#subscription_payment').html(productPriceAmount+ ' / ' +selectedProduct.data('renewaloption'));
+                jQuery('#subscription_name').html($this.parent().find('.subscription_name').html());
+                return productPriceAmount;
             }
             return false;
         }
@@ -555,7 +594,6 @@
                     if (($this.length < 0) || !validUrl(jQuery('#payrexxModal').data("href"))) {
                         return e.preventDefault();
                     }
-                    jQuery('#SubscriptionSelection').modal('hide');
                     return true;
                 },
                 hidden: function (transaction) {
@@ -570,7 +608,67 @@
                 }
             });
         });
-    });
+        
+        // load Billable subscription selection modal content
+        function subscriptionConfirmModalContent() {
+          var modalMainContent = jQuery('<div />');
+          var closeButton   = jQuery('<button />');
+          var row           = jQuery('<div />').addClass('row'); 
+          var modalDialog   = jQuery('<div />').addClass('modal-dialog'); 
+          
+          var modalContent = jQuery('<div />')
+                  .attr({id: "order_subscription", role: "dialog", tabindex: "-1", 'aria-hidden': "true"})
+                  .addClass('modal fade');
+          
+          modalMainContent
+                  .addClass('grid-elm grid-align-1-1 grid-offset');
+          closeButton.addClass('close')
+                     .attr('data-dismiss', 'modal');
+          jQuery('<span />')
+                  .attr('aria-hidden',true)
+                  .html('&times;')
+                  .appendTo(closeButton);
+          jQuery('<span />')
+                  .addClass('sr-only')
+                  .html('Close')
+                  .appendTo(closeButton);
+          closeButton.appendTo(row);
+          jQuery('<h2 />').html('{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_NEW_ORDER}')
+                  .appendTo(row);
+          jQuery('<div />')
+                  .addClass('grid-offset-bottom')
+                  .append('{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_BILLABLE_SUBSCRIPTION}<br/>')
+                  .append('<span><strong>{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</strong>: <span id="subscription_name"></span></span><br/>')
+                  .append('<span><strong>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_PRICE}</strong>: <span id="subscription_payment"></span></span><br/>')
+                  .append('<span class="grid-align-1-1 grid-offset-top confirm_subscription" ><label> <input type="checkbox" id="order_confirm"/> {MULTISITE_ACCEPT_TERMS_URL}</label></span>')
+                  .append('<div class="alert alert-danger order_confirm" style="display: none;">{TXT_MULTISITE_ACCEPT_TERMS_ERROR}</div>')
+                  .appendTo(row);
+          jQuery('<button />')
+                  .attr({'data-dismiss': 'modal', 'id': 'confirmOrder'})
+                  .addClass('upgrade')
+                  .append('{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ORDER} ')
+                  .appendTo(row);
+          jQuery('<button />')
+                  .attr('data-dismiss', 'modal')
+                  .addClass('cancel')
+                  .append('{TXT_CORE_MODULE_MULTISITE_CANCEL} ')
+                  .appendTo(row);
+          row.appendTo(modalMainContent);
+          var modalbody = jQuery('<div />')
+                  .addClass('modal-body')
+                  .append(modalMainContent);
+          jQuery('<div />').addClass('modal-content')
+                  .append(modalbody)
+                  .appendTo(modalDialog);
+                 modalDialog.appendTo(modalContent);
+          return modalContent.on("hidden.bs.modal",
+                    function () {
+                        jQuery('.order_confirm').hide();
+                        jQuery('#order_confirm').prop('checked', false);
+                    }
+                ).appendTo('body');
+        }    
+      });
 </script>
 
 <div class="prices-periods">
@@ -591,7 +689,7 @@
     <!-- BEGIN showProduct -->
     <div id="{MULTISITE_WEBSITE_PRODUCT_ATTRIBUTE_ID}">
         <div class="header">
-            <span class="name">{MULTISITE_WEBSITE_PRODUCT_NAME}</span>
+            <span class="name subscription_name">{MULTISITE_WEBSITE_PRODUCT_NAME}</span>
             <div class="features">
                 {MULTISITE_WEBSITE_PRODUCT_NOTE_PRICE}
             </div>
