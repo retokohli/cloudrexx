@@ -454,8 +454,8 @@
                 },
                 type: "POST",
                 beforeSend: function() {
-                  jQuery('.upgrade').button('loading');
-                  jQuery('.upgrade').prop('disabled', true);
+                  jQuery('.upgradeSubscription').button('loading');
+                  jQuery('.upgradeSubscription').prop('disabled', true);
                 },
                 success: function (response) {
                     subscriptionOptions.isPaymentUrlRequested = false;
@@ -633,7 +633,7 @@
                   .append('<div class="alert alert-danger order_confirm" style="display: none;">{TXT_MULTISITE_ACCEPT_TERMS_ERROR}</div>')
                   .appendTo(row);
           jQuery('<button />')                  
-                  .addClass('upgrade')
+                  .addClass('upgrade upgradeSubscription')
                   .attr('data-loading-text', "<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}")
                   .append('{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ORDER} ')                  
                   .css({'margin-right' : '5px'})
