@@ -3162,7 +3162,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier, $currency);
             $referenceId = '';
             $purpose     = '';
-            if (isset($params['post']['multisite_address'])) {
+            if (isset($params['post']['multisite_address']) && !\FWValidator::isEmpty($params['post']['multisite_address'])) {
                 $referenceId = $product->getId() . '-name-' . $params['post']['multisite_address'];
                 $purpose     = $productName . ' - ' . $params['post']['multisite_address'];
             } elseif ($objUser) {
