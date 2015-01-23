@@ -10,7 +10,9 @@
   <button type="button" class ="website_status website_deactivate" data-status="offline" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" onclick="changeWebsiteStatus(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_DEACTIVATE}</button>
   <button type="button" class ="website_status website_activate" data-status="online" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}"  onclick="changeWebsiteStatus(jQuery(this));">{TXT_CORE_MODULE_MULTISITE_WEBSITE_BUTTON_ACTIVATE}</button>
   <button type="button"  data-target="#WebsiteDelete" data-toggle="modal">{TXT_MULTISITE_WEBSITE_BUTTON_DELETE}</button>
-
+  <!-- BEGIN showUpgradeButton -->
+  <button class="upgrade remoteModal" data-remote="/api/MultiSite/SubscriptionSelection?id={MULTISITE_WEBSITE_ID}&subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="SubscriptionSelection">{TXT_MULTISITE_UPGRADE}</button>
+  <!-- END showUpgradeButton -->
   <div aria-hidden="true" class="modal fade" id="WebsiteDelete" role="dialog" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
