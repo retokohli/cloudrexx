@@ -103,7 +103,7 @@ function getRemoteLoginToken($this) {
         beforeSend: function (xhr, settings) {
             $this.button('loading');
             $this.prop('disabled', true);
-            $this.removeClass('add');
+            checkAddClass($this, 'remove');
         },
         success: function(response) {
             if (response.status == 'success') {
@@ -124,7 +124,7 @@ function getRemoteLoginToken($this) {
         complete: function (xhr, settings) {
             $this.button('reset');
             $this.prop('disabled', false);
-            $this.addClass('add');
+            checkAddClass($this, 'add');
         },
         error: function() { }
     });   
@@ -151,7 +151,7 @@ function enableOrDisableMailService($this) {
         beforeSend: function (xhr, settings) {
             $this.button('loading');
             $this.prop('disabled', true);
-            $this.removeClass('add');
+            checkAddClass($this, 'remove');
         },
         success: function(response) {
             if (response.status == 'success') {
@@ -169,7 +169,7 @@ function enableOrDisableMailService($this) {
         complete: function (xhr, settings) {
             $this.button('reset');
             $this.prop('disabled', false);
-            $this.addClass('add');
+            checkAddClass($this, 'add');
         },
         error: function() { }
     });
@@ -271,6 +271,20 @@ function payrexxAutoLogin($this) {
   requestAutoLogin($this, url, data);
 }
 
+function checkAddClass(element, task){
+    if(task = 'remove'){
+        restoreAddClass = false;
+        if(element.hasClass('add')){
+            restoreAddClass = true;
+            element.removeClass('add');
+        }
+    }else if(task = 'add'){
+        if(restoreAddClass){
+            element.addClass('add');
+        }
+    }
+}
+
 function requestAutoLogin($this, url, data) {
     jQuery.ajax({
         dataType: "json",
@@ -280,7 +294,7 @@ function requestAutoLogin($this, url, data) {
         beforeSend: function (xhr, settings) {
             $this.button('loading');
             $this.prop('disabled', true);
-            $this.removeClass('add');
+            checkAddClass($this, 'remove');
         },
         success: function(response) {
             if (response.status == 'success') {
@@ -301,7 +315,7 @@ function requestAutoLogin($this, url, data) {
         complete: function (xhr, settings) {
             $this.button('reset');
             $this.prop('disabled', false);
-            $this.addClass('add');
+            checkAddClass($this, 'add');
         },
         error: function() { }
     });
