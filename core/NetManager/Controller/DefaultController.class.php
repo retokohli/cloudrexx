@@ -91,11 +91,26 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
             ),
             'functions' => array(
                 'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
+                'edit'      => false,
+                'delete'    => false,
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
+                'actions'   => function($rowData) {
+                            global $_CORELANG;
+                            static $mainDomainName;
+                            if (empty($mainDomainName)) {
+                                $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                                $mainDomainName = $domainRepository->getMainDomain()->getName();
+                            }
+                            $actionIcons = '';
+                            $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
+                            if ($mainDomainName !== $rowData['name']) {
+                                $actionIcons = '<a href="/cadmin/?cmd=NetManager&amp;editid=' . $rowData['id'] .'" class="edit" title="Edit entry"></a>';
+                                $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'/cadmin/?cmd=NetManager&amp;deleteid=' . $rowData['id'] . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
+                            }
+                            return $actionIcons;
+                    }
                 )
             ));
                         
