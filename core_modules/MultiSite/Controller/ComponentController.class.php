@@ -1471,7 +1471,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $productEntityAttributes = $product->getEntityAttributes();
                 //pass the website template value
                 $options = array(
-                    'websiteTemplate' => $productEntityAttributes['websiteTemplate']
+                    'websiteTemplate'   => $productEntityAttributes['websiteTemplate'],
+                    'initialSignUp'     => false,
                 );
                 //website setup process
                 $websiteStatus = $website->setup($options);
