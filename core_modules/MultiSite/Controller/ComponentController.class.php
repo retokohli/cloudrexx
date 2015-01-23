@@ -432,6 +432,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $subscription = null;
         $website      = null;
+        $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl'));
+        \LinkGenerator::parseTemplate($termsUrlValue);
+        $termsUrl = '<a href="'.$termsUrlValue.'" target="_blank">'.$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'].'</a>';
+        
         if (!\FWValidator::isEmpty($subscriptionId)) {
             $subscription = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription')->findOneBy(array('id' => $subscriptionId));
             
@@ -524,7 +528,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         $objTemplate->setVariable(array(
             'MULTISITE_SUBSCRIPTION_ID'             => $subscriptionId,
-            'MULTISITE_WEBSITE_NAME'                => $websiteName,            
+            'MULTISITE_WEBSITE_NAME'                => $websiteName,    
+            'MULTISITE_ACCEPT_TERMS_URL'            => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
             'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'))) ? 'true' : 'false',            
         ));
         return $objTemplate->get();
