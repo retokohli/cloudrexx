@@ -383,7 +383,7 @@
                     setFormStatus('success', options.messageRedirectTxt);
                     window.location.href = response.data.loginUrl;
                     return;
-                }else{
+                }else if(response.data.reload){
                     location.reload();
                 }
 

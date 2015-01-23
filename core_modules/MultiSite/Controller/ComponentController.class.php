@@ -690,7 +690,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             $responseStatus  = isset($resp['status']) && $resp['status'] == 'success';
             $responseMessage = isset($resp['message']) ? $resp['message'] : '';
-            return $this->parseJsonMessage($responseMessage, $responseStatus);
+            $reload          = isset($resp['reload']) ? $resp['reload'] : '';
+            return $this->parseJsonMessage($responseMessage, $responseStatus, $reload);
         } else {
             $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
             $mainDomain = $domainRepository->getMainDomain()->getName();
@@ -702,10 +703,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $queryArguments = array(
                 'addWebsite' => 1,
                 'id'         => $subscriptionId,
-                'productId'  => $productId
+                'productId'  => $productId,
+                'page_reload'  => (isset($_GET['multisite_page_reload']) && $_GET['multisite_page_reload'] == 'reload_page' ? 'reload_page' : ''),
             );
             $objTemplate->setVariable(array(
                 'MULTISITE_DOMAIN'             => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                'MULTISITE_RELOAD_PAGE'        => (isset($_GET['multisite_page_reload']) && $_GET['multisite_page_reload'] == 'reload_page' ? 'reload_page' : ''),
                 'MULTISITE_ADDRESS_URL'        => $addressUrl->toString(),
                 'MULTISITE_ADD_WEBSITE_URL'    => '/api/MultiSite/SubscriptionAddWebsite?' . self::buildHttpQueryString($queryArguments),
                 'TXT_MULTISITE_CREATE_WEBSITE' => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
@@ -1477,7 +1480,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 //website setup process
                 $websiteStatus = $website->setup($options);
                 if ($websiteStatus['status'] == 'success') {
-                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS']);
+                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'], 'reload' => (isset($_GET['page_reload']) && $_GET['page_reload'] == 'reload_page' ? true : false));
                 }
                 
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
@@ -1532,7 +1535,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             // create the website process in the payComplete event
             $order->complete();
-            return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS']);
+            return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'], 'reload' => (isset($_GET['page_reload']) && $_GET['page_reload'] == 'reload_page' ? true : false));
         } catch (Exception $e) {
             \DBG::log("Failed to add website:" . $e->getMessage());
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
@@ -2563,16 +2566,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param  string  $message message 
      * @param  boolean $status  true | false (if status is true returns success json data)
      *                          if status is false returns error message json.
+     * @param  boolean $reload  true | false
      * 
      * @return string
      */
-    public function parseJsonMessage($message, $status) {
+    public function parseJsonMessage($message, $status, $reload=false) {
         $json = new \Cx\Core\Json\JsonData();
 
         if ($status) {
             return $json->json(array(
                         'status' => 'success',
-                        'data'   => array('message' => $message)
+                        'data'   => array('message' => $message, 'reload' => $reload),
             ));
         }
 
