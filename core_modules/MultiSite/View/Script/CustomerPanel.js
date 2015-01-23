@@ -76,7 +76,7 @@ function  loadContent(jQuerySelector, url) {
             }
         },
         error: function(xhr, textStatus, errorThrown) {
-            if (xhr.status == 500 && count <= 3) {
+            if (xhr.status.toString().match(/^5\d{2}$/)  && count <= 3) {
                 ++count;
                 jQuery.ajax(this);
             }
