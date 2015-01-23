@@ -483,6 +483,7 @@
             
             if (getProductPrice($this)) {
                 jQuery('#order_subscription').modal('show');
+                jQuery('#SubscriptionSelection').modal('hide');
                 jQuery('#confirmOrder').click(function() {
                   if (jQuery('#order_confirm:checked').length < 1) {
                       jQuery('div.alert.order_confirm').show();
@@ -490,7 +491,6 @@
                   }
                   
                   jQuery('#order_subscription').modal('hide');
-                  jQuery('#SubscriptionSelection').modal('hide');
                   if (subscriptionOptions.hasPayrexxAccount) {
                       manageSubscription($this);
                       return;
