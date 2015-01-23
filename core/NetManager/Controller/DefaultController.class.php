@@ -106,8 +106,8 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
                             $actionIcons = '';
                             $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
                             if ($mainDomainName !== $rowData['name']) {
-                                $actionIcons = '<a href="/cadmin/?cmd=NetManager&amp;editid=' . $rowData['id'] .'" class="edit" title="Edit entry"></a>';
-                                $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'/cadmin/?cmd=NetManager&amp;deleteid=' . $rowData['id'] . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
+                                $actionIcons = '<a href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;editid=' . $rowData['id'] .'" class="edit" title="Edit entry"></a>';
+                                $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;deleteid=' . $rowData['id'] . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
                             }
                             return $actionIcons;
                     }
