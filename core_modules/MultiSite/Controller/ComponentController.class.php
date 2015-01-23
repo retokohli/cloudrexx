@@ -761,14 +761,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         //show the frontend
         $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
         $statusDisabled = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED);
+        $isTrialWebsite = false;
         
+        // check the website is trial or not
+        $subscription = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription')->findOneBy(array('productEntityId' => $websiteId));
+        if ($subscription && $objTemplate->blockExists('showUpgradeButton')) {
+            $productEntity = $subscription->getProductEntity();
+            $product = $subscription->getProduct();
+            if ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website && $product->getName() === 'Trial') {
+                $isTrialWebsite = true;
+            }
+        }
+
         $objTemplate->setVariable(array(
             'MULTISITE_WEBSITE_FRONTEND_LINK'       => $this->getApiProtocol() . $website->getBaseDn()->getName(),
             'MULTISITE_WEBSITE_DELETE_REDIRECT_URL' => \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'Subscription')->toString(),
+            'MULTISITE_SUBSCRIPTION_ID'             => !\FWValidator::isEmpty($subscription->getId()) ? $subscription->getId() : ''
         ));
         self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
         self::showOrHideBlock($objTemplate, 'showAdminButton', $status);
-
+        self::showOrHideBlock($objTemplate, 'showUpgradeButton', $isTrialWebsite);
         //Show the Website Admin and Backend group users
         if ($objTemplate->blockExists('showWebsiteAdminUsers')) {
             $websiteAdminUsers = $website->getAdminUsers();
