@@ -19,7 +19,7 @@ jQuery(document).ready(function(){
         IsPayment: '{TXT_MULTISITE_PAYMENT_MODE}',
         callBackOnSuccess: function(response) {
             jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
-                showMessage(response.message, 'success');//show success message 
+                showMessage(response.message, 'success');//show success message
                 jQuery('#multisite_active_site').html(
                     jQuery('<div />')
                     .addClass('grid-elm grid-align-1-1 grid-offset')
@@ -78,7 +78,8 @@ var validateAdress = function (value, validator, $field) {
             <input type="hidden" id="product_id" name="product_id" value="{PRODUCT_ID}">
             <input type="hidden" id="product_name" value="{PRODUCT_NAME}">
             <input type="hidden" id="multisite_domain" value="{MULTISITE_DOMAIN}">
-            
+            <input type="hidden" id="multisite_page_reload" value="{MULTISITE_RELOAD_PAGE}">
+
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <h2>{TXT_MULTISITE_ADD_NEW_WEBSITE}</h2>
             <fieldset>

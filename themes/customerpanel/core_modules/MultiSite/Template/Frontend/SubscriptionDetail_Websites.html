@@ -45,7 +45,7 @@
     </table>
     
     <!-- BEGIN showAddWebsiteButton -->
-    <button type="button" class="add" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}" data-target="#SubscriptionAddWebsite" data-toggle="modal">{TXT_MULTISITE_WEBSITE_BUTTON_ADDNEW}</button>
+    <button type="button" class="add" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}&multisite_page_reload=reload_page" data-target="#SubscriptionAddWebsite" data-toggle="modal">{TXT_MULTISITE_WEBSITE_BUTTON_ADDNEW}</button>
     <div aria-hidden="true" class="modal fade" id="SubscriptionAddWebsite" role="dialog" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}</div>
