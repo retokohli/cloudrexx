@@ -535,15 +535,7 @@
                         $resp = response.data;
                         if ($resp.status == 'success') {
                             showMessage($resp.message, 'success');
-                            var id = getQueryParams(document.location.search)['id'];                            
-                            if (id != undefined) {
-                              // we are in subscription details page.
-                              // Redirect to the new subscription page after upgrade
-                              var detailUrl = updateQueryStringParameter('id', $resp.id);
-                              location.replace(detailUrl);
-                            } else {
-                              location.reload(true);
-                            }
+                            window.location.href = '{NODE_MULTISITE_SUBSCRIPTIONDETAIL}?id=' + $resp.id;                            
                         } else {
                             showMessage($resp.message, 'error');
                         }
