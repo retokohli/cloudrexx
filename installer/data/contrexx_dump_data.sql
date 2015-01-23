@@ -420,6 +420,7 @@ INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandat
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (11,0,'text','0','asc',0,'',0);
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (12,0,'text','0','asc',0,'',0);
 INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (13,0,'text','0','asc',0,'',0);
+INSERT INTO `contrexx_access_user_attribute` (`id`, `parent_id`, `type`, `mandatory`, `sort_type`, `order_id`, `access_special`, `access_id`) VALUES (14,0,'text','0','asc',0,'',0);
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (1,1,'Notizen');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (1,2,'Notes');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (1,3,'Notes');
@@ -495,6 +496,12 @@ INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `n
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (13,4,'MultiSite External Payment Customer ID');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (13,5,'MultiSite External Payment Customer ID');
 INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (13,6,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (14,1,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (14,2,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (14,3,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (14,4,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (14,5,'MultiSite External Payment Customer ID');
+INSERT INTO `contrexx_access_user_attribute_name` (`attribute_id`, `lang_id`, `name`) VALUES (14,6,'MultiSite External Payment Customer ID');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`, `homepage`) VALUES (1,'Manager','Administrator',1,'backend','');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`, `homepage`) VALUES (3,'Community','Community',1,'frontend','');
 INSERT INTO `contrexx_access_user_groups` (`group_id`, `group_name`, `group_description`, `is_active`, `type`, `homepage`) VALUES (9,'Moderator','Inhaltspflege und Statistiken',1,'backend','');
@@ -505,6 +512,7 @@ INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `send
 INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('user_activated',0,'info@example.com','admin','Ihr Benutzerkonto wurde aktiviert','text','Hallo [[USERNAME]],\r\n\r\nIhr Benutzerkonto auf [[HOST]] wurde soeben aktiviert und kann von nun an verwendet werden.\r\n\r\n\r\n--\r\n[[SENDER]]','');
 INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('user_deactivated',0,'info@example.com','admin','Ihr Benutzerkonto wurde deaktiviert','text','Hallo [[USERNAME]],\r\n\r\nIhr Benutzerkonto auf [[HOST]] wurde soeben deaktiviert.\r\n\r\n\r\n--\r\n[[SENDER]]','');
 INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('new_user',0,'info@example.com','admin','Ein neuer Benutzer hat sich registriert','text','Der Benutzer [[USERNAME]] hat sich soeben registriert und muss nun frei geschaltet werden.\r\n\r\nÜber die folgende Adresse kann das Benutzerkonto von [[USERNAME]] verwaltet werden:\r\n[[LINK]]\r\n\r\n\r\n--\r\n[[SENDER]]','');
+INSERT INTO `contrexx_access_user_mail` (`type`, `lang_id`, `sender_mail`, `sender_name`, `subject`, `format`, `body_text`, `body_html`) VALUES ('customer_panel_admin_notification',0,'info@example.com','admin','Willkommen als Administrator','text','Hallo [[FIRSTNAME]] [[LASTNAME]]\r\n\r\nSie wurden als Administrator bei [[WEBSITE]] hinzugefügt.\r\nSie können sich unter dem Link [[LINK]] mit den folgenden Angaben einloggen:\r\nBenutzername: [[EMAIL]]\r\nPasswort: [[PASSWORD]]\r\n\r\n--\r\n[[SENDER]]','');
 INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (1,'Sehr geehrte Frau',0);
 INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (2,'Sehr geehrter Herr',0);
 INSERT INTO `contrexx_access_user_title` (`id`, `title`, `order_id`) VALUES (3,'Dear Ms',0);
