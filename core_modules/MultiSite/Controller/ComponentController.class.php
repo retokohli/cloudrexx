@@ -479,7 +479,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
         }
 
-        uasort($products, function($a, $b){
+        uasort($products, function($a, $b) use ($currency) {
 // customizing: list subscription Non-Profit always at the end
 // TODO: implement some sort of sorting ability to the model collection
             # list Non-Profit at last position
@@ -489,8 +489,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             # list Trial at first position
             if ($a->getName() == 'Trial') return -1;
             if ($b->getName() == 'Trial') return 1;
-
-            $currency = self::getUserCurrency($crmContactId);
+            
             if ($a->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency) == $b->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency)) {
                 return 0;
             }
