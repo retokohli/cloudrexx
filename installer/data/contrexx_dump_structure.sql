@@ -102,7 +102,7 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_user_mail` (
-  `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user','customer_panel_admin_notification') NOT NULL default 'reg_confirm',
+  `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user','user_account_invitation') NOT NULL default 'reg_confirm',
   `lang_id` tinyint(2) unsigned NOT NULL default '0',
   `sender_mail` varchar(255) NOT NULL default '',
   `sender_name` varchar(255) NOT NULL default '',
