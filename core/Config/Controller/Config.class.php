@@ -59,13 +59,14 @@ class Config
     private function setNavigation()
     {
         global $objTemplate, $_ARRAYLANG;
-
+        
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
         $objTemplate->setVariable('CONTENT_NAVIGATION','
             <a href="?cmd=Config" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'
             .(in_array('CacheManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="?cmd=Config&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'].'</a>' : '')  .
             '<a href="?cmd=Config&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_EMAIL_SERVER'].'</a>
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
+            .(in_array('Wysiwyg', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=Config&amp;act=Wysiwyg" class="'.($this->act == 'Wysiwyg' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CORE_WYSIWYG'].'</a>' : '')
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '')
             . (\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isWebsiteOwner() && \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser') ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
         );
@@ -120,7 +121,7 @@ class Config
      */
     function getPage()
     {
-           global $_ARRAYLANG, $objTemplate;        
+        global $_ARRAYLANG, $objTemplate;        
 
         if(!isset($_GET['act'])){
             $_GET['act']='';
@@ -144,6 +145,16 @@ class Config
                 
                 break;
 
+            case 'Wysiwyg':
+                if (in_array('Wysiwyg', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+                    $boolShowStatus = false;
+                    $this->showWysiwyg();
+                } else {
+                    \Permission::noAccess();
+                }
+                
+                break;
+                
             case 'cache_update':
                 $boolShowStatus = false;
                 $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
@@ -192,6 +203,72 @@ class Config
 
         $this->act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
         $this->setNavigation();
+    }
+    
+    protected function  showWysiwyg() {
+        global $_ARRAYLANG, $objTemplate, $objInit; 
+        $path = \Cx\Core\Core\Controller\Cx::getCodeBaseDocumentRootPath() . \Cx\Core\Core\Controller\Cx::getCoreFolderName() . '/Wysiwyg/View/Template/Backend';
+        $objTpl = new \Cx\Core\Html\Sigma($path);
+        $objTpl->loadTemplateFile('Default.html');
+
+        $langData = $objInit->loadLanguageData('Wysiwyg');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+
+        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\Wysiwyg');
+        $wysiwygs = $repo->findBy(array('inactive'=>'0'));
+
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($wysiwygs, array(
+            'entityName'    => $_ARRAYLANG['TXT_CORE_WYSIWYG_ENTITY'],
+            'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG'],
+            'functions' => array(
+                'add'       => true,
+                'edit'      => false,
+                'delete'    => false,
+                'sorting'   => true,
+                'paging'    => true,
+                'filtering' => false,
+                'actions'   => function($rowData) {
+                        global $_CORELANG;
+
+                        $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
+
+                        $actionIcons = '<a href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=Config&amp;act=Wysiwyg&amp;editid=' . $rowData['id'] .'" class="edit" title="Edit entry"></a>';
+                        $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=Config&amp;act=Wysiwyg&amp;deleteid=' . $rowData['id'] . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
+
+                        return $actionIcons;
+                }
+            ),
+            'fields' => array(
+                'title' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TITLE'],
+                ),
+                'description' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_DESCRIPTION'],
+                ),
+                'inactive' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_INACTIVE'],
+                ),
+                'imagePath' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_IMAGE_PATH'],
+                    'type' => 'uploader',
+                    'showOverview' => false,
+                ),
+                'htmlContent' => array(
+                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_HTML_CONTENT'],
+                    'showOverview' => false,
+                ),
+            ),
+        ));
+        $objTpl->setVariable('WYSIWYG_CONTENT', $view->render());
+
+        $objTpl->setVariable('ADD_STYLE_URL', \Cx\Core\Core\Controller\Cx::getCodeBaseCoreWebPath() . \Cx\Core\Core\Controller\Cx::getCoreFolderName() . '/Wysiwyg/View/Style/Backend.css');
+        $objTpl->parse('additional_style');
+
+        $objTemplate->setVariable(array(
+            'CONTENT_TITLE' => $_ARRAYLANG['TXT_CORE_WYSIWYG'],
+            'ADMIN_CONTENT' => $objTpl->get()
+        ));
     }
 
 
