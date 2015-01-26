@@ -1210,6 +1210,12 @@ button.actions:after {
      nav ul li.level-1 a.closed:hover {
          background-color: #EDEDED;
      }
+
+    nav .nav-footer {
+        position: absolute;
+        bottom: 15px;
+        left: 25px;
+    }
      
 
     /**

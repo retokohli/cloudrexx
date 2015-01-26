@@ -17,7 +17,8 @@
     var url = window.location;   
     
     $('#content').css('min-height', ($(window).height()-$('header').outerHeight()));
-    
+    $('nav').css('min-height', ($(window).height()-$('header').outerHeight()));
+
     /**
      ********************  init functions ********************
      *
@@ -92,6 +93,7 @@
                                   
     $(window).resize(function () { 
         $('#content').css('min-height', ($(window).height()-$('header').outerHeight()));
+        $('nav').css('min-height', ($(window).height()-$('header').outerHeight()));
     });     
     
     $(window).scroll(function () {  

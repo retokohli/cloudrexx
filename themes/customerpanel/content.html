@@ -12,9 +12,12 @@
 </header> 
 
 <section> 
-    <div class="grid-container">
-        {NAVBAR_FILE}<!--                                             
-        --><div id="content" class="grid-elm grid-align-5-6"> 
+    <div class="grid-container"><nav class="grid-elm grid-align-1-6 show-on-tablet show-on-screen">
+        {NAVBAR_FILE}<div class="nav-footer">
+        <a href="{MULTISITE_AGB_URL}">{TXT_MULTISITE_ACCEPT_TERMS_URL_NAME}</a>
+    </div>
+        </nav><!--
+        --><div id="content" class="grid-elm grid-align-5-6">
             <div id="breadcrumb" class="grid-elm grid-align-1-1 grid-offset">
                 <a href="{NODE_HOME}">Übersicht</a>  > {NAVTREE}{NAVTITLE}
             </div>
