@@ -287,7 +287,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $subscriptionOptions['themeId'] = $websiteThemeId;
             }
             
-            $transactionReference = $id . '-name-' . $websiteName;
+            $transactionReference = "|$id|name|$websiteName|";
             $currency = ComponentController::getUserCurrency($objUser->getCrmUserId());
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $currency, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
@@ -469,15 +469,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
 
             if (!\FWValidator::isEmpty($websiteName)) {
-                $transactionReference = $product->getId(). '-name-'. $websiteName;
+                $transactionReference = "|{$product->getId()}|name|$websiteName|";
                 $purpose              = $product->getName() . ' - ' . $websiteName;
             } else {
-                $transactionReference = $product->getId() . '-owner-' . $objUser->getId();
+                $transactionReference = "|{$product->getId()}|owner|{$objUser->getId()}|";
                 $purpose              = $product->getName();
             }
            
             $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier, $currency);
-
+            $credit = 0;
             $externalPaymentCustomerId = $objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'));
             if (   !\FWValidator::isEmpty($productPrice)
                 && !\FWValidator::isEmpty($externalPaymentCustomerId)
@@ -492,7 +492,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $subscription->setPurpose($purpose);
                 $subscription->setReferenceId($transactionReference);
                 
-                $credit = 0;
                 if (   !\FWValidator::isEmpty($subscriptionId)
                     && $subscriptionObj
                     && !\FWValidator::isEmpty($subscriptionObj->getPaymentAmount())
@@ -512,6 +511,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $daysLeftInCurrentRenewal = $renewalDate->diff($today)->days;
                     
                     $credit                   = number_format($subscriptionPricePerDay * $daysLeftInCurrentRenewal, 2, '.', '');
+
+                    // set discount price of first payment period of subscription
+                    $subscriptionOptions['oneTimeSalePrice'] = $productPrice - $credit;
                 }
                 //update amount deatails in subscription
                 $subscription->setAmount(($productPrice - $credit) * 100);
@@ -545,24 +547,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             try {
                                 $payrexx->update($updateSubscription);
                             } catch (\Payrexx\PayrexxException $e) {
-                                \DBG::log('JsonMultiSite::manageSubscription() - Could not update the a subscription ID => '. $newExternalSubscriptionId);
+                                \DBG::log('JsonMultiSite::manageSubscription() - Could not update the a subscription ID => '. $newExternalSubscriptionId. ' / '. $e->getMessage());
                             }
                         }
                         
-                        $transactionReference .= '-'. $newExternalSubscriptionId;
-                        
-                        // transaction data needed for OrderPaymentEventListener::postPersist()
-                        $subscriptionValidDate = new \DateTime();
-                        $subscriptionValidDate->add($subscriptionPeriod);
-                        $transactionData = array(
-                          'subscription' => array(
-                              'id'          => $newExternalSubscriptionId,
-                              'valid_until' => $subscriptionValidDate->format('Y-m-d')
-                          )
-                        );
-                        
-                        // create payment for order
-                        ComponentController::createPayrexxPayment($transactionReference, $productPrice, $transactionData);
+                        $transactionReference .= "$newExternalSubscriptionId|";
                     } else {
                         \DBG::log('JsonMultiSite::manageSubscription() - Could not create a subscription.');
                         return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
@@ -589,6 +578,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $newSubscriptionId = $newSubscription->getId();
                 break; // break the loop after getting the subscription id from the first entry
             }
+
+            // set regular product price for next payment period of subscription
+            if (!empty($credit)) {
+                $newSubscription->setPaymentAmount($productPrice);
+                \Env::get('em')->flush();
+            }
+    
             return array ('status' => 'success', 'id' => $newSubscriptionId, 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_SUCCESS']);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -3184,12 +3180,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $referenceId = '';
             $purpose     = '';
             if (isset($params['post']['multisite_address']) && !\FWValidator::isEmpty($params['post']['multisite_address'])) {
-                $referenceId = $product->getId() . '-name-' . $params['post']['multisite_address'];
+                $referenceId = "|{$product->getId()}|name|{$params['post']['multisite_address']}|";
                 $purpose     = $productName . ' - ' . $params['post']['multisite_address'];
             } elseif ($objUser) {
                 $userId      = $objUser->getId();
-                $referenceId = $product->getId() . '-' . 'owner-' . $userId;
+                $referenceId = "|{$product->getId()}|owner|$userId|";
                 $purpose     = $productName;
+            } else {
+                throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: Insufficient mapping information supplied: ' . var_export($params, true));
             }
             
             $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');

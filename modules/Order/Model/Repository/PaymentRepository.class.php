@@ -38,22 +38,40 @@ class PaymentRepository extends \Doctrine\ORM\EntityRepository {
            ->from('\Cx\Modules\Order\Model\Entity\Payment', 'p');
         
         $i = 1;
-        $term = '';
-        $operator = '';
         foreach ($criteria as $key => $value) {
-            if (empty($value)) {
-                continue;
+            switch ($key) {
+                case 'transactionReference':
+                    $operator = ' LIKE ?';
+                    $term = $value . '%';
+                    break;
+
+                default:
+                    $operator = ' = ?';
+                    $term = $value;
+                    break;
             }
-            $operator = ($key == 'transactionReference') ? ' LIKE ?' : ($key == 'invoice' ? ' IS ?' : ' = ?');
-            $term     = ($key == 'transactionReference') ? $value . '%' : $value;
+
             if ($i == 1) {
-                $qb->where('p.' . $key . $operator . $i)->setParameter($i, $term);
+                if (is_null($value)) {
+                    $qb->where("p.$key IS NULL");
+                } else {
+                    $qb->where('p.' . $key . $operator . $i)->setParameter($i, $term);
+                }
             } else {
-                $qb->andWhere('p.' . $key . $operator . $i)->setParameter($i, $term);
+                if (is_null($value)) {
+                    $qb->andWhere("p.$key IS NULL");
+                } else {
+                    $qb->andWhere('p.' . $key . $operator . $i)->setParameter($i, $term);
+                }
             }
             $i++;
         }
         
-        return current($qb->getQuery()->getResult());
+        $result = $qb->getQuery()->getResult();
+        if (!$result) {
+            return;
+        }
+
+        return current($result);
     }
 }

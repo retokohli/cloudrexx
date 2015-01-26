@@ -781,7 +781,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setVariable(array(
             'MULTISITE_WEBSITE_FRONTEND_LINK'       => $this->getApiProtocol() . $website->getBaseDn()->getName(),
             'MULTISITE_WEBSITE_DELETE_REDIRECT_URL' => \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'Subscription')->toString(),
-            'MULTISITE_SUBSCRIPTION_ID'             => !\FWValidator::isEmpty($subscription->getId()) ? $subscription->getId() : ''
+            'MULTISITE_SUBSCRIPTION_ID'             => !\FWValidator::isEmpty($subscription) ? $subscription->getId() : ''
         ));
         self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
         self::showOrHideBlock($objTemplate, 'showAdminButton', $status);
@@ -1293,6 +1293,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
         
+        // register placed payment
         $invoiceReferId = isset($invoice['referenceId']) ? $invoice['referenceId'] : '';
         $invoiceId      = isset($invoice['paymentRequestId']) ? $invoice['paymentRequestId'] : 0;
         if (\FWValidator::isEmpty($invoiceReferId) || \FWValidator::isEmpty($invoiceId)) {
@@ -1320,7 +1321,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             && $invoice['amount'] == ($response->getAmount() / 100)
             && $invoice['referenceId'] == $response->getReferenceId()
         ) {
-            $transactionReference = $invoiceReferId . (!\FWValidator::isEmpty($subscriptionId) ? '-' . $subscriptionId : '');
+            $transactionReference = $invoiceReferId . (!\FWValidator::isEmpty($subscriptionId) ? "$subscriptionId|" : '');
             self::createPayrexxPayment($transactionReference, $invoice['amount'], $transaction);
         }
     }
@@ -1549,7 +1550,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'customer'          => \FWUser::getFWUserObject()->objUser,
             );
             
-            $transactionReference = $productId . '-' . $websiteName;
+            $transactionReference = "|$productId|name|$websiteName|";
             $currency = self::getUserCurrency($crmContactId);
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $currency, \FWUser::getFWUserObject()->objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
@@ -1891,11 +1892,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 && !\Cx\Core\Setting\Controller\Setting::add('payrexxAccount', '', 19,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for URL to Payrexx form");
-            }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxFormId') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('payrexxFormId', '', 20,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
-                    throw new MultiSiteException("Failed to add Setting entry for Payrexx Form Id");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('payrexxApiSecret', '', 21,
