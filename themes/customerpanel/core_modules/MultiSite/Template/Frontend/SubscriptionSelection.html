@@ -239,7 +239,25 @@
     color: #FFF;
     background-color: rgb(149, 199, 0);
 }
-
+span.abo-info {
+    width: 100%;
+    font-size: 18px;
+    padding-bottom: 5px;
+    display: inline-block;
+}
+span.abo-info p {
+    width: 75px;
+    display: inline-block;
+    padding: 0;
+}
+#subscription_billable {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 16px;;
+}
+.confirm_subscription label {
+    width: 100%;
+}
 @media (min-width: 601px) {
     /******************************************
     * PRICES
@@ -480,12 +498,12 @@
         
         function buySubscription($this) {
             jQuery('.buy-now').removeClass('subscriptionProduct');
-            $this.data('renewalOption', $this.parent().find('.product_price').find('div:visible').attr('data-renewalOption'));
+            $this.data('renewalOption', $this.parent().parent().parent().parent().parent().find('.prices-periods').find('a.active').text().replace('- 10%',''));
             $this.addClass('subscriptionProduct');
             
             productPriceAmount = getProductPrice($this);
             if (productPriceAmount) {
-                price    =  productPriceAmount + ' / ' + $this.data('renewalOption');
+                price    =  productPriceAmount + '.- CHF / ' + $this.data('renewalOption');
                 subsName =  $this.parent().find('.subscription_name').html();
                 
                 jQuery('#SubscriptionSelection').modal('hide');
@@ -494,7 +512,7 @@
                 manageSubscription($this);
             }
         }
-        
+
         jQuery('.buy-now.website').on('click', function () {
             if ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') {
                 buySubscription(jQuery(this));
@@ -626,11 +644,11 @@
                   .appendTo(row);
           jQuery('<div />')
                   .addClass('grid-offset-bottom')
-                  .append('{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_BILLABLE_SUBSCRIPTION}<br/>')
-                  .append('<span><strong>{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</strong>: <span id="subscription_name">'+ subsName +'</span></span><br/>')
-                  .append('<span><strong>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_PRICE}</strong>: <span id="subscription_payment">'+ price +'</span></span><br/>')
-                  .append('<span class="grid-align-1-1 grid-offset-top confirm_subscription" ><label> <input type="checkbox" id="order_confirm"/> {MULTISITE_ACCEPT_TERMS_URL}</label></span>')
                   .append('<div class="alert alert-danger order_confirm" style="display: none;">{TXT_MULTISITE_ACCEPT_TERMS_ERROR}</div>')
+                  .append('<span id="subscription_billable">{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_BILLABLE_SUBSCRIPTION}</span>')
+                  .append('<span class="abo-info"><p>{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}:</p> <span id="subscription_name"><strong>'+ subsName +'</strong></span></span><br/>')
+                  .append('<span class="abo-info"><p>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_PRICE}:</p> <span id="subscription_payment">'+ price +'</span></span><br/>')
+                  .append('<span class="grid-align-1-1 grid-offset-top confirm_subscription" ><label> <input type="checkbox" id="order_confirm"/> {MULTISITE_ACCEPT_TERMS_URL}</label></span>')
                   .appendTo(row);
           jQuery('<button />')                  
                   .addClass('upgrade upgradeSubscription')
@@ -643,6 +661,7 @@
                           jQuery('div.alert.order_confirm').show();
                           return false;
                       }
+                      jQuery('.upgradeSubscription').removeClass('upgrade');
                       $this = jQuery('.buy-now.subscriptionProduct');                      
                       if (subscriptionOptions.hasPayrexxAccount) {
                           jQuery('#order_subscription').modal('hide');
@@ -672,7 +691,7 @@
                     }
                 )
                 .modal('show');
-        }    
+        }
       });
 </script>
 
