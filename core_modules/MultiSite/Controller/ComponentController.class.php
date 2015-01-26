@@ -2749,4 +2749,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $currency = \Env::get('em')->getRepository('Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
         return $currency;
     }
+
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+        global $_ARRAYLANG;
+
+        \Env::get('init')->loadLanguageData('MultiSite');
+
+        $this->cx->getTemplate()->setVariable(
+            array(
+                'MULTISITE_AGB_URL' => \Cx\Core\Setting\Controller\Setting::getValue('termsUrl'),
+                'TXT_MULTISITE_ACCEPT_TERMS_URL_NAME' => $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'],
+            )
+        );
+    }
 }
