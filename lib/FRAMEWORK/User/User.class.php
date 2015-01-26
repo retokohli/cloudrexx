@@ -1675,89 +1675,20 @@ class User extends User_Profile
             $this->networks->save();
         }
         
-        if(\FWValidator::isEmpty($this->getHashedPassword())){
-            $generatedPassword = $this->make_password();
-            $this->setPassword($generatedPassword);
-        }
-        
         if ($this->id) {
             \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             $this->updateUser();
         } else {
+            if(\FWValidator::isEmpty($this->getHashedPassword())){
+                $generatedPassword = $this->make_password();
+                $this->setPassword($generatedPassword);
+            }
+            
             \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             $this->createUser();
             
             if(!\FWValidator::isEmpty($generatedPassword)) {
-                $objUserMail = \FWUser::getFWUserObject()->getMail();
-
-                //Implement the old mail function
-                if (
-                    (
-                        $objUserMail->load('customer_panel_admin_notification', $_LANGID) ||
-                        $objUserMail->load('customer_panel_admin_notification')
-                    ) &&
-                    (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) &&
-                    ($objMail = new \PHPMailer()) !== false
-                ) {
-                    if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-                        if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                            $objMail->IsSMTP();
-                            $objMail->Host = $arrSmtp['hostname'];
-                            $objMail->Port = $arrSmtp['port'];
-                            $objMail->SMTPAuth = true;
-                            $objMail->Username = $arrSmtp['username'];
-                            $objMail->Password = $arrSmtp['password'];
-                        }
-                    }
-
-                    $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->From = $objUserMail->getSenderMail();
-                    $objMail->FromName = $objUserMail->getSenderName();
-                    $objMail->AddReplyTo($objUserMail->getSenderMail());
-                    $objMail->Subject = $objUserMail->getSubject();
-
-                    $placeholders = array(
-                                    '[[WEBSITE]]',
-                                    '[[FIRSTNAME]]',
-                                    '[[LASTNAME]]',
-                                    '[[EMAIL]]',
-                                    '[[PASSWORD]]',
-                                    '[[LINK]]',
-                                    '[[SENDER]]'
-                                );
-                    $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-                    $mainDomain = $domainRepository->getMainDomain()->getName();
-                    $placeholdersVal = array(
-                                    $mainDomain,
-                                    contrexx_raw2xhtml($this->getProfileAttribute('firstname')),
-                                    contrexx_raw2xhtml($this->getProfileAttribute('lastname')),
-                                    $this->getEmail(),
-                                    $generatedPassword,
-                                    ASCMS_PROTOCOL . '://'.$mainDomain.'/cadmin',
-                                    contrexx_raw2xhtml($objUserMail->getSenderName())
-                                );
-
-                    if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
-                        $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-                        $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
-                            $placeholders,
-                            $placeholdersVal,
-                            $objUserMail->getBodyText()
-                        );
-                    }
-                    if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
-                        $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
-                        $objMail->Body = str_replace(
-                            $placeholders,
-                            $placeholdersVal,
-                            $objUserMail->getBodyHtml()
-                        );
-                    }
-
-                    $objMail->AddAddress($this->getEmail());
-
-                    $objMail->Send();
-                }
+                $this->sendUserAccountInvitationMail($generatedPassword);
             }
         }
 
@@ -1783,6 +1714,78 @@ class User extends User_Profile
         }
         
         return true;
+    }
+    
+    //Implement the old mail function
+    protected function sendUserAccountInvitationMail($generatedPassword) {
+        $objUserMail = \FWUser::getFWUserObject()->getMail();
+        if (
+            (
+                $objUserMail->load('user_account_invitation', $_LANGID) ||
+                $objUserMail->load('user_account_invitation')
+            ) &&
+            (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) &&
+            ($objMail = new \PHPMailer()) !== false
+        ) {
+            if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
+                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                    $objMail->IsSMTP();
+                    $objMail->Host = $arrSmtp['hostname'];
+                    $objMail->Port = $arrSmtp['port'];
+                    $objMail->SMTPAuth = true;
+                    $objMail->Username = $arrSmtp['username'];
+                    $objMail->Password = $arrSmtp['password'];
+                }
+            }
+
+            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail->From = $objUserMail->getSenderMail();
+            $objMail->FromName = $objUserMail->getSenderName();
+            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->Subject = $objUserMail->getSubject();
+
+            $placeholders = array(
+                            '[[WEBSITE]]',
+                            '[[FIRSTNAME]]',
+                            '[[LASTNAME]]',
+                            '[[EMAIL]]',
+                            '[[PASSWORD]]',
+                            '[[LINK]]',
+                            '[[SENDER]]'
+                        );
+            $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+            $mainDomain = $domainRepository->getMainDomain()->getName();
+            $placeholdersVal = array(
+                            $mainDomain,
+                            contrexx_raw2xhtml($this->getProfileAttribute('firstname')),
+                            contrexx_raw2xhtml($this->getProfileAttribute('lastname')),
+                            $this->getEmail(),
+                            $generatedPassword,
+                            ASCMS_PROTOCOL . '://'.$mainDomain.\Cx\Core\Core\Controller\Cx::getBackendFolderName(),
+                            contrexx_raw2xhtml($objUserMail->getSenderName())
+                        );
+
+            if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
+                $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
+                $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
+                    $placeholders,
+                    $placeholdersVal,
+                    $objUserMail->getBodyText()
+                );
+            }
+            if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
+                $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
+                $objMail->Body = str_replace(
+                    $placeholders,
+                    $placeholdersVal,
+                    $objUserMail->getBodyHtml()
+                );
+            }
+
+            $objMail->AddAddress($this->getEmail());
+
+            $objMail->Send();
+        }
     }
 
     protected function updateUser() {
