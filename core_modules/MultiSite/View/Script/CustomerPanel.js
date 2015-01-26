@@ -64,7 +64,7 @@ function updateQueryStringParameter(key, value, uri) {
   }
 }
 
-count = 0;
+var requsts = new Array();
 function  loadContent(jQuerySelector, url) {
     jQuery.ajax({
         dataType: 'html',
@@ -76,8 +76,11 @@ function  loadContent(jQuerySelector, url) {
             }
         },
         error: function(xhr, textStatus, errorThrown) {
-            if (xhr.status.toString().match(/^5\d{2}$/)  && count <= 3) {
-                ++count;
+            if(requsts[this.url] === undefined ) {
+                requsts[this.url] = 1;
+            }
+            if (xhr.status.toString().match(/^5\d{2}$/)  && requsts[this.url] < 3) {
+                requsts[this.url] += 1;
                 jQuery.ajax(this);
             }
         }
