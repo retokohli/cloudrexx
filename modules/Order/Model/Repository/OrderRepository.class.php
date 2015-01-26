@@ -125,6 +125,11 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
             
             //create subscription
             $subscription = $order->createSubscription($product, $subscriptionOptions);
+            // set discount price for first payment period of subscription
+            if (!empty($subscriptionOptions['oneTimeSalePrice'])) {
+                $subscription->setPaymentAmount($subscriptionOptions['oneTimeSalePrice']);
+            }
+
             $order->billSubscriptions();
             $invoices = $order->getInvoices();
             
@@ -136,9 +141,9 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                         if ($payment) {
                             //set subscription-id to Subscription::$externalSubscriptionId
                             if ($subscription) {
-                                $referenceArry = explode('-', $payment->getTransactionReference());
-                                if (isset($referenceArry[3]) && !empty($referenceArry[3])) {
-                                    $subscription->setExternalSubscriptionId($referenceArry[3]);
+                                $referenceArry = explode('|', $payment->getTransactionReference());
+                                if (isset($referenceArry[4]) && !empty($referenceArry[4])) {
+                                    $subscription->setExternalSubscriptionId($referenceArry[4]);
                                 }
                             }
                             $transactionData = $payment->getTransactionData();
