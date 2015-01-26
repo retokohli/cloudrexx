@@ -282,6 +282,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_SUCCESS']  = 'Successfu
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_FAILED']   = 'Failed to delete the selected administrator account.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_SUCCESS']     = 'The new administrator account has been added successfully.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_FAILED']      = 'The creation of the new administrator account failed.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_EDIT_SUCCESS']    = 'The new administrator account has been edited successfully.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_EDIT_FAILED']     = 'The editing of the new administrator account failed.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']        = 'Invalid request.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EXTERNALPAYMENTCUSTOMERIDPROFILEATTRIBUTEID'] = 'Payment user profile attribute ID';

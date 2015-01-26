@@ -170,6 +170,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_SUCCESS']  = 'Das ausge
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_FAILED']   = 'Das Entfernen des ausgewählten Administrator-Kontos schlug fehl.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_SUCCESS']     = 'Das Administrator-Konto wurde erfolgreich hinzugefügt.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_ADD_FAILED']      = 'Das Hinzufügen des Administrator-Kontos schlug fehl.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_EDIT_SUCCESS']    = 'Das Administrator-Konto wurde erfolgreich bearbeitet.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_EDIT_FAILED']     = 'Das Bearbeiten des Administrator-Kontos schlug fehl.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']        = 'Ungültige Anfrage.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATE_ADMIN_USER'] = 'Administrator hinzufügen';

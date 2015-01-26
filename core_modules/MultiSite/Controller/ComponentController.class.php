@@ -1172,27 +1172,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 switch ($submitFormAction) {
 
                     case 'Edit':
-                        $successMsg = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
-                        $errorMsg = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
-                        
-                        $email = isset($_POST['adminUser']['email']) ? contrexx_input2raw($_POST['adminUser']['email']) : '';
-                        if (\FWValidator::isEmpty($email) || !\FWValidator::isEmail($email)) {
-                            return $this->parseJsonMessage($_ARRAYLANG['TXT_ACCESS_INVALID_ENTERED_EMAIL_ADDRESS'], false);
-                        }
                         $command                                                    = 'updateUser';
                         $params['websiteUserId']                                    = $_POST['adminUser']['id'];
-                        $params['multisite_user_account_email']                     = $_POST['adminUser']['email'];
-                        $params['multisite_user_account_password']                  = contrexx_input2raw($_POST['adminUser']['password']);
-                        $params['multisite_user_account_password_confirmed']        = contrexx_input2raw($_POST['adminUser']['confirm_password']);
-                        $params['multisite_user_profile_attribute']['lastname']     = array(contrexx_input2raw($_POST['adminUser']['userProfile']['lastname']));
-                        $params['multisite_user_profile_attribute']['firstname']    = array(contrexx_input2raw($_POST['adminUser']['userProfile']['firstname']));
-                        break;
                     case 'Add' :
                         $email = isset($_POST['adminUser']['email']) ? contrexx_input2raw($_POST['adminUser']['email']) : '';
                         if (\FWValidator::isEmpty($email) || !\FWValidator::isEmail($email)) {
                             return $this->parseJsonMessage($_ARRAYLANG['TXT_ACCESS_INVALID_ENTERED_EMAIL_ADDRESS'], false);
                         }
-                        $command                                                    = 'createAdminUser';
+                        if(!isset($command)) {
+                            $command                                                = 'createAdminUser';
+                        }
+                        
                         $params['multisite_user_account_email']                     = $_POST['adminUser']['email'];
                         $params['multisite_user_account_password']                  = contrexx_input2raw($_POST['adminUser']['password']);
                         $params['multisite_user_account_password_confirmed']        = contrexx_input2raw($_POST['adminUser']['confirm_password']);
@@ -1212,7 +1202,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return $this->parseJsonMessage($successMsg, true);
                     } else {
-                        return $this->parseJsonMessage($response->message, false);
+                        if (is_object($response->message)) {
+                            return $this->parseJsonMessage($response->message->message, false);
+                        } else {
+                            return $this->parseJsonMessage($response->message, false);
+                        }
                     }
                 }
             } catch (\Exception $e) {

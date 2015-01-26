@@ -793,7 +793,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $confirmedPassword = !empty($data['multisite_user_account_password_confirmed']) ? contrexx_input2raw($data['multisite_user_account_password_confirmed']) : '';
                 if (!$objUser->setPassword($password, $confirmedPassword)) {
                     \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
-                    throw new MultiSiteJsonException($objUser->getErrorMsg());
+                    throw new MultiSiteJsonException(array(
+                        'object'    => 'password',
+                        'type'      => 'danger',
+                        'message'   => join("\n", $objUser->getErrorMsg()),
+                        'log'       => \DBG::getMemoryLogs(),
+                    ));
                 }
             }
             
@@ -907,7 +912,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $confirmedPassword = !empty($data['multisite_user_account_password_confirmed']) ? contrexx_input2raw($data['multisite_user_account_password_confirmed']) : '';
             if (!$objUser->setPassword($password, $confirmedPassword)) {
                 \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
-                throw new MultiSiteJsonException($objUser->getErrorMsg());
+                throw new MultiSiteJsonException(array(
+                    'object'    => 'password',
+                    'type'      => 'danger',
+                    'message'   => join("\n", $objUser->getErrorMsg()),
+                    'log'       => \DBG::getMemoryLogs(),
+                ));
             }
         }
 
