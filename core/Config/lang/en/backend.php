@@ -12,6 +12,7 @@ $_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'] = 'System';
 $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'] = 'Caching';
 $_ARRAYLANG['TXT_EMAIL_SERVER'] = 'E-mail server';
 $_ARRAYLANG['TXT_SETTINGS_IMAGE'] = 'Bilder';
+$_ARRAYLANG['TXT_CORE_WYSIWYG'] = 'WYSIWYG';
 $_ARRAYLANG['TXT_LICENSE'] = 'License Management';
 $_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] = 'There are wrong ftp credentials defined in the configurations file (%s) or the ftp connection is disabled. If you don"t fix this issue, contrexx probably doesn"t have access to upload or edit files and folders!';
 $_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = 'The file <strong>%s</strong> is write-protected!<br />No changes to the settings can be made until the write protection on that file has been removed!';

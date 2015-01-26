@@ -12,6 +12,7 @@ $_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'] = 'System';
 $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'] = 'Caching';
 $_ARRAYLANG['TXT_EMAIL_SERVER'] = 'E-Mail Server';
 $_ARRAYLANG['TXT_SETTINGS_IMAGE'] = 'Bilder';
+$_ARRAYLANG['TXT_CORE_WYSIWYG'] = 'WYSIWYG';
 $_ARRAYLANG['TXT_LICENSE'] = 'Lizenzverwaltung';
 $_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] = 'Es wurde in der Konfigurationsdatei (%s) eine ungültige oder keine FTP-Verbindung konfiguriert. Dadurch können Probleme beim Hochladen oder Bearbeiten von Dateien und Verzeichnissen auftreten!';
 $_ARRAYLANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'] = 'Auf die Datei <strong>%s</strong> besteht kein Schreibzugriff!<br />Ohne Schreibzugriff auf diese Datei können keine Einstellungen vorgenommen werden!';
