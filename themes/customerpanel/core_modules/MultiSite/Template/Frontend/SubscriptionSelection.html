@@ -498,7 +498,8 @@ span.abo-info p {
         
         function buySubscription($this) {
             jQuery('.buy-now').removeClass('subscriptionProduct');
-            $this.data('renewalOption', $this.parent().parent().parent().parent().parent().find('.prices-periods').find('a.active').text().replace('- 10%',''));
+            $selectedRenewalPlan = $this.parent().parent().parent().parent().parent().find('.prices-periods').find('a.active').attr('data-renewalOption');
+            $this.data('renewalOption', $selectedRenewalPlan);
             $this.addClass('subscriptionProduct');
             
             productPriceAmount = getProductPrice($this);
@@ -697,9 +698,9 @@ span.abo-info p {
 
 <div class="prices-periods">
     <h2><span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
-    <a class="monthly" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a>
-    <a class="annual active" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a>
-    <a class="biannual" href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}
+    <a class="monthly" data-renewalOption="monthly"  href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a>
+    <a class="annual active" data-renewalOption="annually"  href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a>
+    <a class="biannual" data-renewalOption="biannually"  href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}
         <span class="biannual-discount">
             <sub> - 10% </sub>
         </span>
