@@ -88,7 +88,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                         ' value="'.$strValue.'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'"'.
                         ' style="width: 300px;" onfocus="this.select();" />'.
                         '&nbsp;<input type="button" value="Durchsuchen"'.
-                        ' onClick="getFileBrowser(\''.$this->moduleNameLC.'Inputfield_'.$intId.'\', \''.$this->moduleNameLC.'\', \'/uploads\')" />';
+                        ' onClick="getFileBrowser(\''.$this->moduleNameLC.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/uploads\')" />';
                 } else {
                     $strInputfield =
                         $strImagePreview.
