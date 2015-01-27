@@ -4094,18 +4094,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
                     $pleskLoginUrl = '';
                     
-                    switch(true) {
+                    switch (true) {
                         case $hostingController instanceof PleskController:
-                            $hostingController->setWebspaceId($website->getMailAccountId());                    
+                            $hostingController->setWebspaceId($website->getMailAccountId());
                             $pleskLoginUrl = $hostingController->getPanelAutoLoginUrl($clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
                             break;
-                       
+
                         case $hostingController instanceof XamppController:
                             // ToDo: This method should also work in case XamppController would be used.
+                            $pleskLoginUrl = $hostingController->getPanelAutoLoginUrl($clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
+                            break;
+
                         default:
                             break;
                     }
-                    
+
                     if ($pleskLoginUrl) {
                         return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
                     }

@@ -343,6 +343,6 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      */
     public function getPanelAutoLoginUrl($ipAddress, $sourceAddress) {
         \DBG::msg("MultiSite (XamppController): get new auto-login url for panel $ipAddress / $sourceAddress");
-        return null;       
+        return true;       
     }
 }
