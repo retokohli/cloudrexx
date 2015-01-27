@@ -433,6 +433,7 @@ span.abo-info p {
         // cadminPath => available in customerPanel.js
         var subscriptionOptions = {
             id: '{MULTISITE_SUBSCRIPTION_ID}',
+            renewalPlan: '{MULTISITE_SUBSCRIPTION_RENEWAL_PLAN}',
             addErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_FAILED}',
             addPaymentErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_PAYMENT_FAILED}',
             addHeaderErrorTxt: '{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ADD_INPROGRESS}',
@@ -496,11 +497,37 @@ span.abo-info p {
             buySubscription(jQuery(this));
         });
         
+        function isValidRenewalPlan($newRenewalPlan) {
+            jQuery('div.alert.renewal_plan').hide();
+            switch (subscriptionOptions.renewalPlan) {
+                case 'annually':
+                    if (!($newRenewalPlan == 'annually' || $newRenewalPlan == 'biannually')) {
+                        jQuery('div.alert.renewal_plan').show();
+                          return false;
+                    }
+                    break;
+                case 'biannually':
+                    if ($newRenewalPlan !== 'biannually') {
+                        jQuery('div.alert.renewal_plan').show();
+                          return false;
+                    }
+                    break;
+                case 'monthly':    
+                default:
+                    break;
+            }       
+            return true;
+        }
+        
         function buySubscription($this) {
             jQuery('.buy-now').removeClass('subscriptionProduct');
             $selectedRenewalPlan = $this.parent().parent().parent().parent().parent().find('.prices-periods').find('a.active').attr('data-renewalOption');
             $this.data('renewalOption', $selectedRenewalPlan);
             $this.addClass('subscriptionProduct');
+            
+            if (!isValidRenewalPlan($selectedRenewalPlan)) {
+                return false;
+            }
             
             productPriceAmount = getProductPrice($this);
             if (productPriceAmount) {
@@ -738,6 +765,9 @@ span.abo-info p {
         </div>
     </div>
     <!-- END showProduct -->
+    <div class="grid-offset-top grid-offset-left grid-offset-right">
+        <div class="alert alert-danger renewal_plan" style="display: none;">{TXT_MULTISITE_SUBSCRIPTION_RENEWAL_PLAN_ERROR}</div>
+    </div>
 </div>
 <div class="cancelBtn">
     <input type="button" data-dismiss="modal" value="{TXT_CORE_MODULE_MULTISITE_CANCEL}"/>
