@@ -468,7 +468,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $currency = self::getUserCurrency($crmContactId);
         $websiteName = $website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website ? $website->getName() : '';
         $products = array();
+        $renewalPlan = 'monthly';
         if ($subscription) {
+            if ($subscription->getProductEntity() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                $renewalPlan = self::getSubscriptionRenewalPlan($subscription->getRenewalUnit(), $subscription->getRenewalQuantifier());
+            }
             $product = $subscription->getProduct();
             if (!$product) {
                 return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS'];
@@ -529,10 +533,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setVariable(array(
             'MULTISITE_SUBSCRIPTION_ID'             => $subscriptionId,
             'MULTISITE_WEBSITE_NAME'                => $websiteName,    
+            'MULTISITE_SUBSCRIPTION_RENEWAL_PLAN'   => $renewalPlan,    
             'MULTISITE_ACCEPT_TERMS_URL'            => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
             'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'))) ? 'true' : 'false',            
         ));
         return $objTemplate->get();
+    }
+    
+    /**
+     * Get the subscription renewal plan
+     * 
+     * @param string  $unit
+     * @param integer $quantifier
+     * 
+     * @return string
+     */
+    public static function getSubscriptionRenewalPlan($unit, $quantifier) {
+        
+        $renewalPlan = 'monthly';
+        
+        switch ($unit) {
+            case \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR:
+                $renewalPlan = ($quantifier == 1) ? 'annually' : 'biannually';
+                break;
+        }
+
+        return $renewalPlan;
     }
     
     /**
