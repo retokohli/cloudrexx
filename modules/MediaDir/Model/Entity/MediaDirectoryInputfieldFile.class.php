@@ -101,7 +101,7 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = $strFilePreview.'<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][file]" value="'.$strValue.'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$this->moduleNameLC.'Inputfield_'.$intId.'\', \''.$this->moduleNameLC.'\', \'/uploads\')" />';
+                    $strInputfield = $strFilePreview.'<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][file]" value="'.$strValue.'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$this->moduleNameLC.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/uploads\')" />';
                     $strInputfield .= '<br /><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][name]" value="'.$strName.'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_name" style="width: 300px;" onfocus="this.select();" />&nbsp;<i>'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'].'</i>';
                 
                 } else {
