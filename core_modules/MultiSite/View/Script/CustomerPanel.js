@@ -179,7 +179,7 @@ function enableOrDisableMailService($this) {
 }
     
 function pleskAutoLogin($this) {
-      var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=pleskAutoLoginUrl';
+      var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=getPanelAutoLoginUrl';
       var data = {websiteId: $this.data('id')};
       requestAutoLogin($this, url, data);
 }

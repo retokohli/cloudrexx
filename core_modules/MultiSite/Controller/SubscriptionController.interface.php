@@ -99,4 +99,12 @@ interface SubscriptionController {
      * @param string $planGuid        planGuid
      */
     public function changePlanOfSubscription($subscriptionId, $planGuid);
+    
+    /**
+     * Create a new auto-login url for Panel.
+     * 
+     * @param string $ipAddress      ip address
+     * @param string $sourceAddress  source address
+     */
+    public function getPanelAutoLoginUrl($ipAddress, $sourceAddress);    
 }

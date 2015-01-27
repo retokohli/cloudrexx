@@ -650,16 +650,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Get a subscription owner GUID 
      * 
-     * @param  integer $subscriptionId subscription id
-     * 
      * @return string subscription owner GUID
      * @throws ApiRequestException on error
      * 
      */
-    public function getSubscriptionOwnerGuid($subscriptionId)
+    public function getSubscriptionOwnerGuid()
     {
-        \DBG::msg("MultiSite (PleskController): get subscription owner GUID: $subscriptionId");
-        if (\FWValidator::isEmpty($subscriptionId)) {
+        \DBG::msg("MultiSite (PleskController): get subscription owner GUID.");
+        if (\FWValidator::isEmpty($this->webspaceId)) {
             return false;
         }
 
@@ -675,7 +673,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $filter = $xmldoc->createElement('filter');
         $get->appendChild($filter);
 
-        $id = $xmldoc->createElement('id', $subscriptionId);
+        $id = $xmldoc->createElement('id', $this->webspaceId);
         $filter->appendChild($id);
 
         $dataSet = $xmldoc->createElement('dataset');
@@ -700,14 +698,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * Get an auxilary user login name
      * 
      * @param string $ownerGuid
-     * @param integer $subscriptionDomainId
      * 
      * @return string auxilary user login name
      * @throws ApiRequestException on error
      */
-    public function getAuxilaryUserLoginName($ownerGuid, $subscriptionDomainId) {
-        \DBG::msg("MultiSite (PleskController): get auxilary user login name: $ownerGuid  / $subscriptionDomainId");
-        if (\FWValidator::isEmpty($subscriptionDomainId) || \FWValidator::isEmpty($ownerGuid)) {
+    public function getAuxilaryUserLoginName($ownerGuid)
+    {
+        \DBG::msg("MultiSite (PleskController): get auxilary user login name: $ownerGuid");
+        if (\FWValidator::isEmpty($this->webspaceId) || \FWValidator::isEmpty($ownerGuid)) {
             return false;
         }
 
@@ -747,7 +745,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $responseArr = json_decode($responseJson, true);
         foreach ($responseArr['result'] as $value) {
             $getInfo = $value['data']['gen-info'];
-            if (isset($getInfo['subscription-domain-id']) && $getInfo['subscription-domain-id'] == $subscriptionDomainId) {
+            if (isset($getInfo['subscription-domain-id']) && $getInfo['subscription-domain-id'] == $this->webspaceId) {
                 return $getInfo['login'];
             }
         }
@@ -1549,17 +1547,19 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Create a new auto-login url for Plesk.
      * 
-     * @param string $loginName
      * @param string $ipAddress
      * @param string $sourceAddress
      * 
      * @return string $pleskLoginUrl
      * @throws ApiRequestException
      */
-    public function pleskAutoLoginUrl($loginName, $ipAddress, $sourceAddress)
+    public function getPanelAutoLoginUrl($ipAddress, $sourceAddress)
     {
-        \DBG::msg("MultiSite (PleskController): Plesk auto login url.");
-        if (empty($loginName) || empty($ipAddress) || empty($sourceAddress)) {
+        \DBG::msg("MultiSite (PleskController): get Panel auto login url.");
+        $subscriptionOwnerGuid = $this->getSubscriptionOwnerGuid();
+        $loginName = !\FWValidator::isEmpty($subscriptionOwnerGuid) ? $this->getAuxilaryUserLoginName($subscriptionOwnerGuid) : '';
+
+        if (\FWValidator::isEmpty($loginName) || \FWValidator::isEmpty($ipAddress) || \FWValidator::isEmpty($sourceAddress)) {
             return;
         }
         
@@ -1588,7 +1588,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             \DBG::dump($xmldoc->saveXML());
             \DBG::dump($response);
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
-            throw new ApiRequestException("Error in plesk auto login url: {$error}");
+            throw new ApiRequestException("Error in get panel auto login url: {$error}");
         }
         $pleskLoginUrl = "https://{$this->host}:8443/enterprise/rsession_init.php?PHPSESSID=" . $resultNode->id;
         return $pleskLoginUrl;

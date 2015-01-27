@@ -334,4 +334,15 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): changePlanOfSubscription");
         return null;
     }
+    
+    /**
+     * Create a new auto-login url for Panel.
+     * 
+     * @param string $ipAddress      ip address
+     * @param string $sourceAddress  source address
+     */
+    public function getPanelAutoLoginUrl($ipAddress, $sourceAddress) {
+        \DBG::msg("MultiSite (XamppController): get new auto-login url for panel $ipAddress / $sourceAddress");
+        return null;       
+    }
 }
