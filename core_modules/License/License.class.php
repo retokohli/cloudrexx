@@ -29,7 +29,8 @@ class License {
     private $frontendLocked = false;
     private $editionName;
     private $availableComponents;
-    private $legalComponents;
+    private $legalComponents = array();
+    private $legalComponentsAdditionalData = array();
     private $legalFrontendComponents;
     private $validTo;
     private $upgradeUrl;
@@ -77,7 +78,7 @@ class License {
         $this->state = $state;
         $this->editionName = $editionName;
         $this->availableComponents = $availableComponents;
-        $this->legalComponents = $legalComponents;
+        $this->loadComponentsAdditionalData($legalComponents);
         $this->validTo = $validTo;
         $this->createdAt = $createdAt;
         $this->registeredDomains = is_array($registeredDomains) ? $registeredDomains : array();
@@ -109,6 +110,30 @@ class License {
         $this->setLastSuccessfulUpdateTime($lastSuccessfulUpdate);
     }
     
+    /**
+     * Load the component's addtional data from the argument $legalComponents
+     * 
+     * @param array $legalComponents
+     * 
+     * @return mixed array | boolean
+     */
+    public function loadComponentsAdditionalData($legalComponents = array()) {
+        if (empty($legalComponents)) {
+            return;
+        }
+        
+        $this->legalComponents = array();
+        foreach ($legalComponents as $key => $legalComponent) {
+            if (is_array($legalComponent)) {
+                $componentName = key($legalComponent);
+                $this->legalComponents[] = $componentName;
+                $this->legalComponentsAdditionalData[$componentName] = $legalComponent[$componentName];
+            } else {
+                $this->legalComponents[] = $legalComponent;
+            }
+        }
+    }
+    
     public function getState() {
         return $this->state;
     }
@@ -128,6 +153,10 @@ class License {
         return $this->editionName;
     }
     
+    public function setEditionName($editionName) {
+        $this->editionName = $editionName;
+    }
+    
     public function getAvailableComponents() {
         return $this->availableComponents;
     }
@@ -141,7 +170,24 @@ class License {
     }
 
     public function setLegalComponents($legalComponents) {
-        $this->legalComponents = $legalComponents;
+        $this->loadComponentsAdditionalData($legalComponents);
+    }
+    /**
+     * get the legal components additional data
+     * 
+     * @return array
+     */
+    public function getLegalComponentsAdditionalData() {
+        return $this->legalComponentsAdditionalData;
+    }
+    
+    /**
+     * Set the legal Components additional data
+     * 
+     * @param array $legalComponentsAdditionalData
+     */
+    public function setLegalComponentsAdditionalData($legalComponentsAdditionalData) {
+        $this->legalComponentsAdditionalData = $legalComponentsAdditionalData;
     }
     
     public function isInLegalComponents($componentName) {
@@ -171,16 +217,31 @@ class License {
         return $this->upgradeUrl;
     }
     
+    public function setUpgradeUrl($upgradeUrl) {
+        $this->upgradeUrl = $upgradeUrl;
+    }
+    
     public function getCreatedAtDate() {
         return $this->createdAt;
+    }
+    
+    public function setCreatedAtDate($createdAt) {
+        $this->createdAt = $createdAt;
     }
     
     public function getRegisteredDomains() {
         return $this->registeredDomains;
     }
     
+    public function setRegisteredDomains($registeredDomains) {
+        $this->registeredDomains = $registeredDomains;
+    }
+
     public function getInstallationId() {
         return $this->instId;
+    }
+    public function setInstallationId($insId) {
+        $this->instId = $insId;
     }
     
     public function getLicenseKey() {
@@ -289,6 +350,10 @@ class License {
         return $this->grayzoneTime;
     }
     
+    public function setGrayzoneTime($grayzoneTime) {
+        $this->grayzoneTime = $grayzoneTime;
+    }
+    
     public function getGrayzoneMessages() {
         return $this->grayzoneMessages;
     }
@@ -310,12 +375,20 @@ class License {
         return $this->frontendLockTime;
     }
     
+    public function setFrontendLockTime($frontendLockTime) {
+        $this->frontendLockTime = $frontendLockTime;
+    }
+    
     public function setUpdateInterval($requestInterval) {
         $this->requestInterval = $requestInterval;
     }
     
     public function getRequestInterval() {
         return $this->requestInterval;
+    }
+    
+    public function setRequestInterval($requestInterval) {
+        $this->requestInterval = $requestInterval;
     }
     
     public function getFirstFailedUpdateTime() {
@@ -422,7 +495,7 @@ class License {
         }
 
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseValidTo')) {
-            \Cx\Core\Setting\Controller\Setting::add('licenseValidTo', $this->getValidToDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license');
+            \Cx\Core\Setting\Controller\Setting::add('licenseValidTo', $this->getValidToDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_DATETIME, null, 'license');
         } else {
             \Cx\Core\Setting\Controller\Setting::set('licenseValidTo', $this->getValidToDate());
         }
@@ -455,7 +528,7 @@ class License {
         }
 
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCreatedAt')) {
-            \Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt', $this->getCreatedAtDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license');
+            \Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt', $this->getCreatedAtDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'license');
         } else {
             \Cx\Core\Setting\Controller\Setting::set('licenseCreatedAt', $this->getCreatedAtDate());
         }
@@ -546,7 +619,7 @@ class License {
         }
 
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('coreCmsReleaseDate')) {
-            \Cx\Core\Setting\Controller\Setting::add('coreCmsReleaseDate', $this->getVersion()->getReleaseDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'release');
+            \Cx\Core\Setting\Controller\Setting::add('coreCmsReleaseDate', $this->getVersion()->getReleaseDate(), 1, \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'release');
         } else {
             \Cx\Core\Setting\Controller\Setting::set('coreCmsReleaseDate', $this->getVersion()->getReleaseDate());
         }
@@ -577,6 +650,25 @@ class License {
                 `name` IN(\'' . implode('\', \'', $this->getLegalComponentsList()) . '\')
         ';
         $objDb->Execute($query);
+
+        //Save legal components additional data values.
+        if (!\FWValidator::isEmpty($this->getLegalComponentsAdditionalData())) {
+
+            foreach ($this->getLegalComponentsAdditionalData() as $componentName => $additionalData) {
+                if (empty($componentName)) {
+                    continue;
+                }
+                $query = "
+                    UPDATE 
+                        " . DBPREFIX . "modules
+                    SET 
+                        `additional_data` = '" . contrexx_raw2db(json_encode($additionalData)) . "'
+                    WHERE 
+                        `name` = '" . contrexx_raw2db($componentName) . "'
+                    ";
+                $objDb->Execute($query);
+            }
+        }
     }
     
     /**
