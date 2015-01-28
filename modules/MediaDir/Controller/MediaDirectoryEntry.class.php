@@ -165,27 +165,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if(empty($this->strSearchTerm)) {
-            $query = "
-                SELECT
-                    first_rel_inputfield.`field_id` AS `id`
-                FROM
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS first_rel_inputfield
-                LEFT JOIN
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield
-                ON 
-                    first_rel_inputfield.`field_id` = inputfield.`id`
-                WHERE
-                    (inputfield.`type` != 16 AND inputfield.`type` != 17 AND inputfield.`type` != 30)
-                AND
-                    (first_rel_inputfield.`entry_id` = entry.`id`)
-                AND 
-                    (first_rel_inputfield.`form_id` = entry.`form_id`)
-                ORDER BY
-                    inputfield.`order` ASC
-                LIMIT 1
-            ";
-
-            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$query.")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
+            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
         } else {
             $strWhereTerm = "AND ((rel_inputfield.`value` LIKE '%".$this->strSearchTerm."%') OR (entry.`id` = '".$this->strSearchTerm."')) ";
             $strWhereFirstInputfield = '';
@@ -313,7 +293,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     }
 
 
-
+    
     function listEntries($objTpl, $intView)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
@@ -1222,16 +1202,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
     function countEntries($intCategoryId, $intLevelId, $formId = null, $searchTerm = '', $countAllEntries = false)
     {
-        global $objDatabase, $_ARRAYLANG, $objInit;
-
+        global $objDatabase, $_ARRAYLANG, $objInit, $_LANGID;
+        
         $strWhereLevel      = '';
         $strFromLevel       = '';
         $strWhereCategory   = '';
         $strFromCategory    = '';
         $strWhereForm       = '';
         $strWhereSearchTerm = '';
-        $strFromInputfield  = '';
         $strWhereActive     = '';
+        $strWhereFirstInputfield = '';
 
         if(!empty($intLevelId)) {
             $strWhereLevel = "AND ((level.`level_id` = ".$intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
@@ -1251,7 +1231,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             $term = contrexx_input2db($searchTerm);
             $strWhereSearchTerm  = 'AND (rel_inputfield.`entry_id` = entry.`id`) ';
             $strWhereSearchTerm .= 'AND ((`rel_inputfield`.`value` LIKE "%' . $term . '%") OR (`entry`.`id` = "' . $term . '"))';
-            $strFromInputfield   = ', `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_rel_entry_inputfields` AS `rel_inputfield`';
+        } else {
+            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
         }
         
         if (!$countAllEntries) {
@@ -1267,12 +1248,13 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $query = "SELECT
                     entry.`id` AS `id`
                   FROM
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry ,
+                    `" . DBPREFIX . "module_" . $this->moduleTablePrefix . "_rel_entry_inputfields` AS `rel_inputfield`
                     ".$strFromCategory."
                     ".$strFromLevel."
-                    ".$strFromInputfield."
                   WHERE
                     (entry.`id` != 0)
+                    ".$strWhereFirstInputfield."
                     ".$strWhereActive."
                     ".$strWhereCategory."
                     ".$strWhereLevel."
