@@ -419,6 +419,9 @@ span.abo-info p {
 .confirm_subscription label {
     font-weight: 300;
 }
+.hideRenewalPlan {
+    display: none !important;
+}
 </style>
 <script type="text/javascript">
     jQuery(document).ready(function () {
@@ -446,7 +449,7 @@ span.abo-info p {
             hasPayrexxAccount: {MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT},
             isPaymentUrlRequested: false
         };
-
+        checkAndHideRenewalPlan();
         var subscriptionType = ((jQuery.trim(subscriptionOptions.id) != '0') && jQuery.trim(subscriptionOptions.id) != '') ? 'upgrade' : 'add';
         
         //Set Payment Url
@@ -497,23 +500,25 @@ span.abo-info p {
             buySubscription(jQuery(this));
         });
         
-        function isValidRenewalPlan($newRenewalPlan) {
-            jQuery('div.alert.renewal_plan').hide();
+        function checkAndHideRenewalPlan() {
+            if (!subscriptionOptions.renewalPlan) {
+                return;
+            }
+            jQuery('div.prices-periods a').removeClass('hideRenewalPlan');
+            jQuery('div.prices-periods a').removeClass('active');
             switch (subscriptionOptions.renewalPlan) {
                 case 'annually':
-                    if (!($newRenewalPlan == 'annually' || $newRenewalPlan == 'biannually')) {
-                        jQuery('div.alert.renewal_plan').show();
-                          return false;
-                    }
+                    jQuery('div.prices-periods a.monthly').addClass('hideRenewalPlan');
+                    jQuery('div.prices-periods a.annual').addClass('active');
                     break;
                 case 'biannually':
-                    if ($newRenewalPlan !== 'biannually') {
-                        jQuery('div.alert.renewal_plan').show();
-                          return false;
-                    }
+                    jQuery('div.prices-periods a.monthly').addClass('hideRenewalPlan');
+                    jQuery('div.prices-periods a.annual').addClass('hideRenewalPlan');
+                    jQuery('div.prices-periods a.biannual').addClass('active');
                     break;
                 case 'monthly':    
                 default:
+                    jQuery('div.prices-periods a.annual').addClass('active');
                     break;
             }       
             return true;
@@ -524,10 +529,6 @@ span.abo-info p {
             $selectedRenewalPlan = $this.parent().parent().parent().parent().parent().find('.prices-periods').find('a.active').attr('data-renewalOption');
             $this.data('renewalOption', $selectedRenewalPlan);
             $this.addClass('subscriptionProduct');
-            
-            if (!isValidRenewalPlan($selectedRenewalPlan)) {
-                return false;
-            }
             
             productPriceAmount = getProductPrice($this);
             if (productPriceAmount) {
@@ -765,9 +766,6 @@ span.abo-info p {
         </div>
     </div>
     <!-- END showProduct -->
-    <div class="grid-offset-top grid-offset-left grid-offset-right">
-        <div class="alert alert-danger renewal_plan" style="display: none;">{TXT_MULTISITE_SUBSCRIPTION_RENEWAL_PLAN_ERROR}</div>
-    </div>
 </div>
 <div class="cancelBtn">
     <input type="button" data-dismiss="modal" value="{TXT_CORE_MODULE_MULTISITE_CANCEL}"/>
