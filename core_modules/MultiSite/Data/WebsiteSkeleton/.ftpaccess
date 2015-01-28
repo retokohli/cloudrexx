@@ -1,4 +1,8 @@
 <Directory>
+  # We don't want to manipulate .ftpaccess files
+  PathDenyFilter "(\\.ftpaccess)$"
+  # Hide configuration files from view
+  HideFiles "(\\.ftpaccess)$"
   <Limit WRITE>
     DenyAll
   </Limit>
