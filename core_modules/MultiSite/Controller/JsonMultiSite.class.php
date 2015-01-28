@@ -187,14 +187,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (!\User::isUniqueEmail($params['post']['multisite_email_address'])) {
             self::loadLanguageData();
 
-// TODO: set login url
-            $loginUrl = '';
+            $loginUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain') . '/')->toString();
             $loginLink = '<a class="alert-link" href="'.$loginUrl.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'].'</a>';
             throw new MultiSiteJsonException(array(
                 'object'    => 'email',
-// TODO: change back to 'info' once login functionality has been implemented
-                //'type'      => 'info',
-                'type'      => 'danger',
+                'type'      => 'info',
                 'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'], $loginLink),
             ));
         }

@@ -30,9 +30,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'Eine Website 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_SHORT'] = 'Der Name muss aus mindestens %s Zeichen bestehen.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_LONG'] = 'Der Name kann maximal %s Zeichen lang sein.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_WRONG_CHARS'] = 'Der Name darf nur aus Kleinbuchstaben (a-z) und Zahlen bestehen.';
-// reactivate and remove entry below once login has been implemented
-//$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'Zu dieser E-Mail Adresse besteht bereits ein Konto - %s.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'Zu dieser E-Mail Adresse besteht bereits ein Konto. Bitte verwenden Sie eine andere E-Mail Adresse.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'Zu dieser E-Mail Adresse besteht bereits ein Konto - %s.';
+//$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'] = 'Zu dieser E-Mail Adresse besteht bereits ein Konto. Bitte verwenden Sie eine andere E-Mail Adresse.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL'] = 'Die angegebene E-Mail Adresse ist ung&uuml;ltig.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'] = 'Log in';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Ihre Website %s ist bereit! Überprüfen Sie Ihre Inbox (im Spam gelandet?). Wir haben Ihnen ein E-Mail mit Ihren Zugangsdaten und ersten Tipps gesendet. Viel Erfolg.';
