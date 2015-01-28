@@ -17,8 +17,9 @@ $_ARRAYLANG['TXT_CORE_WYSIWYG'] = 'WYSIWYG';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_DESCRIPTION'] = 'Dieses Modul dient dazu die WYSIWYG-Vorlagen zu verwalten';
 
 // Here come the ACTs:
-$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG'] = 'Übersicht';
-$_ARRAYLANG['TXT_CORE_WYSIWYG_ENTITY'] = 'Wysiwyg';
+$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE'] = 'WYSIWYG Vorlagen';
+$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE_TOOLTIP'] = 'Erstellen Sie hier eine Inhaltsvorlage, welche Sie später im Editor unter Vorlagen auswählen können.';
+$_ARRAYLANG['TXT_CORE_WYSIWYG_TEMPLATE_ENTITY'] = 'WysiwygTemplate';
 
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TITLE'] = 'Titel';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_DESCRIPTION'] = 'Beschreibung';

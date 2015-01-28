@@ -16,7 +16,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addEventListener('wysiwygCssReload', $this);
     }
     
-    /*
+    /**
      * This function controlls the events from the eventListener
      */
     public function onEvent($eventName, array $eventArgs) {
@@ -54,12 +54,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('Backend');
     }
     
-    /*
+    /**
      * find all wysiwyg templates and retrun it in the correct format for the ckeditor
      */
     public function getWysiwygTempaltes() {
         $em = $this->cx->getDb()->getEntityManager();
-        $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\Wysiwyg');
+        $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate');
         $allWysiwyg = $repo->findBy(array('inactive'=>'0'));
         $containerArr = array();
         foreach ($allWysiwyg as $wysiwyg) {
