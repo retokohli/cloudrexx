@@ -3,9 +3,9 @@
 namespace Cx\Core\Wysiwyg\Model\Entity;
 
 /**
- * Cx\Core\Wysiwyg\Model\Entity\Wysiwyg
+ * Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate
  */
-class Wysiwyg extends \Cx\Model\Base\EntityBase {
+class WysiwygTemplate extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $id
      */

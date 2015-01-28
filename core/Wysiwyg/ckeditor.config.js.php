@@ -148,7 +148,9 @@ CKEDITOR.on('instanceReady',function(){
         //var defaultPath = "/"
         loadingTemplates.load = (function(){
             //this.defaultPath = defaultPath;
-            this.button.setState(CKEDITOR.TRISTATE_DISABLED) // Disable "Template"-Button
+            if (typeof this.button != 'undefined') {
+                this.button.setState(CKEDITOR.TRISTATE_DISABLED) // Disable "Template"-Button
+            }
             for(var i=0;i<this.length;i++){
                 (function(item){
                     CKEDITOR.addTemplates('default',{
@@ -157,7 +159,9 @@ CKEDITOR.on('instanceReady',function(){
                     });
                 }).bind(this)(this[i])
             }
-            this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
+            if (typeof this.button != 'undefined') {
+                this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
+            }
         }).bind(loadingTemplates)();
     
     

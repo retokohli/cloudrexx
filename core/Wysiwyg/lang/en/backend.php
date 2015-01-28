@@ -18,11 +18,12 @@ $_ARRAYLANG['TXT_CORE_WYSIWYG_DESCRIPTION'] = 'With this module you can manage t
 
 // Here come the ACTs:
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_DEFAULT'] = 'Overview';
-$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG'] = 'Overview';
+$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE'] = 'WYSIWYG Templates';
+$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE_TOOLTIP'] = 'Click here to create a content template , which you can select in the Editor under Templates later.';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS_DEFAULT'] = 'Mailing';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS_HELP'] = 'Help';
-$_ARRAYLANG['TXT_CORE_WYSIWYG_ENTITY'] = 'Wysiwyg';
+$_ARRAYLANG['TXT_CORE_WYSIWYG_TEMPLATE_ENTITY'] = 'WysiwygTemplate';
 
 // Now our content specific values:
 $_ARRAYLANG['TXT_CORE_WYSIWYG_CONGRATULATIONS'] = 'Overview';
