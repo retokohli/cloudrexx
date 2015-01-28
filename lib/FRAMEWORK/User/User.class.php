@@ -1720,7 +1720,7 @@ class User extends User_Profile
      * Send a invitation mail to the created user.
      * It used the old mail function
      * 
-     * @param type $generatedPassword
+     * @param string $generatedPassword
      */
     protected function sendUserAccountInvitationMail($generatedPassword) {
         $objUserMail = \FWUser::getFWUserObject()->getMail();
