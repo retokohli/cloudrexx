@@ -207,7 +207,7 @@ class Config
     
     protected function  showWysiwyg() {
         global $_ARRAYLANG, $objTemplate, $objInit; 
-        $path = \Cx\Core\Core\Controller\Cx::getCodeBaseDocumentRootPath() . \Cx\Core\Core\Controller\Cx::getCoreFolderName() . '/Wysiwyg/View/Template/Backend';
+        $path = Cx::instanciate()->getCodeBaseDocumentRootPath() . Cx::instanciate()->getCoreFolderName() . '/Wysiwyg/View/Template/Backend';
         $objTpl = new \Cx\Core\Html\Sigma($path);
         $objTpl->loadTemplateFile('Default.html');
 
@@ -215,12 +215,12 @@ class Config
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
 
         $em = \Env::get('cx')->getDb()->getEntityManager();
-        $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\Wysiwyg');
+        $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate');
         $wysiwygs = $repo->findBy(array('inactive'=>'0'));
 
         $view = new \Cx\Core\Html\Controller\ViewGenerator($wysiwygs, array(
-            'entityName'    => $_ARRAYLANG['TXT_CORE_WYSIWYG_ENTITY'],
-            'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG'],
+            'entityName' => $_ARRAYLANG['TXT_CORE_WYSIWYG_TEMPLATE_ENTITY'],
+            'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE_TOOLTIP'] .'</span>',
             'functions' => array(
                 'add'       => true,
                 'edit'      => false,
@@ -262,7 +262,7 @@ class Config
         ));
         $objTpl->setVariable('WYSIWYG_CONTENT', $view->render());
 
-        $objTpl->setVariable('ADD_STYLE_URL', \Cx\Core\Core\Controller\Cx::getCodeBaseCoreWebPath() . \Cx\Core\Core\Controller\Cx::getCoreFolderName() . '/Wysiwyg/View/Style/Backend.css');
+        $objTpl->setVariable('ADD_STYLE_URL', Cx::instanciate()->getCodeBaseCoreWebPath() . Cx::instanciate()->getCoreFolderName() . '/Wysiwyg/View/Style/Backend.css');
         $objTpl->parse('additional_style');
 
         $objTemplate->setVariable(array(
