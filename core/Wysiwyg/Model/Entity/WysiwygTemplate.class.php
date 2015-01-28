@@ -9,32 +9,32 @@ class WysiwygTemplate extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $title
      */
-    private $title;
+    protected $title;
 
     /**
      * @var text $description
      */
-    private $description;
+    protected $description;
 
     /**
      * @var string $imagePath
      */
-    private $imagePath;
+    protected $imagePath;
 
     /**
      * @var text $htmlContent
      */
-    private $htmlContent;
+    protected $htmlContent;
 
     /**
      * @var boolean $inactive
      */
-    private $inactive;
+    protected $inactive;
 
 
     /**
