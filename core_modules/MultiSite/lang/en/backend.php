@@ -326,4 +326,3 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DISABLED'] = 'disabled';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_OVERVIEW']       = 'Go to overview...';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ADD_NEW_BUTTON'] = 'Add new';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_BUTTON_DETAIL']              = 'Manage';
-$_ARRAYLANG['TXT_MULTISITE_SUBSCRIPTION_RENEWAL_PLAN_ERROR'] = 'You have choosed lower renewal plan from current one. Choose another renewal plan.';
