@@ -1134,6 +1134,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (empty($authenticationValue) || !is_array($authenticationValue)) {
             throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Insufficient mapping information supplied.');
         }
+        //check the black listed domains
+        if (in_array($params['post']['domainName'], array_map('trim', explode(',', \Cx\Core\Setting\Controller\Setting::getValue('domainBlackList'))))) {
+            \DBG::log('JsonMultiSite::mapDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
+            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Domain name is black listed.');
+        }
 
         try {
             $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
@@ -1501,7 +1506,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             \DBG::dump($params);
             throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied.'.var_export($params, true));
         }
-
+        //check the black listed domains
+        if (in_array($params['post']['domainName'], array_map('trim', explode(',', \Cx\Core\Setting\Controller\Setting::getValue('domainBlackList'))))) {
+            \DBG::log('JsonMultiSite::updateDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
+            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Domain name is black listed.');
+        }
+        
         try {
             $website = null;
             
@@ -1590,7 +1600,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException($e->getMessage());
         }
     }
-
+    
     /**
      * set Website State
      * 

@@ -1924,6 +1924,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Payrexx API Secret");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('domainBlackList') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('domainBlackList', self::getAllDomainsName(), 22,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, null, 'setup')){
+                    throw new MultiSiteException("Failed to add Setting entry for Domain Black list");
+            }
 
             // websiteSetup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
@@ -2604,7 +2609,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         return $backendGroupIds;
     }
-        
+    
+    /**
+     * Get all the domains name
+     * 
+     * @return string $domainNames
+     */
+    public static function getAllDomainsName() {
+        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $domains = $domainRepo->findAll();
+        $domainNames = array();
+        foreach ($domains as $domain) {
+            $domainNames[] = $domain->getName();
+        }
+        return implode(',', $domainNames);
+    }
+
     /**
      * Parse the message to the json output.
      * 
