@@ -543,7 +543,7 @@ CREATE TABLE `contrexx_core_text` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_core_wysiwyg_wysiwyg` (
+CREATE TABLE `contrexx_core_wysiwyg_template` (
   `id` int(11) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
