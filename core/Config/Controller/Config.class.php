@@ -319,6 +319,15 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::show(
+                $template,
+                'index.php?cmd=Config',
+                $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTINFORMATION'],
+                $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTINFORMATION'],
+                'TXT_CORE_CONFIG_',
+                !$this->isWritable()
+                );
         \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea', 'Yaml');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
@@ -334,15 +343,6 @@ class Config
                 'index.php?cmd=Config',
                 $_ARRAYLANG['TXT_CORE_CONFIG_SECURITY'],
                 $_ARRAYLANG['TXT_CORE_CONFIG_SECURITY'],
-                'TXT_CORE_CONFIG_',
-                !$this->isWritable()
-                );
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation', 'Yaml');
-        \Cx\Core\Setting\Controller\Setting::show(
-                $template,
-                'index.php?cmd=Config',
-                $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTINFORMATION'],
-                $_ARRAYLANG['TXT_CORE_CONFIG_CONTACTINFORMATION'],
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
