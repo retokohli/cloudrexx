@@ -119,14 +119,26 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 SELECT 
                     `rel_levels`.`level_id`, count(*) AS `c`
                 FROM 
-                    `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entries`
+                    `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entry`
                 INNER JOIN 
                     `" . DBPREFIX . "module_".$this->moduleTablePrefix."_rel_entry_levels` AS `rel_levels`
                 ON 
-                    `rel_levels`.`entry_id` = `entries`.`id`
+                    `rel_levels`.`entry_id` = `entry`.`id`
+                LEFT JOIN 
+                    `".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields` AS rel_inputfield
+                ON  
+                    rel_inputfield.`entry_id` = `entry`.`id`
                 WHERE 
-                    `entries`.`active` = 1
-                AND ((`entries`.`duration_type`=2 AND `entries`.`duration_start` <= ".time()." AND `entries`.`duration_end` >= ".time().") OR (`entries`.`duration_type`=1))
+                    `entry`.`active` = 1
+                AND 
+                    rel_inputfield.`form_id` = `entry`.`form_id`
+                AND 
+                    rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")
+                AND
+                    (rel_inputfield.`lang_id` = '".$_LANGID."')
+                AND 
+                    ((`entry`.`duration_type`=2 AND `entry`.`duration_start` <= ".time()." AND `entry`.`duration_end` >= ".time().") OR (`entry`.`duration_type`=1))
+
                 GROUP BY 
                     `rel_levels`.`level_id`";
             

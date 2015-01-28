@@ -662,7 +662,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
 
     function countEntries($intCategoryId=null, $intLevelId=null)
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID;
 
         $intCategoryId = intval($intCategoryId);
         $intLevelId = intval($intLevelId);
@@ -682,16 +682,27 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         }
         $objCountEntriesRS = $objDatabase->Execute("
                                                 SELECT COUNT(*) as c
-                                                    FROM
-                                                        `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entries`
+                                                FROM
+                                                        `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entry`
                                                 INNER JOIN
                                                     `".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories` AS `rel_categories`
                                                 ON
-                                                    `rel_categories`.`entry_id` = `entries`.`id`
-                                                WHERE
-                                                    `entries`.`active` = 1
-                                                AND ((`entries`.`duration_type`=2 AND `entries`.`duration_start` <= ".time()." AND `entries`.`duration_end` >= ".time().") OR (`entries`.`duration_type`=1))
-                                                " . $whereCategory . "
+                                                    `rel_categories`.`entry_id` = `entry`.`id`
+                                                LEFT JOIN 
+                                                    `".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields` AS rel_inputfield
+                                                ON  
+                                                    rel_inputfield.`entry_id` = `entry`.`id`
+                                                
+                                                WHERE 
+                                                    `entry`.`active` = 1
+                                                AND 
+                                                    (rel_inputfield.`form_id` = entry.`form_id`)
+                                                AND 
+                                                    (rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId()."))
+                                                AND
+                                                    (rel_inputfield.`lang_id` = '".$_LANGID."')
+                                                AND ((`entry`.`duration_type`=2 AND `entry`.`duration_start` <= ".time()." AND `entry`.`duration_end` >= ".time().") OR (`entry`.`duration_type`=1))
+                                                    " . $whereCategory . "
                                                 GROUP BY
                                                     `rel_categories`.`category_id`");
 
