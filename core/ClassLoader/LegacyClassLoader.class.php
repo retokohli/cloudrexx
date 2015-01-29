@@ -35,12 +35,24 @@ class LegacyClassLoader {
         $this->cx = $cx;
         $this->extraClassRepositoryFile = $this->cx->getCodeBaseCorePath(). '/ClassLoader/Data/LegacyClassCache.dat';
         $this->userClassCacheFile  = $this->cx->getWebsiteTempPath().'/LegacyClassCache.dat';
-        if (file_exists($classLoader->getFilePath($this->extraClassRepositoryFile))) {
-            $extraClassArr = unserialize(file_get_contents($classLoader->getFilePath($this->extraClassRepositoryFile)));
+
+        $userClassArr = $extraClassArr = array();
+        
+        $extraClassRepositoryFile = $classLoader->getFilePath($this->extraClassRepositoryFile);
+        if (file_exists($extraClassRepositoryFile)) {
+            $fh = fopen($extraClassRepositoryFile, 'r');
+            flock($fh, LOCK_SH);
+            $extraClassArr = unserialize(file_get_contents($extraClassRepositoryFile));
+            fclose($fh);
         }
-        if (file_exists($classLoader->getFilePath($this->userClassCacheFile))) {
-            $userClassArr = unserialize(file_get_contents($classLoader->getFilePath($this->userClassCacheFile)));
+        $userClassCacheFile = $classLoader->getFilePath($this->userClassCacheFile);
+        if (file_exists($userClassCacheFile)) {
+            $fh = fopen($userClassCacheFile, 'r');
+            flock($fh, LOCK_SH);
+            $userClassArr = unserialize(file_get_contents($userClassCacheFile));
+            fclose($fh);
         }
+        
         $this->mapTable = !empty($userClassArr) ? array_merge($extraClassArr, $userClassArr) : $extraClassArr;
     }
 
