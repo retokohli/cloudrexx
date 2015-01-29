@@ -1135,7 +1135,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Insufficient mapping information supplied.');
         }
         //check the black listed domains
-        if (in_array($params['post']['domainName'], array_map('trim', explode(',', \Cx\Core\Setting\Controller\Setting::getValue('domainBlackList'))))) {
+        if (!self::checkBlackListDomains($params['post']['domainName'])) {
             \DBG::log('JsonMultiSite::mapDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
             throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Domain name is black listed.');
         }
@@ -1507,7 +1507,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied.'.var_export($params, true));
         }
         //check the black listed domains
-        if (in_array($params['post']['domainName'], array_map('trim', explode(',', \Cx\Core\Setting\Controller\Setting::getValue('domainBlackList'))))) {
+        if (!self::checkBlackListDomains($params['post']['domainName'])) {
             \DBG::log('JsonMultiSite::updateDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
             throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Domain name is black listed.');
         }
@@ -1601,6 +1601,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
+    /**
+     * check the black listed domains
+     * 
+     * @param string $domainName
+     * @return boolean
+     */
+    public static function checkBlackListDomains($domainName) {
+        if (empty($domainName)) {
+            return;
+        }
+        if (in_array($domainName, array_map('trim', explode(',', \Cx\Core\Setting\Controller\Setting::getValue('domainBlackList'))))) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * set Website State
      * 
