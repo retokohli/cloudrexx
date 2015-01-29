@@ -1141,6 +1141,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         try {
+            //Check the domain name is subdomain of the domain or not.
+            if (!$this->checkSubDomainOfMultisiteDomain($params['post']['domainName'])) {
+                \DBG::log('JsonMultiSite::mapDomain() failed: The domain name is a subdomain of multiSite Domain');
+                throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: The domain name is a subdomain of multiSite Domain');
+            }
+            
             $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
             
             if ($domainRepo->findOneBy(array('name' => $params['post']['domainName']))) {
@@ -1151,7 +1157,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             // create a new domain entity that shall be used for the mapping
             $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);
-
+            
             switch ($params['post']['componentType']) {
                 case ComponentController::MODE_SERVICE:
                     // If componentType is MODE_SERVICE, then we are about to
@@ -1513,6 +1519,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         try {
+            //Check the domain name is subdomain of the domain or not.
+            if (!$this->checkSubDomainOfMultisiteDomain($params['post']['domainName'])) {
+                \DBG::log('JsonMultiSite::updateDomain() failed: The domain name is a subdomain of multiSite Domain');
+                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: The domain name is a subdomain of multiSite Domain');
+            }
+            
             $website = null;
             
             $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
@@ -4613,5 +4625,26 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             \DBG::msg('JsonMultiSite::updateMainDomain() failed: Updating the main domain process failed:' . $e->getMessage());
             throw new MultiSiteJsonException('Failed to set the main domain.');
         }
+    }
+    
+    /**
+     * Check whether the domain name is subdomain of multisite domain or not.
+     * 
+     * @param string $domainName 
+     * @return boolean
+     */
+    public function checkSubDomainOfMultisiteDomain($domainName) {
+        if (empty($domainName)) {
+            return;
+        }
+        
+        $multiSiteDomain = \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+        if(strlen($domainName) - strlen($multiSiteDomain) === stripos($domainName, $multiSiteDomain)) {
+            if ($domainName === $multiSiteDomain || stripos($domainName, '.'.$multiSiteDomain)) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 }
