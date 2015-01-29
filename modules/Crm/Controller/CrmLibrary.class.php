@@ -84,7 +84,7 @@ class CrmLibrary
     * @access public
     * @var integer
     */
-    var $adminAccessId          = 557;
+    var $adminAccessId          = 195;
 
     /**
     * Customer Access Id
@@ -92,7 +92,7 @@ class CrmLibrary
     * @access public
     * @var integer
     */
-    var $customerAccessId       = 556;
+    var $customerAccessId       = 194;
 
     /**
     * Settings value stored in array
@@ -3260,7 +3260,7 @@ CODE;
         \JS::registerJS("modules/Crm/View/Script/main.js");
         \JS::registerCSS("modules/Crm/View/Style/main.css");
     }
-    
+
     /**
      * Get currencyId by crm id
      * 

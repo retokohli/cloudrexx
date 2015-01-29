@@ -37,7 +37,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
                 $objTemplate = $this->cx->getTemplate();
                 
-                \Permission::checkAccess(556, 'static');
+                \Permission::checkAccess(194, 'static');
                 $subMenuTitle = $_CORELANG['TXT_CRM'];
                 $objCrmModule = new CrmManager($this->getName());
                 $objCrmModule->getPage();
