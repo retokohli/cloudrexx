@@ -60,7 +60,6 @@ class UploaderConfiguration
                 'SELECT id,name, size,  100 as quality, CONCAT(".thumb_",name) as value FROM  `' . DBPREFIX
                 . 'settings_thumbnail`'
         );
-        \DBG::log($sth->errorCode());
         self::$thumbnails = $sth->fetchAll();
     }
 
