@@ -22,11 +22,11 @@ namespace Cx\Modules\Order\Model\Repository;
 class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * To get all the past cancelled subscriptions.
+     * To get all the past subscriptions and based on the criteria get in the arguments.
      * 
      * @return array
      */
-    function getExpiredCancelledSubscriptions() 
+    function getExpiredSubscriptionsByCriteria($criteria) 
     {
         $now = new \DateTime('now');
         $qb  = \Env::get('em')->createQueryBuilder();
@@ -35,7 +35,7 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
                 ->where('s.state = :state')
                 ->andWhere('s.expirationDate <= :expirationDate')
                 ->setParameters(array(
-                    'state' => \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED,
+                    'state' => $criteria,
                     'expirationDate' => $now->format("Y-m-d H:i:s")                 
                 ));
         
