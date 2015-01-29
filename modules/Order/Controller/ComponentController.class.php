@@ -44,4 +44,77 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $crmCrmContactEventListener = new \Cx\Modules\Order\Model\Event\CrmCrmContactEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmCrmContactEventListener);
     }
+    
+    /**
+     * get command mode
+     * 
+     * @return type array
+     */
+    public function getCommandsForCommandMode() 
+    {
+        return array('Order');
+    }
+    
+    /**
+     * execute the command
+     * 
+     * @param type $command   command name
+     * @param type $arguments argument name
+     * 
+     * @return type null
+     */
+    public function executeCommand($command, $arguments) 
+    {
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addEvent('model/terminated');
+        
+        $subcommand = null;
+        if (!empty($arguments[0])) {
+            $subcommand = $arguments[0];
+        }
+        switch ($command) {
+            case 'Order':
+                switch ($subcommand) {
+                    case 'Cron':
+                        $this->executeCommandCron();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default :
+                break;
+        }
+    }
+    
+    /**
+     * Api Cron command
+     * 
+     * @return type null
+     */
+    public function executeCommandCron()
+    {
+        //  Terminate the active and expired subscription.
+        $this->terminateExpiredSubscriptions();
+    }
+    
+    /**
+     * To terminate the expired and active subscription
+     * 
+     * @return type null
+     */
+    public function terminateExpiredSubscriptions()
+    {
+        $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+        $subscriptions    = $subscriptionRepo->getExpiredSubscriptionsByCriteria(\Cx\Modules\Order\Model\Entity\Subscription::STATE_ACTIVE);
+        
+        if (\FWValidator::isEmpty($subscriptions)) {
+            return;
+        }
+        
+        foreach ($subscriptions as $subscription) {
+            $subscription->terminate();
+        }
+        \Env::get('em')->flush();
+    }
 }
