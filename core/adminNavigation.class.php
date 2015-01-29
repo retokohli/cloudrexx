@@ -187,7 +187,7 @@ class adminMenu
             $nonUpgradeEntry = false;
             foreach ($arrMatchingItems as $link_data) {
                 if ($this->moduleExists($link_data[4])) {
-                    if($link_data[4] == 'LicenseManager' && !in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList())) {
+                    if($link_data[4] && !in_array($link_data[4], \Env::get('cx')->getLicense()->getLegalComponentsList())) {
                        continue; 
                     }
                         
