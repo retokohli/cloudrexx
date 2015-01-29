@@ -327,3 +327,10 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DISABLED'] = 'disabled';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_OVERVIEW']       = 'Go to overview...';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ADD_NEW_BUTTON'] = 'Add new';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_BUTTON_DETAIL']              = 'Manage';
+
+//Error messages
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_CUSTOMERS_REACHED'] = 'You have reached the maximum number(%s) of customers.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_FORMS_REACHED'] = 'You have reached the maximum number(%s) of forms.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_PRODUCTS_REACHED'] = 'You have reached the maximum number(%s ) of products in the store.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_ADMINS_REACHED'] = 'You have reached the maximum number(%s) of administrators.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'] = 'Go to the overview page';

@@ -213,3 +213,10 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_OVERVIEW']       = 'Zur Übersich
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ADD_NEW_BUTTON'] = 'Neue hinzufügen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OFFLINE'] = 'offline';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DISABLED'] = 'gesperrt';
+
+//Error messages
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_CUSTOMERS_REACHED'] = 'Sie haben die maximale Anzahl(%s) von Kunden erreicht.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_FORMS_REACHED'] = 'Sie haben die maximale Anzahl(%s) von Formularen erreicht.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_PRODUCTS_REACHED'] = 'Sie haben die maximale Anzahl(%s) von Produkten im Shop erreicht.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_ADMINS_REACHED'] = 'Sie haben die maximale Anzahl(%s) von Administratoren erreicht.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'] = 'Weiter zur Übersichtsseite';

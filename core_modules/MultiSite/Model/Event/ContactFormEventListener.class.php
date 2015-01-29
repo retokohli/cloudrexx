@@ -49,7 +49,7 @@ class ContactFormEventListener implements \Cx\Core\Event\Model\Entity\EventListe
                         $forms = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findAll();
                         $formCount = $forms ? count($forms) : 0;
                         if ($formCount >= $options['Form']) {
-                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['Form']).' <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_FORMS_REACHED'], $options['Form']).' <a href="index.php?cmd=Contact">'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'].'</a>');
                         }
                     }
                     break;

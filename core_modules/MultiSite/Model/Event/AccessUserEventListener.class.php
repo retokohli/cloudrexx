@@ -280,7 +280,12 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                 $adminUsers = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
                 $adminUsersCount = count($adminUsers);
                 if ($adminUsersCount >= $options['AdminUser']) {
-                    throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $options['AdminUser']).' <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
+                    $errMsg = sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_ADMINS_REACHED'], $options['AdminUser']);
+                    if(!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                        throw new \Cx\Core\Error\Model\Entity\ShinyException($errMsg.' <a href="index.php?cmd=Access">'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'].'</a>');
+                    }
+                    throw new \Cx\Core\Error\Model\Entity\ShinyException($errMsg);
+                
                 }
             }
         }
