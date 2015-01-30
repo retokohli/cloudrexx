@@ -2664,9 +2664,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
      */
-    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page)
+    {
         self::loadAccountActivationBar();
         self::loadPoweredByFooter();
+        self::loadContactInformationForm();
     }
     
     /**
@@ -2758,6 +2760,82 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
     }
+    
+    /**
+     * load the contact information form 
+     * 
+     * @global array $_ARRAYLANG
+     * @return null
+     */
+    
+    public function loadContactInformationForm()
+    {
+       global $_ARRAYLANG;
+
+        //check the mode
+        if ($this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case self::MODE_HYBRID:
+            case self::MODE_MANAGER:
+                // only show modal contact information modal if user is signed-in
+                $objUser = \FWUser::getFWUserObject()->objUser;
+                if (!$objUser->login()) {
+                    return;
+                }
+
+                $profileAttributes = array(
+                                        'firstname',
+                                        'lastname',
+                                        'address',
+                                        'zip',
+                                        'city',
+                                        'country'
+                                    );
+                $userData = array();
+
+                foreach ($profileAttributes as $profileAttribute) {
+                    $userData[$profileAttribute] = !\FWValidator::isEmpty($objUser->getProfileAttribute($profileAttribute)) ? $objUser->getProfileAttribute($profileAttribute) : '';
+                }
+
+                if (count($userData) === count(array_filter($userData))) {
+                    return;
+                }
+
+                $objTemplate = $this->cx->getTemplate();
+                $objContactTpl = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModulePath() . '/MultiSite/View/Template/Backend');
+                $objContactTpl->loadTemplateFile('ContactInformation.html');
+
+                $blockName = 'multisite_user';
+                $placeholderPrefix = strtoupper($blockName) . '_';
+                $objAccessLib = new \Cx\Core_Modules\Access\Controller\AccessLib($objContactTpl);
+                $objAccessLib->setModulePrefix($placeholderPrefix);
+                $objAccessLib->setAttributeNamePrefix($blockName . '_profile_attribute');
+                $objAccessLib->setAccountAttributeNamePrefix($blockName . '_account_');
+
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+                    $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, true, false, false, false, false);
+                    $objUser->objAttribute->next();
+                }
+                $objAccessLib->parseAccountAttributes($objUser);
+                $objContactTpl->setVariable(array(
+                    'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'],
+                    'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'],
+                    'TXT_CORE_MODULE_MULTISITE_SAVE' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'],
+                    'MULTISITE_CONTACT_INFO_SUBMIT_URL' => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
+                ));
+                $objTemplate->_blocks['__global__'] = preg_replace('/<\/body>/', $objContactTpl->get() . '\\0', $objTemplate->_blocks['__global__']);
+                break;
+
+            default:
+                break;
+        }
+    }
+
     
     /**
      * Get User Currency Object

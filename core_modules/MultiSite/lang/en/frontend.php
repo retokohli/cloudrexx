@@ -69,3 +69,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'] = 'Loading...';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_PLEASE_CONFIRM'] = 'Please check the above checkbox to confirm to delete your account.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OFFLINE'] = 'offline';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DISABLED'] = 'disabled';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'] = 'Save';
+//contact information
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'] = "Your contact information.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'] = "Please fill out the following information to enter the Customer Panel.";

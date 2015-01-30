@@ -1,0 +1,97 @@
+<div aria-hidden="true" class="modal fade" id="multisite_contact_informaiton" role="dialog" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="grid-elm grid-align-1-1 grid-offset" >              
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button> 
+        <h1>{TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE}</h1>
+        {TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT}
+        <form role="form" action="#" id="multisite_contact_information_form">         
+          <fieldset>
+            <!-- BEGIN multisite_user_profile_attribute_title -->     
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE}
+            </div>
+            <!-- END multisite_user_profile_attribute_title --> 
+            <!-- BEGIN multisite_user_profile_attribute_firstname -->     
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}
+            </div>
+            <!-- END multisite_user_profile_attribute_firstname -->     
+
+            <!-- BEGIN multisite_user_profile_attribute_lastname -->     
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}
+            </div>
+            <!-- END multisite_user_profile_attribute_lastname -->     
+
+            <!-- BEGIN multisite_user_profile_attribute_company -->   
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY}
+            </div>
+            <!-- END multisite_user_profile_attribute_company --> 
+            <!-- BEGIN multisite_user_profile_attribute_address -->  
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS}
+            </div>
+            <!-- END multisite_user_profile_attribute_address --> 			
+
+            <!-- BEGIN multisite_user_profile_attribute_city -->   
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY}
+            </div>
+            <!-- END multisite_user_profile_attribute_city --> 			
+
+            <!-- BEGIN multisite_user_profile_attribute_zip -->  
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}</label> {MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP}
+            </div>
+            <!-- END multisite_user_profile_attribute_zip --> 			
+
+            <!-- BEGIN multisite_user_profile_attribute_country -->                   
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
+            </div>
+            <!-- END multisite_user_profile_attribute_country -->    
+            <!-- BEGIN multisite_user_profile_attribute_phone_office -->     
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE}
+            </div>
+            <!-- END multisite_user_profile_attribute_phone_office --> 	
+            <div class="row">
+              <button type="submit" class="save">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  /* <![CDATA[ */
+  jQuery(document).ready(function () {
+    jQuery('#multisite_contact_informaiton').modal('show');
+    jQuery('#multisite_contact_information_form').submit(function () {
+      jQuery.ajax({
+        dataType: "json",
+        url: '{MULTISITE_CONTACT_INFO_SUBMIT_URL}',
+        data: jQuery(this).serialize(),
+        type: "POST",
+        success: function (data) {
+          if (data.status == 'success') {
+            jQuery('#multisite_contact_informaiton').modal('hide');
+          }
+        },
+        fail: function (data) {
+        }
+      });
+
+      return false;
+    });
+    return false;
+  });
+
+
+  /* ]]> */
+</script>
