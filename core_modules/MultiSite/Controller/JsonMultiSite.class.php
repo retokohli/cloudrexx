@@ -278,13 +278,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $renewalQuantifier = 2;
             }else{
                 $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
-        }
+            }
             $subscriptionOptions = array(
-                // set hard-coded to 'month'
-                // later we shall use $_POST['renewalUnit'] instead
                 'renewalUnit'       => $renewalUnit,
-                // set hard-coded to '1'
-                // later we shall use $_POST['renewalQuantifier'] instead
                 'renewalQuantifier' => $renewalQuantifier,
                 'websiteName'       => $websiteName,
                 'customer'          => $objUser,
