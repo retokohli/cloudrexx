@@ -1198,7 +1198,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             //Check the domain name is subdomain of the domain or not.
             if ($this->isDomainASubDomainOfMultisiteDomain($params['post']['domainName'])) {
                 \DBG::log('JsonMultiSite::mapDomain() failed: The domain name is a subdomain of multiSite Domain');
-                throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: The domain name is a subdomain of multiSite Domain');
+                throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'], $params['post']['domainName']));
             }
             
             $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
@@ -1577,7 +1577,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             //Check the domain name is subdomain of the domain or not.
             if ($this->isDomainASubDomainOfMultisiteDomain($params['post']['domainName'])) {
                 \DBG::log('JsonMultiSite::updateDomain() failed: The domain name is a subdomain of multiSite Domain');
-                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: The domain name is a subdomain of multiSite Domain');
+                throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'], $params['post']['domainName']));
             }
             
             $website = null;
