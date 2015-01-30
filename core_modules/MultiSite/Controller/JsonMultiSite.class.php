@@ -1173,6 +1173,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return type
      */
     public function mapDomain($params) {
+        global $_ARRAYLANG;
         if (   empty($params['post'])
             || empty($params['post']['domainName'])
             || empty($params['post']['auth'])
@@ -1190,7 +1191,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         //check the black listed domains
         if (!self::checkBlackListDomains($params['post']['domainName'])) {
             \DBG::log('JsonMultiSite::mapDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
-            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Domain name is black listed.');
+            throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'], $params['post']['domainName']));
         }
 
         try {
@@ -1549,6 +1550,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return string
      */
     public function updateDomain($params) {
+        global $_ARRAYLANG;
         if (   empty($params['post'])
             || empty($params['post']['domainName'])
             || empty($params['post']['auth'])
@@ -1568,7 +1570,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         //check the black listed domains
         if (!self::checkBlackListDomains($params['post']['domainName'])) {
             \DBG::log('JsonMultiSite::updateDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
-            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Domain name is black listed.');
+            throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'], $params['post']['domainName']));
         }
         
         try {
@@ -1674,7 +1676,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public static function checkBlackListDomains($domainName) {
         if (empty($domainName)) {
-            return;
+            return false;
         }
         if (in_array($domainName, array_map('trim', explode(',', \Cx\Core\Setting\Controller\Setting::getValue('domainBlackList'))))) {
             return false;
