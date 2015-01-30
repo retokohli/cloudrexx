@@ -105,7 +105,13 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         if (!$objUser->isVerified()) {
                             throw new \Exception('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
-
+                        
+                        $objWebsiteOwner = \FWUser::getFWUserObject()->objUser->getUser($websiteUserId);
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'isUniqueEmail', 'params' => array('currentEmail'=> $objWebsiteOwner->getEmail(),'newEmail' => $objUser->getEmail())));
+                        if ($response && $response->data->status == 'error') {
+                            throw new \Exception("The email ".$objUser->getEmail()." can't be used for this website owner as there is already another website owner used that email.");
+                        }
+                        
                         $params = self::fetchUserData($objUser);
                         try {
                             $objJsonData = new \Cx\Core\Json\JsonData();

@@ -140,7 +140,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateMainDomain'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getModuleAdditionalData' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
             'changePlanOfMailSubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'domainManipulation'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
+            'domainManipulation'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'isUniqueEmail'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth'))
         );  
     }
 
@@ -930,7 +931,59 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'log'       => \DBG::getMemoryLogs(),
         );
     }
-
+    
+    /**
+     * Verify the owner's email address is isUniqueEmail
+     * 
+     * @param array $params POST-data based on with the account to verify the email
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function isUniqueEmail($params)
+    {
+        $data = $params['post'];
+        
+        if (empty($data)) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'No data supplied',
+            ));
+        }
+        
+        if (!isset($data['currentEmail']) || !isset($data['newEmail'])) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'Unknown user email id',
+            ));
+        }
+        
+        switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => $data['currentEmail']));
+                break;
+            default:
+                break;
+        }
+        
+        if (!$objUser) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'Unknown user account',
+            ));
+        }
+        
+        if (!\User::isUniqueEmail($data['newEmail'], $objUser->getId())) {
+           return array('status' => 'error');
+        }
+        
+        return array('status' => 'success');
+    }
+    
     /**
      * Update the user account of the signed-in user
      * @param array $params POST-data based on with the account shall be updated to
