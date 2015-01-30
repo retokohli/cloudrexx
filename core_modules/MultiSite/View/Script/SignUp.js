@@ -205,12 +205,14 @@
                 data: {
                     multisite_email_address : objMail.val(),
                     multisite_address : objAddress.val(),
-                    product_id : jQuery("#product_id").val()
+                    product_id : jQuery("#product_id").val(),
+					renewalUnit : options.renewalUnit
                 },
                 type: "POST",
                 beforeSend: function (xhr, settings) {
                     objModal.find('.multisite_pay').button('loading');
                     objModal.find('.multisite_pay').prop('disabled', true);
+					jQuery('.multisite_pay').removeClass('btn-primary');
                 },
                 success: function(response){
                     isPaymentUrlRequested = false;

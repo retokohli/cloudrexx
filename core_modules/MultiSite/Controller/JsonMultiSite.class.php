@@ -269,16 +269,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $id = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
 
             // create new subscription of selected product
-            $renewalUnit = isset($params['post']['renewalUnit']) ? $params['post']['renewalUnit'] : 'monthly';
-            $renewalQuantifier = 1;
-            if($renewalUnit == 'annually'){
-                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
-            }else if($renewalUnit == 'biannually'){
-                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
-                $renewalQuantifier = 2;
-            }else{
-                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
-            }
+            $renewalOption = isset($params['post']['renewalUnit']) ? $params['post']['renewalUnit'] : 'monthly';
+			list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($renewalOption);
             $subscriptionOptions = array(
                 'renewalUnit'       => $renewalUnit,
                 'renewalQuantifier' => $renewalQuantifier,
@@ -3266,13 +3258,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $objUser = \FWUser::getFWUserObject()->objUser;
             }
             
-            $productName = $product->getName();            
-            $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
-            $renewalQuantifier = 1;
-            if (isset($params['post']['renewalOption'])) {
-                list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($params['post']['renewalOption']);
-            }
-            
+            $productName = $product->getName();
+			$renewalOption = isset($params['post']['renewalUnit']) ? $params['post']['renewalUnit'] : 'monthly';
+            list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($params['post']['renewalUnit']);
             $currency = ComponentController::getUserCurrency($objUser->getCrmUserId());
             $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier, $currency);
             $referenceId = '';
