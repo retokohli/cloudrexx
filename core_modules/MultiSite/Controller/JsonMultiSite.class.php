@@ -1195,7 +1195,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         try {
             //Check the domain name is subdomain of the domain or not.
-            if (!$this->checkSubDomainOfMultisiteDomain($params['post']['domainName'])) {
+            if ($this->isDomainASubDomainOfMultisiteDomain($params['post']['domainName'])) {
                 \DBG::log('JsonMultiSite::mapDomain() failed: The domain name is a subdomain of multiSite Domain');
                 throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: The domain name is a subdomain of multiSite Domain');
             }
@@ -1573,7 +1573,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
         try {
             //Check the domain name is subdomain of the domain or not.
-            if (!$this->checkSubDomainOfMultisiteDomain($params['post']['domainName'])) {
+            if ($this->isDomainASubDomainOfMultisiteDomain($params['post']['domainName'])) {
                 \DBG::log('JsonMultiSite::updateDomain() failed: The domain name is a subdomain of multiSite Domain');
                 throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: The domain name is a subdomain of multiSite Domain');
             }
@@ -4686,18 +4686,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $domainName 
      * @return boolean
      */
-    public function checkSubDomainOfMultisiteDomain($domainName) {
+    public function isDomainASubDomainOfMultisiteDomain($domainName) {
         if (empty($domainName)) {
             return;
         }
         
         $multiSiteDomain = \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-        if(strlen($domainName) - strlen($multiSiteDomain) === stripos($domainName, $multiSiteDomain)) {
-            if ($domainName === $multiSiteDomain || stripos($domainName, '.'.$multiSiteDomain)) {
-                return false;
-            }
+        if (preg_match('/'.preg_quote('.'.$multiSiteDomain, '/').'$/i', $domainName)) {
+            return true;
         }
         
-        return true;
+        return false;
     }
 }
