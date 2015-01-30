@@ -24,6 +24,7 @@ $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_ERROR']= 'Akzeptieren sie die AGB um for
 $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME']='AGB';
 $_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO']='Ihre pers&ouml;nlichen Zugangsdaten werden an diese E-Mail Adresse gesendet.';
 $_ARRAYLANG['TXT_MULTISITE_BUILD_ERROR_MSG'] = 'Leider ist der Erstellungsprozess Ihrer Website fehlgeschlagen. Bitte nehmen Sie den Kontakt mit unserem Kundendienst unter der Adresse %s auf, um Ihnen weiter zu helfen.';
+$_ARRAYLANG['TXT_MULTISITE_ORDER_BUTTON']='Jetzt bestellen';
 
 // Sign up status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'Eine Website mit dem Namen %s besteht bereits. Bitte wählen Sie einen anderen Namen.';
@@ -89,7 +90,7 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED'] = 'Die Verwaltung der 
 
 // Subscription active
 $_ARRAYLANG['TXT_MULTISITE_REFERENCE_NUMBER'] = 'Referenz-Nr.';
-$_ARRAYLANG['TXT_MULTISITE_TITLE'] = 'Titel';
+$_ARRAYLANG['TXT_MULTISITE_TITLE'] = 'Erstellen Sie jetzt Ihre eigene Website';
 $_ARRAYLANG['TXT_MULTISITE_NEXT_BILL_DATE'] = 'N&auml;chste Rechnung';
 $_ARRAYLANG['TXT_MULTISITE_UPGRADE'] = 'Upgrade';
 $_ARRAYLANG['TXT_MULTISITE_ADD_NEW_WEBSITE'] = 'Neue Website hinzuf&uuml;gen';
