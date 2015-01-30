@@ -220,5 +220,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_FORMS_REACHED'] = 'Sie haben die 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_PRODUCTS_REACHED'] = 'Sie haben die maximale Anzahl(%s) von Produkten im Shop erreicht.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_ADMINS_REACHED'] = 'Sie haben die maximale Anzahl(%s) von Administratoren erreicht.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'] = 'Weiter zur Übersichtsseite';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OWNER_EMAIL_UNIQUE_ERROR'] = 'Die E-Mail Adresse %s wird bereits von einem anderen Benutzer unter %s eingesetzt und kann daher nicht verwendet werden.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OWNER_EMAIL_UNIQUE_ERROR'] = 'Die E-Mail Adresse %1$s wird bereits von einem anderen Benutzer unter %2$s eingesetzt und kann daher nicht verwendet werden.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'] = 'Die Verknüpfung Ihrer Website mit der Domain %s ist nicht zulässig.';
