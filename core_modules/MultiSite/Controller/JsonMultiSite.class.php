@@ -978,9 +978,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         if (!\User::isUniqueEmail($data['newEmail'], $objUser->getId())) {
-           return array('status' => 'error');
+            return array('status' => 'error', 'customerPanelDomain' => \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
         }
-        
+    
         return array('status' => 'success');
     }
     

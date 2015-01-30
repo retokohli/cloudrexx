@@ -88,6 +88,8 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
     }
 
     public function preUpdate($eventArgs) {
+        global $_ARRAYLANG;
+        
         \DBG::msg('MultiSite (AccessUserEventListener): preUpdate');
         $objUser = $eventArgs->getEntity();
         
@@ -107,9 +109,13 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         }
                         
                         $objWebsiteOwner = \FWUser::getFWUserObject()->objUser->getUser($websiteUserId);
-                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'isUniqueEmail', 'params' => array('currentEmail'=> $objWebsiteOwner->getEmail(),'newEmail' => $objUser->getEmail())));
+                        $newEmail = $objUser->getEmail();
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'isUniqueEmail', 'params' => array('currentEmail'=> $objWebsiteOwner->getEmail(),'newEmail' => $newEmail)));
                         if ($response && $response->data->status == 'error') {
-                            throw new \Exception("The email ".$objUser->getEmail()." can't be used for this website owner as there is already another website owner used that email.");
+                            $customerPanelUrl  = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $response->data->customerPanelDomain . '/')->toString();
+                            $customerPanelLink = '<a class="alert-link" href="'.$customerPanelUrl.'" target="_blank">'.$response->data->customerPanelDomain.'</a>';
+                            $mailLink          = '<a class="alert-link" href="mailto:'.$newEmail.'" target="_blank">'.$newEmail.'</a>';
+                            throw new \Exception(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OWNER_EMAIL_UNIQUE_ERROR'], $mailLink, $customerPanelLink));
                         }
                         
                         $params = self::fetchUserData($objUser);
