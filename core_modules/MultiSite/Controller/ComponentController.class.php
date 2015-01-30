@@ -1683,7 +1683,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
             'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
             'PRODUCT_NAME'            => $product->getName(),
-            'PRODUCT_ID'              => $product->getId()
+            'PRODUCT_ID'              => $product->getId(),
+            'RENEWAL_UNIT'            => isset($_GET['renewalUnit']) ? $_GET['renewalUnit'] : 'monthly',
         ));
     }
     

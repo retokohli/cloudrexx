@@ -269,13 +269,23 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $id = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
 
             // create new subscription of selected product
+            $renewalUnit = isset($params['post']['renewalUnit']) ? $params['post']['renewalUnit'] : 'monthly';
+            $renewalQuantifier = 1;
+            if($renewalUnit == 'annually'){
+                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
+            }else if($renewalUnit == 'biannually'){
+                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_YEAR;
+                $renewalQuantifier = 2;
+            }else{
+                $renewalUnit = \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
+        }
             $subscriptionOptions = array(
                 // set hard-coded to 'month'
                 // later we shall use $_POST['renewalUnit'] instead
-                'renewalUnit'       => \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH,
+                'renewalUnit'       => $renewalUnit,
                 // set hard-coded to '1'
                 // later we shall use $_POST['renewalQuantifier'] instead
-                'renewalQuantifier' => 1,
+                'renewalQuantifier' => $renewalQuantifier,
                 'websiteName'       => $websiteName,
                 'customer'          => $objUser,
             );

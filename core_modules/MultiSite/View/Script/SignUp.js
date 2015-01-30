@@ -303,7 +303,8 @@
                 url: options.signUpUrl,
                 data: {
                     multisite_email_address : objMail.val(),
-                    multisite_address : objAddress.val()
+                    multisite_address : objAddress.val(),
+                    renewalUnit : options.renewalUnit
                 },
                 type: "POST",
                 success: function(response){parseResponse(response, null);},
