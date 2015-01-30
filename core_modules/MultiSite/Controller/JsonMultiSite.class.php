@@ -286,7 +286,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             
             $transactionReference = "|$id|name|$websiteName|";
-            $currency = ComponentController::getUserCurrency($objUser->getCrmUserId());
+            $currency = ComponentController::getUserCurrency($objUser ? $objUser->getCrmUserId() : 0);
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $currency, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
@@ -3100,6 +3100,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website   = $websiteRepository->findOneBy(array('id' => $params['post']['websiteId']));
                     $authToken = null;
@@ -3138,6 +3139,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try{
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $dateFormatArr = array("coreCmsReleaseDate", "licenseValidTo", "licenseCreatedAt");
                     $paramsArray = array(
                         $licenseOption => in_array($licenseOption, $dateFormatArr) ? strtotime($licenseValue) : $licenseValue,
@@ -3343,6 +3345,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website = $webRepo->findOneById($websiteId);
                     $inputTypes = array(
