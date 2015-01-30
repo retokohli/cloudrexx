@@ -4688,7 +4688,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function isDomainASubDomainOfMultisiteDomain($domainName) {
         if (empty($domainName)) {
-            return;
+            return false;
         }
         
         $multiSiteDomain = \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
