@@ -206,7 +206,7 @@
                     multisite_email_address : objMail.val(),
                     multisite_address : objAddress.val(),
                     product_id : jQuery("#product_id").val(),
-					renewalUnit : options.renewalUnit
+                    renewalOption: options.renewalOption
                 },
                 type: "POST",
                 beforeSend: function (xhr, settings) {
@@ -306,7 +306,7 @@
                 data: {
                     multisite_email_address : objMail.val(),
                     multisite_address : objAddress.val(),
-                    renewalUnit : options.renewalUnit
+                    renewalOption: options.renewalOption
                 },
                 type: "POST",
                 success: function(response){parseResponse(response, null);},

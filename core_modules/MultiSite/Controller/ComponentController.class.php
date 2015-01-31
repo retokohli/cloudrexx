@@ -495,8 +495,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if ($b->getName() == 'Non-Profit') return -1;
 
             # list Trial at first position
-            if ($a->getName() == 'Trial') return -1;
-            if ($b->getName() == 'Trial') return 1;
+            //if ($a->getName() == 'Trial') return -1;
+            //if ($b->getName() == 'Trial') return 1;
             
             if ($a->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency) == $b->getPaymentAmount(\Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH, 1, $currency)) {
                 return 0;
@@ -509,9 +509,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         foreach ($products as $product) {
-// customizing: do not list Enterprise product 
+// customizing: do not list Trial and Enterprise product 
 // TODO: implement some sort of selective product selection in the multisite configuration
-            if ($product->getName() == 'Enterprise') {
+            if (in_array($product->getName(), array('Trial', 'Enterprise'))) {
                 continue;
             }
             $productName = contrexx_raw2xhtml($product->getName());
@@ -1684,7 +1684,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
             'PRODUCT_NAME'            => $product->getName(),
             'PRODUCT_ID'              => $product->getId(),
-            'RENEWAL_UNIT'            => isset($_GET['renewalUnit']) ? contrexx_raw2xhtml($_GET['renewalUnit']) : 'monthly',
+            'RENEWAL_UNIT'            => isset($_GET['renewalOption']) ? contrexx_raw2xhtml($_GET['renewalOption']) : 'monthly',
         ));
     }
     
