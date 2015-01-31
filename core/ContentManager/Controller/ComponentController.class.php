@@ -39,7 +39,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\Node', $nodeListener);
         
         $evm->addModelListener(\Doctrine\ORM\Events::onFlush, 'Cx\\Core\\ContentManager\\Model\\Entity\\LogEntry', new \Cx\Core\ContentManager\Model\Event\LogEntryEventListener());
+    }
         
+    public function preResolve(\Cx\Core\Routing\Url $request) {
+        $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
         $evm->addEvent('wysiwygCssReload');
     }
     
