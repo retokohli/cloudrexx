@@ -797,7 +797,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (103,'Cron','core
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (104,'SysLog','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (105,'NetManager','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (106,'Wysiwyg','core');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (904,'User','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (107,'User','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
@@ -6183,7 +6183,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (97,'LicenseManager','Comvation AG','TXT_LICENSE','n',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (98,'Test','Comvation AG','TXT_TEST_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (99,'Routing','Comvation AG','TXT_ROUTING_MODULE_DESCRIPTION','n',0,1,1,1,NULL);
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (904,'User','Comvation AG','TXT_CORE_USER_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (107,'User','Comvation AG','TXT_CORE_USER_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (100,'Support','Comvation AG','TXT_MODULE_SUPPORT_DESCRIPTION','n',1,0,1,0,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (103,'Cron','Comvation AG','TXT_CORE_MODULE_CRON_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (104,'SysLog','Comvation AG','TXT_CORE_MODULE_SYSLOG_DESCRIPTION','y',0,1,1,0,NULL);
