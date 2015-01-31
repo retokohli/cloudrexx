@@ -12,7 +12,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     
     public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponent, $cx);
-        $evm = $cx->getEvents();
+    }
+
+    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
         $evm->addEventListener('wysiwygCssReload', $this);
     }
     
