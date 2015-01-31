@@ -73,3 +73,9 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'] = 'Save';
 //contact information
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'] = "Your contact information.";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'] = "Please fill out the following information to enter the Customer Panel.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_FIRSTNAME_EMPTY'] = "Firstname should not be empty.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_LASTNAME_EMPTY'] = "Lastname should not be empty.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_ADDRESS_EMPTY'] = "Address should not be empty.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_CITY_EMPTY'] = "City should not be empty.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_ZIP_EMPTY'] = "Zip should not be empty.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_COUNTRY_EMPTY'] = "Country should not be empty.";

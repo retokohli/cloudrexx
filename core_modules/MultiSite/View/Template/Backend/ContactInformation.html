@@ -1,3 +1,8 @@
+<style type="text/css">
+  .input_error{
+      border: 1px solid #e00500;
+  }  
+</style>
 <div aria-hidden="true" class="modal fade" id="multisite_contact_informaiton" role="dialog" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -7,7 +12,8 @@
         </button> 
         <h1>{TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE}</h1>
         {TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT}
-        <form role="form" action="#" id="multisite_contact_information_form">         
+        <form role="form" action="#" id="multisite_contact_information_form" autocomplete="off">
+          <div class="alert alert-danger validationError" style="display: none;"></div>
           <fieldset>
             <!-- BEGIN multisite_user_profile_attribute_title -->     
             <div class="row">
@@ -16,13 +22,13 @@
             <!-- END multisite_user_profile_attribute_title --> 
             <!-- BEGIN multisite_user_profile_attribute_firstname -->     
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}
             </div>
             <!-- END multisite_user_profile_attribute_firstname -->     
 
             <!-- BEGIN multisite_user_profile_attribute_lastname -->     
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}
             </div>
             <!-- END multisite_user_profile_attribute_lastname -->     
 
@@ -33,25 +39,25 @@
             <!-- END multisite_user_profile_attribute_company --> 
             <!-- BEGIN multisite_user_profile_attribute_address -->  
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS}
             </div>
             <!-- END multisite_user_profile_attribute_address --> 			
 
             <!-- BEGIN multisite_user_profile_attribute_city -->   
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY}
             </div>
             <!-- END multisite_user_profile_attribute_city --> 			
 
             <!-- BEGIN multisite_user_profile_attribute_zip -->  
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}</label> {MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP}
             </div>
             <!-- END multisite_user_profile_attribute_zip --> 			
 
             <!-- BEGIN multisite_user_profile_attribute_country -->                   
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
             </div>
             <!-- END multisite_user_profile_attribute_country -->    
             <!-- BEGIN multisite_user_profile_attribute_phone_office -->     
@@ -60,7 +66,7 @@
             </div>
             <!-- END multisite_user_profile_attribute_phone_office --> 	
             <div class="row">
-              <button type="submit" class="save">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+              <button type="submit" class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
             </div>
           </fieldset>
         </form>
@@ -73,25 +79,54 @@
   jQuery(document).ready(function () {
     jQuery('#multisite_contact_informaiton').modal('show');
     jQuery('#multisite_contact_information_form').submit(function () {
+      jQuery('input').removeClass('input_error');
+      var validationFields = {
+        'firstname': '{TXT_CORE_MODULE_MULTISITE_CONTACT_FIRSTNAME_EMPTY}',
+        'lastname': '{TXT_CORE_MODULE_MULTISITE_CONTACT_LASTNAME_EMPTY}',
+        'address': '{TXT_CORE_MODULE_MULTISITE_CONTACT_ADDRESS_EMPTY}',
+        'zip': '{TXT_CORE_MODULE_MULTISITE_CONTACT_ZIP_EMPTY}',
+        'city': '{TXT_CORE_MODULE_MULTISITE_CONTACT_CITY_EMPTY}',
+        'country': '{TXT_CORE_MODULE_MULTISITE_CONTACT_COUNTRY_EMPTY}'
+      };
+      var error = false;
+      var errorMsg = '';
+      jQuery.each(validationFields, function (key, value) {
+        var inputFieldName = 'multisite_user_profile_attribute[' + key + '][0]';
+        var inputField = jQuery('#multisite_contact_information_form [name="' + inputFieldName + '"]');
+        if (inputField.val() == '' || inputField.val() == '0') {
+          inputField.addClass('input_error').scroll();
+          errorMsg = errorMsg + value + '<br/>';
+          error = true;
+        }
+      });
+      if (error) {
+        jQuery('.validationError').html(errorMsg);
+        jQuery('.alert').show();
+        return false;
+      }
       jQuery.ajax({
         dataType: "json",
         url: '{MULTISITE_CONTACT_INFO_SUBMIT_URL}',
         data: jQuery(this).serialize(),
         type: "POST",
+        beforeSend: function (xhr, settings) {
+          jQuery('.loadingProcess').button('loading');
+          jQuery('.loadingProcess').prop('disabled', true);
+        },
         success: function (data) {
           if (data.status == 'success') {
             jQuery('#multisite_contact_informaiton').modal('hide');
           }
         },
+        complete: function (xhr, settings) {
+          jQuery('.loadingProcess').button('reset');
+          jQuery('.loadingProcess').prop('disabled', false);
+        },
         fail: function (data) {
         }
       });
-
       return false;
     });
-    return false;
   });
-
-
   /* ]]> */
 </script>
