@@ -2364,7 +2364,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function setCustomerPanelDomainAsMainDomain() {
-        global $_CONFIG;
+        global $_CONFIG, $plainCmd;
 
         if (!\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             return;
@@ -2373,11 +2373,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
-        $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
-        if ($_SERVER['HTTP_HOST'] != $customerPanelDomain) {
+        if (in_array($plainCmd, array('MultiSite', 'JsonData'))) {
             return;
         }
 
+        $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $config = \Env::get('config');
         $customerPanelDomain = $domainRepository->findOneBy(array('name' => $customerPanelDomainName));
