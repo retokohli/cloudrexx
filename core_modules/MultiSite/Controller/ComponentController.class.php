@@ -2115,6 +2115,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         // Event Listener must be registered before preContentLoad event
         $this->registerEventListener();
+        $this->setCustomerPanelDomainAsMainDomain();
     }
     
     /**
@@ -2355,6 +2356,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             : '';
         \DBG::msg("MultiSite: Loading Website Service...".$requestInfo);
         return false;
+    }
+
+    public function setCustomerPanelDomainAsMainDomain() {
+        global $_CONFIG;
+
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
+        $config = \Env::get('config');
+        $customerPanelDomain = $domainRepository->findOneBy(array('name' => $customerPanelDomainName));
+        if ($customerPanelDomain) {
+            $config['mainDomainId'] = $customerPanelDomain->getId();
+            $config['domainUrl'] = $customerPanelDomain->getName();
+            \Env::set('config', $config);
+            $_CONFIG = $config;
+        }
     }
     
     /**
