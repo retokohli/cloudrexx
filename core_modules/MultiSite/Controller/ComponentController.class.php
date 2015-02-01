@@ -2366,8 +2366,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function setCustomerPanelDomainAsMainDomain() {
         global $_CONFIG;
 
-        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        if (!\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            return;
+        }
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') != self::MODE_MANAGER) {
+            return;
+        }
+
         $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
+        if ($_SERVER['HTTP_HOST'] != $customerPanelDomain) {
+            return;
+        }
+
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $config = \Env::get('config');
         $customerPanelDomain = $domainRepository->findOneBy(array('name' => $customerPanelDomainName));
         if ($customerPanelDomain) {
