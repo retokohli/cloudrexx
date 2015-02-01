@@ -157,6 +157,10 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
             return;
         }
 
+        if ($subscription->getExpirationDate()) {
+            $entityAttributes['subscriptionExpiration'] = $subscription->getExpirationDate()->getTimestamp();
+        }
+
         $entityAttributes['initialSignUp'] = false;
         switch ($website->getStatus()) {
             case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:

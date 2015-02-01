@@ -1509,11 +1509,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
         }
         
         if (!empty($legalComponents)) {
+            $validTo = !empty($options['subscriptionExpiration']) ? $options['subscriptionExpiration'] : 2733517333;
             $params = array(
                 'websiteId'         => $this->id,
                 'legalComponents'   => $legalComponents,
                 'state'             => \Cx\Core_Modules\License\License::LICENSE_OK,
-                'validTo'           => 2733517333,
+                'validTo'           => $validTo,
                 'updateInterval'    => 8760,
                 'isUpgradable'      => false,
                 'dashboardMessages' => $dashboardMessages

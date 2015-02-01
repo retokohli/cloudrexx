@@ -52,6 +52,10 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
                 $websiteCollection->setWebsiteTemplate($websiteTemplate);
             }
         }
+
+        if ($subscription->getExpirationDate()) {
+            $entityAttributes['subscriptionExpiration'] = $subscription->getExpirationDate()->getTimestamp();
+        }
         
         foreach ($websiteCollection->getWebsites() as $website) {
             if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {

@@ -1527,6 +1527,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'websiteTemplate'   => $productEntityAttributes['websiteTemplate'],
                     'initialSignUp'     => false,
                 );
+
+                if ($subscriptionObj->getExpirationDate()) {
+                    $options['subscriptionExpiration'] = $subscriptionObj->getExpirationDate()->getTimestamp();
+                }
+
                 //website setup process
                 $websiteStatus = $website->setup($options);
                 if ($websiteStatus['status'] == 'success') {
