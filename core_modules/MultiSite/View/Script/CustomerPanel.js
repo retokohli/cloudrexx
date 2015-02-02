@@ -70,6 +70,20 @@ function  loadContent(jQuerySelector, url) {
         dataType: 'html',
         url: url,
         type: 'GET',
+        beforeSend: function (xhr, settings) {
+            var loadingDiv = jQuery('<div />')
+                                .html('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> ' + cx.variables.get('loadingText', 'multisite/lang'));
+            if (jQuery.trim(jQuery(jQuerySelector+ ' table').html()).length > 1) {
+                showAnimationImageInReloadContent(loadingDiv, jQuerySelector);
+            } else {
+                var selector = jQuerySelector;
+                if (jQuery(jQuerySelector + ' div.grid-offset').length > 0) {
+                    selector = selector + ' div.grid-offset';
+                }
+                jQuery(selector).append(loadingDiv);
+            }
+            
+        },
         success: function(data) {
             if (data) {
                 jQuery(jQuerySelector).html(data);
@@ -85,6 +99,23 @@ function  loadContent(jQuerySelector, url) {
             }
         }
     });
+}
+
+/**
+ * Show animation image when refresh a content
+ * 
+ * @param object loadingDiv
+ * @param string jQuerySelector
+ * 
+ * @returns null
+ */
+function showAnimationImageInReloadContent(loadingDiv, jQuerySelector) {
+    loadingDiv.addClass('loading_span');
+    $contentTable = jQuery(jQuerySelector).find('table');
+    $contentTable.addClass('loadlockRelative');
+    $contentTable.append('<div class="load-lock"></div>');
+    jQuery(jQuerySelector+' .load-lock').show();
+    $contentTable.append(loadingDiv);
 }
 
 /**
