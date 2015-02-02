@@ -527,12 +527,13 @@ span.abo-info p {
         function buySubscription($this) {
             jQuery('.buy-now').removeClass('subscriptionProduct');
             $selectedRenewalPlan = $this.parent().parent().parent().parent().parent().find('.prices-periods').find('a.active').attr('data-renewalOption');
+            $selectedRenewalPlanText = $this.parent().parent().parent().parent().parent().find('.prices-periods').find('a.active').text();
             $this.data('renewalOption', $selectedRenewalPlan);
             $this.addClass('subscriptionProduct');
             
             productPriceAmount = getProductPrice($this);
             if (productPriceAmount) {
-                price    =  productPriceAmount + '.- CHF / ' + $this.data('renewalOption');
+                price    =  productPriceAmount + '.- CHF / ' + $selectedRenewalPlanText;
                 subsName =  $this.parent().find('.subscription_name').html();
                 
                 jQuery('#SubscriptionSelection').modal('hide');
