@@ -79,7 +79,7 @@
             keyboard: false
           });
     jQuery('#multisite_contact_information_form').submit(function () {
-      jQuery('input').removeClass('input_error');
+      jQuery('input, select').removeClass('input_error');
       var validationFields = ['firstname','lastname','address','zip','city','country'];
       var error = false;
       jQuery.each(validationFields, function (key, value) {
