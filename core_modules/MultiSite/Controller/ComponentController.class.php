@@ -336,7 +336,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
         if (empty($crmContactId)) {
-            return ' '; // Do not show sbuscriptions
+            return $objTemplate->get(); // Return template so "add" button and "go to overview" button are displayed
         }
 
         //Get the input values
