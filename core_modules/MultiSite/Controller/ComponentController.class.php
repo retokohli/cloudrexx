@@ -647,10 +647,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'MULTISITE_SUBSCRIPTION_CANCEL_SUBMIT_URL' => '/api/MultiSite/SubscriptionDetail?action=subscriptionCancel&id=' . $subscriptionId,
             'MULTISITE_SUBSCRIPTION_DESCRIPTION_SUBMIT_URL' => '/api/MultiSite/SubscriptionDetail?action=updateDescription&id=' . $subscriptionId,            
         ));
-
-        $cancelButtonStatus = ($subscriptionObj->getState() !== \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
+        
+        // Hide the button to cancel a subscription. We shall re-display the button again, once the issue with the Payrexx API has been resolved.
+        //$cancelButtonStatus = ($subscriptionObj->getState() !== \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
         self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
-        self::showOrHideBlock($objTemplate, 'showSubscriptionCancelButton', $cancelButtonStatus);
+        self::showOrHideBlock($objTemplate, 'showSubscriptionCancelButton', false);
 
         if ($objTemplate->blockExists('showWebsites')) {
             $websiteCollection = $subscriptionObj->getProductEntity();
