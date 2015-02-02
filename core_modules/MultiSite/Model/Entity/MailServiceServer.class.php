@@ -373,32 +373,70 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     /**
      * Enable the mail service
      * 
-     * @param integer $accountId
+     * @param object \Cx\Core_Modules\MultiSite\Model\Entity\Website $website
      * 
      * @return boolean
      */
-    public function enableService($accountId)
+    public function enableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
+        if (\FWValidator::isEmpty($website)) {
+            \DBG::log('Unknown website found.');
+            return false;
+        }
+        
+        $accountId = $website->getMailAccountId();
+        if (empty($accountId)) {
+            \DBG::log('Their is no mail service account found in this website.');
+            return false;
+        }
+        
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         if ($hostingController->enableMailService($accountId)) {
+            $website->setMailDn();
+            \Env::get('em')->flush($website);
+            \DBG::log('Successfully mapped the domain of type mail with host ' . $website->getMailDn()->getName());
             return true;
         }
-            return false;
+        \DBG::log('Failed to enable the mail service account.');
+        return false;
     }
         
     /**
      * Disable the mail service
      * 
-     * @param integer $accountId
+     * @param object \Cx\Core_Modules\MultiSite\Model\Entity\Website $website
      * 
      * @return boolean
      */
-    public function disableService($accountId)
+    public function disableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website )
     {
+        if (\FWValidator::isEmpty($website)) {
+            \DBG::log('Unknown website found.');
+            return false;
+        }
+        
+        $accountId = $website->getMailAccountId();
+        if (empty($accountId)) {
+            \DBG::log('Their is no mail service account found in this website.');
+            return false;
+        }
+        
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         if ($hostingController->disableMailService($accountId)) {
+            
+            $mailDomain = $website->getMailDn();
+            
+            if (!($mailDomain instanceof Domain)) {
+                \DBG::log('Their is no domains found by the given criteria.');
+                return false;
+            }
+            
+            $website->unMapDomain($mailDomain);
+            \Env::get('em')->flush();
+            \DBG::log('Successfully unmapped the  domain of type mail with host ' . $mailDomain->getName() . ' of type mail.');
             return true;
         }
-            return false;
+        \DBG::log('Failed to disable mail service account.');
+        return false;
     }
 }    

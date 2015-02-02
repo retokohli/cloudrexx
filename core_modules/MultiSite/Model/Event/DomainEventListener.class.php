@@ -52,6 +52,9 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                         $this->manipulateDnsRecord($domain, 'remove', 'postRemove', $eventArgs);
+                        if($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN) {
+                            return;
+                        }
                         //update the domain cache file
                         $this->updateDomainRepositoryCache($em);
                         break;
@@ -292,7 +295,17 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
                 $value= $domain->getWebsite()->getFqdn()->getName();
                 break;
-            
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN:
+                
+                $type = 'A';
+
+                if ($operation == 'remove') {
+                    break;
+                }
+                
+                $value= $domain->getWebsite()->getMailServiceServer()->getIpAddress();
+                break;
+                
             default:
                 $type = 'CNAME';
                 

@@ -3850,7 +3850,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     if (
                            $mailServiceServer && $website->getMailAccountId()
-                        && $mailServiceServer->enableService($website->getMailAccountId())
+                        && $mailServiceServer->enableService($website)
                     ) {
                         return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY']);
                     }
@@ -3905,7 +3905,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     
                     if (
                            self::validateWebsiteForMailService($website) 
-                        && $website->getMailServiceServer()->disableService($website->getMailAccountId())
+                        && $website->getMailServiceServer()->disableService($website)
                     ) {
                         return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_SUCCESSFULLY']);
                     }

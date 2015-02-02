@@ -586,7 +586,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'readonly'     => true,
                     'table' => array(
                         'parse' => function($value, $arrData) {
-                            return ($arrData['type'] == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN) ? 'A' :
+                            return ($arrData['type'] == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN 
+                                        || $arrData['type'] == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN) ? 'A' :
                                     ($arrData['type'] == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? 'CNAME' : false);
                         },      
                     ),
@@ -601,7 +602,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 $website = $domainRepo->getWebsite();
                                 if ($website) {
                                     return ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN) ? $website->getIpAddress() :
-                                            ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? $website->getFqdn()->getName() : false);
+                                            ($value == \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN ? $website->getFqdn()->getName() : 
+                                             ($value == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN ? $website->getMailServiceServer()->getIpAddress() : false));
                                 }
                             } catch (\Exception $e) {}
                             return false;

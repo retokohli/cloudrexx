@@ -930,6 +930,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }             
             $domains = array_merge(array($website->getBaseDn()), $website->getDomainAliases());
             foreach ($domains as $domain) {
+                if ($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN) {
+                    continue;
+                }
                 $isBaseDomain = $domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN;        
                 $domainId     = $isBaseDomain ? $domain->getId() : $domain->getCoreNetDomainId(); 
                 $objTemplate->setVariable(array(

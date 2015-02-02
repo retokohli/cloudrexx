@@ -128,7 +128,7 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
             $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
             $status = $hostingController->getMailServiceStatus($mailAccountId);
             if ($status == 'true') {
-                $mailServiceServer->disableService($mailAccountId);
+                $mailServiceServer->disableService($website);
             }
         } catch (Exception $e) {
             \DBG::log('Unable to disable the website mail service: ' . $e->getMessage());

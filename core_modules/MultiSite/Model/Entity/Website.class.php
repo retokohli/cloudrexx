@@ -109,6 +109,11 @@ class Website extends \Cx\Model\Base\EntityBase {
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
      */
+    protected $mailDn;
+
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
+     */
     protected $domainAliases;
     
     /**
@@ -1373,6 +1378,37 @@ throw new WebsiteException('implement secret-key algorithm first!');
     }
     
     /**
+     * Get mailDn
+     * 
+     * @return $mailDn Cx\Core_Modules\MultiSite\Model\Entity\Domain
+     */
+    public function getMailDn() {
+        // fetch mailDn from Domain repository
+        if (!$this->mailDn) {
+            foreach ($this->domains as $domain) {
+                if ($domain->getType() == Domain::TYPE_MAIL_DOMAIN) {
+                    $this->mailDn = $domain;
+                    break;
+                }
+            }
+        }
+
+        return $this->mailDn;
+    }
+    
+    /**
+     * Set mailDn
+     */
+    public function setMailDn() {
+        $mailDn = new Domain('mail' . '.' . $this->getBaseDn()->getName());
+        $mailDn->setType(Domain::TYPE_MAIL_DOMAIN);
+        $mailDn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
+        $mailDn->setComponentId($this->getId());
+        $this->mapDomain($mailDn);
+        \Env::get('em')->persist($mailDn);
+    }
+    
+    /**
      * Get DomainAliases
      *
      */   
@@ -1416,7 +1452,11 @@ throw new WebsiteException('implement secret-key algorithm first!');
             case DOMAIN::TYPE_BASE_DOMAIN:
                 $this->baseDn = $domain;
                 break;
-
+            
+            case DOMAIN::TYPE_MAIL_DOMAIN:
+                $this->mailDn = $domain;
+                break;
+            
             case DOMAIN::TYPE_EXTERNAL_DOMAIN:
             default:
                 $domain->settype(DOMAIN::TYPE_EXTERNAL_DOMAIN);
