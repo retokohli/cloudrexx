@@ -1,9 +1,7 @@
 <div class="grid-elm grid-align-1-2 grid-offset">
     <div class="box">  
         <h2>Anmeldeinformationen</h2>         
-        <div  id="multisite_user_account">
-            <span>{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT} <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
-        </div>      
+        <div  id="multisite_user_account"></div>
     </div>     
 </div><!--
 <div class="grid-elm grid-align-1-2 grid-offset">
@@ -34,7 +32,7 @@ cx.ready(function() {
     cx.variables.set('loadingText', '{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}', 'multisite/lang');
     jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
        //loadContent('#multisite_user_profile', '/api/MultiSite/User/Profile');
-    loadContent('#multisite_user_account', '/api/MultiSite/User/Account');
+        loadContent('#multisite_user_account', '/api/MultiSite/User/Account');
     });
 });
 /* ]]> */

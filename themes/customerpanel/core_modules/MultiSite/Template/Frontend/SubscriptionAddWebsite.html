@@ -20,22 +20,23 @@ jQuery(document).ready(function(){
         callBackOnSuccess: function(response) {
             jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
                 showMessage(response.message, 'success');//show success message
-                jQuery('#multisite_active_site').html(
-                    jQuery('<div />')
-                    .addClass('grid-elm grid-align-1-1 grid-offset')
-                    .html('<img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}')
-                    );
-                loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
-                loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
-                loadContent('#multisite_expired_site', '/api/MultiSite/Subscription/Expired?status=expired');
+                
+                switch(jQuery('#product_name').val()) {
+                  case 'Trial':
+                    loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
+                    break;
+                  case 'Free':
+                    loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+                    break;
+                  default:
+                    if (response.websiteId) {
+                      window.location.href = '{NODE_MULTISITE_WEBSITE}?id='+response.websiteId;
+                    }
+                    break;
+                }
+                
             });
             jQuery("#SubscriptionAddWebsite").modal('hide');
-            jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
-                if (response.websiteId) {
-                    window.location.href = '{NODE_MULTISITE_WEBSITE}?id='+response.websiteId;
-                }
-                return true;
-            });
        }
     };
     for (var option in options) {

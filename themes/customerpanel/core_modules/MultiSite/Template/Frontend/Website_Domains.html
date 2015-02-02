@@ -1,4 +1,5 @@
 <!-- BEGIN showDomainsSection -->
+<div class="grid-elm grid-align-1-1 grid-offset">
 <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAINS}</h2>
 <table class="tablesort website-domains">
     <thead>
@@ -31,6 +32,7 @@
 <!-- BEGIN showWebsiteAddDomain -->
 <button class="add domainModal" data-remote="/api/MultiSite/Domain/Add?website_id={MULTISITE_WEBSITE_ID}" data-target="DomainAdd" >{TXT_MULTISITE_WEBSITE_ADD_DOMAIN}</button>
 <!-- END showWebsiteAddDomain -->
+</div>
 <div aria-hidden="true" class="modal fade" id="DomainAdd" role="dialog" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content"></div>

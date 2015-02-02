@@ -893,6 +893,29 @@ button.actions:after {
     line-height: 1em;        
 }
 
+.load-lock{
+    position: absolute;
+    opacity: 0.5;
+    background-color: white;
+    display: none;
+    z-index: 500;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+.loadlockRelative {
+    float: left;
+    width: 100%;
+    position: relative;
+}
+.loading_span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 999;
+}
+
 /**
  ******************** media queries :: replace images for retina displays ********************
  *
