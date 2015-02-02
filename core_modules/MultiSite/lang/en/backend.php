@@ -336,3 +336,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_ADMINS_REACHED'] = 'You have reac
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'] = 'Go to the overview page';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OWNER_EMAIL_UNIQUE_ERROR'] = 'The e-mail %1$s is already in use by a user account on %2$s and can therefore not be used.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'] = 'Mapping your website to the domain %s is not allowed.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']= 'Your profile has been updated successfully.';

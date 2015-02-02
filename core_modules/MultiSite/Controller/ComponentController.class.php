@@ -312,7 +312,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         $objAccessLib->parseAccountAttributes($objUser);
         $objTemplate->setVariable(array(
-            'MULTISITE_USER_PROFILE_SUBMIT_URL' => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
+            'MULTISITE_USER_PROFILE_SUBMIT_URL'         => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
+            'TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'    => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'],
+            'TXT_CORE_MODULE_MULTISITE_SAVE'            => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'],
+            'TXT_CORE_MODULE_MULTISITE_CANCEL'          => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL']
         ));
         
         return $objTemplate->get();
@@ -2861,12 +2864,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $objContactTpl->setVariable(array(
                     'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'     => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'],
                     'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'    => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'],
-                    'TXT_CORE_MODULE_MULTISITE_CONTACT_FIRSTNAME_EMPTY' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_FIRSTNAME_EMPTY'],
-                    'TXT_CORE_MODULE_MULTISITE_CONTACT_LASTNAME_EMPTY'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_LASTNAME_EMPTY'],
-                    'TXT_CORE_MODULE_MULTISITE_CONTACT_ADDRESS_EMPTY'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_ADDRESS_EMPTY'],
-                    'TXT_CORE_MODULE_MULTISITE_CONTACT_CITY_EMPTY'      => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_CITY_EMPTY'],
-                    'TXT_CORE_MODULE_MULTISITE_CONTACT_ZIP_EMPTY'       => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_ZIP_EMPTY'],
-                    'TXT_CORE_MODULE_MULTISITE_CONTACT_COUNTRY_EMPTY'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_COUNTRY_EMPTY'],
+                    'TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG'],
                     'TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'            => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'],    
                     'TXT_CORE_MODULE_MULTISITE_SAVE'                    => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'],
                     'MULTISITE_CONTACT_INFO_SUBMIT_URL'                 => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',

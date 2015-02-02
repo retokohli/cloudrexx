@@ -35,3 +35,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'] = 'Speichern';
 //contact information
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'] = "Ihre Kontaktdaten.";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'] = "Bitte füllen Sie das folgende Formular aus um das Customer Panel zu öffnen.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG'] = "Bitte füllen Sie alle Pflichtfelder aus.";

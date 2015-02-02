@@ -6,13 +6,10 @@
 <div aria-hidden="true" class="modal fade" id="multisite_contact_informaiton" role="dialog" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="grid-elm grid-align-1-1 grid-offset" >              
-        <button type="button" class="close" data-dismiss="modal">
-          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-        </button> 
+      <div class="grid-elm grid-align-1-1 grid-offset" >
         <h1>{TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE}</h1>
         {TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT}
-        <form role="form" action="#" id="multisite_contact_information_form" autocomplete="off">
+        <form role="form" action="{MULTISITE_CONTACT_INFO_SUBMIT_URL}" id="multisite_contact_information_form" autocomplete="off">
           <div class="alert alert-danger validationError" style="display: none;"></div>
           <fieldset>
             <!-- BEGIN multisite_user_profile_attribute_title -->     
@@ -77,54 +74,33 @@
 <script type="text/javascript">
   /* <![CDATA[ */
   jQuery(document).ready(function () {
-    jQuery('#multisite_contact_informaiton').modal('show');
+    jQuery('#multisite_contact_informaiton').modal({
+            backdrop: 'static',
+            keyboard: false
+          });
     jQuery('#multisite_contact_information_form').submit(function () {
       jQuery('input').removeClass('input_error');
-      var validationFields = {
-        'firstname': '{TXT_CORE_MODULE_MULTISITE_CONTACT_FIRSTNAME_EMPTY}',
-        'lastname': '{TXT_CORE_MODULE_MULTISITE_CONTACT_LASTNAME_EMPTY}',
-        'address': '{TXT_CORE_MODULE_MULTISITE_CONTACT_ADDRESS_EMPTY}',
-        'zip': '{TXT_CORE_MODULE_MULTISITE_CONTACT_ZIP_EMPTY}',
-        'city': '{TXT_CORE_MODULE_MULTISITE_CONTACT_CITY_EMPTY}',
-        'country': '{TXT_CORE_MODULE_MULTISITE_CONTACT_COUNTRY_EMPTY}'
-      };
+      var validationFields = ['firstname','lastname','address','zip','city','country'];
       var error = false;
-      var errorMsg = '';
       jQuery.each(validationFields, function (key, value) {
-        var inputFieldName = 'multisite_user_profile_attribute[' + key + '][0]';
+        var inputFieldName = 'multisite_user_profile_attribute[' + value + '][0]';
         var inputField = jQuery('#multisite_contact_information_form [name="' + inputFieldName + '"]');
         if (inputField.val() == '' || inputField.val() == '0') {
           inputField.addClass('input_error').scroll();
-          errorMsg = errorMsg + value + '<br/>';
           error = true;
         }
       });
       if (error) {
-        jQuery('.validationError').html(errorMsg);
+        jQuery('.validationError').html('{TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG}');
         jQuery('.alert').show();
         return false;
       }
-      jQuery.ajax({
-        dataType: "json",
-        url: '{MULTISITE_CONTACT_INFO_SUBMIT_URL}',
-        data: jQuery(this).serialize(),
-        type: "POST",
-        beforeSend: function (xhr, settings) {
-          jQuery('.loadingProcess').button('loading');
-          jQuery('.loadingProcess').prop('disabled', true);
-        },
-        success: function (data) {
-          if (data.status == 'success') {
-            jQuery('#multisite_contact_informaiton').modal('hide');
-          }
-        },
-        complete: function (xhr, settings) {
-          jQuery('.loadingProcess').button('reset');
-          jQuery('.loadingProcess').prop('disabled', false);
-        },
-        fail: function (data) {
-        }
-      });
+      sendApiFormRequest('#multisite_contact_information_form',
+                         '#multisite_contact_informaiton',
+                         '#multisite_user',
+                         '/api/MultiSite/User/Summary'
+                        );
+
       return false;
     });
   });

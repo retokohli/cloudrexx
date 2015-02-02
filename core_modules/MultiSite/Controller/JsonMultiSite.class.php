@@ -820,6 +820,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return  boolean     TRUE on success, FALSE on failure.
      */
     public function updateUser($params) {
+        global $_ARRAYLANG;
+        
         if (empty($params['post'])) {
             throw new MultiSiteJsonException(array(
                 'object'    => 'form',
@@ -928,6 +930,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return array(
             'status'    => 'success',
             'log'       => \DBG::getMemoryLogs(),
+            'message'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']
         );
     }
     
