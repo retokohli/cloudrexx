@@ -71,8 +71,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function executeCommand($command, $arguments) {
-        
+
         // Event Listener must be registered before preContentLoad event
+        \Cx\Modules\Order\Controller\ComponentController::registerEvents();
         $this->registerEventListener();
 
         $subcommand = null;
@@ -101,7 +102,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // load language data of MultiSite component
         JsonMultiSite::loadLanguageData();
-        
+
         // load application template
         $page = new \Cx\Core\ContentManager\Model\Entity\Page();
         $page->setVirtual(true);
@@ -2139,8 +2140,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
         $evm = \Env::get('cx')->getEvents();
-        $evm->addEvent('model/payComplete');
-        $evm->addEvent('model/terminated');
         $domainEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\DomainEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);

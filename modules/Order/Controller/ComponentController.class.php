@@ -46,6 +46,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
     /**
+     * call the registered events before the page loads
+     * 
+     * @param \Cx\Core\Routing\Url $request request values
+     */
+    public function preResolve(\Cx\Core\Routing\Url $request) {
+        self::registerEvents();
+    }
+    
+    /**
      * get command mode
      * 
      * @return type array
@@ -65,9 +74,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommand($command, $arguments) 
     {
-        $evm = \Env::get('cx')->getEvents();
-        $evm->addEvent('model/terminated');
-        
+        self::registerEvents();
         $subcommand = null;
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
@@ -116,5 +123,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $subscription->terminate();
         }
         \Env::get('em')->flush();
+    }
+    
+    /**
+     * Register events all should call from here for the Order Component.
+     */
+    public static function registerEvents() 
+    {
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addEvent('model/terminated');
+        $evm->addEvent('model/payComplete');
     }
 }
