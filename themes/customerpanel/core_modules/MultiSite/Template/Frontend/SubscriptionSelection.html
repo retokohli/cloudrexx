@@ -728,11 +728,15 @@ span.abo-info p {
     <h2><span class="priceplan">{TXT_MULTISITE_WEBSITE_PRODUCT_PRICE_MODEL}</span></h2>
     <a class="monthly" data-renewalOption="monthly"  href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_MONTHLY}</a>
     <a class="annual active" data-renewalOption="annually"  href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_ANNUALLY}</a>
-    <a class="biannual" data-renewalOption="biannually"  href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}
+    
+<!-- We are switching from Paymill to Stripe as a payment provider. Stripe does not allow subscriptions with a duration of two years.
+     So hide the tab "Zwei Jahre" from the subscription selection dialogue. we can re-show it once we will switch back to Paymill.-->
+
+<!--    <a class="biannual" data-renewalOption="biannually"  href="#">{TXT_MULTISITE_WEBSITE_PRODUCT_BIANNUALLY}
         <span class="biannual-discount">
             <sub> - 10% </sub>
         </span>
-    </a>
+    </a> -->
 </div>
 
 <div class="prices">
