@@ -1,5 +1,5 @@
 <div class="grid-elm grid-align-1-1 grid-offset">   
-    <form role="form" action="#" id="multisite_user_contact_form">
+    <form role="form" action="{MULTISITE_USER_PROFILE_SUBMIT_URL}" id="multisite_user_contact_form">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <h2>Kontaktdaten</h2>   
         
@@ -53,8 +53,8 @@
             <!-- END multisite_user_profile_attribute_phone_fax --> 
                                                        
             <div class="row">
-                <button type="submit" class="save">Speichern</button>
-                <button type="button" class="" data-dismiss="modal">Schliessen</button>
+                <button type="submit" class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+                <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
             </div>
         <fieldset>    
     </form>
@@ -64,31 +64,12 @@
 /* <![CDATA[ */
 jQuery(document).ready(function() {
     jQuery('#multisite_user_contact_form').submit(function() {
-        jQuery.ajax({
-            dataType: "json",
-            url: '{MULTISITE_USER_PROFILE_SUBMIT_URL}',
-            data: jQuery(this).serialize(),
-            type: "POST",
-            success: function(data) {
-                if (data.status == 'success') {
-                    jQuery.ajax({
-                        dataType: 'html',
-                        url: '/api/MultiSite/User/Contact',
-                        type: 'GET',
-                        success: function(data) {
-                            if (data) {
-                                jQuery('#multisite_user_contact').html(data);
-                            }
-                            jQuery('#multisite_settings_contact').modal('hide');
-                        },
-                        fail: function(data) {}
-                    });
-                }
-            },
-            fail: function(data) {}
-        });
-
-        return false;
+      sendApiFormRequest('#multisite_user_contact_form',
+                         '#multisite_settings_contact', 
+                         '#multisite_user_contact',
+                         '/api/MultiSite/User/Contact'
+                        );
+      return false;
     });
 });
 /* ]]> */

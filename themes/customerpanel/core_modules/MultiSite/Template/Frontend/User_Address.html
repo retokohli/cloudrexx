@@ -32,4 +32,16 @@
         <!-- END multisite_user_profile_attribute_country --> 	
     </tbody>
 </table>
-<button type="button" data-toggle="modal" data-remote="/api/MultiSite/User/Address/Edit" data-target="#multisite_settings_address">Bearbeiten</button>   
+<button type="button" class="userAddressModal" data-remote="/api/MultiSite/User/Address/Edit" data-target="multisite_settings_address">Bearbeiten</button>   
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+  jQuery('.userAddressModal').bind('click', function (event) {
+      showRemoteModal({
+        modalId   : jQuery(this).data('target'),
+        remoteUrl : jQuery(this).data('remote'),
+      });
+    });
+});
+/* ]]> */
+</script>

@@ -14,4 +14,16 @@
         <!-- END multisite_user_account_password --> 			
     </tbody>
 </table>
-<button type="button" data-toggle="modal" data-remote="/api/MultiSite/User/Account/Edit" data-target="#multisite_settings_account">Bearbeiten</button> 
+<button type="button" class="userAccountModal" data-remote="/api/MultiSite/User/Account/Edit" data-target="multisite_settings_account">Bearbeiten</button> 
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+  jQuery('.userAccountModal').bind('click', function (event) {
+        showRemoteModal({
+          modalId   : jQuery(this).data('target'),
+          remoteUrl : jQuery(this).data('remote'),
+        });
+      });
+});
+/* ]]> */
+</script>

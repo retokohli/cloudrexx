@@ -50,4 +50,16 @@
         <!-- END multisite_user_profile_attribute_phone_fax --> 	
     </tbody>
 </table>
-<button type="button" data-toggle="modal" data-remote="/api/MultiSite/User/Contact/Edit" data-target="#multisite_settings_contact">Bearbeiten</button>
+<button type="button" class="userContactModal" data-remote="/api/MultiSite/User/Contact/Edit" data-target="multisite_settings_contact">Bearbeiten</button>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+  jQuery('.userContactModal').bind('click', function (event) {
+        showRemoteModal({
+          modalId   : jQuery(this).data('target'),
+          remoteUrl : jQuery(this).data('remote'),
+        });
+      });
+});
+/* ]]> */
+</script>
