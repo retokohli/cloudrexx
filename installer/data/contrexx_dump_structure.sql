@@ -4102,7 +4102,7 @@ CREATE TABLE `contrexx_module_shop_products` (
   `group_id` int(10) unsigned default NULL,
   `article_id` int(10) unsigned default NULL,
   `usergroup_ids` varchar(4096) default NULL,
-  `minimum_order_quantity` int(10) NOT NULL,
+  `minimum_order_quantity` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `group_id` (`group_id`),
   KEY `article_id` (`article_id`),
