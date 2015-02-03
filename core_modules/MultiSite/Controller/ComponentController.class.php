@@ -2162,7 +2162,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
-        $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteEventListener);
+
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') != self::MODE_WEBSITE) {
+            $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteEventListener);
+        }
         
         //accessUser Event Listenter
         $accessUserEventListener    = new \Cx\Core_Modules\MultiSite\Model\Event\AccessUserEventListener();
@@ -2198,11 +2201,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $crmCustomerEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CrmCustomerEventListener();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmCustomerEventListener);
         
-        $websiteCollectionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteCollectionEventListener();
-        $evm->addModelListener('terminated', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
-        $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
-
-        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection', $websiteCollectionEventListener);
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') !== self::MODE_WEBSITE) {
+            $websiteCollectionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteCollectionEventListener();
+            $evm->addModelListener('terminated', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
+            $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
+            $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection', $websiteCollectionEventListener);
+        }
 
         //OrderPayment event Listener
         $orderPaymentEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderPaymentEventListener();
