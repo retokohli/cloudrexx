@@ -562,6 +562,10 @@ header #functions li a {
     color: #c7c6c7;
 }
 
+header #functions .user {
+    padding-left: 20px;
+}
+
 .register-sections
  {
     width: 100%;
