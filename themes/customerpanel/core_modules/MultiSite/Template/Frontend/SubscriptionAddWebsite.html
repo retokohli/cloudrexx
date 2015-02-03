@@ -20,21 +20,23 @@ jQuery(document).ready(function(){
         callBackOnSuccess: function(response) {
             jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
                 showMessage(response.message, 'success');//show success message
-                
-                switch(jQuery('#product_name').val()) {
-                  case 'Trial':
-                    loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
-                    break;
-                  case 'Free':
-                    loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
-                    break;
-                  default:
-                    if (response.websiteId) {
-                      window.location.href = '{NODE_MULTISITE_WEBSITE}?id='+response.websiteId;
+                $selectedProduct = jQuery('#product_name').val();
+                if ((   jQuery('#multisite_trial_site').length > 0 
+                     || jQuery('#multisite_active_site').length > 0)
+                     && (jQuery.inArray($selectedProduct, ['Free', 'Trial']) >= 0)) {
+                    switch($selectedProduct) {
+                      case 'Trial':
+                        loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
+                        break;
+                      case 'Free':
+                        loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+                        break;
+                      default:
+                        break;
                     }
-                    break;
-                }
-                
+                } else {
+                    window.location.href = '{NODE_MULTISITE_WEBSITE}?id='+response.websiteId;
+                } 
             });
             jQuery("#SubscriptionAddWebsite").modal('hide');
        }
