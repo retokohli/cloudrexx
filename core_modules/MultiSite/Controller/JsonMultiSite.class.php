@@ -289,6 +289,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (!$order) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
             }
+
+            // Set user's verification state to pending in case the related
+            // password-setup-method has been configured.
+            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') == 'auto-with-verification') {
+                \DBG::msg('HOTFIX: set verification state to pending on Cloudrexx user..');
+                // set state of user account to unverified
+                $objUser->setVerification(false);
+                $objUser->store();
+            }
+
             // create the website process in the payComplete event
             $order->complete(); 
             
