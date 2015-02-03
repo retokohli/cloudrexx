@@ -12,6 +12,13 @@
     </div>     
 </div>
 
+<div class="grid-elm grid-align-1-2 grid-offset">
+    <div class="box">  
+        <h2>Anmeldeinformationen</h2>         
+        <div  id="multisite_user_account"></div>
+    </div>     
+</div>
+
 <div class="grid-elm grid-align-1-1 grid-offset">
     <button type="button" data-target="#deleteWebsiteAccount" data-toggle="modal">{TXT_CORE_MODULE_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE}</button>
 </div>
@@ -23,6 +30,12 @@
     </div>
 </div>      
 <div class="modal fade" id="multisite_settings_address" tabindex="-1" role="dialog" aria-labelledby="multisite_settings_address_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>   
+<div class="modal fade" id="multisite_settings_account" tabindex="-1" role="dialog" aria-labelledby="multisite_settings_account_label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
         </div>
@@ -61,6 +74,7 @@ cx.ready(function() {
     jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
         loadContent('#multisite_user_address', '/api/MultiSite/User/Address');
         loadContent('#multisite_user_contact', '/api/MultiSite/User/Contact');
+        loadContent('#multisite_user_account', '/api/MultiSite/User/Account');
     });
   cadminPath      = cx.variables.get('cadminPath', 'contrexx');
   websiteAccountDeleteUrl = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=deleteAccount';
