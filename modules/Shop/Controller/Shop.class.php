@@ -1413,6 +1413,17 @@ die("Failed to update the Cart!");
                     'SHOP_PRODUCT_FLAG_IMAGE', $strImage
                 );
             }
+            
+            $minimum_order_quantity = $objProduct->minimum_order_quantity();
+            //Activate Quantity-Inputfield when minimum_order_quantity exists
+            if(self::$objTemplate->blockExists('orderQuantity') && $minimum_order_quantity > 0){
+                self::$objTemplate->setVariable(
+//                        'SHOP_PRODUCT_ORDER_QUANTITY',contrexx_raw2xhtml($objProduct->minimum_order_quantity())
+                        'SHOP_PRODUCT_MINIMUM_ORDER_QUANTITY',contrexx_raw2xhtml($objProduct->minimum_order_quantity())
+                );
+            }
+            
+            
             if (self::$objTemplate->blockExists('shopProductRow')) {
                 self::$objTemplate->parse('shopProductRow');
             }
@@ -1940,7 +1951,7 @@ die("Failed to update the Cart!");
     static function _gotoLoginPage()
     {
         // go to the next step
-        if (isset($_POST['continue'])) {
+        if (isset($_POST['continue']) && !\Message::have("error")) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
                 \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login'));
         }

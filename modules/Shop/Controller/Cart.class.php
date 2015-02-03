@@ -388,6 +388,8 @@ class Cart
      */
     static function update($objCustomer)
     {
+        global $_ARRAYLANG;
+        
 //DBG::log("Cart::update(): Cart: ".var_export($_SESSION['shop']['cart'], true));
         if (empty($_SESSION['shop']['cart'])) {
             self::init();
@@ -412,11 +414,19 @@ class Cart
 //DBG::log("Cart::update(): Products: ".var_export($products, true));
         // Loop 1: Collect necessary Product data
         $products = $_SESSION['shop']['cart']['items']->toArray();
+//            \Message::clear();
         foreach ($products as $cart_id => &$product) {
             $objProduct = Product::getById($product['id']);
             if (!$objProduct) {
                 unset($products[$cart_id]);
                 continue;
+            }
+            // Check minimum order quanity, when setted
+            if($product['quantity'] != 0){
+                if ($product['quantity'] < $objProduct->minimum_order_quantity()){
+                    echo "da";
+                    \Message::error($objProduct->name().': '.$_ARRAYLANG['TXT_MINIMUM_ORDER_QUANTITY_ERROR']);
+                }
             }
             // Limit Products in the cart to the stock available if the
             // stock_visibility is enabled.
@@ -515,6 +525,7 @@ class Cart
                 'group_id' => $objProduct->group_id(),
                 'article_id' => $objProduct->article_id(),
                 'product_images' => $objProduct->pictures(),
+                'minimum_order_quantity' => $objProduct->minimum_order_quantity(),
             );
 //DBG::log("Cart::update(): Loop 1: Product: ".var_export(self::$products[$cart_id], true));
         }
@@ -839,6 +850,11 @@ die("Cart::view(): ERROR: No template");
                         'SHOP_PRODUCT_TAX_AMOUNT' =>
                             $arrProduct['vat_amount'].'&nbsp;'.
                             Currency::getActiveCurrencySymbol(),
+                    ));
+                }
+                if(intval($arrProduct['minimum_order_quantity'])>0){
+                    $objTemplate->setVariable(array(
+                        'SHOP_PRODUCT_MINIMUM_ORDER_QUANTITY' => $arrProduct['minimum_order_quantity'],
                     ));
                 }
                 $objTemplate->parse('shopCartRow');
