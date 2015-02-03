@@ -278,7 +278,9 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
       jQuery('.loadingProcess').removeClass('save');
     },
     success: function (response) {
-      message = (response.status == 'success') ? response.data.message : response.message;
+      message = (response.status == 'success') ? response.data.message : (jQuery.type(response.message) === 'object') 
+                                                                         ? response.message.message
+                                                                         : response.message;
       
       jQuery(jsModalSelector).on('hidden.bs.modal', function () {
         showMessage(message, response.status);//show status message 
