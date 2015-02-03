@@ -414,7 +414,6 @@ class Cart
 //DBG::log("Cart::update(): Products: ".var_export($products, true));
         // Loop 1: Collect necessary Product data
         $products = $_SESSION['shop']['cart']['items']->toArray();
-//            \Message::clear();
         foreach ($products as $cart_id => &$product) {
             $objProduct = Product::getById($product['id']);
             if (!$objProduct) {
