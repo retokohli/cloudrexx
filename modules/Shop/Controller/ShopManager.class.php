@@ -2158,6 +2158,7 @@ if ($test === NULL) {
             'SHOP_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg(
                 'long', $objProduct->long(), 'full'),
             'SHOP_STOCK' => $objProduct->stock(),
+            'SHOP_MIN_ORDER_QUANTITY' => $objProduct->minimum_order_quantity(),
             'SHOP_MANUFACTURER_URL' => contrexx_raw2xhtml($objProduct->uri()),
 // TODO: Any attributes for the datepicker input?
             'SHOP_DATE_START' => \Html::getDatepicker('date_start',
@@ -2275,6 +2276,7 @@ if ($test === NULL) {
         $date_start = contrexx_input2raw($_POST['date_start']);
         $date_end = contrexx_input2raw($_POST['date_end']);
         $manufacturer_id = $_POST['manufacturer_id'];
+        $minimum_order_quantity = $_POST['minimum_order_quantity'];
 // Currently not used on the detail page
 //        $flags = (isset($_POST['Flags'])
 //                ? join(' ', $_POST['Flags']) : '');
@@ -2378,6 +2380,7 @@ if ($test === NULL) {
             $objProduct->short($short);
             $objProduct->long($long);
             $objProduct->stock($stock);
+            $objProduct->minimum_order_quantity($minimum_order_quantity);
             $objProduct->stock_visible($stock_visible);
             $objProduct->uri($uri);
             $objProduct->b2b($b2b);

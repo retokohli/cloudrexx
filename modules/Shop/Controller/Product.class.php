@@ -188,6 +188,11 @@ class Product
      * @access  private
      */
     private $arrRelations = null;
+    /**
+     * Is defined, when a minimum order quantity should be checked 
+     * @var integer 
+     */
+    private $minimum_order_quantity = null;
 
 
     /**
@@ -665,6 +670,20 @@ class Product
     }
 
     /**
+     * The minimum order quantity
+     * @param   string    $minimum_order_quantity The optional minimum order quantity 
+     * @return  integer                     minimum order quanity
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function minimum_order_quantity($minimum_order_quantity=null)
+    {
+        if (isset($minimum_order_quantity)) {
+            $this->minimum_order_quantity = intval ($minimum_order_quantity);
+        }
+        return $this->minimum_order_quantity;
+    }
+
+    /**
      * The keywords
      * @param   string    $keywords         The optional product keywords
      * @return  string                      The product keywords
@@ -1026,7 +1045,9 @@ class Product
                     group_id=".($this->group_id
                         ? $this->group_id : 'NULL').",
                     article_id=".($this->article_id
-                        ? $this->article_id : 'NULL')."
+                        ? $this->article_id : 'NULL').",
+                    minimum_order_quantity=".($this->minimum_order_quantity
+                        ? $this->minimum_order_quantity : '0')."
                 WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         
@@ -1059,7 +1080,7 @@ class Product
                 stock, stock_visible, discountprice, discount_active,
                 active, b2b, b2c, date_start, date_end,
                 manufacturer_id, ord, vat_id, weight,
-                flags, usergroup_ids, group_id, article_id
+                flags, usergroup_ids, group_id, article_id, minimum_order_quantity
             ) VALUES (
                 '$this->pictures',
                 '".addslashes($this->category_id)."',
@@ -1075,8 +1096,11 @@ class Product
                 '".addslashes($this->flags)."',
                 '".($this->usergroup_ids ? $this->usergroup_ids : 'NULL')."',
                 ".($this->group_id ? $this->group_id : 'NULL').",
-                ".($this->article_id ? $this->article_id : 'NULL')."
+                ".($this->article_id ? $this->article_id : 'NULL').",
+                ".($this->minimum_order_quantity ? $this->minimum_order_quantity : '0')."
             )";
+//        echo "<pre>";
+//        echo $query;die();
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
@@ -1127,7 +1151,8 @@ class Product
                    `product`.`vat_id`,
                    `product`.`flags`,
                    `product`.`usergroup_ids`,
-                   `product`.`group_id`, `product`.`article_id`, ".
+                   `product`.`group_id`, `product`.`article_id`, 
+                   `product`.`minimum_order_quantity`, ".
                    $arrSql['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products` AS `product`".
                    $arrSql['join']."
@@ -1191,6 +1216,7 @@ class Product
         $objProduct->group_id = $objResult->fields['group_id'];
         $objProduct->article_id = $objResult->fields['article_id'];
         $objProduct->keywords = $strKeys;
+        $objProduct->minimum_order_quantity = $objResult->fields['minimum_order_quantity'];
         // Fetch the Product Attribute relations
         $objProduct->arrRelations =
             Attributes::getRelationArray($objProduct->id);
@@ -1369,6 +1395,7 @@ class Product
             'distribution' => array('type' => 'VARCHAR(16)', 'default' => '', 'renamefrom' => 'handler'),
             'picture' => array('type' => 'VARCHAR(4096)', 'notnull' => false, 'default' => null),
             'flags' => array('type' => 'VARCHAR(4096)', 'notnull' => false, 'default' => null),
+            'minimum_order_quantity' => array('type' => 'INT(10)', 'unsigned' => false, 'default' => '0'),
 // Obsolete:
 //`property1` varchar(100) COLLATE utf8_unicode_ci DEFAULT '',
 //`property2` varchar(100) COLLATE utf8_unicode_ci DEFAULT '',

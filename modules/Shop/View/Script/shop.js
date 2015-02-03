@@ -119,14 +119,29 @@ function checkProductOption(objForm, productId, strAttributeIds) {
     if (shopUseJsCart === undefined) {
         return true;
     }
-    addProductToCart(objForm);
+    //Validate Minimum order quanity, when defined
+    var elForm = cx.jQuery('form#'+objForm);
+    if(elForm.find('input[name="orderQuanity"]').length>0){
+        var element = elForm.find('input[name="orderQuanity"]');
+        if(element.val() < parseInt(element.attr('data-minimum-order-quantity'))){
+            element.addClass("not-valid");
+            return false;
+        }else{
+            element.removeClass("not-valid");
+        }
+        addProductToCart(objForm,element.val());
+    }else{
+        addProductToCart(objForm);
+    }
     return false;
 }
 
-function addProductToCart(objForm) {
+function addProductToCart(objForm,quantity) {
 //  objCart = {products:new Array(),info:{}};
     // Default to one product in case the quantity field is not used
-    objProduct = {id: 0, options: {}, quantity: 1}; // Obsolete: ,title:'',info:{}
+    var quantity = (typeof quantity != "undefined")?quantity:1; //default Quantity of 1
+    objProduct = {id: 0, options: {}, quantity: quantity}; // Obsolete: ,title:'',info:{}
+    console.log(objProduct);
     productOptionRe = /productOption\[([0-9]+)\]/;
     updateProductRe = /updateProduct\[([0-9]+)\]/;
     updateProduct = '';

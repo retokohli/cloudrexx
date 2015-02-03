@@ -975,3 +975,7 @@ $_ARRAYLANG['TXT_SHOP_PAYMILL_LIVE_ACCOUNT'] = "Einstellungen Live-Konto";
 $_ARRAYLANG['TXT_SHOP_MODE'] = "Modus";
 $_ARRAYLANG['TXT_SHOP_TEST'] = "Test";
 $_ARRAYLANG['TXT_SHOP_LIVE'] = "Live";
+
+$_ARRAYLANG['TXT_MIN_ORDER_QUANITY'] = "Mindestbestellmenge";
+
+

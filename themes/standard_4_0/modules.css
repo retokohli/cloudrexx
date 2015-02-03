@@ -1547,6 +1547,16 @@ form[name="registrationForm"] .row {
 #shop form#card-tds-form .card-expiry-month {width: 50px}
 #shop form#card-tds-form .card-expiry-year {width: 75px}
 #shop form#card-tds-form .paymill-error-text {color: red;padding: 10px 0;}
+#shop .functions .order-quanity-container .input-group{
+    width: 130px;
+    float: right;
+}
+#shop .functions .order-quanity-container .help-block{
+    text-align: right;
+}
+#shop input.min-order-quantity.not-valid{
+    border: 1px solid red;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
