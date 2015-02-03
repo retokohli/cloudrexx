@@ -184,6 +184,12 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                             if (   (isset($resp->status) && $resp->status == 'error')
                                 || (isset($resp->data->status) && $resp->data->status == 'error')
                             ) {
+                                if (isset($resp->log)) {
+                                    \DBG::appendLogs(array_map(function($logEntry) {return '(Service: '.$serviceServer->getLabel().') '.$logEntry;}, $resp->log));
+                                }
+                                if (isset($resp->message)) {
+                                    \DBG::appendLogs(array('(Service: '.$serviceServer->getLabel().') '.$resp->message));
+                                }
                                 throw new \Exception('Failed to delete this user');
                             }
                         }
