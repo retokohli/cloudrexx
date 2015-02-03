@@ -165,16 +165,16 @@ class CxCore_ModulesMultiSiteModelEntityMailServiceServerProxy extends \Cx\Core_
         return parent::deleteAccount($accountId);
     }
 
-    public function enableService($accountId)
+    public function enableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         $this->_load();
-        return parent::enableService($accountId);
+        return parent::enableService($website);
     }
 
-    public function disableService($accountId)
+    public function disableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         $this->_load();
-        return parent::disableService($accountId);
+        return parent::disableService($website);
     }
 
     public function __get($name)

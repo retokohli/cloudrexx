@@ -255,6 +255,18 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::getBaseDn();
     }
 
+    public function getMailDn()
+    {
+        $this->_load();
+        return parent::getMailDn();
+    }
+
+    public function setMailDn()
+    {
+        $this->_load();
+        return parent::setMailDn();
+    }
+
     public function getDomainAliases()
     {
         $this->_load();
