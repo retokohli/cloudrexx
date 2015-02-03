@@ -672,8 +672,8 @@ class Product
     /**
      * The minimum order quantity
      * @param   string    $minimum_order_quantity The optional minimum order quantity 
-     * @return  integer                     minimum order quanity
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @return  integer   minimum order quanity
+     * @author  Kaleb Tschbaold <kaleb.tschabold@comvation.com>
      */
     function minimum_order_quantity($minimum_order_quantity=null)
     {
@@ -1099,8 +1099,6 @@ class Product
                 ".($this->article_id ? $this->article_id : 'NULL').",
                 ".($this->minimum_order_quantity ? $this->minimum_order_quantity : '0')."
             )";
-//        echo "<pre>";
-//        echo $query;die();
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
