@@ -103,8 +103,9 @@ interface SubscriptionController {
     /**
      * Create a new auto-login url for Panel.
      * 
-     * @param string $ipAddress      ip address
-     * @param string $sourceAddress  source address
+     * @param integer $subscriptionId subscription id
+     * @param string  $ipAddress      ip address
+     * @param string  $sourceAddress  source address
      */
-    public function getPanelAutoLoginUrl($ipAddress, $sourceAddress);    
+    public function getPanelAutoLoginUrl($subscriptionId, $ipAddress, $sourceAddress);    
 }

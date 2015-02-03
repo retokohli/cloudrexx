@@ -1547,20 +1547,28 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Create a new auto-login url for Plesk.
      * 
-     * @param string $ipAddress
-     * @param string $sourceAddress
+     * @param integer $subscriptionId subscription id
+     * @param string  $ipAddress      id address
+     * @param string  $sourceAddress  source address
      * 
      * @return string $pleskLoginUrl
      * @throws ApiRequestException
      */
-    public function getPanelAutoLoginUrl($ipAddress, $sourceAddress)
+    public function getPanelAutoLoginUrl($subscriptionId, $ipAddress, $sourceAddress)
     {
         \DBG::msg("MultiSite (PleskController): get Panel auto login url.");
+        
+        if (empty($subscriptionId) || empty($ipAddress) || empty($sourceAddress)) {
+            return false;
+        }
+        
+        $this->webspaceId = $subscriptionId;
+        
         $subscriptionOwnerGuid = $this->getSubscriptionOwnerGuid();
-        $loginName = !\FWValidator::isEmpty($subscriptionOwnerGuid) ? $this->getAuxilaryUserLoginName($subscriptionOwnerGuid) : '';
+        $loginName = !empty($subscriptionOwnerGuid) ? $this->getAuxilaryUserLoginName($subscriptionOwnerGuid) : '';
 
-        if (\FWValidator::isEmpty($loginName) || \FWValidator::isEmpty($ipAddress) || \FWValidator::isEmpty($sourceAddress)) {
-            return;
+        if (empty($loginName)) {
+            return false;
         }
         
         $xmldoc = $this->getXmlDocument();
