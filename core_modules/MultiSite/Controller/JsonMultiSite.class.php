@@ -893,7 +893,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         // set profile data
         if (isset($data['multisite_user_profile_attribute'])) {
-            $objUser->setProfile($data['multisite_user_profile_attribute']);
+            $objUser->setProfile(contrexx_input2raw($data['multisite_user_profile_attribute']));
         }
 
         // set md5 hashed password
