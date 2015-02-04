@@ -652,10 +652,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'MULTISITE_SUBSCRIPTION_DESCRIPTION_SUBMIT_URL' => '/api/MultiSite/SubscriptionDetail?action=updateDescription&id=' . $subscriptionId,            
         ));
         
-        // Hide the button to cancel a subscription. We shall re-display the button again, once the issue with the Payrexx API has been resolved.
-        //$cancelButtonStatus = ($subscriptionObj->getState() !== \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
+        $cancelButtonStatus = ($subscriptionObj->getState() !== \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
         self::showOrHideBlock($objTemplate, 'showUpgradeButton', $product->isUpgradable());
-        self::showOrHideBlock($objTemplate, 'showSubscriptionCancelButton', false);
+        self::showOrHideBlock($objTemplate, 'showSubscriptionCancelButton', $cancelButtonStatus);
 
         if ($objTemplate->blockExists('showWebsites')) {
             $websiteCollection = $subscriptionObj->getProductEntity();
@@ -825,8 +824,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'showOverview' => false,
                         ),
                     'username'=> array(
-                              'header' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TITLE_NAME']
-                        ),
+                            'header' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TITLE_NAME'],
+                            'table' => array(
+                                'parse' => function($value, $arrData) {
+                                    $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
+                                    $objUser->assignRandomUserId();
+                                    $objUser->setProfile(array(
+                                        'firstname' => array(0 => $arrData['userProfile']->getFirstname()),
+                                        'lastname'  => array(0 => $arrData['userProfile']->getLastname()),
+                                    ));
+                                    return \FWUser::getParsedUserTitle($objUser);
+                                },
+                            ),
+                    ),
                     'email'=> array(
                               'header' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_TITLE_EMAIL']
                         ),
@@ -1283,7 +1293,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Api Payrexx command
      */
     public function executeCommandPayrexx()
-    {                
+    {
+        // use file-logging to debug payrexx web-hooks
+        \DBG::deactivate();
+        \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_LOG);
+        \DBG::dump($_REQUEST);
         $transaction = isset($_POST['transaction'])
                        ? $_POST['transaction']
                        : (isset($_POST['subscription'])
@@ -1298,6 +1312,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             || \FWValidator::isEmpty($invoice)
             || \FWValidator::isEmpty($contact)
         ) {
+            \DBG::msg(__METHOD__.': insufficient data supplied. Abort execution.');
             return;
         }
         
@@ -1315,6 +1330,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             && !\FWValidator::isEmpty($subscriptionEnd)
             && $subscriptionStatus === \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED
         ) {
+            \DBG::msg(__METHOD__.': subscription has been cancelled');
             $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
             $subscription = $subscriptionRepo->findOneBy(array('externalSubscriptionId' => $subscriptionId));
             if (!\FWValidator::isEmpty($subscription)) {
@@ -1331,6 +1347,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $invoiceReferId = isset($invoice['referenceId']) ? $invoice['referenceId'] : '';
         $invoiceId      = isset($invoice['paymentRequestId']) ? $invoice['paymentRequestId'] : 0;
         if (\FWValidator::isEmpty($invoiceReferId) || \FWValidator::isEmpty($invoiceId)) {
+            \DBG::msg(__METHOD__.': unkown payment. Abort execution.');
             return;
         }
         
@@ -1345,6 +1362,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         try {
             $response = $payrexx->getOne($invoiceRequest);
         } catch (\Payrexx\PayrexxException $e) {
+            \DBG::msg(__METHOD__.': Fetching payment response failed: ' . $e->getMessage());
             throw new MultiSiteException("Failed to get payment response:". $e->getMessage());
         }
         
@@ -1358,6 +1376,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $transactionReference = $invoiceReferId . (!\FWValidator::isEmpty($subscriptionId) ? "$subscriptionId|" : '');
             self::createPayrexxPayment($transactionReference, $invoice['amount'], $transaction);
         }
+
+        \DBG::msg(__METHOD__.': End of command execution reached. Bye..');
     }
     
     /**
@@ -1440,8 +1460,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public static function createPayrexxPayment($transactionReference, $amount, $transactionData)
     {
         if (\FWValidator::isEmpty($transactionReference) || \FWValidator::isEmpty($amount) || \FWValidator::isEmpty($transactionData)) {
+            \DBG::msg(__METHOD__.': insufficient data available to create a new payment');
             return;
         }
+
+        \DBG::msg(__METHOD__.': add new payment');
         
         $payment = new \Cx\Modules\Order\Model\Entity\Payment();
         $payment->setHandler(\Cx\Modules\Order\Model\Entity\Payment::HANDLER_PAYREXX);
