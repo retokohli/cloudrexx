@@ -58,4 +58,8 @@ class User extends \User {
         }
         return parent::updateUser();
     }
+
+    public function assignRandomUserId() {
+        $this->id = time().rand(1,getrandmax());
+    }
 }
