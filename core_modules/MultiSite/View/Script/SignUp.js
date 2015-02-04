@@ -306,6 +306,7 @@
                 data: {
                     multisite_email_address : objMail.val(),
                     multisite_address : objAddress.val(),
+                    product_id : jQuery("#product_id").val(),
                     renewalOption: options.renewalOption
                 },
                 type: "POST",
