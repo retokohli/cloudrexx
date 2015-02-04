@@ -402,6 +402,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return;
         }
         
+        // activate file logging to debug payment handling
+        \DBG::deactivate();
+        \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_LOG);
+        \DBG::dump($_REQUEST);
         
         $subscriptionId = isset($params['post']['subscription_id']) ? contrexx_input2raw($params['post']['subscription_id']) : 0;
         $subscriptionType = !\FWValidator::isEmpty($subscriptionId) ? 'UPGRADE' : 'ADD';
@@ -551,6 +555,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             $updateSubscription = new \Payrexx\Models\Request\Subscription();
                             $updateSubscription->setId($newExternalSubscriptionId);
                             $updateSubscription->setAmount($productPrice * 100);
+                            $updateSubscription->setCurrency(\Payrexx\Models\Request\Subscription::CURRENCY_CHF);
                             try {
                                 $payrexx->update($updateSubscription);
                             } catch (\Payrexx\PayrexxException $e) {
@@ -559,6 +564,20 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         }
                         
                         $transactionReference .= "$newExternalSubscriptionId|";
+
+                        // transaction data needed for OrderPaymentEventListener::postPersist()
+                        $subscriptionValidDate = new \DateTime();
+                        $subscriptionValidDate->add($subscriptionPeriod);
+                        $transactionData = array(
+                            'subscription' => array(
+                              'id'          => $newExternalSubscriptionId,
+                              //'valid_until' => $response->getValidUntil(),//;$subscriptionValidDate->format('Y-m-d')
+                              'valid_until' => $subscriptionValidDate->format('Y-m-d')
+                          )
+                        );
+                        
+                        // create payment for order
+                        ComponentController::createPayrexxPayment($transactionReference, $productPrice - $credit, $transactionData);
                     } else {
                         \DBG::log('JsonMultiSite::manageSubscription() - Could not create a subscription.');
                         return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
