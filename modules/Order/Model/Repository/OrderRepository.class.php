@@ -134,13 +134,17 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
             $invoices = $order->getInvoices();
             
             if (!empty($invoices)) {
+                \DBG::msg(__METHOD__.": order has invoices");
                 $paymentRepo = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Payment');
                 foreach ($invoices as $invoice) {
                     if (!$invoice->getPaid()) {
+                        \DBG::msg(__METHOD__.": lookup payment with transaction-reference $transactionReference and amount ".$invoice->getAmount());
                         $payment = $paymentRepo->findOneByCriteria(array('amount' => $invoice->getAmount(), 'transactionReference' => $transactionReference, 'invoice' => null));
                         if ($payment) {
+                            \DBG::msg(__METHOD__.": payment found");
                             //set subscription-id to Subscription::$externalSubscriptionId
                             if ($subscription) {
+                                \DBG::msg(__METHOD__.": trying to link to new subscription to the external subscription ID");
                                 $referenceArry = explode('|', $payment->getTransactionReference());
                                 if (isset($referenceArry[4]) && !empty($referenceArry[4])) {
                                     $subscription->setExternalSubscriptionId($referenceArry[4]);
@@ -151,6 +155,7 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                                 && isset($transactionData['contact'])
                                 && isset($transactionData['contact']['id'])
                             ) {
+                                \DBG::msg(__METHOD__.": set externalPaymentCustomerIdProfileAttributeId of user to ".$transactionData['contact']['id']);
                                 $objUser->setProfile(
                                         array(
                                             \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId') => array(0 => $transactionData['contact']['id'])
