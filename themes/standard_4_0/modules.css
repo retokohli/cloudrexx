@@ -1547,6 +1547,12 @@ form[name="registrationForm"] .row {
 #shop form#card-tds-form .card-expiry-month {width: 50px}
 #shop form#card-tds-form .card-expiry-year {width: 75px}
 #shop form#card-tds-form .paymill-error-text {color: red;padding: 10px 0;}
+#shop .functions .order-quanity-container{
+    display: inline-block;
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+}
 #shop .functions .order-quanity-container .input-group{
     width: 130px;
     float: right;
