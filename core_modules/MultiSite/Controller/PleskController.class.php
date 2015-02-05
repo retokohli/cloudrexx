@@ -1566,7 +1566,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         
         $subscriptionOwnerGuid = $this->getSubscriptionOwnerGuid();
         $loginName = !empty($subscriptionOwnerGuid) ? $this->getAuxilaryUserLoginName($subscriptionOwnerGuid) : '';
-
+        
         if (empty($loginName)) {
             return false;
         }
@@ -1600,5 +1600,43 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
         $pleskLoginUrl = "https://{$this->host}:8443/enterprise/rsession_init.php?PHPSESSID=" . $resultNode->id;
         return $pleskLoginUrl;
+    }
+    
+    /**
+     * Get the available service plans of mail service server
+     * 
+     * @return array
+     * @throws ApiRequestException
+     */
+    public function getAvailableServicePlansOfMailServer() {
+        \DBG::msg("MultiSite (PleskController): get available service plans of mail service server.");
+       
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+
+        $service = $xmldoc->createElement('service-plan');
+        $packet->appendChild($service);
+        
+        $get = $xmldoc->createElement('get');
+        $service->appendChild($get);
+        
+        $filter = $xmldoc->createElement('filter');
+        $get->appendChild($filter); 
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'service-plan'}->{'get'}->result;
+        $responseJson = json_encode($response->{'service-plan'}->{'get'});
+        $responseArr  = json_decode($responseJson, true); 
+        
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in get plans of mail service server: {$error}");
+        }
+
+        \DBG::dump($responseArr);
+        return $responseArr;        
     }
 }

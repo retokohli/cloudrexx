@@ -141,7 +141,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getModuleAdditionalData' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),            
             'changePlanOfMailSubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'domainManipulation'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
-            'isUniqueEmail'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth'))
+            'isUniqueEmail'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'getMailServicePlans'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkPermission')),
         );  
     }
 
@@ -2920,6 +2921,58 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return array('status' => 'success', 'message' => 'The Query Execution was Stopped');
     }
     
+    /**
+     * Fetch the service plans of selected mail service server
+     * 
+     * @global array $_ARRAYLANG
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function getMailServicePlans($params) {
+        global $_ARRAYLANG;
+
+        self::loadLanguageData();
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    if (!isset($params['post']['mailServiceServerId']) && empty($params['post']['mailServiceServerId'])) {
+                        \DBG::log('JsonMultiSite::getMailServicePlans() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode') . ' failed: Insufficient mapping information supplied: ' . var_export($params, true));
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND']);
+                    }
+                    $mailServiceServerId   = contrexx_input2raw($params['post']['mailServiceServerId']);
+                    $mailServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer');
+                    $mailServiceServer     = $mailServiceServerRepo->findOneById($mailServiceServerId);
+                    if (!$mailServiceServer) {
+                        \DBG::log('JsonMultiSite::getMailServicePlans() mail service server is not found for supplied mail service id ' . $mailServiceServerId);
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND']);
+                    }
+
+                    $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                    $plans = $hostingController->getAvailableServicePlansOfMailServer();
+                    if (!empty($plans)) {
+                        return array(
+                            'status'  => 'success',
+                            'result'  => $plans,
+                            'message' => $_ARRAYLANG['TXT_MULTISITE_FETCH_MAIL_SERVICE_PLAN_SUCCESSFULLY']
+                        );                        
+                    }
+                    
+                default:
+                    break;
+            }
+            return array(
+                        'status' =>'error',
+                        'message' => $_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN']
+                    );  
+        } catch (\Exception $e) {
+            \DBG::log('JsonMultiSite::getMailServicePlans() failed: to get service plans from mail service server: ' . $e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN']);
+        }
+    }
+
     /**
      * Fetching License information
      * 

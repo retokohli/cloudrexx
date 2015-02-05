@@ -282,7 +282,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'delete' => true,
                         'sorting' => true,
                         'paging' => true,       
-                        'filtering' => false,   
+                        'filtering' => false,
+                        'actions' => (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ?
+                                        function($rowData) {
+                                            return \Cx\Core_Modules\MultiSite\Controller\BackendController::getMailServicePlans($rowData);
+                                        } : false,
                     ),
                     'fields' => array(
                         'id' => array(
@@ -882,6 +886,36 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return $websiteRemoteLogin; 
     }
     
+    /**
+     * Fetching the plans from the associated mail server
+     * 
+     * @global array $_ARRAYLANG
+     * @param array $rowData
+     * @return string $plans
+     */
+    public function getMailServicePlans($rowData) {
+        global $_ARRAYLANG;
+        
+        $mailServerId = $rowData['id'];
+        if (empty($mailServerId)) {
+            return false;
+        }
+        $mailServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer');
+        $mailServer = $mailServerRepo->findOneById($mailServerId);
+        if (!$mailServer) {
+            return false;
+        }
+        $title = $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] . $mailServer->getLabel() . ' (' . $mailServer->getHostName() . ')';
+        $cxjs = \ContrexxJavascript::getInstance();
+        $cxjs->setVariable(array(
+            'planName'     => $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_NAME'],
+            'planGuid'     => $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_GUID']
+        ), 'multisite/lang');
+        $planIcon = '<a href="javascript:void(0);" class="mailServerPlans mailServerPlans_' . $mailServerId . '" title="' . $title . '">';
+
+        return $planIcon;
+    }
+
     /**
      * Multisite Configuration of the selected website
      * 

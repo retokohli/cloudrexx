@@ -340,3 +340,11 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'] = 'Go to the overview pa
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OWNER_EMAIL_UNIQUE_ERROR'] = 'The e-mail %1$s is already in use by a user account on %2$s and can therefore not be used.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'] = 'Mapping your website to the domain %s is not allowed.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']= 'Your profile has been updated successfully.';
+
+//mail service
+$_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND'] = 'Mail service server not available';
+$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] = 'Plan informations for the selected mail service server: ';
+$_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN'] = 'Failed to fetch the service plans of mail service server.';
+$_ARRAYLANG['TXT_MULTISITE_FETCH_MAIL_SERVICE_PLAN_SUCCESSFULLY'] = 'Fetched the service plans of mail service server successfully.';
+$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_NAME'] = 'Plan Name';
+$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_GUID'] = 'Plan GUID';

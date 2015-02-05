@@ -190,6 +190,69 @@
             });
         });
         
+// get mail service server plans
+$('.mailServerPlans').click(function () {
+    cx.bind("loadingStart", cx.lock, "mailServerPlans");
+    cx.bind("loadingEnd", cx.unlock, "mailServerPlans");
+    cx.trigger("loadingStart", "mailServerPlans", {});
+
+    var className = $(this).attr('class'),
+            id = parseInt(className.match(/[0-9]+/)[0], 10),
+            title = $(this).attr('title'),
+            planGuid = cx.variables.get('planGuid', "multisite/lang"),
+            planName = cx.variables.get('planName', "multisite/lang");
+
+    Url = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getMailServicePlans";
+    $.ajax({
+        url: Url,
+        type: "POST",
+        data: {mailServiceServerId: id},
+        dataType: "json",
+        beforeSend: function () {
+            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
+        },
+        success: function (response) {
+            cx.trigger("loadingEnd", "mailServerPlans", {});
+            if (response.status == 'success') {
+                switch (response.data.status) {
+                    case 'success':
+                        $table = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
+                        $table.append('<th>'+planName+'</th><th>'+planGuid+'</th>');
+                        $.each(response.data.result, function(key, data) {
+                            $tr = $('<tr class = "row1" />');
+                            $('<td />')
+                                    .html(key)
+                                    .appendTo($tr);
+                            $('<td />')
+                                    .html(data)
+                                    .appendTo($tr);
+                            $table.append($tr);
+                        });
+                        cx.ui.dialog({
+                            width: 820,
+                            height: 400,
+                            title: title,
+                            content: $table,
+                            autoOpen: true,
+                            modal: true,
+                            buttons: {
+                                "Close": function() {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+                        
+                        break;
+                  default:
+                        break;
+                }
+                cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
+            } else {
+                cx.tools.StatusMessage.showMessage(response.message, null, 4000);
+            }
+        }
+    });
+});
         // execute query on websites / service server's websites
         $('.executeQuery').click(function() {
             cx.bind('loadingStart', executeQueryLock, 'executeSql');

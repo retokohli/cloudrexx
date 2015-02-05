@@ -346,4 +346,13 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): get new auto-login url for panel $subscriptionId / $ipAddress / $sourceAddress");
         return true;       
     }
+    
+    /**
+     * Get the all available service plans of mail service server
+     */
+    public function getAvailableServicePlansOfMailServer() {
+        \DBG::msg("MultiSite (XamppController): getAvailableServicePlansOfMailServer");
+        return true;
+    }
+
 }
