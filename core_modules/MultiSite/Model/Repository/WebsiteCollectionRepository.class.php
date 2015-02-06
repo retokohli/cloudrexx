@@ -60,6 +60,36 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
             $websiteCollection = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection();
         }
         
+        $this->setWebsiteCollectionMetaInformation($websiteCollection, $productOptions);
+        
+        //assigning the initialized website to the website collection
+        if ($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+            $websiteCollection->addWebsite($website);
+            \Env::get('em')->persist($website);
+        }
+
+        //Persist website and websiteCollection to the db
+        \Env::get('em')->persist($websiteCollection);
+        //Flush the entity manager
+        \Env::get('em')->flush();        
+        
+        return $websiteCollection;
+    }
+    
+    /**
+     * Set the website collection meta information
+     * 
+     * @global array $_ARRAYLANG
+     * 
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection
+     * @param array $productOptions
+     * 
+     * @return \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection
+     * @throws WebsiteCollectionRepositoryException
+     */
+    public function setWebsiteCollectionMetaInformation(\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection, $productOptions = array()) {
+        global $_ARRAYLANG;
+
         if ($productOptions['websiteCollectionQuota']) {
             $websiteCollection->setQuota($productOptions['websiteCollectionQuota']);
         }
@@ -75,18 +105,5 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
             throw new WebsiteCollectionRepositoryException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_TEMPLATE_FAILED']);
         }
         $websiteCollection->setWebsiteTemplate($websiteTemplate);
-        
-        //assigning the initialized website to the website collection
-        if ($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-            $websiteCollection->addWebsite($website);
-            \Env::get('em')->persist($website);
-        }
-
-        //Persist website and websiteCollection to the db
-        \Env::get('em')->persist($websiteCollection);
-        //Flush the entity manager
-        \Env::get('em')->flush();
-
-        return $websiteCollection;
     }
 }
