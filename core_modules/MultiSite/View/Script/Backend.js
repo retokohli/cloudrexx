@@ -195,12 +195,10 @@ $('.mailServerPlans').click(function () {
     cx.bind("loadingStart", cx.lock, "mailServerPlans");
     cx.bind("loadingEnd", cx.unlock, "mailServerPlans");
     cx.trigger("loadingStart", "mailServerPlans", {});
-
+    
     var className = $(this).attr('class'),
             id = parseInt(className.match(/[0-9]+/)[0], 10),
-            title = $(this).attr('title'),
-            planGuid = cx.variables.get('planGuid', "multisite/lang"),
-            planName = cx.variables.get('planName', "multisite/lang");
+            title = $(this).attr('title');
 
     Url = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getMailServicePlans";
     $.ajax({
@@ -212,13 +210,14 @@ $('.mailServerPlans').click(function () {
             cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
         },
         success: function (response) {
+            cx.tools.StatusMessage.removeAllDialogs();
             cx.trigger("loadingEnd", "mailServerPlans", {});
             if (response.status == 'success' && response.data.status == 'success') {
-                if($.isEmptyObject(response.data.result)) {
-                    $table = 'There is no plan available for this mail service server.';
+                if(jQuery.type(response.data.result) === 'string') {
+                    $htmlContent = '<p>' + response.data.result + '</p>';
                 } else {
-                    $table = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
-                    $table.append('<thead><th>'+planName+'</th><th>'+planGuid+'</th></thead>');
+                    $htmlContent = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
+                    $htmlContent.append('<thead><th>Name</th><th>GUID</th></thead>');
                     $.each(response.data.result, function(key, data) {
                         $tr = $('<tr class = "row1" />');
                         $('<td />')
@@ -227,14 +226,14 @@ $('.mailServerPlans').click(function () {
                         $('<td />')
                                 .html(data)
                                 .appendTo($tr);
-                        $table.append($tr);
+                        $htmlContent.append($tr);
                     });
                 }
                 cx.ui.dialog({
                     width: 820,
                     height: 400,
                     title: title,
-                    content: $table,
+                    content: $('<div />').append($htmlContent),
                     autoOpen: true,
                     modal: true,
                     buttons: {
@@ -243,7 +242,6 @@ $('.mailServerPlans').click(function () {
                         }
                     }
                 });                        
-                cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
             } else {
                 var errorMessage =  (response.message) === '' ?  (response.data.message) : (response.message);
                 cx.tools.StatusMessage.showMessage(errorMessage, null, 4000);

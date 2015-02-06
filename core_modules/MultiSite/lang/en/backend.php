@@ -342,9 +342,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'] = 'Mapping your w
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']= 'Your profile has been updated successfully.';
 
 //mail service
-$_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND'] = 'Mail service server not available';
-$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] = 'Plan informations for the selected mail service server: ';
-$_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN'] = 'Failed to fetch the service plans of mail service server.';
-$_ARRAYLANG['TXT_MULTISITE_FETCH_MAIL_SERVICE_PLAN_SUCCESSFULLY'] = 'Fetched the service plans of mail service server successfully.';
-$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_NAME'] = 'Plan Name';
-$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_GUID'] = 'Plan GUID';
+$_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND'] = 'Mail service server is not available';
+$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] = 'Available plan on the server: ';
+$_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN'] = 'Unable to fetch server data.';
+$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_EMPTY'] = 'There is no plan available for this mail service server.';

@@ -906,11 +906,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             return false;
         }
         $title = $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] . $mailServer->getLabel() . ' (' . $mailServer->getHostName() . ')';
-        $cxjs = \ContrexxJavascript::getInstance();
-        $cxjs->setVariable(array(
-            'planName'     => $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_NAME'],
-            'planGuid'     => $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_GUID']
-        ), 'multisite/lang');
         $planIcon = '<a href="javascript:void(0);" class="mailServerPlans mailServerPlans_' . $mailServerId . '" title="' . $title . '">';
 
         return $planIcon;

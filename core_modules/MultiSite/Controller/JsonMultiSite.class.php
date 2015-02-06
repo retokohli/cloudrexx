@@ -2952,14 +2952,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
                     $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
                     $plans = $hostingController->getAvailableServicePlansOfMailServer();
-                    if (!empty($plans)) {
-                        return array(
+                    return array(
                             'status'  => 'success',
-                            'result'  => $plans,
-                            'message' => $_ARRAYLANG['TXT_MULTISITE_FETCH_MAIL_SERVICE_PLAN_SUCCESSFULLY']
+                            'result'  => empty($plans) ? $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_EMPTY'] : $plans,
                         );                        
-                    }
-                    
                 default:
                     break;
             }

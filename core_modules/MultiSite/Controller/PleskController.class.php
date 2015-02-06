@@ -1608,7 +1608,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @return array
      * @throws ApiRequestException
      */
-    public function getAvailableServicePlansOfMailServer() {
+    public function getAvailableServicePlansOfMailServer() 
+    {
         \DBG::msg("MultiSite (PleskController): get available service plans of mail service server.");
        
         $xmldoc = $this->getXmlDocument();
@@ -1633,10 +1634,12 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             \DBG::dump($xmldoc->saveXML());
             \DBG::dump($response);
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
-            throw new ApiRequestException("Error in get plans of mail service server: {$error}");
+            throw new ApiRequestException("Error in get service plans of mail service server: {$error}");
         }
-
-        \DBG::dump($responseArr);
-        return $responseArr;        
+        $servicePlans = array();
+        foreach ($responseArr['result'] as $resultArr) {
+            $servicePlans[$resultArr['name']] = $resultArr['guid'];
+        }
+        return $servicePlans;
     }
 }

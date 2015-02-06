@@ -227,3 +227,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'] = 'Weiter zur Übersicht
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OWNER_EMAIL_UNIQUE_ERROR'] = 'Die E-Mail Adresse %1$s wird bereits von einem anderen Benutzer unter %2$s eingesetzt und kann daher nicht verwendet werden.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'] = 'Die Verknüpfung Ihrer Website mit der Domain %s ist nicht zulässig.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']= 'Ihr Profil wurde erfolgreich aktualisiert.';
+
+//mail service
+$_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND'] = 'E-Mail Service Server ist nicht verfügbar';
+$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] = 'Verfügbare Abos auf dem Server: ';
+$_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN'] = 'Fehler beim Abfragen der Serverdaten.';
