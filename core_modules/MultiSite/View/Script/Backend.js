@@ -245,7 +245,8 @@ $('.mailServerPlans').click(function () {
                 });                        
                 cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
             } else {
-                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
+                var errorMessage =  (response.message) === '' ?  (response.data.message) : (response.message);
+                cx.tools.StatusMessage.showMessage(errorMessage, null, 4000);
             }
         }
     });
