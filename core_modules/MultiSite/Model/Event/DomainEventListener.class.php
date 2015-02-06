@@ -30,6 +30,7 @@ class DomainEventListenerException extends \Exception {}
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_multisite
+ * @todo        Split up into DomainEventListener and NetDomainEventListener
  */
 class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function postRemove($eventArgs) {
