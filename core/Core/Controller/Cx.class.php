@@ -1553,7 +1553,13 @@ namespace Cx\Core\Core\Controller {
             $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
 
             // This would be a postContentParseHook:
-            \Message::show();
+            // Note: This if-statement is a dirty hotfix for another problem
+            // (maybe session or otherwise). Shop sometimes shows the same
+            // message twice without this if. This should not be the case since
+            // \Message::clear() is called in \Message::show().
+            if ($this->mode == self::MODE_BACKEND) {
+                \Message::show();
+            }
             
             $this->ch->callPostContentParseHooks();
         }
