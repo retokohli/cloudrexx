@@ -61,6 +61,6 @@ class CronMailLogRepository extends \Doctrine\ORM\EntityRepository {
             $logs = array();
         }
         
-        return $logs[0] ? $logs[0] : null;
+        return isset($logs[0]) ? $logs[0] : null;
     }
 }
