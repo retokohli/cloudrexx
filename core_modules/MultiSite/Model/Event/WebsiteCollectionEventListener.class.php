@@ -30,6 +30,24 @@ class WebsiteCollectionEventListenerException extends \Exception {}
  */
 class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     
+    public function postPersist($eventArgs) {
+        \DBG::msg(__METHOD__);
+        $this->assignToSubscription($eventArgs);
+    }
+
+    protected function assignToSubscription($eventArgs) {
+        $websiteCollection = $eventArgs->getEntity();
+        $tempData = $websiteCollection->getTempData();
+        if (!empty($tempData['assignedSubscriptionId'])) {
+            $subscription = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription')->findOneById($tempData['assignedSubscriptionId']);
+            if ($subscription) {
+                $subscription->setProductEntity($websiteCollection);
+            }
+            $websiteCollection->setTempData(array());
+            \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->flush();
+        }
+    }
+    
     /**
      * Pay Complete Event
      * 
