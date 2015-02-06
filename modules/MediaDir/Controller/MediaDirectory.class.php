@@ -307,9 +307,12 @@ class MediaDirectory extends MediaDirectoryLibrary
             //check show entries
             if($objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1 || $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1 || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
                 $objEntries = new MediaDirectoryEntry($this->moduleName);
+                
+                $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
+                $objEntries->listEntries($this->_objTpl, 2);
+                
                 if(!$bolLatest) {
-                    $intNumEntries = intval($objEntries->countEntries($intCategoryId, $intLevelId, $intCmdFormId));
-
+                    $intNumEntries = intval($objEntries->countEntries());
                     if($intNumEntries > $intLimitEnd) {
                         $strPaging = getPaging($intNumEntries, $intLimitStart, $strPagingCmdParam.$strPagingLevelParam.$strPagingCatParam, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
                         $this->_objTpl->setGlobalVariable(array(
@@ -317,9 +320,6 @@ class MediaDirectory extends MediaDirectoryLibrary
                         ));
                     }
                 }
-
-                $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
-                $objEntries->listEntries($this->_objTpl, 2);
             }
 
             //no entries found
