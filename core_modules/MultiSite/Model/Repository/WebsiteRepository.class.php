@@ -136,42 +136,30 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
      * 
      * @return array
      */
-    public function getWebsitesByCriteria(array $criteria) {
+    public function getWebsitesByCriteria($criteria, $userIds) {
         try {
             $qb = $this->getEntityManager()->createQueryBuilder();
-            $qb->select('website')
-                ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website');
-            
-            if (!empty($criteria['creationDate'])) {
-                switch (true) {
-                    case preg_match('#^ON\ #i', $criteria['creationDate']):
-                        $date = new \DateTime(preg_replace('#^ON\ #i', '', $criteria['creationDate']));
-                        $qb->where('website.creationDate > ?1')->setParameter(1, $date->format('Y-m-d 00:00:01'));
-                        $qb->andWhere('website.creationDate < ?2')->setParameter(2, $date->format('Y-m-d 23:59:59'));
-                        break;
-                    case preg_match('#^BEFORE\ #i', $criteria['creationDate']):
-                        $date = new \DateTime(preg_replace('#^BEFORE\ #i', '', $criteria['creationDate']));
-                        $qb->where('website.creationDate < ?3')->setParameter(3, $date->format('Y-m-d 00:00:01'));
-                        break;
-                    case preg_match('#^AFTER\ #i', $criteria['creationDate']):
-                        $date = new \DateTime(preg_replace('#^AFTER\ #i', '', $criteria['creationDate']));
-                        $qb->where('website.creationDate > ?4')->setParameter(4, $date->format('Y-m-d 23:59:59'));
-                        break;
-                }
-            }
-            
-            $i = 5;
-            foreach ($criteria as $key => $value) {
-                if (empty($value) || $key === 'creationDate') {
+            $qb->select('Website')
+                ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'Website');
+
+            $filterPos = 1;            
+            foreach ($criteria as $fieldName => $fieldValue) {
+                if (empty($fieldValue)) {
                     continue;
                 }
-                if ($i == 5) {
-                    $method = !empty($criteria['creationDate']) ? 'andWhere' : 'where';
-                    $qb->$method('website.' . $key . ' = ?' . $i)->setParameter($i, $value);
+                //for date field
+                if ($fieldName == 'Website.creationDate') {
+                    $this->addDateFilterToQueryBuilder($qb, $fieldName, $fieldValue, $filterPos, false);
                 } else {
-                    $qb->andWhere('website.' . $key . ' = ?' . $i)->setParameter($i, $value);
-                }
-                $i++;
+                    $method = ($filterPos == 1) ? 'where' : 'andWhere';
+                    $qb->$method($fieldName . ' = ?' . $filterPos)->setParameter($filterPos, $fieldValue);
+                    $filterPos++;
+                }                
+            }
+            
+            if (!empty($userIds)) {
+                $method = ($filterPos == 1) ? 'where' : 'andWhere';
+                $qb->$method($qb->expr()->in('Website.ownerId', $userIds));
             }
             
             $qb->getDql();
@@ -179,7 +167,128 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
         } catch (\Doctrine\ORM\NoResultException $e) {
             $websites = array();
         }
+        
         return $websites;
+    }
+
+    /**
+     * Get the userids by criteria
+     * 
+     * @param array $criteria
+     * 
+     * @return boolean|array
+     */
+    public function getUsersByCriteria(array $criteria) {
+        if (empty($criteria)) {
+            return;
+        }
+        try {
+            $qb = $this->getEntityManager()->createQueryBuilder();
+            $qb
+                ->select('User')
+                ->from('\Cx\Core\User\Model\Entity\User', 'User');
+
+            $filterPos = 1;            
+            foreach ($criteria as $fieldName => $fieldValue) {
+                if (empty($fieldValue)) {
+                    continue;
+                }
+                //for date field
+                if ($fieldName == 'User.regdate') {
+                    $this->addDateFilterToQueryBuilder($qb, $fieldName, $fieldValue, $filterPos, true);
+                } else {
+                    $method = ($filterPos == 1) ? 'where' : 'andWhere';
+                    $qb->$method($fieldName . ' = ?' . $filterPos)->setParameter($filterPos, $fieldValue);
+                    $filterPos++;
+                }
+            }
+
+            $users = $qb->getQuery()->getResult();
+            if (!$users) {
+                return;
+            }
+            $userIds = array();
+            foreach ($users as $user) {
+                if (   isset($criteria['User.regdate'])
+                    && !preg_match('#^[ON\ | BEFORE\ | AFTER\ ]#i', $criteria['User.regdate'])
+                ) {
+                    $regDate = new \DateTime();
+                    $regDate->setTimestamp($user->getRegdate());
+                    if (!\Cx\Core_Modules\MultiSite\Controller\CronController::validateDateByCriteria($regDate, $criteria['User.regdate'])) {
+                        continue;
+                    }
+                }
+                $userIds[] = $user->getId();
+            }
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $userIds = array();
+        }
+        return $userIds;
+    }
+        
+    /**
+     * Add the date filter to the query builder
+     * 
+     * @param \Doctrine\ORM\QueryBuilder $qb            Query builder object
+     * @param string                     $fieldName     filter field name
+     * @param string                     $criteria      filter criteria    
+     * @param int                        $filterPos     current postion of filter query
+     * @param boolean                    $useTimeStamp  use datetime or timestamp in the query
+     * 
+     * @return null
+     */
+    public function addDateFilterToQueryBuilder(\Doctrine\ORM\QueryBuilder & $qb, $fieldName, $criteria, & $filterPos, $useTimeStamp = false)
+    {
+        if (empty($fieldName) || empty($criteria)) {
+            return;
+        }
+        
+        // return if format not in ON|BEFORE|AFTER
+        if (!preg_match('#^[ON\ | BEFORE\ | AFTER\ ]#i', $criteria)) {
+            return;
+        }
+        
+        $startDate = new \DateTime(preg_replace('/\b(ON|BEFORE|AFTER) \b/i', '', $criteria));
+        $startDate->setTime(0, 0, 1);
+        
+        $method = ($filterPos == 1) ? 'where' : 'andWhere';
+        switch (true) {
+            case preg_match('#^ON\ #i', $criteria):
+                $qb
+                    ->$method($fieldName . ' > ?'. $filterPos)
+                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));                
+                $startDate->setTime(23, 59, 59);
+                $filterPos++;
+                
+                $qb
+                    ->andWhere($fieldName . ' < ?'. $filterPos)
+                    ->setParameter($filterPos,  self::parseTimeForFilter($startDate, $useTimeStamp));
+                break;
+            case preg_match('#^BEFORE\ #i', $criteria):
+                $qb
+                    ->$method($fieldName . '< ?'. $filterPos)
+                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));
+                break;
+            case preg_match('#^AFTER\ #i', $criteria):
+                $startDate->setTime(23, 59, 59);
+                $qb
+                    ->$method($fieldName . ' > ?'. $filterPos)
+                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));
+                break;
+        }
+        $filterPos++;        
+    }
+
+    /**
+     * Get the timestamp or date value based on the date time object
+     * 
+     * @param \DateTime $date
+     * @param boolean   $timeStamp
+     * 
+     * @return array
+     */
+    public static function parseTimeForFilter(\DateTime $date, $timeStamp = false) {        
+        return $timeStamp ? $date->getTimestamp() : $date->format('Y-m-d H:i:s');
     }
     
     /**
