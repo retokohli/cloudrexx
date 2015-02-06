@@ -196,9 +196,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         } else {
             $strWhereDuration = null;
         }
-
+        
         $query = "
-            SELECT
+            SELECT SQL_CALC_FOUND_ROWS
                 entry.`id` AS `id`,
                 entry.`order` AS `order`,
                 entry.`form_id` AS `form_id`,
@@ -247,9 +247,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             ".$strLimit."
             ".$strOffset."
         ";
-
         $objEntries = $objDatabase->Execute($query);
-
+        
+        $totalRecords =$objDatabase->Execute("SELECT FOUND_ROWS() AS found_rows");
+        
         $arrEntries = array();
 
         if ($objEntries !== false) {
@@ -287,8 +288,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                 $objEntries->MoveNext();
             }
-
-            $this->recordCount = $objEntries->RecordCount();
+            //$this->recordCount = $objEntries->RecordCount();
+            $this->recordCount = $totalRecords->fields['found_rows'];
         }
     }
 
@@ -1202,72 +1203,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
     function countEntries($intCategoryId, $intLevelId, $formId = null, $searchTerm = '', $countAllEntries = false)
     {
-        global $objDatabase, $_ARRAYLANG, $objInit, $_LANGID;
-        
-        $strWhereLevel      = '';
-        $strFromLevel       = '';
-        $strWhereCategory   = '';
-        $strFromCategory    = '';
-        $strWhereForm       = '';
-        $strWhereSearchTerm = '';
-        $strWhereActive     = '';
-        $strWhereFirstInputfield = '';
-
-        if(!empty($intLevelId)) {
-            $strWhereLevel = "AND ((level.`level_id` = ".$intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
-            $strFromLevel = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level";
-        }
-
-        if(!empty($intCategoryId)) {
-            $strWhereCategory = "AND ((category.`category_id` = ".$intCategoryId.") AND (category.`entry_id` = entry.`id`)) ";
-            $strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
-        }
-
-        if (!empty($formId)) {
-            $strWhereForm = "AND (entry.`form_id` = ".$formId.") ";
-        }
-        
-        if (!empty($searchTerm) && $searchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) {
-            $term = contrexx_input2db($searchTerm);
-            $strWhereSearchTerm  = 'AND (rel_inputfield.`entry_id` = entry.`id`) ';
-            $strWhereSearchTerm .= 'AND ((`rel_inputfield`.`value` LIKE "%' . $term . '%") OR (`entry`.`id` = "' . $term . '"))';
-        } else {
-            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
-        }
-        
-        if (!$countAllEntries) {
-            $strWhereActive = 'AND (entry.`active` = 1 AND entry.`confirmed` = 1)';
-        }
-        
-        if($objInit->mode == 'frontend') {
-            $strWhereDuration = "AND (`duration_type` = 1 OR (`duration_type` = 2 AND (`duration_start` < '$intToday' AND `duration_end` > '$intToday'))) ";
-        } else {
-            $strWhereDuration = null;
-        }
-
-        $query = "SELECT
-                    entry.`id` AS `id`
-                  FROM
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry ,
-                    `" . DBPREFIX . "module_" . $this->moduleTablePrefix . "_rel_entry_inputfields` AS `rel_inputfield`
-                    ".$strFromCategory."
-                    ".$strFromLevel."
-                  WHERE
-                    (entry.`id` != 0)
-                    ".$strWhereFirstInputfield."
-                    ".$strWhereActive."
-                    ".$strWhereCategory."
-                    ".$strWhereLevel."
-                    ".$strWhereForm."
-                    ".$strWhereSearchTerm."
-                    ".$strWhereDuration."
-                  GROUP BY
-                    entry.`id`";
-
-        $objNumEntries = $objDatabase->Execute($query);
-        $intNumEntries = $objNumEntries->RecordCount();
-
-        return intval($intNumEntries);
+        return $this->recordCount;
     }
 
 

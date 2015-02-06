@@ -1237,8 +1237,11 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 break;
         }
 
+        $objEntries->getEntries(null, $intLevelId, $intCategoryId, $strTerm, null, null, null, null, 'n', null, null, $intFormId, null, $this->limit, $this->offset);
+        $objEntries->listEntries($this->_objTpl, 1);
+
         // Paging
-        $count  = $objEntries->countEntries($intCategoryId, $intLevelId, $intFormId, $strTerm, true);
+        $count  = $objEntries->countEntries();
         $filter = (!empty($strTerm) ? '&term=' . $strTerm : '') .
                   (!empty($intCategoryId) ? '&cat_id=' . $intCategoryId : '') .
                   (!empty($intFormId) ? '&form_id=' . $intFormId : '') .
@@ -1246,9 +1249,6 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $term   = !empty($strTerm) ? '&term=' . $strTerm : '';
         $paging = getPaging($count, $this->offset, '&cmd='.$this->moduleName.'&act=entries'.$filter, '', true);
         $this->_objTpl->setGlobalVariable($this->moduleLangVar . '_PAGING', $paging);
-
-        $objEntries->getEntries(null, $intLevelId, $intCategoryId, $strTerm, null, null, null, null, 'n', null, null, $intFormId, null, $this->limit, $this->offset);
-        $objEntries->listEntries($this->_objTpl, 1);
 
         if (!empty($strTerm)) {
             $this->_objTpl->setVariable($this->moduleLangVar.'_SEARCH_TERM_PARAMETER', '&term='.$strTerm);
