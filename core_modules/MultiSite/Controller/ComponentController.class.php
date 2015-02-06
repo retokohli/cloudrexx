@@ -2174,78 +2174,163 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
-        $evm = \Env::get('cx')->getEvents();
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case self::MODE_MANAGER:
+                $this->registerDomainEventListener();
+                $this->registerNetDomainEventListener();
+                $this->registerWebsiteEventListener();
+                $this->registerAccessUserEventListener();
+                $this->registerCronMailEventListener();
+                $this->registerWebsiteTemplateEventListener();
+                $this->registerOrderPaymentEventListener();
+                $this->registerWebsiteCollectionEventListener();
+                $this->registerOrderSubscriptionEventListener();
+                break;
+
+            case self::MODE_HYBRID:
+                $this->registerDomainEventListener();
+                $this->registerNetDomainEventListener();
+                $this->registerWebsiteEventListener();
+                $this->registerAccessUserEventListener();
+                $this->registerCronMailEventListener();
+                $this->registerOrderPaymentEventListener();
+                $this->registerWebsiteCollectionEventListener();
+                $this->registerOrderSubscriptionEventListener();
+                break;
+
+            case self::MODE_SERVICE:
+                $this->registerDomainEventListener();
+                $this->registerNetDomainEventListener();
+                $this->registerWebsiteEventListener();
+                $this->registerAccessUserEventListener();
+                $this->registerWebsiteCollectionEventListener();
+                break;
+
+            case self::MODE_WEBSITE:
+                $this->registerNetDomainEventListener();
+                $this->registerAccessUserEventListener();
+                $this->registerContactFormEventListener();
+                $this->registerShopProductEventListener();
+                $this->registerCrmCustomerEventListener();
+                $this->registerCoreYamlSettingEventListener();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    protected function registerDomainEventListener() {
         $domainEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\DomainEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
+    }
 
+    protected function registerNetDomainEventListener() {
+        $domainEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\DomainEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
+    }
         
+    protected function registerWebsiteEventListener() {
         $websiteEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
+        $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteEventListener);
+    }
 
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') != self::MODE_WEBSITE) {
-            $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteEventListener);
-        }
-        
-        //accessUser Event Listenter
+    /**
+     * @todo    Split up into UserEventListener and AccessUserEventListener
+     */
+    protected function registerAccessUserEventListener() {
         $accessUserEventListener    = new \Cx\Core_Modules\MultiSite\Model\Event\AccessUserEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'User', $accessUserEventListener);
+
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
-        
+    }
+
+    protected function registerCronMailEventListener() {
         $cronMailEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CronMailEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\CronMail', $cronMailEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\CronMail', $cronMailEventListener);
+    }
         
-        //website Template Event Listener
+    protected function registerWebsiteTemplateEventListener() {
         $websiteTemplateEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteTemplateEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteTemplate', $websiteTemplateEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteTemplate', $websiteTemplateEventListener);
+    }
         
-        //ContactForm event Listener
+    protected function registerContactFormEventListener() {
         $contactFormEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\ContactFormEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\Contact\\Model\\Entity\\Form', $contactFormEventListener);
-        
-        //ShopProduct Event Listener
-        $shopProductEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\ShopProductEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Shop\\Controller\\Product', $shopProductEventListener);
-        
-        //CrmCustomer event Listener
-        $crmCustomerEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CrmCustomerEventListener();
-        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmCustomerEventListener);
-        
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') !== self::MODE_WEBSITE) {
-            $websiteCollectionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteCollectionEventListener();
-            $evm->addModelListener('terminated', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
-            $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
-            $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection', $websiteCollectionEventListener);
-        }
+    }
 
-        //OrderPayment event Listener
+    protected function registerShopProductEventListener() {
+        $shopProductEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\ShopProductEventListener();
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Shop\\Controller\\Product', $shopProductEventListener);
+    }
+
+    protected function registerCrmCustomerEventListener() {
+        $crmCustomerEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CrmCustomerEventListener();
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Modules\\Crm\\Model\\Entity\\CrmContact', $crmCustomerEventListener);
+    }
+
+    protected function registerWebsiteCollectionEventListener() {
+        $websiteCollectionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteCollectionEventListener();
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection', $websiteCollectionEventListener);
+        $evm->addModelListener('terminated', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
+        $evm->addModelListener('payComplete', 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $websiteCollectionEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection', $websiteCollectionEventListener);
+    }
+
+    /**
+     * @todo Move to Order component?
+     */
+    protected function registerOrderPaymentEventListener() {
         $orderPaymentEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderPaymentEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
         
-        //CoreYamlSetting event Listener
+    }
+
+    protected function registerCoreYamlSettingEventListener() {
         $coreYamlSettingEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CoreYamlSettingEventListener();
+        $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\Setting\\Model\\Entity\\YamlSetting', $coreYamlSettingEventListener);
     }
     
+    protected function registerOrderSubscriptionEventListener() {
+        $orderSubscriptionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderSubscriptionEventListener();
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postFlush, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
+    }
     
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         global $_CONFIG;
