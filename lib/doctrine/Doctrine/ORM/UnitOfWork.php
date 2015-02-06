@@ -322,6 +322,12 @@ class UnitOfWork implements PropertyChangedListener
             $coll->takeSnapshot();
         }
 
+        // Comvation: Backported from doctrine 2.4 - BEGIN
+        if ($this->evm->hasListeners(Events::postFlush)) {
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->em));
+        }
+        // Comvation: Backported from doctrine 2.4 - END
+
         // Clear up
         $this->entityInsertions =
         $this->entityUpdates =

@@ -41,7 +41,7 @@ class ModelEventWrapper {
         $evm->addEventListener(\Doctrine\ORM\Events::preRemove,   $this);
         $evm->addEventListener(\Doctrine\ORM\Events::postRemove,  $this);
         $evm->addEventListener(\Doctrine\ORM\Events::onFlush,     $this);
-        $evm->addEventListener('postFlush'/* this event will be natively be available from Doctrine 2.2: \Doctrine\ORM\Events::postFlush*/,     $this);
+        $evm->addEventListener(\Doctrine\ORM\Events::postFlush,     $this);
     }
     
     public function prePersist(\Doctrine\ORM\Event\LifecycleEventArgs $eventArgs) {
