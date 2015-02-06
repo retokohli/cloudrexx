@@ -190,65 +190,66 @@
             });
         });
         
-// get mail service server plans
-$('.mailServerPlans').click(function () {
-    cx.bind("loadingStart", cx.lock, "mailServerPlans");
-    cx.bind("loadingEnd", cx.unlock, "mailServerPlans");
-    cx.trigger("loadingStart", "mailServerPlans", {});
-    
-    var className = $(this).attr('class'),
-            id = parseInt(className.match(/[0-9]+/)[0], 10),
-            title = $(this).attr('title');
+        // get mail service server plans
+        $('.mailServerPlans').click(function () {
+            cx.bind("loadingStart", cx.lock, "mailServerPlans");
+            cx.bind("loadingEnd", cx.unlock, "mailServerPlans");
+            cx.trigger("loadingStart", "mailServerPlans", {});
 
-    Url = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getMailServicePlans";
-    $.ajax({
-        url: Url,
-        type: "POST",
-        data: {mailServiceServerId: id},
-        dataType: "json",
-        beforeSend: function () {
-            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
-        },
-        success: function (response) {
-            cx.tools.StatusMessage.removeAllDialogs();
-            cx.trigger("loadingEnd", "mailServerPlans", {});
-            if (response.status == 'success' && response.data.status == 'success') {
-                if(jQuery.type(response.data.result) === 'string') {
-                    $htmlContent = '<p>' + response.data.result + '</p>';
-                } else {
-                    $htmlContent = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
-                    $htmlContent.append('<thead><th>Name</th><th>GUID</th></thead>');
-                    $.each(response.data.result, function(key, data) {
-                        $tr = $('<tr class = "row1" />');
-                        $('<td />')
-                                .html(key)
-                                .appendTo($tr);
-                        $('<td />')
-                                .html(data)
-                                .appendTo($tr);
-                        $htmlContent.append($tr);
-                    });
-                }
-                cx.ui.dialog({
-                    width: 820,
-                    height: 400,
-                    title: title,
-                    content: $('<div />').append($htmlContent),
-                    autoOpen: true,
-                    modal: true,
-                    buttons: {
-                        "Close": function() {
-                            $(this).dialog("close");
+            var className = $(this).attr('class'),
+                    id = parseInt(className.match(/[0-9]+/)[0], 10),
+                    title = $(this).attr('title');
+
+            Url = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=getMailServicePlans";
+            $.ajax({
+                url: Url,
+                type: "POST",
+                data: {mailServiceServerId: id},
+                dataType: "json",
+                beforeSend: function () {
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + $('#loading').html() + "</div>");
+                },
+                success: function (response) {
+                    cx.tools.StatusMessage.removeAllDialogs();
+                    cx.trigger("loadingEnd", "mailServerPlans", {});
+                    if (response.status == 'success' && response.data.status == 'success') {
+                        if(jQuery.type(response.data.result) === 'string') {
+                            $htmlContent = '<p>' + response.data.result + '</p>';
+                        } else {
+                            $htmlContent = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
+                            $htmlContent.append('<thead><th>Name</th><th>GUID</th></thead>');
+                            $.each(response.data.result, function(key, data) {
+                                $tr = $('<tr class = "row1" />');
+                                $('<td />')
+                                        .html(key)
+                                        .appendTo($tr);
+                                $('<td />')
+                                        .html(data)
+                                        .appendTo($tr);
+                                $htmlContent.append($tr);
+                            });
                         }
+                        cx.ui.dialog({
+                            width: 820,
+                            height: 400,
+                            title: title,
+                            content: $('<div />').append($htmlContent),
+                            autoOpen: true,
+                            modal: true,
+                            buttons: {
+                                "Close": function() {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });                        
+                    } else {
+                        var errorMessage =  (response.message) === '' ?  (response.data.message) : (response.message);
+                        cx.tools.StatusMessage.showMessage(errorMessage, null, 4000);
                     }
-                });                        
-            } else {
-                var errorMessage =  (response.message) === '' ?  (response.data.message) : (response.message);
-                cx.tools.StatusMessage.showMessage(errorMessage, null, 4000);
-            }
-        }
-    });
-});
+                }
+            });
+        });
+        
         // execute query on websites / service server's websites
         $('.executeQuery').click(function() {
             cx.bind('loadingStart', executeQueryLock, 'executeSql');
