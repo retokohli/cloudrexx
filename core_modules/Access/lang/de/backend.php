@@ -306,4 +306,6 @@ $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'] = "Unvollständige Reg
 $_ARRAYLANG['TXT_ACCESS_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_ACCESS_USER_CRM_ACCOUNT'] = "Dieser Benutzer ist verknüpft mit einem CRM Kontakt, klicken um direkt zum CRM Kontakt zu gelangen.";
 $_ARRAYLANG['TXT_ACCESS_USER_TYPE_CRM'] = "nur CRM";
+$_ARRAYLANG['TXT_ACCESS_NOTIFICATION_EMAIL'] = "E-Mail-Benachrichtigung mit generierten Passwort senden";
+$_ARRAYLANG['TXT_ACCESS_NOTIFICATION_EMAIL_TITLE'] = "E-Mail-Benachrichtigung";
 ?>
