@@ -213,42 +213,39 @@ $('.mailServerPlans').click(function () {
         },
         success: function (response) {
             cx.trigger("loadingEnd", "mailServerPlans", {});
-            if (response.status == 'success') {
-                switch (response.data.status) {
-                    case 'success':
-                        $table = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
-                        $table.append('<th>'+planName+'</th><th>'+planGuid+'</th>');
-                        $.each(response.data.result, function(key, data) {
-                            $tr = $('<tr class = "row1" />');
-                            $('<td />')
-                                    .html(key)
-                                    .appendTo($tr);
-                            $('<td />')
-                                    .html(data)
-                                    .appendTo($tr);
-                            $table.append($tr);
-                        });
-                        cx.ui.dialog({
-                            width: 820,
-                            height: 400,
-                            title: title,
-                            content: $table,
-                            autoOpen: true,
-                            modal: true,
-                            buttons: {
-                                "Close": function() {
-                                    $(this).dialog("close");
-                                }
-                            }
-                        });
-                        
-                        break;
-                  default:
-                        break;
+            if (response.status == 'success' && response.data.status == 'success') {
+                if($.isEmptyObject(response.data.result)) {
+                    $table = 'There is no plan available for this mail service server.';
+                } else {
+                    $table = $('<table cellspacing="0" cellpadding="3" border="0" class="adminlist" width="100%" />');
+                    $table.append('<thead><th>'+planName+'</th><th>'+planGuid+'</th></thead>');
+                    $.each(response.data.result, function(key, data) {
+                        $tr = $('<tr class = "row1" />');
+                        $('<td />')
+                                .html(key)
+                                .appendTo($tr);
+                        $('<td />')
+                                .html(data)
+                                .appendTo($tr);
+                        $table.append($tr);
+                    });
                 }
+                cx.ui.dialog({
+                    width: 820,
+                    height: 400,
+                    title: title,
+                    content: $table,
+                    autoOpen: true,
+                    modal: true,
+                    buttons: {
+                        "Close": function() {
+                            $(this).dialog("close");
+                        }
+                    }
+                });                        
                 cx.tools.StatusMessage.showMessage(response.data.message, null, 3000);
             } else {
-                cx.tools.StatusMessage.showMessage(response.message, null, 4000);
+                cx.tools.StatusMessage.showMessage(response.data.message, null, 4000);
             }
         }
     });
