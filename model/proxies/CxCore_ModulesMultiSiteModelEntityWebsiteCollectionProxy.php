@@ -27,6 +27,18 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteCollectionProxy extends \Cx\Core_
     }
 
     
+    public function getTempData()
+    {
+        $this->_load();
+        return parent::getTempData();
+    }
+
+    public function setTempData($tempData)
+    {
+        $this->_load();
+        return parent::setTempData($tempData);
+    }
+
     public function getId()
     {
         $this->_load();

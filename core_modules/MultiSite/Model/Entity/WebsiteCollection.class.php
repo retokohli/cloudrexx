@@ -45,10 +45,23 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
     protected $websiteTemplate;
     
     /**
+     * @var array
+     */
+    protected $tempData = array();
+
+    /**
      * Constructor
      */
     public function __construct() {
         $this->websites = new \Doctrine\Common\Collections\ArrayCollection();        
+    }
+    
+    public function getTempData() {
+        return $this->tempData;
+    }
+    
+    public function setTempData($tempData) {
+        $this->tempData = $tempData;
     }
     
     /**
