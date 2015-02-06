@@ -235,7 +235,7 @@ class PageRepository extends EntityRepository {
         // 3. We found a page in our language!
         // Now lets do a final check if this page is of type fallback.
         // If so, we were unlucky and have to stop here.
-        if ($page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
+        if ($page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK && !$page->isVirtual()) {
             return null;
         }
 
