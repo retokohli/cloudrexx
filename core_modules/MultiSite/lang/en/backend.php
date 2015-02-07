@@ -345,4 +345,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']= 'Your pro
 $_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND'] = 'Mail service server is not available';
 $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] = 'Available plan on the server: ';
 $_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN'] = 'Unable to fetch server data.';
-$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_EMPTY'] = 'There is no plan available for this mail service server.';
+$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_EMPTY'] = 'This mail service server does not contain any plans.';

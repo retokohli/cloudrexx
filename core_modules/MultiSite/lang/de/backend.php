@@ -232,3 +232,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']= 'Ihr Prof
 $_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND'] = 'E-Mail Service Server ist nicht verfügbar';
 $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] = 'Verfügbare Abos auf dem Server: ';
 $_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN'] = 'Fehler beim Abfragen der Serverdaten.';
+$_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_EMPTY'] = 'Auf diesem Mail Service Server sind keine Abos verfügbar.';
