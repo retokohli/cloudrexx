@@ -39,6 +39,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     const MODE_HYBRID = 'hybrid';
     const MODE_WEBSITE = 'website';
     
+    /**
+     * Main Domain
+     *
+     * Main Domain of the contrexx installation mentioned in global configuration
+     * 
+     * @static string
+     */
+    static $cxMainDomain;
+    
     protected $messages = '';
     protected $reminders = array(3, 14);
     protected $db;
@@ -2493,6 +2502,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             return;
         }
+        
+        $config = \Env::get('config');
+        self::$cxMainDomain = $config['domainUrl'];
+        
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') != self::MODE_MANAGER) {
             return;
         }
@@ -2503,7 +2516,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $config = \Env::get('config');
         $customerPanelDomain = $domainRepository->findOneBy(array('name' => $customerPanelDomainName));
         if ($customerPanelDomain) {
             $config['mainDomainId'] = $customerPanelDomain->getId();

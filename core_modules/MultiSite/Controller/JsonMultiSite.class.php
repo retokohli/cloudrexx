@@ -1182,11 +1182,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public static function getAuthenticationObject($secretKey, $remoteInstallationId) 
     {
         $key = md5($secretKey . $remoteInstallationId);
-        $config = \Env::get('config');
-
+        
         return json_encode(array(
             'key'     => $key,
-            'sender' => $config['domainUrl'],
+            'sender' => ComponentController::$cxMainDomain,
         ));
     }
     /**
