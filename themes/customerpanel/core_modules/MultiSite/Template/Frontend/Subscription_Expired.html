@@ -6,21 +6,23 @@
             <thead>
                 <tr>
                     <th width="15%">{TXT_MULTISITE_REFERENCE_NUMBER}</th>
-                    <th width="40%">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
-                    <th width="20%">{TXT_MULTISITE_NEXT_BILL_DATE}</th>
-                    <th width="25%" class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+                    <th width="20%">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
+                    <th width="35%">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION_DESCRIPTION}</th>
+                    <th width="15%">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION_ENDED_DATE}</th>
+                    <!--<th width="25%" class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>-->
                 </tr>
             </thead>
             <tbody>
                 <!-- BEGIN showSiteDetails -->
                 <!-- BEGIN showWebsites -->
                 <tr>
-                    <td>34235</td>
+                    <td>{MULTISITE_SUBSCRIPTION_ID}</td>
                     <td>{MULTISITE_WEBSITE_PLAN}</td>
+                    <td>{MULTISITE_SUBSCRIPTION_DESCRIPTION}</td>
                     <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
-                    <td class="actions">
+<!--                    <td class="actions">
                         <button class="save">{TXT_MULTISITE_SUBSCRIPTION_REACTIVATE}</button>
-                    </td>
+                    </td>-->
                 </tr>                
                 <!-- END showWebsites -->
                 <!-- END showSiteDetails -->
