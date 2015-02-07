@@ -209,15 +209,6 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
             }
             $userIds = array();
             foreach ($users as $user) {
-                if (   isset($criteria['User.regdate'])
-                    && !preg_match('#^[ON\ | BEFORE\ | AFTER\ ]#i', $criteria['User.regdate'])
-                ) {
-                    $regDate = new \DateTime();
-                    $regDate->setTimestamp($user->getRegdate());
-                    if (!\Cx\Core_Modules\MultiSite\Controller\CronController::validateDateByCriteria($regDate, $criteria['User.regdate'])) {
-                        continue;
-                    }
-                }
                 $userIds[] = $user->getId();
             }
         } catch (\Doctrine\ORM\NoResultException $e) {
@@ -229,31 +220,30 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
     /**
      * Add the date filter to the query builder
      * 
-     * @param \Doctrine\ORM\QueryBuilder $qb            Query builder object
-     * @param string                     $fieldName     filter field name
-     * @param string                     $criteria      filter criteria    
-     * @param int                        $filterPos     current postion of filter query
-     * @param boolean                    $useTimeStamp  use datetime or timestamp in the query
+     * @param \Doctrine\ORM\QueryBuilder $qb             Query builder object
+     * @param string                     $fieldName      filter field name
+     * @param string                     $filterCriteria filter criteria    
+     * @param int                        $filterPos      current postion of filter query
+     * @param boolean                    $useTimeStamp   use datetime or timestamp in the query
      * 
      * @return null
      */
-    public function addDateFilterToQueryBuilder(\Doctrine\ORM\QueryBuilder & $qb, $fieldName, $criteria, & $filterPos, $useTimeStamp = false)
+    public function addDateFilterToQueryBuilder(\Doctrine\ORM\QueryBuilder & $qb, $fieldName, $filterCriteria, & $filterPos, $useTimeStamp = false)
     {
-        if (empty($fieldName) || empty($criteria)) {
+        if (empty($fieldName) || empty($filterCriteria)) {
             return;
         }
         
-        // return if format not in ON|BEFORE|AFTER
-        if (!preg_match('#^[ON\ | BEFORE\ | AFTER\ ]#i', $criteria)) {
-            return;
-        }
+        $criteria = preg_replace('#^\+#i', '-', $filterCriteria);  // +n days = (date - n days)
+        $format   = preg_replace('/\b(ON|BEFORE|AFTER) \b/i', '', $criteria);
         
-        $startDate = new \DateTime(preg_replace('/\b(ON|BEFORE|AFTER) \b/i', '', $criteria));
+        $startDate = new \DateTime($format);
         $startDate->setTime(0, 0, 1);
         
         $method = ($filterPos == 1) ? 'where' : 'andWhere';
         switch (true) {
             case preg_match('#^ON\ #i', $criteria):
+            case preg_match('#^\-#i', $criteria):
                 $qb
                     ->$method($fieldName . ' > ?'. $filterPos)
                     ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));                

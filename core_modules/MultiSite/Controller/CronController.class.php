@@ -65,14 +65,6 @@ class CronController {
             $websites = $websiteRepo->getWebsitesByCriteria($websiteCriteria, $userIds);
             if ($websites) {
                 foreach ($websites as $website) {
-                    //checking date criteria(like Date, Time format)
-                    if (   isset($websiteCriteria['Website.creationDate']) 
-                        && !preg_match('#^[ON\ | BEFORE\ | AFTER\ ]#i', $websiteCriteria['Website.creationDate']) 
-                        && !self::validateDateByCriteria($website->getCreationDate(), $websiteCriteria['Website.creationDate'])
-                    ) {
-                        continue;
-                    }
-                    
                     //If owner is empty, proceed next
                     if (!$website->getOwnerId()) {
                         continue;
@@ -129,25 +121,5 @@ class CronController {
                 }
             }
         }
-    }
-    
-    /**
-     * Validate the given date by the given criteria
-     * 
-     * @param \DateTime $date      datetime object
-     * @param string    $criteria  
-     * 
-     * @return boolean true if date is valid by the given criteria, false otherwise
-     */
-    public static function validateDateByCriteria(\DateTime $date, $criteria) 
-    {
-        
-        $currentDate  = new \DateTime();
-        $currentDate->modify('midnight');
-        
-        $date->modify($criteria);
-        $date->modify('midnight');
-        
-        return $currentDate == $date;        
     }
 }
