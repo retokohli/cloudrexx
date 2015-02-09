@@ -234,3 +234,4 @@ $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_INFO'] = 'Verfügbare Abos auf dem 
 $_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN'] = 'Fehler beim Abfragen der Serverdaten.';
 $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_EMPTY'] = 'Auf diesem Mail Service Server sind keine Abos verfügbar.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ENDED_DATE'] = "Abgelaufen am";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_SUBSCRIPTION_DOWNGRADE_ERROR'] = 'Downgrade von %1$s nach %2$s ist nicht möglich.';
