@@ -3144,9 +3144,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                 $website = $websiteRepository->findBy(array('ownerId' => $params['post']['userId']));
                 if (!$website) {
-                    $objFWUser = \FWUser::getFWUserObject();
-                    $objUser = $objFWUser->objUser->getUser($params['post']['userId']);
-                    if ($objUser->delete()) {
+                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($params['post']['userId']);
+                    $deleteUser = $objUser ? $objUser->delete() : true;
+                    if ($deleteUser) {
                         return array(
                             'status'    => 'success',
                             'log'       => \DBG::getMemoryLogs(),
