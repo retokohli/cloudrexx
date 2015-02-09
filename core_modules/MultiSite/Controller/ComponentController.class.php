@@ -2703,6 +2703,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objUser = \FWUser::getFWUserObject()->objUser;
         
         $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
+
         if ($externalPaymentCustomerIdProfileAttributeId) {
             $objProfileAttribute = $objUser->objAttribute->getById($externalPaymentCustomerIdProfileAttributeId);
             if ($objProfileAttribute->getId() != $externalPaymentCustomerIdProfileAttributeId) {
@@ -2710,10 +2711,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
         if (!$externalPaymentCustomerIdProfileAttributeId) {
+            $attributeName = 'MultiSite External Payment Customer ID';
+            $externalIdInDatabase = $objUser->objAttribute->getAttributeIdByName($attributeName);
+            if($externalIdInDatabase){
+                return $externalIdInDatabase;
+            }
             $objProfileAttribute = $objUser->objAttribute->getById(0);
             $objProfileAttribute->setNames(array(
-                1 => 'MultiSite External Payment Customer ID',
-                2 => 'MultiSite External Payment Customer ID'
+                1 => $attributeName,
+                2 => $attributeName
             ));
             $objProfileAttribute->setType('text');
             $objProfileAttribute->setParent(0);
