@@ -690,6 +690,25 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         return $objAttribute;
     }
 
+    /**
+     * get attribute id by attribut name
+     *
+     * @param string $name
+     * @global $objDatabase
+     * @return int id or false if not found
+     */
+    function getAttributeIdByName($name)
+    {
+        global $objDatabase;
+
+        $query = 'SELECT `attribute_id` FROM `'.DBPREFIX.'access_user_attribute_name`
+                WHERE `name` = "'.$name.'"';
+        $objAttribute = $objDatabase->Execute($query);
+        if($objAttribute->fields["attribute_id"]){
+            return $objAttribute->fields["attribute_id"];
+        }
+        return false;
+    }
 
     /**
      * Load attribute
