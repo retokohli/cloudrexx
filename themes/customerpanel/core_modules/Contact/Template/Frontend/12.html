@@ -1,0 +1,58 @@
+<div class="grid-container  grid-offset">
+<div class="grid-elm grid-align-2-3 grid-offset-larger-right">       
+<!-- BEGIN contact_form -->
+<form role="form" id="contactForm" class="contactForm" action="index.php?section=Contact&amp;cmd=12" method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();">
+    <fieldset id="contactFrame">          
+<div class="contact row form-group">
+<label for="contactFormFieldId_92">{92_LABEL}<strong class="is_required">*</strong></label>
+<select class="contactFormClass_select" name="contactFormField_92" id="contactFormFieldId_92">
+<!-- BEGIN field_92 -->
+<option value='{92_VALUE}' {SELECTED_92}>{92_VALUE}</option>
+<!-- END field_92 -->
+</select>
+</div>
+<div class="contact row form-group">
+<label for="contactFormFieldId_93">{93_LABEL}<strong class="is_required">*</strong></label>
+<select class="contactFormClass_select" name="contactFormField_93" id="contactFormFieldId_93">
+<!-- BEGIN field_93 -->
+<option value='{93_VALUE}' {SELECTED_93}>{93_VALUE}</option>
+<!-- END field_93 -->
+</select>
+</div>
+<div class="contact row form-group">
+<label for="contactFormFieldId_94">{94_LABEL}<strong class="is_required">*</strong></label>
+<input class="contactFormClass_text" id="contactFormFieldId_94" type="text" name="contactFormField_94" value="{94_VALUE}" />
+</div>
+<div class="contact row form-group">                   
+<div class="contactFormGroup" id="contactFormFieldId_100">
+<div class="checkbox"><label class="noCaption" for="contactFormField_0_100"><input type="checkbox" class="contactFormClass_checkboxGroup" name="contactFormField_100[]" id="contactFormField_0_100" value="Ja ich habe die AGB gelesen und akzeptiere diese." {SELECTED_100_0}/>Ja ich habe die <a id="terms" href="https://www.cloudrexx.com/de/Rechtliches/AGBs" target="_blank">AGB</a> gelesen und akzeptiere diese.<strong class="is_required">*</strong></label></div>
+</div>
+</div>
+<input class="contactFormClass_hidden" id="contactFormFieldId_89" type="hidden" name="contactFormField_89" value="{89_VALUE}" />
+<input class="contactFormClass_hidden" id="contactFormFieldId_90" type="hidden" name="contactFormField_90" value="{90_VALUE}" />
+<input class="contactFormClass_hidden" id="contactFormFieldId_91" type="hidden" name="contactFormField_91" value="{91_VALUE}" />
+<input class="contactFormClass_hidden" id="contactFormFieldId_95" type="hidden" name="contactFormField_95" value="{95_VALUE}" />
+<input class="contactFormClass_hidden" id="contactFormFieldId_96" type="hidden" name="contactFormField_96" value="{96_VALUE}" />
+<input class="contactFormClass_hidden" id="contactFormFieldId_97" type="hidden" name="contactFormField_97" value="{97_VALUE}" />
+<input class="contactFormClass_hidden" id="contactFormFieldId_98" type="hidden" name="contactFormField_98" value="{98_VALUE}" />
+<input class="contactFormClass_hidden" id="contactFormFieldId_99" type="hidden" name="contactFormField_99" value="{99_VALUE}" />
+<!-- BEGIN contact_form_captcha -->
+<div class="contact row form-group">
+<label>{TXT_CONTACT_CAPTCHA}</label>
+{CONTACT_CAPTCHA_CODE}
+</div>
+<!-- END contact_form_captcha -->
+<div class="contact row form-group">
+<input class="contactFormClass_button btn btn-default" type="submit" name="submitContactForm" value="{TXT_CONTACT_SUBMIT}" /><input class="contactFormClass_button btn btn-default" type="reset" value="{TXT_CONTACT_RESET}" />
+<input type="hidden" name="unique_id" value="{CONTACT_UNIQUE_ID}" />
+</div>
+</fieldset>
+</form>
+<!-- END contact_form -->    
+
+<div id="contactFeedback">{CONTACT_FEEDBACK_TEXT}</div>
+
+<div class="text-danger" id="contactFormError">{TXT_NEW_ENTRY_ERORR}</div>
+{CONTACT_JAVASCRIPT}
+</div><aside class="grid-elm grid-align-1-3 grid-offset-left show-on-screen"><!-- BEGIN formText -->{12_FORM_TEXT}<!-- END formText --></aside>
+</div>

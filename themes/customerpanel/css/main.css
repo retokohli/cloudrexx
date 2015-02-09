@@ -366,7 +366,7 @@ ul li { /* empty */ }
 
 aside {
     border-left: 1px solid #d3d3d3;
-    font-size: 0.8em;
+    font-size: 0.9em;
 }
 
 table {
@@ -652,7 +652,7 @@ legend { border: none; visibility: hidden; }
     display: none;
     width: 100%;       
     color: #E30613;  
-    padding: 20px 10px 20px 10px;   
+    padding: 20px 0px 20px 0px;   
     line-height: 1.1em;
 }
 
@@ -674,9 +674,11 @@ form .is_required {
 }
      
 form label {
-    display: inline-block;    
+    display: block;    
     padding: 0;
     font-weight: 400;
+    width: auto;
+  /*   white-space: nowrap;  */
 }
 
 form #captcha {
@@ -730,7 +732,7 @@ form .contactFormGroup label,
 form .newsletterFormGroup label,
 form .shopFormGroup label
 {                     
-    width: auto;
+    width: 90%;
     font-weight: normal; 
     margin: 0 20px 0 0;    
 }
@@ -754,7 +756,7 @@ select {
     border-radius: 3px;
     background-color: #ffffff;
     color: #333;
-    -moz-user-select: none;
+   /* -moz-user-select: none;     */
     border: 1px solid #d3d3d3;      
     margin-bottom: 2px;  
 }  
