@@ -52,8 +52,8 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
 
         // in case product has been changed, we shall triger the model event payComplete
         // this will update the license information on the associated websites
-        if (!empty($changeSet['product'])) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/payComplete', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+        if (!empty($changeSet['product'])) {            
+            \Env::get('cx')->getEvents()->triggerEvent('model/payComplete', array(new \Doctrine\ORM\Event\LifecycleEventArgs($subscription, \Env::get('em'))));
         }
     }
     
