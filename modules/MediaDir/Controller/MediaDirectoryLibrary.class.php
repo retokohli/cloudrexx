@@ -628,7 +628,7 @@ function deselectAll(control){
     }
 }
 var defaultLang = '$_LANGID';
-var activeLang = new Array($arrActiveLang);
+var activeLang = [$arrActiveLang];
 \$J(function(){
     \$J('.mediadirInputfieldDefault').each(function(){
         id = \$J(this).data('id');
@@ -638,7 +638,7 @@ var activeLang = new Array($arrActiveLang);
             var that = \$J(this);
             var id = \$J(this).data('id');
             
-            \$J.each(activeLang, function(i, v) {                
+            \$J.each(activeLang, function(i, v) {
                 if (\$J('#mediadirInputfield_'+ id +'_'+ v).val() == that.data('lastDefaultValue')) {
                     \$J('#mediadirInputfield_'+ id +'_'+ v).val(that.val());
                 }
