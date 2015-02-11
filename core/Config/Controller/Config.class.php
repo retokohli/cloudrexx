@@ -917,16 +917,15 @@ class Config
      */
     public function image($arrData)
     {
-
-        \JS::registerJS('lib/javascript/jquery/1.9.1/js/jquery.min.js');
         \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Style/mediabrowser.css', 1));
-        \JS::registerJS('lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js');
-        \JS::registerJS('lib/javascript/bootbox.min.js');
-
         global $objDatabase, $objTemplate, $_ARRAYLANG;
 
         $this->strPageTitle = $_ARRAYLANG['TXT_SETTINGS_IMAGE'];
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_image', 'settings_image.html');
+        
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'publicTempPath'        => Cx::instanciate()->getWebsitePublicTempWebPath(),
+        ), 'config/publicTempPath');
 
         // Saves the settings
         if (isset($arrData['submit'])) {
@@ -1668,6 +1667,28 @@ class Config
         global $objDatabase, $objTemplate, $_ARRAYLANG;
         $cx = Cx::instanciate();
 
+        $key = $_GET['key'];
+        if (!preg_match("/[A-Z0-9]{5}/i", $key)){
+            die;
+        }
+        
+        if (!\Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsitePublicTempPath())) {
+            die;
+        }
+        
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsitePublicTempPath());
+        $processFile = $cx->getWebsitePublicTempPath().'/progress' . $key . '.txt';
+        if (\Cx\Lib\FileSystem\FileSystem::exists($processFile)) {
+            die;
+        }
+        
+        try {
+            $objProcessFile = new \Cx\Lib\FileSystem\File($processFile);
+            $objProcessFile->touch();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $ex) {
+            die;
+        }
+        
         $recursiveIteratorIterator
             = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($cx->getWebsiteImagesPath().'/'), \RecursiveIteratorIterator::SELF_FIRST);
         $jsonFileArray = array();
@@ -1681,7 +1702,7 @@ class Config
 
 
         $imageFiles = array();
-
+        
         foreach ($recursiveIteratorIterator as $file) {
             /**
              * @var $file \SplFileInfo
@@ -1723,23 +1744,10 @@ class Config
 
         }
 
-
-        $key = $_GET['key'];
-        if (!preg_match("/[A-Z0-9]{5}/i", $key)){
-            die;
-        }
-        $processFile = $cx->getWebsiteTempPath() . '/public/progress' . $key . '.txt';
-        if (FileSystem::exists($processFile)) {
-            die;
-        }
-
-
-        file_put_contents($processFile, '');
-
         $imageFilesCount = count($imageFiles);
-
+        
         if ($imageFilesCount == 0) {
-            file_put_contents($processFile, 100);
+            $objProcessFile->write(100);
             die;
         }
 
@@ -1793,15 +1801,14 @@ class Config
             }
 
             $fileCounter++;
-            file_put_contents($processFile, $fileCounter / $imageFilesCount * 100);
-
+            $objProcessFile->write($fileCounter / $imageFilesCount * 100);
         }
-
+            
         session_write_close();
-        file_put_contents($processFile, 100);
-        sleep(1);
+        $objProcessFile->write(100);
+        sleep(3);
 
-        FileSystem::delete_file($processFile);
+        $objProcessFile->delete();
         die;
     }
 
