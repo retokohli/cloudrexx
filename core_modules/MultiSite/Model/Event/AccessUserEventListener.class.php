@@ -172,7 +172,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website = $websiteRepository->findBy(array('ownerId' => $objUser->getId()));
+                    $website = $websiteRepository->findWebsitesByCriteria(array('user.id' => $objUser->getId()));
                     if ($website) {
                         throw new \Exception('This user is linked with Websites, cannot able to delete');
                     }
@@ -216,7 +216,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     //Find each associated service servers
                     $webServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
                     $webSiteRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $websites      = $webSiteRepo->findWebsitesByOwnerId($objUser->getId());
+                    $websites      = $webSiteRepo->findWebsitesByCriteria(array('user.id' => $objUser->getId()));
                     
                     if (!isset($websites)) {
                         return;
@@ -235,7 +235,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     //find User's Website
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $websites  = $webRepo->findBy(array('ownerId' => $objUser->getId()));
+                    $websites  = $webRepo->findWebsitesByCriteria(array('user.id' => $objUser->getId()));
                     foreach ($websites As $website) {
                         \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('updateUser', $params, $website);
                     }
@@ -250,6 +250,10 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
     }
 
     public static function fetchUserData($objUser) {
+        if ($objUser instanceof \Cx\Core\User\Model\Entity\User) {
+            $objFWUser = \FWUser::getFWUserObject();
+            $objUser   = $objFWUser->objUser->getUser($objUser->getId());
+        }
         //get user's profile details
         $objUser->objAttribute->first();
         $arrUserDetails = array();

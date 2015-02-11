@@ -86,199 +86,48 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
         return $website;
     }
     
-    public function findWebsitesByOwnerId($ownerId) {
+    public function findWebsitesByCriteria($criteria = array()) {
+        if (empty($criteria)) {
+            return;
+        }
+        
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('website')
                 ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
-                ->where('website.ownerId = :ownerId')
-                ->groupBy('website.websiteServiceServerId')
-                ->getDql();
-        $qb->setParameter('ownerId', $ownerId);
+                ->leftJoin('website.owner', 'user');
+        
+        $filterPos = 1;
+        foreach ($criteria as $fieldName => $fieldValue) {
+            if (empty($fieldValue)) {
+                continue;
+            }
+            $method = ($filterPos == 1) ? 'where' : 'andWhere';
+            $qb->$method($fieldName . ' = ?' . $filterPos)->setParameter($filterPos, $fieldValue);
+            $filterPos++;
+        }
+        
+        $qb
+           ->groupBy('website.websiteServiceServerId')
+           ->addGroupBy('website.name')
+           ->getDql();
 
         return $qb->getQuery()->getResult();
     }
     
     public function findWebsitesBySearchTerms($term) {
-        $filter = array(
-                    'email' => '%' . $term . '%'
-                  );
-        $ids = array();
-        if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter)) {
-            while (!$objUser->EOF) {
-                $ids[] = $objUser->getId();
-                $objUser->next();
-            }
-        }
-        $matchedUsersId = !empty($ids) ? 'website.ownerId IN (' . implode(',', $ids) . ') OR' : '';
-        $query = \Env::get('em')->createQuery("SELECT 
-                                                    website 
-                                                FROM 
-                                                    Cx\Core_Modules\MultiSite\Model\Entity\Website website 
-                                                JOIN 
-                                                    website.domains domain 
-                                                WHERE 
-                                                    " . $matchedUsersId . "
-                                                    website.name LIKE '%" . $term . "%'
-                                                OR 
-                                                    website.ftpUser LIKE '%" . $term . "%'
-                                                OR 
-                                                    domain.name LIKE '%" . $term . "%' 
-                                                GROUP BY 
-                                                    website.id"
-        );
-        return $query->getResult();
-    }
-    
-    /**
-     * Get the Website Owners by criteria
-     * 
-     * @param array $criteria
-     * 
-     * @return array
-     */
-    public function getWebsitesByCriteria($criteria, $userIds) {
-        try {
-            $qb = $this->getEntityManager()->createQueryBuilder();
-            $qb->select('Website')
-                ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'Website');
-
-            $filterPos = 1;            
-            foreach ($criteria as $fieldName => $fieldValue) {
-                if (empty($fieldValue)) {
-                    continue;
-                }
-                //for date field
-                if ($fieldName == 'Website.creationDate') {
-                    $this->addDateFilterToQueryBuilder($qb, $fieldName, $fieldValue, $filterPos, false);
-                } else {
-                    $method = ($filterPos == 1) ? 'where' : 'andWhere';
-                    $qb->$method($fieldName . ' = ?' . $filterPos)->setParameter($filterPos, $fieldValue);
-                    $filterPos++;
-                }                
-            }
-            
-            if (!empty($userIds)) {
-                $method = ($filterPos == 1) ? 'where' : 'andWhere';
-                $qb->$method($qb->expr()->in('Website.ownerId', $userIds));
-            }
-            
-            $qb->getDql();
-            $websites = $qb->getQuery()->getResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
-            $websites = array();
-        }
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('website')
+                ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
+                ->leftJoin('website.owner', 'user')
+                ->leftJoin('website.domains', 'domain')
+                ->where('user.email LIKE ?1')->setParameter(1, '%' . $term . '%')
+                ->orWhere('website.name LIKE ?1')->setParameter(1, '%' . $term . '%')
+                ->orWhere('website.ftpUser LIKE ?1')->setParameter(1, '%' . $term . '%')
+                ->orWhere('domain.name LIKE ?1')->setParameter(1, '%' . $term . '%')
+                ->groupBy('website.id')
+                ->getDql();
         
-        return $websites;
-    }
-
-    /**
-     * Get the userids by criteria
-     * 
-     * @param array $criteria
-     * 
-     * @return boolean|array
-     */
-    public function getUsersByCriteria(array $criteria) {
-        if (empty($criteria)) {
-            return;
-        }
-        try {
-            $qb = $this->getEntityManager()->createQueryBuilder();
-            $qb
-                ->select('User')
-                ->from('\Cx\Core\User\Model\Entity\User', 'User');
-
-            $filterPos = 1;            
-            foreach ($criteria as $fieldName => $fieldValue) {
-                if (empty($fieldValue)) {
-                    continue;
-                }
-                //for date field
-                if ($fieldName == 'User.regdate') {
-                    $this->addDateFilterToQueryBuilder($qb, $fieldName, $fieldValue, $filterPos, true);
-                } else {
-                    $method = ($filterPos == 1) ? 'where' : 'andWhere';
-                    $qb->$method($fieldName . ' = ?' . $filterPos)->setParameter($filterPos, $fieldValue);
-                    $filterPos++;
-                }
-            }
-
-            $users = $qb->getQuery()->getResult();
-            if (!$users) {
-                return;
-            }
-            $userIds = array();
-            foreach ($users as $user) {
-                $userIds[] = $user->getId();
-            }
-        } catch (\Doctrine\ORM\NoResultException $e) {
-            $userIds = array();
-        }
-        return $userIds;
-    }
-        
-    /**
-     * Add the date filter to the query builder
-     * 
-     * @param \Doctrine\ORM\QueryBuilder $qb             Query builder object
-     * @param string                     $fieldName      filter field name
-     * @param string                     $filterCriteria filter criteria    
-     * @param int                        $filterPos      current postion of filter query
-     * @param boolean                    $useTimeStamp   use datetime or timestamp in the query
-     * 
-     * @return null
-     */
-    public function addDateFilterToQueryBuilder(\Doctrine\ORM\QueryBuilder & $qb, $fieldName, $filterCriteria, & $filterPos, $useTimeStamp = false)
-    {
-        if (empty($fieldName) || empty($filterCriteria)) {
-            return;
-        }
-        
-        $criteria = preg_replace('#^\+#i', '-', $filterCriteria);  // +n days = (date - n days)
-        $format   = preg_replace('/\b(ON|BEFORE|AFTER) \b/i', '', $criteria);
-        
-        $startDate = new \DateTime($format);
-        $startDate->setTime(0, 0, 1);
-        
-        $method = ($filterPos == 1) ? 'where' : 'andWhere';
-        switch (true) {
-            case preg_match('#^ON\ #i', $criteria):
-            case preg_match('#^\-#i', $criteria):
-                $qb
-                    ->$method($fieldName . ' > ?'. $filterPos)
-                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));                
-                $startDate->setTime(23, 59, 59);
-                $filterPos++;
-                
-                $qb
-                    ->andWhere($fieldName . ' < ?'. $filterPos)
-                    ->setParameter($filterPos,  self::parseTimeForFilter($startDate, $useTimeStamp));
-                break;
-            case preg_match('#^BEFORE\ #i', $criteria):
-                $qb
-                    ->$method($fieldName . '< ?'. $filterPos)
-                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));
-                break;
-            case preg_match('#^AFTER\ #i', $criteria):
-                $startDate->setTime(23, 59, 59);
-                $qb
-                    ->$method($fieldName . ' > ?'. $filterPos)
-                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));
-                break;
-        }
-        $filterPos++;        
-    }
-
-    /**
-     * Get the timestamp or date value based on the date time object
-     * 
-     * @param \DateTime $date
-     * @param boolean   $timeStamp
-     * 
-     * @return array
-     */
-    public static function parseTimeForFilter(\DateTime $date, $timeStamp = false) {        
-        return $timeStamp ? $date->getTimestamp() : $date->format('Y-m-d H:i:s');
+        return $qb->getQuery()->getResult();
     }
     
     /**

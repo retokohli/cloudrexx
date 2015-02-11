@@ -32,8 +32,6 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
     ipAddress:
       type: string
       length: 45
-    ownerId:
-      type: integer
     themeId:
       type: integer
     installationId:
@@ -67,6 +65,11 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
         name: websiteServiceServerId
         referencedColumnName: id
 #        cascade: [remove]
+    owner:
+      targetEntity: Cx\Core\User\Model\Entity\User
+      joinColumn:
+          name: ownerId
+          referencedColumnName: id
     mailServiceServer:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer
       inversedBy: websites

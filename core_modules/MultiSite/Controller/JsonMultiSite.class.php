@@ -1151,7 +1151,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         //check the logged in user is owner of website($websiteId)
-        if ($website->getOwnerId() == \FWUser::getFWUserObject()->objUser->getId()) {
+        if ($website->getOwner()->getId() == \FWUser::getFWUserObject()->objUser->getId()) {
             return true;
         }
         return false;
@@ -3142,7 +3142,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']);
                 }
                 $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                $website = $websiteRepository->findBy(array('ownerId' => $params['post']['userId']));
+                $website = $websiteRepository->findWebsitesByCriteria(array('user.id' => $params['post']['userId']));
                 if (!$website) {
                     $objUser = \FWUser::getFWUserObject()->objUser->getUser($params['post']['userId']);
                     $deleteUser = $objUser ? $objUser->delete() : true;
@@ -3258,13 +3258,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     $objOwner = \FWUser::getFWUserObject()->objUser->getUser(array('email' => $params['post']['ownerEmail'])); 
                     $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website = $websiteRepository->findOneBy(array('ownerId' => $objOwner->getId(), 'name' => $params['post']['websiteName']));
-                    
+                    $websiteObj = $websiteRepository->findWebsitesByCriteria(array('user.id' => $objOwner->getId(), 'website.name' => $params['post']['websiteName']));
+                    $website    = current($websiteObj);
                     if (!$website) {
                         throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Unknown Website-User-Id: ' . $objOwner->getId());
                     }
                     
-                    $websiteVerificationUrl = \FWUser::getVerificationLink(true, $website->getOwner(), $website->getBaseDn()->getName());
+                    $websiteVerificationUrl = \FWUser::getVerificationLink(true, $objOwner, $website->getBaseDn()->getName());
                     // write mail
                     \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
                     \DBG::msg('Website: send Account Activation Email > ADMIN');
@@ -4103,7 +4103,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         $userId = \FWUser::getFWUserObject()->objUser->getId();
-        if ($website->getOwnerId() == $userId) {
+        if ($website->getOwner()->getId() == $userId) {
             return $this->remoteLogin(array('post' => array('websiteId' => $params['post']['websiteId'])));
         }
         
@@ -4250,7 +4250,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (!$website) {
                         throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed: Unkown Website-ID: ' . $params['post']['websiteId']);
                     }
-                    if ($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()) {
+                    if ($website->getOwner()->getId() != \FWUser::getFWUserObject()->objUser->getId()) {
                         return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
                     }
                     $mailServiceServer = $website->getMailServiceServer();

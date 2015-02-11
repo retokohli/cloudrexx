@@ -83,11 +83,6 @@ class Website extends \Cx\Model\Base\EntityBase {
     protected $ipAddress;
 
     /**
-     * @var integer $ownerId
-     */
-    protected $ownerId;
-    
-    /**
      * @var string $secretKey
      */
     protected $secretKey;
@@ -166,11 +161,15 @@ class Website extends \Cx\Model\Base\EntityBase {
         }
         $this->status = self::STATE_INIT;
         $this->websiteServiceServerId = 0;
-        $this->owner = $userObj;
-        $this->ownerId = $userObj->getId();
         $this->installationId = $this->generateInstalationId();
         $this->themeId = $themeId;
 
+        if ($userObj) {
+            $em      = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+            $objUser = $em->getRepository('\Cx\Core\User\Model\Entity\User')->findOneById($userObj->getId());
+            $this->setOwner($objUser);
+        }
+        
         if ($websiteServiceServer) {
             $this->setWebsiteServiceServer($websiteServiceServer);
         }
@@ -376,12 +375,23 @@ class Website extends \Cx\Model\Base\EntityBase {
         return $this->websiteServiceServer;
     }
 
+    /**
+     * Set the owner
+     * 
+     * @param MultiSiteUser $user
+     */
+    public function setOwner(\Cx\Core\User\Model\Entity\User $user) 
+    {
+        $this->owner = $user;
+    }
+    
+    /**
+     * Get the owner
+     * 
+     * @return MultiSiteUser
+     */
     public function getOwner()
     {
-        if (!isset($this->owner)) {
-            $user = new \User();
-            $this->owner = $user->getUser($this->ownerId);
-        }
         return $this->owner;
     }
     
@@ -424,26 +434,6 @@ class Website extends \Cx\Model\Base\EntityBase {
         return $this->ipAddress;
     }
 
-    /**
-     * Set ownerId
-     *
-     * @param integer $ownerId
-     */
-    public function setOwnerId($ownerId)
-    {
-        $this->ownerId = $ownerId;
-    }
-
-    /**
-     * Get ownerId
-     *
-     * @return integer $ownerId
-     */
-    public function getOwnerId()
-    {
-        return $this->ownerId;
-    }
-    
     /**
      * Set themeId
      *
@@ -522,7 +512,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         $websiteIp = null;
 
         // language
-        $lang = $this->owner->getBackendLanguage();
+        $lang = $this->owner->getBackendLangId();
         $langId = \FWLanguage::getLanguageIdByCode($lang);
         
         if ($langId === false) {
@@ -648,8 +638,8 @@ class Website extends \Cx\Model\Base\EntityBase {
                     case 'auto-with-verification':
                         \DBG::msg('Website: set verification state to pending on Cloudrexx user..');
                         // set state of user account to unverified
-                        $this->owner->setVerification(false);
-                        $this->owner->store();
+                        $this->owner->setVerified(false);
+                        \Env::get('em')->flush();
                         $websiteVerificationUrl = $this->generateVerificationUrl();
 
                     // important: intentionally no break for this case!
@@ -1681,23 +1671,32 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @return string
      */
     public function generatePasswordRestoreUrl() {
-        $this->owner->setRestoreKey();
+        $this->owner->setRestoreKey($this->getRestoreKey());
         // hard-coded to 1 day
         $this->owner->setRestoreKeyTime(86400);
-        $this->owner->store();
+        \Env::get('em')->flush();
         $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
         return $websitePasswordUrl;
     }
 
     public function generateVerificationUrl() {
-        $this->owner->setRestoreKey();
+        $this->owner->setRestoreKey($this->getRestoreKey());
         // hard-coded to 30 days
         $this->owner->setRestoreKeyTime(86400 * 30);
-        $this->owner->store();
+        \Env::get('em')->flush();
         $websiteVerificationUrl = \FWUser::getVerificationLink(true, $this->owner, $this->baseDn->getName());
         return $websiteVerificationUrl;
     }
 
+    /**
+     * Get the restore key
+     * 
+     * @return string
+     */
+    public function getRestoreKey() {
+        return md5($this->owner->getEmail().$this->owner->getRegdate().time());
+    }
+    
     public function generateAuthToken() {
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('generateAuthToken', array(), $this);
@@ -1722,10 +1721,10 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * 
      * @return string
      */
-    public function generateAccountPassword() {        
+    public function generateAccountPassword() {
         $newPassword = \User::make_password(8, true);
         $params = array(
-            'userId' => $this->ownerId,
+            'userId' => $this->owner->getId(),
             'multisite_user_account_password'           => $newPassword,
             'multisite_user_account_password_confirmed' => $newPassword,
         );

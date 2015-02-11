@@ -470,7 +470,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         return $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
                     }
 
-                    if ($website->getOwnerId() != $userId) {
+                    if ($website->getOwner()->getId() != $userId) {
                         return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
                     }
                 }
@@ -798,7 +798,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!$website) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
         }
-        if($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()){
+        if($website->getOwner()->getId() != \FWUser::getFWUserObject()->objUser->getId()){
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
         }
 
@@ -1077,7 +1077,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
         }
 
-        if ($website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()) {
+        if ($website->getOwner()->getId() != \FWUser::getFWUserObject()->objUser->getId()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
         }
         
@@ -1207,7 +1207,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
         }
 
-        if ($website->getOwnerId() != $objUser->getId()) {
+        if ($website->getOwner()->getId() != $objUser->getId()) {
             return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
         }
 
@@ -1672,7 +1672,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             self::showOrHideBlock($objTemplate, 'websiteLinkActive', $status);
             self::showOrHideBlock($objTemplate, 'websiteLinkInactive', !$status);
-            self::showOrHideBlock($objTemplate, 'showAdminButton', ($status && $website->getOwnerId() == $userId));
+            self::showOrHideBlock($objTemplate, 'showAdminButton', ($status && $website->getOwner()->getId() == $userId));
             self::showOrHideBlock($objTemplate, 'showWebsiteLink', $status);
             self::showOrHideBlock($objTemplate, 'showWebsiteName', !$status);
             self::showOrHideBlock($objTemplate, 'showWebsiteViewButton', $status);
