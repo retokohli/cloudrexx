@@ -635,6 +635,10 @@ class FWUser extends User_Setting
         global $_CORELANG;
 
         static $arrTitles = array();
+        
+        if ($user instanceof \Cx\Core\User\Model\Entity\User) {
+            $user = FWUser::getFWUserObject()->objUser->getUser($user->getId());
+        }
 
         if ($user) {
             if (is_object($user)) {
