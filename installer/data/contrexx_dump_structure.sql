@@ -195,7 +195,7 @@ CREATE TABLE `contrexx_access_users` (
   `u2u_active` enum('0','1') NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `username` (`username`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -402,7 +402,7 @@ CREATE TABLE `contrexx_core_module_multisite_cron_mail_log` (
   `id` int(11) NOT NULL auto_increment,
   `cron_mail_id` int(11) default NULL,
   `user_id` int(5) NOT NULL,
-  `websiteId` int(11) NOT NULL,
+  `websiteId` int(11) default NULL,
   `success` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `IDX_A532A954EF07C77B` (`cron_mail_id`),
@@ -451,7 +451,7 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `websiteServiceServerId` int(11) default NULL,
   `secretKey` varchar(255) NOT NULL,
   `ipAddress` varchar(45) NOT NULL,
-  `ownerId` int(11) NOT NULL,
+  `ownerId` int(5) unsigned NOT NULL,
   `themeId` int(11) default NULL,
   `installationId` varchar(40) NOT NULL,
   `ftpUser` varchar(200) default NULL,
@@ -462,8 +462,11 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   UNIQUE KEY `name_index` (`name`),
   KEY `mailServiceServerId` (`mailServiceServerId`),
   KEY `IDX_7E722DC8F71CEE96` (`websiteCollectionId`),
+  KEY `IDX_7E722DC8E05EFD25` (`ownerId`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_4` FOREIGN KEY (`ownerId`) REFERENCES `contrexx_access_users` (`id`),
   CONSTRAINT `contrexx_core_module_multisite_website_ibfk_1` FOREIGN KEY (`mailServiceServerId`) REFERENCES `contrexx_core_module_multisite_mail_service_server` (`id`),
-  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_2` FOREIGN KEY (`websiteCollectionId`) REFERENCES `contrexx_core_module_multisite_website_collection` (`id`)
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_2` FOREIGN KEY (`websiteCollectionId`) REFERENCES `contrexx_core_module_multisite_website_collection` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_3` FOREIGN KEY (`ownerId`) REFERENCES `contrexx_access_users` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
