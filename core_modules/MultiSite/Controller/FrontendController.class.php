@@ -33,6 +33,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $websiteId = intval($_GET['id']);
                 $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                 $website = $websiteRepository->findOneById($websiteId);
+                
+                // check the website is actually owned by the signed-in user
+                if (    !($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) 
+                     || $website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()
+                   ) {
+                       $this->redirectToSubscriptionPage();
+                }
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setTitle($website->getName());
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setContentTitle('Website - '.$website->getBaseDn()->getName() . ComponentController::getWebsiteNonOnlineStateAsLiteral($website));
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setMetaTitle($website->getName());
@@ -44,6 +51,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $subscriptionId = intval($_GET['id']);
                 $subscriptionRepository = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
                 $subscription = $subscriptionRepository->findOneById($subscriptionId);
+                
+                // check the subscription is actually owned by the signed-in user
+                if (    !($subscription instanceof \Cx\Modules\Order\Model\Entity\Subscription) 
+                     || !($subscription->getOrder() instanceof \Cx\Modules\Order\Model\Entity\Order)
+                     || \FWUser::getFWUserObject()->objUser->getCrmUserId() != $subscription->getOrder()->getContactId()
+                    ) {
+                        $this->redirectToSubscriptionPage();
+                }
                 $subscriptionDescription = $subscription->getDescription();
                 if (!empty($subscriptionDescription)) {
                     $subscriptionTitle = $subscriptionDescription;
@@ -56,5 +71,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 break;
             default:
         }
+    }
+        
+    /**
+     * Redirect to subscription overview page
+     */
+    public function redirectToSubscriptionPage()
+    {
+        $url = \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'Subscription')->toString();
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: '. $url);
+        exit;
     }
 }
