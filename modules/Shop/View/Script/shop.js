@@ -141,7 +141,6 @@ function addProductToCart(objForm,quantity) {
     // Default to one product in case the quantity field is not used
     var quantity = (typeof quantity != "undefined")?quantity:1; //default Quantity of 1
     objProduct = {id: 0, options: {}, quantity: quantity}; // Obsolete: ,title:'',info:{}
-    console.log(objProduct);
     productOptionRe = /productOption\[([0-9]+)\]/;
     updateProductRe = /updateProduct\[([0-9]+)\]/;
     updateProduct = '';

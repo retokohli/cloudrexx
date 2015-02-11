@@ -423,7 +423,7 @@ class Cart
             // Check minimum order quanity, when setted
             if($product['quantity'] != 0){
                 if ($product['quantity'] < $objProduct->minimum_order_quantity()){
-                    \Message::error($objProduct->name().': '.$_ARRAYLANG['TXT_MINIMUM_ORDER_QUANTITY_ERROR']);
+                    \Message::error($objProduct->name().': '.$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY_ERROR']);
                 }
             }
             // Limit Products in the cart to the stock available if the
