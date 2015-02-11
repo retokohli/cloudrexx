@@ -704,7 +704,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         $query = 'SELECT `attribute_id` FROM `'.DBPREFIX.'access_user_attribute_name`
                 WHERE `name` = "'.$name.'"';
         $objAttribute = $objDatabase->Execute($query);
-        if($objAttribute->fields["attribute_id"]){
+        if($objAttribute !== false){
             return $objAttribute->fields["attribute_id"];
         }
         return false;
