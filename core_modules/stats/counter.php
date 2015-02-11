@@ -342,6 +342,12 @@ class counter
             $this->arrProxy['host'] = "";
             $this->arrProxy['useragent'] = "";
         }
+		foreach ($this->arrClient as &$client) {
+            $client = addslashes(strip_tags($client));
+        }
+        foreach ($this->arrProxy as &$proxy) {
+            $proxy = addslashes(strip_tags($proxy));
+        }
     }
 
     /**

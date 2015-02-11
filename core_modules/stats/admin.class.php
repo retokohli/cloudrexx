@@ -190,14 +190,14 @@ class stats extends statsLibrary
             foreach ($this->arrVisitorsDetails as $stats) {
                 $this->_objTpl->setVariable(array(
                     'STATS_REQUESTS_CLIENT_ROW_CLASS'        => $rowClass%2 == 1 ? "row2" : "row1",
-                    'STATS_REQUESTS_CLIENT_HOST'            => empty($stats['client_host']) ? "-" : "<a href=\"?cmd=nettools&amp;tpl=whois&amp;address=".$stats['client_host']."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".$stats['client_host']."</a>",
-                    'STATS_REQUESTS_CLIENT_IP'                => empty($stats['client_ip']) ? "-" : "<a href=\"?cmd=nettools&amp;tpl=whois&amp;address=".$stats['client_ip']."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".$stats['client_ip']."</a>",
-                    'STATS_REQUESTS_CLIENT_LAST_REQUEST'    => empty($stats['last_request']) ? "-" : $stats['last_request'],
-                    'STATS_REQUESTS_CLIENT_USERAGENT'        => empty($stats['client_useragent']) ? "-" : $stats['client_useragent'],
-                    'STATS_REQUESTS_CLIENT_PROXY_USERAGENT'    => empty($stats['proxy_useragent']) ? "-" : $stats['proxy_useragent'],
-                    'STATS_REQUESTS_CLIENT_PROXY_IP'        => empty($stats['proxy_ip']) ? "-" : "<a href=\"?cmd=nettools&amp;tpl=whois&amp;address=".$stats['proxy_ip']."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".$stats['proxy_ip']."</a>",
-                    'STATS_REQUESTS_CLIENT_PROXY_HOST'        => empty($stats['proxy_host']) ? "-" : "<a href=\"?cmd=nettools&amp;tpl=whois&amp;address=".$stats['proxy_host']."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".$stats['proxy_host']."</a>",
-                    ));
+                    'STATS_REQUESTS_CLIENT_HOST'            => empty($stats['client_host']) ? "-" : "<a href=\"?cmd=nettools&amp;tpl=whois&amp;address=".htmlentities($stats['client_host'], ENT_QUOTES, 'UTF-8')."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".htmlentities($stats['client_host'], ENT_QUOTES, 'UTF-8')."</a>",
+                    'STATS_REQUESTS_CLIENT_IP'                => empty($stats['client_ip']) ? "-" : "<a href=\"?cmd=nettools&amp;tpl=whois&amp;address=".htmlentities($stats['client_ip'], ENT_QUOTES, 'UTF-8')."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".htmlentities($stats['client_ip'], ENT_QUOTES, 'UTF-8')."</a>",
+                    'STATS_REQUESTS_CLIENT_LAST_REQUEST'    => empty($stats['last_request']) ? "-" : htmlentities($stats['last_request'], ENT_QUOTES, 'UTF-8'),
+                    'STATS_REQUESTS_CLIENT_USERAGENT'        => empty($stats['client_useragent']) ? "-" : htmlentities($stats['client_useragent'], ENT_QUOTES, 'UTF-8'),
+                    'STATS_REQUESTS_CLIENT_PROXY_USERAGENT'    => empty($stats['proxy_useragent']) ? "-" : htmlentities($stats['proxy_useragent'], ENT_QUOTES, 'UTF-8'),
+                    'STATS_REQUESTS_CLIENT_PROXY_IP'        => empty($stats['proxy_ip']) ? "-" : "<a href=\"?cmd=nettools&amp;tpl=whois&amp;address=".htmlentities($stats['proxy_ip'], ENT_QUOTES, 'UTF-8')."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".htmlentities($stats['proxy_ip'], ENT_QUOTES, 'UTF-8')."</a>",
+                    'STATS_REQUESTS_CLIENT_PROXY_HOST'        => empty($stats['proxy_host']) ? "-" : "<a href=\"?cmd=nettools&amp;tpl=whois&amp;address=".htmlentities($stats['proxy_host'], ENT_QUOTES, 'UTF-8')."\" title=\"".$_ARRAYLANG['TXT_SHOW_DETAILS']."\">".htmlentities($stats['proxy_host'], ENT_QUOTES, 'UTF-8')."</a>",
+                                    ));
                 $this->_objTpl->parse('stats_requests_today_clients');
                 $this->_objTpl->hideBlock('stats_requests_today_clients_list_nodata');
                 $rowClass++;

@@ -411,7 +411,12 @@ class MediaLibrary
         if (empty($_POST['oldExt'])) {
             $fileName = $_POST['renName'];
             $oldName  = $_POST['oldName'];
-        } else {
+            }
+                    $evil = array('exe', 'bat', 'pif', 'com','vs', 'vbs', 'js','html', 'xhtml', 'xml', 'svg', 'shtml', 'htm','php', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx','jsp', 'jspx', 'jhtml', 'phtml', 'cfm');
+                $ext = ((!empty($_POST['renExt']) && !in_array($_POST['renExt'], $evil)) ? $_POST['renExt'] : 'txt');
+            $fileName = $_POST['renName'].'.'.$ext;
+            $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
+ else {
 // TODO: $_POST['renName'] may be empty
             $ext      =
                 (   !empty($_POST['renExt'])
