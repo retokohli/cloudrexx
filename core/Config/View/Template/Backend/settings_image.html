@@ -35,7 +35,14 @@
     }
 </style>
 
+<script src="lib/javascript/jquery/1.9.1/js/jquery.min.js"></script>
 <script>
+  $jq19 = jQuery.noConflict();
+</script>
+<script src='lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js'></script>
+<script src='lib/javascript/bootbox.min.js'></script>
+
+<script>  
     var template = '{CONFIG_THUMBNAIL_NEW_TEMPLATE}';
 
     function deleteThumbnail(entryId) {
@@ -50,11 +57,11 @@
 
         var refreshId;
         var key = Math.random().toString(36).substr(2, 5);
-        $.get('index.php?cmd=Config&act=generateThumbnail&key=' + key, function (progress) {
-            $('.progress-bar').css('width','100%');
+        cx.jQuery.get('index.php?cmd=Config&act=generateThumbnail&key=' + key, function (progress) {          
+            //cx.jQuery('.progress-bar').css('width','100%');
             clearInterval(refreshId);
-
-            cx.jQuery(refreshModal).modal('hide');
+            
+            $jq19(refreshModal).modal('hide');
             bootbox.dialog({
                 title: "Generierung fertig.",
                 message: "Alle Vorschaubilder wurden generiert.",
@@ -68,7 +75,7 @@
                     }
                 },
                 onEscape : function(){
-                    cx.jQuery(refreshModal).modal('hide');
+                    $jq19(refreshModal).modal('hide');
                 }
             });
         });
@@ -91,23 +98,36 @@
         });
 
         refreshId = function()
-        {
-            $.get('/tmp/public/progress'+key+'.txt', function(progress)
-            {
-                $('.progress-bar').css('width',progress+'%');
+        {                    
+          cx.jQuery.ajax({
+              url : cx.variables.get('publicTempPath', 'config/publicTempPath')+'/progress'+key+'.txt',
+              tryCount : 0,
+              retryLimit : 10,
+              success : function(progress) {
+                  cx.jQuery('.progress-bar').css('width',progress+'%');
 
-                cx.jQuery('.thumbnails-generator .progress-bar').text( parseInt(progress)+'%');
-                if(progress >= 100)
-                {
-                    cx.jQuery('.thumbnails-generator').removeClass('active');
-                    cx.jQuery('.thumbnails-generator').removeClass('progress-striped');
-                    cx.jQuery('.thumbnails-generator .progress-bar').text('Complete');
-                    clearTimeout(refreshId);
+                  cx.jQuery('.thumbnails-generator .progress-bar').text( parseInt(progress)+'%');
+                  if(progress >= 100)
+                  {
+                      cx.jQuery('.thumbnails-generator').removeClass('active');
+                      cx.jQuery('.thumbnails-generator').removeClass('progress-striped');
+                      cx.jQuery('.thumbnails-generator .progress-bar').text('Complete');
+                      clearTimeout(refreshId);
+                  }
+                  else {
+                      setTimeout(refreshId, 500);
+                  }
+              },
+              error : function(xhr, textStatus, errorThrown ) {                
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    cx.jQuery.ajax(this);
+                    return;
                 }
-                else {
-                    setTimeout(refreshId, 500);
-                }
-            });
+                return;
+              }
+          });
         };
         setTimeout(refreshId, 500);
     }
@@ -135,13 +155,13 @@
             },
             show: false
         });
-        cx.jQuery(dialog).on('show.bs.modal', function (e) {
+        $jq19(dialog).on('show.bs.modal', function (e) {
             cx.jQuery('.edit-thumbnail-modal input[name=id]').val(entryId);
             cx.jQuery('.edit-thumbnail-modal input[name=name]').val(name);
             cx.jQuery('.edit-thumbnail-modal input[name=size]').val(size);
         });
 
-        cx.jQuery(dialog).modal('show');
+        $jq19(dialog).modal('show');
     }
 </script>
 

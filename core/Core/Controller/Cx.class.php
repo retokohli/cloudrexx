@@ -265,6 +265,10 @@ namespace Cx\Core\Core\Controller {
         const FOLDER_NAME_THEMES = '/themes';
         
         /**
+         * @var string
+         */
+        const FOLDER_NAME_PUBLIC_TEMP = '/public';
+        /**
          * The webserver's DocumentRoot path.
          * Formerly known as ASCMS_PATH.
          * @var string
@@ -503,6 +507,8 @@ namespace Cx\Core\Core\Controller {
 
         protected $websiteImagesPath;
         protected $websiteImagesWebPath;
+        protected $websitePublicTempPath;
+        protected $websitePublicTempWebPath;
 
         /**
          * This creates instances of this class
@@ -2494,7 +2500,11 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive4WebPath
                 = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
                 . '/archive4';
-
+            
+            $this->websitePublicTempPath
+                = $this->websiteTempPath . self::FOLDER_NAME_PUBLIC_TEMP;
+            $this->websitePublicTempWebPath
+                = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;    
 
         }
 
@@ -2851,6 +2861,20 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteImagesWebPath()
         {
             return $this->websiteImagesWebPath;
+        }
+        
+        /**
+         * @return string
+         */
+        public function getWebsitePublicTempPath() {
+            return $this->websitePublicTempPath;
+        }
+        
+        /**
+         * @return string
+         */
+        public function getWebsitePublicTempWebPath() {
+            return $this->websitePublicTempWebPath;
         }
     }
 }
