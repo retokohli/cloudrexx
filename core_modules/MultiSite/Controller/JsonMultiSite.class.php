@@ -3104,7 +3104,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                     $result[$key]['content'] = implode(', ', $license->getRegisteredDomains());
                                     break;
                                 case 'availableComponents':
-                                    $result[$key]['content'] = serialize($license->getComponentsWithAdditionalData());
+                                    $result[$key]['content'] = serialize($license->getLicensedComponentsWithAdditionalData());
                                     break;
                                 case 'dashboardMessages':
                                     $result[$key]['content'] = $dashboardMessages;

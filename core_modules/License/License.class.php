@@ -671,32 +671,35 @@ class License {
     }
     
     /**
-     * Get the components with their additional data's
+     * Get the licensed components with their additional data's
      * 
      * @global type $objDatabase
      * 
      * @return array
      */
-    public function getComponentsWithAdditionalData() {
+    public function getLicensedComponentsWithAdditionalData() {
         global $objDatabase;
         
         $query = '
             SELECT
                 `name`, `additional_data`
             FROM
-                '.DBPREFIX.'modules';
+                '.DBPREFIX.'modules
+            WHERE
+            `is_licensed` = \'1\'
+        ';
         $objResult = $objDatabase->execute($query);
         
-        $components = array();
+        $licensedComponents = array();
         if ($objResult) {
             while (!$objResult->EOF) {
-                $components[] = !empty($objResult->fields['additional_data']) 
+                $licensedComponents[] = !empty($objResult->fields['additional_data']) 
                                         ? array($objResult->fields['name'] => json_decode($objResult->fields['additional_data'], true))
                                         : $objResult->fields['name'];
                 $objResult->MoveNext();
             }
         }
-        return $components;
+        return $licensedComponents;
     }
     
     /**
