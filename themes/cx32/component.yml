@@ -1,7 +1,0 @@
-DlcInfo:
-  name: cx32
-  description: ''
-  type: template
-  publisher: 'Comvation AG'
-  versions: { state: stable, number: 1.0.0, releaseDate: '' }
-  dependencies: [{ name: jquery, type: lib, minimumVersionNumber: 1.9.1, maximumVersionNumber: 1.9.1 }]
