@@ -13,22 +13,25 @@
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
 // don't load Frontend and BackendController for this core_module
+use Cx\Core\ContentManager\Model\Entity\Page;
+use Cx\Core\Core\Controller\Cx;
+use Cx\Core\Core\Model\Entity\SystemComponent;
+use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Html\Sigma;
+use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
 use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
 use Cx\Core_Modules\MediaBrowser\Model\ResourceRegister;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
+use Cx\Lib\FileSystem\FileSystemException;
 
 class ComponentController extends
-    \Cx\Core\Core\Model\Entity\SystemComponentController
+    SystemComponentController
 {
 
     protected $mediaBrowserInstances = array();
 
 
-    public function __construct(
-        \Cx\Core\Core\Model\Entity\SystemComponent $systemComponent,
-        \Cx\Core\Core\Controller\Cx $cx
-    )
+    public function __construct(SystemComponent $systemComponent, Cx $cx)
     {
         parent::__construct($systemComponent, $cx);
     }
@@ -52,15 +55,27 @@ class ComponentController extends
         );
     }
 
+    public function preContentLoad(Page $page) {
+        $eventHandlerInstance = $this->cx->getEvents();
+        $eventHandlerInstance->addEvent('LoadMediaTypes');
+    }
+
+    public function preContentParse(Page $page) {
+        $this->cx->getEvents()->addEventListener('LoadMediaTypes', new MediaBrowserEventListener($this->cx));
+    }
+
     /**
      * @param Sigma $template
      */
-    public function preFinalize(\Cx\Core\Html\Sigma $template)
+    public function preFinalize(Sigma $template)
     {
-
         if (count($this->mediaBrowserInstances) > 0) {
             global $_ARRAYLANG;
-            \Env::get('init')->loadLanguageData('MediaBrowser');
+            /**
+             * @var $init \InitCMS
+             */
+            $init = \Env::get('init');
+            $init->loadLanguageData('MediaBrowser');
             foreach ($_ARRAYLANG as $key => $value) {
                 if (preg_match("/TXT_FILEBROWSER_[A-Za-z0-9]+/", $key)) {
                     \ContrexxJavascript::getInstance()->setVariable(
@@ -116,7 +131,7 @@ class ComponentController extends
                     $template->_blocks['__global__']
                 );
 
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            } catch (FileSystemException $e) {
                 echo($e->getMessage());
             }
             \JS::registerCSS(

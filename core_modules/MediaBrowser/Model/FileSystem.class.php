@@ -286,56 +286,15 @@ class FileSystem
     {
         $hasAccess = false;
         foreach (
-            MediaBrowserConfiguration::getInstance()->getAllMediaTypePaths() as
+            MediaBrowserConfiguration::getInstance()->getMediaTypePaths() as
             $virtualPathName => $mediatype
         ) {
             if (self::isSubdirectory($virtualPathName, $path)) {
-                return self::checkMediaTypePermission($virtualPathName);
+                return true;
             }
         }
         return $hasAccess;
     }
-
-    /**
-     * Checks whether the user has the right to edit files in this mediatype directory.
-     *
-     * @param $mediatype
-     *
-     * @return boolean
-     */
-    public static function checkMediaTypePermission($mediatype)
-    {
-        switch ($mediatype) {
-        case 'media1':
-        case 'media2':
-        case 'media3':
-        case 'media4':
-        case 'media5':
-            return \Permission::checkAccess(7, 'static', true)
-            && \Permission::checkAccess(38, 'static', true)
-            && \Permission::checkAccess(39, 'static', true);
-        case 'shop':
-            return \Permission::checkAccess(13, 'static', true);
-        case 'gallery':
-            return \Permission::checkAccess(12, 'static', true)
-            && \Permission::checkAccess(67, 'static', true);
-        case 'access':
-            return \Permission::checkAccess(18, 'static', true);
-        case 'mediadir':
-            return \Permission::checkAccess(153, 'static', true);
-        case 'downloads':
-            return \Permission::checkAccess(141, 'static', true);
-        case 'calendar':
-            return \Permission::checkAccess(16, 'static', true);
-        case 'podcast':
-            return \Permission::checkAccess(87, 'static', true);
-        case 'blog':
-            return \Permission::checkAccess(119, 'static', true);
-        default:
-            return true;
-        }
-    }
-
 
     /**
      * Checks if a file exists either in the actual filesystem or in the virtual filesystem.

@@ -8,6 +8,8 @@
 
 namespace Cx\Core\Wysiwyg\Controller;
 
+use Cx\Core\Wysiwyg\Model\Event\WysiwygEventListener;
+
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
     
     public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent, \Cx\Core\Core\Controller\Cx $cx) {
@@ -77,4 +79,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return json_encode($containerArr);
     }
 
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $eventListener = new WysiwygEventListener($this->cx);
+        $this->cx->getEvents()->addEventListener('LoadMediaTypes', $eventListener);
+    }
 }

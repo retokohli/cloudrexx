@@ -11,13 +11,10 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
-use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
-use Cx\Lib\FileSystem\File;
+use Cx\Core_Modules\MediaBrowser\Model\MediaType;
 
 class MediaBrowserConfiguration
 {
-    const  WEB_PATH = 1;
-    const  PATH = 0;
 
     protected static $thumbnails;
 
@@ -31,27 +28,16 @@ class MediaBrowserConfiguration
      */
     protected $cx;
 
-    protected $mediaTypes
-        = array(
-            'files' => 'TXT_FILEBROWSER_FILES',
-            'webpages' => 'TXT_FILEBROWSER_WEBPAGES',
-            'media1' => 'TXT_FILEBROWSER_MEDIA_1',
-            'media2' => 'TXT_FILEBROWSER_MEDIA_2',
-            'media3' => 'TXT_FILEBROWSER_MEDIA_3',
-            'media4' => 'TXT_FILEBROWSER_MEDIA_4',
-            'attach' => 'TXT_FILE_UPLOADS',
-            'shop' => 'TXT_FILEBROWSER_SHOP',
-            'gallery' => 'TXT_THUMBNAIL_GALLERY',
-            'access' => 'TXT_USER_ADMINISTRATION',
-            'mediadir' => 'TXT_MEDIADIR_MODULE',
-            'downloads' => 'TXT_DOWNLOADS',
-            'calendar' => 'TXT_CALENDAR',
-            'podcast' => 'TXT_FILEBROWSER_PODCAST',
-            'blog' => 'TXT_FILEBROWSER_BLOG',
-            'Wysiwyg' => 'TXT_FILEBROWSER_WYSIWYG',
-        );
+    protected $mediaTypes = array();
 
+    /**
+     * @var array
+     */
     protected $mediaTypePaths;
+
+    /**
+     * @var MediaType[]
+     */
     protected $allMediaTypePaths;
 
     /**
@@ -74,80 +60,23 @@ class MediaBrowserConfiguration
     protected function __construct()
     {
         $this->cx = \Env::get('cx');
-
-        $this->allMediaTypePaths
-            = array(
-            'files' => array(
-                $this->cx->getWebsiteImagesContentPath(),
-                $this->cx->getWebsiteImagesContentWebPath(),
-            ),
-            'media1' => array(
-                $this->cx->getWebsiteMediaarchive1Path(),
-                $this->cx->getWebsiteMediaarchive1WebPath(),
-            ),
-            'media2' => array(
-                $this->cx->getWebsiteMediaarchive2Path(),
-                $this->cx->getWebsiteMediaarchive2WebPath(),
-            ),
-            'media3' => array(
-                $this->cx->getWebsiteMediaarchive3Path(),
-                $this->cx->getWebsiteMediaarchive3WebPath(),
-            ),
-            'media4' => array(
-                $this->cx->getWebsiteMediaarchive4Path(),
-                $this->cx->getWebsiteMediaarchive4WebPath(),
-            ),
-            'attach' => array(
-                $this->cx->getWebsiteImagesAttachPath(),
-                $this->cx->getWebsiteImagesAttachWebPath(),
-            ),
-            'shop' => array(
-                $this->cx->getWebsiteImagesShopPath(),
-                $this->cx->getWebsiteImagesShopWebPath(),
-            ),
-            'gallery' => array(
-                $this->cx->getWebsiteImagesGalleryPath(),
-                $this->cx->getWebsiteImagesGalleryWebPath(),
-            ),
-            'access' => array(
-                $this->cx->getWebsiteImagesAccessPath(),
-                $this->cx->getWebsiteImagesAccessWebPath(),
-            ),
-            'mediadir' => array(
-                $this->cx->getWebsiteImagesMediaDirPath(),
-                $this->cx->getWebsiteImagesMediaDirWebPath(),
-            ),
-            'downloads' => array(
-                $this->cx->getWebsiteImagesDownloadsPath(),
-                $this->cx->getWebsiteImagesDownloadsWebPath(),
-            ),
-            'calendar' => array(
-                $this->cx->getWebsiteImagesCalendarPath(),
-                $this->cx->getWebsiteImagesCalendarWebPath(),
-            ),
-            'podcast' => array(
-                $this->cx->getWebsiteImagesPodcastPath(),
-                $this->cx->getWebsiteImagesPodcastWebPath(),
-            ),
-            'blog' => array(
-                $this->cx->getWebsiteImagesBlogPath(),
-                $this->cx->getWebsiteImagesBlogWebPath(),
-            ),
-            'Wysiwyg' => array(
-                $this->cx->getWebsiteImagesPath() . '/wysiwyg',
-                $this->cx->getWebsiteImagesWebPath() . '/wysiwyg',
-            ),
-        );
-
-        foreach ($this->allMediaTypePaths as $mediatype => $path) {
-            if (FileSystem::checkMediaTypePermission($mediatype)) {
-                $this->mediaTypePaths[$mediatype] = $path;
-            } else {
-                unset($this->mediaTypes[$mediatype]);
+        $eventHandlerInstance = $this->cx->getEvents();
+        /**
+         * Loads all mediatypes into $this->allMediaTypePaths
+         */
+        $eventHandlerInstance->triggerEvent('LoadMediaTypes', array($this));
+        ksort($this->allMediaTypePaths);
+        foreach ($this->allMediaTypePaths as $mediatype) {
+            if ($mediatype->checkAccess()) {
+                $this->mediaTypePaths[$mediatype->getName()] = $mediatype->getDirectory();
+                $this->mediaTypes[$mediatype->getName()] = $mediatype;
             }
         }
+    }
 
-
+    public function addMediaType(MediaType $mediaType)
+    {
+        $this->allMediaTypePaths[$mediaType->getPosition().$mediaType->getName()] = $mediaType;
     }
 
 
@@ -160,7 +89,7 @@ class MediaBrowserConfiguration
     }
 
     /**
-     * @return array
+     * @return MediaType[]
      */
     public function getMediaTypes()
     {

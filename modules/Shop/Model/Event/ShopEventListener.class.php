@@ -10,6 +10,9 @@
  */
 
 namespace Cx\Modules\Shop\Model\Event;
+use Cx\Core\Core\Controller\Cx;
+use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
+use Cx\Core_Modules\MediaBrowser\Model\MediaType;
 
 /**
  * EventListener for Shop
@@ -20,6 +23,16 @@ namespace Cx\Modules\Shop\Model\Event;
  * @subpackage  module_shop
  */
 class ShopEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+
+    /**
+     * @var Cx
+     */
+    protected $cx;
+
+    function __construct(Cx $cx)
+    {
+        $this->cx = $cx;
+    }
 
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
@@ -49,6 +62,21 @@ class ShopEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                             };
         $result = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($search->getResultArray($query, 'Shop', 'details', 'productId=', $search->getTerm(), $parseSearchData));
         $search->appendResult($result);
+    }
+
+    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    {
+        global $_ARRAYLANG;
+        \Env::get('init')->loadLanguageData('MediaBrowser');
+        $mediaType = new MediaType();
+        $mediaType->setName('shop');
+        $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_SHOP']);
+        $mediaType->setDirectory(array(
+            $this->cx->getWebsiteImagesShopPath(),
+            $this->cx->getWebsiteImagesShopWebPath(),
+        ));
+        $mediaType->getAccessIds(array(13));
+        $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
 }

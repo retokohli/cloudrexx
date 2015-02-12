@@ -9,6 +9,7 @@
  */
 
 namespace Cx\Modules\Blog\Controller;
+use Cx\Modules\Blog\Model\Event\BlogEventListener;
 
 /**
  * Main controller for Blog
@@ -149,5 +150,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 break;
         }
+    }
+
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $eventListener = new BlogEventListener($this->cx);
+        $this->cx->getEvents()->addEventListener('LoadMediaTypes', $eventListener);
     }
 }

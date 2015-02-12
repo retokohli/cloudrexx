@@ -204,6 +204,5 @@ $_ARRAYLANG['TXT_GALLERY_RESOLUTION_TOO_HIGH'] = "zu hohe Auflösung";
 $_ARRAYLANG['TXT_GALLERY_UPLOAD_CONFIRM_IMAGES'] = "Bilder bestätigen";
 $_ARRAYLANG['TXT_GALLERY_UPLOAD_IMAGES'] = "Hochgeladene Bilder";
 $_ARRAYLANG['TXT_GALLERY_UPLOAD_HELP'] = "<b>Wie kann ich neue Bilder importieren:</b><br/>
-    Laden sie zuerst hier die neuen Bilder hoch. Anschliessend können sie über Bilder bestätigen die Bilder mit Titel
+    Laden sie zuerst hier die neuen Bilder hoch. Anschliessend können sie über Bilder bestätigen, mit Titel
     versehen und in die entsprechenden Kategorien verschieben.";
-?>

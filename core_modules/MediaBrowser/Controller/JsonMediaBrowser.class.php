@@ -83,18 +83,6 @@ class JsonMediaBrowser implements JsonAdapter
         // standard
 
 
-        $return[] = array(
-            'name' => $_ARRAYLANG['TXT_FILEBROWSER_FILES'],
-            'value' => 'files',
-            'path' => array_values(
-                array_filter(
-                    explode(
-                        '/', $mediaBrowser->getMediaTypePathsbyNameAndOffset('files', 1)
-                    )
-                )
-            )
-        );
-
         \Env::get('init')->loadLanguageData('FileBrowser');
         foreach (
             $mediaBrowser->getMediaTypes() as $type =>
@@ -103,12 +91,8 @@ class JsonMediaBrowser implements JsonAdapter
             if (!$this->_checkForModule($type)) {
                 continue;
             }
-            $name = $_ARRAYLANG[$name];
-            if (empty($name)) {
-                $name = $_CORELANG[$name];
-            }
             $return[] = array(
-                'name' => $name,
+                'name' => $name->getHumanName(),
                 'value' => $type,
                 'path' => array_values(
                     array_filter(
