@@ -286,7 +286,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             
             $transactionReference = "|$id|name|$websiteName|";
-            $currency = ComponentController::getUserCurrency($objUser);
+            $currency = ComponentController::getUserCurrency($objUser->getCrmUserId());
             $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($id, $currency, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
