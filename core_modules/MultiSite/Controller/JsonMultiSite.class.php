@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * JSON Adapter for Multisite
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1838,7 +1839,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $licenseState = isset($params['post']['state']) ? $params['post']['state'] : (isset($params['post']['licenseState']) ? $params['post']['licenseState'] : '');
                     $licenseValidTo = isset($params['post']['validTo']) ? $params['post']['validTo'] : (isset($params['post']['licenseValidTo']) ? $params['post']['licenseValidTo'] : '');
                     $licenseUpdateInterval = isset($params['post']['updateInterval']) ? $params['post']['updateInterval'] : (isset($params['post']['licenseUpdateInterval']) ? $params['post']['licenseUpdateInterval'] : '');
-                    $licenseLegalComponents = isset($params['post']['legalComponents']) ? $params['post']['legalComponents'] : (isset($params['post']['availableComponents']) ? array_map('trim', explode(',', $params['post']['availableComponents'])) : '');
+                    $availableComponents = (isset($params['post']['availableComponents']) ? unserialize($params['post']['availableComponents']) : '');
+                    $licenseLegalComponents = isset($params['post']['legalComponents']) ? $params['post']['legalComponents'] : $availableComponents;
+                    
+                    //If available components is set and not in a proper serialized format, throw error.
+                    if (isset($params['post']['availableComponents'])) {
+                        if (empty($availableComponents)) {
+                            return array('status' => 'error');
+                        }
+                    }
+                    
                     if (!empty($licenseState)) {
                         $license->setState($licenseState);
                     }
@@ -3028,6 +3038,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $licenseConfig = array('license', 'release');
                     foreach ($licenseConfig as $value) {
                         foreach (\Cx\Core\Setting\Controller\Setting::getArray('Config', $value) as $key => $value) {
+                            $value['type'] = ($value['type'] == 'text') ? 'textarea' : $value['type'];
                             if (in_array($key, array('licensePartner', 'licenseCustomer'))) {
                                 switch ($key) {
                                     case 'licensePartner':
@@ -3093,7 +3104,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                                     $result[$key]['content'] = implode(', ', $license->getRegisteredDomains());
                                     break;
                                 case 'availableComponents':
-                                    $result[$key]['content'] = implode(', ', $license->getLegalComponentsList());
+                                    $result[$key]['content'] = serialize($license->getComponentsWithAdditionalData());
                                     break;
                                 case 'dashboardMessages':
                                     $result[$key]['content'] = $dashboardMessages;

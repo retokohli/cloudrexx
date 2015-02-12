@@ -634,7 +634,8 @@ class License {
             UPDATE
                 '.DBPREFIX.'modules
             SET
-                `is_licensed` = \'0\'
+                `is_licensed` = \'0\' , 
+                `additional_data` = NULL
             WHERE
                 `distributor` = \'Comvation AG\'
         ';
@@ -667,6 +668,35 @@ class License {
                 $objDb->Execute($query);
             }
         }
+    }
+    
+    /**
+     * Get the components with their additional data's
+     * 
+     * @global type $objDatabase
+     * 
+     * @return array
+     */
+    public function getComponentsWithAdditionalData() {
+        global $objDatabase;
+        
+        $query = '
+            SELECT
+                `name`, `additional_data`
+            FROM
+                '.DBPREFIX.'modules';
+        $objResult = $objDatabase->execute($query);
+        
+        $components = array();
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $components[] = !empty($objResult->fields['additional_data']) 
+                                        ? array($objResult->fields['name'] => json_decode($objResult->fields['additional_data'], true))
+                                        : $objResult->fields['name'];
+                $objResult->MoveNext();
+            }
+        }
+        return $components;
     }
     
     /**
