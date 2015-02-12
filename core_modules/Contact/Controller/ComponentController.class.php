@@ -53,4 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $this->cx->getEvents()->addEventListener('LoadMediaTypes', new \Cx\Core_Modules\Contact\Model\Event\ContactEventListener($this->cx));
+    }
 }

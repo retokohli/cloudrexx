@@ -10,6 +10,9 @@
  */
 
 namespace Cx\Modules\Gallery\Model\Event;
+use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
+use Cx\Core_Modules\MediaBrowser\Model\MediaType;
+use Cx\Core\Core\Controller\Cx;
 
 /**
  * EventListener for Gallery
@@ -20,6 +23,16 @@ namespace Cx\Modules\Gallery\Model\Event;
  * @subpackage  module_gallery
  */
 class GalleryEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+
+    /**
+     * @var Cx
+     */
+    protected $cx;
+
+    function __construct(Cx $cx)
+    {
+        $this->cx = $cx;
+    }
 
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
@@ -54,6 +67,22 @@ class GalleryEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                        AND tblCat.status=1";
         $pictureResult = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($search->getResultArray($pictureQuery, 'Gallery', 'showCat', 'cid=', $search->getTerm()));
         $search->appendResult($pictureResult);
+    }
+
+
+    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    {
+        global $_ARRAYLANG;
+        \Env::get('init')->loadLanguageData('Gallery');
+        $mediaType = new MediaType();
+        $mediaType->setName('gallery');
+        $mediaType->setHumanName($_ARRAYLANG['TXT_THUMBNAIL_GALLERY']);
+        $mediaType->setDirectory(array(
+            $this->cx->getWebsiteImagesGalleryPath(),
+            $this->cx->getWebsiteImagesGalleryWebPath(),
+        ));
+        $mediaType->getAccessIds(array(12,67));
+        $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
 }

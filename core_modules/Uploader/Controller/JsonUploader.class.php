@@ -292,7 +292,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         global $_ARRAYLANG;
 
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $strPath = $params['get']['path'];
+        $strPath = \Cx\Core_Modules\MediaBrowser\Model\FileSystem::getAbsolutePath($params['get']['path']);
 
         if (!empty($params['post']['file']['datainfo']['name'])
             && !empty($strPath)

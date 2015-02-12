@@ -33,7 +33,7 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
     }
     
     function getNavigationPlacholder()
-    {                 
+    {
         $this->strPlaceholder = null;
         
         if($this->arrSettings['settingsShowLevels'] == 1) {
@@ -52,7 +52,7 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
     }
     
     function getLatestPlacholder()
-    {                     
+    {
         $this->strPlaceholder = null;
         
         $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']); 

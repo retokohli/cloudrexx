@@ -1,3 +1,4 @@
+Options +FollowSymlinks
 # <contrexx>
 #  <core_routing>
     RewriteEngine On
@@ -8,12 +9,12 @@
     RewriteBase   /
 
     # Strip virtual language directory for MEDIA RESSOURCES, CONTENT DATA and THEME
-    RewriteCond %{REQUEST_URI} ^/\w+/(core|core_modules|lib|modules|feed|media|images|themes)/
-    RewriteRule ^\w+\/(.*)$ /$1 [L]
+#    RewriteCond %{REQUEST_URI} ^/\w+/(core|core_modules|lib|modules|feed|media|images|themes)/
+#    RewriteRule ^\w+\/(.*)$ /$1 [L]
 
     # Deny direct access to directories containing sensitive data
     RewriteCond %{ENV:REDIRECT_END} !1
-    RewriteCond %{REQUEST_URI} ^/(config|tmp|websites|core\/.*/Data|core_modules\/.*\/Data|modules\/.*\/Data)/
+    RewriteCond %{REQUEST_URI} ^/(config|tmp(?!/public)|websites|core\/.*/Data|core_modules\/.*\/Data|modules\/.*\/Data)/
     RewriteRule . - [F]
 
     # MultiSite: Map requests to MEDIA RESOURCES of the Code Base of a Website

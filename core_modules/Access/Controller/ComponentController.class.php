@@ -9,6 +9,7 @@
  */
 
 namespace Cx\Core_Modules\Access\Controller;
+use Cx\Core_Modules\Access\Model\Event\AccessEventListener;
 
 /**
  * Main controller for Access
@@ -239,6 +240,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
-    
+
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $eventListener = new AccessEventListener($this->cx);
+        $this->cx->getEvents()->addEventListener('LoadMediaTypes', $eventListener);
+    }
     
 }

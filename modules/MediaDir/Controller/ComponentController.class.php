@@ -9,6 +9,7 @@
  */
 
 namespace Cx\Modules\MediaDir\Controller;
+use Cx\Modules\MediaDir\Model\Event\MediaDirEventListener;
 
 /**
  * Main controller for MediaDir
@@ -132,5 +133,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             default:
                 break;
         }
+    }
+
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $eventListener = new MediaDirEventListener($this->cx);
+        $this->cx->getEvents()->addEventListener('LoadMediaTypes', $eventListener);
     }
 }

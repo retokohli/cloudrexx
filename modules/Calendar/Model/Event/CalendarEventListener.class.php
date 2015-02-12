@@ -10,6 +10,9 @@
  */
 
 namespace Cx\Modules\Calendar\Model\Event;
+use Cx\Core\Core\Controller\Cx;
+use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
+use Cx\Core_Modules\MediaBrowser\Model\MediaType;
 
 /**
  * EventListener for Calendar
@@ -20,6 +23,17 @@ namespace Cx\Modules\Calendar\Model\Event;
  * @subpackage  module_calendar
  */
 class CalendarEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+
+    /**
+     * @var Cx
+     */
+    protected $cx;
+
+    function __construct(Cx $cx)
+    {
+        $this->cx = $cx;
+    }
+
 
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
@@ -35,4 +49,17 @@ class CalendarEventListener implements \Cx\Core\Event\Model\Entity\EventListener
         $search->appendResult($result);
     }
 
+    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    {
+        global $_ARRAYLANG;
+        $mediaType = new MediaType();
+        $mediaType->setName('calendar');
+        $mediaType->setHumanName($_ARRAYLANG['TXT_CALENDAR']);
+        $mediaType->setDirectory(array(
+            $this->cx->getWebsiteImagesCalendarPath(),
+            $this->cx->getWebsiteImagesCalendarWebPath(),
+        ));
+        $mediaType->getAccessIds(array(16));
+        $mediaBrowserConfiguration->addMediaType($mediaType);
+    }
 }

@@ -9,6 +9,7 @@
  */
 
 namespace Cx\Modules\Downloads\Controller;
+use Cx\Modules\Downloads\Model\Event\DownloadsEventListener;
 
 /**
  * Main controller for Downloads
@@ -98,4 +99,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         
     }
+
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $eventListener = new DownloadsEventListener($this->cx);
+        $this->cx->getEvents()->addEventListener('LoadMediaTypes', $eventListener);
+    }
+
 }
