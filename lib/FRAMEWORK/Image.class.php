@@ -240,8 +240,8 @@ class ImageManager
     public function resizeImage($width, $height, $quality)
     {
         if (!$this->imageCheck) return false;
-		
-		if ($this->newImage) {
+	
+	if ($this->newImage) {
             $this->orgImage       = $this->newImage;
             $this->orgImageWidth  = $this->newImageWidth;
             $this->orgImageHeight = $this->newImageHeight;
@@ -251,26 +251,35 @@ class ImageManager
         $this->newImageHeight = $height;
         $this->newImageQuality = $quality;
         $this->newImageType = $this->orgImageType;
-		
+        
+        $dstX      = ($this->newImageWidth  > $this->orgImageWidth) ? round(($this->newImageWidth - $this->orgImageWidth) / 2) : 0;
+        $dstY      = ($this->newImageHeight > $this->orgImageHeight) ? round(($this->newImageHeight - $this->orgImageHeight) / 2) : 0;
+        $newWidth  = ($this->newImageWidth  > $this->orgImageWidth) ? $this->orgImageWidth : $this->newImageWidth;
+        $newHeight = ($this->newImageHeight > $this->orgImageHeight) ? $this->orgImageHeight : $this->newImageHeight;
+	
         if (function_exists('imagecreatetruecolor')) {
             $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
             // GD > 2 check
             if ($this->newImage) {
-                $this->setTransparency();
+                if ($this->newImageWidth  > $this->orgImageWidth) {
+                    imagefill($this->newImage, 0, 0, imagecolorallocate($this->newImage, 255, 255, 255));
+                } else {
+                    $this->setTransparency();
+                }
             } else {
                 $this->newImage = imagecreate($this->newImageWidth, $this->newImageHeight);
             }
         } else {
             $this->newImage = imagecreate($this->newImageWidth, $this->newImageHeight);
         }
-		
+        
         if (function_exists('imagecopyresampled')) { //resampled is gd2 only
-            imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
+            imagecopyresampled($this->newImage, $this->orgImage, $dstX, $dstY, 0, 0, $newWidth, $newHeight, $this->orgImageWidth, $this->orgImageHeight);
         } else {
-            imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
+            imagecopyresized($this->newImage, $this->orgImage, $dstX, $dstY, 0, 0, $newWidth, $newHeight, $this->orgImageWidth, $this->orgImageHeight);
         }
-		
-		if ($this->newImage) {
+        
+	if ($this->newImage) {
             return true;
         }
         return false;
