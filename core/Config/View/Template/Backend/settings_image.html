@@ -54,7 +54,7 @@
     }
 
     function regenerateThumbnails() {
-
+      
         var refreshId;
         var key = Math.random().toString(36).substr(2, 5);
         cx.jQuery.get('index.php?cmd=Config&act=generateThumbnail&key=' + key, function (progress) {          
@@ -84,7 +84,7 @@
             title: "Vorschaubilder neu generieren",
             message: '<div class="progress  thumbnails-generator">' +
                      '<div class="progress-bar progress-bar-striped active" style="width: 0%;">' +
-                     '<span class="sr-only">60% Complete</span>' +
+                     '<span class="sr-only">0% Complete</span>' +
                      '</div></div>',
             buttons: {
                 danger: {
@@ -100,7 +100,7 @@
         refreshId = function()
         {                    
           cx.jQuery.ajax({
-              url : cx.variables.get('publicTempPath', 'config/publicTempPath')+'/progress'+key+'.txt',
+              url : cx.variables.get('publicTempPath', 'config/image')+'/progress'+key+'.txt',
               tryCount : 0,
               retryLimit : 10,
               success : function(progress) {

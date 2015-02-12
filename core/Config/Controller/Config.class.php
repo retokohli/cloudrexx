@@ -925,7 +925,7 @@ class Config
         
         \ContrexxJavascript::getInstance()->setVariable(array(
             'publicTempPath'        => Cx::instanciate()->getWebsitePublicTempWebPath(),
-        ), 'config/publicTempPath');
+        ), 'config/image');
 
         // Saves the settings
         if (isset($arrData['submit'])) {
