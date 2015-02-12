@@ -106,11 +106,6 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
             $filterPos++;
         }
         
-        $qb
-           ->groupBy('website.websiteServiceServerId')
-           ->addGroupBy('website.name')
-           ->getDql();
-
         return $qb->getQuery()->getResult();
     }
     
