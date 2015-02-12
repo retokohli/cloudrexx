@@ -1416,10 +1416,12 @@ die("Failed to update the Cart!");
             
             $minimum_order_quantity = $objProduct->minimum_order_quantity();
             //Activate Quantity-Inputfield when minimum_order_quantity exists
-            if(self::$objTemplate->blockExists('orderQuantity') && $minimum_order_quantity > 0){
+            if (self::$objTemplate->blockExists('orderQuantity') && $minimum_order_quantity > 0) {
                 self::$objTemplate->setVariable(
                         'SHOP_PRODUCT_MINIMUM_ORDER_QUANTITY',contrexx_raw2xhtml($objProduct->minimum_order_quantity())
                 );
+            } elseif (self::$objTemplate->blockExists('orderQuantity') && !$minimum_order_quantity){
+                self::$objTemplate->hideBlock('orderQuantity');
             }
             
             
