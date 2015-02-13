@@ -551,7 +551,7 @@ die("Failed to get Customer for ID $customer_id");
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_COULD_NOT_LOAD_CART', $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] ,'shop/cart');
         \ContrexxJavascript::getInstance()->setVariable('TXT_EMPTY_SHOPPING_CART', $_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'] ,'shop/cart');
         \ContrexxJavascript::getInstance()->setVariable("url", (String)\Cx\Core\Routing\URL::fromModuleAndCMd('Shop'.MODULE_INDEX, 'cart', FRONTEND_LANG_ID, array('remoteJs' => 'addProduct')), 'shop/cart');
-        \JS::registerJS(ASCMS_MODULE_WEB_PATH . '/Shop/View/Script/cart.js');
+        \JS::registerJS(substr(ASCMS_MODULE_FOLDER . '/Shop/View/Script/cart.js', 1));
         \JS::registerCode(
             "cartTpl = '".preg_replace(
               array('/\'/', '/[\n\r]/', '/\//'),
@@ -1901,7 +1901,7 @@ die("Failed to update the Cart!");
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_PRODUCT_ADDED_TO_CART', $_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'], 'shop');
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_CONFIRM_DELETE_PRODUCT', $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_PRODUCT'], 'shop');
         \ContrexxJavascript::getInstance()->setVariable('TXT_MAKE_DECISION_FOR_OPTIONS', $_ARRAYLANG['TXT_MAKE_DECISION_FOR_OPTIONS'], 'shop');
-        \JS::registerJS(ASCMS_MODULE_WEB_PATH . '/Shop/View/Script/shop.js');
+        \JS::registerJS(substr(ASCMS_MODULE_FOLDER . '/Shop/View/Script/shop.js', 1));
     }
 
 
