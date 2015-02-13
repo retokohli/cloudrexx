@@ -366,16 +366,18 @@ class File implements FileInterface
      * @return TRUE if file has successfully been removed
      */
     public function delete()
-    {
-        $objFile = null;
-        
+    {        
         // use PHP
         if (   $this->accessMode == self::PHP_ACCESS
             || $this->accessMode == self::UNKNOWN_ACCESS
         ) {
             try {
-                $objFile = new FileSystemFile($this->file);
-                $objFile->delete();
+                $objFilePhp = new FileSystemFile($this->file);
+                $objFilePhp->delete();
+                clearstatcache(); 
+                if (!file_exists($objFilePhp->getAbsoluteFilePath())) {
+                    return true;                
+                }
             } catch (FileSystemFileException $e) {
                 \DBG::msg('FileSystemFile: '.$e->getMessage());
             }
@@ -386,19 +388,17 @@ class File implements FileInterface
             || $this->accessMode == self::UNKNOWN_ACCESS
         ) {
             try {
-                $objFile = new FTPFile($this->file);
-                $objFile->delete();
+                $objFileFtp = new FTPFile($this->file);
+                $objFileFtp->delete();
+                clearstatcache(); 
+                if (!file_exists($objFileFtp->getAbsoluteFilePath())) {
+                    return true;                
+                }
             } catch (FTPFileException $e) {
                 \DBG::msg('FTPFile: '.$e->getMessage());
             }
         }
-
-        clearstatcache();
-        if ($objFile && file_exists($objFile->getAbsoluteFilePath())) {
-            throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
-        }
-
-        return true;
+        throw new FileSystemException('File: Unable to delete file '.$this->file.'!');
     }
 }
 
