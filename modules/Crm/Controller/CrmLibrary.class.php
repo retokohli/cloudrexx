@@ -2804,6 +2804,8 @@ class CrmLibrary
      * @return null
      */
     function initUploader($fieldId, $restrictUpload2SingleFile = true, $callBackFun = 'uploadFinished', $data, $dir) {
+        global $_ARRAYLANG;
+        
         try {
             //init the uploader
             \JS::activate('cx'); //the uploader needs the framework
@@ -2831,10 +2833,13 @@ class CrmLibrary
             $uploadId = $uploader->getUploadId();
             $uploader->setData($data);
 
-
-            //retrieve temporary location for uploaded files
-            $tup = self::getTemporaryUploadPath($uploadId, $fieldId, $dir);
-
+            try {
+                //retrieve temporary location for uploaded files
+                $tup = self::getTemporaryUploadPath($uploadId, $fieldId, $dir);
+            } catch (\Exception $e) {
+                \DBG::log($e->getMessage());
+                \Message::warning(sprintf($_ARRAYLANG['TXT_CRM_TEMP_FOLDER_WRITE_ACCESS_ERROR'], \Env::get('cx')->getWebsiteTempPath()));
+            }
             //create the folder
             if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
                 throw new \Cx\Core_Modules\Contact\Controller\ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");

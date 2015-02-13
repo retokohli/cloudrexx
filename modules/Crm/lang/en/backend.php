@@ -576,3 +576,4 @@ $_ARRAYLANG['TXT_CRM_CONTACT_SALUTATION'] = 'The salutation of selected contact 
 $_ARRAYLANG['TXT_CRM_CONTACT_GENDER'] = 'The gender of contact in CRM';
 $_ARRAYLANG['TXT_CRM_CONTACT_KEY'] = 'Key: ';
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR'] = 'Enter a valid quoted price.';
+$_ARRAYLANG['TXT_CRM_TEMP_FOLDER_WRITE_ACCESS_ERROR'] = 'The folder <strong>%s</strong> is write-protected!<br />The file upload does not work until the write protection on that folder has been removed!';
