@@ -1,0 +1,39 @@
+<div>
+  <form  method="post" action="">
+    <table cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+      <tbody>
+        <!-- BEGIN showCompanySizeOverview -->
+        <tr>
+          <th colspan="5">{TXT_CRM_EDIT_COMPANY_SIZE}</th>
+        </tr>
+        <tr class="row1">
+          <td valign="top" width="13%">
+            {TXT_CRM_COMPANY_SIZE}&nbsp;<font color="red">*</font>
+          </td>
+          <td width="87%">
+            <input type="textbox" name="companySize" value="{CRM_COMPANY_SIZE}"/>
+          </td>
+        </tr>
+        <tr class="row2">
+          <td>
+            {TXT_CRM_SORTING_NUMBER}&nbsp;
+          </td>
+          <td>
+            <input type="text" name="sorting"  id="sortingNumber" value="{CRM_COMPANY_SIZE_SORTING}" >
+          </td>
+        </tr>
+        <tr class="row1">
+          <td>
+            {TXT_CRM_TITLEACTIVE}
+          </td>
+          <td>
+            <input type="checkbox" name="status" value="1" {CRM_COMPANY_SIZE_STATUS_CHECKED}>
+          </td>
+        </tr>
+        <!-- END showCompanySizeOverview -->
+      </tbody>
+    </table>
+    <br>
+    <input type="submit" name="save" value="{TXT_CRM_SAVE}" />
+  </form> 
+</div>

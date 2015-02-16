@@ -332,3 +332,10 @@ progress {
   background: #fff;
 }
 progress::-moz-progress-bar { background: #0063a6; }
+.okBox-new {
+        color: #39950C;
+        background: #DFF0D8;
+        padding: 8px;
+        margin-bottom: 5px;
+        clear: left;
+}

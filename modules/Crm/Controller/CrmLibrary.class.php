@@ -1484,6 +1484,75 @@ class CrmLibrary
     }
 
     /**
+     * Activate / Deactivate company size status
+     * 
+     * @param mixed   $entries  company size id  
+     * @param boolean $deactivate
+     */
+    function activateCompanySize($entries, $deactivate = false) {
+        global $objDatabase, $_ARRAYLANG;
+        
+        if (!empty($entries) && is_array($entries)) {
+            $ids = implode(',', $entries);
+            $setValue = $deactivate ? 0 : 1;
+            $query = "UPDATE `".DBPREFIX."module_".$this->moduleNameLC."_company_size` SET `status` = CASE id ";
+            foreach ($entries as $count => $idValue) {
+                $query .= sprintf("WHEN %d THEN $setValue ", $idValue);
+            }
+            $query .= "END WHERE id IN ($ids)";
+            $objResult = $objDatabase->Execute($query);
+            
+            if ($_GET['ajax']) {
+                exit();
+            } else {
+                $_SESSION['strOkMessage'] = (!$deactivate) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] 
+                                                           : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            }
+            
+        } else {
+            $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleNameLC."_company_size` SET `status` = IF(status = 1, 0, 1) WHERE id = $entries");
+        }
+    }
+    
+    /**
+     * delete company size
+     * 
+     * @param mixed $companySizeId  companySizeId is either integer or array. 
+     */
+    function deleteCompanySize($companySizeId) {
+        global $objDatabase;
+        $ids = (is_array($companySizeId)) ? implode(',', $companySizeId) : $companySizeId;
+        $query = "DELETE FROM `" . DBPREFIX . "module_" . $this->moduleNameLC . "_company_size` WHERE id IN ($ids)";
+        $objResult = $objDatabase->Execute($query);
+    }
+
+    /**
+     * save the sorting 
+     * 
+     * @param array $entriesSorting  save the sorting. 
+     */
+    function saveSortingCompanySize($entriesSorting)
+    {
+        global $objDatabase,$_ARRAYLANG;
+
+        if (!empty($entriesSorting) && is_array($entriesSorting)) {
+
+            $ids = implode(',', array_keys($entriesSorting));
+
+            $query = "UPDATE `".DBPREFIX."module_".$this->moduleNameLC."_company_size` SET `sorting` = CASE id ";
+            foreach ($entriesSorting as $idValue => $value ) {
+                $query .= sprintf("WHEN %d THEN %d ", $idValue, $value);
+            }
+            $query .= "END WHERE id IN ($ids)";
+            $objResult = $objDatabase->Execute($query);
+
+        }
+        if (isset($_POST['save_entries'])) {
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_SORTING_COMPLETE'];
+        }
+    }
+
+    /**
      * Membership Sorting functionality
      *
      * @param Array $entriesSorting entries ids
