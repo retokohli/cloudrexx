@@ -414,6 +414,7 @@ $_ARRAYLANG['TXT_CRM_CATALOGS_UPDATED_SUCCESSFULLY'] = "Dringlichkeit erfolgreic
 $_ARRAYLANG['TXT_CRM_DEACTIVATED'] = "deaktiviert";
 $_ARRAYLANG['TXT_CRM_ACTIVATED']   = "aktiviert";
 $_ARRAYLANG['TXT_CRM_ICON']   = "Symbol";
+$_ARRAYLANG['TXT_CRM_COMPANY_SIZE'] = "Unternehmensgrösse";
 
 /* settings membership */
 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'] = "Kundengruppe";
