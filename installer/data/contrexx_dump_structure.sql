@@ -4404,7 +4404,7 @@ CREATE TABLE `contrexx_session_variable` (
   `value` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `key_index` (`parent_id`,`key`,`sessionid`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -4417,7 +4417,7 @@ CREATE TABLE `contrexx_sessions` (
   `user_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`sessionid`),
   KEY `LastUpdated` (`lastupdated`)
-) ENGINE=MyISAM;
+) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
