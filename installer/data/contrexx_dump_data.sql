@@ -3155,6 +3155,16 @@ INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, 
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (4,'fieldMetaHost','0',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (5,'fieldMetaLang','0',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (6,'fieldMetaIP','0',1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (1,'1',1,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (2,'2 - 9',2,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (3,'10 - 19',3,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (4,'20 - 49',4,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (5,'50 - 99',5,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (6,'100 - 199',6,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (7,'200 - 749',7,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (8,'750 - 999',8,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (9,'1\'000 - 4\'999',9,1);
+INSERT INTO `contrexx_module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (10,'> 5\'000',10,1);
 INSERT INTO `contrexx_module_crm_contacts` (`id`, `customer_id`, `customer_type`, `customer_name`, `customer_website`, `customer_addedby`, `customer_currency`, `contact_familyname`, `contact_role`, `contact_customer`, `contact_language`, `gender`, `notes`, `industry_type`, `contact_type`, `user_account`, `datasource`, `profile_picture`, `status`, `added_date`) VALUES (13775,'',0,'Alexandra',NULL,1,0,'Muster','CEO',13776,1,2,'',0,2,0,1,'',1,'2013-02-15');
 INSERT INTO `contrexx_module_crm_contacts` (`id`, `customer_id`, `customer_type`, `customer_name`, `customer_website`, `customer_addedby`, `customer_currency`, `contact_familyname`, `contact_role`, `contact_customer`, `contact_language`, `gender`, `notes`, `industry_type`, `contact_type`, `user_account`, `datasource`, `profile_picture`, `status`, `added_date`) VALUES (13776,'0001',272,'Comvation AG Switzerland',NULL,1,80,'','',0,1,0,'Die Herstellerin der Website Management Software Contrexx.',126,1,0,1,'',1,'2013-02-15');
 INSERT INTO `contrexx_module_crm_currency` (`id`, `name`, `active`, `pos`, `hourly_rate`, `default_currency`) VALUES (71,'AED-United Arab Emirates Dirham',1,0,'{\"267\":0,\"273\":0,\"272\":0,\"271\":0,\"268\":0,\"266\":0,\"274\":0,\"275\":0,\"270\":0}',0);

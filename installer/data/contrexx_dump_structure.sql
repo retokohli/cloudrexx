@@ -1233,6 +1233,16 @@ CREATE TABLE `contrexx_module_contact_settings` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_company_size` (
+  `id` int(11) NOT NULL auto_increment,
+  `company_size` varchar(100) NOT NULL,
+  `sorting` int(11) NOT NULL,
+  `status` tinyint(4) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_crm_contacts` (
   `id` int(11) NOT NULL auto_increment,
   `customer_id` varchar(256) default NULL,
