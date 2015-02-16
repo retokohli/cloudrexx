@@ -578,3 +578,4 @@ $_ARRAYLANG['TXT_CRM_CONTACT_SALUTATION'] = 'Anrede des im CRM ausgewählten Ges
 $_ARRAYLANG['TXT_CRM_CONTACT_GENDER'] = 'Geschlecht des Kontaktes im CRM';
 $_ARRAYLANG['TXT_CRM_CONTACT_KEY'] = 'Schlüssel: ';
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR'] = 'Enter a valid quoted price.';
+$_ARRAYLANG['TXT_CRM_TEMP_FOLDER_WRITE_ACCESS_ERROR'] = 'Auf das Verzeichnis <strong>%s</strong> besteht kein Schreibzugriff!<br />Ohne Schreibzugriff auf dieses Verzeichnis funktioniert der Datei-Upload nicht!';
