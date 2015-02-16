@@ -423,8 +423,10 @@ class Cart
             // Check minimum order quanity, when set
             // Do not add error message if it's an AJAX request
             if (
-                !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' &&
+                (
+                    empty($_SERVER['HTTP_X_REQUESTED_WITH']) ||
+                    strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest'
+                ) &&
                 $product['quantity'] != 0 &&
                 $product['quantity'] < $objProduct->minimum_order_quantity()
             ) {
