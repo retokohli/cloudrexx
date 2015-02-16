@@ -212,7 +212,7 @@ class cmsSession extends RecursiveArrayAccess {
         // release all locks
         if (!empty($this->locks)) {
             foreach (array_keys($this->locks) as $lockKey) {
-                if ($this->data[$lockKey]) {
+                if (isset($this->data[$lockKey])) {
                     $sessionValue = $this->data[$lockKey];
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
                         self::updateToDb($sessionValue);
@@ -462,6 +462,7 @@ class cmsSession extends RecursiveArrayAccess {
                     INSERT INTO `' . DBPREFIX . 'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `user_id`)
                     VALUES ("' . $aKey . '", ' . ($this->rememberMe ? 1 : 0) . ', "' . time() . '", "' . time() . '", "' . $this->status . '", ' . intval($this->userId) . ')
                 ');
+                
                 return '';
             }
         }
@@ -534,8 +535,8 @@ class cmsSession extends RecursiveArrayAccess {
      * @return boolean
      */
     function cmsSessionGc() {
-        \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`remember_me` = 0) AND (`lastupdated` < ' . (time() - $this->defaultLifetime) . '))');
-        \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`remember_me` = 1) AND (`lastupdated` < ' . (time() - $this->defaultLifetimeRememberMe) . '))');
+        \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`s`.`remember_me` = 0) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetime) . '))');
+        \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`s`.`remember_me` = 1) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetimeRememberMe) . '))');
         return true;
     }
 
@@ -791,7 +792,6 @@ class cmsSession extends RecursiveArrayAccess {
      * @param object $arrObj session object array
      */
     public static function updateToDb($arrObj) {
-        
         if (empty($arrObj->id) && (string) $arrObj->offset != '') {
             $query = 'INSERT INTO 
                             '. DBPREFIX .'session_variable
