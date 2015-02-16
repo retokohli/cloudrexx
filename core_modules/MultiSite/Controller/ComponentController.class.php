@@ -2138,23 +2138,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             
             if (!\FWValidator::isEmpty(\Env::get('db'))) {
-                $settingExternalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
-                $dbExternalPaymentCustomerIdProfileAttributeId      = self::getExternalPaymentCustomerIdProfileAttributeId();
-              
-                if ($settingExternalPaymentCustomerIdProfileAttributeId != $dbExternalPaymentCustomerIdProfileAttributeId) {
-                    \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager','FileSystem');
-                    if ($settingExternalPaymentCustomerIdProfileAttributeId === null) {
-                        if (!\Cx\Core\Setting\Controller\Setting::add('externalPaymentCustomerIdProfileAttributeId', $dbExternalPaymentCustomerIdProfileAttributeId, 5,
-                            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'manager')) {
-                                throw new MultiSiteException("Failed to add Setting entry for External Payment Customer Id Profile Attribute Id");
-                        }
-                    } else {
-                        if (!(\Cx\Core\Setting\Controller\Setting::set('externalPaymentCustomerIdProfileAttributeId', $dbExternalPaymentCustomerIdProfileAttributeId)
-                            && \Cx\Core\Setting\Controller\Setting::update('externalPaymentCustomerIdProfileAttributeId'))) {
-                            throw new MultiSiteException("Failed to update Setting for External Payment Customer Id Profile Attribute Id");
-                        }
-                    }
-                } 
+                self::addOrUpdateConfigurationOptionUserProfileAttributeId('externalPaymentCustomerIdProfileAttributeId', 5);
+                self::addOrUpdateConfigurationOptionUserProfileAttributeId('affiliateIdProfileAttributeId', 6);
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -2163,6 +2148,44 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return false;
     }
 
+    /**
+     * Add or Update the Configuration Option User Profile Attribute id
+     * 
+     * @param string  $configOptionName
+     * @param integer $order
+     * 
+     * @return boolean
+     * @throws MultiSiteException
+     */
+    public static function addOrUpdateConfigurationOptionUserProfileAttributeId($configOptionName, $order) {
+        if (empty($configOptionName)) {
+            return;
+        }
+        $dbProfileAttributeId      = self::getProfileAttributeIdByConfigOptionName($configOptionName);
+        $settingProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName);
+
+        if ($settingProfileAttributeId != $dbProfileAttributeId) {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager', 'FileSystem');
+            if ($settingProfileAttributeId === null) {
+                if (!\Cx\Core\Setting\Controller\Setting::add($configOptionName, $dbProfileAttributeId, $order, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'manager')) {
+                    $errorMsg = ($configOptionName == 'affiliateIdProfileAttributeId')
+                                    ? 'Failed to add Setting entry for Affiliate Id Profile Attribute Id'
+                                    : 'Failed to add Setting entry for External Payment Customer Id Profile Attribute Id';
+                    throw new MultiSiteException($errorMsg);
+                }
+            } else {
+                if (   !(\Cx\Core\Setting\Controller\Setting::set($configOptionName, $dbProfileAttributeId) 
+                    && \Cx\Core\Setting\Controller\Setting::update($configOptionName))
+                ) {
+                    $errorMsg = ($configOptionName == 'affiliateIdProfileAttributeId')
+                                    ? 'Failed to update Setting for Affiliate Id Profile Attribute Id'
+                                    : 'Failed to update Setting for External Payment Customer Id Profile Attribute Id';
+                    throw new MultiSiteException($errorMsg);
+                }
+            }
+        }
+    }
+    
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         // Event Listener must be registered before preContentLoad event
         $this->registerEventListener();
@@ -2699,10 +2722,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return integer attribute id
      * @throws MultiSiteException
      */
-    public static function getExternalPaymentCustomerIdProfileAttributeId() {
+    public static function getProfileAttributeIdByConfigOptionName($configOptionName) {
         $objUser = \FWUser::getFWUserObject()->objUser;
         
-        $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
+        $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName);
 
         if ($externalPaymentCustomerIdProfileAttributeId) {
             $objProfileAttribute = $objUser->objAttribute->getById($externalPaymentCustomerIdProfileAttributeId);
@@ -2711,7 +2734,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
         if (!$externalPaymentCustomerIdProfileAttributeId) {
-            $attributeName = 'MultiSite External Payment Customer ID';
+            $attributeName = ($configOptionName == 'affiliateIdProfileAttributeId') 
+                                ? 'Affiliate ID user profile attribute ID' 
+                                : 'MultiSite External Payment Customer ID';
             $externalIdInDatabase = $objUser->objAttribute->getAttributeIdByName($attributeName);
             if($externalIdInDatabase){
                 return $externalIdInDatabase;
@@ -2724,8 +2749,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objProfileAttribute->setType('text');
             $objProfileAttribute->setParent(0);
             if (!$objProfileAttribute->store()) {
-                throw new MultiSiteException(
-                'Failed to create MultiSite External Payment Customer Id Profile Attribute Id');
+                $errorMsg  = ($configOptionName == 'affiliateIdProfileAttributeId') 
+                                ? 'Failed to create MultiSite External Payment Customer Id Profile Attribute Id' 
+                                : 'Failed to create Affiliate ID user profile attribute ID';
+                throw new MultiSiteException($errorMsg);
             }
             
         }
