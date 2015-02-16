@@ -420,11 +420,15 @@ class Cart
                 unset($products[$cart_id]);
                 continue;
             }
-            // Check minimum order quanity, when setted
-            if($product['quantity'] != 0){
-                if ($product['quantity'] < $objProduct->minimum_order_quantity()){
-                    \Message::error($objProduct->name().': '.$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY_ERROR']);
-                }
+            // Check minimum order quanity, when set
+            // Do not add error message if it's an AJAX request
+            if (
+                !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' &&
+                $product['quantity'] != 0 &&
+                $product['quantity'] < $objProduct->minimum_order_quantity()
+            ) {
+                \Message::error($objProduct->name().': '.$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY_ERROR']);
             }
             // Limit Products in the cart to the stock available if the
             // stock_visibility is enabled.
