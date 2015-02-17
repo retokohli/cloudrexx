@@ -1392,7 +1392,7 @@ class CrmSettings extends CrmLibrary
                 \Cx\Core\Csrf\Controller\Csrf::header("location:./index.php?cmd=" . $this->moduleName . "&act=settings&tpl=companySize");
                 exit();
             }else{
-                $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATE_ERROR'];
+                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATE_ERROR'];
             }
         }
         
