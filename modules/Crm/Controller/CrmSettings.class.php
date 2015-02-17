@@ -1279,4 +1279,191 @@ class CrmSettings extends CrmLibrary
 
         return $objTemplate->get();
     }
+    
+    /**
+    * show all company size
+    * 
+    * @global array  $_ARRAYLANG
+    * @global object $objDatabase
+    * 
+    * @return null
+    */
+    function showCompanySize() {
+        global $_ARRAYLANG, $objDatabase;
+
+        \JS::activate("jquery");
+
+        $subTpl = isset($_GET['subTpl']) ? $_GET['subTpl'] : '';
+        
+        $this->settingsController = new CrmSettings($this->_objTpl, $this->moduleName);
+        
+        $fields = array(
+            'company_size' => isset($_POST['companySize']) ? contrexx_input2raw($_POST['companySize']) : '',
+            'sorting'      => isset($_POST['sorting']) ? contrexx_input2raw($_POST['sorting']) : '',
+            'status'       => isset($_POST['status']) ? 1 : (empty($_POST) ? 1 : 0)
+        );
+        
+        if (!empty($subTpl)) {
+            switch ($subTpl) {
+                case 'modifyCompanySize':
+                    $this->modifyCompanySize($fields);
+                    break;
+            }
+            return;
+        }
+
+        //get the post values
+        $action  = (isset($_REQUEST['actionType'])) ? $_REQUEST['actionType'] : '';
+        $entries = (isset($_REQUEST['companySizeEntry'])) ? array_map('intval', $_REQUEST['companySizeEntry']) : 0;
+        $sorting = (isset($_REQUEST['sorting'])) ? array_map('intval', $_REQUEST['sorting']) : 0;
+
+        $id = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : 0;
+
+        switch ($action) {
+            case 'changestatus':
+                $this->activateCompanySize($id);
+            case 'activate':
+                $this->activateCompanySize($entries);
+                break;
+            case 'deactivate':
+                $this->activateCompanySize($entries, true);
+                break;
+            case 'delete':
+                $companySizeIds = (isset($_GET['ajax'])) ? $id : $entries;
+                $this->deleteCompanySize($companySizeIds);
+                break;
+            default:
+                break;
+        }
+        if (isset($_GET['ajax']))
+            exit();
+
+        if (!empty($action) || isset($_POST['save_entries'])) {
+            $this->saveSortingCompanySize($sorting);
+        }
+
+        $objTpl = $this->_objTpl;
+        $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_crm_settings_company_size.html');
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
+
+        if ($_POST['save']) {
+            //insert
+            $query = \SQL::insert('module_' . $this->moduleNameLC . '_company_size', $fields, array('escape' => true));
+            $db = $objDatabase->Execute($query);
+            if ($db) {
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
+            } else {
+                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_ERROR'];
+            }
+        }
+
+        $this->getCompanySize();
+        $this->parseCompanySizePlaceholders();
+    }
+
+    /**
+     * update the company size
+     * 
+     * @global object $objDatabase
+     * @global array  $_ARRAYLANG
+     * @param  array  $fields  post values
+     * 
+     * @return null
+     */
+    function modifyCompanySize($fields) {
+        global $objDatabase, $_ARRAYLANG;
+        $objTpl = $this->_objTpl;
+        $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleNameLC.'_settings_modify_company_size.html');
+        
+        $id = isset($_GET['id']) ? $_GET['id'] : 0;
+        
+        //Get the company size
+        $this->getCompanySize($id);
+        //parse the placeholders
+        $this->parseCompanySizePlaceholders();
+        if($_POST['save']) {
+            if(!empty($id)){
+                //update 
+                $query  = \SQL::update('module_'.$this->moduleNameLC.'_company_size', $fields, array('escape' => true)).' WHERE `id` = '.$id;
+            }
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) {
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
+                \Cx\Core\Csrf\Controller\Csrf::header("location:./index.php?cmd=" . $this->moduleName . "&act=settings&tpl=companySize");
+                exit();
+            }else{
+                $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATE_ERROR'];
+            }
+        }
+        
+    }
+    
+    /**
+     * Get the all company sizes / get specific company size by id
+     * 
+     * @global object  $objDatabase
+     * @param  integer $id company size id
+     * 
+     * @return null
+     */
+    function getCompanySize($id = 0) {
+        global $objDatabase;
+
+        $id = isset($_GET['id']) ? $_GET['id'] : 0;
+        $where = (!empty($id)) ? 'WHERE id=' . $id : '';
+
+        $objResult = $objDatabase->Execute('SELECT * FROM `' . DBPREFIX .
+                'module_' . $this->moduleNameLC . '_company_size` '
+                . $where . ' ORDER BY sorting ASC');
+
+        $row = "row2";
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->_objTpl->setVariable(array(
+                    'CRM_COMPANY_SIZE_ID'       => contrexx_raw2xhtml($objResult->fields['id']),
+                    'CRM_COMPANY_SIZE'          => contrexx_raw2xhtml($objResult->fields['company_size']),
+                    'CRM_COMPANY_SIZE_SORTING'  => contrexx_raw2xhtml($objResult->fields['sorting']),
+                    'CRM_COMPANY_SIZE_STATUS'   => contrexx_raw2xhtml($objResult->fields['status']) ? '../core/Core/View/Media/icons/led_green.gif' : '../core/Core/View/Media/icons/led_red.gif',
+                    'CRM_ROW_CLASS'             => $row = ($row == "row2" ? "row1" : "row2"),
+                    'CRM_COMPANY_SIZE_STATUS_CHECKED' => $objResult->fields['status'] == 1 ? 'checked' : '',
+                ));
+                (empty($id)) ? $this->_objTpl->parse("showCompanySizeOverview") : '';
+                $objResult->MoveNext();
+            }
+        }
+    }
+
+    /**
+     * parse the company size place holders
+     * 
+     * @global array $_ARRAYLANG
+     */
+    function parseCompanySizePlaceholders() {
+        global $_ARRAYLANG;
+        $this->_objTpl->setVariable(array(
+            'TXT_CRM_COMPANY_SIZE'                       => $_ARRAYLANG['TXT_CRM_COMPANY_SIZE'],
+            'TXT_CRM_ADD_COMPANY_SIZE'                   => $_ARRAYLANG['TXT_CRM_ADD_COMPANY_SIZE'],
+            'TXT_CRM_EDIT_COMPANY_SIZE'                  => $_ARRAYLANG['TXT_CRM_EDIT_COMPANY_SIZE'],
+            'TXT_CRM_SORTING_NUMBER'                     => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+            'TXT_CRM_TITLEACTIVE'                        => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+            'TXT_CRM_SAVE'                               => $_ARRAYLANG['TXT_CRM_SAVE'],
+            'TXT_CRM_FUNCTIONS'                          => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+            'TXT_CRM_SORTING'                            => $_ARRAYLANG['TXT_CRM_SORTING'],
+            'TXT_STATUS'                                 => $_ARRAYLANG['TXT_STATUS'],
+            'TXT_CRM_CHANGE_STATUS'                      => $_ARRAYLANG['TXT_CRM_CHANGE_STATUS'],
+            'TXT_CRM_SELECT_ALL'                         => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
+            'TXT_CRM_REMOVE_SELECTION'                   => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
+            'TXT_CRM_SELECT_ACTION'                      => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+            'TXT_CRM_ACTIVATESELECTED'                   => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
+            'TXT_CRM_DEACTIVATESELECTED'                 => $_ARRAYLANG['TXT_CRM_DEACTIVATESELECTED'],
+            'TXT_CRM_DELETE_SELECTED'                    => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+            'TXT_CRM_ENTRY_DELETED_SUCCESS'              => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'],   
+            'TXT_CRM_NOTHING_SELECTED'                   => $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'],
+            'TXT_CRM_ACTIVATED_SUCCESSFULLY'             => $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'],
+            'TXT_CRM_DEACTIVATED_SUCCESSFULLY'           => $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'],
+            'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'        => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
+            'TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'  => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES']
+        ));
+    }
+    
 }
