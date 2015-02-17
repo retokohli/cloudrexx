@@ -54,7 +54,7 @@ class CrmContact
             $query = "SELECT c.id, c.customer_id, c.customer_type,
                              c.customer_name, c.customer_addedby,
                              c.customer_currency, c.contact_familyname,
-                             c.contact_role, c.contact_customer, c.contact_language,
+                             c.contact_role, c.contact_customer, c.contact_language,c.company_size,
                              c.notes, c.contact_type,c.user_account,c.added_date,c.industry_type,                             
                              e.email,p.phone, c.datasource,
                              c.gender,c.profile_picture
@@ -73,6 +73,7 @@ class CrmContact
                 $this->family_name      = $objResult->fields['contact_familyname'];
                 $this->contact_role     = $objResult->fields['contact_role'];
                 $this->contact_language = $objResult->fields['contact_language'];
+                $this->companySize      = $objResult->fields['company_size'];
                 $this->contact_customer = $objResult->fields['contact_customer'];
                 $this->addedUser        = $objResult->fields['customer_addedby'];
                 $this->currency         = $objResult->fields['customer_currency'];                
@@ -114,6 +115,7 @@ class CrmContact
                            c.notes,
                            c.customer_addedby,
                            c.industry_type,
+                           cs.company_size As companySize,
                            idn.value AS industry_name,
                            c.user_account,
                            c.datasource,
@@ -130,6 +132,8 @@ class CrmContact
                          ON c.customer_type = t.id
                        LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_industry_types AS i
                          ON c.industry_type = i.id
+                       LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_company_size AS cs
+                         ON c.company_size = cs.id
                        LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_industry_type_local AS idn
                          ON idn.entry_id = i.id AND lang_id = {$_LANGID}
                        LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_currency AS curr
@@ -164,6 +168,7 @@ class CrmContact
             'customer_type'     => isset ($this->customerType) ? (int) $this->customerType : 0,
             'customer_name'     => isset ($this->customerName) ? $this->customerName : '',
             'customer_addedby'  => isset ($this->addedUser) ? (int) $this->addedUser : 1,
+            'company_size'      => isset ($this->companySize) ? $this->companySize : 0,
             'customer_currency' => isset ($this->currency) ? (int) $this->currency : 0,
             'contact_familyname'=> isset ($this->family_name) ? $this->family_name : '',
             'contact_role'      => isset ($this->contact_role) ? $this->contact_role : '',

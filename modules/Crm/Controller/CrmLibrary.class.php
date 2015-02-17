@@ -688,6 +688,39 @@ class CrmLibrary
     }
 
     /**
+     * Get Company Size Dropdown From DB
+     *
+     * @param Template Object $objTpl
+     * @param Integer         $selectedId
+     * @param String          $block
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function getCompanySizeDropDown($objTpl, $selectedId = 0, $block = 'companySize')
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute('SELECT   id,company_size,sorting,status
+                                                FROM     '.DBPREFIX.'module_'.$this->moduleNameLC.'_company_size
+                                                WHERE    status = "1"
+                                                ORDER BY sorting');
+        
+        while (!$objResult->EOF) {
+            $selected = ($selectedId == $objResult->fields['id']) ? 'selected' : '';
+
+            $objTpl->setVariable(array(
+                    'CRM_COMPANY_SIZE'           => contrexx_raw2xhtml($objResult->fields['company_size']),
+                    'CRM_COMPANY_SIZE_ID'        => contrexx_raw2xhtml($objResult->fields['id']),
+                    'CRM_COMPANY_SIZE_SELECTED'  => $selected,
+            ));
+            $objTpl->parse($block);
+            $objResult->MoveNext();
+        }
+    }
+    
+    /**
      * Get Industry Type Dropdown From DB
      *
      * @param Object  $objTpl
@@ -1488,6 +1521,11 @@ class CrmLibrary
      * 
      * @param mixed   $entries  company size id  
      * @param boolean $deactivate
+     * 
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     * 
+     * @return null
      */
     function activateCompanySize($entries, $deactivate = false) {
         global $objDatabase, $_ARRAYLANG;
@@ -1500,36 +1538,39 @@ class CrmLibrary
                 $query .= sprintf("WHEN %d THEN $setValue ", $idValue);
             }
             $query .= "END WHERE id IN ($ids)";
-            $objResult = $objDatabase->Execute($query);
-            
-            if ($_GET['ajax']) {
-                exit();
-            } else {
-                $_SESSION['strOkMessage'] = (!$deactivate) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] 
-                                                           : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
-            }
-            
+            $objDatabase->Execute($query);
+            $_SESSION['strOkMessage'] = (!$deactivate) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] 
+                                                       : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
         } else {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleNameLC."_company_size` SET `status` = IF(status = 1, 0, 1) WHERE id = $entries");
         }
     }
     
     /**
-     * delete company size
+     * Delete company size
      * 
      * @param mixed $companySizeId  companySizeId is either integer or array. 
+     * 
+     * @global ADO Connection $objDatabase
+     * 
+     * @return null
      */
     function deleteCompanySize($companySizeId) {
         global $objDatabase;
         $ids = (is_array($companySizeId)) ? implode(',', $companySizeId) : $companySizeId;
         $query = "DELETE FROM `" . DBPREFIX . "module_" . $this->moduleNameLC . "_company_size` WHERE id IN ($ids)";
-        $objResult = $objDatabase->Execute($query);
+        $objDatabase->Execute($query);
     }
 
     /**
-     * save the sorting 
+     * Save the sorting 
      * 
-     * @param array $entriesSorting  save the sorting. 
+     * @param array $entriesSorting  sorting values. 
+     * 
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     * 
+     * @return null
      */
     function saveSortingCompanySize($entriesSorting)
     {
@@ -1544,7 +1585,7 @@ class CrmLibrary
                 $query .= sprintf("WHEN %d THEN %d ", $idValue, $value);
             }
             $query .= "END WHERE id IN ($ids)";
-            $objResult = $objDatabase->Execute($query);
+            $objDatabase->Execute($query);
 
         }
         if (isset($_POST['save_entries'])) {
