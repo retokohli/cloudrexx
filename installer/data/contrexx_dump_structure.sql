@@ -1250,6 +1250,7 @@ CREATE TABLE `contrexx_module_crm_contacts` (
   `customer_name` varchar(256) default NULL,
   `customer_website` varchar(256) default NULL,
   `customer_addedby` int(11) default NULL,
+  `company_size` int(11) default NULL,
   `customer_currency` int(11) default NULL,
   `contact_familyname` varchar(256) default NULL,
   `contact_role` varchar(256) default NULL,
