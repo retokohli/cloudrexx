@@ -5,7 +5,7 @@
             var $elm = $J(this);
             url = $elm.attr("href");
             $J.get(url, function(data) {
-                image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
+                image = $elm.find('img').attr('src').split('/').pop() == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
                 $elm.find('img').attr('src', '../core/Core/View/Media/icons/'+image);
                 fadeOkbox('{TXT_CRM_STATUS_SUCCESSFULLY_CHANGED}');
             });

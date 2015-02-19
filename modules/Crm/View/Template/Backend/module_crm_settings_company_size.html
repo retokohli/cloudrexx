@@ -10,7 +10,7 @@
       });
       e.preventDefault();
     });
-
+    
     $J("#multiAction").change(function () {
       if ($J(".entrySelection:checked").length <= 0 && $J(this).val() != 0) {
         alert('{TXT_CRM_NOTHING_SELECTED}');
@@ -43,19 +43,26 @@
       }
     });
 
-    function fadeOkbox(msg) {
-      console.log(msg);
-      
-          $J('.okBox-new').html(msg);
-          $J('.okBox-new').fadeIn('slow');
-          setTimeout(function () {
-            $J('.okBox-new').fadeOut('slow');
-          }, 6000);
-        }
+$J("#company_size").submit(function() {
+      $J("#companySize").css("border", "1px solid #0A50A1");
+      if ($J.trim($J("#companySize").val()) == "") {
+        $J("#companySize").css('border', '1px solid red');
+        $J('#alertbox').html('{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}');
+        $J('#alertbox').css('display', 'block');
+        return false;
+      } else {
+        return true;
+      }
+    });
+});
 
-  });
-
-
+function fadeOkbox(msg) {
+      $J('.okBox-new').html(msg);
+      $J('.okBox-new').fadeIn('slow');
+      setTimeout(function () {
+        $J('.okBox-new').fadeOut('slow');
+      }, 6000);
+    }
 </script>
 
 <div class="okBox-new" style="display:none;"></div>
@@ -141,7 +148,7 @@
 
         <tr class="row1">
           <td valign="top" width="13%">{TXT_CRM_COMPANY_SIZE}&nbsp;<font color="red">*</font></td>
-          <td width="87%"><input type="textbox" name="companySize" value="{CRM_SETTINGS_COMPANY_SIZE}"/></td>
+          <td width="87%"><input type="textbox" id="companySize" name="companySize"  value="{CRM_SETTINGS_COMPANY_SIZE}"/></td>
         </tr>
 
         <tr class="row2">
