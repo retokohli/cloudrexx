@@ -1,5 +1,21 @@
+<script type="text/javascript">
+  $J(function () {
+    $J("#company_size").submit(function () {
+      $J("#companySize").css("border", "1px solid #0A50A1");
+      if ($J.trim($J("#companySize").val()) == "") {
+        $J("#companySize").css('border', '1px solid red');
+        $J('#alertbox').html('{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}');
+        $J('#alertbox').css('display', 'block');
+        return false;
+      } else {
+        return true;
+      }
+    });
+  });
+</script>
+<div id="alertbox" style="display:none;"></div>
 <div>
-  <form  method="post" action="">
+  <form id="company_size" method="post" action="">
     <table cellspacing="0" cellpadding="3" width="100%" class="adminlist">
       <tbody>
         <!-- BEGIN showCompanySizeOverview -->
@@ -11,7 +27,7 @@
             {TXT_CRM_COMPANY_SIZE}&nbsp;<font color="red">*</font>
           </td>
           <td width="87%">
-            <input type="textbox" name="companySize" value="{CRM_COMPANY_SIZE}"/>
+            <input type="textbox" name="companySize" id="companySize" value="{CRM_COMPANY_SIZE}">
           </td>
         </tr>
         <tr class="row2">

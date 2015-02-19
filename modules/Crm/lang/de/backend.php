@@ -402,6 +402,8 @@ $_ARRAYLANG['TXT_CRM_MINIMIZE']          = "Minimieren";
 $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS']   = "Eintrag erfolgreich hinzugefügt";
 $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'] = "Eintrag erfolgreich bearbeitet";
 $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'] = "Eintrag erfolgreich gelöscht";
+$_ARRAYLANG['TXT_CRM_ENTRY_ADDED_ERROR']   = "Der Eintrag konnte nicht hinzugefügt werden";
+$_ARRAYLANG['TXT_CRM_ENTRY_UPDATE_ERROR']   = "Der Eintrag konnte nicht aktualisiert werden";
 $_ARRAYLANG['TXT_CRM_BACKEND']           = "Backend";
 $_ARRAYLANG['TXT_CRM_FRONTEND']          = "Frontend";
 $_ARRAYLANG['TXT_CRM_STANDARD']          = "Standard";
@@ -581,4 +583,7 @@ $_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR'] = 'Enter a valid quoted pri
 $_ARRAYLANG['TXT_CRM_TEMP_FOLDER_WRITE_ACCESS_ERROR'] = 'Auf das Verzeichnis <strong>%s</strong> besteht kein Schreibzugriff!<br />Ohne Schreibzugriff auf dieses Verzeichnis funktioniert der Datei-Upload nicht!';
 
 /* settings company size */
-$_ARRAYLANG['TXT_CRM_COMPANY_SIZE'] = "Unternehmensgrösse";
+$_ARRAYLANG['TXT_CRM_COMPANY_SIZE']         = "Unternehmensgrösse";
+$_ARRAYLANG['TXT_CRM_ADD_COMPANY_SIZE']     = 'Hinzufügen einer Unternehmensgrösse';
+$_ARRAYLANG['TXT_CRM_EDIT_COMPANY_SIZE']    = 'Bearbeite einer Unternehmensgrösse';
+$_ARRAYLANG['TXT_CRM_NUMBER_OF_COMPANIES']  = 'Anzahl der Unternehmen';
