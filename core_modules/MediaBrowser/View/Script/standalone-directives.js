@@ -234,4 +234,4 @@
     ;
 
 
-}(window.MediaBrowserjQuery);
+}(cx.variables.get('jquery','mediabrowser'));

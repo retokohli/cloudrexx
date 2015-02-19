@@ -15,7 +15,6 @@ namespace Cx\Core_Modules\Uploader\Controller;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
-use Cx\Core_Modules\MediaBrowser\Model\ResourceRegister;
 use Cx\Core_Modules\Uploader\Model\Uploader;
 
 class ComponentController extends SystemComponentController
@@ -52,22 +51,7 @@ class ComponentController extends SystemComponentController
                 }
             }
 
-            try {
-                // add ng-app="contrexxApp" as Attribute to <html>
-                $template->_blocks['__global__'] = str_replace(
-                    '<html', '<html data-ng-app="contrexxApp"', $template->_blocks['__global__']
-                );
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                echo($e->getMessage());
-            }
-
-            ResourceRegister::registerMediaBrowserRessource();
-
-            $template->_blocks['__global__'] = str_replace(
-                '</head>', ResourceRegister::getCode() . '</head>',
-                $template->_blocks['__global__']
-            );
-
+            \JS::activate('mediabrowser');
             \JS::registerCSS(
                 substr(
                     $this->cx->getCoreModuleFolderName()

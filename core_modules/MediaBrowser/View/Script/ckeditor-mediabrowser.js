@@ -21,7 +21,7 @@ CKEDITOR.on('dialogDefinition', function (event) {
                         type: "GET",
                         url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + callback.data[0].datainfo.filepath
                     });
-                    var dialog = window.MediaBrowserjQuery(cx.variables.get('thumbnails_template', 'mediabrowser'));
+                    var dialog = cx.variables.get('jquery','mediabrowser')(cx.variables.get('thumbnails_template', 'mediabrowser'));
                     var image = dialog.find('.image');
                     image.attr('src', callback.data[0].datainfo.filepath);
                     bootbox.dialog({
@@ -49,7 +49,7 @@ CKEDITOR.on('dialogDefinition', function (event) {
                 browseButton.onClick = function (dialog, i) {
                     editor._.filebrowserSe = this;
                     //editor.execCommand ('image');
-                    jQuery('#ckeditor_image_button').trigger("click", {
+                    cx.variables.get('jquery','mediabrowser')('#ckeditor_image_button').trigger("click", {
                         callback: filelistCallback,
                         cxMbViews: 'filebrowser,uploader',
                         cxMbStartview: 'MediaBrowserList'
@@ -61,7 +61,7 @@ CKEDITOR.on('dialogDefinition', function (event) {
                     setTimeout(function () {
                         var inputfield = that.getValueOf('info', 'txtUrl');
                         if (inputfield == '') {
-                            jQuery('#ckeditor_image_button').trigger("click", {
+                            cx.variables.get('jquery','mediabrowser')('#ckeditor_image_button').trigger("click", {
                                 callback: filelistCallback,
                                 cxMbViews: 'filebrowser,uploader',
                                 cxMbStartview: 'MediaBrowserList'
@@ -93,7 +93,7 @@ CKEDITOR.on('dialogDefinition', function (event) {
                 browseButton.hidden = false;
                 browseButton.onClick = function (dialog, i) {
                     //editor.execCommand ('image');
-                    jQuery('#ckeditor_image_button').trigger("click", {
+                    cx.variables.get('jquery','mediabrowser')('#ckeditor_image_button').trigger("click", {
                         callback: sitestructureCallback,
                         cxMbViews: 'sitestructure',
                         cxMbStartview: 'MediaBrowserList'

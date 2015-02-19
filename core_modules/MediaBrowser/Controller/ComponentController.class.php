@@ -20,7 +20,6 @@ use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Html\Sigma;
 use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
 use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
-use Cx\Core_Modules\MediaBrowser\Model\ResourceRegister;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Lib\FileSystem\FileSystemException;
 
@@ -86,7 +85,7 @@ class ComponentController extends
 
             $thumbnailsTemplate = new Sigma();
             $thumbnailsTemplate->loadTemplateFile(
-                'core_modules/MediaBrowser/View/Template/Thumbnails.html'
+                $this->cx->getCoreModuleFolderName().'/MediaBrowser/View/Template/Thumbnails.html'
             );
             $thumbnailsTemplate->setVariable(
                 'TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE', sprintf(
@@ -117,23 +116,8 @@ class ComponentController extends
                 'mediabrowser'
             );
 
-            try {
-                // add ng-app="contrexxApp" as Attribute to <html>
-                $template->_blocks['__global__'] = str_replace(
-                    '<html', '<html ng-app="contrexxApp"',
-                    $template->_blocks['__global__']
-                );
-
-                ResourceRegister::registerMediaBrowserRessource();
-
-                $template->_blocks['__global__'] = str_replace(
-                    '</head>', ResourceRegister::getCode() . '</head>',
-                    $template->_blocks['__global__']
-                );
-
-            } catch (FileSystemException $e) {
-                echo($e->getMessage());
-            }
+            $template->setGlobalVariable('MEDIABROWSER_ANGULAR_APP','ng-app="contrexxApp"');
+            \JS::activate('mediabrowser');
             \JS::registerCSS(
                 substr(
                     $this->cx->getCoreModuleFolderName()
