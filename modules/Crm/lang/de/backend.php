@@ -414,7 +414,6 @@ $_ARRAYLANG['TXT_CRM_CATALOGS_UPDATED_SUCCESSFULLY'] = "Dringlichkeit erfolgreic
 $_ARRAYLANG['TXT_CRM_DEACTIVATED'] = "deaktiviert";
 $_ARRAYLANG['TXT_CRM_ACTIVATED']   = "aktiviert";
 $_ARRAYLANG['TXT_CRM_ICON']   = "Symbol";
-$_ARRAYLANG['TXT_CRM_COMPANY_SIZE'] = "Unternehmensgrösse";
 
 /* settings membership */
 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'] = "Kundengruppe";
@@ -580,3 +579,6 @@ $_ARRAYLANG['TXT_CRM_CONTACT_GENDER'] = 'Geschlecht des Kontaktes im CRM';
 $_ARRAYLANG['TXT_CRM_CONTACT_KEY'] = 'Schlüssel: ';
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR'] = 'Enter a valid quoted price.';
 $_ARRAYLANG['TXT_CRM_TEMP_FOLDER_WRITE_ACCESS_ERROR'] = 'Auf das Verzeichnis <strong>%s</strong> besteht kein Schreibzugriff!<br />Ohne Schreibzugriff auf dieses Verzeichnis funktioniert der Datei-Upload nicht!';
+
+/* settings company size */
+$_ARRAYLANG['TXT_CRM_COMPANY_SIZE'] = "Unternehmensgrösse";

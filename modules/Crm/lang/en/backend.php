@@ -417,9 +417,6 @@ $_ARRAYLANG['TXT_CRM_CATALOGS_UPDATED_SUCCESSFULLY'] = "Opportunity stages %s su
 $_ARRAYLANG['TXT_CRM_DEACTIVATED'] = "deactivated";
 $_ARRAYLANG['TXT_CRM_ACTIVATED']   = "activated";
 $_ARRAYLANG['TXT_CRM_ICON']   = "Icon";
-$_ARRAYLANG['TXT_CRM_COMPANY_SIZE'] = "Company Size";
-$_ARRAYLANG['TXT_CRM_ADD_COMPANY_SIZE'] = 'Add Company Size';
-$_ARRAYLANG['TXT_CRM_EDIT_COMPANY_SIZE'] = 'Edit Company Size';
 
 /* settings membership */
 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'] = "Customer Groups";
@@ -582,3 +579,9 @@ $_ARRAYLANG['TXT_CRM_CONTACT_GENDER'] = 'The gender of contact in CRM';
 $_ARRAYLANG['TXT_CRM_CONTACT_KEY'] = 'Key: ';
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR'] = 'Enter a valid quoted price.';
 $_ARRAYLANG['TXT_CRM_TEMP_FOLDER_WRITE_ACCESS_ERROR'] = 'The folder <strong>%s</strong> is write-protected!<br />The file upload does not work until the write protection on that folder has been removed!';
+
+/* settings company size */
+$_ARRAYLANG['TXT_CRM_COMPANY_SIZE']         = "Company Size";
+$_ARRAYLANG['TXT_CRM_ADD_COMPANY_SIZE']     = 'Add Company Size';
+$_ARRAYLANG['TXT_CRM_EDIT_COMPANY_SIZE']    = 'Edit Company Size';
+$_ARRAYLANG['TXT_CRM_NUMBER_OF_COMPANIES']  = 'Number of Companies';

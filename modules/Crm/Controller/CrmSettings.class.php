@@ -1419,11 +1419,13 @@ class CrmSettings extends CrmLibrary
         $row = "row2";
         if ($objResult) {
             while (!$objResult->EOF) {
+                $numberOfCompanies = $objDatabase->getOne("SELECT COUNT(id) FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` WHERE company_size =". contrexx_raw2db($objResult->fields['id'] ));
                 $this->_objTpl->setVariable(array(
                     'CRM_COMPANY_SIZE_ID'       => contrexx_raw2xhtml($objResult->fields['id']),
                     'CRM_COMPANY_SIZE'          => contrexx_raw2xhtml($objResult->fields['company_size']),
                     'CRM_COMPANY_SIZE_SORTING'  => contrexx_raw2xhtml($objResult->fields['sorting']),
                     'CRM_COMPANY_SIZE_STATUS'   => contrexx_raw2xhtml($objResult->fields['status']) ? '../core/Core/View/Media/icons/led_green.gif' : '../core/Core/View/Media/icons/led_red.gif',
+                    'CRM_NUMBER_OF_COMPANIES'   => contrexx_raw2xhtml($numberOfCompanies),
                     'CRM_ROW_CLASS'             => $row = ($row == "row2" ? "row1" : "row2"),
                     'CRM_COMPANY_SIZE_STATUS_CHECKED' => $objResult->fields['status'] == 1 ? 'checked' : '',
                 ));
@@ -1444,6 +1446,7 @@ class CrmSettings extends CrmLibrary
             'TXT_CRM_COMPANY_SIZE'                       => $_ARRAYLANG['TXT_CRM_COMPANY_SIZE'],
             'TXT_CRM_ADD_COMPANY_SIZE'                   => $_ARRAYLANG['TXT_CRM_ADD_COMPANY_SIZE'],
             'TXT_CRM_EDIT_COMPANY_SIZE'                  => $_ARRAYLANG['TXT_CRM_EDIT_COMPANY_SIZE'],
+            'TXT_CRM_NUMBER_OF_COMPANIES'                => $_ARRAYLANG['TXT_CRM_NUMBER_OF_COMPANIES'],
             'TXT_CRM_SORTING_NUMBER'                     => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
             'TXT_CRM_TITLEACTIVE'                        => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
             'TXT_CRM_SAVE'                               => $_ARRAYLANG['TXT_CRM_SAVE'],
