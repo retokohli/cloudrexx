@@ -293,7 +293,25 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
     }
 
-
+    /**
+     * Setter for $this->strBlockName
+     * 
+     * @param string $blockName html parse block name
+     */
+    function setStrBlockName($blockName)
+    {
+        $this->strBlockName = $blockName;
+    }
+    
+    /**
+     * Getter for $this->strBlockName
+     * 
+     * @return string current parse block name to list the entries
+     */
+    function getStrBlockName()
+    {
+        return $this->strBlockName;
+    }
     
     function listEntries($objTpl, $intView)
     {
@@ -506,7 +524,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 	                        }
 
 	                        $i++;
-	                        $objTpl->parse($this->moduleNameLC.'EntryList');
+                                $objTpl->parse($this->strBlockName);
+
 	                        $objTpl->clearVariables();
 	                    }
                     }

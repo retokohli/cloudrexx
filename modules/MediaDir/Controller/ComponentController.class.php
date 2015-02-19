@@ -124,10 +124,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         array_push($mediadirCheck, $i);
                     }
                 }
-                if ($mediadirCheck) {
+                if ($mediadirCheck || $objTemplate->blockExists('mediadirLatest')) {
                     $objMediadir = new MediaDirectory('', $this->getName());
                     $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
+                }
+                if ($mediadirCheck) {
                     $objMediadir->getHeadlines($mediadirCheck);
+                }
+                if ($objTemplate->blockExists('mediadirLatest')){
+                    $objMediadir->getLatestEntries();
                 }
                 break;
             default:

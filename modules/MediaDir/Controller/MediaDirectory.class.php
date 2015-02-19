@@ -533,8 +533,20 @@ class MediaDirectory extends MediaDirectoryLibrary
         $objEntry->listEntries($this->_objTpl, 2);
     }
 
+    /**
+     * Show the latest entries
+     */
+    function getLatestEntries()
+    {
+        global $objTemplate;
+        
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
+        $objEntry->getEntries(null, null, null, null, null, null, true, null, $this->arrSettings['settingsLatestNumHeadlines']);
+        $objEntry->setStrBlockName($this->moduleNameLC.'Latest');
+        
+        $objEntry->listEntries($objTemplate, 2);
+    }
     
-
     function getHeadlines($arrExistingBlocks)
     {
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
