@@ -84,6 +84,11 @@ class Uploader extends EntityBase
         $this->options = array_merge($this->options, $options);
     }
 
+    /**
+     * @param $option
+     *
+     * @return string
+     */
     function getOption($option)
     {
         if (isset($this->options[$option])) {
@@ -92,6 +97,10 @@ class Uploader extends EntityBase
         return null;
     }
 
+    /**
+     * Get all options as a string.
+     * @return string
+     */
     function getOptionsString()
     {
         $optionsString = "";
@@ -105,6 +114,11 @@ class Uploader extends EntityBase
         return $optionsString;
     }
 
+    /**
+     * @param string $buttonName
+     *
+     * @return string
+     */
     function getXHtml($buttonName = "Upload")
     {
         $path = $this->cx->getCodeBaseCoreModulePath() . '/Uploader/View/Template/Backend/Uploader.html';
@@ -114,11 +128,19 @@ class Uploader extends EntityBase
         );
     }
 
+    /**
+     * Set a javascript callback on a global function.
+     * @param String $string
+     */
     public function setCallback($string)
     {
         $this->setOptions(array('data-on-file-uploaded' => $string));
     }
 
+    /**
+     * Add additional data for the uploader
+     * @param $data
+     */
     public function setData($data)
     {
         if (!isset($_SESSION['uploader']['handlers'])) {
