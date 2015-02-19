@@ -37,6 +37,11 @@ class MediaBrowser extends EntityBase
         $this->options = array_merge($this->options, $options);
     }
 
+    /**
+     * @param $option
+     *
+     * @return string
+     */
     function getOption($option)
     {
         if (isset($this->options[$option])) {
@@ -45,11 +50,19 @@ class MediaBrowser extends EntityBase
         return null;
     }
 
+    /**
+     * Set a Javascript callback when the modal gets closed
+     * @param $callback
+     */
     function setCallback($callback)
     {
         $this->options['data-cx-Mb-Cb-Js-Modalclosed'] = $callback;
     }
 
+    /**
+     * Get all Options as a String
+     * @return string
+     */
     function getOptionsString()
     {
         $optionsString = "";
@@ -63,6 +76,11 @@ class MediaBrowser extends EntityBase
         return $optionsString;
     }
 
+    /**
+     * @param string $buttonName
+     *
+     * @return string
+     */
     function getXHtml($buttonName = "MediaBrowser")
     {
         return '<'.$this->tagName.' ' . $this->getOptionsString() . ' >' . $buttonName . '</'.$this->tagName.' >';
