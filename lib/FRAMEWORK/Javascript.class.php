@@ -408,6 +408,23 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 ),
             ),
         ),
+        'mediabrowser' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/1.9.1/js/jquery.min.js',
+                'lib/plupload/js/moxie.min.js',
+                'lib/plupload/js/plupload.full.min.js',
+                'lib/javascript/angularjs/angular.js',
+                'lib/javascript/angularjs/angular-route.js',
+                'lib/javascript/angularjs/angular-animate.js',
+                'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
+                'lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js',
+                'lib/javascript/bootbox.min.js',
+                'core_modules/MediaBrowser/View/Script/mediabrowser.js',
+                'core_modules/MediaBrowser/View/Script/standalone-directives.js'
+            ),
+            'dependencies' => array('twitter-bootstrap' => '3.2.0', 'cx'),
+            'specialcode' => ''
+        ),
     );
 
     /**

@@ -1,3 +1,5 @@
+cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
+
 !function (jQuery) {
     var $ = jQuery;
 
@@ -896,4 +898,4 @@
             }
         };
     }]);
-}(window.MediaBrowserjQuery);
+}(cx.variables.get('jquery','mediabrowser'));
