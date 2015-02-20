@@ -10,6 +10,7 @@
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
+use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
 use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
 use Cx\Core_Modules\Uploader\Model\Uploader;
 
@@ -21,8 +22,7 @@ use Cx\Core_Modules\Uploader\Model\Uploader;
  * @package     contrexx
  * @subpackage  coremodule_mediabrowser
  */
-class BackendController extends
-    \Cx\Core\Core\Model\Entity\SystemComponentBackendController
+class BackendController extends SystemComponentBackendController
 {
 
     /**
@@ -87,7 +87,7 @@ class BackendController extends
         );
 
         $mediaBrowser = new MediaBrowser();
-        $mediaBrowser->setCallback('callback');
+        $mediaBrowser->setCallback('fancyCallback');
         $template->setVariable(
             'MEDIABROWSER_CODE1', $mediaBrowser->getXHtml('MediaBrowser')
         );
@@ -95,65 +95,5 @@ class BackendController extends
             'MEDIABROWSER_CODE1_RAW',
             htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser'))
         );
-
-
-        // get the act
-        $act = $cmd[0];
-        // get the submenu of act
-        $this->submenuName = $this->getSubmenuName($cmd);
-        // initiat the right controller
-        // DELETE FOR PRODUCTION
-        // Controller routes all calls to undeclared methods to your
-        // ComponentController. So you can do things like
-        //$this->getName();
-        // DELETE FOR PRODUCTION
-        // Trigger the specific controller
-        $this->routeToController($act);
-    }
-
-
-    /**
-     * Trigger a controller according the act param from the url
-     *
-     * @param   string $act
-     */
-    public function routeToController($act)
-    {
-        $act = ucfirst($act);
-        if (!empty($act)) {
-            $controllerName = __NAMESPACE__ . '\\' . $act . 'Controller';
-            if (!$controllerName && !class_exists($controllerName)) {
-                return;
-            } else {
-
-            }
-            //  instantiate the view specific controller
-            $objController = new $controllerName(
-                $this->getSystemComponentController(), $this->cx
-            );
-        } else {
-            // instantiate the default View Controller
-            $objController = new DefaultController(
-                $this->getSystemComponentController(), $this->cx
-            );
-        }
-        $objController->parsePage($this->template);
-
-    }
-
-    /**
-     * Returns the sub menu page if the url contains any
-     *
-     * @param   array $cmd
-     *
-     * @return  string
-     */
-    protected function getSubmenuName($cmd)
-    {
-        if (count($cmd) > 1) {
-            $submenu = ucfirst($cmd[1]);
-            return $submenu;
-        }
-        return null;
     }
 }
