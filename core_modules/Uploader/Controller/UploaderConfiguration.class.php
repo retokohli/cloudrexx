@@ -1,12 +1,10 @@
 <?php
 
 /**
- * Specific FrontendController for this Component. Use this to easily create a frontent view
- *
- * @copyright   Comvation AG
+ * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  modules_uploader
+ * @subpackage  coremodule_uploader
  */
 
 namespace Cx\Core_Modules\Uploader\Controller;
