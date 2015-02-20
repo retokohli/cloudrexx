@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Specific BackendController for this Component. Use this to easily create a backend view
- *
  * @copyright   Comvation AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
@@ -251,8 +249,7 @@ class FileSystem
     {
         if (self::isVirtualPath($virtualPath)) {
             $pathArray = explode('/', $virtualPath);
-            return MediaBrowserConfiguration::getInstance(
-            )->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0) . '/' . join(
+            return MediaBrowserConfiguration::getInstance()->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0) . '/' . join(
                 '/', $pathArray
             );
         }

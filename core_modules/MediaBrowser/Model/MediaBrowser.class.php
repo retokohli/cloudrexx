@@ -1,9 +1,10 @@
 <?php
+
 /**
- * Created by PhpStorm.
- * User: robin
- * Date: 29.09.14
- * Time: 09:47
+ * @copyright   Comvation AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_mediabrowser
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Model;

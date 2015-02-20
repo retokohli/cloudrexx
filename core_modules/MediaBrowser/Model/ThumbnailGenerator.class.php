@@ -1,7 +1,6 @@
 <?php
+
 /**
- * Specific BackendController for this Component. Use this to easily create a backend view
- *
  * @copyright   Comvation AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
@@ -9,7 +8,6 @@
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Model;
-
 
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
