@@ -67,12 +67,10 @@
      */
     function callback(callback) {
         console.log(callback);
-
-
-
     }
 
-    function fancyCallback(){
+    function fancyCallback(callback){
+
         if (callback.type == 'close'){
             bootbox.alert({
                 message: 'Close Event',
@@ -92,7 +90,7 @@
             for (var i in callback.data) {
                 if (callback.data.hasOwnProperty(i)){
                     if (callback.data[i].datainfo.extension == 'Jpg' || callback.data[i].datainfo.extension == 'Png' || callback.data[i].datainfo.extension == 'Gif'){
-                        images += "<img class='img-responsive' src='"+callback.data[i].datainfo.filepath+"' />";
+                        images += "<img class='img-responsive' style=\"max-width:100%; height: auto;\" src='"+callback.data[i].datainfo.filepath+"' />";
                     }
                     else {
                         images += callback.data[i].datainfo.filepath;
