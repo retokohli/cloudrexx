@@ -1,11 +1,11 @@
 <?php
+
 /**
- * @copyright   Comvation AG
+ * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_uploader
  */
-
 
 namespace Cx\Core_Modules\Uploader\Model;
 

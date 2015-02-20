@@ -25,10 +25,10 @@ use Cx\Lib\FileSystem\FileSystem;
 /**
  * JSON Adapter for Uploader
  *
- * @copyright   Comvation AG
+ * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  coremodule_uploader
  */
 class JsonUploader extends SystemComponentController implements JsonAdapter
 {
