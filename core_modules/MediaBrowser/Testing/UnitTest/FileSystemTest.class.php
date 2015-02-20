@@ -12,7 +12,9 @@
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Testing\UnitTest;
+
 use Cx\Core\Core\Controller\Cx;
+use Cx\Core\Test\Model\Entity\ContrexxTestCase;
 use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
 
 /**
@@ -24,7 +26,7 @@ use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
  * @package     contrexx
  * @subpackage  coremodule_mediabrowser
  */
-class FileSystemTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
+class FileSystemTest extends ContrexxTestCase
 {
 
     public function testPathchecker()
@@ -37,10 +39,18 @@ class FileSystemTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
     {
         $cx = Cx::instanciate();
         $this->assertTrue(FileSystem::isSubdirectory($cx->getWebsitePath().'/images', 'files/'));
-        $this->assertTrue(FileSystem::isSubdirectory($cx->getWebsitePath().'/media', 'media2/'));
         $this->assertFalse(FileSystem::isSubdirectory($cx->getWebsitePath().'/media', 'files/'));
         $this->assertFalse(FileSystem::isSubdirectory($cx->getWebsitePath().'/images', 'media5/'));
     }
 
+    public function testFileSystemOperations()
+    {
+        var_dump('fsdf');
+        var_dump(FileSystem::getAbsolutePath('files/test'));
+        var_dump('fssdfsdfdf');
+        FileSystem::createDirectory('files/', 'test');
+        $this->assertTrue(is_dir(FileSystem::getAbsolutePath('files/test')));
+        FileSystem::removeDirectory('files/', 'test');
+    }
 
 }
