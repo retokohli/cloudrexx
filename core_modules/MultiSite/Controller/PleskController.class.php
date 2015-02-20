@@ -30,7 +30,7 @@ class ApiRequestException extends DbControllerException {}
  * @subpackage  coremodule_MultiSite
  * @version     1.0.0
  */
-class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbController,
+class PleskController extends \Cx\Core\Core\Model\Entity\Controller implements \Cx\Core_Modules\MultiSite\Controller\DbController,
                                  \Cx\Core_Modules\MultiSite\Controller\SubscriptionController,
                                  \Cx\Core_Modules\MultiSite\Controller\FtpController,
                                  \Cx\Core_Modules\MultiSite\Controller\DnsController,
@@ -66,9 +66,23 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Constructor
      */
-    public function __construct($host, $login, $password, $apiVersion = null){
-        $this->host = $host;
-        $this->login = $login;
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx)
+    {
+        parent::__construct($systemComponentController, $cx);
+    }
+
+    /**
+     * Initialize the PleskController
+     * 
+     * @param string $host       host name 
+     * @param string $login      auth user name
+     * @param string $password   auth password
+     * @param string $apiVersion apiVersion
+     */
+    public function initialize($host, $login, $password, $apiVersion = null) 
+    {
+        $this->host     = $host;
+        $this->login    = $login;
         $this->password = $password;
         $this->apiVersion = !\FWValidator::isEmpty($apiVersion) ? $apiVersion : ''; 
     }
@@ -475,13 +489,15 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
-     * Static function to set default configuration 
+     * Set default configuration 
      */
-    public static function fromConfig(){
-        $pleskHost=\Cx\Core\Setting\Controller\Setting::getValue('pleskHost');
-        $pleskLogin=\Cx\Core\Setting\Controller\Setting::getValue('pleskLogin');
-        $pleskPassword=\Cx\Core\Setting\Controller\Setting::getValue('pleskPassword');
-        return new static($pleskHost, $pleskLogin, $pleskPassword);
+    public function initFromConfig()
+    {
+        $pleskHost     = \Cx\Core\Setting\Controller\Setting::getValue('pleskHost');
+        $pleskLogin    = \Cx\Core\Setting\Controller\Setting::getValue('pleskLogin');
+        $pleskPassword = \Cx\Core\Setting\Controller\Setting::getValue('pleskPassword');
+        
+        $this->initialize($pleskHost, $pleskLogin, $pleskPassword);
     }
     
     

@@ -64,6 +64,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         \FWUser::$allowedHosts[] = 'https://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
     }
     
+    /**
+     * Get the controller classes
+     * 
+     * @return array array of the controller classes.
+     */
+    public function getControllerClasses()
+    {
+        return array('Backend', 'Cron', 'Frontend', 'Plesk', 'Xampp');
+    }
+    
     public function getControllersAccessableByJson() { 
         return array('JsonMultiSite');
     }
@@ -1450,7 +1460,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommandCron()
     {
-        $cron = new CronController();
+        $cron = $this->getController('Cron');
         $cron->sendNotificationMails();
         
         //  Terminate the cancelled subscription.
@@ -1793,25 +1803,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
 
-    public static function getHostingController() {
+    /**
+     * Get the Hosting Controller
+     * 
+     * @return object $hostingController hostingController
+     * 
+     * @throws WebsiteException
+     */
+    public function getHostingController() 
+    {
         global $_DBCONFIG;
 
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         switch (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
             case 'plesk':
-                $hostingController = \Cx\Core_Modules\MultiSite\Controller\PleskController::fromConfig();
+                $hostingController = $this->getController('Plesk');
+                
+                $hostingController->initFromConfig();
                 $hostingController->setWebspaceId(\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
                 break;
 
             case 'xampp':
                 // initialize XAMPP controller with database of Website Manager/Service Server
-                $dbObj = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
-                $dbUserObj = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
-                $hostingController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($dbObj, $dbUserObj); 
+                $dbObj             = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
+                $dbUserObj         = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
+                
+                $hostingController = $this->getController('Xampp'); 
+                $hostingController->initialize($dbObj, $dbUserObj);
                 break;
 
             default:
-                throw new WebsiteException('Unknown websiteController set!');    
+                throw new MultiSiteException('Unknown websiteController set!');    
                 break;
         }
 
@@ -1825,15 +1847,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @return $hostingController
      */
-    public static function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer) {
+    public function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer)
+    {
         switch ($mailServiceServer->getType()) {
             case 'plesk':
-                $hostingController = new PleskController($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword(), $mailServiceServer->getApiVersion());
+                $hostingController = $this->getController('Plesk');
+                $hostingController->initialize($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword(), $mailServiceServer->getApiVersion());
                 break;
 
             case 'xampp':
             default:
-                throw new WebsiteException('Unknown MailController set!');    
+                throw new MultiSiteException('Unknown MailController set!');    
                 break;
         }
         return $hostingController;
@@ -3079,5 +3103,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'TXT_MULTISITE_ACCEPT_TERMS_URL_NAME' => $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'],
             )
         );
+    }
+    
+    /**
+     * Get the MultiSite ComponentController Instance
+     * 
+     * @return object $componentController MultiSite component controller object
+     */
+    public static function getMultiSiteComponentControllerInstance() 
+    {
+        $systemComponentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $componentController = $systemComponentRepo->findOneBy(array('name'=>'MultiSite'));
+        
+        return $componentController;
     }
 }

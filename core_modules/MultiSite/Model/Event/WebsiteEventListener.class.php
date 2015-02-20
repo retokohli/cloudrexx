@@ -125,7 +125,9 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 return;
             }
             
-            $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
+            $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+            $hostingController   = $componentController->getMailServerHostingController($mailServiceServer);
+            
             $status = $hostingController->getMailServiceStatus($mailAccountId);
             if ($status == 'true') {
                 $mailServiceServer->disableService($website);

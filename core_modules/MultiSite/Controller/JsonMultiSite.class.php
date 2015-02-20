@@ -2497,8 +2497,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (!$website) {
                         throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Unkown Website: ' . $authenticationValue['sender']);
                     }
-
-                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                    
+                    $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+                    $hostingController   = $componentController->getHostingController();
+                    
                     $password = \User::make_password(8, true);
                     if ($hostingController->changeFtpAccountPassword($website->getFtpUser(), $password)) {
                         return array(
@@ -2958,8 +2960,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         \DBG::log('JsonMultiSite::getMailServicePlans() mail service server is not found for supplied mail service id ' . $mailServiceServerId);
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND']);
                     }
-
-                    $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                    
+                    $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+                    $hostingController   = $componentController->getMailServerHostingController($mailServiceServer);
+                    
                     $plans = $hostingController->getAvailableServicePlansOfMailServer();
                     return array(
                             'status'  => 'success',
@@ -4050,7 +4054,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     $mailServiceServer = $website->getMailServiceServer();
                     if ($mailServiceServer && !\FWValidator::isEmpty($website->getMailAccountId())) {
-                        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
+                        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+                        $hostingController   = $componentController->getMailServerHostingController($mailServiceServer);
+                        
                         $status = $hostingController->getMailServiceStatus($website->getMailAccountId());
                         return array('status' => 'success', 'mailServiceStatus' => ($status == 'true') ? true : false);
                     }
@@ -4270,7 +4276,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
 
                     $clientIp = !\FWValidator::isEmpty($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))) : $_SERVER['REMOTE_ADDR'];
-                    $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                    $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+                    $hostingController   = $componentController->getMailServerHostingController($mailServiceServer);
                     
                     $pleskLoginUrl = $hostingController->getPanelAutoLoginUrl($website->getMailAccountId(), $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
                     
@@ -4494,7 +4501,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     $mailServiceServer = $website->getMailServiceServer();
                     if ( !\FWValidator::isEmpty($mailServiceServer) && !\FWValidator::isEmpty($website->getMailAccountId())) {
-                        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
+                        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+                        $hostingController   = $componentController->getMailServerHostingController($mailServiceServer);
+                    
                         if (!$hostingController) {
                             \DBG::msg('Failed to get the hosting controller.');
                             throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
@@ -4619,7 +4628,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         return array('status' => 'error');
                     }
                     
-                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($mailServiceServer);
+                    $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+                    $hostingController   = $componentController->getMailServerHostingController($mailServiceServer);
+                    
                     if (!$hostingController) {
                         \DBG::log('Failed to Fetch the hosting controller.');
                         return array('status' => 'error');
@@ -4715,7 +4726,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $mailServiceServer = $website->getMailServiceServer();
                     if (!\FWValidator::isEmpty($mailServiceServer)
                             && $website->getMailAccountId()) {
-                        $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+                        $hostingController   = $componentController->getMailServerHostingController($mailServiceServer);
+                        
                         $hostingController->setWebspaceId($website->getMailAccountId());
                         if (!$hostingController || !($hostingController instanceof PleskController)) {
                             throw new MultiSiteJsonException('Failed to set the main domain.');

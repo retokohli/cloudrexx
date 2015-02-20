@@ -20,12 +20,15 @@ namespace Cx\Core_Modules\MultiSite\Controller;
  * @package     contrexx
  * @subpackage  coremodule_multisite
  */
-class CronController {
+class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     
     /**
      * Constructor
      */
-    public function __construct() {}
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx)
+    {
+        parent::__construct($systemComponentController, $cx);
+    }
     
     /**
      * Send the Notification email to Website owners

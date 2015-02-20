@@ -314,7 +314,9 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
      */
     public function createAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
-        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+        $hostingController   = $componentController->getMailServerHostingController($this);
+        
         $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
         $mainDomain = '';
         if ($resp->status == 'success' && $resp->data->status == 'success') {
@@ -363,7 +365,9 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
      */
     public function deleteAccount($accountId)
     {
-        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+        $hostingController   = $componentController->getMailServerHostingController($this);
+        
         if ($hostingController->removeSubscription($accountId)) {
             return true;
         }
@@ -390,7 +394,9 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             return false;
         }
         
-        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+        $hostingController   = $componentController->getMailServerHostingController($this);
+        
         if ($hostingController->enableMailService($accountId)) {
             $website->setMailDn();
             \Env::get('em')->flush($website);
@@ -421,7 +427,9 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             return false;
         }
         
-        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
+        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+        $hostingController   = $componentController->getMailServerHostingController($this);
+        
         if ($hostingController->disableMailService($accountId)) {
             
             $mailDomain = $website->getMailDn();

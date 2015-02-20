@@ -504,8 +504,9 @@ class Website extends \Cx\Model\Base\EntityBase {
         \Env::get('em')->persist($this);
         \Env::get('em')->flush();
         
-        $this->websiteController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
-
+        $componentController     = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+        $this->websiteController = $componentController->getHostingController();
+        
         $websiteName = $this->getName();
         $websiteMail = $this->owner->getEmail(); 
         $websiteThemeId = $this->getThemeId(); 
@@ -1126,7 +1127,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     //remove the FTP Account if there
-                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                    $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+                    $hostingController   = $componentController->getHostingController();
+                    
                     if ($this->ftpUser) {
                         $ftpAccounts = $hostingController->getFtpAccounts();
                         if (in_array($this->ftpUser, $ftpAccounts)) {

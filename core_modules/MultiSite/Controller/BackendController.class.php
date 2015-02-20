@@ -952,7 +952,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public static function getDnsRecords()
     {
-        $hostingController  = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+        $hostingController   = $componentController->getHostingController();
+        
         return $hostingController->getDnsRecords();
     }
     

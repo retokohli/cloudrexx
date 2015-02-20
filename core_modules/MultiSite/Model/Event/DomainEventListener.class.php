@@ -320,21 +320,21 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
 
         // add DNS record through hosting controller
+        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
+        $hostingController   = $componentController->getHostingController();
+        
         switch ($operation) {
             case 'add':
-                $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                 $recordId = $hostingController->addDnsRecord($type, $domain->getName(), $value, \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'));
                 \DBG::msg(__METHOD__.": Set pleskId: $recordId");
                 $domain->setPleskId($recordId);
                 break;
 
             case 'remove':
-                $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                 $hostingController->removeDnsRecord($type, $domain->getName(), $domain->getPleskId());
                 break;
 
             case 'update':
-                $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                 $recordId = $hostingController->updateDnsRecord($type, $domain->getName(), $value, \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'), $domain->getPleskId());
 
                 // check if DNS-record was updated
