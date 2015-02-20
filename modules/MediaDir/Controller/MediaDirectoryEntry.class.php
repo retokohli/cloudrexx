@@ -288,7 +288,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
                 $objEntries->MoveNext();
             }
-            //$this->recordCount = $objEntries->RecordCount();
             $this->recordCount = $totalRecords->fields['found_rows'];
         }
     }
@@ -1220,7 +1219,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
 
 
-    function countEntries($intCategoryId, $intLevelId, $formId = null, $searchTerm = '', $countAllEntries = false)
+    function countEntries()
     {
         return $this->recordCount;
     }
