@@ -97,7 +97,7 @@ class UploaderController {
             'fileName' => isset($_REQUEST['name']) ? $_REQUEST['name'] : false,
             'allow_extensions' => false,
             'delay' => 0,
-            'cb_sanitizieFileName' => array(__CLASS__, 'sanitizieFileName'),
+            'cb_sanitizeFileName' => array(__CLASS__, 'sanitizeFileName'),
             'cb_check_file' => false,
                 ), $conf);
 
@@ -121,8 +121,8 @@ class UploaderController {
             }
 
             // callback function for sanitizie filename
-            if (is_callable($conf['cb_sanitizieFileName'])) {
-                $fileName = call_user_func($conf['cb_sanitizieFileName'], $conf['fileName']);
+            if (is_callable($conf['cb_sanitizeFileName'])) {
+                $fileName = call_user_func($conf['cb_sanitizeFileName'], $conf['fileName']);
             } else {
                 $fileName = $conf['fileName'];
             }
@@ -332,12 +332,12 @@ class UploaderController {
      * @param string $filename The filename to be sanitized
      * @return string The sanitized filename
      */
-    private static function sanitizieFileName($filename) {
+    public static function sanitizeFileName($filename) {
         $special_chars = array("?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}");
         $filename = str_replace($special_chars, '', $filename);
         $filename = preg_replace('/[\s-]+/', '-', $filename);
         $filename = trim($filename, '.-_ ');
-        if ((boolean) preg_match("/^[a-z]+$/", $filename)) {
+        if ((boolean) preg_match("/^[a-z]+$/", $filename) || empty($filename)) {
             $filename = 'File_'.date('U').'.'.$filename;
         }
         return $filename;
