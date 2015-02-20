@@ -1,14 +1,15 @@
 <div>
     <script>
-        cx.variables.get('jquery','mediabrowser')('#thumbnailSelector').find('.thumbnail-size').change(function () {
-            var size = cx.variables.get('jquery','mediabrowser')(this).val();
-            size = size == 0 ? '100%' : size;
-            cx.variables.get('jquery','mediabrowser')('#thumbnailSelector').find('.image').css({'width': size})
-        });
+        !function($){
+            $('#thumbnailSelector').find('.thumbnail-size').change(function () {
+                var size = $(this).val();
+                size = size == 0 ? '100%' : size;
+                $('#thumbnailSelector').find('.image').css({'width': size})
+            });
+        }(cx.variables.get('jquery','mediabrowser'))
     </script>
     <div id="thumbnailSelector">
         <img src="" alt="" class="image"/>
-
         <div class="form-horizontal">
             <select name="size" class="form-control thumbnail-size">
                 <option value="0">{TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE}</option>
