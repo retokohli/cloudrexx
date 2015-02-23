@@ -460,11 +460,13 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `websiteCollectionId` int(11) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name_index` (`name`),
-  KEY `mailServiceServerId` (`mailServiceServerId`),
   KEY `websiteCollectionId` (`websiteCollectionId`),
   KEY `ownerId` (`ownerId`),
-  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_1` FOREIGN KEY (`mailServiceServerId`) REFERENCES `contrexx_core_module_multisite_mail_service_server` (`id`),
-  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_2` FOREIGN KEY (`websiteCollectionId`) REFERENCES `contrexx_core_module_multisite_website_collection` (`id`)
+  KEY `mailServiceServerId` (`mailServiceServerId`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_3` FOREIGN KEY (`mailServiceServerId`) REFERENCES `contrexx_core_module_multisite_mail_service_server` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_mailServiceServerId` FOREIGN KEY (`mailServiceServerId`) REFERENCES `contrexx_core_module_multisite_mail_service_server` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_ownerId` FOREIGN KEY (`ownerId`) REFERENCES `contrexx_access_users` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_websiteCollectionId` FOREIGN KEY (`websiteCollectionId`) REFERENCES `contrexx_core_module_multisite_website_collection` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
