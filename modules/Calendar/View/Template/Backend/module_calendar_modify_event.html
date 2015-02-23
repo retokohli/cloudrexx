@@ -318,39 +318,35 @@
            $J( '.exceptionDateHolder li:eq('+ page +')').show();            
         }
     }
-
-    function SetUrl(url, width, height, alt) {
-        switch (fileType) {
-            case 'image':
-            case 'webpages':
-            case 'link':
-                document.getElementById(insertBox).value = url;
-                break;
+    
+    function setSelectedEventRedirect(data) {
+        if (data.type == 'page') {
+            var url = data.data[0].node;
+            document.getElementById('eventRedirect').value = url;
         }
     }
-
-    function getFileBrowser(name, type)
-    {
-        insertBox = name;
-        fileType = type;
-        switch (type) {
-            case 'image':
-            case 'webpages':
-                openWindow('index.php?cmd=FileBrowser&standalone=true&type=images', '', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-                break
-            case 'link':
-                openWindow('index.php?cmd=FileBrowser&standalone=true&type=webpages', '', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-                break;
+    
+    function setSelectedEventPicture(data) {
+        if (data.type == 'file') {
+            var url = data.data[0].datainfo;
+            document.getElementById('eventPicture').value = url.filepath;
         }
-
     }
-
-
-    function openWindow(theURL, winName, features) {
-        browserPopup = window.open(theURL, "Browser", features);
-        browserPopup.focus();
+    
+    function setSelectedEventAttachment(data) {
+        if (data.type == 'file') {
+            var url = data.data[0].datainfo;            
+            document.getElementById('eventAttachment').value = url.filepath;
+        }
     }
-
+    
+    function setSelectedInputPlaceMap(data) {
+        if (data.type == 'file') {
+            var url = data.data[0].datainfo;            
+            document.getElementById('inputPlaceMap').value = url.filepath;
+        }
+    }
+    
     function formCheck()
     {
         var status = true;
@@ -741,7 +737,7 @@
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</td>
                         <td>
-                            <input type="text" maxlength="255" style="width: 250px;" name="calendar-redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventRedirect', 'link')" />                                                                                                      
+                            <input type="text" maxlength="255" style="width: 250px;" name="calendar-redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;{CALENDAR_EVENT_REDIRECT_BROWSE_BUTTON}
                         </td>
                     </tr>
                 </table>
@@ -815,7 +811,7 @@
             <tr class="row2 event_place_manual">
                 <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
                 <td>
-                    <input type="text" maxlength="255" name="placeMap" id="inputPlaceMap" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
+                    <input type="text" maxlength="255" name="placeMap" id="inputPlaceMap" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;{CALENDAR_PLACE_MAP_SOURCE_BROWSE_BUTTON}
                     <!--<label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>-->
                 </td>
             </tr>                    
@@ -952,13 +948,13 @@
             <tr class="row1">
                 <td width="180" valign="top">{TXT_CALENDAR_EVENT_PICTURE}</td>
                 <td colspan="2">
-                    <input type="text" maxlength="255" name="picture" value="{CALENDAR_EVENT_PICTURE}" id="eventPicture" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventPicture', 'image')" />
+                    <input type="text" maxlength="255" name="picture" value="{CALENDAR_EVENT_PICTURE}" id="eventPicture" style="width: 250px;" />&nbsp;{CALENDAR_EVENT_PICTURE_BROWSE_BUTTON}
                 </td>
             </tr>
             <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_ATTACHMENT}</td>
                 <td colspan="2">
-                    <input type="text" maxlength="255" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" id="eventAttachment" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventAttachment', 'image')" />
+                    <input type="text" maxlength="255" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" id="eventAttachment" style="width: 250px;" />&nbsp;{CALENDAR_EVENT_ATTACHMENT_BROWSE_BUTTON}
                 </td>
             </tr>                             
         </table>

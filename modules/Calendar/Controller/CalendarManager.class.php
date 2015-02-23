@@ -291,6 +291,33 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $objEventManager->showEventList($this->_objTpl);
     }
     
+    /**
+     * Display the MediaBrowser button
+     * 
+     * @global array $_ARRAYLANG
+     * 
+     * @param string $name callback function name
+     * @param string $type mediabrowser type
+     * 
+     * @return string
+     */
+    public static function showMediaBrowserButton($name, $type = 'filebrowser')
+    {
+        if (empty($name)) {
+            return;
+        }
+        
+        global $_ARRAYLANG;
+        
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setOptions(array(
+                    'type'             => 'button',
+                    'data-cx-mb-views' => $type
+        ));
+        $mediaBrowser->setCallback('setSelected' . ucfirst($name));
+        
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CALENDAR_BROWSE']);
+    }
     
     /**
      * Add / Edit of the Event
@@ -507,6 +534,12 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_FROM_MEDIADIR'         => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'],
             'TXT_'.$this->moduleLangVar.'_PREV'                             => $_ARRAYLANG['TXT_CALENDAR_PREV'],
             'TXT_'.$this->moduleLangVar.'_NEXT'                             => $_ARRAYLANG['TXT_CALENDAR_NEXT'],
+            
+            //show media browser button
+            $this->moduleLangVar.'_EVENT_REDIRECT_BROWSE_BUTTON'            => self::showMediaBrowserButton('eventRedirect', 'sitestructure'),
+            $this->moduleLangVar.'_EVENT_PICTURE_BROWSE_BUTTON'             => self::showMediaBrowserButton('eventPicture'),
+            $this->moduleLangVar.'_EVENT_ATTACHMENT_BROWSE_BUTTON'          => self::showMediaBrowserButton('eventAttachment'),
+            $this->moduleLangVar.'_PLACE_MAP_SOURCE_BROWSE_BUTTON'          => self::showMediaBrowserButton('inputPlaceMap'),
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
