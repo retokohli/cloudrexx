@@ -142,7 +142,7 @@
                     uploader.bind('Error', function (up, err) {
                         $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drag-zone').addClass('fileError');
                         $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drag-zone .error').html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(err.code), 'mediabrowser'));
-                        console.log(err);
+
                         setTimeout(function () {
                             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drag-zone').removeClass('fileError');
                         }, 3000);
