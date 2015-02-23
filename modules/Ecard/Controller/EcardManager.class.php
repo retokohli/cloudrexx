@@ -108,7 +108,16 @@ class EcardManager
         \JS::activate('shadowbox');
         $this->_objTpl->loadTemplateFile('module_ecard_overview.html',true,true);
         $this->_pageTitle = $_ARRAYLANG['TXT_MOTIVE_SELECTION'];
-
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setCallback('mbCallback');
+        $mediaBrowser->setOptions(
+                                array(
+                                'type' => 'button',
+                                'data-cx-mb-views' => 'filebrowser',
+                                'id' => 'mediabrowser_button',
+                                'style' => 'display: none;'    
+                                )
+                            );
         /* Update progress */
         if (!empty($_POST['saveMotives'])) {
             $i = 0;
@@ -143,6 +152,9 @@ class EcardManager
             'TXT_CHOOSE' => $_ARRAYLANG['TXT_CHOOSE'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
             'TXT_ECARD_IMAGES' => $_ARRAYLANG['TXT_ECARD_IMAGES'],
+            'MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml(
+                                        $_ARRAYLANG['TXT_CORE_CM_BROWSE']
+                                     )
         ));
 
         /* Display progress */
@@ -162,7 +174,7 @@ class EcardManager
                 $sourcePath = ASCMS_ECARD_OPTIMIZED_WEB_PATH.'/'.$motiveFilename;
                 $thumbnail = ASCMS_ECARD_THUMBNAIL_WEB_PATH.'/'.$motiveFilename;
             }
-            /* Initialize DATA placeholder */
+            /* Initialize DATA placeholder */                        
             $this->_objTpl->setVariable(array(
                 'MOTIVE_PATH' => $sourcePath,
                 'MOTIVE_THUMB_PATH' => $thumbnail,

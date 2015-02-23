@@ -4,11 +4,7 @@
 path = "";
 function ecardGetFileBrowser(motive_id) {
   path = motive_id;
-  openWindow(
-    "index.php?cmd=FileBrowser&{CSRF_PARAM}&amp;standalone=true", 
-    "", 
-    "width=800,height=600,resizable=yes,status=no,scrollbars=yes"
-  );
+  cx.jQuery('#mediabrowser_button').trigger('click');  
 }
 
 function ecardClearImage(motive_id) {
@@ -17,16 +13,16 @@ function ecardClearImage(motive_id) {
   document.getElementById("motive_img_"+motive_id).alt = "";
 }
 
-function SetUrl(url, width, height, alt) {
-  document.getElementById("motive_id_"+path).value = url;
-//  document.getElementById("motive_img_"+path).src = url;
-//  document.getElementById("motive_img_"+path).alt = url;
-}  
-
-function openWindow(theURL, features) {
-  dataPopup = window.open(theURL, features);
-  dataPopup.focus();
+function mbCallback(data) {
+    if (data.type= "file" && path != '') {
+        var url = data.data[0].datainfo.filepath;
+        
+        document.getElementById("motive_id_"+path).value = url;
+        document.getElementById("motive_img_"+path).src  = url;
+        document.getElementById("motive_img_"+path).alt  = url;
+    }  
 }
+
 /* ]]> */
 </script>
 
@@ -59,6 +55,7 @@ function openWindow(theURL, features) {
     </tr>
     <!-- END motiveBlock -->
   </table>
+  {MEDIABROWSER_BUTTON}
   <input type="submit" name="saveMotives" value="{TXT_SAVE}" />
 </form>
 <!-- END module_ecard_overview.html -->
