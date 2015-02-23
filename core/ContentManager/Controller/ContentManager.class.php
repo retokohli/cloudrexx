@@ -210,6 +210,18 @@ class ContentManager extends \Module
                 $objCx->setVariable($name, $_CORELANG[$value], 'contentmanager/lang/' . $subscope);
             }
         }
+        
+        // Mediabrowser
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setOptions(array('type' => 'button'));
+        $mediaBrowser->setCallback('setWebPageUrlCallback');
+        $mediaBrowser->setOptions(array(
+            'data-cx-mb-views' => 'sitestructure',
+            'id' => 'page_target_browse'
+        ));
+        $this->template->setVariable(array(
+            'CM_MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+        ));
 
         $toggleTitles      = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
         $toggleType        = !empty($_SESSION['contentManager']['toggleStatuses']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['toggleType'] : 'block';

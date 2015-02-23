@@ -27,7 +27,7 @@
 					<br /><br />
 					<div id="podcast_medium_source_local_box" style="display:{PODCAST_SELECT_LOCAL_MEDIUM_BOX};">
 						<input type="text" value="{PODCAST_LOCAL_SOURCE}" name="podcast_medium_local_source" id="podcast_medium_local_source" style="width:350px;" />
-						<input type="button" value="{TXT_PODCAST_BROWSE}" onclick="podcast_get_fileBrowser()" />
+						{PODCAST_BROWSE}
 					</div>
 					<div id="podcast_medium_source_remote_box" style="display:{PODCAST_SELECT_REMOTE_MEDIUM_BOX};">
 						<input type="text" value="{PODCAST_REMOTE_SOURCE}" name="podcast_medium_remote_source" style="width:435px;" />
@@ -91,15 +91,12 @@ function podcast_change_source()
     }
 }
 
-function podcast_get_fileBrowser()
+function mediaBrowserCallback(data)
 {
-	podcastPopup = window.open('?cmd=FileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-	podcastPopup.focus();
-}
-
-function SetUrl(url, width, height, alt)
-{
-	document.getElementById('podcast_medium_local_source').value = url;
+  if (data.type=="file") {
+    var url = data.data[0].datainfo.filepath;
+    document.getElementById('podcast_medium_local_source').value = url;
+  }
 }
 
 var checkYoutubeSource = function(){

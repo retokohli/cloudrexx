@@ -811,11 +811,11 @@ textarea.input-lg, select[multiple].input-lg {
     margin-right: auto
 }
 
-.hide {
+#mediaBrowserMain .hide {
     display: none !important
 }
 
-.show {
+#mediaBrowserMain .show {
     display: block !important
 }
 
