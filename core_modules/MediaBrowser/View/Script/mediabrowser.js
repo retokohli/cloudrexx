@@ -341,8 +341,12 @@ cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
                             $scope.afterUpload();
                         },
                         Error: function (up, err) {
-
-                            console.log("nError #" + err.code + ": " + err.message)
+                            $J('.mediaUploaderListCtrl').find('.uploadPlatform').addClass('fileError');
+                            $J('.mediaUploaderListCtrl').find('.uploadPlatform .error').html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(err.code), 'mediabrowser'));
+                            setTimeout(function () {
+                                $J('.mediaUploaderListCtrl').find(' .uploadPlatform').removeClass('fileError');
+                            }, 3000);
+                            up.refresh(); // Reposition Flash/Silverlight
                         }
                     }
                 });
