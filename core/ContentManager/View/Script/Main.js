@@ -162,13 +162,11 @@ cx.ready(function() {
     // Disable the option use for all channels by default
     cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"], input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
             
-    cx.jQuery('#page_target_browse').click(function() {
-        url = '?cmd=FileBrowser&csrf='+cx.variables.get('csrf', 'contrexx')+'&standalone=true&type=webpages';
-        opts = 'width=800,height=600,resizable=yes,status=no,scrollbars=yes';
-        window.open(url, 'target', opts).focus();
-        return false;
-    });
-    window.SetUrl = function(url, width, height, path) {
+    setWebPageUrlCallback = function(data) {
+      if(data.type=="page") {
+        var url  = data.data[0].node;
+        var path = data.data[0].url;
+        
         url = url.replace(cx.variables.get('contrexxPathOffset', 'contentmanager'), '');
         if (path == '') {
             path = url;
@@ -176,13 +174,16 @@ cx.ready(function() {
         if (path[0] == '/') {
             path = path.substr(1);
         }
+        var lang = cx.variables.get('language', 'contrexx');
         cx.jQuery('#page_target_wrapper').hide();
-        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + path).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + lang + '/' + path).attr('href', function() {return cx.jQuery(this).text()});
         cx.jQuery('#page_target_text_wrapper').show();
         cx.jQuery('#page_target_protocol > option').removeAttr('selected');
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
         cx.jQuery('#page_target, #page_target_backup').val(url);
+      }
     }
+    
     cx.jQuery('#page_target').keyup(function() {
         var targetValue = cx.jQuery.trim(cx.jQuery(this).val());
         if (cx.jQuery(this).val() != targetValue) {

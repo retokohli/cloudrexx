@@ -42,7 +42,10 @@
 			</tr>
 			<tr class="row1">
 				<td>{TXT_PODCAST_THUMBNAIL}</td>
-				<td colspan="3"><a href="javascript:void(0);" id="podcast_thumbnail_link" title="{TXT_PODCAST_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('?cmd=FileBrowser&{CSRF_PARAM}&amp;standalone=true&amp;path=/', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');" >{TXT_PODCAST_EDIT_OR_ADD_IMAGE}<br /> <img id="podcast_thumbnail"  style="border: none;" src="{PODCAST_MEDIUM_THUMBNAIL_SRC}" title="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" alt="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" /></a></td>
+				<td colspan="3">
+                                  {PODCAST_THUMB_BROWSE}
+                                  <a href="javascript:void(0);" id="podcast_thumbnail_link" title="{TXT_PODCAST_EDIT_OR_ADD_IMAGE}" onclick="openBrowser();" >{TXT_PODCAST_EDIT_OR_ADD_IMAGE}<br /> <img id="podcast_thumbnail"  style="border: none;" src="{PODCAST_MEDIUM_THUMBNAIL_SRC}" title="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" alt="{TXT_IMMO_EDIT_OR_ADD_IMAGE}" /></a>
+                                </td>
 			</tr>
 			<tr class="row2" style="vertical-align:top;">
 				<td width="15%">{TXT_PODCAST_CATEGORIES}</td>
@@ -80,32 +83,22 @@
 	var elImgThumbnail = document.getElementById("podcast_thumbnail");
 	var thumbSizeMax = 90;
 
-	var openBrowser = function openBrowser(url, attrs) {
-		if(elInputThumbnailPath.value != ''){
-			pathRegExp =/\/images\/Podcast\/?(.+)\/.+/;
-			path = pathRegExp.exec(elInputThumbnailPath.value);
-			url='index.php?cmd=FileBrowser&{CSRF_PARAM}&standalone=true&type=podcast&path=/'+(path != null ? path[1] : '');
-		}
-		try{
-			if(!browserPopup.closed){
-				return browserPopup.focus();
-			}
-		}catch(e){}
-		if (!window.focus){
-			return true;
-		}
-		browserPopup = window.open(url, "", attrs);
-		browserPopup.focus();
-		return false;
+	var openBrowser = function openBrowser() {
+          jQuery('#podcast_thumbnail_browser').trigger("click");
+          return false;
 	}
 
-	var SetUrl = function(url, width, height, alt) {
-		elInputThumbnailPath.setAttribute('value', url);
-		fileRegExp = /.+\/(.+)$/;
-		fileRegExp.exec(url);
-		elTxt = document.createTextNode(RegExp.$1);
-		elImgThumbnail.src = url;
-		setSize(width, height);
+	var mediaBrowserCallback = function(data) {
+          if (data.type=="file") {
+            var url = data.data[0].datainfo.filepath;
+            
+            elInputThumbnailPath.setAttribute('value', url);
+            fileRegExp = /.+\/(.+)$/;
+            fileRegExp.exec(url);
+            elTxt = document.createTextNode(RegExp.$1);
+            elImgThumbnail.src = url;
+          }
+	  //setSize(width, height);
 	}
 
 	var setSize = function (width, height){

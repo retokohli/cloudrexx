@@ -29,52 +29,51 @@ function newsletterDelAttachment(attachmentNr) {
   }
 }
 
-function newsletterOpenWindow(url, name ,attrs) {
-  newsletterPopup = window.open(url, "", attrs);
-  newsletterPopup.focus();
-}
+function mediaBrowserCallback(data) {
+  if (data.type=="file") {
+    var url = data.data[0].datainfo.filepath;
+    
+    newsletterAttachmentNr++;
 
-function SetUrl(url, width, height, alt) {
-  newsletterAttachmentNr++;
+    elDiv = document.createElement('div');
+    elDiv.setAttribute('id', 'newsletter_attachment_box_'+newsletterAttachmentNr);
 
-  elDiv = document.createElement('div');
-  elDiv.setAttribute('id', 'newsletter_attachment_box_'+newsletterAttachmentNr);
+    elInput = document.createElement('input');
+    elInput.setAttribute('type', 'hidden');
+    elInput.setAttribute('name', 'newsletter_mail_attachment['+newsletterAttachmentNr+']');
+    elInput.setAttribute('value', url);
 
-  elInput = document.createElement('input');
-  elInput.setAttribute('type', 'hidden');
-  elInput.setAttribute('name', 'newsletter_mail_attachment['+newsletterAttachmentNr+']');
-  elInput.setAttribute('value', url);
+    fileRegExp = /.+\/(.+)$/;
+    fileRegExp.exec(url);
+    elTxt = document.createTextNode(RegExp.$1);
 
-  fileRegExp = /.+\/(.+)$/;
-  fileRegExp.exec(url);
-  elTxt = document.createTextNode(RegExp.$1);
+    elALink = document.createElement('a');
+    elALink.setAttribute('href', url);
+    elALink.setAttribute('target', '_blank');
+    elALink.setAttribute('title', '{TXT_NEWSLETTER_DISPLAY_FILE}');
+    elALink.appendChild(elTxt);
 
-  elALink = document.createElement('a');
-  elALink.setAttribute('href', url);
-  elALink.setAttribute('target', '_blank');
-  elALink.setAttribute('title', '{TXT_NEWSLETTER_DISPLAY_FILE}');
-  elALink.appendChild(elTxt);
+    elImg = document.createElement('img');
+    elImg.setAttribute('src', '../core/Core/View/Media/icons/delete.gif');
+    elImg.setAttribute('alt', '{TXT_NEWSLETTER_REMOVE_FILE}');
+    elImg.setAttribute('width', '17');
+    elImg.setAttribute('height', '17');
+    elImg.setAttribute('border', '0');
 
-  elImg = document.createElement('img');
-  elImg.setAttribute('src', '../core/Core/View/Media/icons/delete.gif');
-  elImg.setAttribute('alt', '{TXT_NEWSLETTER_REMOVE_FILE}');
-  elImg.setAttribute('width', '17');
-  elImg.setAttribute('height', '17');
-  elImg.setAttribute('border', '0');
+    elADel = document.createElement('a');
+    elADel.setAttribute("href", "javascript:newsletterDelAttachment('"+newsletterAttachmentNr+"')");
+    elADel.setAttribute('title', '{TXT_NEWSLETTER_REMOVE_FILE}');
+    elADel.appendChild(elImg);
 
-  elADel = document.createElement('a');
-  elADel.setAttribute("href", "javascript:newsletterDelAttachment('"+newsletterAttachmentNr+"')");
-  elADel.setAttribute('title', '{TXT_NEWSLETTER_REMOVE_FILE}');
-  elADel.appendChild(elImg);
+    elDiv.appendChild(elInput);
+    elDiv.appendChild(elALink);
+    elDiv.appendChild(elADel);
 
-  elDiv.appendChild(elInput);
-  elDiv.appendChild(elALink);
-  elDiv.appendChild(elADel);
+    document.getElementById('newsletter_attachment_frame').appendChild(elDiv);
 
-  document.getElementById('newsletter_attachment_frame').appendChild(elDiv);
-
-  if (document.getElementById('newsletter_attachment_frame').style.display = 'none') {
-    document.getElementById('newsletter_attachment_frame').style.display = 'block';
+    if (document.getElementById('newsletter_attachment_frame').style.display = 'none') {
+      document.getElementById('newsletter_attachment_frame').style.display = 'block';
+    }
   }
 }
 // ]]>
@@ -206,7 +205,7 @@ function SetUrl(url, width, height, alt) {
           </div>
 <!-- END newsletter_mail_attachment_list -->
       </div>
-      <input type="button" onclick="newsletterOpenWindow('index.php?cmd=FileBrowser&amp;{CSRF_PARAM}&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes')" value="{TXT_NEWSLETTER_ATTACH_FILE}" />
+      {NEWSLETTER_ATTACH_FILE}
     </td>
   </tr>
 </table>

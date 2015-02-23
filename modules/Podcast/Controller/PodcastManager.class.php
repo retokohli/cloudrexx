@@ -723,8 +723,7 @@ class PodcastManager extends PodcastLib
             'TXT_PODCAST_LATEST_MEDIA_COUNT'    => $_ARRAYLANG['TXT_PODCAST_LATEST_MEDIA_COUNT'],
             'TXT_PODCAST_FEED_TITLE'            => $_ARRAYLANG['TXT_PODCAST_FEED_TITLE'],
             'TXT_PODCAST_FEED_DESCRIPTION'      => $_ARRAYLANG['TXT_PODCAST_FEED_DESCRIPTION'],
-            'TXT_PODCAST_FEED_IMAGE'            => $_ARRAYLANG['TXT_PODCAST_FEED_IMAGE'],
-            'TXT_PODCAST_BROWSE'                => $_ARRAYLANG['TXT_PODCAST_BROWSE'],
+            'TXT_PODCAST_FEED_IMAGE'            => $_ARRAYLANG['TXT_PODCAST_FEED_IMAGE'],            
             'TXT_PODCAST_FEED_LINK'             => $_ARRAYLANG['TXT_PODCAST_FEED_LINK'],
             'TXT_PODCAST_SAVE'                  => $_ARRAYLANG['TXT_PODCAST_SAVE'],
             'TXT_PODCAST_PLACEHOLDERS'          => $_ARRAYLANG['TXT_PODCAST_PLACEHOLDERS'],
@@ -755,6 +754,15 @@ class PodcastManager extends PodcastLib
             'TXT_PODCAST_MEDIA_SHORT_DATE'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_DATE'],
             'TXT_PODCAST_MEDIA_DESCRIPTION'     => $_ARRAYLANG['TXT_PODCAST_MEDIA_DESCRIPTION'],
             'TXT_PODCAST_AUTO_VALIDATE'         => $_ARRAYLANG['TXT_PODCAST_AUTO_VALIDATE'],
+            'PODCAST_BROWSE'                    => PodcastLib::getMediaBrowserButton(
+                                                            $_ARRAYLANG['TXT_PODCAST_BROWSE'],
+                                                            array(
+                                                                'data-cx-mb-views' => 'filebrowser',
+                                                                'type' => 'button',
+                                                                'style'=> 'width:110px;'
+                                                            ),
+                                                            'mediaBrowserCallback'
+                                                    ),
         ));
 
         if (isset($_POST['podcast_save_settings'])) {
