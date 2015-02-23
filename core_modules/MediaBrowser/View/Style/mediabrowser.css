@@ -1981,7 +1981,7 @@ input#FileSearchIsRegex {
     bottom: 30px;
 }
 
-.uploader-modal .drag-zone .error {
+.uploader-modal .drag-zone .error, .uploadPlatform .error {
     right: 15px;
     bottom: 0;
     position: absolute;
@@ -1998,12 +1998,15 @@ input#FileSearchIsRegex {
     font-size: 15px;
 }
 
-.uploader-modal .drag-zone.fileError .error {
-
+.uploader-modal .drag-zone.fileError .error, .uploadPlatform.fileError .error {
     opacity: 1;
     position: absolute;
     right: 15px;
     bottom: 30px;
+}
+
+.uploadPlatform.fileError .error {
+    bottom: 15px;
 }
 
 .uploader-modal .upload-file .progress {
