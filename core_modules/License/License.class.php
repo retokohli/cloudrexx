@@ -138,7 +138,13 @@ class License {
      * This is a dirty fix to allow 3rd party components with disabled licensing
      */
     protected function loadLegalComponentsHack() {
-        $objDatabase = \Env::get('cx')->getDb()->getAdoDb();
+        $cx = \Env::get('cx');
+        // This is necessary for update
+        if (!$cx) {
+            global $objDatabase;
+        } else {
+            $objDatabase = $cx->getDb()->getAdoDb();
+        }
         $result = $objDatabase->Execute('
             SELECT
                 `name`
