@@ -724,6 +724,16 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $this->_objTpl->hideBlock('access_permission_tabs_menu');
         }
 
+        //Display MediaBrowser for selecting webpage
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setOptions(array(
+                    'type'             => 'button',
+                    'data-cx-mb-views' => 'sitestructure',
+                    'id'               => 'media-browser-button',
+                    'style'            => 'display: none;'
+        ));
+        $mediaBrowser->setCallback('SetUrl');
+        
         $this->attachJavaScriptFunction('accessSetWebpage');
         $this->attachJavaScriptFunction('accessSelectAllGroups');
         $this->attachJavaScriptFunction('accessDeselectAllGroups');
@@ -731,6 +741,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $this->attachJavaScriptFunction('accessRemoveGroupFromList');
 
         $this->_objTpl->setVariable(array(
+            'ACCESS_MEDIA_BROWSER_BUTTON'   => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_ACCESS_BROWSE']),
             'TXT_ACCESS_GENERAL'            => $_ARRAYLANG['TXT_ACCESS_GENERAL'],
             'TXT_ACCESS_PERMISSIONS'        => $_ARRAYLANG['TXT_ACCESS_PERMISSIONS'],
             'TXT_ACCESS_NAME'               => $_ARRAYLANG['TXT_ACCESS_NAME'],
