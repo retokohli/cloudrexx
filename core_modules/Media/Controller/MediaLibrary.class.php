@@ -610,7 +610,7 @@ class MediaLibrary
         $dir  = array();
         $file = array();
         $forbidden_files = array('.', '..', '.svn', '.htaccess', 'index.php');
-
+        $filterThumbFiles = 'thumb_thumbnail|thumb_medium|thumb_large';
         if (is_dir($path)) {
             $fd = @opendir($path);
             $name = @readdir($fd);
@@ -642,13 +642,14 @@ class MediaLibrary
                             if (!\FWSystem::detectUtf8($fileName)) {
                                 $fileName = utf8_encode($fileName);
                             }
-                        
-                            $file['icon'][] = $this->_getIcon($path.$name);
-                            $file['name'][] = $fileName;
-                            $file['size'][] = $this->_getSize($path.$name);
-                            $file['type'][] = $this->_getType($path.$name);
-                            $file['date'][] = $this->_getDate($path.$name);
-                            $file['perm'][] = $this->_getPerm($path.$name);
+                            if (!preg_match('/^.*\.(' . $filterThumbFiles . ').*$/i', $fileName)) {
+                                $file['icon'][] = $this->_getIcon($path . $name);
+                                $file['name'][] = $fileName;
+                                $file['size'][] = $this->_getSize($path . $name);
+                                $file['type'][] = $this->_getType($path . $name);
+                                $file['date'][] = $this->_getDate($path . $name);
+                                $file['perm'][] = $this->_getPerm($path . $name);
+                            }
                         }
                     }
                 }
