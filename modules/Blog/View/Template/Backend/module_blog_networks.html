@@ -20,19 +20,13 @@ function selectMultiAction() {
 	}
 }
 
-//Following Functions are needed for Picture-Selection -------------------------------------------------------------
-function SetUrl(url, width, height, alt) {
-	document.getElementById(newsElInsertBox).value = url;
-}
-
-function newsGetFileBrowser(elInsertBox) {
-	newsElInsertBox = elInsertBox;
-	openWindow('?cmd=FileBrowser&{CSRF_PARAM}&standalone=true&type=blog','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-}
-
-function openWindow(theURL,winName,features){
-	blogPopup = window.open(theURL,"Blog",features);
-	blogPopup.focus();
+//media browser callback function.
+function blogSetUrl(data) {
+    if (data.type === 'file') {
+        if (data.data[0]) {
+            $J('#frmAddNetwork_Icon').val(data.data[0].datainfo.filepath);
+        }
+    }
 }
 //]]>
 </script>
@@ -117,7 +111,9 @@ function openWindow(theURL,winName,features){
 			</tr>
 			<tr class="row1">
 				<td>{TXT_ADD_ICON}</td>
-				<td colspan="3"><input type="text" name="frmAddNetwork_Icon" id="frmAddNetwork_Icon" value="" maxlength="255" style="width:30%;" />&nbsp;<input type="button" name="frmAddNetwork_IconButton" value="{TXT_ADD_BROWSE}" onclick="newsGetFileBrowser('frmAddNetwork_Icon', 'image')" /></td>
+				<td colspan="3"><input type="text" name="frmAddNetwork_Icon" id="frmAddNetwork_Icon" value="" maxlength="255" style="width:30%;" />&nbsp;
+                                    {BLOG_MEDIABROWSER_BUTTON}
+                                </td>
 			</tr>
 			<tr class="row2">
 				<td width="10%">{TXT_ADD_LANGUAGES}</td>

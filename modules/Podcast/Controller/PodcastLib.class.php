@@ -1494,10 +1494,6 @@ EOF;
      */
     public static function getMediaBrowserButton($buttonValue, $options = array(), $callback = '')
     {
-        if (empty($buttonValue)) {
-            return;
-        }
-        
         // Mediabrowser
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
         $mediaBrowser->setOptions($options);

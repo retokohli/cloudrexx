@@ -61,19 +61,18 @@ function activateAnyActiveDiv() {
     }	
 }
 
-//Following Functions are needed for Picture-Selection -------------------------------------------------------------
-function SetUrl(url, width, height, alt) {
-    document.getElementById(newsElInsertBox).value = url;
+//media browser callback function
+function blogSetUrl(data) {
+    if (data.type === 'file') {
+        if (data.data[0]) {      
+            document.getElementById(newsElInsertBox).value = data.data[0].datainfo.filepath;
+        }
+    }    
 }
-
-function newsGetFileBrowser(elInsertBox) {
+//get media browser
+function newsGetMediaBrowser(elInsertBox) {
     newsElInsertBox = elInsertBox;
-    openWindow('?cmd=FileBrowser&{CSRF_PARAM}&standalone=true&type=blog','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-}
-
-function openWindow(theURL,winName,features){
-    blogPopup = window.open(theURL,"Blog",features);
-    blogPopup.focus();
+    cx.jQuery('#mediabrowser_button').trigger('click');
 }
 //]]>
 </script>
@@ -111,7 +110,7 @@ function openWindow(theURL,winName,features){
         </tr>
         <tr class="row2">
             <td>{TXT_DIV_IMAGE}</td>
-            <td colspan="3"><input type="text" name="frmEditEntry_Image_{DIV_LANGUAGE_ID}" id="frmEditEntry_Image_{DIV_LANGUAGE_ID}" style="width:30%;" value="{DIV_IMAGE}" />&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Image_{DIV_LANGUAGE_ID}', 'image')" /></td>
+            <td colspan="3"><input type="text" name="frmEditEntry_Image_{DIV_LANGUAGE_ID}" id="frmEditEntry_Image_{DIV_LANGUAGE_ID}" style="width:30%;" value="{DIV_IMAGE}" />&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetMediaBrowser('frmEditEntry_Image_{DIV_LANGUAGE_ID}')" /></td>
         </tr>
         <tr class="row1">
             <td width="10%" valign="top">{TXT_DIV_CATEGORIES}</td>
@@ -129,4 +128,5 @@ function openWindow(theURL,winName,features){
     <input type="hidden" name="frmEditCategory_MessageId" value="{EDIT_MESSAGE_ID}" />
     <input type="submit" value="{TXT_EDIT_SUBMIT}" name="frmEditCategory_Submit" />
 </form>
+{BLOG_MEDIABROWSER_BUTTON}
 <!-- END module_blog_entries_add.html -->
