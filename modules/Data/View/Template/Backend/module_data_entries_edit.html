@@ -72,8 +72,12 @@ function showSelectedThumbnailMethod(method, langId) {
 }
 
 //Following Functions are needed for Picture-Selection -------------------------------------------------------------
-function SetUrl(url, width, height, alt) {
-    document.getElementById(newsElInsertBox).value = url;
+function mbCallback(data) {
+    if (data.type === "file" && newsElInsertBox != '' && data.data[0]) {
+        var url = data.data[0].datainfo.filepath;
+
+        document.getElementById(newsElInsertBox).value = url;
+    }
 }
 
 function newsGetFileBrowser(elInsertBox, sType)
@@ -87,17 +91,7 @@ function newsGetFileBrowser(elInsertBox, sType)
             return false;
         }
     }
-
-    if (sType == 'webpages') {
-        openWindow('index.php?cmd=FileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-    } else {
-        openWindow('index.php?cmd=FileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-    }
-}
-
-function openWindow(theURL,winName,features){
-    dataPopup = window.open(theURL,"Data",features);
-    dataPopup.focus();
+    cx.jQuery('#mediabrowser_button').trigger('click');
 }
 
 var switchMode = function(mode)
@@ -512,6 +506,7 @@ function fillSelects() {
     </table>
     </div>
     <br />
+    {MEDIABROWSER_BUTTON}
     <input type="hidden" name="frmEditCategory_MessageId" value="{EDIT_MESSAGE_ID}" />
     <input type="submit" value="{TXT_EDIT_SUBMIT}" name="frmEditCategory_Submit" />
 </form>

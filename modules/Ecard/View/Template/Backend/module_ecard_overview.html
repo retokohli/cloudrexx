@@ -14,7 +14,7 @@ function ecardClearImage(motive_id) {
 }
 
 function mbCallback(data) {
-    if (data.type= "file" && path != '') {
+    if (data.type === "file" && path != '' && data.data[0]) {
         var url = data.data[0].datainfo.filepath;
         
         document.getElementById("motive_id_"+path).value = url;
