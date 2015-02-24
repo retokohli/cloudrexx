@@ -141,7 +141,7 @@ class ImageManager
      * @param   int     $quality
      * @return  boolean
      */
-    function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90, $thumb_name='')
+    function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90, $thumb_name='', $generateThumbnailByRatio = false)
     {
         $_objImage = new ImageManager();
         $file      = basename($file);
@@ -155,7 +155,13 @@ class ImageManager
         $thumbWidth  = $tmpSize[0] * $factor;
         $thumbHeight = $tmpSize[1] * $factor;
         if (!$_objImage->loadImage($strPath.$file)) return false;
-        if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
+        
+        if ($generateThumbnailByRatio && !$_objImage->resizeImageWithAspectRatio($thumbWidth, $thumbHeight, $quality)) {
+            return false;
+        } elseif (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) {
+            return false;
+        }
+        
         if (!(strlen($thumb_name) > 0)) {
             $thumb_name = self::getThumbnailFilename($file);
         }
@@ -240,8 +246,31 @@ class ImageManager
     public function resizeImage($width, $height, $quality)
     {
         if (!$this->imageCheck) return false;
-	
+        
+        //Create a new image for given size
+	$this->createNewImageForResize($width, $height, $quality);
+        if (function_exists('imagecopyresampled')) { //resampled is gd2 only
+-           imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
+        } else {
+-           imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
+        }
+        
 	if ($this->newImage) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * create new image for resize
+     * 
+     * @param   string   $width    The width of the new image.
+     * @param   string   $height   The height of the new image.
+     * @param   string   $quality  The quality for the new image.
+     */
+    public function createNewImageForResize($width, $height, $quality, $setWhiteBackground = false)
+    {
+        if ($this->newImage) {
             $this->orgImage       = $this->newImage;
             $this->orgImageWidth  = $this->newImageWidth;
             $this->orgImageHeight = $this->newImageHeight;
@@ -251,17 +280,12 @@ class ImageManager
         $this->newImageHeight = $height;
         $this->newImageQuality = $quality;
         $this->newImageType = $this->orgImageType;
-        
-        $dstX      = ($this->newImageWidth  > $this->orgImageWidth) ? round(($this->newImageWidth - $this->orgImageWidth) / 2) : 0;
-        $dstY      = ($this->newImageHeight > $this->orgImageHeight) ? round(($this->newImageHeight - $this->orgImageHeight) / 2) : 0;
-        $newWidth  = ($this->newImageWidth  > $this->orgImageWidth) ? $this->orgImageWidth : $this->newImageWidth;
-        $newHeight = ($this->newImageHeight > $this->orgImageHeight) ? $this->orgImageHeight : $this->newImageHeight;
 	
         if (function_exists('imagecreatetruecolor')) {
             $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
             // GD > 2 check
             if ($this->newImage) {
-                if ($this->newImageWidth  > $this->orgImageWidth) {
+                if ($setWhiteBackground) {
                     imagefill($this->newImage, 0, 0, imagecolorallocate($this->newImage, 255, 255, 255));
                 } else {
                     $this->setTransparency();
@@ -272,6 +296,29 @@ class ImageManager
         } else {
             $this->newImage = imagecreate($this->newImageWidth, $this->newImageHeight);
         }
+    }
+    
+    /**
+     * Resize the image with aspect ratio and fill the white color in empty area
+     * 
+     * @param   string   $width    The width of the new image.
+     * @param   string   $height   The height of the new image.
+     * @param   string   $quality  The quality for the new image.
+     * 
+     * @return boolean
+     */
+    public function resizeImageWithAspectRatio($width, $height, $quality)
+    {
+        if (!$this->imageCheck) return false;
+        
+        $setWhiteBackground = ($width  > $this->orgImageWidth) ? true : false;
+        //Create a new image for given size
+        $this->createNewImageForResize($width, $height, $quality, $setWhiteBackground);
+        
+        $dstX      = ($this->newImageWidth  > $this->orgImageWidth) ? round(($this->newImageWidth - $this->orgImageWidth) / 2) : 0;
+        $dstY      = ($this->newImageHeight > $this->orgImageHeight) ? round(($this->newImageHeight - $this->orgImageHeight) / 2) : 0;
+        $newWidth  = ($this->newImageWidth  > $this->orgImageWidth) ? $this->orgImageWidth : $this->newImageWidth;
+        $newHeight = ($this->newImageHeight > $this->orgImageHeight) ? $this->orgImageHeight : $this->newImageHeight;
         
         if (function_exists('imagecopyresampled')) { //resampled is gd2 only
             imagecopyresampled($this->newImage, $this->orgImage, $dstX, $dstY, 0, 0, $newWidth, $newHeight, $this->orgImageWidth, $this->orgImageHeight);
@@ -284,7 +331,7 @@ class ImageManager
         }
         return false;
     }
-
+    
 
     /**
      * Add transparency to new image

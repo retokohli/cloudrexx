@@ -43,7 +43,7 @@ class ThumbnailGenerator
      * @return array With all thumbnail types and if they were generated successfully.
      */
     public static function createThumbnail(
-        $path, $fileNamePlain, $fileExtension, \ImageManager $imageManager
+        $path, $fileNamePlain, $fileExtension, \ImageManager $imageManager, $generateThumbnailByRatio = false
     )
     {
         $success = Array();
@@ -65,7 +65,8 @@ class ThumbnailGenerator
                 $fileNamePlain . '.' . $fileExtension,
                 $thumbnail['size'],
                 $thumbnail['quality'],
-                $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
+                $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension,
+                $generateThumbnailByRatio
             )
             ) {
                 $success[$thumbnail['value']]
