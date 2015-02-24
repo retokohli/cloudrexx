@@ -568,9 +568,10 @@ class DownloadsManager extends DownloadsLibrary
 
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_GROUP_ASSOCIATED_CATEGORIES'      => implode("\n", $arrAssociatedCategoryOptions),
-            'DOWNLOADS_GROUP_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions)
+            'DOWNLOADS_GROUP_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions),
+            'DOWNLOADS_MEDIA_BROWSER_BUTTON'             => self::getMediaBrowserButton(null, 'sitestructure')
         ));
-
+        
         return true;
     }
 
@@ -851,7 +852,10 @@ class DownloadsManager extends DownloadsLibrary
                 'DOWNLOADS_CATEGORY_'.$permissionTypeUC.'_ASSOCIATED_GROUPS'        => implode("\n", $arrPermissionType['associated_groups'])
             ));
         }
-        $this->objTemplate->setVariable('DOWNLOADS_CATEGORY_APPLY_RECURSIVE_CHECKED', $objCategory->hasToSetPermissionsRecursive() ? 'checked="checked"' : '');
+        $this->objTemplate->setVariable(array(
+            'DOWNLOADS_CATEGORY_APPLY_RECURSIVE_CHECKED' => $objCategory->hasToSetPermissionsRecursive() ? 'checked="checked"' : '',
+            'DOWNLOADS_MEDIA_BROWSER_BUTTON'             => self::getMediaBrowserButton(null, 'filebrowser')
+        ));
         return true;
     }
 
@@ -1720,10 +1724,37 @@ class DownloadsManager extends DownloadsLibrary
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_DOWNLOAD_CANCEL_LINK_SECITON'    => $this->parentCategoryId ? 'categories' : 'downloads',
             'DOWNLOADS_PARENT_CATEGORY_ID'              => $this->parentCategoryId,
+            'DOWNLOADS_MEDIA_BROWSER_BUTTON'            => self::getMediaBrowserButton('mediabrowser_button', 'filebrowser')
         ));
         return true;
     }
-
+    
+    /**
+     * Mediabrowser integrated into the downloads modules.
+     * 
+     * @global array $_ARRAYLANG
+     * @param string $view optional argument
+     */
+    public static function getMediaBrowserButton($id, $type = 'filebrowser')
+    {
+        global $_ARRAYLANG;
+        
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setCallback('mbCallback');
+        $options = array(
+            'type'             => 'button',
+            'data-cx-mb-views' => $type,
+        );
+        
+        if (!empty($id)) {
+            $options['id']    = $id;
+            $options['style'] = 'display:none;';
+        }
+        
+        $mediaBrowser->setOptions($options);
+        
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_DOWNLOADS_BROWSE']);
+    }
 
     /**
      * @todo  Documentation

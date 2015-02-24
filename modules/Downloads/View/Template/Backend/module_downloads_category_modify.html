@@ -174,28 +174,18 @@
 
 
 
-//		function downloadsGetFileBrowser(elInsertBox)
-//		{
-//			downloadsElInsertBox = elInsertBox;
-//			downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-//		}
-//		
-
-	function downloadsOpenWindow(theURL,winName,features)
-	{
-	    downloadsPopup = window.open(theURL,"Downloads",features);
-	    downloadsPopup.focus();
-	}
-
-    
-    function SetUrl(url, width, height, alt)
+    function mbCallback(data)
     {
-        document.getElementById('downloads_category_image').value = url;
-        document.getElementById('downloads_category_image_remove_button').style.display = '';
-        document.getElementById('downloads_category_image_preview').src = url+'.thumb';
-        //document.getElementById('downloads_category_image_preview').src = thumb_url;
-        //document.getElementById('downloads_category_image_preview').style.width = thumb_width;
-        //document.getElementById('downloads_category_image_preview').style.height = thumb_height;
+        if (data.type === "file" && data.data[0]) {
+            var url = data.data[0].datainfo.filepath;
+
+            document.getElementById('downloads_category_image').value = url;
+            document.getElementById('downloads_category_image_remove_button').style.display = '';
+            document.getElementById('downloads_category_image_preview').src = url+'.thumb';
+            //document.getElementById('downloads_category_image_preview').src = thumb_url;
+            //document.getElementById('downloads_category_image_preview').style.width = thumb_width;
+            //document.getElementById('downloads_category_image_preview').style.height = thumb_height;
+        }
     }
 // ]]>
 </script>
@@ -283,7 +273,7 @@
                             height="17"
                         />
                         </a>
-                        <br /><input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsOpenWindow('index.php?cmd=FileBrowser&{CSRF_PARAM}&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes')" />
+                        <br />{DOWNLOADS_MEDIA_BROWSER_BUTTON}
                         <br />
                     </td>
                 </tr>

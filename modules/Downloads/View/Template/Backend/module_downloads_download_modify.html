@@ -98,47 +98,40 @@ function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMim
     downloadsElImagePreview = typeof(elImagePreview) == 'undefined' ? null : elImagePreview;
     downloadsElRemoveButton = typeof(elRemoveButton) == 'undefined' ? null : elRemoveButton;
     downloadsElMimeType = typeof(elMimeType) == 'undefined' ? null : elMimeType;
-    downloadsOpenWindow('index.php?cmd=FileBrowser&type=downloads&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    cx.jQuery('#mediabrowser_button').trigger('click');
 }
 
-function downloadsOpenWindow(theURL,winName,features)
-{
-	downloadsPopup = window.open(theURL,"Downloads",features);
-	downloadsPopup.focus();
-}
-
-function SetUrl(url, width, height, alt)
+function mbCallback(data)
 {
     fileExtRegExp = new Array();
     <!-- BEGIN downloads_download_file_ext_regexp -->
     fileExtRegExp[fileExtRegExp.length] = new Array('{DOWNLOADS_MIME_TYPE}', new RegExp("\.(?:{DOWNLOADS_FILE_EXTENSION_REGEXP})$", "i"));
     <!-- END downloads_download_file_ext_regexp -->
 
-    if (downloadsElMimeType != null) {
-        for (i = 0; i < fileExtRegExp.length; i++) {
-            if ((extension = fileExtRegExp[i][1].exec(url)) !== null) {
-                downloadsElMimeType.value = fileExtRegExp[i][0];
-                break;
+    if (data.type === "file" && downloadsElInsertBox != '' && data.data != '') {
+        var url = data.data[0].datainfo.filepath;
+        downloadsElInsertBox.value = url;
+        
+        if (downloadsElImagePreview != null) {
+           downloadsElImagePreview.src = url+'.thumb';
+        }
+        if (downloadsElRemoveButton != null) {
+           downloadsElRemoveButton.style.display = '';
+        }
+        if (downloadsElMimeType != null) {
+            for (i = 0; i < fileExtRegExp.length; i++) {
+                if ((extension = fileExtRegExp[i][1].exec(url)) !== null) {
+                    downloadsElMimeType.value = fileExtRegExp[i][0];
+                    break;
+                }
             }
         }
+        var id = downloadsElInsertBox.id;
+        var result = id.match(/(\d+)$/);
+        if (result && result[1] == 0) {
+            downloadsSyncNameFields(downloadsElInsertBox.value,'input','downloads_download_file_source')
+        }
     }
-
-
-    downloadsElInsertBox.value = url;
-
-    if (downloadsElImagePreview != null) {
-        downloadsElImagePreview.src = url+'.thumb';
-    }
-    if (downloadsElRemoveButton != null) {
-        downloadsElRemoveButton.style.display = '';
-    }
-
-    var id = downloadsElInsertBox.id;
-    var result = id.match(/(\d+)$/);
-    if (result && result[1] == 0) {
-        downloadsSyncNameFields(downloadsElInsertBox.value,'input','downloads_download_file_source')
-    }
-
 }
 
 function downloadsAdjustSourceConfig()
@@ -675,6 +668,7 @@ function downloadsAdjustSourceConfig()
     <!-- end div downloadsTab_downloadPermissions -->
 
     <br />
+    {DOWNLOADS_MEDIA_BROWSER_BUTTON}
     <input type="button" name="downloads_download_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=Downloads&{CSRF_PARAM}&act={DOWNLOADS_DOWNLOAD_CANCEL_LINK_SECITON}&amp;parent_id={DOWNLOADS_PARENT_CATEGORY_ID}&amp;category_sort={DOWNLOADS_DOWNLOAD_CATEGORY_SORT}&amp;category_by={DOWNLOADS_DOWNLOAD_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_DOWNLOAD_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_DOWNLOAD_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_DOWNLOAD_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_DOWNLOAD_DOWNLOAD_OFFSET}'" />
     <input type="submit" name="downloads_download_save" value="{TXT_DOWNLOADS_SAVE}" />
 </form>

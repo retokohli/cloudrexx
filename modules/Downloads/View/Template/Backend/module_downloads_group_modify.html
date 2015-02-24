@@ -87,22 +87,12 @@
         }
     }
 
-
-	function downloadsOpenWindow(theURL,winName,features)
-	{
-	    downloadsPopup = window.open(theURL,"Downloads",features);
-	    downloadsPopup.focus();
-	}
-
-    function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMimeType)
+    function mbCallback(data)
     {
-        downloadsElInsertBox = elInsertBox;
-        downloadsOpenWindow('index.php?cmd=FileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-    }
-
-    function SetUrl(url, width, height, alt)
-    {
-        downloadsElInsertBox.value = url;
+        if (data.type === "page" && data.data[0]) {
+            var url = data.data[0].node;
+            document.getElementById('downloads_group_file_source').value = url;
+        }
     }
 // ]]>
 </script>
@@ -139,7 +129,8 @@
                     <input type="radio" name="downloads_group_type" id="downloads_group_type_url" value="url" {DOWNLOADS_GROUP_TYPE_URL_CHECKED} onchange="downloadsAdjustSourceConfig()" /><label for="downloads_group_type_url">{TXT_DOWNLOADS_URL}</label>
                     <br />
                     <div id="downloads_group_type_file_config" style="display:{DOWNLOADS_GROUP_TYPE_FILE_CONFIG_DISPLAY}">
-                        <input type="text" name="downloads_group_file_source" id="downloads_group_file_source" value="{DOWNLOADS_GROUP_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_group_file_source'),null,null,document.getElementById('downloads_group_mime_type'))" />
+                        <input type="text" name="downloads_group_file_source" id="downloads_group_file_source" value="{DOWNLOADS_GROUP_FILE_SOURCE}" style="width:300px;" /> 
+                        {DOWNLOADS_MEDIA_BROWSER_BUTTON}
                     </div>
                     <div id="downloads_group_type_url_config" style="display:{DOWNLOADS_GROUP_TYPE_URL_CONFIG_DISPLAY}">
                         <input type="text" name="downloads_group_url_source" value="{DOWNLOADS_GROUP_URL_SOURCE}" style="width:300px;" />

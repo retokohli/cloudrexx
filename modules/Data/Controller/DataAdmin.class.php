@@ -1083,7 +1083,27 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         return $amount;
     }
 
-
+    /**
+     * Get the MediaBrowser button
+     * 
+     * @global array $_ARRAYLANG
+     * @return string
+     */
+    public static function getMediaBrowserButton() {
+        global $_ARRAYLANG;
+        
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setCallback('mbCallback');
+        $mediaBrowser->setOptions(array(
+                                    'type'             => 'button',
+                                    'data-cx-mb-views' => 'filebrowser',
+                                    'id'               => 'mediabrowser_button',
+                                    'style'            => 'display: none;'
+                                ));
+        
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']);
+    }
+    
     /**
      * Shows the "Add Entry" page.
      *
@@ -1098,7 +1118,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
-
+        
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
             'TXT_ADD_ENTRY'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'],
@@ -1123,9 +1143,10 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             'RELEASE_MINUTES_OPTIONS_END'   => $this->getTimeOptions(23, 0),
             'ENDLESS_CHECKED'               => "checked=\"checked\"",
             'RELEASE_DISPLAY'               => "disabled=\"disabled\"",
-            'RELEASE_COLOR'                 => "gray"
-        ));
-
+            'RELEASE_COLOR'                 => "gray",
+            'MEDIABROWSER_BUTTON'           => self::getMediaBrowserButton()
+));
+        
         $arrCategories = $this->createCategoryArray();
 
         $catTree = $this->buildCatTree($arrCategories);
@@ -1417,7 +1438,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
 
         $this->_strPageTitle = $copy ? $_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'] : $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
-
+        
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
             'TXT_EDIT_SUBMIT'        =>    $_ARRAYLANG['TXT_SAVE'],
@@ -1427,7 +1448,8 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             'TXT_DIV_MODE_FORWARD'  =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_FORWARD'],
             'TXT_DIV_ACTIVATE_RELEASE_TIME' =>  $_ARRAYLANG['TXT_ACTIVATE_RELEASE_TIME'],
             'TXT_DIV_RELEASE_TIME'  =>  $_ARRAYLANG['TXT_RELEASE_TIME'],
-            'TXT_ENDDATE_ENDLESS'   =>  $_ARRAYLANG['TXT_ENDLESS']
+            'TXT_ENDDATE_ENDLESS'   =>  $_ARRAYLANG['TXT_ENDLESS'],
+            'MEDIABROWSER_BUTTON'   =>  self::getMediaBrowserButton()
         ));
 
         $arrCategories = $this->createCategoryArray();
