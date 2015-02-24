@@ -466,20 +466,23 @@ class FileBrowser {
     
                 if (count($this->_arrFiles) > 0) {
                     $arrEscapedPaths = array();
+                    $filterThumbFiles = 'thumb_thumbnail|thumb_medium|thumb_large';
                     foreach ($this->_arrFiles as $arrFile) {
                         $arrEscapedPaths[] = contrexx_raw2encodedUrl($arrFile['path']);
-                        $this->_objTpl->setVariable(array(
-                            'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
-                            'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
-                            'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".contrexx_raw2xhtml($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
-                            'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
-                            'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
-                            'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
-                            'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
-                            'FILEBROWSER_FILE_DIMENSION'        => (empty($arrFile['width']) && empty($arrFile['height'])) ? '' : intval($arrFile['width']).'x'.intval($arrFile['height'])
-                        ));
-                        $this->_objTpl->parse('content_files');
-                        $rowNr++;
+                        if (!preg_match('/^.*\.(' . $filterThumbFiles . ').*$/i', $arrFile['name'])) {
+                            $this->_objTpl->setVariable(array(
+                                'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
+                                'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
+                                'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".contrexx_raw2xhtml($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
+                                'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
+                                'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
+                                'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
+                                'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
+                                'FILEBROWSER_FILE_DIMENSION'        => (empty($arrFile['width']) && empty($arrFile['height'])) ? '' : intval($arrFile['width']).'x'.intval($arrFile['height'])
+                            ));
+                            $this->_objTpl->parse('content_files');
+                            $rowNr++;
+                        }
                     }
     
                     $this->_objTpl->setVariable('FILEBROWSER_FILES_JS', "'".implode("','",$arrEscapedPaths)."'");
