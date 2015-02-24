@@ -107,7 +107,10 @@ function accessChangeProtection(triggerLink, nodeId, lang, backend)
 				</tr>
                 <tr class="row1">
                     <td>{TXT_ACCESS_HOMEPAGE}&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_ACCESS_HOMEPAGE_DESC}</span></td>
-                    <td colspan="3"><input type="text" name="access_group_homepage" id="access_group_homepage" value="{ACCESS_GROUP_HOMEPAGE}" style="width:300px;" /><input type="button" name="access_open_browser" value="{TXT_ACCESS_BROWSE}" onclick="accessGetFileBrowser('access_group_homepage', 'webpages')" /></td>
+                    <td colspan="3"><input type="text" name="access_group_homepage" id="access_group_homepage" value="{ACCESS_GROUP_HOMEPAGE}" style="width:300px;" />
+                        <input type="button" name="access_open_browser" value="{TXT_ACCESS_BROWSE}" onclick="accessGetFileBrowser('access_group_homepage')" />
+                        {ACCESS_MEDIA_BROWSER_BUTTON}
+                    </td>
                 </tr>
 			</tbody>
 		</table>
