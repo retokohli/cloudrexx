@@ -352,6 +352,10 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
                 }
             }
         }
+        
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setOptions(array('type' => 'button', 'data-cx-mb-views' => 'sitestructure'));
+        $mediaBrowser->setCallback('aliasSetUrl');
 
         // prepare template
         $this->_objTpl->loadTemplateFile('module_alias_modify.html');
@@ -359,7 +363,7 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
 
         $this->_objTpl->setVariable(array(
             'TXT_ALIAS_TARGET_PAGE'             => $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE'],
-            'TXT_ALIAS_BROWSE'                  => $_ARRAYLANG['TXT_ALIAS_BROWSE'],
+            'ALIAS_MEDIABROWSER_BUTTON'         => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_ALIAS_BROWSE']),
             'TXT_ALIAS_ALIAS_ES'                => $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'],
             'TXT_ALIAS_DELETE'                  => $_ARRAYLANG['TXT_ALIAS_DELETE'],
             'TXT_ALIAS_CONFIRM_REMOVE_ALIAS'    => $_ARRAYLANG['TXT_ALIAS_CONFIRM_REMOVE_ALIAS'],

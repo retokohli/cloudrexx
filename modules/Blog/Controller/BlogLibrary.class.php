@@ -1181,4 +1181,25 @@ class BlogLibrary {
             }
         }
     }
+    
+    /**
+     * Get mediabrowser button
+     * 
+     * @param string $buttonValue Value of the button
+     * @param string $options     Input button options 
+     * @param string $callback    Media browser callback function
+     * 
+     * @return null
+     */
+    public static function getMediaBrowserButton($buttonValue, $options = array(), $callback = '')
+    {
+        // Mediabrowser
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setOptions($options);
+        if ($callback) {
+            $mediaBrowser->setCallback($callback);
+        }
+        
+        return $mediaBrowser->getXHtml($buttonValue);        
+    }
 }

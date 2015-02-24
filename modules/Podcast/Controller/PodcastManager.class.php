@@ -754,7 +754,7 @@ class PodcastManager extends PodcastLib
             'TXT_PODCAST_MEDIA_SHORT_DATE'      => $_ARRAYLANG['TXT_PODCAST_MEDIA_SHORT_DATE'],
             'TXT_PODCAST_MEDIA_DESCRIPTION'     => $_ARRAYLANG['TXT_PODCAST_MEDIA_DESCRIPTION'],
             'TXT_PODCAST_AUTO_VALIDATE'         => $_ARRAYLANG['TXT_PODCAST_AUTO_VALIDATE'],
-            'PODCAST_BROWSE'                    => PodcastLib::getMediaBrowserButton(
+            'PODCAST_BROWSE'                    => self::getMediaBrowserButton(
                                                             $_ARRAYLANG['TXT_PODCAST_BROWSE'],
                                                             array(
                                                                 'data-cx-mb-views' => 'filebrowser',
