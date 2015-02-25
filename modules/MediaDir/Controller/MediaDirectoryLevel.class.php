@@ -322,8 +322,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$arrLevel['levelId'].'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a>',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel[$intLevelId]['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel[$intLevelId]['levelName'][0]).'" />',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel[$intLevelId]['levelPicture'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel['levelPicture'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
                     ));
 
