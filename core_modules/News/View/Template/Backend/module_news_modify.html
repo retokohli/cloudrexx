@@ -23,7 +23,18 @@
         $J('input[name=endDate]').datetimepicker(dpOptions);
     }, true);
 
-    function SetUrl(url, width, height, alt) {
+    function SetUrl(data) {
+        var type = data.type;
+        var url  = '';
+        
+        if (type === 'close') {
+            return false;
+        } else if (type === 'file') {
+            url = data.data[0].datainfo.filepath;
+        } else if (type === 'page') {
+            url = data.data[0].node;
+        }
+        
         switch (newsElType) {
             case 'image':
             case 'webpages':
@@ -51,13 +62,19 @@
             }
         }
 
-        var langId = cx.jQuery("a.langtab.active").attr("id").slice(14);
-
-        if (sType == 'webpages') {
-            openWindow('index.php?cmd=FileBrowser&{CSRF_PARAM}&standalone=true&type=webpages&langId='+langId,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-        } else {
-            openWindow('index.php?cmd=FileBrowser&{CSRF_PARAM}&standalone=true&langId='+langId,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+        var options = {};
+        switch (sType) {
+            case 'image':
+                options = {cxMbViews: 'filebrowser', cxMbStartview: 'MediaBrowserList'};
+                break;
+            case 'webpages':
+                options = {cxMbViews: 'sitestructure', cxMbStartview: 'MediaBrowserList'};
+                break;
+            case 'link':
+                options = {cxMbViews: 'filebrowser,sitestructure', cxMbStartview: 'MediaBrowserList'};
+                break;
         }
+        cx.variables.get('jquery','mediabrowser')('#newsMediaBrowser').trigger('click', options);
     }
 
     function newsInsertLink(elInsertBox, sLink) {
@@ -638,6 +655,7 @@
         <br />
     </div>
     <!-- end news4 div -->
+    {NEWS_MEDIA_BROWSER_BROWSE_BUTTON}
     <input type="submit" name="{NEWS_SUBMIT_NAME}" value="{NEWS_SUBMIT_NAME_TEXT}" />
     <br />
     <br />

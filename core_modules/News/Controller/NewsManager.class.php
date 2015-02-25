@@ -1193,7 +1193,12 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'NEWS_TYPE_CHECKED_CONTENT'     => empty($newsredirect) ? 'checked="checked"' : '',
             'NEWS_TYPE_CHECKED_REDIRECT'    => empty($newsredirect) ? '' : 'checked="checked"',
             'NEWS_TEASER_IMAGE_PATH'        => contrexx_raw2xhtml($newsTeaserImagePath),
-            'NEWS_TEASER_IMAGE_THUMBNAIL_PATH' => contrexx_raw2xhtml($newsTeaserImageThumbnailPath)
+            'NEWS_TEASER_IMAGE_THUMBNAIL_PATH' => contrexx_raw2xhtml($newsTeaserImageThumbnailPath),
+            'NEWS_MEDIA_BROWSER_BROWSE_BUTTON' => self::getMediaBrowserButton(array(
+                                                                                'type'  => 'button',
+                                                                                'id'    => 'newsMediaBrowser',
+                                                                                'style' => 'display:none;'
+                                                                              ),'SetUrl')
         ));         
 
         if ($_CONFIG['newsTeasersStatus'] == '1') {
@@ -1642,7 +1647,12 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'NEWS_TEASER_IMAGE_THUMBNAIL_PATH' => contrexx_raw2xhtml($objResult->fields['teaser_image_thumbnail_path']),
                 'NEWS_DATE'                     => date('Y-m-d H:i:s'),
                 'NEWS_SUBMIT_NAME'              => isset($_GET['validate']) ? 'validate' : 'store',
-                'NEWS_SUBMIT_NAME_TEXT'         => isset($_GET['validate']) ? $_ARRAYLANG['TXT_CONFIRM'] : $_ARRAYLANG['TXT_STORE']
+                'NEWS_SUBMIT_NAME_TEXT'         => isset($_GET['validate']) ? $_ARRAYLANG['TXT_CONFIRM'] : $_ARRAYLANG['TXT_STORE'],
+                'NEWS_MEDIA_BROWSER_BROWSE_BUTTON' => self::getMediaBrowserButton(array(
+                                                                                    'type'  => 'button',
+                                                                                    'id'    => 'newsMediaBrowser',
+                                                                                    'style' => 'display:none;'
+                                                                                  ),'SetUrl')
             ));
 
             if ($this->arrSettings['news_message_protection'] == '1') {
@@ -3322,7 +3332,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'NEWS_USE_TOP_CHECKED'                  => $this->arrSettings['news_use_top'] == '1' ? 'checked="checked"' : '',
             'NEWS_MESSAGE_TOP_DISPLAY'              => $this->arrSettings['news_use_top'] == '1' ? '' : 'none',
             'NEWS_TOP_DAYS'                         =>(intval($this->arrSettings['news_top_days'])),
-            'NEWS_TOP_LIMIT'                        =>(intval($this->arrSettings['news_top_limit']))
+            'NEWS_TOP_LIMIT'                        =>(intval($this->arrSettings['news_top_limit'])),
+            'NEWS_MEDIA_BROWSER_BROWSE_BUTTON'      => self::getMediaBrowserButton(array(
+                                                                                    'type'             => 'button',
+                                                                                    'id'               => 'newsFeedImage',
+                                                                                    'data-cx-mb-views' => 'filebrowser',
+                                                                                    'style'            => 'width:110px;'
+                                                                                   ),'SetUrl')
         ));
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ACTIVATED'                         =>  $_CORELANG['TXT_ACTIVATED'],
@@ -4292,6 +4308,32 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             return true;
         }   
         return false;
+    }
+    
+    /**
+     * Get the MediaBrowser button
+     * 
+     * @global array $_ARRAYLANG
+     * 
+     * @param string $options      mediabrowser options
+     * @param string $callBackName callback javascript function name
+     * 
+     * @return mixed boolean|string
+     */
+    public static function getMediaBrowserButton($options, $callBackName = '') {
+        if (empty($options)) {
+            return false;
+        }
+        
+        global $_ARRAYLANG;
+        
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setOptions($options);
+        if (!empty($callBackName)) {
+            $mediaBrowser->setCallback($callBackName);
+        }
+        
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_BROWSE']);
     }
 }
 
