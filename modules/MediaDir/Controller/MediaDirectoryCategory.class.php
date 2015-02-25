@@ -315,8 +315,8 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$arrCategory['catId'].'">'.contrexx_raw2xhtml($arrCategory['catName'][0]).'</a>',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategory['catDescription'][0],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]).'" />',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategory['catPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrCategory['catName'][0]).'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategory['catPicture'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategory['catNumEntries'],
                     ));
 
