@@ -1096,7 +1096,6 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         $mediaBrowser->setCallback('mbCallback');
         $mediaBrowser->setOptions(array(
                                     'type'             => 'button',
-                                    'data-cx-mb-views' => 'filebrowser',
                                     'id'               => 'mediabrowser_button',
                                     'style'            => 'display: none;'
                                 ));
