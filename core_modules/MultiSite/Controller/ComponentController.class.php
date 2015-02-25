@@ -71,7 +71,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getControllerClasses()
     {
-        return array('Backend', 'Cron', 'Frontend', 'Plesk', 'Xampp');
+        return array('Backend', 'Frontend', 'Cron');
     }
     
     public function getControllersAccessableByJson() { 
@@ -1810,16 +1810,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @throws WebsiteException
      */
-    public function getHostingController() 
+    public static function getHostingController()
     {
         global $_DBCONFIG;
 
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         switch (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
             case 'plesk':
-                $hostingController = $this->getController('Plesk');
-                
-                $hostingController->initFromConfig();
+                $hostingController = \Cx\Core_Modules\MultiSite\Controller\PleskController::fromConfig();
                 $hostingController->setWebspaceId(\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
                 break;
 
@@ -1828,8 +1826,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $dbObj             = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
                 $dbUserObj         = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
                 
-                $hostingController = $this->getController('Xampp'); 
-                $hostingController->initialize($dbObj, $dbUserObj);
+                $hostingController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($dbObj, $dbUserObj);
                 break;
 
             default:
@@ -1847,12 +1844,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @return $hostingController
      */
-    public function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer)
+    public static function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer)
     {
         switch ($mailServiceServer->getType()) {
             case 'plesk':
-                $hostingController = $this->getController('Plesk');
-                $hostingController->initialize($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword(), $mailServiceServer->getApiVersion());
+                $hostingController = new PleskController($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword(), $mailServiceServer->getApiVersion());
                 break;
 
             case 'xampp':
@@ -3100,18 +3096,5 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'TXT_MULTISITE_ACCEPT_TERMS_URL_NAME' => $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'],
             )
         );
-    }
-    
-    /**
-     * Get the MultiSite ComponentController Instance
-     * 
-     * @return object $componentController MultiSite component controller object
-     */
-    public static function getMultiSiteComponentControllerInstance() 
-    {
-        $systemComponentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $componentController = $systemComponentRepo->findOneBy(array('name'=>'MultiSite'));
-        
-        return $componentController;
     }
 }

@@ -314,8 +314,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
      */
     public function createAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
-        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
-        $hostingController   = $componentController->getMailServerHostingController($this);
+        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         
         $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
         $mainDomain = '';
@@ -365,8 +364,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
      */
     public function deleteAccount($accountId)
     {
-        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
-        $hostingController   = $componentController->getMailServerHostingController($this);
+        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         
         if ($hostingController->removeSubscription($accountId)) {
             return true;
@@ -394,8 +392,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             return false;
         }
         
-        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
-        $hostingController   = $componentController->getMailServerHostingController($this);
+        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         
         if ($hostingController->enableMailService($accountId)) {
             $website->setMailDn();
@@ -427,8 +424,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             return false;
         }
         
-        $componentController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMultiSiteComponentControllerInstance();
-        $hostingController   = $componentController->getMailServerHostingController($this);
+        $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         
         if ($hostingController->disableMailService($accountId)) {
             

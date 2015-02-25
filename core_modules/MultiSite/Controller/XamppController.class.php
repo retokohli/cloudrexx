@@ -24,7 +24,7 @@ namespace Cx\Core_Modules\MultiSite\Controller;
  * @subpackage  coremodule_MultiSite
  * @version     1.0.0
  */
-class XamppController extends \Cx\Core\Core\Model\Entity\Controller implements \Cx\Core_Modules\MultiSite\Controller\DbController,
+class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbController,
                                  \Cx\Core_Modules\MultiSite\Controller\SubscriptionController,
                                  \Cx\Core_Modules\MultiSite\Controller\FtpController,
                                  \Cx\Core_Modules\MultiSite\Controller\DnsController,
@@ -37,20 +37,8 @@ class XamppController extends \Cx\Core\Core\Model\Entity\Controller implements \
     /**
      * Constructor
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx)
-    {
-        parent::__construct($systemComponentController, $cx);
-    }
-    
-    /**
-     * Initialize the Xampp Controller
-     * 
-     * @param \Cx\Core\Model\Model\Entity\Db $db
-     * @param \Cx\Core\Model\Model\Entity\DbUser $dbUser
-     */
-    public function initialize(\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser) {
-        
-        $dbClass  = new \Cx\Core\Model\Db($db, $dbUser);
+    public function __construct(\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser) {
+        $dbClass = new \Cx\Core\Model\Db($db, $dbUser);
         // init new db
         $this->db = $dbClass->getAdoDb(); 
     }
