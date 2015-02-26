@@ -541,15 +541,18 @@ class MediaManager extends MediaLibrary
             'path' => $this->path,
             'webPath' => $this->webPath
         );
-
-        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
-        $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php', '\Cx\Core_modules\Media\Controller\MediaLibrary', 'uploadFinished'));
-        $comboUp->setData($data);
-        //set instance name to combo_uploader so we are able to catch the instance with js
-        $comboUp->setJsInstanceName('exposed_combo_uploader');
-        $this->_objTpl->setVariable(array(
-              'COMBO_UPLOADER_CODE'               => $comboUp->getXHtml(true)
+        
+        \JS::activate('mediabrowser');        
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Uploader();
+        $uploader->setFinishedCallback(array(
+            ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php',
+            '\Cx\Core_modules\Media\Controller\MediaLibrary',
+            'uploadFinished'
         ));
+        $uploader->setData($data);
+        $this->_objTpl->setVariable(
+            'MEDIA_UPLOADER_BUTTON', $uploader->getXHtml($_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'])
+        );
         //end of uploader button handling
 
         //check if a finished upload caused reloading of the page.
