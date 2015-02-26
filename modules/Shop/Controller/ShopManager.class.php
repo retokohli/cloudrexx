@@ -1633,7 +1633,7 @@ if ($test === NULL) {
         $virtual = false;
         $pictureFilename = NULL;
         $picturePath = $thumbPath = self::$defaultImage;
-        if ($category_id) {
+        if ($category_id) {            
             // Edit the selected category:  Flip view to the edit tab
             $flagEditTabActive = true;
             $objCategory = ShopCategory::getById($category_id);
@@ -1690,6 +1690,18 @@ if ($test === NULL) {
                 'SHOP_PICTURE_IMG_HREF' => $picturePath,
             ));
         }
+        // mediabrowser
+        $mediaBrowserOptions = array(
+            'type'                      => 'button',
+            'data-cx-mb-startmediatype' => 'shop',
+            'data-cx-mb-views'          => 'filebrowser',
+            'id'                        => 'media_browser_shop',
+            'style'                     => 'display:none'
+        );
+        self::$objTemplate->setGlobalVariable(array(
+            'MEDIABROWSER_BUTTON' => self::getMediaBrowserButton($mediaBrowserOptions, 'setSelectedImage')
+        ));
+        
         self::$objTemplate->parse('category_edit');
 // TODO: Add controls to fold parent categories
 //        $level_prev = null;
@@ -2095,6 +2107,20 @@ if ($test === NULL) {
 //            self::$objTemplate->setVariable(
 //                'SHOP_FLAGS_SELECTION', $flagsSelection);
 //        }
+//        
+        // media browser
+        $mediaBrowserOptions = array(
+            'type'                      => 'button',
+            'data-cx-mb-startmediatype' => 'shop',
+            'data-cx-mb-views'          => 'filebrowser',
+            'id'                        => 'media_browser_shop',
+            'style'                     => 'display:none'
+        );
+        
+        self::$objTemplate->setVariable(array(
+            'MEDIABROWSER_BUTTON' => self::getMediaBrowserButton($mediaBrowserOptions, 'setSelectedImage')
+        ));
+
         $distribution = $objProduct->distribution();
         // Available active frontend groups, and those assigned to the product
         $objGroup = \FWUser::getFWUserObject()->objGroup->getGroups(
@@ -3980,4 +4006,32 @@ die("Shopmanager::delete_article_group(): Obsolete method called");
 //        return Discount::deleteCustomerGroup($_GET['id']);
     }
 
+    /**
+     * Get Media Browser
+     * 
+     * @param object $objTpl            Template object 
+     * @param string $placeholderKey    Place holder name
+     * @param string $placeholderValue  Display name
+     * @param array  $options           options Ex:type, id.. etc
+     * @param string $callback          callback function name
+     * 
+     * @return null
+     */
+    public static function getMediaBrowserButton($options = array(), $callback = '')
+    {
+        global $_ARRAYLANG;
+        
+        if (empty($options)) {
+            return;
+        }
+        
+        // Mediabrowser
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser->setOptions($options);
+        if ($callback) {
+            $mediaBrowser->setCallback($callback);
+        }
+        
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_SHOP_EDIT_OR_ADD_IMAGE']);
+    }
 }
