@@ -280,14 +280,6 @@ function openWindow(theURL,winName,features)
   </table>
 <!-- END mediaActionPaste -->
 <div>
-    {COMBO_UPLOADER_CODE}
-    <script type="text/javascript">
-        cx.ready(function(){
-            var uploader = cx.instances.get('exposed_combo_uploader','uploader');
-            uploader.dialog().bind('close',function(){
-                window.location = window.location;
-            });
-        },true);
-    </script>
+    {MEDIA_UPLOADER_BUTTON}
 </div>
 <!-- END module_media.html -->
