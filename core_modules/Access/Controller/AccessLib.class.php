@@ -1354,10 +1354,12 @@ function SetUrl(data)
             break;
 
         case 'file':
-            var width  = '';
-            var heigth = '';
-            var alt    = '';
-            accessSetImage(data.data[0].datainfo.filepath, width, height, alt);
+            var url    = data.data[0].datainfo.filepath;
+            var newImg = new Image();
+            newImg.onload = function() {
+                accessSetImage(url, newImg.width, newImg.height, '');
+            }
+            newImg.src = url;
             break;
     }
 }
