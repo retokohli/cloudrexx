@@ -97,9 +97,15 @@
             fileRegExp.exec(url);
             elTxt = document.createTextNode(RegExp.$1);
             elImgThumbnail.src = url;
+            var newImg = new Image();
+            newImg.onload = function() {
+              var height = newImg.height;
+              var width = newImg.width;              
+              setSize(width, height);            
+            };
+            newImg.src = url;
           }
-	  //setSize(width, height);
-	}
+	};
 
 	var setSize = function (width, height){
 		if(width > thumbSizeMax || height > thumbSizeMax){
