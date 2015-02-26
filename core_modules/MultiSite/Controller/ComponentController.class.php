@@ -94,6 +94,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // Event Listener must be registered before preContentLoad event
         \Cx\Modules\Order\Controller\ComponentController::registerEvents();
         $this->registerEventListener();
+        $this->setCustomerPanelDomainAsMainDomain();
 
         $subcommand = null;
         if (!empty($arguments[0])) {
