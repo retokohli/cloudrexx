@@ -188,6 +188,9 @@ class Config
                 $this->generateThumbnail($_POST);
                 break;
 
+            case 'getThumbProgress':
+                $this->getThumbProgress();
+                break;
 
             default:
                 $this->showSettings();
@@ -1662,9 +1665,18 @@ class Config
         return \Env::get('cx')->getWebsiteConfigPath() . '/settings.php';
     }
 
+    /**
+     * Regenerate the thumbnails
+     * 
+     * @param array $post $_POST values
+     */
     protected  function generateThumbnail($post)
     {
-        global $objDatabase, $objTemplate, $_ARRAYLANG;
+        // release the locks, session not needed
+        $session = \cmsSession::getInstance();
+        $session->releaseLocks();
+        session_write_close();
+        
         $cx = Cx::instanciate();
 
         $key = $_GET['key'];
@@ -1672,12 +1684,7 @@ class Config
             die;
         }
         
-        if (!\Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsitePublicTempPath())) {
-            die;
-        }
-        
-        \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsitePublicTempPath());
-        $processFile = $cx->getWebsitePublicTempPath().'/progress' . $key . '.txt';
+        $processFile = $session->getTempPath() .'/progress' . $key . '.txt';
         if (\Cx\Lib\FileSystem\FileSystem::exists($processFile)) {
             die;
         }
@@ -1801,15 +1808,35 @@ class Config
             }
 
             $fileCounter++;
-            $objProcessFile->write($fileCounter / $imageFilesCount * 100);
+            $objProcessFile->write($fileCounter / $imageFilesCount * 100);            
         }
-            
-        session_write_close();
-        $objProcessFile->write(100);
-        sleep(3);
 
-        $objProcessFile->delete();
+        $objProcessFile->write(100);
         die;
     }
 
+    /**
+     * Get the thumbnail generation progress from the temp file
+     */
+    function getThumbProgress()
+    {
+        // release the locks, session not needed
+        $session = \cmsSession::getInstance();
+        $session->releaseLocks();
+        session_write_close();
+        
+        $key         = isset($_GET['key']) ?  $_GET['key'] : '';
+        $processFile = $session->getTempPath() .'/progress' . $key . '.txt';
+        
+        $process = 0;
+        if (file_exists($processFile)) {
+            $process = file_get_contents($processFile);
+            if ($process == 100) {
+                \Cx\Lib\FileSystem\FileSystem::delete_file($processFile);
+            }
+        }
+        
+        echo $process;
+        die;
+    }
 }

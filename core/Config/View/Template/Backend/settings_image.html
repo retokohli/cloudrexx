@@ -98,9 +98,9 @@
         });
 
         refreshId = function()
-        {                    
+        {          
           cx.jQuery.ajax({
-              url : cx.variables.get('publicTempPath', 'config/image')+'/progress'+key+'.txt',
+              url : 'index.php?cmd=Config&act=getThumbProgress&key=' + key,
               tryCount : 0,
               retryLimit : 10,
               success : function(progress) {
