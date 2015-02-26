@@ -186,6 +186,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $this->executeCommandBackup($arguments);
                         break;
                     
+                    case 'Restore':
+                        echo $this->executeCommandRestore($arguments);
+                        break;
+                    
                     case 'Cron':
                         $this->executeCommandCron();
                         break;
@@ -1403,7 +1407,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Api Backup command
      */
-    public function executeCommandBackup($arguments) 
+    public function executeCommandBackup($arguments)
     {
         try {
             $websiteId = isset($arguments['websiteId']) ? contrexx_input2raw($arguments['websiteId']) : 0;
@@ -1436,13 +1440,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
                 
             if ($websiteServiceServer instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer) {
-                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
-                if ($resp->status == 'success' && $resp->data->status = 'success') {
-                     //TODO display success message when ajax success
-                   return $resp->data->message;
-                }
-                //TODO display error message when ajax fails
-                return $resp->data->message;
+                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);                
+                //TODO display error message when ajax success/fails
+                return $resp->status == 'success' ? $resp->data->message : $resp->message;
             }
             $this->cx->getEvents()->triggerEvent(
                     'SysLog/Add', array(
@@ -1454,6 +1454,52 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         } catch (\Exception $e) {
             throw new MultiSiteException("Failed to backup the website:" . $e->getMessage());
         }
+    }
+    
+    /**
+     * Api Restore command
+     */
+    public function executeCommandRestore($arguments)
+    {
+        try {
+            $restoreWebsiteName    = isset($arguments['restoreWebsiteName']) ? contrexx_input2raw($arguments['restoreWebsiteName']) : '';
+            $websiteBackupFilePath = isset($arguments['websiteBackupFilePath']) ? contrexx_input2raw($arguments['websiteBackupFilePath']) : '';
+            if (empty($restoreWebsiteName) || empty($websiteBackupFilePath)) {
+                \DBG::log('Invalid arguements are supplied.');
+                return 'Failed to restore the website.';
+            }
+            
+            $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $website = $websiteServiceRepo->findOneBy(array('name' => $restoreWebsiteName));
+            if ($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                \DBG::log('This website already exists.');
+                $this->cx->getEvents()->triggerEvent(
+                    'SysLog/Add', array(
+                        'severity' => 'WARNING',
+                        'message' => 'The given website name is already in use',
+                        'data' => ' ',
+                ));
+                return 'Failed to restore the website for the given website name.';
+            }
+            
+            $defaultServiceServerId = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer');
+            if (empty($defaultServiceServerId)) {
+                return 'Invalid Service server Id.';
+            }
+
+            $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+            $websiteServiceServer  = $websiteServiceServerRepo->findOneById($defaultServiceServerId);
+            $params = array(
+                'websiteName' => $restoreWebsiteName,
+                'websiteBackupFilePath' => $websiteBackupFilePath
+            );
+            if ($websiteServiceServer instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer) {
+                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteRestore', $params, $websiteServiceServer);
+                return $resp->status == 'success' ? $resp->data->message : $resp->message;
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteException("Failed to restore the website:" . $e->getMessage());
+        } 
     }
     
     /**
