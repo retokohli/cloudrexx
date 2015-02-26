@@ -210,68 +210,28 @@ class Config
     
     protected function  showWysiwyg() {
         global $_ARRAYLANG, $objTemplate, $objInit; 
-        $path = Cx::instanciate()->getCodeBaseDocumentRootPath() . Cx::instanciate()->getCoreFolderName() . '/Wysiwyg/View/Template/Backend';
-        $objTpl = new \Cx\Core\Html\Sigma($path);
+        
+        $cx = Cx::instanciate();
+        $em = $cx->getDB()->getEntityManager();
+        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $wysiwyg = $componentRepo->findOneBy(array('name'=>'WYSIWYG'));
+        $wysiwygBackendController = $wysiwyg->getController('Backend');
+        
+        $objTpl = new \Cx\Core\Html\Sigma($wysiwyg->getDirectory(true) . '/View/Template/Backend');
         $objTpl->loadTemplateFile('Default.html');
-
-        $langData = $objInit->loadLanguageData('Wysiwyg');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-
-        $em = \Env::get('cx')->getDb()->getEntityManager();
-        $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate');
-        $wysiwygs = $repo->findBy(array('inactive'=>'0'));
-
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($wysiwygs, array(
-            'entityName' => $_ARRAYLANG['TXT_CORE_WYSIWYG_TEMPLATE_ENTITY'],
-            'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE_TOOLTIP'] .'</span>',
-            'functions' => array(
-                'add'       => true,
-                'edit'      => false,
-                'delete'    => false,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                'actions'   => function($rowData) {
-                        global $_CORELANG;
-
-                        $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
-
-                        $actionIcons = '<a href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=Config&amp;act=Wysiwyg&amp;editid=' . $rowData['id'] .'" class="edit" title="Edit entry"></a>';
-                        $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=Config&amp;act=Wysiwyg&amp;deleteid=' . $rowData['id'] . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
-
-                        return $actionIcons;
-                }
-            ),
-            'fields' => array(
-                'title' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TITLE'],
-                ),
-                'description' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_DESCRIPTION'],
-                ),
-                'inactive' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_INACTIVE'],
-                ),
-                'imagePath' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_IMAGE_PATH'],
-                    'type' => 'uploader',
-                    'showOverview' => false,
-                ),
-                'htmlContent' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_HTML_CONTENT'],
-                    'showOverview' => false,
-                ),
-            ),
-        ));
-        $objTpl->setVariable('WYSIWYG_CONTENT', $view->render());
-
-        $objTpl->setVariable('ADD_STYLE_URL', Cx::instanciate()->getCodeBaseCoreWebPath() . Cx::instanciate()->getCoreFolderName() . '/Wysiwyg/View/Style/Backend.css');
-        $objTpl->parse('additional_style');
+        
+        $wysiwygBackendController->parsePage($objTpl, array('WysiwygTemplate'));
+        
+        \JS::registerCSS(substr($wysiwyg->getDirectory(false, true) . '/View/Style/Backend.css', 1));
 
         $objTemplate->setVariable(array(
             'CONTENT_TITLE' => $_ARRAYLANG['TXT_CORE_WYSIWYG'],
-            'ADMIN_CONTENT' => $objTpl->get()
+            'ADMIN_CONTENT' => $objTpl->get(),
         ));
+        
+        $langData = $objInit->loadLanguageData('Wysiwyg');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $objTpl->setGlobalVariable($_ARRAYLANG);
     }
 
 

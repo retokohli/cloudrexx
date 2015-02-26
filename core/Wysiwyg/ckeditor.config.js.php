@@ -85,6 +85,8 @@ CKEDITOR.editorConfig = function( config )
     config.baseHref = 'http://<?php echo $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET; ?>/';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
+    
+    config.templates_replaceContent = false;
 
     config.toolbar_Full = config.toolbar_Small = [
         ['Source','-','NewPage','Templates'],
