@@ -2312,10 +2312,16 @@ class CrmLibrary
                 }
             }
         }
-        $objUser->setUsername($email);
+        //set group ids
+        $defaultUserGroup = $settings['default_user_group'];        
+        $groups           = $objUser->getAssociatedGroupIds();
+        if (!empty($defaultUserGroup) && !in_array($defaultUserGroup, $groups)) {
+            array_push($groups, $defaultUserGroup);
+        }
+        $objUser->setGroups($groups);
         
+        $objUser->setUsername($email);
         $objUser->setEmail($email);
-        $objUser->setGroups((array) $settings['default_user_group']);
         $objUser->setFrontendLanguage($result['contact_language']);
         $objUser->setBackendLanguage($settings['customer_default_language_backend']);
         $objUser->setActiveStatus(true);
