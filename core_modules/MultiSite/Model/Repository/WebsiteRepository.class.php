@@ -162,8 +162,13 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
         if (empty($term)) {
             return array();
         }
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb ->select('website')
+            ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
+            ->where('website.name LIKE ?1')
+            ->setParameter(1, '%' . contrexx_raw2db($term) . '%');
         
-        $websites = $this->findWebsitesByCriteria(array('name' => '%' . contrexx_raw2db($term) . '%'));
+        $websites = $qb->getQuery()->getResult();
         
         return !empty($websites) ? $websites : array();
     }

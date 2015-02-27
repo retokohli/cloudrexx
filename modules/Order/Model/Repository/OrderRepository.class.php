@@ -70,6 +70,62 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
     }
     
     /**
+     * Get orders by the search term
+     * 
+     * @param type $term    Search term
+     * @param type $contact Crm Contact id or \User object
+     * 
+     * @return object 
+     */
+    public function findOrdersBySearchTerm($term, $contact)
+    {
+        $contactId = null;
+        if ($contact instanceof \User) {
+            $contactId = $contact->getCrmUserId();
+            // selected user is not a crm user
+            if (empty($contactId)) {
+                return array();
+            }
+        } else {
+            $contactId = $contact;
+        }
+        
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb ->select('o')
+            ->from('\Cx\Modules\Order\Model\Entity\Order', 'o')
+            ->leftJoin('o.subscriptions', 's');
+        
+        $conditions = array();        
+        if (!empty($term)) {
+            $subscriptionRepository = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+            $subscriptions          = $subscriptionRepository->findSubscriptionsBySearchTerm($term);
+            if (empty($subscriptions)) {
+                return array();
+            }
+            $subscriptionIds = array();
+            foreach ($subscriptions as $subscription) {
+                $subscriptionIds[] = $subscription->getId();
+            }
+            $conditions[] = $qb->expr()->in('s.id', $subscriptionIds);
+        }
+
+        if (!empty($contactId)) {
+            $conditions[] = 'o.contactId = :contactId';
+            $qb->setParameter('contactId', $contactId);
+        }
+        
+        $first = true;
+        foreach ($conditions as $condition) {
+            $method = $first ? 'where' : 'andWhere';
+            $qb->$method($condition);
+            
+            $first = false;
+        }
+        
+        return $qb->getQuery()->getResult();
+    }
+    
+    /**
      * Check the order count by the $crmId
      * 
      * @param integer $crmId Crm User Id

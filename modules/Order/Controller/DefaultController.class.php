@@ -81,10 +81,19 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $orders = $this->orderRepository->findAll();
-        if (empty($orders)) {
-            $orders = new \Cx\Modules\Order\Model\Entity\Order();
+        $term          = isset($_GET['filter-term']) ? contrexx_input2xhtml($_GET['filter-term']) : '';
+        $filterUserId  = isset($_GET['filter-user-id']) ? contrexx_input2raw($_GET['filter-user-id']) : 0;
+        $objFilterUser = null;
+        
+        if (!empty($term) || !empty($filterUserId)) {
+            if ($filterUserId) {
+                $objFilterUser = \FWUser::getFWUserObject()->objUser->getUser($filterUserId);
+            }
+            $orders = $this->orderRepository->findOrdersBySearchTerm($term, $objFilterUser);
+        } else {
+            $orders = $this->orderRepository->findAll();
         }
+        
         $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT'],
             'functions' => array(
@@ -126,6 +135,26 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                 ),
             ),
         ));
+
+        if (isset($_GET['editid']) && !empty($_GET['editid'])) {
+            $this->template->hideBlock("order_filter");
+        } else {
+            \FWUser::getUserLiveSearch(array(
+                'minLength' => 1,
+                'canCancel' => true,
+                'canClear'  => true
+            ));
+                        
+            $this->template->setVariable(array(
+                'TXT_MODULE_ORDER_SEARCH'       => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH'],
+                'TXT_MODULE_ORDER_FILTER'       => $_ARRAYLANG['TXT_MODULE_ORDER_FILTER'],
+                'TXT_MODULE_ORDER_SEARCH_TERM'  => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'],                
+                'ORDER_SEARCH_VALUE'            => isset($_GET['filter-term']) ? contrexx_input2xhtml($_GET['filter-term']) : '',
+                'ORDER_USER_ID'                 => contrexx_raw2xhtml($filterUserId),
+                'ORDER_USER_NAME'               => $objFilterUser ? contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objFilterUser)) : '',
+            ));
+        }
+        
         $this->template->setVariable('ORDERS_CONTENT', $view->render());
     }
 }
