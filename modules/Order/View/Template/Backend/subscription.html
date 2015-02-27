@@ -1,1 +1,21 @@
+<!-- END subscription_filter -->
+<form method="get" action="" name="searchSubscription" id="searchSubscription">
+    <table cellspacing="0" cellpadding="5" border="0" width="100%" class="adminlist" >
+        <tr>
+            <th valign="top" colspan="2">
+                <div align="left">{TXT_ORDER_SUBSCRIPTIONS_FILTER}</div>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <input type='hidden' name="cmd" value="Order" />
+                <input type='hidden' name="act" value="subscription" />
+                <input type="text" name="term" placeholder="{TXT_ORDER_SUBSCRIPTIONS_SEARCH_TERM}" id="term"  style="width: 300px;" class="search-box" value="{ORDER_SUBSCRIPTIONS_SEARCH_VALUE}" autocomplete="off" />
+                &nbsp;&nbsp;
+                <input type="submit" value="{TXT_ORDER_SUBSCRIPTIONS_SEARCH}"  id="searchButton"/>&nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</form>
+<!-- END subscription_filter -->
 {SUBSCRIPTIONS_CONTENT}

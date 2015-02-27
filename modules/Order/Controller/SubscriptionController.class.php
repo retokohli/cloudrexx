@@ -71,9 +71,11 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $subscriptions = $this->subscriptionRepo->findAll();
-        if (empty($subscriptions)) {
-            $subscriptions = new \Cx\Modules\Order\Model\Entity\Subscription();
+        $term = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        if (!empty($term)) {
+            $subscriptions = $this->subscriptionRepo->findSubscriptionsBySearchTerm($term);
+        } else {
+            $subscriptions = $this->subscriptionRepo->findAll();
         }
         $view = new \Cx\Core\Html\Controller\ViewGenerator($subscriptions, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_SUBSCRIPTION'],
@@ -112,7 +114,17 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                 ),
                 
             ),
-            ));
+        ));
+
+        $this->template->setVariable(array(
+            'TXT_ORDER_SUBSCRIPTIONS_FILTER'       => $_ARRAYLANG['TXT_MODULE_ORDER_FILTER'],
+            'TXT_ORDER_SUBSCRIPTIONS_SEARCH'       => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH'],
+            'TXT_ORDER_SUBSCRIPTIONS_SEARCH_TERM'  => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'],
+            'ORDER_SUBSCRIPTIONS_SEARCH_VALUE'     => contrexx_raw2xhtml($term)
+        ));
+        if (isset($_GET['editid']) && !empty($_GET['editid'])) {
+            $this->template->hideBlock("subscription_filter");
+        }
         $this->template->setVariable('SUBSCRIPTIONS_CONTENT', $view->render());
     }
 }

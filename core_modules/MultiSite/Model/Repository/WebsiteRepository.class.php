@@ -150,6 +150,23 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
         $website = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false, $websiteThemeId);
         return $website;
     }
+    
+    /**
+     * Find websites by the search term
+     * 
+     * @param string $term
+     * 
+     * @return array
+     */
+    public function findByTerm($term) {
+        if (empty($term)) {
+            return array();
+        }
+        
+        $websites = $this->findWebsitesByCriteria(array('name' => '%' . contrexx_raw2db($term) . '%'));
+        
+        return !empty($websites) ? $websites : array();
+    }
 }
 
 

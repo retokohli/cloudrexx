@@ -9,3 +9,8 @@
 global $_ARRAYLANG;
 
 $_ARRAYLANG['TXT_MODULE_ORDER_DELETE_USER_ERROR_MSG'] = 'Der Kunde kann nicht entfernt werden, da von diesem noch Bestellungen vorhanden sind.';
+
+//filter
+$_ARRAYLANG['TXT_MODULE_ORDER_SEARCH'] = 'Suchen';
+$_ARRAYLANG['TXT_MODULE_ORDER_FILTER'] = 'Filter';
+$_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'] = 'Suchbegriff eingeben';

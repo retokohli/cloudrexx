@@ -106,4 +106,28 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
         }
         $websiteCollection->setWebsiteTemplate($websiteTemplate);
     }
+
+    /**
+     * Find the website Collection by search term
+     * 
+     * @param string $term
+     * 
+     * @return array
+     */
+    public function findByTerm($term) {
+        if (empty($term)) {
+            return array();
+        }
+        
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb
+            ->select('websiteCollection')
+            ->from('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection', 'websiteCollection')
+            ->leftJoin('websiteCollection.websites', 'website')
+            ->where('website.name LIKE 1?')->setParameter(1, '%' . contrexx_raw2db($term) . '%');
+        
+        $websiteCollections = $qb->getQuery()->getResult();
+        
+        return !empty($websiteCollections) ? $websiteCollections : array();
+    }
 }

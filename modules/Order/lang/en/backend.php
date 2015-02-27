@@ -19,3 +19,8 @@ $_ARRAYLANG['TXT_MODULE_ORDER_ACT_INVOICE']      = 'Invoices';
 $_ARRAYLANG['TXT_MODULE_ORDER_ACT_PAYMENT']      = 'Payments';
 $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PAYREXX_CANCEL_FAILED'] = 'Unable to Cancel the Subscription in payrexx';
 $_ARRAYLANG['TXT_MODULE_ORDER_DELETE_USER_ERROR_MSG'] = 'The customer can not be removed because orders are available from this yet.';
+
+//filter
+$_ARRAYLANG['TXT_MODULE_ORDER_SEARCH'] = 'Search';
+$_ARRAYLANG['TXT_MODULE_ORDER_FILTER'] = 'Filter';
+$_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'] = 'Enter your search term';
