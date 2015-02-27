@@ -465,7 +465,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             }
             ),
             'fields' => array(
-                'id' => array('showOverview' => false),
+                'id' => array('header' => 'ID'),
                 'name' => array(
                     'header' => 'TXT_MULTISITE_SITE_ADDRESS',
                     'readonly' => true,
@@ -516,11 +516,31 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     ),
                 ),
                 'ipAddress' => array('header' => 'IP Address'),
-                'ownerId' => array(
+                'owner' => array(
                     'header' => 'Owner',
                     'table' => array(
                         'parse' => function($value) {
-                            return \FWUser::getParsedUserTitle($value);
+                            global $_ARRAYLANG;
+                            $objUser = \FWUser::getFWUserObject()->objUser->getUser($value->getId());
+                            if (empty($objUser)) {
+                                return '';
+                            }
+                            $crmDetailImg = '';
+                            if (!empty($objUser->getCrmUserId())) {
+                                $crmDetailImg = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$objUser->getCrmUserId()}' 
+                                                    title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'>
+                                                    <img 
+                                                        src='../core/Core/View/Media/navigation_level_1_189.png' 
+                                                        width='16' height='16' 
+                                                        alt='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'
+                                                    />
+                                                </a>";
+                            }
+                            return "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$value->getId()}'
+                                        title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MODIY_USER_ACCOUNT']}'>" .
+                                        \FWUser::getParsedUserTitle($value) .
+                                    "</a>" . 
+                                    $crmDetailImg;
                         },
                     ),
                 ),

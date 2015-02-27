@@ -235,3 +235,5 @@ $_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN'] = 'Fehler beim Ab
 $_ARRAYLANG['TXT_MULTISITE_MAIL_SERVICE_PLAN_EMPTY'] = 'Auf diesem Mail Service Server sind keine Abos verfügbar.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ENDED_DATE'] = "Abgelaufen am";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_SUBSCRIPTION_DOWNGRADE_ERROR'] = 'Downgrade von %1$s nach %2$s ist nicht möglich.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT'] = 'Dieser Benutzer ist verknüpft mit einem CRM Kontakt, klicken um direkt zum CRM Kontakt zu gelangen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MODIY_USER_ACCOUNT'] = 'Benutzerkonto bearbeiten';
