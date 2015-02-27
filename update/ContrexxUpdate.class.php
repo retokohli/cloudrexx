@@ -415,6 +415,7 @@ class ContrexxUpdate
 
         $licenseFile = UPDATE_UPDATES.'/'.$arrUpdate['cmsVersion'].'/data/contrexx_lizenz_de.txt';
         $license = @file_get_contents($licenseFile);
+        $license = htmlentities($license, ENT_COMPAT | ENT_XML1);
 
         // replace I. and II. titles
         $license = preg_replace('/^(I+\.\s[^\n]+)$/im', '<h3>\1</h3>', $license);
