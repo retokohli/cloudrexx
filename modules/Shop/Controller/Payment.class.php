@@ -505,6 +505,11 @@ class Payment
                 ? \Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SAFERPAY_WINDOW_MENUOPTIONS' => \Saferpay::getWindowMenuoptions(
                 \Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option')),
+            'SHOP_PAYREXX_INSTANCE_NAME' => \Cx\Core\Setting\Controller\Setting::getValue('payrexx_instance_name'),
+            'SHOP_PAYREXX_API_SECRET' => \Cx\Core\Setting\Controller\Setting::getValue('payrexx_api_secret'),
+            'SHOP_PAYREXX_STATUS' =>
+                (\Cx\Core\Setting\Controller\Setting::getValue('payrexx_active')
+                    ? \Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_YELLOWPAY_SHOP_ID' => \Cx\Core\Setting\Controller\Setting::getValue('postfinance_shop_id'),
             'SHOP_YELLOWPAY_STATUS' =>
                 (\Cx\Core\Setting\Controller\Setting::getValue('postfinance_active')

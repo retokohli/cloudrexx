@@ -270,6 +270,9 @@ class PaymentProcessing
             case 'yellowpay': // was: 'PostFinance_DebitDirect'
                 $return = self::_YellowpayProcessor();
                 break;
+            case 'payrexx':
+                $return = self::_PayrexxProcessor();
+                break;
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
                 $return = \PostfinanceMobile::getForm(
@@ -531,6 +534,26 @@ if (empty ($return)) {
         return $return;
     }
 
+    /**
+     * Returns the HTML code for the Payrexx payment method.
+     * @return  string  HTML code
+     */
+    static function _PayrexxProcessor()
+    {
+        global $_ARRAYLANG, $_CONFIG;
+
+        $return = \PayrexxProcessor::getModalCode();
+        if (!$return) {
+            $strError =
+                '<font color="red"><b>'.
+                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_PAYREXX'].
+                '<br /></b>';
+            $strError .= join('<br />', \PayrexxProcessor::$arrError); //.'<br />';
+            return $strError.'</font>';
+        }
+        return $return;
+    }
+
 
     /**
      * Returns the complete HTML code for the Datatrans payment form
@@ -654,6 +677,8 @@ if (empty ($return)) {
 //                        join('<br />', \Yellowpay::$arrWarning).
 //                        '</font>');
 //                    }
+            case 'payrexx':
+                return \PayrexxProcessor::checkIn();
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
                 // A return value of null means:  Do not change the order status
@@ -713,6 +738,8 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 return \PayPal::getOrderId();
             case 'yellowpay':
                 return \Yellowpay::getOrderId();
+            case 'payrexx':
+                return \PayrexxProcessor::getOrderId();
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
 //DBG::log("getOrderId(): mobilesolutions");

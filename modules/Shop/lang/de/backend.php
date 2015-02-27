@@ -943,6 +943,8 @@ $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT'] = "%2\$01.2f&nbsp;%4\$s<div class='ca
 $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT_JOINER'] = ", ";
 $_ARRAYLANG['TXT_SHOP_ORDER_EXPORT'] = "Bestellungen exportieren";
 $_ARRAYLANG['TXT_SHOP_ORDER_ERROR_MISSING_CUSTOMER'] = "Der dieser Bestellung zugeordnete Kunde (ID %1\$u) existiert nicht.";
+
+$_ARRAYLANG['TXT_SHOP_PSP_PAYREXX'] = "Payrexx";
 $_ARRAYLANG['TXT_SHOP_PSP_PAYPAL'] = "PayPal";
 $_ARRAYLANG['TXT_SHOP_PSP_SAFERPAY'] = "Saferpay";
 $_ARRAYLANG['TXT_SHOP_PSP_YELLOWPAY'] = "PostFinance";
@@ -978,4 +980,8 @@ $_ARRAYLANG['TXT_SHOP_LIVE'] = "Live";
 
 $_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANITY'] = "Mindestbestellmenge";
 
+$_ARRAYLANG['TXT_SHOP_PAYMENT_PAYREXX'] = "Payrexx";
+$_ARRAYLANG['TXT_SHOP_PAYMENT_PAYREXX_INSTANCE_NAME'] = "Instanz Name";
+$_ARRAYLANG['TXT_SHOP_PAYMENT_PAYREXX_API_SECRET'] = "API Secret";
+$_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_PAYREXX'] = "Payrexx konnte auf Grund eines Konfigurationsfehlers nicht initialisiert werden.";
 

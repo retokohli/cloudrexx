@@ -149,6 +149,33 @@ function deletePayment(pId)
       </td>
     </tr>
     <tr class="row2">
+        <td width="15%" class="nowrap">{TXT_SHOP_PAYMENT_PAYREXX}</td>
+        <td class="nowrap">
+            <label for="payrexx_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+            <input name="payrexx_swapper" id="payrexx_swapper" type="checkbox" onclick="swapBlock('payrexx');" value="1" />&nbsp;
+            <div id="payrexx" style="display:none;">
+                <table width="100%">
+                    <tr>
+                        <td width="20%">{TXT_SHOP_PAYMENT_PAYREXX_INSTANCE_NAME}</td>
+                        <td width="80%">
+                            <input type="text" name="payrexx_instance_name" value="{SHOP_PAYREXX_INSTANCE_NAME}" style="width: 270px;" maxlength="50" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{TXT_SHOP_PAYMENT_PAYREXX_API_SECRET}</td>
+                        <td>
+                            <input type="text" name="payrexx_api_secret" value="{SHOP_PAYREXX_API_SECRET}" style="width: 270px;" maxlength="50" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td class="nowrap a_center">
+            <input type="checkbox" name="payrexx_active" value="1"
+            {SHOP_PAYREXX_STATUS} />
+        </td>
+    </tr>
+    <tr class="row2">
       <td width="15%" class="nowrap">{TXT_YELLOWPAY_POSTFINANCE}</td>
       <td class="nowrap">
         <label for="postfinance_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
