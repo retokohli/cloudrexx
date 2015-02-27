@@ -1,1 +1,31 @@
+<style type="text/css">
+  .pull-left{float: left;}
+</style>
+<!-- BEGIN order_filter -->
+<form method="get" action="" name="searchwebsite" id="searchwebsite">
+  <table cellspacing="0" cellpadding="5" border="0" width="100%" class="adminlist" >
+    <tr>
+      <th valign="top" colspan="2">
+        <div align="left">{TXT_MODULE_ORDER_FILTER}</div>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <input type='hidden' name="cmd" value="Order" />
+        <div class="pull-left">
+          <input type="text" name="filter-term" placeholder="{TXT_MODULE_ORDER_SEARCH_TERM}" id="term"  style="width: 300px;" class="search-box" value="{ORDER_SEARCH_VALUE}" autocomplete="off" />
+        </div>
+        <div class="pull-left" style="margin-left: 3px;">
+          <input class="live-search-user-id" name="filter-user-id" value="{ORDER_USER_ID}" />
+          <input class="live-search-user-name" value="{ORDER_USER_NAME}" />
+        </div>
+        <div class="pull-left">
+          &nbsp;&nbsp;
+          <input type="submit" value="{TXT_MODULE_ORDER_SEARCH}"  id="searchButton"/>&nbsp;&nbsp;
+        </div>        
+      </td>
+    </tr>
+  </table>
+</form>
+<!-- END order_filter -->
 {ORDERS_CONTENT}
