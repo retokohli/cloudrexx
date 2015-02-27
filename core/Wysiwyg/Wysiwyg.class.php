@@ -190,6 +190,18 @@ class Wysiwyg
     }
 
     /**
+     * strip BB tags
+     *
+     * @param string $text
+     * @return unknown
+     */
+    public static function stripBBtags($text)
+    {
+        $BBCodeHandler = new \Cx\Core\Wysiwyg\BBCodeHandler();
+        return $BBCodeHandler->stripBBtags($text);
+    }
+
+    /**
      * Alias for the method getSourceCode()
      *
      * @return string

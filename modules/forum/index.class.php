@@ -593,8 +593,8 @@ class Forum extends ForumLibrary {
                 $this->_updateNotification($intLastThreadId);
                 $this->_sendNotifications($intLastThreadId, $subject, $content);
                 $this->updateViewsNewItem($intForumId, $lastInsertId);
-                $objCache = new Cache();
-                $objCache->deleteAllFiles();
+                //$objCache = new Cache();
+                //$objCache->deleteAllFiles();
             }
             CSRF::header('Location: ?section=forum&cmd=board&id='.$intForumId);
             die();
@@ -947,8 +947,8 @@ class Forum extends ForumLibrary {
                 $this->updateViewsNewItem($intCatId, $lastInsertId, true);
                 $this->_updateNotification($intThreadId);
                 $this->_sendNotifications($intThreadId, $subject, $content);
-                $objCache = new Cache();
-                $objCache->deleteAllFiles();
+                //$objCache = new Cache();
+                //$objCache->_deleteAllFiles();
             }
             CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
             die();
@@ -1046,8 +1046,8 @@ class Forum extends ForumLibrary {
 
             if($objDatabase->Execute($updateQuery) !== false){
                 $this->updateViews($intThreadId, $intPostId);
-                $objCache = new Cache();
-                $objCache->deleteAllFiles();
+               //$objCache = new Cache();
+               //$objCache->deleteAllFiles();
             }
 
             CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
@@ -1309,8 +1309,8 @@ class Forum extends ForumLibrary {
             $arrSearch      = array('[[FORUM_THREAD_SUBJECT]]', '[[FORUM_THREAD_STARTER]]', '[[FORUM_LATEST_SUBJECT]]',    '[[FORUM_LATEST_MESSAGE]]',    '[[FORUM_THREAD_URL]]');
             $arrReplace     = array($strFirstPostSubject,         $strFirstPostAuthor,         $strSubject,                $strContent,                 $strThreadURL);
 
-            $_strMailTemplate = html_entity_decode(str_replace($arrSearch, $arrReplace, $this->stripBBtags($this->_arrSettings['notification_template'])));
-            $_strMailSubject  = html_entity_decode(str_replace($arrSearch, $arrReplace, $this->stripBBtags($this->_arrSettings['notification_subject'])));
+            $_strMailTemplate = html_entity_decode(str_replace($arrSearch, $arrReplace, \Cx\Core\Wysiwyg\Wysiwyg::stripBBtags($this->_arrSettings['notification_template'])));
+            $_strMailSubject  = html_entity_decode(str_replace($arrSearch, $arrReplace, \Cx\Core\Wysiwyg\Wysiwyg::stripBBtags($this->_arrSettings['notification_subject'])));
 
             $objFWUser = FWUser::getFWUserObject();
 
