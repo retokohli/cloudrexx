@@ -445,15 +445,54 @@ class ContrexxUpdate
     private function showInfoAboutLicense()
     {
         global $_CONFIG;
-        if (isset($_POST['updateNext'])) {
-            if (empty($_POST['update_license_info'])) {
-                $_SESSION['contrexx_update']['license_info'] = false;
+        // process sent form
+            // create message and push to license server
+            // HTTP POST http://updatesrv1.contrexx.com/register
+            // license server creates new license and sends info mail to helpdesk for payment
+            
+        if (isset($_POST['agb'])) {
+            $srvUri = 'updatesrv1.contrexx.com';
+            $srvPath = '/';
+            require_once(UPDATE_LIB.'/PEAR/HTTP/Request2.php');
+            $request = new \HTTP_Request2('http://' . $srvUri . $srvPath . 'register/', \HTTP_Request2::METHOD_POST);
+            $request->setHeader('X-Remote-Addr', $_SERVER['REMOTE_ADDR']);
+            $request->setHeader('Referer', 'http://');
+            foreach ($_POST as $key=>$value) {
+                $request->addPostParameter($key, $value);
+            }
+            $host = $_CONFIG['domainUrl'];
+            if ($host != $_SERVER['SERVER_NAME']) {
+                $host .= ' on ' . $_SERVER['SERVER_NAME'];
+            }
+            $request->addPostParameter('host', $host);
+            $successful = false;
+            try {
+                $objResponse = $request->send();
+                if ($objResponse->getStatus() !== 200) {
+                    // ERROR
+                } else {
+                    $response = json_decode($objResponse->getBody());
+                    if (!$response) {
+                        // ERROR
+                    } else if (!isset($response->success) || !$response->success) {
+                        // ERROR
+                    } else {
+                        // everything ok, license ordered
+                        $successful = true;
+                    }
+                }
+            } catch (\HTTP_Request2_Exception $objException) {
+                // ERROR
+            }
+            if ($successful) {
+                $_POST['update_license_info'] = 1;
             } else {
-                $_SESSION['contrexx_update']['license_info'] = true;
+                // show non-nice error message
+                die();
             }
         }
-
-        if ((isset($_POST['updateNext']) && (!empty($_POST['update_license_info']))) || !$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        
+        if ((isset($_POST['updateNext']) && !empty($_POST['update_license_info'])) || $_SESSION['contrexx_update']['license_info'] || !$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '4.0.0')) {
             $_SESSION['contrexx_update']['license_info'] = true;
             
             $this->setNextStep();
@@ -477,10 +516,12 @@ class ContrexxUpdate
             'UPDATE_VERSION'                    => $this->getLiteralRepresentationOfVersion($_CONFIG['coreCmsVersion']),
         ));
 
-        if ($_CONFIG['coreCmsEdition'] == 'OpenSource') {
-            $this->objTemplate->touchBlock('update_license_info_free');
+        if (in_array($_CONFIG['coreCmsEdition'], array('OpenSource', 'Trial', 'Free', 'Basic'))) {
+            $this->objTemplate->touchBlock('update_license_new');
+            $this->objTemplate->hideBlock('update_license_existing');
         } else {
-            $this->objTemplate->hideBlock('update_license_info_free');
+            $this->objTemplate->touchBlock('update_license_existing');
+            $this->objTemplate->hideBlock('update_license_new');
         }
         
         $this->objTemplate->parse('license_info');
