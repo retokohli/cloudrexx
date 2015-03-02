@@ -64,8 +64,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = '310';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.1.1') {
     $version = '311';
-} elseif ($_CONFIG['coreCmsVersion'] == '4.0.0') {
-    $version = '400';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.2.0') {
+    $version = '320';
 } else {
     // nothing to do
     return true;
