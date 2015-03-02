@@ -1914,4 +1914,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
             throw new WebsiteException('Unable get Resource usage stats: ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Return the backend edit link
+     */
+    public function getEditLink()
+    {
+        return '<a href=​index.php?cmd=MultiSite&editid='. $this->getId() .'>' . $this->getName() . '</a>';        
+    }
 }

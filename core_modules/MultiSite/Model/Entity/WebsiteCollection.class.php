@@ -148,4 +148,16 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
         $this->websiteTemplate = $websiteTemplate;
         $websiteTemplate->addWebsiteCollection($this); 
     }
+
+    /**
+     * Return the backend edit link of websites
+     */
+    public function getEditLink()
+    {
+        $websiteLink = '';
+        foreach ($this->websites as $website) {
+            $websiteLink .= '<a href=​index.php?cmd=MultiSite&editid='. $website->getId() .'>' . $website->getName() . '</a> ';
+        }
+        return $websiteLink;
+    }
 }
