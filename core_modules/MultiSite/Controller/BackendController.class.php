@@ -911,7 +911,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             $remoteLoginType = $customerPanelLogin ? 'customerpanel' : 'website';
             $title           =  $customerPanelLogin ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_CUSTOMERPANELDOMAIN_TITLE'] 
-                                                    : sprint_f($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_TITLE'], $website->getFqdn()->getName());
+                                                    : sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_TITLE'], $website->getFqdn()->getName());
         }
         
         $websiteRemoteLogin = '<a href="javascript:void(0);" class = "remoteWebsiteLogin" data-login = "'.$remoteLoginType.'" data-id = "'.$wesiteId.'" title = "'.$title.'" ></a>';
