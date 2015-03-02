@@ -137,6 +137,20 @@ function getFormData(goBack)
     }
   }
   
+  oElements = document.getElementById('wrapper').getElementsByTagName('textarea');
+  if (oElements.length > 0) {
+    for (i = 0;i < oElements.length; i++) {
+      if (oElements[i].name.search('\[[0-9]+\]$') >= 0) {
+        if (typeof(oFormData[oElements[i].name.substr(0,oElements[i].name.search('\[[0-9]+\]$'))]) == 'undefined') {
+          oFormData[oElements[i].name.substr(0,oElements[i].name.search('\[[0-9]+\]$'))] = new Array();
+        }
+        oFormData[oElements[i].name.substr(0,oElements[i].name.search('\[[0-9]+\]$'))][oElements[i].name.substr(oElements[i].name.search('\[[0-9]+\]$')+1,oElements[i].name.match('\[[0-9]+\]$')[0].length-2)] = oElements[i].value;
+      } else {
+        oFormData[oElements[i].name] = oElements[i].value;
+      }
+    }
+  }
+  
   aFormData = new Array();
   for (i in oFormData) {
     aFormData.push(i+':'+((typeof(oFormData[i]) == 'object') ? '["'+oFormData[i].join('","')+'"]' : '"'+oFormData[i]+'"'));
