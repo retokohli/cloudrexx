@@ -459,6 +459,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::remoteLogin($rowData, false);
                                 }
                                 if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                    $domainRepo = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
+                                    $domain     = $domainRepo->findOneBy(array('name' => \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')));
+                                    if ($domain) {
+                                        $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::remoteLogin($rowData, true);
+                                    }
+                                }
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::multiSiteConfig($rowData, false);
                                 }
                                 return $actions;
@@ -888,8 +895,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * 
      * @return string
      */
-    public function remoteLogin($rowData)
+    public function remoteLogin($rowData, $customerPanelLogin = false)
     {
+        global $_ARRAYLANG;
+        
         $wesiteId = $rowData['id'];
         $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
         if (!empty($wesiteId)) {
@@ -900,9 +909,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (!$website->getFqdn()) {
                 return;
             }
-            $title = 'Remote Login to '  . $website->getFqdn()->getName();
+            $remoteLoginType = $customerPanelLogin ? 'customerpanel' : 'website';
+            $title           =  $customerPanelLogin ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_CUSTOMERPANELDOMAIN_TITLE'] 
+                                                    : sprint_f($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_TITLE'], $website->getFqdn()->getName());
         }
-        $websiteRemoteLogin = '<a href="javascript:void(0);" class = "remoteWebsiteLogin" data-id = "'.$wesiteId.'" title = "'.$title.'" ></a>';
+        
+        $websiteRemoteLogin = '<a href="javascript:void(0);" class = "remoteWebsiteLogin" data-login = "'.$remoteLoginType.'" data-id = "'.$wesiteId.'" title = "'.$title.'" ></a>';
         return $websiteRemoteLogin; 
     }
     

@@ -502,7 +502,7 @@
             $.ajax({
                 url: domainUrl,
                 type: "POST",
-                data: {websiteId: $(this).attr('data-id')},
+                data: {websiteId: $(this).attr('data-id'), loginType: $(this).data('login')},
                 dataType: "json",
                 success: function(response) {
                     if (response.status == 'success') {

@@ -2271,7 +2271,23 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
     public function generateAuthToken($params) {
         try {
-            $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    if (empty($params['post']['ownerId'])) {
+                        return array(
+                            'status' => 'error',
+                            'log' => \DBG::getMemoryLogs(),
+                        );
+                    }
+                    $websiteUserId = $params['post']['ownerId'];
+                    break;
+                case ComponentController::MODE_WEBSITE:
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                    break;
+                default:
+                    break;
+            }
             $objUser = \FWUser::getFWUserObject()->objUser->getUser(intval($websiteUserId));
             if (!$objUser) {
                 throw new MultiSiteJsonException('Unable to load website Owner user account');
@@ -3190,21 +3206,36 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $_ARRAYLANG;
         self::loadLanguageData();
         
-        if (empty($params['post']['websiteId'])) {
+        $websiteId = $params['post']['websiteId'];
+        if (empty($websiteId)) {
             return false;
         }
+        $loginType = ($params['post']['loginType'] == 'customerpanel') ? 'customerpanel' : 'website';
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                    $website   = $websiteRepository->findOneBy(array('id' => $params['post']['websiteId']));
-                    $authToken = null;
-                    $websiteLoginUrl = null;
-                    $websiteName = $website->getBaseDn()->getName();
-                    list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
-                    $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
-                    return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'], $websiteName),'webSiteLoginUrl' => $websiteLoginUrl->toString());
+                    $website   = $websiteRepository->findOneBy(array('id' => $websiteId));
+                    if (!$website) {
+                        return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_FAILED'], $loginType));
+                    }
+                                    
+                    if ($loginType == 'customerpanel') {
+                        $response = self::executeCommandOnManager('generateAuthToken', array('ownerId' => $website->getOwner()->getId()));
+                        if ($response->status == 'error' || $response->data->status == 'error') {
+                            return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_FAILED'], $loginType));
+                        }
+                        $successMessage = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_CUSTOMERPANELDOMAIN_SUCCESS'];
+                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'). '/index.php?section=Login&user-id='.$response->data->userId.'&auth-token='.$response->data->authToken);
+                    } else {
+                        list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
+                        
+                        $websiteName     = $website->getBaseDn()->getName();
+                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
+                        $successMessage  = sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'], $websiteName);
+                    }
+                    return array('status' => 'success', 'message' => $successMessage,'webSiteLoginUrl' => $websiteLoginUrl->toString());
                     break;
                 default:
                     break;
