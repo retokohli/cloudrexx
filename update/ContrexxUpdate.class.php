@@ -450,7 +450,7 @@ class ContrexxUpdate
             // HTTP POST http://updatesrv1.contrexx.com/register
             // license server creates new license and sends info mail to helpdesk for payment
             
-        if (isset($_POST['agb'])) {
+        if (isset($_POST['agb']) && isset($_POST['edition'])) {
             $srvUri = 'updatesrv1.contrexx.com';
             $srvPath = '/';
             require_once(UPDATE_LIB.'/PEAR/HTTP/Request2.php');
@@ -490,6 +490,8 @@ class ContrexxUpdate
                 // show non-nice error message
                 die();
             }
+        } else if (isset($_POST['agb'])) {
+            $_POST['update_license_info'] = 1;
         }
         
         if ((isset($_POST['updateNext']) && !empty($_POST['update_license_info'])) || $_SESSION['contrexx_update']['license_info'] || !$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '4.0.0')) {
@@ -516,7 +518,7 @@ class ContrexxUpdate
             'UPDATE_VERSION'                    => $this->getLiteralRepresentationOfVersion($_CONFIG['coreCmsVersion']),
         ));
 
-        if (in_array($_CONFIG['coreCmsEdition'], array('OpenSource', 'Trial', 'Free', 'Basic'))) {
+        if (in_array($_CONFIG['coreCmsEdition'], array('OpenSource', 'Trial', 'Free', 'Basic', 'Premium'))) {
             $this->objTemplate->touchBlock('update_license_new');
             $this->objTemplate->hideBlock('update_license_existing');
         } else {
