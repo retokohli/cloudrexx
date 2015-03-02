@@ -119,17 +119,24 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                 'subscriptions' => array(
                     'header' => 'subscriptions',
                     'table'  => array(
-                        'parse' => function ($value, $arrayData) {
-                            $subscription  = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Subscription')->findOneBy(array('id' => $arrayData['id']));
-                            if (!$subscription) {
-                                return;
+                        'parse' => function ($subscriptions) {
+                            $result = array();
+                            foreach ($subscriptions as $subscription) {
+                                $productEntity     = $subscription->getProductEntity();
+                                $productEntityName = $subscription->getProduct()->getName();
+                                if(!$productEntity) {
+                                    continue;
+                                }
+                                $productEditLink = $productEntity;
+                                if (method_exists($productEntity, 'getEditLink')) {
+                                    $productEditLink = $productEntity->getEditLink();
+                                }
+                                $subscriptionEditUrl = '<a href=​index.php?cmd=Order&act=subscription&editid='. $subscription->getId() .'>' . $productEntityName . '</a>';
+                                
+                                $result[] = $subscriptionEditUrl . ' (' . $productEditLink . ')';
                             }
-                            $productEntity = $subscription->getProductEntity();
-                            $productEntityName = $subscription->getProduct()->getName();
-                            if(!$productEntity) {
-                                return;
-                            }
-                            return $productEntityName . ' (' . $productEntity . ')';
+                            
+                            return implode(', ', $result);
                         }
                     )
                 ),
