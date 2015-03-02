@@ -64,6 +64,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = '310';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.1.1') {
     $version = '311';
+} elseif ($_CONFIG['coreCmsVersion'] == '4.0.0') {
+    $version = '400';
 } else {
     // nothing to do
     return true;
@@ -1482,38 +1484,40 @@ $updates310Sp1To310Sp2 = array(
     ),
 );
 
-$updatesRc1To310Sp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesRc2To310Sp2    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesStableTo310Sp2 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesHotfixTo310Sp2 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesSp1To310Sp2    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesSp2To310Sp2    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesSp3To310Sp2    = array_merge($updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesSp4To310Sp2    = array_merge($updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updates310To310Sp2    = array_merge($updates310To310Sp1, $updates310Sp1To310Sp2);
-//$updates310Sp1To310Sp2 = $updates310Sp1To310Sp2;
+$updatesRc1To400    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesRc2To400    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesStableTo400 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesHotfixTo400 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp1To400    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp2To400    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp3To400    = array_merge($updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp4To400    = array_merge($updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updates310To400    = array_merge($updates310To310Sp1, $updates310Sp1To310Sp2);
+$updates310Sp1To400 = $updates310To400;
 
 
 if ($version == 'rc1') {
-    $updates = $updatesRc1To310Sp2;
+    $updates = $updatesRc1To400;
 } elseif ($version == 'rc2') {
-    $updates = $updatesRc2To310Sp2;
+    $updates = $updatesRc2To400;
 } elseif ($version == 'stable') {
-    $updates = $updatesStableTo310Sp2;
+    $updates = $updatesStableTo400;
 } elseif ($version == 'hotfix') {
-    $updates = $updatesHotfixTo310Sp2;
+    $updates = $updatesHotfixTo400;
 } elseif ($version == 'sp1') {
-    $updates = $updatesSp1To310Sp2;
+    $updates = $updatesSp1To400;
 } elseif ($version == 'sp2') {
-    $updates = $updatesSp2To310Sp2;
+    $updates = $updatesSp2To400;
 } elseif ($version == 'sp3') {
-    $updates = $updatesSp3To310Sp2;
+    $updates = $updatesSp3To400;
 } elseif ($version == 'sp4') {
-    $updates = $updatesSp4To310Sp2;
+    $updates = $updatesSp4To400;
 } elseif ($version == '310') {
-    $updates = $updates310To310Sp2;
+    $updates = $updates310To400;
+} elseif ($version == '311') {
+    $updates = $updates310Sp1To400;
 } else {
-    $updates = $updates310Sp1To310Sp2;
+    $updates = $updates310Sp1To400;
 }
 
 
@@ -2164,14 +2168,14 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
  * CONTACT: Add multi-file upload field
  *
  **************************************/
-if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '4.0.0')) {
     try {
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_contact_form_field',
             array(
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'id_form'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\')', 'notnull' => true, 'default' => 'text'),
+                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\',\'datetime\')', 'notnull' => true, 'default' => 'text'),
                 'special_type'   => array('type' => 'VARCHAR(20)', 'notnull' => true),
                 'is_required'    => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
                 'check_type'     => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1'),
