@@ -124,7 +124,7 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
             ->select('websiteCollection')
             ->from('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection', 'websiteCollection')
             ->leftJoin('websiteCollection.websites', 'website')
-            ->where('website.name LIKE 1?')->setParameter(1, '%' . contrexx_raw2db($term) . '%');
+            ->where('website.name LIKE :name')->setParameter('name', '%' . contrexx_raw2db($term) . '%');
         
         $websiteCollections = $qb->getQuery()->getResult();
         
