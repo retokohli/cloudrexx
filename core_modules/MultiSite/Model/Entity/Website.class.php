@@ -1920,6 +1920,6 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function getEditLink()
     {
-        return '<a href=​index.php?cmd=MultiSite&editid='. $this->getId() .'>' . $this->getName() . '</a>';        
+        return '<a href="index.php?cmd=MultiSite&editid='. $this->getId() .'">' . $this->getName() . '</a>';        
     }
 }

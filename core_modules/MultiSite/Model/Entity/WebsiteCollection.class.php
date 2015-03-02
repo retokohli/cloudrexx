@@ -154,10 +154,10 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
      */
     public function getEditLink()
     {
-        $websiteLink = '';
+        $websites = array();
         foreach ($this->websites as $website) {
-            $websiteLink .= '<a href=​index.php?cmd=MultiSite&editid='. $website->getId() .'>' . $website->getName() . '</a> ';
+            $websites[] = '<a href="index.php?cmd=MultiSite&editid='. $website->getId() .'">' . $website->getName() . '</a>';
         }
-        return $websiteLink;
+        return implode(', ', $websites);
     }
 }
