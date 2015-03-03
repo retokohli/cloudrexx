@@ -3851,7 +3851,27 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             \DBG::log('Website configuration file is not exists in the website.');
             return false;
         }
-
+        
+        list($dbHost, $dbName, $dbUserName, $dbPassword) = $this->getWebsiteDatabaseInfo($configFilePath);
+        if (!empty($dbHost) && !empty($dbUserName) && !empty($dbName)) {
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupPath. '/database') && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteBackupPath . '/database')) {
+                \DBG::log('Failed to create the website databse backup location Folder');
+                return false;
+            }
+            exec('mysqldump --no-create-db --no-create-info --single-transaction --complete-insert --extended-insert=FALSE -h ' . $dbHost . ' -u ' . $dbUserName . ' -p' . $dbPassword . ' ' . $dbName . ' > ' . $websiteBackupPath . '/database/sql_dump.sql');
+        }
+        return true;
+    }
+    
+    /**
+     * Get website database details
+     * 
+     * @param string $configFilePath website config file path
+     * @return boolean
+     */
+    public function getWebsiteDatabaseInfo($configFilePath)
+    {
+        
         $config = new \Cx\Lib\FileSystem\File($configFilePath);
         $configData = $config->getData();
         $dbHost = $dbUserName = $dbPassword = $dbName = $matches = '';
@@ -3868,15 +3888,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (preg_match('/\\$_DBCONFIG\\[\'database\'\\] = \'(.*?)\'/', $configData, $matches)) {
             $dbName = $matches[1];
         }
-
-        if (!empty($dbHost) && !empty($dbUserName) && !empty($dbName)) {
-            if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupPath. '/database') && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteBackupPath . '/database')) {
-                \DBG::log('Failed to create the website databse backup location Folder');
-                return false;
-            }
-            exec('mysqldump -h ' . $dbHost . ' -u ' . $dbUserName . ' -p' . $dbPassword . ' ' . $dbName . ' > ' . $websiteBackupPath . '/database/sql_dump.sql');
-        }
-        return true;
+        
+        return array($dbHost, $dbName, $dbUserName, $dbPassword);
     }
     
     /**
@@ -3897,6 +3910,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         if (!$this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath)) {
+            return array('status' => 'error', 'message' => 'Failed to Restore the website Repository!');
+        }
+        
+        if (!$this->websiteDataRestore($websiteName, $websiteBackupFilePath)) {
             return array('status' => 'error', 'message' => 'Failed to Restore the website Repository!');
         }
         
@@ -3949,6 +3966,109 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         return true;
+    }
+    
+    /**
+     * Restore website database and data repository
+     * 
+     * @param string $websiteName           website Name
+     * @param string $websiteBackupFilePath website backup path
+     * @return boolean
+     */
+    public function websiteDataRestore($websiteName, $websiteBackupFilePath)
+    {
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName;
+        
+        if (!$this->extractWebsiteDataBase($websitePath, $websiteBackupFilePath)) {
+            return false;
+        }
+        
+        if (!$this->websiteDatabaseRestore($websitePath)) {
+            return false;
+        }
+        
+        if (!$this->websiteRepositoryRestore($websitePath, $websiteBackupFilePath)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Restore the website repository
+     * 
+     * @param string $websitePath           website path
+     * @param string $websiteBackupFilePath website backup path
+     * @return boolean
+     */
+    public function websiteRepositoryRestore($websitePath, $websiteBackupFilePath)
+    {
+        $websiteTempDir     = $websitePath.'/website_temp';
+        $restoreWebsiteFile = new \PclZip($websiteBackupFilePath);
+        $restoreWebsiteFile->extract(PCLZIP_OPT_PATH, $websitePath, PCLZIP_OPT_BY_PREG, '/dataRepository/', PCLZIP_OPT_REMOVE_PATH, 'dataRepository', PCLZIP_OPT_REPLACE_NEWER);
+        
+        \Cx\Lib\FileSystem\FileSystem::copy_file($websiteTempDir.'/configuration.php', $websitePath . '/config/configuration.php', true);
+        
+        //cleanup website tempory folder
+        if (!\Cx\Lib\FileSystem\FileSystem::delete_folder($websiteTempDir, true)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Extract the database folder in website_temp folder
+     * 
+     * @param string $websitePath           website path
+     * @param string $websiteBackupFilePath website backup path
+     * @return boolean
+     */
+    public function extractWebsiteDataBase($websitePath, $websiteBackupFilePath)
+    {
+        $websiteTempDir = $websitePath . '/website_temp';
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteTempDir) && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteTempDir)) {
+            return false;
+        }
+
+        $restoreWebsiteFile = new \PclZip($websiteBackupFilePath);
+        $restoreWebsiteFile->extract(PCLZIP_OPT_PATH, $websiteTempDir, PCLZIP_OPT_BY_PREG, '/database/');
+        \Cx\Lib\FileSystem\FileSystem::copy_file($websitePath.'/config/configuration.php', $websiteTempDir.'/configuration.php');
+        return true;
+    }
+    
+    /**
+     * Restore the website database
+     * 
+     * @param string $websitePath           website path
+     * @return boolean
+     */
+    public function websiteDatabaseRestore($websitePath)
+    {
+        try {
+            $configFilePath = $websitePath . '/config/configuration.php';
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($configFilePath)) {
+                \DBG::log('Website configuration file is not exists in the website.');
+                return false;
+            }
+
+            list($dbHost, $dbName, $dbUserName, $dbPassword) = $this->getWebsiteDatabaseInfo($configFilePath);
+            if (empty($dbHost || $dbName || $dbUserName || $dbPassword)) {
+                \DBG::log('Database details are not be valid');
+                return false;
+            }
+            
+            $sqlDumpFile = $websitePath . '/website_temp/database/sql_dump.sql';
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($sqlDumpFile)) {
+                return false;
+            }
+            
+            exec('mysql -h ' . $dbHost . ' -u ' . $dbUserName . ' -p' . $dbPassword . ' '.$dbName.' < ' . $sqlDumpFile);
+            return true;
+        } catch (Exception $e) {
+            \DBG::log('JsonMultiSite::websiteDatabaseRestore() failed: To restore website database'. $e->getMessage());
+            return false;
+        }
+        
     }
     
     protected function activateDebuggingToMemory() {
