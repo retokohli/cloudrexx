@@ -104,6 +104,11 @@ class EntityInterface implements Exportable, Importable
                     $entityValue = $associationObj;
                 }
                 
+                //checks if the string a serialized array
+                if(preg_match('/^([adObis]:|N;)/', $entityValue)) {
+                    $entityValue = unserialize($entityValue);
+                }
+                
                 $entityObj->{'set' . ucfirst($entityField)}($entityValue);
                 
             }
