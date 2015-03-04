@@ -1272,6 +1272,28 @@ class CrmManager extends CrmLibrary
     }
 
     /**
+     * parse required blocks for multisite contact modal
+     *
+     * @param int $crmContactId
+     * @param object $objTpl
+     * @param int $selectedIdCustomerType
+     * @param int $selectedIdCompanySize
+     * @return empty
+     */
+    function parseCrmForMultiSite($crmContactId, $objTpl, $selectedIdCustomerType = 0, $selectedIdCompanySize = 0){
+        $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+        $crmContact->load($crmContactId);
+        $customerTypeId = $crmContact->__get("customerType");
+
+        $objTpl->setGlobalVariable(array(
+            'CRM_INDUSTRY_DROPDOWN'     => $this->listIndustryTypes($this->_objTpl, 2, $selectedIdCustomerType),//$this->contact->industryType
+            'TXT_CRM_PLEASE_SELECT'     => $_ARRAYLANG['TXT_CRM_COMMENT_DESCRIPTION'],
+        ));
+        $this->getCompanySizeDropDown($objTpl, $selectedIdCompanySize);
+        $this->getCustomerTypeDropDown($objTpl, $customerTypeId);
+
+    }
+    /**
      * remove the styles sheet on shadow box page
      *
      * @global array $_ARRAYLANG

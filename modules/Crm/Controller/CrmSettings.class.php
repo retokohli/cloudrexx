@@ -1037,6 +1037,11 @@ class CrmSettings extends CrmLibrary
                     'emp_default_user_group'             => isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0,
                     'default_country_value'              => isset ($_POST['default_country_value']) ? (int) $_POST['default_country_value'] : 0
             );
+	    // save industry_typ and company_size user profil attribut id 
+            \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
+            \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_industry_typ', $_POST['user_profile_attribute_industry_typ']);
+            \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_company_size', $_POST['user_profile_attribute_company_size']);
+            \Cx\Core\Setting\Controller\Setting::updateAll();
 
             foreach ($settings as $settings_var => $settings_val) {
                 $updateAllowPm = 'UPDATE '.DBPREFIX.'module_'.$this->moduleNameLC.'_settings
@@ -1167,6 +1172,8 @@ class CrmSettings extends CrmLibrary
                 'TXT_CRM_DEFAULT_USER_GROUP'     => $_ARRAYLANG['TXT_CRM_DEFAULT_USER_GROUP'],
                 'TXT_CRM_CREATE_ACCOUNT_USER'    => $_ARRAYLANG['TXT_CRM_CREATE_ACCOUNT_USER'],
                 'TXT_CRM_CREATE_ACCOUNT_USER_TIP'=> $_ARRAYLANG['TXT_CRM_CREATE_ACCOUNT_USER_TIP'],
+                'TXT_CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE'=> $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE'],
+                'TXT_CRM_PROFILE_ATTRIBUT_COMPANY_SIZE'=> $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_COMPANY_SIZE'],
 
                 'MODULE_NAME'                    => $this->moduleName,
                 'TXT_CRM_NOTES'                  => $_ARRAYLANG['TXT_CRM_NOTES'],
@@ -1176,7 +1183,17 @@ class CrmSettings extends CrmLibrary
                 'TXT_CRM_EMPLOYEE'               => $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE'],
                 'TXT_CRM_EMP_DEFAULT_USER_GROUP' => $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP'],
                 'TXT_CRM_SETTINGS_EMP_TOOLTIP'   => $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP'],
-                'TXT_CRM_ACCOUNT_ARE_MANTATORY'  => $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY']
+                'TXT_CRM_ACCOUNT_ARE_MANTATORY'  => $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY'],
+                'CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE_DROPDOWN' =>\Html::getSelect(
+                                                                'user_profile_attribute_industry_typ',
+                                                                \User_Profile_Attribute::getCustomAttributeNameArray(),
+                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ'),
+                                                                '', '', 'tabindex="0" style="width: 270px;"'),
+                'CRM_PROFILE_ATTRIBUT_COMPANY_SIZE_DROPDOWN' => \Html::getSelect(
+                                                                'user_profile_attribute_company_size',
+                                                                \User_Profile_Attribute::getCustomAttributeNameArray(),
+                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size'),
+                                                                '', '', 'tabindex="0" style="width: 270px;"'),
         ));
         
         if (!$this->isPmInstalled)
