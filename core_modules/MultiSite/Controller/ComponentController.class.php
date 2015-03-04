@@ -3051,6 +3051,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (!$objUser->login()) {
                     return;
                 }
+                // get user attribut field id for customer typ and company size out of crm, because we can not save this
+                // 2 settings for a crm user, they are only available for crm companies
+                \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
+                $attributIdForCustomerType = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ');
+                $attributIdForCompanySize = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size');
 
                 $profileAttributes = array(
                                         'firstname',
@@ -3058,16 +3063,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                         'address',
                                         'zip',
                                         'city',
-                                        'country'
-                                    );
+                                        'country',
+                                        $attributIdForCustomerType,
+                                        $attributIdForCompanySize
+                );
                 $userData = array();
-
-                foreach ($profileAttributes as $profileAttribute) {
-                    $userData[$profileAttribute] = !\FWValidator::isEmpty($objUser->getProfileAttribute($profileAttribute)) ? $objUser->getProfileAttribute($profileAttribute) : '';
-                }
-
-                if (count($userData) === count(array_filter($userData))) {
-                    return;
+                $userCrmId = $objUser->getCrmUserId();
+                // if there is no crm user, the customerTyp is not set and we do not need to check the rest, because
+                // the form must be filled out anyway
+                if($userCrmId != null){
+                    foreach ($profileAttributes as $profileAttribute) {
+                        $userData[$profileAttribute] = !\FWValidator::isEmpty($objUser->getProfileAttribute($profileAttribute)) ? $objUser->getProfileAttribute($profileAttribute) : '';
+                    }
+                    // get the crm Contact to find out if customerType isset, because this is a must in our form
+                    $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                    $crmContact->load($userCrmId);
+                    if (count($userData) === count(array_filter($userData)) && $crmContact->__get('customerType') != 0) {
+                        return;
+                    }
                 }
 
                 $objTemplate = $this->cx->getTemplate();
@@ -3087,14 +3100,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, true, false, false, false, false);
                     $objUser->objAttribute->next();
                 }
+                $crmComponent = new \Cx\Modules\Crm\Controller\CrmManager('crm');
+                // get required information out of crm, so we can display them in our modal
+                $crmComponent->parseCrmForMultiSite($userCrmId, $objContactTpl, $userData[$attributIdForCustomerType], $userData[$attributIdForCompanySize]);
                 $objAccessLib->parseAccountAttributes($objUser);
                 $objContactTpl->setVariable(array(
-                    'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'     => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'],
-                    'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'    => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'],
-                    'TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG'],
-                    'TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'            => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'],    
-                    'TXT_CORE_MODULE_MULTISITE_SAVE'                    => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'],
-                    'MULTISITE_CONTACT_INFO_SUBMIT_URL'                 => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
+                    'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'             => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'],
+                    'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'            => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'],
+                    'TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG'],
+                    'TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'                    => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'],
+                    'TXT_CORE_MODULE_MULTISITE_SAVE'                            => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SAVE'],
+                    'TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_INDUSTRY_TYPE'      => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_INDUSTRY_TYPE'],
+                    'TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_SIZE'       => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_SIZE'],
+                    'TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP'],
+                    'TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT'                   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT'],
+                    'MULTISITE_CONTACT_INFO_SUBMIT_URL'                         => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
+                    'MULTISITE_COMPANY_SIZE_POST_NAME'                          => 'multisite_user_profile_attribute['.$attributIdForCompanySize.'][0]',
+                    'MULTISITE_INDUSTRY_TYPE_POST_NAME'                         => 'multisite_user_profile_attribute['.$attributIdForCustomerType.'][0]',
                 ));
                 $objTemplate->_blocks['__global__'] = preg_replace('/<\/body>/', $objContactTpl->get() . '\\0', $objTemplate->_blocks['__global__']);
                 break;

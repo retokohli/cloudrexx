@@ -587,3 +587,5 @@ $_ARRAYLANG['TXT_CRM_COMPANY_SIZE']         = "Unternehmensgrösse";
 $_ARRAYLANG['TXT_CRM_ADD_COMPANY_SIZE']     = 'Hinzufügen einer Unternehmensgrösse';
 $_ARRAYLANG['TXT_CRM_EDIT_COMPANY_SIZE']    = 'Bearbeite einer Unternehmensgrösse';
 $_ARRAYLANG['TXT_CRM_NUMBER_OF_COMPANIES']  = 'Anzahl der Unternehmen';
+$_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE']  = 'Profilattribut für Branche';
+$_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_COMPANY_SIZE']  = 'Profilattribut für die Firmengrösse';

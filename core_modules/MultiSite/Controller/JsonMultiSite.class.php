@@ -924,6 +924,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $objUser->setRestoreKeyTime(intval($data['multisite_user_account_restore_key_time']), true);
         }
 
+        // we save customer_type in crm, because we can and do not need to make a new profile attribut
+        if(isset($data['customer_type'])){
+            // if id is null, there is no crm user, so we create one
+            if($objUser->getCrmUserId() === null){
+                \Cx\Modules\Crm\Controller\CrmLibrary::addCrmContactFromAccessUser($objUser);
+            }
+            $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+            $crmContact->load($objUser->getCrmUserId());
+            $crmContact->__set('customerType', $data['customer_type']);
+            $crmContact->save();
+        }
         // set profile data
         if (isset($data['multisite_user_profile_attribute'])) {
             $objUser->setProfile(contrexx_input2raw($data['multisite_user_profile_attribute']));

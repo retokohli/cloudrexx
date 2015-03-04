@@ -1,7 +1,15 @@
 <style type="text/css">
   .input_error{
       border: 1px solid #e00500;
-  }  
+  }
+  .half-row {
+    width: 48%;
+    display: inline-block;
+  }
+
+  .row .half-row:last-child {
+    margin-left: 3%;
+  }
 </style>
 <div aria-hidden="true" class="modal fade" id="multisite_contact_informaiton" role="dialog" tabindex="-1">
   <div class="modal-dialog">
@@ -12,22 +20,20 @@
         <form role="form" action="{MULTISITE_CONTACT_INFO_SUBMIT_URL}" id="multisite_contact_information_form" autocomplete="off">
           <div class="alert alert-danger validationError" style="display: none;"></div>
           <fieldset>
-            <!-- BEGIN multisite_user_profile_attribute_title -->     
+            <!-- BEGIN multisite_user_profile_gender_title -->
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER}
             </div>
-            <!-- END multisite_user_profile_attribute_title --> 
-            <!-- BEGIN multisite_user_profile_attribute_firstname -->     
-            <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}
-            </div>
-            <!-- END multisite_user_profile_attribute_firstname -->     
+            <!-- END multisite_user_profile_gender_title -->
 
-            <!-- BEGIN multisite_user_profile_attribute_lastname -->     
-            <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}
+            <div class="row ">
+              <!-- BEGIN multisite_user_profile_attribute_firstname -->
+              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}</div>
+              <!-- END multisite_user_profile_attribute_firstname -->
+              <!-- BEGIN multisite_user_profile_attribute_lastname -->
+              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}</div>
+              <!-- END multisite_user_profile_attribute_lastname -->
             </div>
-            <!-- END multisite_user_profile_attribute_lastname -->     
 
             <!-- BEGIN multisite_user_profile_attribute_company -->   
             <div class="row">
@@ -40,28 +46,52 @@
             </div>
             <!-- END multisite_user_profile_attribute_address --> 			
 
-            <!-- BEGIN multisite_user_profile_attribute_city -->   
-            <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY}
-            </div>
-            <!-- END multisite_user_profile_attribute_city --> 			
 
-            <!-- BEGIN multisite_user_profile_attribute_zip -->  
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP}
+              <!-- BEGIN multisite_user_profile_attribute_zip -->
+              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP}</div>
+              <!-- END multisite_user_profile_attribute_zip -->
+              <!-- BEGIN multisite_user_profile_attribute_city -->
+              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY}</div>
+              <!-- END multisite_user_profile_attribute_city -->
             </div>
-            <!-- END multisite_user_profile_attribute_zip --> 			
 
-            <!-- BEGIN multisite_user_profile_attribute_country -->                   
-            <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
-            </div>
-            <!-- END multisite_user_profile_attribute_country -->    
             <!-- BEGIN multisite_user_profile_attribute_phone_office -->     
             <div class="row">
               <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE}
             </div>
-            <!-- END multisite_user_profile_attribute_phone_office --> 	
+            <!-- END multisite_user_profile_attribute_phone_office -->
+            <!-- BEGIN multisite_user_profile_attribute_country -->
+            <div class="row">
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
+            </div>
+            <!-- END multisite_user_profile_attribute_country -->
+            <div class="row">
+              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_INDUSTRY_TYPE}</label><br />
+                <select tabindex="6" name="{MULTISITE_INDUSTRY_TYPE_POST_NAME}" id="industryType">
+                <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
+                {CRM_INDUSTRY_DROPDOWN}
+              </select>
+            </div>
+            <div class="row">
+              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_SIZE}</label><br />
+              <select tabindex="9" name="{MULTISITE_COMPANY_SIZE_POST_NAME}" id="companySize">
+                <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
+                <!-- BEGIN companySize -->
+                <option value="{CRM_COMPANY_SIZE_ID}" {CRM_COMPANY_SIZE_SELECTED}>{CRM_COMPANY_SIZE}</option>
+                <!-- END companySize -->
+              </select>
+            </div>
+            <div class="row">
+              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP}</label> <font color="red">*</font><br />
+              <select tabindex="8" name="customer_type" id="customer_type">
+                <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
+                <!-- BEGIN customerTypes -->
+                <option value="{CRM_CUSTOMER_TYPE_ID}" {CRM_CUSTOMER_TYPE_SELECTED}>{CRM_CUSTOMER_TYPE}</option>
+                <!-- END customerTypes -->
+              </select>
+            </div>
+
             <div class="row">
               <button type="submit" class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
             </div>
@@ -80,10 +110,13 @@
           });
     jQuery('#multisite_contact_information_form').submit(function () {
       jQuery('input, select').removeClass('input_error');
-      var validationFields = ['firstname','lastname','address','zip','city','country'];
+      var validationFields = ['firstname','lastname','address','zip','city','country', 'customer_type'];
       var error = false;
       jQuery.each(validationFields, function (key, value) {
-        var inputFieldName = 'multisite_user_profile_attribute[' + value + '][0]';
+      	var inputFieldName = value;
+      	if(value != 'customer_type'){
+        	var inputFieldName = 'multisite_user_profile_attribute[' + value + '][0]';
+        }
         var inputField = jQuery('#multisite_contact_information_form [name="' + inputFieldName + '"]');
         if (inputField.val() == '' || inputField.val() == '0') {
           inputField.addClass('input_error').scroll();
