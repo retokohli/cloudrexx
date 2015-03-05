@@ -28,7 +28,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * To show messages, use \Message class
      * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, $cmd) {
         // this class inherits from Controller, therefore you can get access to
         // Cx like this:
         $this->cx;
