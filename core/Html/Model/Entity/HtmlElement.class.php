@@ -118,7 +118,7 @@ class HtmlElement {
         foreach ($this->getAttributes() as $name=>$value) {
             $template->setVariable(array(
                 'ATTRIBUTE_NAME' => $name,
-                'ATTRIBUTE_VALUE' => contrexx_raw2xhtml($value),
+                'ATTRIBUTE_VALUE' =>  preg_replace(array("/{/","/}/"), array("&#123;","&#125;"), contrexx_raw2xhtml($value), -1), //replaces curly brackets, so they get not parsed with the sigma engine
             ));
             $template->parse('attribute');
         }
