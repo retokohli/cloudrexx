@@ -1804,12 +1804,11 @@ class ReflectionComponent {
         $em = \Env::get('cx')->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\\Core\\ContentManager\\Model\\Entity\\Page');
         $pages = $pageRepo->findBy(array(
-            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
             'module' => $this->componentName,
         ));
         foreach ($pages as $page) {
             if ($copy) {
-                // copy the node and persist changes
+               // copy the node and persist changes
                 $newNode = $page->getNode()->copy();
                 $em->flush();
                 
@@ -1829,7 +1828,7 @@ class ReflectionComponent {
         
         // remove old component from db (component, modules, backend_areas)
         if (!$copy) {
-            $this->removeFromDb();
+             $this->removeFromDb();
         }
         
         // copy/move in filesystem (name, type and customizing)
@@ -1865,17 +1864,14 @@ class ReflectionComponent {
             return;
         }
         
-        // move to correct type and name directory
-        try {
-            $objFile = new \Cx\Lib\FileSystem\File($this->getDirectory());
-            if ($copy) {
-                $objFile->copy($destination);
-            } else {
-                $objFile->move($destination);
-            }
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            \DBG::msg($e->getMessage());
+        $status = false;
+        if ($copy) {
+            $status = \Cx\Lib\FileSystem\FileSystem::copy_folder($this->getDirectory(), $destination);
+        } else {
+            $status = \Cx\Lib\FileSystem\FileSystem::move($this->getDirectory(), $destination);
         }
+        
+        return $status;
     }
     
     /**
