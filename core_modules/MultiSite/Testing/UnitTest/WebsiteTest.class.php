@@ -40,7 +40,7 @@ class WebsiteTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
          * 2. Website name
          */
         $objUser     = $objFWUser->objUser->getUser(contrexx_input2raw(1));        // get the user object
-        $websiteName = 'mytestwebsite'. \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'); // website name + multisite domain name
+        $websiteName = 'mytestwebsite'; // website name
         
         // check website is manager
         $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
