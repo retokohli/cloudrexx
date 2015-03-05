@@ -3706,6 +3706,7 @@ CREATE TABLE `contrexx_module_order_subscription` (
   `description` varchar(255) default NULL,
   `state` varchar(12) default NULL,
   `termination_date` datetime default NULL,
+  `note` text,
   PRIMARY KEY  (`id`),
   KEY `order_id` (`order_id`),
   KEY `product_id` (`product_id`),
