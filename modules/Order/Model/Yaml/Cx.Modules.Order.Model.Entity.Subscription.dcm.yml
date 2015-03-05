@@ -50,6 +50,8 @@ Cx\Modules\Order\Model\Entity\Subscription:
       type: datetime
       column: termination_date
       nullable: true
+    note:
+      type: string
       
   manyToOne: # owning side
     order:

@@ -47,6 +47,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     protected $renewalDate = null;
     protected $externalSubscriptionId = null;
     protected $description = null;
+    protected $note = null;
     
     /**
      *
@@ -254,6 +255,24 @@ class Subscription extends \Cx\Model\Base\EntityBase {
      */
     public function setDescription($description) {
         $this->description = $description;
+    }
+    
+    /**
+     * Getter for $note
+     * 
+     * @return string $note
+     */
+    public function getNote() {
+        return $this->note;
+    }
+    
+    /**
+     * Setter for $note
+     * 
+     * @param string $note
+     */
+    public function setNote($note) {
+        $this->note = $note;
     }
     
     /**
