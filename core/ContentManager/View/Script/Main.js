@@ -2517,8 +2517,12 @@ cx.cm.editorInUse = function() {
 
 cx.cm.createEditor = function() {
     if (!cx.cm.editorInUse()) {
+        var buildUrl = function(base, key, value) {
+            var sep = (base.indexOf('?') > -1) ? '&' : '?';
+            return base + sep + key + '=' + value;
+        }
         var config = {
-            customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
+            customConfig: buildUrl(cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'), 'pageId', cx.jQuery('#pageId').val()),
             toolbar: 'Full',
             skin: 'moono'
         };

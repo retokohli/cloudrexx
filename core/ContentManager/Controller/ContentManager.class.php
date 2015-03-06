@@ -359,11 +359,10 @@ class ContentManager extends \Module
             'TXT_EDITMODE_CODE'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
             'TXT_EDITMODE_CONTENT' => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT'],
         ));
-        $pageId = isset($_GET['page']) ? $_GET['page'] : '';
         $cxjs->setVariable(array(
             'editmodetitle'      => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
             'editmodecontent'    => $editmodeTemplate->get(),
-            'ckeditorconfigpath' => substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH . '/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT) + 1) . '?pageId='.$pageId,
+            'ckeditorconfigpath' => substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH . '/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT) + 1),
             'regExpUriProtocol'  =>  \FWValidator::REGEX_URI_PROTO,
             'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,

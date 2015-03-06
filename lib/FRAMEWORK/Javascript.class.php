@@ -928,14 +928,14 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     public static function findCSS(&$content)
     {
         JS::grabComments($content);
-        /*
-         * $content = preg_replace_callback('/<link .*?href=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:\/>)?/i', array('CSS', 'registerFromRegex'), $content);
-         */
+        //deactivate error handling for not well formed html
+        libxml_use_internal_errors(true);
         $css = array();
         $dom = new domDocument;
         $dom->loadHTML($content);
+        libxml_clear_errors();
         foreach($dom->getElementsByTagName('link') as $element) {
-            if(strpos($element->getAttribute('href'), '.css', strlen($element->getAttribute('href')) - strlen('.css')) !== FALSE) {
+            if(preg_match('/\.css(\?.*)?$/', $element->getAttribute('href'))) {
                 $css[] = $element->getAttribute('href');
                 JS::registerCSS($element->getAttribute('href'));
             }
