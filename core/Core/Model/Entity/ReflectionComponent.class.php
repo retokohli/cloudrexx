@@ -1806,16 +1806,21 @@ class ReflectionComponent {
         $pages = $pageRepo->findBy(array(
             'module' => $this->componentName,
         ));
+        $migratedNodes = array();
         foreach ($pages as $page) {
             if ($copy) {
-               // copy the node and persist changes
-                $newNode = $page->getNode()->copy();
-                $em->flush();
-                
-                // update module name of the page
-                foreach ($newNode->getPages() as $newPage) {
-                    $newPage->setModule($newName);
-                    $em->persist($newPage);
+                $node =  $page->getNode();
+                if (!in_array($node->getId(), $migratedNodes)) {
+                   // copy the node and persist changes
+                    $newNode = $node->copy();
+                    $em->flush();
+
+                    // update module name of the page
+                    foreach ($newNode->getPages() as $newPage) {
+                        $newPage->setModule($newName);
+                        $em->persist($newPage);
+                    }
+                    $migratedNodes[] = $node->getId();
                 }
             } else {
                 $page->setModule($newName);
