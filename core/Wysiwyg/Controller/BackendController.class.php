@@ -52,6 +52,33 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         
         // Not an entity, parse overview or settings
         switch (current($cmd)) {
+            case 'Settings':
+                if(isset($_POST)) {
+                    \Cx\Core\Setting\Controller\Setting::set('specificStylesheet', isset($_POST["specificStylesheet"])?1:0);
+                    
+                    \Cx\Core\Setting\Controller\Setting::storeFromPost();
+                }
+                
+                $i = 0;
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('specificStylesheet')
+                    && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'wysiwyg')
+                ){
+                    throw new \Exception("Failed to add new configuration option");
+                }
+                
+                \Cx\Core\Setting\Controller\Setting::init('Config', 'wysiwyg', 'Yaml');
+                
+                $tmpl = new \Cx\Core\Html\Sigma();
+                \Cx\Core\Setting\Controller\Setting::show(
+                    $tmpl,
+                    'index.php?cmd=Config&act=Wysiwyg&tpl=Settings',
+                    $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS'],
+                    $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS'],
+                    'TXT_CORE_WYSIWYG_'
+                );
+                
+                $template->setVariable('WYSIWYG_CONFIG_TEMPLATE', $tmpl->get());
+                break;
             case '':
             default:
                 if ($template->blockExists('overview')) {

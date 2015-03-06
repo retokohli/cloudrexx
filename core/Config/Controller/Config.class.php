@@ -218,9 +218,26 @@ class Config
         $wysiwygBackendController = $wysiwyg->getController('Backend');
         
         $objTpl = new \Cx\Core\Html\Sigma($wysiwyg->getDirectory(true) . '/View/Template/Backend');
-        $objTpl->loadTemplateFile('Default.html');
         
-        $wysiwygBackendController->parsePage($objTpl, array('WysiwygTemplate'));
+        //merge language
+        $langData = $objInit->loadLanguageData('Wysiwyg');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        $objTpl->setGlobalVariable($_ARRAYLANG);
+        
+        $objTpl->loadTemplatefile('Subnavigation.html');
+        
+        $tbl = isset($_GET['tpl']) ? contrexx_input2raw($_GET['tpl']) : '';
+        
+        switch ($tbl) {
+            case 'Settings':
+                $wysiwygBackendController->parsePage($objTpl, array('Settings'));
+                break;
+            case '':
+            default:
+                $objTpl->addBlockfile('WYSIWYG_CONFIG_TEMPLATE', 'wysiwyg_template', 'Default.html');
+                $wysiwygBackendController->parsePage($objTpl, array('WysiwygTemplate'));
+                break;
+        }
         
         \JS::registerCSS(substr($wysiwyg->getDirectory(false, true) . '/View/Style/Backend.css', 1));
 
@@ -228,10 +245,6 @@ class Config
             'CONTENT_TITLE' => $_ARRAYLANG['TXT_CORE_WYSIWYG'],
             'ADMIN_CONTENT' => $objTpl->get(),
         ));
-        
-        $langData = $objInit->loadLanguageData('Wysiwyg');
-        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-        $objTpl->setGlobalVariable($_ARRAYLANG);
     }
 
 

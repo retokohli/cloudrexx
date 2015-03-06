@@ -34,10 +34,11 @@ $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')
 $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
 $themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
 $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+\Cx\Core\Setting\Controller\Setting::init('Config', 'wysiwyg', 'Yaml');
 
 $skin = $themeRepo->getDefaultTheme()->getFoldername();
-if(isset($_GET['pageId']) && !empty($_GET['pageId']) && $pageRepo->find($_GET['pageId'])->getSkin()>0){
-    $skin = $themeRepo->findById($pageRepo->find($_GET['pageId'])->getSkin())->getFoldername();
+if(\Cx\Core\Setting\Controller\Setting::getValue('specificStylesheet') && !empty($pageId) && $pageRepo->find($pageId)->getSkin()>0){
+    $skin = $themeRepo->findById($pageRepo->find($pageId)->getSkin())->getFoldername();
 }
 //getThemeFileContent
 $filePath = $skin.'/index.html';
