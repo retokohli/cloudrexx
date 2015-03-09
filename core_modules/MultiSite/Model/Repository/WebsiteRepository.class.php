@@ -115,12 +115,13 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
                 ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
                 ->leftJoin('website.owner', 'user')
                 ->leftJoin('website.domains', 'domain')
-                ->where('user.email LIKE ?1')->setParameter(1, '%' . $term . '%')
-                ->orWhere('website.name LIKE ?1')->setParameter(1, '%' . $term . '%')
-                ->orWhere('website.ftpUser LIKE ?1')->setParameter(1, '%' . $term . '%')
-                ->orWhere('domain.name LIKE ?1')->setParameter(1, '%' . $term . '%')
-                ->groupBy('website.id')
-                ->getDql();
+                ->where('website.id = :id')->setParameter('id', $term)
+                ->orWhere('user.email LIKE ?1')
+                ->orWhere('website.name LIKE ?1')
+                ->orWhere('website.ftpUser LIKE ?1')
+                ->orWhere('domain.name LIKE ?1')
+                ->setParameter(1, '%' . $term . '%')
+                ->groupBy('website.id');
         
         return $qb->getQuery()->getResult();
     }
