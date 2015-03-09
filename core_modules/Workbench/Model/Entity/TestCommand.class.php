@@ -40,6 +40,8 @@ class TestCommand extends Command {
      * Array of testing folders
      */
     protected $testingFolders = array();
+    
+    protected $phpUnitPath;
 
     /**
      * Execute this command
@@ -75,9 +77,11 @@ class TestCommand extends Command {
                     $this->interface->show(ASCMS_TESTING_FOLDER . " not exists in the component ". $arguments[3] .'!');
                     return;
                 }
+                unset($arguments[3]);
             } else {
                 $this->getTestingFoldersByType($arguments[2], $useCustomizing);
             }
+            unset($arguments[2]);
         } elseif (!empty ($arguments[2])) {
             // check whether it a valid component
             $componentName = $arguments[2];
@@ -88,6 +92,7 @@ class TestCommand extends Command {
                     break;
                 }                                
             }
+            unset($arguments[2]);
         }
         
         // get all testing folder when component type or name not specificed
@@ -97,9 +102,9 @@ class TestCommand extends Command {
             }
         }
                 
-        $phpUnitTestPath = ASCMS_LIBRARY_PATH.'/PHPUnit';
-        if(!file_exists($phpUnitTestPath)) {
-            $this->interface->show("PhpUnit is not found in ". $phpUnitTestPath);
+        $this->phpUnitPath = ASCMS_LIBRARY_PATH.'/PHPUnit';
+        if(!file_exists($this->phpUnitPath)) {
+            $this->interface->show("PhpUnit is not found in ". $this->phpUnitPath);
             return;
         }
 
@@ -112,29 +117,32 @@ class TestCommand extends Command {
         asort($this->testingFolders);
         
         // Needs to change the dir because files might be loaded by its relative path inside PHPUnit
-        chdir($phpUnitTestPath);
-        require_once $phpUnitTestPath.'/PHP/CodeCoverage/Filter.php';
-        \PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
-
+        chdir($this->phpUnitPath);        
+        
         if (extension_loaded('xdebug')) {
             xdebug_disable();
         }
 
-        if (strpos('@php_bin@', '@php_bin') === 0) {            
-            set_include_path($phpUnitTestPath . PATH_SEPARATOR . get_include_path());
+        if (strpos('@php_bin@', '@php_bin') === 0) {
+            set_include_path($this->phpUnitPath . PATH_SEPARATOR . get_include_path());
         }
+                
+        spl_autoload_register(array($this, 'phpunitAutoload'));
 
-        require_once $phpUnitTestPath.'/PHPUnit/Autoload.php';
-
-        define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
-                    
+        unset($arguments[0]);
+        unset($arguments[1]); // unset the arguments
         $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();        
         foreach ($this->testingFolders as $testingFolder) {
-            $_SERVER['argv'] = $argv = array(
-                $phpUnitTestPath,
-                '--testdox',
-                $testingFolder,
+            $options = array(
+                $this->phpUnitPath,
+                '--testdox'
             );
+            foreach ($arguments as $arg) {
+                $options[] = $arg;
+            }
+            $options[] = $testingFolder;
+            
+            $_SERVER['argv'] = $argv = $options;
             $_SERVER['argc'] = count($argv);
 
             $command->run($_SERVER['argv'], false);
@@ -263,5 +271,27 @@ class TestCommand extends Command {
         }
         
         return false;
+    }
+    
+    /*
+     * Autoload function to load the PHPUnit class files.
+     */
+    function phpunitAutoload($class)
+    {
+        require_once $this->phpUnitPath . '/PHPUnit/Util/Filesystem.php';
+        
+        if (
+               strpos($class, 'PHPUnit_') === 0
+            || strpos($class, 'PHP_') === 0
+            || strpos($class, 'Text_') === 0
+            || strpos($class, 'File_') === 0
+            || strpos($class, 'Doctrine') === 0
+            || strpos($class, 'SebastianBergmann') === 0
+           ) {
+           $file = \PHPUnit_Util_Filesystem::classNameToFilename($class);
+           if (file_exists($this->phpUnitPath . '/'. $file)) {
+               require_once $file;
+           }
+        }
     }
 }
