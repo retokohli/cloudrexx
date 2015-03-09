@@ -111,13 +111,16 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
     }
     
     /**
-     * Set the website
+     * Set the websites
      *  
-     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website $website
+     * @param \Doctrine\Common\Collections\ArrayCollection $websites
      */
-    public function setWebsite(Website $website)
+    public function setWebsites($websites)
     {
-        $this->websites = $website;
+        $this->websites = $websites;
+        foreach ($websites as $website) {
+            $website->setWebsiteCollection($this);
+        }
     }
     
     /**
