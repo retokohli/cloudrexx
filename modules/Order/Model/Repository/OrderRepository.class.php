@@ -240,4 +240,18 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
             throw new OrderRepositoryException($e->getMessage());
         }
     }
+    
+    /**
+     * Get the orders ordered by ID in descending order.
+     * 
+     * @return array
+     */
+    public function getAllByDesc() {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('o')
+           ->from('\Cx\Modules\Order\Model\Entity\Order', 'o')
+           ->orderBy('o.id', 'DESC');
+        
+        return $qb->getQuery()->getResult();
+    }
 }

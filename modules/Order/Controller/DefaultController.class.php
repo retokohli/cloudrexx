@@ -91,7 +91,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
             }
             $orders = $this->orderRepository->findOrdersBySearchTerm($term, $objFilterUser);
         } else {
-            $orders = $this->orderRepository->findAll();
+            $orders = $this->orderRepository->getAllByDesc();
         }
         
         $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, array(
@@ -109,9 +109,23 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                     'header' => 'contactId',
                     'table' => array(
                         'parse' => function($value) {
+                            global $_ARRAYLANG;
                             $userId   = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($value);
                             $userName = \FWUser::getParsedUserTitle($userId);
-                            $url = '<a href=​index.php?cmd=Access&act=user&tpl=modify&id='. $userId .'>' . $userName . '</a>';
+                            $crmDetailLink = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$value}' 
+                                                    title='{$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT']}'>
+                                                    <img 
+                                                        src='".\Env::get('cx')->getCodeBaseCoreWebPath()."/Core/View/Media/navigation_level_1_189.png' 
+                                                        width='16' height='16' 
+                                                        alt='{$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT']}'
+                                                    />
+                                                </a>";
+                                                        
+                            $url = "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$userId}'
+                                       title='{$_ARRAYLANG['TXT_MODULE_ORDER_MODIY_USER_ACCOUNT']}'>" .
+                                       $userName .
+                                    "</a>" . 
+                                    $crmDetailLink;
                             return $url;
                         },
                     ),

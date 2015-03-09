@@ -24,3 +24,5 @@ $_ARRAYLANG['TXT_MODULE_ORDER_DELETE_USER_ERROR_MSG'] = 'The customer can not be
 $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH'] = 'Search';
 $_ARRAYLANG['TXT_MODULE_ORDER_FILTER'] = 'Filter';
 $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'] = 'Enter your search term';
+$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT'] = 'Click to open the crm contact.';
+$_ARRAYLANG['TXT_MODULE_ORDER_MODIY_USER_ACCOUNT'] = 'Edit user account';
