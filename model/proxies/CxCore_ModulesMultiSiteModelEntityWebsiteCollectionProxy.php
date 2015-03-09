@@ -93,6 +93,12 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteCollectionProxy extends \Cx\Core_
         return parent::setWebsiteTemplate($websiteTemplate);
     }
 
+    public function getEditLink()
+    {
+        $this->_load();
+        return parent::getEditLink();
+    }
+
     public function __get($name)
     {
         $this->_load();

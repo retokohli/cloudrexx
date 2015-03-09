@@ -123,6 +123,12 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::getWebsiteServiceServer();
     }
 
+    public function setOwner(\Cx\Core\User\Model\Entity\User $user)
+    {
+        $this->_load();
+        return parent::setOwner($user);
+    }
+
     public function getOwner()
     {
         $this->_load();
@@ -151,18 +157,6 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
     {
         $this->_load();
         return parent::getIpAddress();
-    }
-
-    public function setOwnerId($ownerId)
-    {
-        $this->_load();
-        return parent::setOwnerId($ownerId);
-    }
-
-    public function getOwnerId()
-    {
-        $this->_load();
-        return parent::getOwnerId();
     }
 
     public function setThemeId($themeId)
@@ -327,6 +321,12 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::generateVerificationUrl();
     }
 
+    public function getRestoreKey()
+    {
+        $this->_load();
+        return parent::getRestoreKey();
+    }
+
     public function generateAuthToken()
     {
         $this->_load();
@@ -399,6 +399,12 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::getResourceUsageStats();
     }
 
+    public function getEditLink()
+    {
+        $this->_load();
+        return parent::getEditLink();
+    }
+
     public function __get($name)
     {
         $this->_load();
@@ -426,7 +432,7 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'creationDate', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'ownerId', 'themeId', 'installationId', 'ftpUser', 'mailAccountId', 'websiteServiceServer', 'mailServiceServer', 'websiteCollection', 'domains');
+        return array('__isInitialized__', 'id', 'name', 'creationDate', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'themeId', 'installationId', 'ftpUser', 'mailAccountId', 'websiteServiceServer', 'owner', 'mailServiceServer', 'websiteCollection', 'domains');
     }
 
     public function __clone()
