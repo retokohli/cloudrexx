@@ -1,0 +1,18 @@
+<label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
+<!-- BEGIN images -->
+
+<img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"/>
+<button class="remove-image button">
+    Entfernen
+</button>
+<input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
+<!-- END images -->
+{MEDIABROWSER_BUTTON}
+<script>
+    function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback){
+        if (callback.type == 'file'){
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(callback.data[0].datainfo.filepath);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',callback.data[0].datainfo.filepath);
+        }
+    }
+</script>
