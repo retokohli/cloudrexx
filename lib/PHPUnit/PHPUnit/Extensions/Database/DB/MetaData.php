@@ -1,45 +1,11 @@
 <?php
-/**
- * PHPUnit
+/*
+ * This file is part of DBUnit.
  *
- * Copyright (c) 2002-2011, Sebastian Bergmann <sb@sebastian-bergmann.de>.
- * All rights reserved.
+ * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *
- *   * Neither the name of Sebastian Bergmann nor the names of his
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * @package    DbUnit
- * @author     Mike Lively <m@digitalsandwich.com>
- * @copyright  2002-2011 Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link       http://www.phpunit.de/
- * @since      File available since Release 1.0.0
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 /**
@@ -48,8 +14,8 @@
  *
  * @package    DbUnit
  * @author     Mike Lively <m@digitalsandwich.com>
- * @copyright  2010 Mike Lively <m@digitalsandwich.com>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
+ * @copyright  2010-2014 Mike Lively <m@digitalsandwich.com>
+ * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @version    Release: @package_version@
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 1.0.0
@@ -61,7 +27,10 @@ abstract class PHPUnit_Extensions_Database_DB_MetaData implements PHPUnit_Extens
         'mysql'  => 'PHPUnit_Extensions_Database_DB_MetaData_MySQL',
         'oci'    => 'PHPUnit_Extensions_Database_DB_MetaData_Oci',
         'sqlite' => 'PHPUnit_Extensions_Database_DB_MetaData_Sqlite',
-        'sqlite2'=> 'PHPUnit_Extensions_Database_DB_MetaData_Sqlite'
+        'sqlite2'=> 'PHPUnit_Extensions_Database_DB_MetaData_Sqlite',
+        'sqlsrv' => 'PHPUnit_Extensions_Database_DB_MetaData_SqlSrv',
+        'firebird' => 'PHPUnit_Extensions_Database_DB_MetaData_Firebird',
+        'dblib'  => 'PHPUnit_Extensions_Database_DB_MetaData_Dblib'
     );
 
     /**
@@ -121,7 +90,7 @@ abstract class PHPUnit_Extensions_Database_DB_MetaData implements PHPUnit_Extens
                 return self::registerClassWithDriver($className, $driverName)->newInstance($pdo, $schema);
             }
         } else {
-            throw new Exception("Could not find a meta data driver for {$driverName} pdo driver.");
+            throw new PHPUnit_Extensions_Database_Exception("Could not find a meta data driver for {$driverName} pdo driver.");
         }
     }
 
@@ -140,14 +109,14 @@ abstract class PHPUnit_Extensions_Database_DB_MetaData implements PHPUnit_Extens
     public static function registerClassWithDriver($className, $pdoDriver)
     {
         if (!class_exists($className)) {
-            throw new Exception("Specified class for {$pdoDriver} driver ({$className}) does not exist.");
+            throw new PHPUnit_Extensions_Database_Exception("Specified class for {$pdoDriver} driver ({$className}) does not exist.");
         }
 
         $reflection = new ReflectionClass($className);
         if ($reflection->isSubclassOf('PHPUnit_Extensions_Database_DB_MetaData')) {
             return self::$metaDataClassMap[$pdoDriver] = $reflection;
         } else {
-            throw new Exception("Specified class for {$pdoDriver} driver ({$className}) does not extend PHPUnit_Extensions_Database_DB_MetaData.");
+            throw new PHPUnit_Extensions_Database_Exception("Specified class for {$pdoDriver} driver ({$className}) does not extend PHPUnit_Extensions_Database_DB_MetaData.");
         }
     }
 
@@ -222,5 +191,25 @@ abstract class PHPUnit_Extensions_Database_DB_MetaData implements PHPUnit_Extens
     public function allowsCascading()
     {
         return FALSE;
+    }
+
+    /**
+     * Disables primary keys if the rdbms does not allow setting them otherwise
+     *
+     * @param string $tableName
+     */
+    public function disablePrimaryKeys($tableName)
+    {
+        return;
+    }
+
+    /**
+     * Reenables primary keys after they have been disabled
+     *
+     * @param string $tableName
+     */
+    public function enablePrimaryKeys($tableName)
+    {
+        return;
     }
 }

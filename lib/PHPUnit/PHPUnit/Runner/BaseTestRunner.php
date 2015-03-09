@@ -1,46 +1,11 @@
 <?php
-/**
- * PHPUnit
+/*
+ * This file is part of PHPUnit.
  *
- * Copyright (c) 2002-2011, Sebastian Bergmann <sebastian@phpunit.de>.
- * All rights reserved.
+ * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *
- *   * Neither the name of Sebastian Bergmann nor the names of his
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * @package    PHPUnit
- * @subpackage Runner
- * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link       http://www.phpunit.de/
- * @since      File available since Release 2.0.0
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 /**
@@ -49,9 +14,8 @@
  * @package    PHPUnit
  * @subpackage Runner
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @copyright  Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 2.0.0
  */
@@ -62,6 +26,7 @@ abstract class PHPUnit_Runner_BaseTestRunner
     const STATUS_INCOMPLETE = 2;
     const STATUS_FAILURE    = 3;
     const STATUS_ERROR      = 4;
+    const STATUS_RISKY      = 5;
     const SUITE_METHODNAME  = 'suite';
 
     /**
@@ -79,34 +44,36 @@ abstract class PHPUnit_Runner_BaseTestRunner
      * This is a template method, subclasses override
      * the runFailed() and clearStatus() methods.
      *
-     * @param  string  $suiteClassName
-     * @param  string  $suiteClassFile
-     * @param  boolean $syntaxCheck
+     * @param  string                 $suiteClassName
+     * @param  string                 $suiteClassFile
+     * @param  mixed                  $suffixes
      * @return PHPUnit_Framework_Test
      */
-    public function getTest($suiteClassName, $suiteClassFile = '', $syntaxCheck = FALSE)
+    public function getTest($suiteClassName, $suiteClassFile = '', $suffixes = '')
     {
         if (is_dir($suiteClassName) &&
             !is_file($suiteClassName . '.php') && empty($suiteClassFile)) {
-            $testCollector = new PHPUnit_Runner_IncludePathTestCollector(
-              array($suiteClassName)
+            $facade = new File_Iterator_Facade;
+            $files  = $facade->getFilesAsArray(
+                $suiteClassName,
+                $suffixes
             );
 
             $suite = new PHPUnit_Framework_TestSuite($suiteClassName);
-            $suite->addTestFiles($testCollector->collectTests(), $syntaxCheck);
+            $suite->addTestFiles($files);
 
             return $suite;
         }
 
         try {
             $testClass = $this->loadSuiteClass(
-              $suiteClassName, $suiteClassFile, $syntaxCheck
+                $suiteClassName,
+                $suiteClassFile
             );
-        }
-
-        catch (Exception $e) {
+        } catch (PHPUnit_Framework_Exception $e) {
             $this->runFailed($e->getMessage());
-            return NULL;
+
+            return;
         }
 
         try {
@@ -114,35 +81,28 @@ abstract class PHPUnit_Runner_BaseTestRunner
 
             if (!$suiteMethod->isStatic()) {
                 $this->runFailed(
-                  'suite() method must be static.'
+                    'suite() method must be static.'
                 );
 
-                return NULL;
+                return;
             }
 
             try {
-                $test = $suiteMethod->invoke(NULL, $testClass->getName());
-            }
-
-            catch (ReflectionException $e) {
+                $test = $suiteMethod->invoke(null, $testClass->getName());
+            } catch (ReflectionException $e) {
                 $this->runFailed(
-                  sprintf(
-                    "Failed to invoke suite() method.\n%s",
-
-                    $e->getMessage()
-                  )
+                    sprintf(
+                        "Failed to invoke suite() method.\n%s",
+                        $e->getMessage()
+                    )
                 );
 
-                return NULL;
+                return;
             }
-        }
-
-        catch (ReflectionException $e) {
+        } catch (ReflectionException $e) {
             try {
                 $test = new PHPUnit_Framework_TestSuite($testClass);
-            }
-
-            catch (InvalidArgumentException $e) {
+            } catch (PHPUnit_Framework_Exception $e) {
                 $test = new PHPUnit_Framework_TestSuite;
                 $test->setName($suiteClassName);
             }
@@ -156,20 +116,15 @@ abstract class PHPUnit_Runner_BaseTestRunner
     /**
      * Returns the loaded ReflectionClass for a suite name.
      *
-     * @param  string  $suiteClassName
-     * @param  string  $suiteClassFile
-     * @param  boolean $syntaxCheck
+     * @param  string          $suiteClassName
+     * @param  string          $suiteClassFile
      * @return ReflectionClass
      */
-    protected function loadSuiteClass($suiteClassName, $suiteClassFile = '', $syntaxCheck = FALSE)
+    protected function loadSuiteClass($suiteClassName, $suiteClassFile = '')
     {
         $loader = $this->getLoader();
 
-        if ($loader instanceof PHPUnit_Runner_StandardTestSuiteLoader) {
-            return $loader->load($suiteClassName, $suiteClassFile, $syntaxCheck);
-        } else {
-            return $loader->load($suiteClassName, $suiteClassFile);
-        }
+        return $loader->load($suiteClassName, $suiteClassFile);
     }
 
     /**
@@ -184,7 +139,7 @@ abstract class PHPUnit_Runner_BaseTestRunner
      * Override to define how to handle a failed loading of
      * a test suite.
      *
-     * @param  string  $message
+     * @param string $message
      */
     abstract protected function runFailed($message);
 }

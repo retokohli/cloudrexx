@@ -1,46 +1,11 @@
 <?php
-/**
- * PHPUnit
+/*
+ * This file is part of PHPUnit.
  *
- * Copyright (c) 2002-2011, Sebastian Bergmann <sebastian@phpunit.de>.
- * All rights reserved.
+ * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *
- *   * Neither the name of Sebastian Bergmann nor the names of his
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * @package    PHPUnit
- * @subpackage Util_TestDox
- * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link       http://www.phpunit.de/
- * @since      File available since Release 2.3.0
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 /**
@@ -49,9 +14,8 @@
  * @package    PHPUnit
  * @subpackage Util_TestDox
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @copyright  Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 2.1.0
  */
@@ -75,21 +39,25 @@ class PHPUnit_Util_TestDox_NamePrettifier
     /**
      * Prettifies the name of a test class.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
      */
     public function prettifyTestClass($name)
     {
         $title = $name;
 
-        if ($this->suffix !== NULL &&
+        if ($this->suffix !== null &&
             $this->suffix == substr($name, -1 * strlen($this->suffix))) {
             $title = substr($title, 0, strripos($title, $this->suffix));
         }
 
-        if ($this->prefix !== NULL &&
+        if ($this->prefix !== null &&
             $this->prefix == substr($name, 0, strlen($this->prefix))) {
             $title = substr($title, strlen($this->prefix));
+        }
+
+        if (substr($title, 0, 1) == '\\') {
+            $title = substr($title, 1);
         }
 
         return $title;
@@ -98,7 +66,7 @@ class PHPUnit_Util_TestDox_NamePrettifier
     /**
      * Prettifies the name of a test method.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return string
      */
     public function prettifyTestMethod($name)
@@ -113,11 +81,11 @@ class PHPUnit_Util_TestDox_NamePrettifier
 
         if (in_array($string, $this->strings)) {
             $name = $string;
-        } else if ($count == 0) {
+        } elseif ($count == 0) {
             $this->strings[] = $string;
         }
 
-        if (strpos($name, '_') !== FALSE) {
+        if (strpos($name, '_') !== false) {
             return str_replace('_', ' ', $name);
         }
 
@@ -130,7 +98,7 @@ class PHPUnit_Util_TestDox_NamePrettifier
             $name[0] = strtoupper($name[0]);
         }
 
-        $wasNumeric = FALSE;
+        $wasNumeric = false;
 
         for ($i = $offset; $i < $max; $i++) {
             if ($i > $offset &&
@@ -142,11 +110,11 @@ class PHPUnit_Util_TestDox_NamePrettifier
 
                 if (!$wasNumeric && $isNumeric) {
                     $buffer    .= ' ';
-                    $wasNumeric = TRUE;
+                    $wasNumeric = true;
                 }
 
                 if ($wasNumeric && !$isNumeric) {
-                    $wasNumeric = FALSE;
+                    $wasNumeric = false;
                 }
 
                 $buffer .= $name[$i];
@@ -159,7 +127,7 @@ class PHPUnit_Util_TestDox_NamePrettifier
     /**
      * Sets the prefix of test names.
      *
-     * @param  string  $prefix
+     * @param string $prefix
      */
     public function setPrefix($prefix)
     {
@@ -169,7 +137,7 @@ class PHPUnit_Util_TestDox_NamePrettifier
     /**
      * Sets the suffix of test names.
      *
-     * @param  string  $prefix
+     * @param string $suffix
      */
     public function setSuffix($suffix)
     {
