@@ -81,7 +81,6 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
         }
         
         $productOptions        = $newProduct->getEntityAttributes();
-        $productEntityObj      = $subscription->getProductEntity();
         $websiteCollectionRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection');
 
         if (   $oldProductEntityClass == 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection' 
@@ -93,6 +92,7 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
                   && $newProductEntityClass == 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection'
         ) {
             \DBG::msg(__METHOD__.': Update WebsiteCollection');
+            $productEntityObj = $subscription->getProductEntity();
             if ($productEntityObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
                 $websiteCollectionRepo->setWebsiteCollectionMetaInformation($productEntityObj, $productOptions);
                 $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
@@ -107,13 +107,18 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
             $websiteCollection = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection();
             $websiteCollectionRepo->setWebsiteCollectionMetaInformation($websiteCollection, $productOptions);
 
-            // attach existing Website to new WebsiteCollection (in case the subscription used to have a Website)
-            if ($productEntityObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                $websiteCollection->setWebsite($productEntityObj);
-            }
+            // fetch old product entity of subscription
+            $oldProductEntity = $oldProduct->getEntityById($subscription->getProductEntityId());
 
+            // set new product entity
+            $subscription->setProductEntity($websiteCollection);
             $websiteCollection->setTempData(array('assignedSubscriptionId' => $subscription->getId()));
             $this->entitiesToPersistOnPostFlush[] = $websiteCollection;
+     
+            // attach existing Website to new WebsiteCollection (in case the subscription used to have a Website)
+            if ($oldProductEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                $websiteCollection->addWebsite($oldProductEntity);
+            }
         }
     }
 
