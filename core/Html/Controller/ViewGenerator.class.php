@@ -106,7 +106,11 @@ class ViewGenerator {
                                 $storecallback = $this->options['fields'][$field]['storecallback'];
                                 $newValue = $storecallback(contrexx_input2raw($_POST[$field]));
                             } else if ($fieldDefinition['type'] == 'datetime') {
-                                $newValue = new \DateTime($_POST[$field]);
+                                if (empty($_POST[$field])) {
+                                    $newValue = null;
+                                } else {
+                                    $newValue = new \DateTime($_POST[$field]);
+                                }
                             } elseif ($fieldDefinition['type'] == 'array') {
                                 $newValue = unserialize($_POST[$field]);
                                 // verify that the value is actually an array -> prevent to store other php data
@@ -206,7 +210,11 @@ class ViewGenerator {
                                 $storecallback = $this->options['fields'][$name]['storecallback'];
                                 $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
                             } else if ($fieldDefinition['type'] == 'datetime') {
-                                $newValue = new \DateTime($_POST[$name]);
+                                if (empty($_POST[$name])) {
+                                    $newValue = null;
+                                } else {
+                                    $newValue = new \DateTime($_POST[$name]);
+                                }
                             } elseif ($fieldDefinition['type'] == 'array') {
                                 $newValue = unserialize($_POST[$name]);
                                 // verify that the value is actually an array -> prevent to store other php data
