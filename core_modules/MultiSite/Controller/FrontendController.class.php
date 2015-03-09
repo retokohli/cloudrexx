@@ -36,7 +36,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 
                 // check the website is actually owned by the signed-in user
                 if (    !($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) 
-                     || $website->getOwnerId() != \FWUser::getFWUserObject()->objUser->getId()
+                     || $website->getOwner()->getId() != \FWUser::getFWUserObject()->objUser->getId()
                    ) {
                        $this->redirectToSubscriptionPage();
                 }
