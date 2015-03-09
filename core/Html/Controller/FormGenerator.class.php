@@ -199,6 +199,9 @@ class FormGenerator {
                 if ($value instanceof \DateTime) {
                     $value = $value->format(ASCMS_DATE_FORMAT);
                 }
+                if (is_null($value)) {
+                    $value = '';
+                }
                 $input = new \Cx\Core\Html\Model\Entity\DataElement($name, $value);
                 $input->setAttribute('type', 'text');
                 $input->setAttribute('class', 'datepicker');
