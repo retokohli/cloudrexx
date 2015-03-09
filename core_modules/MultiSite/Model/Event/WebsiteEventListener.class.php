@@ -158,6 +158,8 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
             return;
         }
 
+        \DBG::msg(__METHOD__ . ': Subscription::$productEntity is Website');
+
         if ($subscription->getExpirationDate()) {
             $entityAttributes['subscriptionExpiration'] = $subscription->getExpirationDate()->getTimestamp();
         }

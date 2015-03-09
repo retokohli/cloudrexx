@@ -64,6 +64,8 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
             return;
         }
         
+        \DBG::msg(__METHOD__ . ': Subscription::$productEntity is WebsiteCollection');
+
         if (isset($entityAttributes['websiteTemplate'])) {
             $websiteTemplate = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate')->findOneById($entityAttributes['websiteTemplate']);
             if ($websiteTemplate) {
