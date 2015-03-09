@@ -72,4 +72,30 @@ class WebsiteTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
         
         $this->assertInstanceOf('\Cx\Core_Modules\MultiSite\Model\Entity\Website', $website);
     }
+    
+    /**
+     * Test function to destroy website
+     */
+    function testDestroyWebsite()
+    {   
+        /**
+         * Destroy website name
+         */
+        $websiteName = 'mytestwebsite';
+        $websiteRepo = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $objWebsite = $websiteRepo->findOneBy(array('name' => $websiteName));
+        
+        // Delete website from both manager and service server
+        $objWebsite->destroy();
+        
+        /**
+         * remove the website object and flush into database
+         */
+        self::$cx->getDb()->getEntityManager()->remove($objWebsite);
+        self::$cx->getDb()->getEntityManager()->flush();
+        
+        // check the website is removed or not
+        $website = $websiteRepo->findOneBy(array('name' => $websiteName));
+        $this->assertEmpty($website); 
+    }
 }
