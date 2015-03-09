@@ -171,6 +171,18 @@ class CxModulesOrderModelEntitySubscriptionProxy extends \Cx\Modules\Order\Model
         return parent::setDescription($description);
     }
 
+    public function getNote()
+    {
+        $this->_load();
+        return parent::getNote();
+    }
+
+    public function setNote($note)
+    {
+        $this->_load();
+        return parent::setNote($note);
+    }
+
     public function getExternalSubscriptionId()
     {
         $this->_load();
@@ -270,7 +282,7 @@ class CxModulesOrderModelEntitySubscriptionProxy extends \Cx\Modules\Order\Model
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'subscriptionDate', 'expirationDate', 'productEntityId', 'paymentAmount', 'paymentState', 'renewalUnit', 'renewalQuantifier', 'renewalDate', 'externalSubscriptionId', 'description', 'state', 'terminationDate', 'order', 'product');
+        return array('__isInitialized__', 'id', 'subscriptionDate', 'expirationDate', 'productEntityId', 'paymentAmount', 'paymentState', 'renewalUnit', 'renewalQuantifier', 'renewalDate', 'externalSubscriptionId', 'description', 'state', 'terminationDate', 'note', 'order', 'product');
     }
 
     public function __clone()
