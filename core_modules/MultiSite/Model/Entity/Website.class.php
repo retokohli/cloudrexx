@@ -1920,6 +1920,17 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function getEditLink()
     {
-        return '<a href="index.php?cmd=MultiSite&editid='. $this->getId() .'">' . $this->getName() . '</a>';        
+        global $_ARRAYLANG;
+        
+        $websiteDetailLink = '<a href="index.php?cmd=MultiSite&term=' . $this->getId() . '" title="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DETAIL_LINK'] . '"> 
+                                    <img 
+                                        src = "' . \Env::get('cx')->getCodeBaseCoreModuleWebPath() . '/MultiSite/View/Media/details.gif"
+                                        width="16px" height="16px"
+                                        alt="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DETAIL_LINK'] . '"
+                                    />
+                                </a>';
+        return '<a href="index.php?cmd=MultiSite&editid='. $this->getId() .'" title="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EDIT_LINK'] . '">' 
+                . $this->getName() . 
+                '</a>&nbsp;' . $websiteDetailLink;
     }
 }

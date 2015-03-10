@@ -157,9 +157,20 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
      */
     public function getEditLink()
     {
+        global $_ARRAYLANG;
+        
         $websites = array();
         foreach ($this->websites as $website) {
-            $websites[] = '<a href="index.php?cmd=MultiSite&editid='. $website->getId() .'">' . $website->getName() . '</a>';
+            $websiteDetailLink = '<a href="index.php?cmd=MultiSite&term=' . $website->getId() . '" title="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DETAIL_LINK'] . '"> 
+                                    <img 
+                                        src = "' . \Env::get('cx')->getCodeBaseCoreModuleWebPath() . '/MultiSite/View/Media/details.gif"
+                                        width="16px" height="16px"
+                                        alt="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DETAIL_LINK'] . '"
+                                    />
+                                </a>';
+            $websites[] = '<a href="index.php?cmd=MultiSite&editid='. $website->getId() .'" title="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EDIT_LINK'] . '">'
+                            . $website->getName()  . 
+                          '</a>&nbsp;'. $websiteDetailLink;
         }
         return implode(', ', $websites);
     }
