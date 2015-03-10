@@ -57,44 +57,16 @@ class PHPUnitTextUICommand extends \PHPUnit_TextUI_Command {
 
         $this->runner->setLoader($this->arguments['loader']);
         
-        // Reset the Printer object.This will be again loaded from self::arguments otherwise it will hold the previous results.
-        $this->runner->resetPrinter();
-
-        if (is_object($this->arguments['test']) &&
-            $this->arguments['test'] instanceof \PHPUnit_Framework_Test) {
-            $suite = $this->arguments['test'];
-        } else {
-            $suite = $this->runner->getTest(
-                $this->arguments['test'],
-                $this->arguments['testFile'],
-                $this->arguments['testSuffixes']
-            );
-        }
-
-        $testFiles = self::collectTests($this->arguments['test']);
-        asort($testFiles);
+        $suite = new \PHPUnit_Framework_TestSuite();
         
+        $testFiles = array();
+        foreach ($this->arguments['test'] as $testFodler) {
+            $testFiles = array_merge($testFiles, self::collectTests($testFodler));
+        }
+        
+        asort($testFiles);
         $suite->addTestFiles($testFiles);
         
-        if ($this->arguments['listGroups']) {
-            $this->printVersionString();
-
-            print "Available test group(s):\n";
-
-            $groups = $suite->getGroups();
-            sort($groups);
-
-            foreach ($groups as $group) {
-                print " - $group\n";
-            }
-
-            if ($exit) {
-                exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
-            } else {
-                return \PHPUnit_TextUI_TestRunner::SUCCESS_EXIT;
-            }
-        }
-
         unset($this->arguments['test']);
         unset($this->arguments['testFile']);
 

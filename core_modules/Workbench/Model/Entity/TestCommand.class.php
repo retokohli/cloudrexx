@@ -131,22 +131,20 @@ class TestCommand extends Command {
 
         unset($arguments[0]);
         unset($arguments[1]); // unset the arguments
-        $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();        
-        foreach ($this->testingFolders as $testingFolder) {
-            $options = array(
-                $this->phpUnitPath,
-                '--testdox'
-            );
-            foreach ($arguments as $arg) {
-                $options[] = $arg;
-            }
-            $options[] = $testingFolder;
-            
-            $_SERVER['argv'] = $argv = $options;
-            $_SERVER['argc'] = count($argv);
-
-            $command->run($_SERVER['argv'], false);
+        $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();
+        $options = array(
+            $this->phpUnitPath,
+            '--testdox'
+        );
+        foreach ($arguments as $arg) {
+            $options[] = $arg;
         }
+        $options[] = $this->testingFolders;
+
+        $_SERVER['argv'] = $argv = $options;
+        $_SERVER['argc'] = count($argv);
+
+        $command->run($_SERVER['argv'], false);
         
         $this->interface->show('Done');
     }
