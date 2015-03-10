@@ -110,4 +110,17 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
         
         return !empty($subscriptions) ? $subscriptions : array();
     }
+    /**
+     * Get all subscriptions ordered by ID in descending order.
+     * 
+     * @return array
+     */
+    public function getAllByDesc() {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('s')
+           ->from('\Cx\Modules\Order\Model\Entity\Subscription', 's')
+           ->orderBy('s.id', 'DESC');
+        
+        return $qb->getQuery()->getResult();
+    }
 }
