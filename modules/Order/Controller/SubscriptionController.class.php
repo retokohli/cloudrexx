@@ -75,7 +75,7 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
         if (!empty($term)) {
             $subscriptions = $this->subscriptionRepo->findSubscriptionsBySearchTerm($term);
         } else {
-            $subscriptions = $this->subscriptionRepo->findAll();
+            $subscriptions = $this->subscriptionRepo->getAllByDesc();
         }
         $view = new \Cx\Core\Html\Controller\ViewGenerator($subscriptions, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_SUBSCRIPTION'],
@@ -96,7 +96,12 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                             if(!$productEntity) {
                                 return;
                             }
-                            return $productEntity;
+                            $productEditLink = $productEntity;
+                            if (method_exists($productEntity, 'getEditLink')) {
+                                $productEditLink = $productEntity->getEditLink();
+                            }
+                            
+                            return $productEditLink;
                         }
                     )
                 ),
