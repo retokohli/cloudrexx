@@ -53,15 +53,21 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // Not an entity, parse overview or settings
         switch (current($cmd)) {
             case 'Settings':
-                if(isset($_POST)) {
+                if(isset($_POST) && isset($_POST['bsubmit'])) {
                     \Cx\Core\Setting\Controller\Setting::set('specificStylesheet', isset($_POST["specificStylesheet"])?1:0);
+                    \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST["replaceActualContents"])?1:0);
                     
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }
                 
                 $i = 0;
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('specificStylesheet')
-                    && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'wysiwyg')
+                    && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '1', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'wysiwyg')
+                ){
+                    throw new \Exception("Failed to add new configuration option");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('replaceActualContents')
+                    && !\Cx\Core\Setting\Controller\Setting::add('replaceActualContents', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'wysiwyg')
                 ){
                     throw new \Exception("Failed to add new configuration option");
                 }
@@ -225,6 +231,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         
         return array(
             'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
+            'order' => array(
+                'overview' => array(
+                    'active',
+                    'title',
+                    'description',
+                ),
+            ),
             'functions' => array(
                 'add'       => true,
                 'edit'      => true,
@@ -234,14 +247,37 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'filtering' => false,
             ),
             'fields' => array(
+                'id' => array(
+                    'showOverview' => false,
+                ),
                 'title' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_TITLE'],
+                    'table' => array(
+                        'parse' => function($data, $rows) {
+                            $editUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                            $editUrl->setParam('editid', $rows['id']);
+                            $data = '<a href="' . $editUrl . '" title="'.$data.'">'.$data.'</a>';
+                            return $data;
+                        },
+                    ),
                 ),
                 'description' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_DESCRIPTION'],
                 ),
-                'inactive' => array(
-                    'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_INACTIVE'],
+                'active' => array(
+                    'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_STATE'],
+                    'formtext' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ACTIVE'],
+                    'sorting' => false,
+                    'table' => array(
+                        'parse' => function($data, $rows) {
+                            $img = 'led_red.gif';
+                            if ($data) {
+                                $img = 'led_green.gif';
+                            }
+                            $data = '<img src="core/Core/View/Media/icons/'.$img.'" />';
+                            return $data;
+                        },
+                    ),
                 ),
                 'imagePath' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_IMAGE_PATH'],
@@ -251,9 +287,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'htmlContent' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_HTML_CONTENT'],
                     'showOverview' => false,
+                    'type' => 'sourcecode',
+                    'mode' => 'html',
                 ),
             ),
         );
     }
-    
 }

@@ -65,7 +65,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getWysiwygTempaltes() {
         $em = $this->cx->getDb()->getEntityManager();
         $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate');
-        $allWysiwyg = $repo->findBy(array('inactive'=>'0'));
+        $allWysiwyg = $repo->findBy(array('active'=>'1'));
         $containerArr = array();
         foreach ($allWysiwyg as $wysiwyg) {
             $containerArr[] = array(

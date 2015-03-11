@@ -45,7 +45,8 @@ class BackendTable extends HTML_Table {
                         continue;
                     }
                     $origHeader = $header;
-    				if ($first) {
+                    $sorting = $options['fields'][$header]['sorting'];
+                    if ($first) {
                         if (isset($options['fields'][$header]['header'])) {
                             $header = $options['fields'][$header]['header'];
                         }
@@ -55,7 +56,8 @@ class BackendTable extends HTML_Table {
                         if (
                             is_array($options['functions']) &&
                             isset($options['functions']['sorting']) &&
-                            $options['functions']['sorting']
+                            $options['functions']['sorting'] &&
+                            $sorting!==false
                         ) {
                             $order = '';
                             $img = '&uarr;&darr;';

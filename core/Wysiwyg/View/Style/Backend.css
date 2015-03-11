@@ -6,4 +6,4 @@
  */
 #form-X-title, #imagePath, #form-X-description, #form-X-htmlContent {width: 500px;}
 #form-X-description {height: 50px;}
-#form-X-htmlContent {height: 200px;}
+#editor-htmlContent {height: 300px;width: 100%;}

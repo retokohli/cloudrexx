@@ -351,4 +351,23 @@ class DataSet implements \Iterator {
 
         return $out;
     }
+    
+    /**
+     * Sort the columns after the given array.
+     * Not defined columns are sorted after doctrine file (yml).
+     * @param type $arr Array with the new order
+     */
+    public function sortColumn($arr) {
+        foreach ($this->data as $key => $val) {
+            $sortedData = array();
+            foreach ($arr as $orderKey => $orderVal) {
+                if(array_key_exists($orderVal, $val)){
+                    $sortedData[$orderVal] = $val[$orderVal];
+                } else {
+                    unset($arr[$orderKey]);
+                }
+            }
+            $this->data[$key] = array_merge($sortedData,$val);
+        }
+    }
 }
