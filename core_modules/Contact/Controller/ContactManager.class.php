@@ -779,12 +779,14 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
         if (count($arrActiveSystemFrontendLanguages) > 0) {
             $intLanguageCounter = 0;
-            $boolFirstLanguage  = true;
             $arrLanguages       = array(0 => '', 1 => '', 2 => '');
             $strJsTabToDiv      = '';
 
             foreach($arrActiveSystemFrontendLanguages as $langId => $arrLanguage) {
-                if ($formId) {
+                // Bugfix: if only one language is activated, it must be true, so the fields can be saved
+                if(count($arrActiveSystemFrontendLanguages) == 1){
+                    $boolLanguageIsActive = true;
+                }elseif ($formId) {
                     $boolLanguageIsActive = isset($this->arrForms[$formId]['lang'][$langId]) && $this->arrForms[$formId]['lang'][$langId]['is_active'];
                 } else {
                     $boolLanguageIsActive = $langId == FRONTEND_LANG_ID;
@@ -841,7 +843,11 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         } elseif (count($this->arrForms[$formId]['lang'])) {
             $selectedInterfaceLanguage = key($this->arrForms[$formId]['lang']);
         }
-
+        foreach(\FWLanguage::getLanguageArray() as $language){
+            if($language['id'] == $selectedInterfaceLanguage && $language["frontend"] == 0){
+                $selectedInterfaceLanguage = \FWLanguage::getDefaultLangId();
+            }
+        }
         //Get the fallback languages array
         $fallBackArr = \FWLanguage::getFallbackLanguageArray();
 
