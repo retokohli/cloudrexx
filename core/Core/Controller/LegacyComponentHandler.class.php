@@ -1175,10 +1175,12 @@ class LegacyComponentHandler {
                         $teaser = $newsObj->getTeaser();
                         if ($teaser !== null) //news details, else getTeaser would return null
                             $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
-                        \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
-                        \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
-                        \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
-                        $page_metatitle = $newsObj->newsTitle;
+                        if ($page->getCmd() === 'details') {
+                            \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
+                            \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
+                            \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
+                            $page_metatitle = $newsObj->newsTitle;
+                        }
                     },
 
                     'livecam' => function() {
@@ -1490,7 +1492,7 @@ class LegacyComponentHandler {
                     },
 
                     'jobs' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
+                        global $cl, $_CORELANG, $page, $page_metatitle;
 
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/index.class.php'))
@@ -1498,10 +1500,12 @@ class LegacyComponentHandler {
                         $jobsObj= new \jobs(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($jobsObj->getJobsPage());
                         $jobsObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
-                        \Env::get('cx')->getPage()->setTitle($jobsObj->jobsTitle);
-                        \Env::get('cx')->getPage()->setContentTitle($jobsObj->jobsTitle);
-                        \Env::get('cx')->getPage()->setMetaTitle($jobsObj->jobsTitle);
-                        $page_metatitle = $jobsObj->jobsTitle;
+                        if ($page->getCmd() === 'details') {
+                            \Env::get('cx')->getPage()->setTitle($jobsObj->jobsTitle);
+                            \Env::get('cx')->getPage()->setContentTitle($jobsObj->jobsTitle);
+                            \Env::get('cx')->getPage()->setMetaTitle($jobsObj->jobsTitle);
+                            $page_metatitle = $jobsObj->jobsTitle;
+                        }
                     },
 
                     'error' => function() {
