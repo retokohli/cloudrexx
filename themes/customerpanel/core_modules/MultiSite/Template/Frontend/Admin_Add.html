@@ -18,8 +18,9 @@
         <input type="text" name="adminUser[email]" id="email" value="">
       </div>  
       <div class="row">
-        <input type="checkbox" name="adminUser[notification_email]" id="notification_email" value="1" checked="checked">
-        <label for="notification_email">{TXT_USER_NOTIFICATION_EMAIL}</label>
+        <label for="notification_email">{TXT_USER_NOTIFICATION_EMAIL}:</label>
+        <input type="radio" name="notification_email" class="notification_email" id="password_gernerated" value="1" checked="checked" /> {TXT_ACCESS_PASSWORD_GENERATED}<br />
+        <input type="radio" name="notification_email" class="notification_email" id="password_manually" value="0" /> {TXT_ACCESS_PASSWORD_MANUALLY}
       </div>  
       <div class="row">
         <label id="label_password" for="password">{TXT_ACCESS_PASSWORD}:</label>
@@ -40,25 +41,25 @@
 <script type="text/javascript">
   /* <![CDATA[ */
   jQuery(document).ready(function () {
-    jQuery('#notification_email').change(function() {
-      if(this.checked) {
+    jQuery('input[name="notification_email"]').change(function() {
+      if(jQuery(this).val()==1) {
           jQuery('#label_password').hide();
           jQuery('#password').val('').hide();
           jQuery('#label_confirm_password').hide();
           jQuery('#confirm_password').val('').hide();
-      } else {
+      } else if(jQuery(this).val()==0) {
           jQuery('#label_password').show();
           jQuery('#password').show();
           jQuery('#label_confirm_password').show();
           jQuery('#confirm_password').show();
       }
     });
-    jQuery('#notification_email').trigger('change');
     jQuery('#multisite_admin_user_add_form').submit(function () {
       var apiUrl = '/api/MultiSite/Website/Admins?id=' + getQueryParams(document.location.search)['id'];
       sendApiFormRequest('#multisite_admin_user_add_form', '#AdminAdd', '#multisite_website_admins', apiUrl);
       return false;
     });
+    jQuery('input[name="notification_email"]:checked').trigger('change');
   });
   /* ]]> */
 </script>
