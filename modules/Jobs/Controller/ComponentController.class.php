@@ -38,10 +38,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $objJobs = new Jobs(\Env::get('cx')->getPage()->getContent());
                 \Env::get('cx')->getPage()->setContent($objJobs->getJobsPage());
-                $objJobs->getPageTitle(\Env::get('cx')->getPage()->getTitle());
-                \Env::get('cx')->getPage()->setTitle($objJobs->jobsTitle);
-                \Env::get('cx')->getPage()->setContentTitle($objJobs->jobsTitle);
-                \Env::get('cx')->getPage()->setMetaTitle($objJobs->jobsTitle);
+                if ($page->getCmd() === 'details') {
+                    $objJobs->getPageTitle(\Env::get('cx')->getPage()->getTitle());
+                    \Env::get('cx')->getPage()->setTitle($objJobs->jobsTitle);
+                    \Env::get('cx')->getPage()->setContentTitle($objJobs->jobsTitle);
+                    \Env::get('cx')->getPage()->setMetaTitle($objJobs->jobsTitle);
+                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:

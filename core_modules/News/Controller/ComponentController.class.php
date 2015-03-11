@@ -42,9 +42,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $teaser = $newsObj->getTeaser();
                 if ($teaser !== null) //news details, else getTeaser would return null
                     $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
-                \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
-                \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
-                \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
+                if ($page->getCmd() === 'details') {
+                    \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
+                    \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
+                    \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
+                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
