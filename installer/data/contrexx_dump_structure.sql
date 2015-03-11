@@ -551,7 +551,7 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
   `description` text NOT NULL,
   `imagePath` varchar(255) NOT NULL,
   `htmlContent` text,
-  `inactive` tinyint(4) NOT NULL,
+  `active` tinyint(4) NOT NULL default '1',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
