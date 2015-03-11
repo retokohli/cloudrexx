@@ -276,6 +276,32 @@ class ForumAdmin extends ForumLibrary {
                    'CATEGORY_ADD_LANGUAGES_2'    =>    $arrLanguages[1],
                    'CATEGORY_ADD_LANGUAGES_3'    =>    $arrLanguages[2]
                ));
+           } else {
+               $activeFrontendLangIds = \FWLanguage::getActiveFrontendLanguages();
+               reset($activeFrontendLangIds);
+               $activeFrontendLangId = array_search(current($activeFrontendLangIds), $activeFrontendLangIds);
+               $activeLang = '<input checked="checked" type="checkbox" name="frmAddCategory_Languages[]" value="' .
+                   $activeFrontendLangId . '" />'. current($activeFrontendLangIds)['name'];
+
+               $this->_objTpl->setVariable(array(
+                   'CATEGORY_ADD_NAME_LANGID'    =>    $activeFrontendLangId,
+                   'CATEGORY_ADD_DESC_LANGID'    =>    $activeFrontendLangId,
+                   'FORUM_ADD_NAME_LANGID'        =>    $activeFrontendLangId,
+                   'FORUM_ADD_DESC_LANGID'        =>    $activeFrontendLangId,
+                   'CATEGORY_ADD_NAME_LANG'    =>    current($activeFrontendLangIds)['name'],
+                   'CATEGORY_ADD_DESC_LANG'    =>    current($activeFrontendLangIds)['name'],
+                   'FORUM_ADD_NAME_LANG'        =>    current($activeFrontendLangIds)['name'],
+                   'FORUM_ADD_DESC_LANG'        =>    current($activeFrontendLangIds)['name']
+               ));
+
+               $this->_objTpl->parse('categoryNameFields');
+               $this->_objTpl->parse('categoryDescFields');
+               $this->_objTpl->parse('forumNameFields');
+               $this->_objTpl->parse('forumDescFields');
+
+               $this->_objTpl->setVariable(array(
+                   'CATEGORY_ADD_LANGUAGES_1'    =>    $activeLang
+               ));
            }
 
      //show "add forum"-form
