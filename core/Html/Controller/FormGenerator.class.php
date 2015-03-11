@@ -85,19 +85,15 @@ class FormGenerator {
     }
     
     public static function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
-        global $_ARRAYLANG;
-
         $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $group->setAttribute('class', 'group');
         $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
         $label->setAttribute('for', 'form-X-' . $field);
         $fieldHeader = $field;
-        if (isset($fieldOptions['header'])) {
-            if (isset($_ARRAYLANG[$fieldOptions['header']])) {
-                $fieldHeader = $_ARRAYLANG[$fieldOptions['header']];
-            } else {
-                $fieldHeader = $fieldOptions['header'];
-            }
+        if (isset($fieldOptions['formtext'])){
+            $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'formtext');
+        } else if (isset($fieldOptions['header'])) {
+            $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'header');
         }
         $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($fieldHeader));
         $group->addChild($label);
@@ -281,7 +277,69 @@ class FormGenerator {
                 
                 return $div;
                 break;
+            case 'sourcecode':
+                //set mode
+                $mode = 'html';
+                if(isset($options['mode'])) {
+                    switch($options['mode']) {
+                        case 'js':
+                            $mode = 'javascript';
+                        break;
+                        case 'yml':
+                        case 'yaml':
+                            $mode = 'yaml';
+                        break;
+                    }
+                }
+                
+                //define textarea
+                $textarea = new \Cx\Core\Html\Model\Entity\HtmlElement('textarea');
+                $textarea->setAttribute('name', $name);
+                $textarea->setAttribute('id', $name);
+                $textarea->setAttribute('style', 'display:none;');
+                $textarea->addChild(new \Cx\Core\Html\Model\Entity\TextElement($value));
+                
+                //define pre
+                $pre = new \Cx\Core\Html\Model\Entity\HtmlElement('pre');
+                $pre->setAttribute('id','editor-'.$name);
+                $pre->addChild(new \Cx\Core\Html\Model\Entity\TextElement(contrexx_raw2xhtml($value)));
+                
+                //set readonly if necessary
+                $readonly = '';
+                if (isset($options['readonly']) && $options['readonly']) {
+                    $readonly = 'editor.setReadOnly(true);';
+                    $textarea->setAttribute('disabled');
+                }
+                
+                //create div and add all stuff
+                $div = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                $div->addChild($textarea);
+                $div->addChild($pre);
+                
+                //register js
+                $jsCode = <<<CODE
+var editor;                        
+\$J(function(){
+if (\$J("#editor-$name").length) {
+    editor = ace.edit("editor-$name");
+    editor.getSession().setMode("ace/mode/$mode");
+    editor.setShowPrintMargin(false);
+    editor.focus();
+    editor.gotoLine(1);
+    $readonly
+}
 
+\$J('form').submit(function(){
+    \$J('#$name').val(editor.getSession().getValue());
+});
+
+});
+CODE;
+                \JS::activate('ace');            
+                \JS::registerCode($jsCode);
+                
+                return $div;
+                break;
             case 'string':
             default:
                 // convert NULL to empty string
@@ -317,5 +375,16 @@ class FormGenerator {
     
     public function __toString() {
         return $this->render();
+    }
+    
+    protected function getFormLabel($fieldOptions, $key) {
+        global $_ARRAYLANG;
+        
+        if (isset($_ARRAYLANG[$fieldOptions[$key]])) {
+            $fieldHeader = $_ARRAYLANG[$fieldOptions[$key]];
+        } else {
+            $fieldHeader = $fieldOptions[$key];
+        }
+        return $fieldHeader;
     }
 }

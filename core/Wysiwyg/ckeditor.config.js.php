@@ -87,7 +87,7 @@ CKEDITOR.editorConfig = function( config )
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
     
-    config.templates_replaceContent = false;
+    config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents')? 'true' : 'false' ?>;
 
     config.toolbar_Full = config.toolbar_Small = [
         ['Source','-','NewPage','Templates'],

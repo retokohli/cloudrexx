@@ -32,9 +32,9 @@ class WysiwygTemplate extends \Cx\Model\Base\EntityBase {
     protected $htmlContent;
 
     /**
-     * @var boolean $inactive
+     * @var boolean $active
      */
-    protected $inactive;
+    protected $active = true;
 
 
     /**
@@ -128,22 +128,22 @@ class WysiwygTemplate extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set inactive
+     * Set active
      *
-     * @param boolean $inactive
+     * @param boolean $active
      */
-    public function setInactive($inactive)
+    public function setActive($active)
     {
-        $this->inactive = $inactive;
+        $this->active = $active;
     }
 
     /**
-     * Get inactive
+     * Get active
      *
-     * @return boolean $inactive
+     * @return boolean $active
      */
-    public function getInactive()
+    public function getActive()
     {
-        return $this->inactive;
+        return $this->active;
     }
 }

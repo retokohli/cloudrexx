@@ -55,7 +55,7 @@ class ViewGenerator {
                     $entityNS = get_class($this->object);
                 }
             }
-
+            
             /** 
              *  postSave event
              *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -307,6 +307,9 @@ class ViewGenerator {
             }
         }
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+            if(!empty($this->options['order']['overview'])) {
+                $renderObject->sortColumn($this->options['order']['overview']);
+            }
             $addBtn = '';
             if (!empty($this->options['functions']['add'])) {
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
@@ -357,6 +360,9 @@ class ViewGenerator {
                     $fieldDefinition = $entityObject->getFieldMapping($field);
                     $this->options[$field]['type']=$fieldDefinition['type'];
                     $renderArray[$field]="";
+                    if (!empty($fieldDefinition['options']['default'])){
+                        $renderArray[$field]=$fieldDefinition['options']['default'];
+                    }
                 }
             }
             // load single-valued-associations
@@ -410,6 +416,18 @@ class ViewGenerator {
         } else {
             return false;
         }
+        
+        //sets the order of the fields
+        if(!empty($this->options['order']['form'])) {
+            $sortedData = array();
+            foreach ($this->options['order']['form'] as $orderVal) {
+                if(array_key_exists($orderVal, $renderArray)){
+                    $sortedData[$orderVal] = $renderArray[$orderVal];
+                }
+            }
+            $renderArray = array_merge($sortedData,$renderArray);
+        }
+        
         return new FormGenerator($renderArray, $actionUrl,$title, $this->options);
     }
     
