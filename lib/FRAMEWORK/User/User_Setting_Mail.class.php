@@ -121,12 +121,12 @@ class User_Setting_Mail
         'user_account_invitation'    => array(
             'title'    => 'TXT_ACCESS_USER_ACCOUNT_INVITATION',
             'placeholders'    => array(
-                '[[FIRSTNAME]]'    => 'TXT_ACCESS_FIRSTNAME_DESC',
-                '[[LASTNAME]]'        => 'TXT_ACCESS_LASTNAME_DESC',
-                '[[WEBSITE]]'        => 'TXT_ACCESS_WEBSITE_DESC',
+                '[[FIRSTNAME]]'    => 'TXT_FIRST_NAME',
+                '[[LASTNAME]]'        => 'TXT_LAST_NAME',
+                '[[WEBSITE]]'        => 'TXT_SETTINGS_DOMAIN_URL',
                 '[[LINK]]'        => 'TXT_ACCESS_LINK_DESC',
                 '[[EMAIL]]'        => 'TXT_ACCESS_EMAIL_DESC',
-                '[[PASSWORD]]'        => 'TXT_ACCESS_PASSWORD_DESC',
+                '[[PASSWORD]]'        => 'TXT_ACCESS_PASSWORD',
                 '[[SENDER]]'    => 'TXT_ACCESS_SENDER_DESC'
             ),
             'required'    => array()

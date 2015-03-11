@@ -1664,6 +1664,7 @@ class User extends User_Profile
 
         //for calling postPersist and postUpdate based on $callPostUpdateEvent
         $callPostUpdateEvent = $this->id;
+        $generatedPassword = '';
         
         if (!$this->validateUsername()) {
             return false;

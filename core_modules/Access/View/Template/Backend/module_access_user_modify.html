@@ -8,18 +8,18 @@ $J(document).ready(function() {
         $J('#password-complexity').html(checkComplexity($J('input[name=access_user_password]').val()))
     })
     
-    $J('#notification_email').change(function() {
-      if(this.checked) {
+    $J('input[name="notification_email"]').change(function() {
+      if($J(this).val()==1) {
           $J('.password-field').hide();
           $J('.password-field input').val('');
           $J('#password-complexity').removeClass().html('');
-      } else {
+      } else if($J(this).val()==0) {
           $J('.password-field').show();
       }
     });
     
-    if($J('#notification_email').is(':visible')) {
-        $J('#notification_email').trigger('change');
+    if($J('input[name="notification_email"]').is(':visible')) {
+        $J('input[name="notification_email"]:checked').trigger('change');
     }
     
     /**
@@ -162,7 +162,8 @@ $J(document).ready(function() {
                         <tr class="row2" style="display:{CSS_DISPLAY_STATUS_CREATE}">
                             <td >{TXT_ACCESS_NOTIFICATION_EMAIL_TITLE}</td>
                             <td>
-                                <input type="checkbox" name="notification_email" id="notification_email" value="1" checked="checked" /> <label for="notification_email">{TXT_ACCESS_NOTIFICATION_EMAIL}</label>
+                                <input type="radio" name="notification_email" class="notification_email" id="password_gernerated" value="1" checked="checked" /> <label for="password_gernerated">{TXT_ACCESS_PASSWORD_GENERATED}</label><br />
+                                <input type="radio" name="notification_email" class="notification_email" id="password_manually" value="0" /> <label for="password_manually">{TXT_ACCESS_PASSWORD_MANUALLY}</label>
                             </td>
 			</tr>
 			<tr class="row1 password-field">
