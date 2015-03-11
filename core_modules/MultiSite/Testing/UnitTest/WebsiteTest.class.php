@@ -26,66 +26,32 @@ namespace Cx\Core_Modules\MultiSite\Testing\UnitTest;
  * @subpackage  coremodule_multisite
  */
 class WebsiteTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
-{
+{    
     
     /**
      * Test function to adding a website
      */
     function testAddWebsite()
     {
-        $objFWUser   = \FWUser::getFWUserObject();
+        $websiteName = 'mytestsite';
         
-        /**
-         * Creating website requires 2 parameters
-         * 1. User object 
-         * 2. Website name
-         */
-        $objUser     = $objFWUser->objUser->getUser(contrexx_input2raw(1));        // get the user object
-        $websiteName = 'mytestwebsite'; // website name
-        
-        // check website is manager
-        $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
-        $websiteServiceServer = null;
-        
-        // When current server is a website manager then it will request the service server to create the website.
-        // So we need to fetch the default website website service server.
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
-            //get default service server
-            $defaultWebsiteServiceServer = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer')));
-            $websiteServiceServer = $defaultWebsiteServiceServer[0];
-        }
-        
-        /**
-         * create new website object and flush into database
-         */
-        $objWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
-        self::$cx->getDb()->getEntityManager()->persist($objWebsite);        
-        self::$cx->getDb()->getEntityManager()->flush();
-        
-        // configure the website
-        $objWebsite->setup(array('subscription' => 'Trail'));
+        $this->createWebsite($websiteName);
         
         // Check the website is present or not
         $websiteRepo = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $website = $websiteRepo->findOneBy(array('name' => $websiteName));
-        
+        $website = $websiteRepo->findOneBy(array('name' => $websiteName));        
         $this->assertInstanceOf('\Cx\Core_Modules\MultiSite\Model\Entity\Website', $website);
+
+        return $website;
     }
     
     /**
-     * Test function to destroy website
+     * @depends testAddWebsite
      */
-    function testDestroyWebsite()
+    function testDestroyWebsite(\Cx\Core_Modules\MultiSite\Model\Entity\Website $objWebsite)
     {   
-        /**
-         * Destroy website name
-         */
-        $websiteName = 'mytestwebsite';
-        $websiteRepo = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $objWebsite = $websiteRepo->findOneBy(array('name' => $websiteName));
+        $websiteName = $objWebsite->getName();
         
-        // Delete website from both manager and service server
         $objWebsite->destroy();
         
         /**
@@ -95,7 +61,7 @@ class WebsiteTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
         self::$cx->getDb()->getEntityManager()->flush();
         
         // check the website is removed or not
-        $website = $websiteRepo->findOneBy(array('name' => $websiteName));
+        $website = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('name' => $websiteName));
         $this->assertEmpty($website); 
     }
 }

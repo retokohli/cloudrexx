@@ -29,16 +29,27 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
 {
 
     /**
-     * Test function to create mail account for website
+     * Test function to adding a website
      */
-    function testCreateAccount()
+    function testAddWebsite()
     {
-        /**
-         * Website to create mail account
-         */
-        $website = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')
-                                  ->findOneBy(array('name' => 'mytestsite'));
+        $websiteName = 'mailservicetestsite';
         
+        $this->createWebsite($websiteName);
+        
+        // Check the website is present or not
+        $websiteRepo = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website = $websiteRepo->findOneBy(array('name' => $websiteName));        
+        $this->assertInstanceOf('\Cx\Core_Modules\MultiSite\Model\Entity\Website', $website);
+
+        return $website;
+    }
+    
+    /**
+     * @depends testAddWebsite
+     */
+    function testCreateAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
+    {
         $accountId = 0; // Initially the mail account id is null
         
         /**
@@ -56,15 +67,14 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
             $website->setMailAccountId($accountId);
             self::$cx->getDb()->getEntityManager()->flush();
             
-            // Check the created mail account is presnt or not
+            // Check the created mail account is present or not
             $this->assertNotEmpty($accountId);
             $this->assertEquals($accountId, $website->getMailAccountId());
             
             return $website;
         } else {
             $this->setExpectedException('Failed to create mail service account.');
-        }
-        
+        }        
     }
     
     /**
@@ -75,7 +85,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
         if ($website && 
             \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
-            $mailServiceServer = $website->getMailServiceServer();
+            $mailServiceServer = $website->getMailServiceServer();  // get the mail service server
             $mailServiceServer->enableService($website);
             
             $this->assertInstanceOf('\Cx\Core_Modules\MultiSite\Model\Entity\Domain', $website->getMailDn());
@@ -85,14 +95,14 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
     }
     
     /**
-     * @depends testCreateAccount
+     * @depends testEnableService
      */
     function testDisableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
-    {        
+    {   
         if ($website && 
             \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
-            $mailServiceServer = $website->getMailServiceServer();
+            $mailServiceServer = $website->getMailServiceServer();  // get the mail service server
             $mailServiceServer->disableService($website);
             
             $this->assertEmpty($website->getMailDn());
@@ -115,6 +125,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
             $website->setMailServiceServer(null);
             self::$cx->getDb()->getEntityManager()->flush();
             
+            // check the mail service account of website is delete or not
             $this->assertEmpty($website->getMailAccountId());
         } else {
             $this->setExpectedException('Failed to delete mail service account.');
