@@ -306,6 +306,7 @@ $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'] = "Uncompleted sign up
 $_ARRAYLANG['TXT_ACCESS_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_ACCESS_USER_CRM_ACCOUNT'] = "This user is a crm contact, click to open the crm contact.";
 $_ARRAYLANG['TXT_ACCESS_USER_TYPE_CRM'] = "only crm";
-$_ARRAYLANG['TXT_ACCESS_NOTIFICATION_EMAIL'] = "Send an e-mail notification with generated password";
-$_ARRAYLANG['TXT_ACCESS_NOTIFICATION_EMAIL_TITLE'] = "E-Mail-notification";
+$_ARRAYLANG['TXT_ACCESS_NOTIFICATION_EMAIL_TITLE'] = "Password set method";
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_MANUALLY'] = "Set password manually";
+$_ARRAYLANG['TXT_ACCESS_PASSWORD_GENERATED'] = "Generate random password and send to email address";
 ?>

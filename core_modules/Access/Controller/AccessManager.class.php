@@ -1248,7 +1248,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             $objUser->setPrimaryGroup(isset($_POST['access_user_primary_group']) ? $_POST['access_user_primary_group'] : 0);
             
-            if ((isset($_POST['notification_email']) || $objUser->setPassword(isset($_POST['access_user_password']) ? trim(contrexx_stripslashes($_POST['access_user_password'])) : '', isset($_POST['access_user_password_confirmed']) ? trim(contrexx_stripslashes($_POST['access_user_password_confirmed'])) : '')) &&
+            if (((isset($_POST['notification_email']) && $_POST['notification_email']==1) || $objUser->setPassword(isset($_POST['access_user_password']) ? trim(contrexx_stripslashes($_POST['access_user_password'])) : '', isset($_POST['access_user_password_confirmed']) ? trim(contrexx_stripslashes($_POST['access_user_password_confirmed'])) : '')) &&
                 // only administrators are allowed to change the admin status and the account validity
                 (!\Permission::hasAllAccess() || $objUser->getId() == $objFWUser->objUser->getId() || (
                     $objUser->setAdminStatus(isset($_POST['access_user_is_admin']) ? (bool)$_POST['access_user_is_admin'] : false) &&
@@ -1356,7 +1356,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_PASSWORD_WEAK'                  => $_ARRAYLANG['TXT_ACCESS_PASSWORD_WEAK'],
             'TXT_ACCESS_PASSWORD_GOOD'                  => $_ARRAYLANG['TXT_ACCESS_PASSWORD_GOOD'],
             'TXT_ACCESS_PASSWORD_STRONG'                => $_ARRAYLANG['TXT_ACCESS_PASSWORD_STRONG'],
-            'TXT_ACCESS_NOTIFICATION_EMAIL'             => $_ARRAYLANG['TXT_ACCESS_NOTIFICATION_EMAIL'],
+            'TXT_ACCESS_PASSWORD_MANUALLY'              => $_ARRAYLANG['TXT_ACCESS_PASSWORD_MANUALLY'],
+            'TXT_ACCESS_PASSWORD_GENERATED'             => $_ARRAYLANG['TXT_ACCESS_PASSWORD_GENERATED'],
             'TXT_ACCESS_NOTIFICATION_EMAIL_TITLE'       => $_ARRAYLANG['TXT_ACCESS_NOTIFICATION_EMAIL_TITLE'],
         ));
 
