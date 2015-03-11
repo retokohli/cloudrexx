@@ -683,6 +683,7 @@ CODE;
         }
         $themeDirectory .= $suffix;
 
+        $this->validateThemeName($themeDirectory, 'foldername');
         $themeName = !empty($_POST['theme_dbname']) ? contrexx_input2raw($_POST['theme_dbname']) : $themeDirectoryFromArchive;
 
         $arrDirectories[] = $themeDirectory;
@@ -700,11 +701,7 @@ CODE;
             }
 
             //check if its the base directory
-            if (basename($item['stored_filename']) == $themeDirectoryFromArchive) {
-                //take the whole string, this is the archive base directory
-                //$arrDirectories[] = $item['stored_filename'];
-                $arrDirectories[] = $themeDirectory;
-            } else {
+            if (basename($item['stored_filename']) != $themeDirectoryFromArchive) {
                 //only take the most top directory
                 $arrDirectories[] = substr($item['stored_filename'], strlen($themeDirectoryFromArchive));
             }
@@ -773,7 +770,8 @@ CODE;
             "jfif","jif","jpe","pbm","pcx","pgm","ppm","psd","ras",
             "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
             "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
-            "html","shtml","css","js","tpl","thumb","ico"
+            "html","shtml","css","js","tpl","thumb","ico",
+            "eot", "ttf", "woff", "otf", // font files
         );
 
         if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path . $theme->getFoldername(), PCLZIP_OPT_REMOVE_PATH, $themeDirectoryFromArchive, PCLZIP_OPT_BY_PREG, '/('.implode('|', $valid_exts).')$/')) != 0){
@@ -827,7 +825,7 @@ CODE;
                 $themeDirectory = '';
                 $themeDirectoryFromArchive = '';
                 $arrDirectories = array();
-
+                
                 // analyze theme archive
                 if (!$this->validateArchiveStructure($content, $themeDirectory, $themeDirectoryFromArchive, $themeName, $arrDirectories)) {
                     return false;
@@ -836,7 +834,15 @@ CODE;
                 if (!$this->createDirectoryStructure($themeDirectory, $arrDirectories)) {
                     return false;
                 }
-
+                
+                // try to get the theme name from yml
+                $themeInfoContent = $archive->extract(PCLZIP_OPT_BY_NAME, $themeDirectoryFromArchive .  \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE, PCLZIP_OPT_EXTRACT_AS_STRING);
+                if (!empty($themeInfoContent)) {
+                    $yaml      = new \Symfony\Component\Yaml\Yaml();
+                    $themeInfo = $yaml->load($themeInfoContent[0]['content']);
+                    $themeName = isset($themeInfo['DlcInfo']['name']) ? $themeInfo['DlcInfo']['name'] : $themeName;
+                }
+                
                 //create database entry
                 $this->validateThemeName($themeName);
                 
@@ -1180,10 +1186,10 @@ CODE;
 //      $this->newdir();
     }
 
-    private function validateThemeName(&$themeName)
+    private function validateThemeName(&$themeName, $dbField = 'themesname')
     {
         $suffix = '';
-        while ($this->themeRepository->findOneBy(array('themesname' => $themeName.$suffix))) {
+        while ($this->themeRepository->findOneBy(array($dbField => $themeName.$suffix))) {
             $suffix++;
         }
 
