@@ -27,19 +27,41 @@ namespace Cx\Core_Modules\MultiSite\Testing\UnitTest;
  */
 class WebsiteTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
 {    
-    
     /**
-     * Test function to adding a website
+     * Test function to validate website name
      */
-    function testAddWebsite()
+    function testValidateWebsiteName()
     {
         $websiteName = 'mytestsite';
+
+        // verify that name is not a blocked word
+        $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes'));
+        $this->assertNotContains($websiteName, $unavailablePrefixesValue);
         
+        // verify that name complies with naming scheme
+        $this->assertNotRegExp('/[^a-z0-9]/', $websiteName);
+        
+        // verify that website name length
+        $this->assertLessThan(strlen($websiteName), \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength'));
+        
+        $this->assertGreaterThan(strlen($websiteName), \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength'));
+
+        // Check existing website
+        $website = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('name' => $websiteName));
+        $this->assertNotInstanceOf('\Cx\Core_Modules\MultiSite\Model\Entity\Website', $website);
+        
+        return $websiteName;
+    }
+    
+    /**
+     * @depends testValidateWebsiteName
+     */
+    function testAddWebsite($websiteName)
+    {
         $this->createWebsite($websiteName);
         
         // Check the website is present or not
-        $websiteRepo = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $website = $websiteRepo->findOneBy(array('name' => $websiteName));        
+        $website = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('name' => $websiteName));
         $this->assertInstanceOf('\Cx\Core_Modules\MultiSite\Model\Entity\Website', $website);
 
         return $website;
