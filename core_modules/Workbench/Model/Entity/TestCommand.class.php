@@ -70,29 +70,26 @@ class TestCommand extends Command {
         $arrComponentTypes = array('core', 'core_module', 'module');                
         
         // check for the component type
-        if (isset($arguments[2]) && in_array($arguments[2], $arrComponentTypes)) {
-            if (isset($arguments[3])) {
-                $componentFolder        = $this->getModuleFolder($arguments[3], $arguments[2], $useCustomizing);
-                if (!$this->addTestingFolderToArray($arguments[3], $componentFolder)) {
-                    $this->interface->show(ASCMS_TESTING_FOLDER . " not exists in the component ". $arguments[3] .'!');
-                    return;
-                }
-                unset($arguments[3]);
-            } else {
-                $this->getTestingFoldersByType($arguments[2], $useCustomizing);
-            }
+        $componentType = (isset($arguments[2]) && in_array($arguments[2], $arrComponentTypes)) ? $arguments[2] : null;
+        $componentName = null;
+        if (!$componentType) {
+            $componentName = !empty($arguments[2]) && $this->isComponent($arguments[2]) ? $arguments[2] : null;
+        }
+        
+        if ($componentType || $componentName) {
             unset($arguments[2]);
-        } elseif (!empty ($arguments[2])) {
-            // check whether it a valid component
-            $componentName = $arguments[2];
-            
-            foreach ($arrComponentTypes as $cType) {
-                $componentFolder        = $this->getModuleFolder($componentName, $cType, $useCustomizing);
-                if ($this->addTestingFolderToArray($componentName, $componentFolder)) {
-                    break;
-                }                                
-            }
-            unset($arguments[2]);
+        }
+        
+        // check the third parameter it might be component name
+        if (!empty($arguments[3]) && $this->isComponent($arguments[3])) {
+            $componentName = $arguments[3];
+            unset($arguments[3]);
+        }
+        
+        if ($componentType && !$componentName) {
+            $this->getTestingFoldersByType($componentType, $useCustomizing);
+        } elseif ($componentName) {
+            $this->getTestingFoldersByName($componentName, $useCustomizing);
         }
         
         // get all testing folder when component type or name not specificed
@@ -147,6 +144,26 @@ class TestCommand extends Command {
         $command->run($_SERVER['argv'], false);
         
         $this->interface->show('Done');
+    }
+    
+    /**
+     * Get the testing folder by given component name
+     * 
+     * @param string $componentName  Component name     
+     * @param string $useCustomizing use customizing
+     * 
+     * @return null
+     */
+    private function getTestingFoldersByName($componentName, $useCustomizing)
+    {
+        $arrComponentTypes = array('core', 'core_module', 'module');
+        
+        foreach ($arrComponentTypes as $cType) {
+            $componentFolder = $this->getModuleFolder($componentName, $cType, $useCustomizing);
+            if ($this->addTestingFolderToArray($componentName, $componentFolder)) {
+                break;
+            }
+        }
     }
     
     /**
@@ -291,5 +308,23 @@ class TestCommand extends Command {
                require_once $file;
            }
         }
+    }
+
+    /**
+     * Check whether component exists or not
+     * 
+     * @param type $componentName
+     * 
+     * @return mixed component object or null
+     */
+    function isComponent($componentName)
+    {
+        $cx = \Env::get('cx');
+        $em = $cx->getDb()->getEntityManager();
+        
+        $componentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
+        $component     = $componentRepo->findOneBy(array('name' => $componentName));
+        
+        return $component;
     }
 }
