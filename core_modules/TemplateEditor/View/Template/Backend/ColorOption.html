@@ -1,3 +1,15 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
 <span class="colorPreview" style="background-color: {TEMPLATEEDITOR_OPTION_VALUE}"></span>
 <input type="text"  id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}" />
+<script>
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').blur(function () {
+        jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(){
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
+            setTimeout(function(){
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
+            }, 2000);
+        })
+    });
+</script>

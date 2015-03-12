@@ -17,7 +17,7 @@ class AreaOption extends Option {
     public function __construct($name,$humanname, $data)
     {
         parent::__construct($name,$humanname, $data);
-        $this->active = $data['active'];
+        $this->active =  $data['active'] == 'true';
     }
 
     /**
@@ -27,7 +27,7 @@ class AreaOption extends Option {
     {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile('core_modules/TemplateEditor/View/Template/Backend/AreaOption.html');
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->active ? 'checked' : '');
+        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', ( $this->active) ? 'checked' : '');
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName);
         $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
@@ -41,14 +41,24 @@ class AreaOption extends Option {
      */
     public function renderFrontend($template)
     {
-        // TODO: Implement renderFrontend() method.
+        $blockName = strtolower('TEMPLATE_EDITOR_'.$this->name);
+        if ($template->blockExists($blockName) && $this->active){
+            $template->touchBlock($blockName);
+        }
     }
 
     /**
      * @param array $data
+     *
+     * @return array
+     * @throws OptionValueNotValidException
      */
     public function handleChange($data)
     {
-        // TODO: Implement handleChange() method.
+        if ($data != 'true' && $data != 'false'){
+            throw new OptionValueNotValidException('Should be true or false.');
+        }
+        $this->active = $data;
+        return array('active' => $data);
     }
 }

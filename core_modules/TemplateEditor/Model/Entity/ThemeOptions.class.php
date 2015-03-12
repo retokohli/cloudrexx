@@ -2,6 +2,8 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
+use Cx\Core\Core\Controller\Cx;
+use Cx\Core\View\Model\Entity\Theme;
 use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 use Cx\Core\Html\Sigma;
 
@@ -21,17 +23,27 @@ class ThemeOptions implements YamlSerializable
      */
     protected $name;
 
+    protected $data;
+
     /**
+     * @param Theme $theme
      * @param $data
      */
-    public function __construct($data)
+    public function __construct($theme, $data)
     {
         global $_LANGID;
+        $this->data = $data;
+        $this->theme = $theme;
         foreach ($data['DlcInfo']['options'] as $option) {
             $optionReflection = new \ReflectionClass($option['type']);
             if ($optionReflection->getParentClass()->getName()
                 == 'Cx\Core_Modules\TemplateEditor\Model\Entity\Option'
             ) {
+                if (Cx::instanciate()->getMode() == Cx::MODE_BACKEND || (Cx::instanciate()->getUser()->getFWUserObject()->objUser->login())) {
+                    if (isset($_SESSION['TemplateEditor'][$this->theme->getId()][$option['name']])){
+                        $option['specific'] = array_merge($option['specific'],  $_SESSION['TemplateEditor'][$this->theme->getId()][$option['name']]->toArray());
+                    }
+                }
                 $this->options[$option['name']] = $optionReflection->newInstance(
                     $option['name'], isset($option['translation'][$_LANGID]) ? $option['translation'][$_LANGID] : $option['name'], $option['specific']
                 );
@@ -41,11 +53,17 @@ class ThemeOptions implements YamlSerializable
 
 
     /**
+     * @param $name
      * @param $data
+     *
+     * @throws ThemeOptionNotFoundException
      */
-    public function handleChanges($data)
+    public function handleChanges($name, $data)
     {
-        // TODO implement here
+        if (!array_key_exists($name, $this->options)) {
+            throw new ThemeOptionNotFoundException();
+        }
+        return $this->options[$name]->handleChange($data);
     }
 
     /**
@@ -63,7 +81,9 @@ class ThemeOptions implements YamlSerializable
      */
     public function renderFrontend($template)
     {
-        // TODO implement here
+        foreach ($this->options as $option){
+            $option->renderFrontend($template);
+        }
     }
 
 
@@ -107,3 +127,5 @@ class ThemeOptions implements YamlSerializable
         $this->name = $name;
     }
 }
+
+Class ThemeOptionNotFoundException extends \Exception {}

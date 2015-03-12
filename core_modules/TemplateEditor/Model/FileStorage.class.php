@@ -53,6 +53,7 @@ class FileStorage implements Storable
      */
     public function persist($name, $data)
     {
+//        var_dump($data);
         // TODO: Implement persist() method.
     }
 }

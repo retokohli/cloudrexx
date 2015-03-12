@@ -13,11 +13,10 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
 
-use Core_Modules\TemplateEditor\Model\Entity\ColorOption;
-use Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
-use Core_Modules\TemplateEditor\Model\Repository\ThemeOptionsRepository;
-use Core_Modules\TemplateEditor\Model\Storable;
 use Cx\Core\Test\Model\Entity\ContrexxTestCase;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
+use Cx\Core_Modules\TemplateEditor\Model\Repository\ThemeOptionsRepository;
 
 /**
  * FileSystemTest
@@ -48,7 +47,7 @@ class StorableTest extends ContrexxTestCase
 
     public function testLoadOption()
     {
-        $themeOption = $this->themeOptionRepository->getByName('standard_3_0');
+        $themeOption = $this->themeOptionRepository->get('standard_3_0');
         $this->assertTrue($themeOption instanceof ThemeOptions);
         if ($themeOption instanceof ThemeOptions){
             $this->assertTrue($themeOption->getOption('main_color') instanceof ColorOption);
@@ -57,7 +56,7 @@ class StorableTest extends ContrexxTestCase
 
     public function testSaveOption()
     {
-        $themeOption = $this->themeOptionRepository->getByName('standard_3_0');
+        $themeOption = $this->themeOptionRepository->get('standard_3_0');
         $newColor = 'dddddd';
         $this->assertTrue($themeOption instanceof ThemeOptions);
         if ($themeOption instanceof ThemeOptions) {

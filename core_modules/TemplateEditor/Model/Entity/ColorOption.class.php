@@ -41,14 +41,17 @@ class ColorOption extends Option {
      */
     public function renderFrontend($template)
     {
-        // TODO: Implement renderFrontend() method.
+        $template->setVariable('TEMPLATE_EDITOR_'.strtoupper($this->name), $this->color);
     }
 
     /**
      * @param array $data
+     *
+     * @return array
      */
     public function handleChange($data)
     {
-        // TODO: Implement handleChange() method.
+        $this->color = $data;
+        return array('color' => $this->color);
     }
 }

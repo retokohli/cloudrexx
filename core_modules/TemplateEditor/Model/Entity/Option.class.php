@@ -73,5 +73,6 @@ abstract class Option {
         $this->humanName = $humanName;
     }
 
-
 }
+
+Class OptionValueNotValidException extends \Exception {}

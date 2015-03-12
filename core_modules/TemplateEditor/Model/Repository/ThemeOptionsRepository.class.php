@@ -1,6 +1,7 @@
 <?php
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Repository;
+use Cx\Core\View\Model\Entity\Theme;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
 use Cx\Core_Modules\TemplateEditor\Model\Storable;
 
@@ -23,9 +24,9 @@ class ThemeOptionsRepository {
      * @param String $name
      * @return ThemeOptions
      */
-    public function getByName($name) {
-        $componentData = $this->storage->retrieve($name);
-        return new ThemeOptions($componentData);
+    public function get(Theme $theme) {
+        $componentData = $this->storage->retrieve($theme->getFoldername());
+        return new ThemeOptions($theme,$componentData);
     }
 
     /**

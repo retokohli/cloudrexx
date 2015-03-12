@@ -45,14 +45,17 @@ class ImageOption extends Option {
      */
     public function renderFrontend($template)
     {
-        // TODO: Implement renderFrontend() method.
+        $template->setVariable('TEMPLATE_EDITOR_'.strtoupper($this->name), $this->url);
     }
 
     /**
      * @param array $data
+     *
+     * @return array
      */
     public function handleChange($data)
     {
-        // TODO: Implement handleChange() method.
+        $this->url = $data;
+        return array('url' => $data);
     }
 }

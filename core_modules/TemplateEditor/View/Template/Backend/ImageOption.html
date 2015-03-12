@@ -7,6 +7,20 @@
         if (callback.type == 'file'){
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(callback.data[0].datainfo.filepath);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',callback.data[0].datainfo.filepath);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').trigger('change');
         }
     }
+
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
+        jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',jQuery(this).val());
+        var parent =  jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent();
+        parent.addClass('saving');
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val() , function(){
+            parent.removeClass('saving');
+            parent.addClass('saved');
+            setTimeout(function(){
+                parent.removeClass('saved');
+            }, 2000);
+        })
+    });
 </script>

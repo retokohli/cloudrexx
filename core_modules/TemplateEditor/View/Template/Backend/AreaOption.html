@@ -3,3 +3,20 @@
            {TEMPLATEEDITOR_OPTION_VALUE}/>
     {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
 </label>
+<script>
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
+        var parent =  jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().parent();
+        parent.addClass('saving');
+        var checked = false;
+        if (jQuery(this).attr('checked') == 'checked'){
+            checked = true;
+        }
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',checked, function(){
+            parent.removeClass('saving');
+            parent.addClass('saved');
+            setTimeout(function(){
+                parent.removeClass('saved');
+            }, 2000);
+        })
+    });
+</script>

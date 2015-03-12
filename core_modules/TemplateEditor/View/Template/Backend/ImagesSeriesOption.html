@@ -1,18 +1,86 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
+<div class="image-list">
 <!-- BEGIN images -->
-
-<img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"/>
-<button class="remove-image button">
-    Entfernen
-</button>
-<input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
+<div class="image">
+    <img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"
+         id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/>
+    <div class="actions">
+        <button class="remove-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">
+            Entfernen
+        </button>
+        <button class="change-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">
+            Ändern
+        </button>
+    </div>
+    <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"
+           value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
+</div>
 <!-- END images -->
+</div>
+<div class="clearfix"></div>
 {MEDIABROWSER_BUTTON}
 <script>
-    function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback){
-        if (callback.type == 'file'){
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(callback.data[0].datainfo.filepath);
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',callback.data[0].datainfo.filepath);
+    var template = '<div class="image"><img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/> <div class="actions"> <button class="remove-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}"> Entfernen </button> <button class="change-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">Ändern </button> </div> <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"value="{TEMPLATEEDITOR_OPTION_VALUE}"/> </div>';
+
+    var lastId = {TEMPLATEEDITOR_LASTID};
+
+    var updateImage = function () {
+        var id = jQuery(this).data('id');
+        cx.variables.get('jquery', 'mediabrowser')('#{MEDIABROWSER_ID}').trigger("click", {
+            callback: function (callback) {
+                if (callback.type == 'file') {
+                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id).val(callback.data[0].datainfo.filepath);
+                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id + '_img').attr('src', callback.data[0].datainfo.filepath);
+                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id ).trigger('change');
+                }
+            }
+        });
+    };
+
+    jQuery('.change-image').click(updateImage);
+
+    var removeImage = function () {
+        var id = jQuery(this).data('id');
+        var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id ).parent();
+        parent.addClass('saving');
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {url: '', id: jQuery(this).data('id')}, function () {
+            parent.removeClass('saving');
+            parent.addClass('saved');
+            setTimeout(function () {
+                parent.removeClass('saved');
+            }, 2000);
+            parent.hide();
+        })
+    };
+
+    jQuery('.remove-image').click(removeImage);
+
+    var changeImage = function () {
+        var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + jQuery(this).data('id') ).parent();
+        parent.addClass('saving');
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {url: jQuery(this).val(), id: jQuery(this).data('id')}, function () {
+            parent.removeClass('saving');
+            parent.addClass('saved');
+            setTimeout(function () {
+                parent.removeClass('saved');
+            }, 2000);
+        })
+    };
+
+    function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback)
+    {
+        if (callback.type == 'file') {
+            lastId++;
+            var newImage = jQuery(template);
+            newImage.find('img').attr('src', callback.data[0].datainfo.filepath).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId+'_img');
+            newImage.find('.remove-image').data('id', lastId).click(removeImage);
+            newImage.find('.change-image').data('id', lastId).click(updateImage);
+            newImage.find('input').val(callback.data[0].datainfo.filepath).data('id', lastId).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId);
+            jQuery('.image-list').append(newImage);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).change(changeImage);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).trigger('change');
         }
     }
+
+    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').change(changeImage);
 </script>

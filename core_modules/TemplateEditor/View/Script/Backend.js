@@ -15,3 +15,10 @@ jQuery(document).ready(function () {
     });
 });
 
+function updateOption(optionName,optionData, callback){
+    jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=updateOption", { optionName: optionName, optionData:optionData }, function (data) {
+        jQuery("#preview-template-editor").attr('src', jQuery("#preview-template-editor").get(0).contentWindow.location.href);
+        callback(data);
+    }, "json");
+}
+
