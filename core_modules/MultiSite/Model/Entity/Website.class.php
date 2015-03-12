@@ -1931,6 +1931,6 @@ throw new WebsiteException('implement secret-key algorithm first!');
                                 </a>';
         return '<a href="index.php?cmd=MultiSite&editid='. $this->getId() .'" title="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EDIT_LINK'] . '">' 
                 . $this->getName() . 
-                '</a>&nbsp;' . $websiteDetailLink;
+                '</a>' . $websiteDetailLink;
     }
 }

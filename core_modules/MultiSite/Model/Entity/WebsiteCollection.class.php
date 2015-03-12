@@ -170,7 +170,7 @@ class WebsiteCollection extends \Cx\Model\Base\EntityBase {
                                 </a>';
             $websites[] = '<a href="index.php?cmd=MultiSite&editid='. $website->getId() .'" title="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EDIT_LINK'] . '">'
                             . $website->getName()  . 
-                          '</a>&nbsp;'. $websiteDetailLink;
+                          '</a>'. $websiteDetailLink;
         }
         return implode(', ', $websites);
     }
