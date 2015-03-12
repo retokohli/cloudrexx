@@ -26,7 +26,7 @@ use \Cx\Core\Json\Adapter\Block\JsonBlock as JsonBlock;
  */
 class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     /**
-     * @covers JsonBlock::getBlockContent
+     * @covers \Cx\Core\Json\Adapter\Block\JsonBlock::getBlockContent
      * @expectedException \Cx\Core\Json\Adapter\Block\NoPermissionException
      */
     public function testGetBlockContentNoPermission() {
@@ -37,7 +37,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     }
     
     /**
-     * @covers JsonBlock::getBlockContent
+     * @covers \Cx\Core\Json\Adapter\Block\JsonBlock::getBlockContent
      * @expectedException \Cx\Core\Json\Adapter\Block\NotEnoughArgumentsException
      */
     public function testGetBlockContentNotEnoughArguments() {
@@ -51,7 +51,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     }
     
     /**
-     * @covers JsonBlock::getBlockContent
+     * @covers \Cx\Core\Json\Adapter\Block\JsonBlock::getBlockContent
      * @expectedException \Cx\Core\Json\Adapter\Block\NoBlockFoundException
      */
     public function testGetBlockContentNoBlockFound() {
@@ -65,7 +65,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     }
     
     /**
-     * @covers JsonBlock::getBlockContent
+     * @covers \Cx\Core\Json\Adapter\Block\JsonBlock::getBlockContent
      */
     public function testGetBlockContent() {
         global $sessionObj;
@@ -79,7 +79,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     }
     
     /**
-     * @covers JsonBlock::saveBlockContent
+     * @covers \Cx\Core\Json\Adapter\Block\JsonBlock::saveBlockContent
      * @expectedException \Cx\Core\Json\Adapter\Block\NotEnoughArgumentsException
      */
     public function testSaveBlockContentNotEnoughArguments() {
@@ -93,7 +93,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     }
     
     /**
-     * @covers JsonBlock::saveBlockContent
+     * @covers \Cx\Core\Json\Adapter\Block\JsonBlock::saveBlockContent
      */
     public function testSaveBlockContent() {
         global $sessionObj;
