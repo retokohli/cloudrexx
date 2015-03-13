@@ -29,6 +29,7 @@ $_ARRAYLANG['TXT_CORE_WYSIWYG_CONGRATULATIONS'] = 'Overview';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_SUCCESSFUL_CREATION'] = 'This is the Overview/Dashboard of your new Component. More tabs will be generated if you add entities to this component.';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_EXAMPLE_TEMPLATE'] = 'This is the default template for this component, located in View/Template/Backend/Default.html. In order to add entities, place your YAML files in Model/Yaml folder and execute ./workbench.bat db update. Then add a language file entry for your entity.';
 
+$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYGTEMPLATE'] = 'WYSIWYG Templates';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYGTEMPLATE_TITLE'] = 'Title';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYGTEMPLATE_DESCRIPTION'] = 'Description';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYGTEMPLATE_ACTIVE'] = 'Active';
