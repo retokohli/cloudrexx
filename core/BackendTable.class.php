@@ -45,7 +45,11 @@ class BackendTable extends HTML_Table {
                         continue;
                     }
                     $origHeader = $header;
-                    $sorting = $options['fields'][$header]['sorting'];
+                    if(isset($options['fields'][$header]['sorting'])) {
+                        $sorting = $options['fields'][$header]['sorting'];
+                    } else if(isset($options['functions']['sorting'])) {
+                        $sorting = $options['functions']['sorting'];
+                    }
                     if ($first) {
                         if (isset($options['fields'][$header]['header'])) {
                             $header = $options['fields'][$header]['header'];
