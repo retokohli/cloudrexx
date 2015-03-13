@@ -1541,6 +1541,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         
         if (!empty($legalComponents)) {
             $validTo = !empty($options['subscriptionExpiration']) ? $options['subscriptionExpiration'] : 2733517333;
+            $codeBase = !empty($websiteTemplate->getCodeBase()) ? $websiteTemplate->getCodeBase() : \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase');
             $params = array(
                 'websiteId'         => $this->id,
                 'legalComponents'   => $legalComponents,
@@ -1548,7 +1549,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 'validTo'           => $validTo,
                 'updateInterval'    => 8760,
                 'isUpgradable'      => false,
-                'dashboardMessages' => $dashboardMessages
+                'dashboardMessages' => $dashboardMessages,
+                'coreCmsEdition'    => $websiteTemplate->getName(),
+                'coreCmsVersion'    => $codeBase
             );
             //send the JSON Request 'setLicense' command from service to website
             try {
