@@ -93,6 +93,12 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         $recipientMailAddress = \Cx\Core\Setting\Controller\Setting::getValue('recipientMailAddress');
         $faqLink = '<a target="_blank" title="click to FAQ page" href='.$faqUrl.'>'.$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_FAQ'].'</a>';
         
+        //Get License information
+        $license        = \Env::get('cx')->getLicense();
+        $licenseName    = $license->getEditionName();
+        $licenseValid   = $license->getValidToDate();
+        $licenseVersion = $license->getVersion()->getNumber();
+        
         //get the input datas
         $feedBackType    = isset($_POST['feedBackType']) ? contrexx_input2raw($_POST['feedBackType']) : '';
         $feedBackSubject = isset($_POST['feedBackSubject']) ? contrexx_input2raw($_POST['feedBackSubject']) : '';
@@ -114,7 +120,10 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                     'lastName'     => $objUser->objUser->getProfileAttribute('lastname'),
                     'phone'        => !$objUser->objUser->getProfileAttribute('phone_office') ? $objUser->objUser->getProfileAttribute('phone_mobile') : $objUser->objUser->getProfileAttribute('phone_office'),
                     'company'      => $objUser->objUser->getProfileAttribute('company'),
-                    'toEmail'      => $recipientMailAddress
+                    'toEmail'      => $recipientMailAddress,
+                    'licenseName'  => $licenseName,
+                    'licenseValid' => $licenseValid,
+                    'licenseVersion'=> $licenseVersion
                 );
                 //send the feedBack mail
                 $this->sendMail($arrFields) ? \Message::ok($_ARRAYLANG['TXT_SUPPORT_FEEDBACK_EMAIL_SEND_SUCESSFULLY']) : \Message::error($_ARRAYLANG['TXT_SUPPORT_FEEDBACK_EMAIL_SEND_FAILED']);
@@ -205,7 +214,26 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
             </tr>
         </tbody>
     </table>
-
+    
+    <p><strong>'.$_ARRAYLANG['TXT_SUPPORT_LICENSE_TITLE'].'</strong></p>
+    
+    <table cellpadding ="0" cellspacing ="0" style="width: 100%; font-size: 13px;">
+        <tbody>
+            <tr>
+                <td valign="top" width="15%">' . $_ARRAYLANG['TXT_SUPPORT_LICENSE_NAME'] . '</td>
+                <td>&nbsp;: ' . $arrFields['licenseName'] . '</td>
+            </tr>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_LICENSE_VALID_UNTIL'] . '</td>
+                <td>&nbsp;: ' . $arrFields['licenseValid'] . '</td>
+            </tr>
+            <tr>
+                <td valign="top">' . $_ARRAYLANG['TXT_SUPPORT_LICENSE_VERSION'] . '</td>
+                <td>&nbsp;: ' . $arrFields['licenseVersion'] . '</td>
+            </tr>
+        </tbody>
+    
+    </table>
 
     <p><strong>' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_MAIL'] . '</strong></p>
 
