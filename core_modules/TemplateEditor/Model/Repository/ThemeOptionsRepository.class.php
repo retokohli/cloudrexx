@@ -16,20 +16,27 @@ class ThemeOptionsRepository {
      */
     protected $storage;
 
+    /**
+     * @param Storable $storage
+     */
     public function __construct(Storable $storage) {
         $this->storage = $storage;
     }
 
     /**
-     * @param String $name
+     * @param Theme $theme
+     *
      * @return ThemeOptions
      */
-    public function get(Theme $theme) {
+    public function get(Theme $theme)
+    {
         $componentData = $this->storage->retrieve($theme->getFoldername());
-        return new ThemeOptions($theme,$componentData);
+        return new ThemeOptions($theme, $componentData);
     }
 
     /**
+     * Save a ThemeOptions entity to the component.yml file.
+     *
      * @param ThemeOptions $entity
      */
     public function save($entity) {

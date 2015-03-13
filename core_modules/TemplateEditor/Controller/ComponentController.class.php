@@ -16,7 +16,15 @@ use Cx\Core_Modules\TemplateEditor\Model\Repository\ThemeOptionsRepository;
 class ComponentController extends SystemComponentController
 {
 
-
+    /**
+     * Do something before main template gets parsed
+     *
+     * This creates the frontend placeholders for the preview and the normal view.
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\Html\Sigma                       $template   The main template
+     */
     public function preFinalize(\Cx\Core\Html\Sigma $template)
     {
         if ($this->cx->getMode() == Cx::MODE_FRONTEND) {
@@ -34,6 +42,9 @@ class ComponentController extends SystemComponentController
         }
     }
 
+    /**
+     * @return array
+     */
     public function getControllersAccessableByJson() {
         return array('JSONTemplateEditor');
     }

@@ -1,6 +1,9 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
 <img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"/>
 <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
+<div class="error-box">
+
+</div>
 {MEDIABROWSER_BUTTON}
 <script>
     function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback){
@@ -12,15 +15,24 @@
     }
 
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
-        jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',jQuery(this).val());
         var parent =  jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent();
         parent.addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val() , function(){
-            parent.removeClass('saving');
-            parent.addClass('saved');
-            setTimeout(function(){
-                parent.removeClass('saved');
-            }, 2000);
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val() , function(response){
+            if (response.status == 'error'){
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(response.message).slideDown();
+            }
+            else {
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',response.data.url);
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(response.data.url);
+                parent.removeClass('saving');
+                parent.addClass('saved');
+                setTimeout(function(){
+                    parent.removeClass('saved');
+                }, 2000);
+            }
+
         })
     });
 </script>

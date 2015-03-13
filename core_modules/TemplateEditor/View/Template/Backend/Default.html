@@ -1,14 +1,36 @@
 <div class="sidebar">
-    <a href="{TEMPLATEEDITOR_BACKURL}" class="back-to-layoutmanager">&larr; Back to Layoutmanager</a>
+    <a href="{TEMPLATEEDITOR_BACKURL}" class="back-to-layoutmanager">&larr; {TXT_CORE_MODULE_TEMPLATEEDITOR_BACK_TO_LAYOUTMANAGER}</a>
+
     <div class="options">
-    <!-- BEGIN option -->
-    <div class="option {TEMPLATEEDITOR_OPTION_TYPE}">
-        {TEMPLATEEDITOR_OPTION}
-    </div>
-    <!-- END option -->
+
+        <div class="option layout">
+            <label for="layout">{TXT_CORE_MODULE_TEMPLATEEDITOR_LAYOUT}</label>
+            <select name="layout" id="layout">
+                <!-- BEGIN layouts -->
+                <option value="{TEMPLATEEDITOR_LAYOUT_ID}" {TEMPLATEEDITOR_LAYOUT_ACTIVE}>{TEMPLATEEDITOR_LAYOUT_NAME}
+                </option>
+                <!-- END layouts -->
+            </select>
+        </div>
+
+        <div class="option view">
+            <label>{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW}</label>
+            <div class="buttons">
+                <button class="button" data-size="375px">{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW_PHONE}</button>
+                <button class="button" data-size="966px">{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW_TABLET}</button>
+                <button class="button" data-size="1280px">{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW_DESKTOP}</button>
+                <button class="button active" data-size="100%">{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW_FULL}</button>
+            </div>
+        </div>
+
+        <!-- BEGIN option -->
+        <div class="option {TEMPLATEEDITOR_OPTION_TYPE}">
+            {TEMPLATEEDITOR_OPTION}
+        </div>
+        <!-- END option -->
     </div>
 
-    <button type="submit" class="save" id="saveOptionsButton">Save</button>
+    <button type="submit" class="save" id="saveOptionsButton">{TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE}</button>
 
 </div>
 <div class="preview">

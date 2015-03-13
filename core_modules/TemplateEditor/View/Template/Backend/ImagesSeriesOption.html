@@ -6,21 +6,22 @@
          id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/>
     <div class="actions">
         <button class="remove-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">
-            Entfernen
+            {TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PICTURE}
         </button>
         <button class="change-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">
-            Ändern
+            {TXT_CORE_MODULE_TEMPLATEEDITOR_CHANGE_PICTURE}
         </button>
     </div>
     <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"
            value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
+    <div class="error-box"></div>
 </div>
 <!-- END images -->
 </div>
 <div class="clearfix"></div>
 {MEDIABROWSER_BUTTON}
 <script>
-    var template = '<div class="image"><img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/> <div class="actions"> <button class="remove-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}"> Entfernen </button> <button class="change-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">Ändern </button> </div> <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"value="{TEMPLATEEDITOR_OPTION_VALUE}"/> </div>';
+    var template = '<div class="image"><img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/> <div class="actions"> <button class="remove-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}"> Entfernen </button> <button class="change-image button" data-id="{TEMPLATEEDITOR_OPTION_ID}">Ändern </button> </div> <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"value="{TEMPLATEEDITOR_OPTION_VALUE}"/> <div class="error-box"></div></div>';
 
     var lastId = {TEMPLATEEDITOR_LASTID};
 
@@ -43,7 +44,7 @@
         var id = jQuery(this).data('id');
         var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id ).parent();
         parent.addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {url: '', id: jQuery(this).data('id')}, function () {
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {url: '', id: jQuery(this).data('id'), action:'remove'}, function () {
             parent.removeClass('saving');
             parent.addClass('saved');
             setTimeout(function () {
@@ -57,15 +58,22 @@
 
     var changeImage = function () {
         var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + jQuery(this).data('id') ).parent();
-        parent.find('img').attr('src', jQuery(this).val());
-
+        var id = jQuery(this).data('id');
         parent.addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {url: jQuery(this).val(), id: jQuery(this).data('id')}, function () {
-            parent.removeClass('saving');
-            parent.addClass('saved');
-            setTimeout(function () {
-                parent.removeClass('saved');
-            }, 2000);
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {url: jQuery(this).val(), id: id}, function (response) {
+            if (response.status == 'error'){
+                parent.addClass('error');
+                parent.find('.error-box').text(response.message).slideDown();
+            }
+            else {
+                parent.find('.error-box').slideUp();
+                parent.find('img').attr('src', response.data.urls[id]);
+                parent.removeClass('saving');
+                parent.addClass('saved');
+                setTimeout(function () {
+                    parent.removeClass('saved');
+                }, 2000);
+            }
         })
     };
 

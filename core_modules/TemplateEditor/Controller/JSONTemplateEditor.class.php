@@ -55,6 +55,8 @@ class JSONTemplateEditor implements JsonAdapter {
 
 
     /**
+     * Save the options to the component.yml file.
+     *
      * @param array $params
      */
     public function saveOptions($params) {
@@ -79,9 +81,14 @@ class JSONTemplateEditor implements JsonAdapter {
     }
 
     /**
+     * Update the value of a option for a specific template.
+     *
      * @param array $params
      */
     public function updateOption($params) {
+        global $_ARRAYLANG;
+
+        \Env::get('init')->loadLanguageData('TemplateEditor');
         $themeID = isset($_GET['tid']) ? $_GET['tid'] : 1;
         $themeRepository = new ThemeRepository();
         $theme = $themeRepository->findById($themeID);
@@ -103,10 +110,10 @@ class JSONTemplateEditor implements JsonAdapter {
             throw new \LogicException("This method needs a valid name to work.");
         }
         if (empty($params['post']['optionData'])){
-            throw new \LogicException("This method needs data to work.");
+            throw new \LogicException($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY'] );
         }
         $data = $themeOptions->handleChanges($params['post']['optionName'], $params['post']['optionData']);
-
         $_SESSION['TemplateEditor'][$themeID][$params['post']['optionName']] = $data;
+        return $data;
     }
 }

@@ -33,7 +33,7 @@ abstract class Option implements YamlSerializable {
     public function __construct($name, $translations, $data){
         global $_LANGID;
         $this->name = $name;
-        $this->humanName = isset($translations[$_LANGID]) ? $translations[$_LANGID] : $name;
+        $this->humanName = isset($translations[$_LANGID]) ? $translations[$_LANGID] : (isset($translations[2]) ? $translations[2] : $name);
         $this->translations = $translations;
     }
 

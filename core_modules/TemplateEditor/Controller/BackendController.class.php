@@ -9,17 +9,29 @@
 namespace Cx\Core_Modules\TemplateEditor\Controller;
 
 
+use Cx\Core\Html\Sigma;
 use Cx\Core\View\Model\Entity\Theme;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
 use Cx\Core_Modules\TemplateEditor\Model\FileStorage;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\ThemeOptionsRepository;
 use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
 use Cx\Core\Routing\Url;
 use Cx\Core\View\Model\Repository\ThemeRepository;
-use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
 
 class BackendController extends SystemComponentBackendController
 {
+    /**
+     * @var ThemeRepository
+     */
+    private $themeRepository;
+    /**
+     * @var ThemeOptionsRepository
+     */
     private $themeOptionRepository;
+
+    /**
+     * @var ThemeOptions
+     */
     private $themeOptions;
 
     /**
@@ -49,33 +61,54 @@ class BackendController extends SystemComponentBackendController
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
-
+        \Permission::checkAccess(47, 'static');
         $fileStorage           = new FileStorage(
             $this->cx->getWebsiteThemesPath()
         );
         $themeOptionRepository = new ThemeOptionsRepository($fileStorage);
         $this->themeOptionRepository = $themeOptionRepository;
-        $themeRepository = new ThemeRepository();
+        $this->themeRepository = new ThemeRepository();
         $themeID         = isset($_GET['tid']) ? $_GET['tid'] : 1;
-        $this->theme = $themeRepository->findById($themeID);
+        $this->theme = $this->themeRepository->findById($themeID);
         $this->themeOptions = $this->themeOptionRepository->get(
             $this->theme
         );
+
         $this->showOverview($template);
     }
 
     /**
+     * Creates the main overview for this component.
+     *
      * @param $template
      *
      * @throws \Cx\Core\Routing\UrlException
      */
-    public function showOverview($template)
+    public function showOverview(Sigma $template)
     {
+        global $_ARRAYLANG;
         \JS::registerJS('core_modules/TemplateEditor/View/Script/spectrum.js');
         $template->loadTemplateFile(
             $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/Default.html'
         );
+        /**
+         * @var $themes Theme[]
+         */
+        $themes = $this->themeRepository->findAll();
+        foreach ($themes as $theme){
+            $template->setVariable(array(
+                'TEMPLATEEDITOR_LAYOUT_NAME' => $theme->getThemesname(),
+                'TEMPLATEEDITOR_LAYOUT_ID' => $theme->getId()
+            ));
+            if ($this->theme->getId() == $theme->getId()){
+                $template->setVariable(array(
+                    'TEMPLATEEDITOR_LAYOUT_ACTIVE' => 'selected'
+                ));
+            }
+            $template->parse('layouts');
+        }
+
         $this->themeOptions->renderBackend($template);
         $template->setVariable(
             'TEMPLATEEDITOR_IFRAME_URL', Url::fromModuleAndCmd(
@@ -83,6 +116,7 @@ class BackendController extends SystemComponentBackendController
             array('preview' => $this->theme->getId(), 'templateEditor' => 1)
         )
         );
+        $template->setGlobalVariable($_ARRAYLANG);
         $template->setVariable(
             'TEMPLATEEDITOR_BACKURL', './index.php?cmd=ViewManager'
         );

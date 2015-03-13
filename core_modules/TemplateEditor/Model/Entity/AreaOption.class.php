@@ -33,7 +33,6 @@ class AreaOption extends Option {
         $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
         $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'area');
         $template->parse('option');
-        // TODO: Implement renderBackend() method.
     }
 
     /**

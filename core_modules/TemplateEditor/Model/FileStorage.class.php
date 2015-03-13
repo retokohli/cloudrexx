@@ -50,7 +50,7 @@ class FileStorage implements Storable
      * @param                  $name
      * @param YamlSerializable $data
      *
-     * @return int
+     * @return bool
      */
     public function persist($name, YamlSerializable $data)
     {

@@ -24,7 +24,6 @@ class ColorOption extends Option
         if (isset($data['choice'])) {
             $this->choice = $data['choice'];
         }
-        // TODO: Implement _construct() method.
     }
 
     /**
@@ -32,6 +31,7 @@ class ColorOption extends Option
      */
     public function renderBackend($template)
     {
+        global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
             'core_modules/TemplateEditor/View/Template/Backend/ColorOption.html'
@@ -46,6 +46,14 @@ class ColorOption extends Option
                 'TEMPLATEEDITOR_OPTION_CHOICE', json_encode($this->choice)
             );
         }
+        \ContrexxJavascript::getInstance()->setVariable(
+            array(
+                'select' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SELECT'],
+                'colorError' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_COLOR_WRONG_FORMAT'],
+                'cancel' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL']
+            ),
+            'TemplateEditor'
+        );
         $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
         $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'color');
         $template->parse('option');
@@ -65,9 +73,14 @@ class ColorOption extends Option
      * @param array $data
      *
      * @return array
+     * @throws OptionValueNotValidException
      */
     public function handleChange($data)
     {
+        global $_ARRAYLANG;
+        if (!preg_match('/^(#)?[0-9a-f]+$/',$data)) {
+            throw new OptionValueNotValidException($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_COLOR_WRONG_FORMAT']);
+        }
         $this->color = $data;
         return array('color' => $this->color);
     }

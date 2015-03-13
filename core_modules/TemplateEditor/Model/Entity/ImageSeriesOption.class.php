@@ -1,6 +1,7 @@
 <?php
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
+use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Html\Sigma;
 use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
 
@@ -27,7 +28,6 @@ class ImageSeriesOption extends Option {
                 $this->urls[$key] = $url;
             }
         }
-        // TODO: Implement _construct() method.
     }
 
     /**
@@ -35,8 +35,11 @@ class ImageSeriesOption extends Option {
      */
     public function renderBackend($template)
     {
+        global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile('core_modules/TemplateEditor/View/Template/Backend/ImagesSeriesOption.html');
+        $subTemplate->setGlobalVariable($_ARRAYLANG);
+
         foreach ($this->urls as $id => $url) {
             $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $url);
             $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_ID', $id);
@@ -46,7 +49,7 @@ class ImageSeriesOption extends Option {
         $mediaBrowserId = $this->name.'_mediabrowser';
         $mediaBrowser->setOptions(array('id' =>$mediaBrowserId));
         $mediaBrowser->setCallback('callback_'.$this->name);
-        $subTemplate->setVariable('MEDIABROWSER_BUTTON', $mediaBrowser->getXHtml('Bild hinzufügen'));
+        $subTemplate->setVariable('MEDIABROWSER_BUTTON', $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PICTURE']));
         $subTemplate->setVariable('MEDIABROWSER_ID', $mediaBrowserId);
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName);
@@ -54,7 +57,7 @@ class ImageSeriesOption extends Option {
         end($this->urls);
         $key = key($this->urls);
         $key = $key != null ? $key : '0';
-        $subTemplate->setVariable('TEMPLATEEDITOR_LASTID',$key );
+        $subTemplate->setVariable('TEMPLATEEDITOR_LASTID',$key);
         $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
         $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'img series');
 
@@ -69,7 +72,7 @@ class ImageSeriesOption extends Option {
         $blockName = strtolower('TEMPLATE_EDITOR_'.$this->name);
         if ($template->blockExists($blockName)){
             foreach ($this->urls as $id => $url) {
-                $template->setVariable(strtoupper('TEMPLATE_EDITOR_'.$this->name), $url);
+                $template->setVariable(strtoupper('TEMPLATE_EDITOR_'.$this->name), htmlentities($url));
                 $template->parse($blockName);
             }
         }
@@ -83,11 +86,26 @@ class ImageSeriesOption extends Option {
      */
     public function handleChange($data)
     {
+
+        global $_ARRAYLANG;
         if (empty($data['id']) && $data['id'] != 0) {
             throw new OptionValueNotValidException("Needs a id to work");
         }
         if (empty($data['url'])){
-            unset($this->urls[intval($data['id'])]);
+            if (isset($data['action']) && $data['action'] == 'remove'){
+                unset($this->urls[intval($data['id'])]);
+            }
+            else {
+                throw new OptionValueNotValidException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY']));
+            }
+        }
+        $url = parse_url($data['url']);
+        if (!isset($url['host'])){
+            if (!file_exists(Cx::instanciate()->getWebsitePath().$url['path'])){
+                if (!file_exists(Cx::instanciate()->getCodeBasePath().$url['path'])){
+                    throw new OptionValueNotValidException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'], $url['path']));
+                }
+            }
         }
         $this->urls[$data['id']] = $data['url'];
         return array('urls' => $this->urls);

@@ -53,6 +53,9 @@ class ThemeOptions implements YamlSerializable
 
 
     /**
+     * Pass the changes to the option directly to handle it.
+     * It returns the data which should be saved into the session.
+     *
      * @param $name
      * @param $data
      *
@@ -67,6 +70,8 @@ class ThemeOptions implements YamlSerializable
     }
 
     /**
+     * Call the renderBackend method on all child options.
+     *
      * @param Sigma $template
      */
     public function renderBackend($template)
@@ -77,6 +82,8 @@ class ThemeOptions implements YamlSerializable
     }
 
     /**
+     * Call the renderFrontend method on all child options.
+     *
      * @param Sigma $template
      */
     public function renderFrontend($template)
@@ -86,7 +93,12 @@ class ThemeOptions implements YamlSerializable
         }
     }
 
-
+    /**
+     * Serialize a class to use in a .yml file.
+     * This should return a array which will be serialized by the caller.
+     *
+     * @return array
+     */
     public function yamlSerialize()
     {
         $options = array();
@@ -95,7 +107,6 @@ class ThemeOptions implements YamlSerializable
         }
         $this->data['DlcInfo']['options'] = $options;
         return $this->data;
-        // TODO: Implement yamlSerialize() method.
     }
 
     /**

@@ -12,6 +12,7 @@ class TextOption extends Option
 
     protected $string = '';
     protected $regex = null;
+    protected $html = false;
 
     /**
      * @param String $name
@@ -22,6 +23,7 @@ class TextOption extends Option
         parent::__construct($name, $humanname, $data);
         $this->string = isset($data['textvalue']) ? $data['textvalue'] : '';
         $this->regex  = isset($data['regex']) ? $data['regex'] : null;
+        $this->html  = isset($data['html']) ? $data['html'] : false;
     }
 
     /**
@@ -41,7 +43,6 @@ class TextOption extends Option
         $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
         $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'text');
         $template->parse('option');
-        // TODO: Implement renderBackend() method.
     }
 
     /**
@@ -49,7 +50,7 @@ class TextOption extends Option
      */
     public function renderFrontend($template)
     {
-        $template->setVariable('TEMPLATE_EDITOR_'.strtoupper($this->name), $this->string);
+        $template->setVariable('TEMPLATE_EDITOR_'.strtoupper($this->name),$this->html  ? $this->string : htmlentities($this->string));
     }
 
     /**
@@ -60,9 +61,10 @@ class TextOption extends Option
      */
     public function handleChange($data)
     {
-        if (!preg_match($this->regex, $data)) {
+        global $_ARRAYLANG;
+        if ($this->regex && !preg_match($this->regex, $data)) {
             throw new OptionValueNotValidException(
-                "String $data doesn't match given regex:" . $this->regex
+              sprintf($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_TEXT_WRONG_FORMAT'], $data) . $this->regex
             );
         }
         $this->string = $data;

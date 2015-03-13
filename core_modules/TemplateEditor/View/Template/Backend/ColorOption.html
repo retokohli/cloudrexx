@@ -1,30 +1,49 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<input type="text"  id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}" />
+<input type="text"  id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
+<div class="error-box">
+
+</div>
 <script>
     jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").spectrum({
         showPalette: true,
+        cancelText: cx.variables.get('cancel','TemplateEditor'),
+        chooseText: cx.variables.get('select','TemplateEditor'),
         palette: [
             {TEMPLATEEDITOR_OPTION_CHOICE}
         ],
         change: function(color) {
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').trigger('blur');
             jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").spectrum("set", color);
-
             jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").spectrum("hide");
         },
         preferredFormat: 'hex'
     });
     jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").show();
 
-    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').blur(function () {
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
+        var color = new tinycolor(jQuery(this).val());
+        if (!color.isValid()){
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(cx.variables.get('colorError','TemplateEditor')).slideDown();
+            return;
+        }
         jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").spectrum("set", jQuery(this).val());
         jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(){
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
-            setTimeout(function(){
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
-            }, 2000);
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(response){
+            if (response.status == 'error'){
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(response.message).slideDown();
+            }
+            else {
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
+                setTimeout(function () {
+                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
+                }, 2000);
+            }
         })
+
+
     });
 </script>

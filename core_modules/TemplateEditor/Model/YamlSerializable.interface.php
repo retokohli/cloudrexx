@@ -5,7 +5,10 @@ namespace Cx\Core_Modules\TemplateEditor\Model;
 interface YamlSerializable {
 
     /**
-     * @return string
+     * Serialize a class to use in a .yml file.
+     * This should return a array which will be serialized by the caller.
+     *
+     * @return array
      */
     public function yamlSerialize();
 
