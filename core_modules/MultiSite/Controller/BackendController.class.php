@@ -29,15 +29,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_SERVICE:
-                return array('domains','statistics', 'settings'=> array('codebases','website_templates'));
+                return array('maintenance' => array(), 'statistics', 'settings'=> array('codebases','website_templates'));
                 break;
 
             case ComponentController::MODE_MANAGER:
-                return array('domains','statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers', 'mail_service_servers' ));
+                return array('maintenance' => array(), 'statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers', 'mail_service_servers' ));
                 break;
 
             case ComponentController::MODE_HYBRID:
-                return array('domains','statistics', 'notifications', 'settings'=> array('email','codebases','website_templates', 'mail_service_servers' ));
+                return array('maintenance' => array(), 'statistics', 'notifications', 'settings'=> array('email','codebases','website_templates', 'mail_service_servers' ));
                 break;
 
             case ComponentController::MODE_NONE:
@@ -83,8 +83,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $this->parseSectionStatistics($template, $cmd);
                 break;
 
-            case 'domains':
-                $this->parseSectionDomains($template, $cmd);
+            case 'maintenance':
+                $this->parseSectionMaintenance($template, $cmd);
                 break;
                 
             default:
@@ -589,6 +589,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $template->setVariable('TABLE', $view->render());
     }
     
+    public function parseSectionMaintenance(\Cx\Core\Html\Sigma $template, array $cmd) 
+    {
+        $this->parseSectionDomains($template, $cmd);
+    }
+
     public function parseSectionDomains(\Cx\Core\Html\Sigma $template, array $cmd)
     {
         $domains = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('componentType' => 'website'));
