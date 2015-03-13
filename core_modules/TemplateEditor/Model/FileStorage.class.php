@@ -50,11 +50,12 @@ class FileStorage implements Storable
      * @param                  $name
      * @param YamlSerializable $data
      *
+     * @return int
      */
-    public function persist($name, $data)
+    public function persist($name, YamlSerializable $data)
     {
-//        var_dump($data);
-        // TODO: Implement persist() method.
+        return file_put_contents($this->path
+            . '/' . $name . '/component.yml',Yaml::dump($data->yamlSerialize(),5));
     }
 }
 

@@ -92,4 +92,16 @@ class ImageSeriesOption extends Option {
         $this->urls[$data['id']] = $data['url'];
         return array('urls' => $this->urls);
     }
+
+    /**
+     * @return string
+     */
+    public function yamlSerialize()
+    {
+        $option = parent::yamlSerialize();
+        $option['specific'] = array(
+            'urls' => $this->urls
+        );
+        return $option;
+    }
 }

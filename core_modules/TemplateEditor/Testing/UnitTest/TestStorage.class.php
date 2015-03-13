@@ -8,9 +8,9 @@
 namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
 
 
-use Core_Modules\TemplateEditor\Model\Storable;
-use Core_Modules\TemplateEditor\Model\YamlSerializable;
 use Cx\Core\Core\Controller\Cx;
+use Cx\Core_Modules\TemplateEditor\Model\Storable;
+use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 use Symfony\Component\Yaml\Yaml;
 
 class TestStorage implements Storable
@@ -32,7 +32,7 @@ class TestStorage implements Storable
      *
      * @return bool
      */
-    public function persist($name, $data)
+    public function persist($name,YamlSerializable $data)
     {
         return true;
     }

@@ -57,6 +57,8 @@
 
     var changeImage = function () {
         var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + jQuery(this).data('id') ).parent();
+        parent.find('img').attr('src', jQuery(this).val());
+
         parent.addClass('saving');
         updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {url: jQuery(this).val(), id: jQuery(this).data('id')}, function () {
             parent.removeClass('saving');

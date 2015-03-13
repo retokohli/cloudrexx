@@ -68,4 +68,16 @@ class TextOption extends Option
         $this->string = $data;
         return array('textvalue' => $this->string);
     }
+
+    /**
+     * @return string
+     */
+    public function yamlSerialize()
+    {
+        $option = parent::yamlSerialize();
+        $option['specific'] = array(
+            'textvalue' => $this->string
+        );
+        return $option;
+    }
 }

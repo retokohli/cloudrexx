@@ -31,7 +31,7 @@ class ThemeOptions implements YamlSerializable
      */
     public function __construct($theme, $data)
     {
-        global $_LANGID;
+        $this->name = $theme->getFoldername();
         $this->data = $data;
         $this->theme = $theme;
         foreach ($data['DlcInfo']['options'] as $option) {
@@ -39,13 +39,13 @@ class ThemeOptions implements YamlSerializable
             if ($optionReflection->getParentClass()->getName()
                 == 'Cx\Core_Modules\TemplateEditor\Model\Entity\Option'
             ) {
-                if (Cx::instanciate()->getMode() == Cx::MODE_BACKEND || (Cx::instanciate()->getUser()->getFWUserObject()->objUser->login())) {
+                if (Cx::instanciate()->getMode() == Cx::MODE_BACKEND || ((Cx::instanciate()->getUser()->getFWUserObject()->objUser->login()) && isset($_GET['templateEditor']))) {
                     if (isset($_SESSION['TemplateEditor'][$this->theme->getId()][$option['name']])){
                         $option['specific'] = array_merge($option['specific'],  $_SESSION['TemplateEditor'][$this->theme->getId()][$option['name']]->toArray());
                     }
                 }
                 $this->options[$option['name']] = $optionReflection->newInstance(
-                    $option['name'], isset($option['translation'][$_LANGID]) ? $option['translation'][$_LANGID] : $option['name'], $option['specific']
+                    $option['name'], $option['translation'], $option['specific']
                 );
             }
         }
@@ -89,6 +89,12 @@ class ThemeOptions implements YamlSerializable
 
     public function yamlSerialize()
     {
+        $options = array();
+        foreach ($this->options as $option){
+            $options[] = $option->yamlSerialize();
+        }
+        $this->data['DlcInfo']['options'] = $options;
+        return $this->data;
         // TODO: Implement yamlSerialize() method.
     }
 

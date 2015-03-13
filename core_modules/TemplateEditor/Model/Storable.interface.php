@@ -19,6 +19,6 @@ interface Storable {
      *
      * @return
      */
-    public function persist($name,$data);
+    public function persist($name,YamlSerializable $data);
 
 }

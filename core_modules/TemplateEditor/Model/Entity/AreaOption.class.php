@@ -61,4 +61,14 @@ class AreaOption extends Option {
         $this->active = $data;
         return array('active' => $data);
     }
+
+    /**
+     * @return string
+     */
+    public function yamlSerialize()
+    {
+        $option = parent::yamlSerialize();
+        $option['specific'] = array('active' => $this->active);
+        return  $option;
+    }
 }

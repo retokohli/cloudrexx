@@ -9,6 +9,7 @@
 namespace Cx\Core_Modules\TemplateEditor\Controller;
 
 
+use Cx\Core\View\Model\Entity\Theme;
 use Cx\Core_Modules\TemplateEditor\Model\FileStorage;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\ThemeOptionsRepository;
 use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
@@ -18,6 +19,14 @@ use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
 
 class BackendController extends SystemComponentBackendController
 {
+    private $themeOptionRepository;
+    private $themeOptions;
+
+    /**
+     * @var Theme
+     */
+    private $theme;
+
     /**
      * Returns a list of available commands (?act=XY)
      *
@@ -40,46 +49,46 @@ class BackendController extends SystemComponentBackendController
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
+
+        $fileStorage           = new FileStorage(
+            $this->cx->getWebsiteThemesPath()
+        );
+        $themeOptionRepository = new ThemeOptionsRepository($fileStorage);
+        $this->themeOptionRepository = $themeOptionRepository;
+        $themeRepository = new ThemeRepository();
+        $themeID         = isset($_GET['tid']) ? $_GET['tid'] : 1;
+        $this->theme = $themeRepository->findById($themeID);
+        $this->themeOptions = $this->themeOptionRepository->get(
+            $this->theme
+        );
+        $this->showOverview($template);
+    }
+
+    /**
+     * @param $template
+     *
+     * @throws \Cx\Core\Routing\UrlException
+     */
+    public function showOverview($template)
+    {
+        \JS::registerJS('core_modules/TemplateEditor/View/Script/spectrum.js');
         $template->loadTemplateFile(
             $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/Default.html'
         );
-        $fileStorage = new FileStorage(
-            $this->cx->getWebsiteThemesPath()
-        );
-        $themeOptionRepository = new ThemeOptionsRepository($fileStorage);
-        $themeRepository = new ThemeRepository();
-        $themeID = isset($_GET['tid']) ? $_GET['tid'] : 1;
-        $theme = $themeRepository->findById($themeID);
-        $themeOptions = $themeOptionRepository->get(
-            $theme
-        );
-        $themeOptions->renderBackend($template);
+        $this->themeOptions->renderBackend($template);
         $template->setVariable(
             'TEMPLATEEDITOR_IFRAME_URL', Url::fromModuleAndCmd(
             'home', '', null,
-            array('preview' => $themeID, 'templateEditor' => 1)
+            array('preview' => $this->theme->getId(), 'templateEditor' => 1)
         )
         );
         $template->setVariable(
             'TEMPLATEEDITOR_BACKURL', './index.php?cmd=ViewManager'
         );
-    }
-
-    /**
-     *
-     */
-    public function saveOptions()
-    {
-        // TODO implement here
-    }
-
-    /**
-     *
-     */
-    public function showOverview()
-    {
-        // TODO implement here
+        \ContrexxJavascript::getInstance()->setVariable(
+            'themeid',$this->theme->getId(), 'TemplateEditor'
+        );
     }
 
 }

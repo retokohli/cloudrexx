@@ -58,4 +58,16 @@ class ImageOption extends Option {
         $this->url = $data;
         return array('url' => $data);
     }
+
+    /**
+     * @return string
+     */
+    public function yamlSerialize()
+    {
+        $option = parent::yamlSerialize();
+        $option['specific'] = array(
+            'url' => $this->url
+        );
+        return $option;
+    }
 }

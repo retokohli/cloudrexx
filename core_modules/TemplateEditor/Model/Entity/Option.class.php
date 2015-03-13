@@ -3,27 +3,38 @@
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Html\Sigma;
+use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 
 /**
  * 
  */
-abstract class Option {
+abstract class Option implements YamlSerializable {
 
     /**
      * @var void
      */
     public $name;
 
+    /**
+     * @var array
+     */
+    public $translations;
+
+    /**
+     * @var String
+     */
     public $humanName;
 
     /**
      * @param String $name
-     * @param        $humanname
+     * @param        $translations
      * @param array  $data
      */
-    public function __construct($name, $humanname, $data){
+    public function __construct($name, $translations, $data){
+        global $_LANGID;
         $this->name = $name;
-        $this->humanName = $humanname;
+        $this->humanName = isset($translations[$_LANGID]) ? $translations[$_LANGID] : $name;
+        $this->translations = $translations;
     }
 
     /**
@@ -72,6 +83,27 @@ abstract class Option {
     {
         $this->humanName = $humanName;
     }
+
+    /**
+     * @return array
+     *     -
+    name: slider_images
+    specific:
+    urls: [ "images/content/slideshow/slide_1.jpg", "images/content/slideshow/slide_2.jpg" ]
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageSeriesOption
+    translation:
+    1: "Haupt Slider"
+     */
+    public function yamlSerialize()
+    {
+        return array(
+            'name' => $this->name,
+            'specific' => array(),
+            'type' => get_called_class(),
+            'translation' => $this->translations
+        );
+    }
+
 
 }
 

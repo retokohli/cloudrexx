@@ -20,19 +20,17 @@ class ComponentController extends SystemComponentController
     public function preFinalize(\Cx\Core\Html\Sigma $template)
     {
         if ($this->cx->getMode() == Cx::MODE_FRONTEND) {
-            if (isset($_GET['templateEditor'])) {
-                $fileStorage = new FileStorage(
-                    $this->cx->getWebsiteThemesPath()
-                );
-                $themeOptionRepository = new ThemeOptionsRepository($fileStorage);
-                $themeRepository = new ThemeRepository();
-                $themeID = isset($_GET['preview']) ? $_GET['preview'] : 1;
-                $theme = $themeRepository->findById($themeID);
-                $themeOptions = $themeOptionRepository->get(
-                    $theme
-                );
-                $themeOptions->renderFrontend($template);
-            }
+            $fileStorage = new FileStorage(
+                $this->cx->getWebsiteThemesPath()
+            );
+            $themeOptionRepository = new ThemeOptionsRepository($fileStorage);
+            $themeRepository = new ThemeRepository();
+            $themeID = isset($_GET['preview']) ? $_GET['preview'] : 1;
+            $theme = $themeRepository->findById((int) $themeID);
+            $themeOptions = $themeOptionRepository->get(
+                $theme
+            );
+            $themeOptions->renderFrontend($template);
         }
     }
 
