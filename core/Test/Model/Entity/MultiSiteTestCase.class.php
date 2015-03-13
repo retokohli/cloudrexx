@@ -68,6 +68,6 @@ abstract class MultiSiteTestCase extends ContrexxTestCase
         self::$cx->getDb()->getEntityManager()->flush();
         
         // configure the website
-        $objWebsite->setup(array('subscription' => 'Trail'));
+        $objWebsite->setup(array('websiteTemplate' => 1));
     }
 }
