@@ -377,7 +377,7 @@ CODE;
         return $this->render();
     }
     
-    protected function getFormLabel($fieldOptions, $key) {
+    protected static function getFormLabel($fieldOptions, $key) {
         global $_ARRAYLANG;
         
         if (isset($_ARRAYLANG[$fieldOptions[$key]])) {
