@@ -1238,10 +1238,12 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Get All FtpAccounts
      * 
+     * @param boolean $extendedData Get additional data of the FTP user
+     * 
      * @return array
      * @throws ApiRequestException
      */
-    public function getFtpAccounts() {
+    public function getFtpAccounts($extendedData = false) {
         
         \DBG::msg("MultiSite (PleskController): get all Ftp Accounts: $this->webspaceId");
         if (empty($this->webspaceId)) {
@@ -1279,7 +1281,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $resultArr   = array();
             $responseArr = (count($respArr['result']) == count($respArr['result'], COUNT_RECURSIVE)) ? $respArr : $respArr['result'];
             foreach ($responseArr as $result) {
-                $resultArr[$result['id']] = $result['name'];
+                if ($extendedData) {
+                    $resultArr[$result['id']] = array(
+                        'name' => $result['name'],
+                        'path' => $result['home'],
+                    );
+                } else {
+                    $resultArr[$result['id']] = $result['name'];
+                }
             }
         }
         return $resultArr;

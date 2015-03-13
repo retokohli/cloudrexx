@@ -60,8 +60,10 @@ interface FtpController {
     /**
      * Get All the Ftp Accounts
      * 
+     * @param boolean $extendedData Get additional data of the FTP user
+     * 
      * @return array
      * @throws ApiRequestException On error
      */
-    public function getFtpAccounts();
+    public function getFtpAccounts($extendedData = false);
 }

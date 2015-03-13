@@ -107,6 +107,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'removeUser'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'setWebsiteTheme'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
             'getFtpUser'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'auth')),
+            'getFtpAccounts'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkPermission')),
             'getLicense'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
             'remoteLogin'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission')),
             'editLicense'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, array($this, 'checkGetLicenseAccess')),
@@ -2482,6 +2483,36 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: Website Ftp user field is empty.');
         } catch (Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: to get website FTP user: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get all Ftp user accounts
+     * 
+     * @param array $params
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function getFtpAccounts($params) {
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:
+                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                    $ftpUserAccounts   = $hostingController->getFtpAccounts(true);
+                    if ($ftpUserAccounts) {
+                        return array(
+                            'status' => 'success',
+                            'data'   => $ftpUserAccounts,
+                            'log'    => \DBG::getMemoryLogs(),
+                        );
+                    }
+                    break;
+            }
+            throw new MultiSiteJsonException('JsonMultiSite::getFtpAccounts() failed');
+        } catch (Exception $e) {
+            throw new MultiSiteJsonException('JsonMultiSite::getFtpAccounts() failed: ' . $e->getMessage());
         }
     }
     

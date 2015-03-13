@@ -253,8 +253,12 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     
     /**
      * Get Ftp Accounts
+     * 
+     * @param boolean $extendedData Get additional data of the FTP user
+     * 
+     * @return null
      */
-    public function getFtpAccounts() {
+    public function getFtpAccounts($extendedData = false) {
         \DBG::msg("MultiSite (XamppController): get Ftp Accounts");
         return null;
     }

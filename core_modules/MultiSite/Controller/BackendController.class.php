@@ -29,15 +29,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_SERVICE:
-                return array('maintenance' => array(), 'statistics', 'settings'=> array('codebases','website_templates'));
+                return array('maintenance' => array('ftp'), 'statistics', 'settings'=> array('codebases','website_templates'));
                 break;
 
             case ComponentController::MODE_MANAGER:
-                return array('maintenance' => array(), 'statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers', 'mail_service_servers' ));
+                return array('maintenance' => array('ftp'), 'statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers', 'mail_service_servers' ));
                 break;
 
             case ComponentController::MODE_HYBRID:
-                return array('maintenance' => array(), 'statistics', 'notifications', 'settings'=> array('email','codebases','website_templates', 'mail_service_servers' ));
+                return array('maintenance' => array('ftp'), 'statistics', 'notifications', 'settings'=> array('email','codebases','website_templates', 'mail_service_servers' ));
                 break;
 
             case ComponentController::MODE_NONE:
@@ -591,7 +591,85 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     
     public function parseSectionMaintenance(\Cx\Core\Html\Sigma $template, array $cmd) 
     {
-        $this->parseSectionDomains($template, $cmd);
+        if ($cmd[1] == 'ftp') {
+            $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
+            
+            $ftpAccounts = array();
+            if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode') , array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+                $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                $ftpAccountsArr    = $hostingController->getFtpAccounts(true);
+                foreach ($ftpAccountsArr as $ftpAccount) {
+                    $ftpAccounts[$ftpAccount['name']] = $ftpAccount['path'];
+                }
+            } else {
+                $websiteServiceServers = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
+                foreach ($websiteServiceServers as $websiteServiceServer) {
+                    $ftpAccounts[$websiteServiceServer->getId()] = array();
+                    $ftpAccountsResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getFtpAccounts', array(), $websiteServiceServer);
+                    if ($ftpAccountsResp && $ftpAccountsResp->status == 'success') {
+                        foreach ($ftpAccountsResp->data as $ftpAccount) {
+                            $ftpAccounts[$websiteServiceServer->getId()][$ftpAccount->name] = $ftpAccount[$ftpAccount->path];
+                        }
+                    }
+                }
+            }
+            
+            $websiteArr = array();
+            foreach ($websites as $website) {
+                $ftpStatus = 0;
+                $ftpPath   = '';
+                $websiteServiceServer = '';
+                
+                // get website service server
+                if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
+                    $objWebsiteServiceServer = $website->getWebsiteServiceServer();
+                    if ($objWebsiteServiceServer) {
+                        $websiteServiceServer = $objWebsiteServiceServer->getlabel();                        
+                    }
+                }
+                
+                // get FTP details
+                $currentFtpAccounts = (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER)
+                                        ? ($objWebsiteServiceServer ? $ftpAccounts[$objWebsiteServiceServer->getId()] : array())
+                                        : $ftpAccounts;
+                if (array_key_exists($website->getFtpUser(), $currentFtpAccounts)) {
+                    $ftpStatus = 1;
+                    $ftpPath   = $currentFtpAccounts[$website->getFtpUser()];
+                }
+                $websiteArr[] = array(
+                    'status'               => $ftpStatus,
+                    'name'                 => $website->getName(),
+                    'ftpUser'              => $website->getFtpUser(),
+                    'ftpPath'              => $ftpPath,
+                    'websiteServiceServer' => $websiteServiceServer
+                );
+            }
+            $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteArr);
+            $view = new \Cx\Core\Html\Controller\ViewGenerator($dataSet, array(
+                        'header' => 'FTP',
+                        'fields' => array(
+                            'name'    => array('header' => 'TXT_CORE_MODULE_MULTISITE_WEBSITENAME'),
+                            'ftpUser' => array('header' => 'TXT_CORE_MODULE_MULTISITE_FTPUSER'),
+                            'ftpPath' => array('header' => 'TXT_CORE_MODULE_MULTISITE_FTPPATH'),
+                            'status'  => array(
+                                'header' => 'TXT_CORE_MODULE_MULTISITE_WEBSITESTATE',
+                                'table' => array(
+                                    'parse' => function($value, $arrData) {
+                                        $led = $value ? 'led_green.gif' : 'led_red.gif';
+                                        return '<img src="../core/Core/View/Media/icons/'. $led .'" alt="status" />';
+                                    }
+                                )
+                            ),
+                            'websiteServiceServer' => array(
+                                'header' => 'TXT_CORE_MODULE_MULTISITE_WEBSITE_SERVICE_SERVER',
+                                'showOverview' => \Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER,
+                            )
+                        )
+                    ));
+            $template->setVariable('TABLE', $view->render());
+        } else {
+            $this->parseSectionDomains($template, $cmd);
+        }
     }
 
     public function parseSectionDomains(\Cx\Core\Html\Sigma $template, array $cmd)
@@ -667,7 +745,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         ));
         $template->setVariable('TABLE', $view->render()); 
     }
-
+    
     /**
      * Set up the page with a list of all Settings  
      * Stores the settings if requested to.
