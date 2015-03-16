@@ -132,12 +132,14 @@ class Subscription extends \Cx\Model\Base\EntityBase {
      * 
      * @param \Cx\Modules\Order\Model\Entity\Order $order
      */
-    public function setOrder(Order $order) {
+    public function setOrder(Order $order, $updatePaymentAmount = false) {
         $this->order = $order;
         if (!$this->getProduct()) {
             return;
         }
-        $this->paymentAmount = $this->getProduct()->getPaymentAmount($this->getRenewalUnit(), $this->getRenewalQuantifier(), $order->getCurrency());
+        if ($updatePaymentAmount) {
+            $this->paymentAmount = $this->getProduct()->getPaymentAmount($this->getRenewalUnit(), $this->getRenewalQuantifier(), $order->getCurrency());
+        }
     }
     
     /**
