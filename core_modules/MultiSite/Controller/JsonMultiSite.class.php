@@ -4092,7 +4092,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         list($dbHost, $dbName, $dbUserName, $dbPassword) = $this->getWebsiteDatabaseInfo($configFilePath);
-        if (empty($dbHost || $dbName || $dbUserName || $dbPassword)) {
+        if (empty($dbHost) || empty($dbName) || empty($dbUserName) || empty($dbPassword)) {
             \DBG::log('Database details are not valid');
             return false;
         }
