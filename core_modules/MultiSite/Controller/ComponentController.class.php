@@ -539,7 +539,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         foreach ($products as $product) {
 // customizing: do not list Trial and Enterprise product 
 // TODO: implement some sort of selective product selection in the multisite configuration
-            if (in_array($product->getName(), array('Trial', 'Enterprise'))) {
+            if (in_array($product->getName(), array('Enterprise'))) {
                 continue;
             }
             $productName = contrexx_raw2xhtml($product->getName());
@@ -1895,8 +1895,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @return $hostingController
      */
-    public static function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer)
-    {
+    public static function getMailServerHostingController(\Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer $mailServiceServer) {
         switch ($mailServiceServer->getType()) {
             case 'plesk':
                 $hostingController = new PleskController($mailServiceServer->getHostname(), $mailServiceServer->getAuthUsername() , $mailServiceServer->getAuthPassword(), $mailServiceServer->getApiVersion());
