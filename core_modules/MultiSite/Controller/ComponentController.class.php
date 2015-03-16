@@ -1630,12 +1630,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
 
                 //website setup process
-                $websiteStatus = $website->setup($options);
-                if ($websiteStatus['status'] == 'success') {
-                    return array('status' => 'success', 'message' => array('message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'], 'websiteId' => $website->getId()), 'reload' => (isset($_GET['page_reload']) && $_GET['page_reload'] == 'reload_page' ? true : false));
+                try {
+                    $websiteStatus = $website->setup($options);
+                    if ($websiteStatus['status'] == 'success') {
+                        return array('status' => 'success', 'message' => array('message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_SUCCESS'], 'websiteId' => $website->getId()), 'reload' => (isset($_GET['page_reload']) && $_GET['page_reload'] == 'reload_page' ? true : false));
+                    }
+
+                    throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Website setup process not successful');
+                } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
                 }
-                
-                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
             }
         } catch (\Exception $e) {
             \DBG::log("Failed to add website:" . $e->getMessage());
