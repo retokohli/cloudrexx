@@ -2540,6 +2540,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             'log'       => \DBG::getMemoryLogs(),
                         );
                     }
+                    if (isset($response->log)) {
+                        \DBG::appendLogs(array_map(function($logEntry) {return '(Service) '.$logEntry;}, $response->log));
+                    }
+                    if (isset($response->message)) {
+                        \DBG::msg($response->message);
+                    }
                     break;
                 case ComponentController::MODE_SERVICE:
                 case ComponentController::MODE_HYBRID:
