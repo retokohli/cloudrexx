@@ -84,7 +84,7 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      *
      * @param array $data
      */
-    protected function __construct($data, $offset = '', $parentId = 0, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null, $callableOnValidateKey = null)
+    public function __construct($data, $offset = '', $parentId = 0, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null, $callableOnValidateKey = null)
     {
         $this->offset   = $offset;
         $this->parentId = intval($parentId);

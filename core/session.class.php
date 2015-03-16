@@ -177,7 +177,7 @@ class cmsSession extends RecursiveArrayAccess {
     /**
      * Default object constructor.          
      */    
-    protected function __construct()
+    public function __construct()
     {
 
         if (ini_get('session.auto_start')) {
