@@ -43,14 +43,14 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
     }
     
     /**
-     * Find the subscriptions by the search term
+     * Find the subscriptions by the filter
      * 
-     * @param string $term
+     * @param string $filter
      * 
      * @return array
      */
-    function findSubscriptionsBySearchTerm($term) {
-        if (empty($term)) {
+    function findSubscriptionsBySearchTerm($filter) {
+        if (empty($filter)) {
             return array();
         }
         
@@ -67,19 +67,28 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
             $ids  = array();
             $repo = $this->getEntityManager()->getRepository($product->getEntityClass());
             if ($repo && method_exists($repo, 'findByTerm')) {
-                $entities = $repo->findByTerm($term);
-                if (empty($entities)) {
-                    continue;
+                if (!empty($filter['term'])) {
+                    $entities = $repo->findByTerm($filter['term']);
+                    if (empty($entities)) {
+                        continue;
+                    }
+                    $entityClassMetaData = $this->getEntityManager()->getClassMetadata($product->getEntityClass());
+                    $primaryKeyName      = $entityClassMetaData->getSingleIdentifierFieldName();
+                    $methodName          = 'get'. ucfirst($primaryKeyName);
+                    foreach ($entities as $entity) {
+                        $ids[] = $entity->$methodName();
+                    }
+                    $options = array('ids' => $ids, 'entityClass' => $product->getEntityClass());
                 }
-                $entityClassMetaData = $this->getEntityManager()->getClassMetadata($product->getEntityClass());
-                $primaryKeyName      = $entityClassMetaData->getSingleIdentifierFieldName();
-                $methodName          = 'get'. ucfirst($primaryKeyName);
-                foreach ($entities as $entity) {
-                    $ids[] = $entity->$methodName();
-                }
-                $options = array('ids' => $ids, 'entityClass' => $product->getEntityClass());
-                $subscriptions = array_merge($subscriptions, $this->getSubscriptionsByProductEntity($options));
             }
+            
+            if (!empty($filter['filterProduct'])) {
+                $options['filterProduct']   = $filter['filterProduct'];
+            }
+            if (!empty($filter['filterState'])) {
+                $options['filterState']   = $filter['filterState'];
+            }
+            $subscriptions = array_merge($subscriptions, $this->getSubscriptionsByProductEntity($options));
         }
         
         return $subscriptions;
@@ -96,16 +105,22 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
         if (empty($criteria)) {
             return array();
         }
-        
+
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb
             ->select('s')
             ->from('\Cx\Modules\Order\Model\Entity\Subscription', 's')
-            ->leftJoin('s.product', 'p')
-            ->where($qb->expr()->in('s.productEntityId', $criteria['ids']))
-            ->andWhere('p.entityClass = :entityClass')
-            ->setParameter('entityClass', $criteria['entityClass']);
-        
+            ->leftJoin('s.product', 'p');
+                
+        $criteria['ids']           ? $qb->where($qb->expr()->in('s.productEntityId', $criteria['ids'])) 
+                                   : '';
+        $criteria['entityClass']   ? $qb->andWhere('p.entityClass = :entityClass')
+                                        ->setParameter('entityClass', $criteria['entityClass'])
+                                   : '';
+        $criteria['filterProduct'] ? $qb->andWhere($qb->expr()->in('p.id', $criteria['filterProduct'])) 
+                                   : '';
+        $criteria['filterState']   ? $qb->andWhere($qb->expr()->in('s.state', $criteria['filterState'])) 
+                                   : '';
         $subscriptions = $qb->getQuery()->getResult();
         
         return !empty($subscriptions) ? $subscriptions : array();

@@ -26,3 +26,5 @@ $_ARRAYLANG['TXT_MODULE_ORDER_FILTER'] = 'Filter';
 $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'] = 'Enter your search term';
 $_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT'] = 'Click to open the crm contact.';
 $_ARRAYLANG['TXT_MODULE_ORDER_MODIY_USER_ACCOUNT'] = 'Edit user account';
+$_ARRAYLANG['TXT_ORDER_SUBSCRIPTIONS_SEARCH_PRODUCT'] = 'Select your search product';
+$_ARRAYLANG['TXT_ORDER_SUBSCRIPTIONS_SEARCH_STATE']   = 'Select your search state';

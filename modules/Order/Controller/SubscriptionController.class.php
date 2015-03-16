@@ -71,12 +71,29 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $term = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
-        if (!empty($term)) {
-            $subscriptions = $this->subscriptionRepo->findSubscriptionsBySearchTerm($term);
+        $term          = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $filterProduct = isset($_GET['filter_product']) 
+                         ? contrexx_input2raw($_GET['filter_product']) : array();
+        $filterState   = isset($_GET['filter_state']) 
+                         ? contrexx_input2raw($_GET['filter_state']) : array();
+        
+        if (!empty($term) || !empty($filterProduct) || !empty($filterState)) {
+            $filter    = array('term' => $term, 'filterProduct' => $filterProduct, 'filterState' => $filterState);
+            $subscriptions = $this->subscriptionRepo->findSubscriptionsBySearchTerm($filter);
         } else {
             $subscriptions = $this->subscriptionRepo->getAllByDesc();
         }
+        
+        $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
+        $this->getSearchFilterDropDown($products, $filterProduct, 'product');
+        
+        $subscriptionStates = array(\Cx\Modules\Order\Model\Entity\Subscription::STATE_ACTIVE, 
+                                    \Cx\Modules\Order\Model\Entity\Subscription::STATE_INACTIVE, 
+                                    \Cx\Modules\Order\Model\Entity\Subscription::STATE_TERMINATED, 
+                                    \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED
+                              );
+        $this->getSearchFilterDropDown($subscriptionStates, $filterState, 'state');
+        
         $view = new \Cx\Core\Html\Controller\ViewGenerator($subscriptions, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_SUBSCRIPTION'],
             'functions' => array(
@@ -127,9 +144,35 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
             'TXT_ORDER_SUBSCRIPTIONS_SEARCH_TERM'  => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'],
             'ORDER_SUBSCRIPTIONS_SEARCH_VALUE'     => contrexx_raw2xhtml($term)
         ));
-        if (isset($_GET['editid']) && !empty($_GET['editid'])) {
+        if (isset($_GET['editid']) && !empty($_GET['editid']) || isset($_GET['add']) && !empty($_GET['add'])) {
             $this->template->hideBlock("subscription_filter");
         }
         $this->template->setVariable('SUBSCRIPTIONS_CONTENT', $view->render());
+    }
+    
+    /**
+     * Get search filter dropdown
+     * 
+     * @param mixed   $filterDropDownValues
+     * @param mixed   $selected
+     * @param string  $block       
+     */
+    public function getSearchFilterDropDown($filterDropDownValues, $selected, $block) {
+
+        foreach ($filterDropDownValues as $filterDropDownValue) {
+            $filterDropDownName = $filterDropDownValue;
+            if (is_object($filterDropDownValue)) {
+                $filterDropDownName  = $filterDropDownValue->getName();
+                $filterDropDownValue = $filterDropDownValue->getId();
+            }
+            
+            $selectedVal = in_array($filterDropDownValue, $selected) ? 'selected' : '';
+            $this->template->setVariable(array(
+                'ORDER_SUBSCRIPTION_'.strtoupper($block).'_NAME'         => contrexx_raw2xhtml($filterDropDownName),
+                'ORDER_SUBSCRIPTION_'.strtoupper($block).'_VALUE'        => contrexx_raw2xhtml($filterDropDownValue),
+                'ORDER_SUBSCRIPTION_'.strtoupper($block).'_SELECTED'     => $selectedVal,
+            ));
+            $this->template->parse('subscription_' . $block . '_filter');
+        }
     }
 }
