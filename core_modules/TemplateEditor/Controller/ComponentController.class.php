@@ -1,8 +1,12 @@
 <?php
+
 /**
- * @copyright   Comvation AG
+ * Class ComponentController
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
+ * @subpackage  core_module_templateeditor
  */
 
 namespace Cx\Core_Modules\TemplateEditor\Controller;
@@ -23,19 +27,20 @@ class ComponentController extends SystemComponentController
      *
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Html\Sigma                       $template   The main template
+     *
+     * @param \Cx\Core\Html\Sigma $template The main template
      */
-    public function preFinalize(\Cx\Core\Html\Sigma $template)
-    {
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
         if ($this->cx->getMode() == Cx::MODE_FRONTEND) {
-            $fileStorage = new FileStorage(
+            $fileStorage           = new FileStorage(
                 $this->cx->getWebsiteThemesPath()
             );
             $themeOptionRepository = new ThemeOptionsRepository($fileStorage);
-            $themeRepository = new ThemeRepository();
-            $themeID = isset($_GET['preview']) ? $_GET['preview'] : 1;
-            $theme = $themeRepository->findById((int) $themeID);
-            $themeOptions = $themeOptionRepository->get(
+            $themeRepository       = new ThemeRepository();
+            $themeID               = isset($_GET['preview']) ? $_GET['preview']
+                : 1;
+            $theme                 = $themeRepository->findById((int)$themeID);
+            $themeOptions          = $themeOptionRepository->get(
                 $theme
             );
             $themeOptions->renderFrontend($template);

@@ -8,7 +8,12 @@ use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 use Cx\Core\Html\Sigma;
 
 /**
+ * Class ThemeOptions
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
  */
 class ThemeOptions implements YamlSerializable
 {
@@ -27,21 +32,29 @@ class ThemeOptions implements YamlSerializable
 
     /**
      * @param Theme $theme
-     * @param $data
+     * @param       $data
      */
-    public function __construct($theme, $data)
-    {
-        $this->name = $theme->getFoldername();
-        $this->data = $data;
+    public function __construct($theme, $data) {
+        $this->name  = $theme->getFoldername();
+        $this->data  = $data;
         $this->theme = $theme;
         foreach ($data['DlcInfo']['options'] as $option) {
             $optionReflection = new \ReflectionClass($option['type']);
             if ($optionReflection->getParentClass()->getName()
                 == 'Cx\Core_Modules\TemplateEditor\Model\Entity\Option'
             ) {
-                if (Cx::instanciate()->getMode() == Cx::MODE_BACKEND || ((Cx::instanciate()->getUser()->getFWUserObject()->objUser->login()) && isset($_GET['templateEditor']))) {
-                    if (isset($_SESSION['TemplateEditor'][$this->theme->getId()][$option['name']])){
-                        $option['specific'] = array_merge($option['specific'],  $_SESSION['TemplateEditor'][$this->theme->getId()][$option['name']]->toArray());
+                if (Cx::instanciate()->getMode() == Cx::MODE_BACKEND
+                    || ((Cx::instanciate()->getUser()->getFWUserObject(
+                        )->objUser->login())
+                        && isset($_GET['templateEditor']))
+                ) {
+                    if (isset($_SESSION['TemplateEditor'][$this->theme->getId(
+                        )][$option['name']])) {
+                        $option['specific'] = array_merge(
+                            $option['specific'],
+                            $_SESSION['TemplateEditor'][$this->theme->getId(
+                            )][$option['name']]->toArray()
+                        );
                     }
                 }
                 $this->options[$option['name']] = $optionReflection->newInstance(
@@ -61,8 +74,7 @@ class ThemeOptions implements YamlSerializable
      *
      * @throws ThemeOptionNotFoundException
      */
-    public function handleChanges($name, $data)
-    {
+    public function handleChanges($name, $data) {
         if (!array_key_exists($name, $this->options)) {
             throw new ThemeOptionNotFoundException();
         }
@@ -74,9 +86,8 @@ class ThemeOptions implements YamlSerializable
      *
      * @param Sigma $template
      */
-    public function renderBackend($template)
-    {
-        foreach ($this->options as $option){
+    public function renderBackend($template) {
+        foreach ($this->options as $option) {
             $option->renderBackend($template);
         }
     }
@@ -86,9 +97,8 @@ class ThemeOptions implements YamlSerializable
      *
      * @param Sigma $template
      */
-    public function renderFrontend($template)
-    {
-        foreach ($this->options as $option){
+    public function renderFrontend($template) {
+        foreach ($this->options as $option) {
             $option->renderFrontend($template);
         }
     }
@@ -99,10 +109,9 @@ class ThemeOptions implements YamlSerializable
      *
      * @return array
      */
-    public function yamlSerialize()
-    {
+    public function yamlSerialize() {
         $options = array();
-        foreach ($this->options as $option){
+        foreach ($this->options as $option) {
             $options[] = $option->yamlSerialize();
         }
         $this->data['DlcInfo']['options'] = $options;
@@ -114,35 +123,38 @@ class ThemeOptions implements YamlSerializable
      *
      * @return Option
      */
-    public function getOption($name)
-    {
-        return array_key_exists($name, $this->options) ? $this->options[$name] : null;
+    public function getOption($name) {
+        return array_key_exists($name, $this->options) ? $this->options[$name]
+            : null;
     }
 
     /**
      * @param $name
      * @param $value
      */
-    public function setOption($name, $value)
-    {
+    public function setOption($name, $value) {
         $this->options[$name] = $value;
     }
 
     /**
      * @return mixed
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
     /**
      * @param mixed $name
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
+    }
+
+    public function getOptionCount() {
+        return count($this->options);
     }
 }
 
-Class ThemeOptionNotFoundException extends \Exception {}
+Class ThemeOptionNotFoundException extends \Exception
+{
+}

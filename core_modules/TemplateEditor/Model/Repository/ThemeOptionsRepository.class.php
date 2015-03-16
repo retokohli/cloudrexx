@@ -1,15 +1,21 @@
 <?php
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Repository;
+
 use Cx\Core\View\Model\Entity\Theme;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
 use Cx\Core_Modules\TemplateEditor\Model\Storable;
 
 /**
- * 
+ * Class ThemeOptionsRepository
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
  */
-class ThemeOptionsRepository {
-
+class ThemeOptionsRepository
+{
 
     /**
      * @var Storable
@@ -28,8 +34,7 @@ class ThemeOptionsRepository {
      *
      * @return ThemeOptions
      */
-    public function get(Theme $theme)
-    {
+    public function get(Theme $theme) {
         $componentData = $this->storage->retrieve($theme->getFoldername());
         return new ThemeOptions($theme, $componentData);
     }
@@ -40,7 +45,7 @@ class ThemeOptionsRepository {
      * @param ThemeOptions $entity
      */
     public function save($entity) {
-        $this->storage->persist($entity->getName(),$entity);
+        $this->storage->persist($entity->getName(), $entity);
     }
 
 }

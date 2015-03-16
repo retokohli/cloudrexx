@@ -1,9 +1,12 @@
 <?php
 
 /**
- * @copyright   Comvation AG
+ * Class BackendController
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
+ * @subpackage  core_module_templateeditor
  */
 
 namespace Cx\Core_Modules\TemplateEditor\Controller;
@@ -44,8 +47,7 @@ class BackendController extends SystemComponentBackendController
      *
      * @return array List of acts
      */
-    public function getCommands()
-    {
+    public function getCommands() {
         return array();
     }
 
@@ -59,18 +61,19 @@ class BackendController extends SystemComponentBackendController
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array               $cmd      CMD separated by slashes
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
-    {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
         \Permission::checkAccess(47, 'static');
-        $fileStorage           = new FileStorage(
+        $fileStorage                 = new FileStorage(
             $this->cx->getWebsiteThemesPath()
         );
-        $themeOptionRepository = new ThemeOptionsRepository($fileStorage);
+        $themeOptionRepository       = new ThemeOptionsRepository($fileStorage);
         $this->themeOptionRepository = $themeOptionRepository;
-        $this->themeRepository = new ThemeRepository();
-        $themeID         = isset($_GET['tid']) ? $_GET['tid'] : 1;
-        $this->theme = $this->themeRepository->findById($themeID);
-        $this->themeOptions = $this->themeOptionRepository->get(
+        $this->themeRepository       = new ThemeRepository();
+        $themeID                     = isset($_GET['tid']) ? $_GET['tid'] : 1;
+        $this->theme                 = $this->themeRepository->findById(
+            $themeID
+        );
+        $this->themeOptions          = $this->themeOptionRepository->get(
             $this->theme
         );
 
@@ -84,9 +87,8 @@ class BackendController extends SystemComponentBackendController
      *
      * @throws \Cx\Core\Routing\UrlException
      */
-    public function showOverview(Sigma $template)
-    {
-        global $_ARRAYLANG;
+    public function showOverview(Sigma $template) {
+        global $_ARRAYLANG, $_CONFIG;
         \JS::registerJS('core_modules/TemplateEditor/View/Script/spectrum.js');
         $template->loadTemplateFile(
             $this->cx->getCodeBaseCoreModulePath()
@@ -96,32 +98,55 @@ class BackendController extends SystemComponentBackendController
          * @var $themes Theme[]
          */
         $themes = $this->themeRepository->findAll();
-        foreach ($themes as $theme){
-            $template->setVariable(array(
-                'TEMPLATEEDITOR_LAYOUT_NAME' => $theme->getThemesname(),
-                'TEMPLATEEDITOR_LAYOUT_ID' => $theme->getId()
-            ));
-            if ($this->theme->getId() == $theme->getId()){
-                $template->setVariable(array(
-                    'TEMPLATEEDITOR_LAYOUT_ACTIVE' => 'selected'
-                ));
+        foreach ($themes as $theme) {
+            $template->setVariable(
+                array(
+                    'TEMPLATEEDITOR_LAYOUT_NAME' => $theme->getThemesname(),
+                    'TEMPLATEEDITOR_LAYOUT_ID' => $theme->getId()
+                )
+            );
+            if ($this->theme->getId() == $theme->getId()) {
+                $template->setVariable(
+                    array(
+                        'TEMPLATEEDITOR_LAYOUT_ACTIVE' => 'selected'
+                    )
+                );
             }
             $template->parse('layouts');
         }
 
         $this->themeOptions->renderBackend($template);
+
+        if ($this->themeOptions->getOptionCount() == 0) {
+            $template->setVariable(
+                array(
+                    'TEMPLATEOPTION_NO_OPTIONS_TEXT' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_HELP'],
+                    'TEMPLATEOPTION_NO_OPTIONS_LINKNAME' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_LINKNAME']
+                )
+            );
+            $template->parse('no_options');
+        }
         $template->setVariable(
             'TEMPLATEEDITOR_IFRAME_URL', Url::fromModuleAndCmd(
             'home', '', null,
             array('preview' => $this->theme->getId(), 'templateEditor' => 1)
-        )
-        );
-        $template->setGlobalVariable($_ARRAYLANG);
-        $template->setVariable(
+        ),
             'TEMPLATEEDITOR_BACKURL', './index.php?cmd=ViewManager'
         );
+        $template->setGlobalVariable($_ARRAYLANG);
         \ContrexxJavascript::getInstance()->setVariable(
-            'themeid',$this->theme->getId(), 'TemplateEditor'
+            array(
+                'themeid' => $this->theme->getId(),
+                'iframeUrl' => Url::fromModuleAndCmd(
+                    'home', '', null,
+                    array(
+                        'preview' => $this->theme->getId(),
+                        'templateEditor' => 1
+                    )
+                )->toString(),
+                'domainUrl' => $_CONFIG['domainUrl']
+            ),
+            'TemplateEditor'
         );
     }
 

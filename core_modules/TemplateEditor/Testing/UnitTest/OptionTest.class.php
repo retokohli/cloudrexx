@@ -6,11 +6,13 @@ use Cx\Core\Test\Model\Entity\ContrexxTestCase;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption;
 
 /**
- * @copyright   Comvation AG
+ * Class OptionTest
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
+ * @subpackage  core_module_templateeditor
  */
-
 class OptionTest extends ContrexxTestCase {
 
     public function testTextOption()

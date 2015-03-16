@@ -3,9 +3,15 @@
 namespace Cx\Core_Modules\TemplateEditor\Model;
 
 /**
- * 
+ * Interface Storable
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
  */
-interface Storable {
+interface Storable
+{
 
 
     /**
@@ -19,6 +25,6 @@ interface Storable {
      *
      * @return bool
      */
-    public function persist($name,YamlSerializable $data);
+    public function persist($name, YamlSerializable $data);
 
 }

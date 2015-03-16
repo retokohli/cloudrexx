@@ -40,3 +40,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_COLOR_WRONG_FORMAT'] = 'Wrong color 
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_TEXT_WRONG_FORMAT'] = "String \"%s\" doesn't match given regex: ";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'] = "File \"%s\" not found.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY'] = "Can't be empty.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_HELP'] = "This template has no options. To learn how to add options to your template visit the wiki page.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_LINKNAME'] = "Wiki: How to add options to your template.";

@@ -2,7 +2,16 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model;
 
-interface YamlSerializable {
+/**
+ * Class YamlSerializable
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
+interface YamlSerializable
+{
 
     /**
      * Serialize a class to use in a .yml file.

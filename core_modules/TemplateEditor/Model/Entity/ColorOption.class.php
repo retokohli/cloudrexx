@@ -5,21 +5,36 @@ namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 use Cx\Core\Html\Sigma;
 
 /**
+ * Class ColorOption
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
  */
 class ColorOption extends Option
 {
-
+    /**
+     * Color in hex format
+     *
+     * @var String
+     */
     protected $color;
+
+    /**
+     * Array with color choices in hex format
+     *
+     * @var array
+     */
     protected $choice;
 
     /**
      * @param String $name
+     * @param array  $translations
      * @param array  $data
      */
-    public function __construct($name, $humanname, $data)
-    {
-        parent::__construct($name, $humanname, $data);
+    public function __construct($name, $translations, $data) {
+        parent::__construct($name, $translations, $data);
         $this->color = $data['color'];
         if (isset($data['choice'])) {
             $this->choice = $data['choice'];
@@ -29,8 +44,7 @@ class ColorOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderBackend($template)
-    {
+    public function renderBackend($template) {
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
@@ -62,8 +76,7 @@ class ColorOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderFrontend($template)
-    {
+    public function renderFrontend($template) {
         $template->setVariable(
             'TEMPLATE_EDITOR_' . strtoupper($this->name), $this->color
         );
@@ -75,11 +88,12 @@ class ColorOption extends Option
      * @return array
      * @throws OptionValueNotValidException
      */
-    public function handleChange($data)
-    {
+    public function handleChange($data) {
         global $_ARRAYLANG;
-        if (!preg_match('/^(#)?[0-9a-f]+$/',$data)) {
-            throw new OptionValueNotValidException($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_COLOR_WRONG_FORMAT']);
+        if (!preg_match('/^(#)?[0-9a-f]+$/', $data)) {
+            throw new OptionValueNotValidException(
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_COLOR_WRONG_FORMAT']
+            );
         }
         $this->color = $data;
         return array('color' => $this->color);
@@ -88,13 +102,26 @@ class ColorOption extends Option
     /**
      * @return string
      */
-    public function yamlSerialize()
-    {
-        $option = parent::yamlSerialize();
+    public function yamlSerialize() {
+        $option             = parent::yamlSerialize();
         $option['specific'] = array(
             'color' => $this->color,
             'choice' => $this->choice
         );
         return $option;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getColor() {
+        return $this->color;
+    }
+
+    /**
+     * @param mixed $color
+     */
+    public function setColor($color) {
+        $this->color = $color;
     }
 }
