@@ -533,7 +533,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 return '';
                             }
                             $crmDetailImg = '';
-                            if (!empty($objUser->getCrmUserId())) {
+                            if (!\FWValidator::isEmpty($objUser->getCrmUserId())) {
                                 $crmDetailImg = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$objUser->getCrmUserId()}' 
                                                     title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'>
                                                     <img 
