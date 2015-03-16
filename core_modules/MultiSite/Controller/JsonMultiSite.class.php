@@ -2199,7 +2199,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public static function executeCommandOnWebsite($command, $params, $website) {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
-            throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode HYBRID or SERVICE.');
+            throw new MultiSiteJsonException('Command '.__METHOD__.' is only available in MultiSite-mode MODE_MANAGER, HYBRID or SERVICE (running on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' '.$website->getName().')');
         }
 
         // In case mode is Manager, the request shall be routed through the associated Service Server
