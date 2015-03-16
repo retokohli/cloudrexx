@@ -396,7 +396,8 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         
         if ($hostingController->enableMailService($accountId)) {
             $website->setMailDn();
-            \Env::get('em')->flush($website);
+            \Env::get('em')->persist($website);
+            \Env::get('em')->flush();
             \DBG::log('Successfully mapped the domain of type mail with host ' . $website->getMailDn()->getName());
             return true;
         }
