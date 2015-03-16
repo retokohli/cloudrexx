@@ -1565,6 +1565,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     if (isset($resp->log)) {
                         \DBG::appendLogs(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->log));
                     }
+                    if (isset($resp->message)) {
+                        \DBG::msg('(Website: '.$this->getName().') '.$resp->message);
+                    }
                     throw new WebsiteException('Unable to setup license: Error in setup license in Website');
                 }
             } catch (\Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException $e) {
