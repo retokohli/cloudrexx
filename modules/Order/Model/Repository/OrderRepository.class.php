@@ -95,10 +95,10 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
             ->from('\Cx\Modules\Order\Model\Entity\Order', 'o')
             ->leftJoin('o.subscriptions', 's');
         
-        $conditions = array();        
+        $conditions = array(); 
         if (!empty($term)) {
             $subscriptionRepository = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-            $subscriptions          = $subscriptionRepository->findSubscriptionsBySearchTerm($term);
+            $subscriptions          = $subscriptionRepository->findSubscriptionsBySearchTerm(array('term' => $term));
             if (empty($subscriptions)) {
                 return array();
             }

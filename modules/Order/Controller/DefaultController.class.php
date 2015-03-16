@@ -81,7 +81,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $term          = isset($_GET['filter-term']) ? contrexx_input2xhtml($_GET['filter-term']) : '';
+        $term          = isset($_GET['filter-term']) ? contrexx_input2raw($_GET['filter-term']) : '';
         $filterUserId  = isset($_GET['filter-user-id']) ? contrexx_input2raw($_GET['filter-user-id']) : 0;
         $objFilterUser = null;
         
@@ -157,7 +157,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
             ),
         ));
 
-        if (isset($_GET['editid']) && !empty($_GET['editid'])) {
+        if ((isset($_GET['editid']) && !empty($_GET['editid'])) || (isset($_GET['add']) && !empty($_GET['add']))) {
             $this->template->hideBlock("order_filter");
         } else {
             \FWUser::getUserLiveSearch(array(
