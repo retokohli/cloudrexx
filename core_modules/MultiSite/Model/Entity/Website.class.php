@@ -1541,7 +1541,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         
         if (!empty($legalComponents)) {
             $validTo = !empty($options['subscriptionExpiration']) ? $options['subscriptionExpiration'] : 2733517333;
-            $codeBase = !empty($websiteTemplate->getCodeBase()) ? $websiteTemplate->getCodeBase() : \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase');
+            $codeBase = !\FWValidator::isEmpty($websiteTemplate->getCodeBase()) ? $websiteTemplate->getCodeBase() : \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase');
             $params = array(
                 'websiteId'         => $this->id,
                 'legalComponents'   => $legalComponents,
