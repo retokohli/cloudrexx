@@ -34,14 +34,14 @@ interface EngineInterface {
      * @return  boolean           True if values have been changed in memory,
      *                            false otherwise
      */
-    static function changed();
+     function changed();
 
     /**
      * Optionally sets and returns the value of the tab index
      * @param   integer $tab_index  The optional new tab index
      * @return  integer             The current tab index
      */
-    static function tab_index($tab_index=null);
+     function tab_index($tab_index=null);
 
     /**
      * Flush the stored settings
@@ -50,7 +50,7 @@ interface EngineInterface {
      * Does *NOT* clear the section, however.
      * @return  void
      */
-    static function flush();
+     function flush();
 
     /** 
      * Returns the settings array for the given section and group
@@ -64,13 +64,13 @@ interface EngineInterface {
      * @return  array                 The settings array on success,
      *                                false otherwise
      */
-    static function getArray($section, $group=null);
+     function getArray($section, $group=null);
 
     /**
      * Returns the settings array for the given section and group
      * @return  array
      */
-    public static function getArraySetting();
+    public  function getArraySetting();
 
     /**
      * Returns the settings value stored in the object for the name given.
@@ -82,7 +82,7 @@ interface EngineInterface {
      * @return  mixed                 The settings value, if present,
      *                                null otherwise
      */
-    static function getValue($name);
+     function getValue($name);
     
     /**
      * Returns the true or false for given the setting name
@@ -94,7 +94,7 @@ interface EngineInterface {
      * @return  boolean               The if setting name is exist returned true,
      *                                false otherwise
      */
-    static function isDefined($name);
+     function isDefined($name);
 
     /**
      * Updates a setting
@@ -108,7 +108,7 @@ interface EngineInterface {
      * @return  boolean               True if the value has been changed,
      *                                false otherwise, null on noop
      */
-    static function set($name, $value);
+     function set($name, $value);
 
     /**
      * Stores all settings entries present in the $arrSettings object
@@ -124,7 +124,7 @@ interface EngineInterface {
      * @return  boolean                   True on success, null on noop,
      *                                    false otherwise
      */
-    public static function updateAll();
+    public  function updateAll();
 
     /**
      * Updates the value for the given name in the settings table
@@ -139,10 +139,10 @@ interface EngineInterface {
      * @param   string    $name   The settings name
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
-     * @static
+     * 
      * @global  mixed     $objDatabase    Database connection object
      */
-    public static function update($name);
+    public  function update($name);
 
     /**
      * Add a new record to the settings
@@ -162,7 +162,7 @@ interface EngineInterface {
      * @param   string    $group    The optional group
      * @return  boolean             True on success, false otherwise
      */ 
-    public static function add($name, $value, $ord=false, $type='text', $values='', $group=null);
+    public  function add($name, $value, $ord=false, $type='text', $values='', $group=null);
 
     /**
      * Delete one or more records from the database table
@@ -178,23 +178,23 @@ interface EngineInterface {
      *                              Defaults to null
      * @return  boolean             True on success, false otherwise
      */
-    public static function delete($name=null, $group=null);
+    public  function delete($name=null, $group=null);
 
     /**
      * Deletes all entries for the current section
      *
      * This is for testing purposes only.  Use with care!
-     * The static $section determines the module affected.
+     * The $section determines the module affected.
      * @return    boolean               True on success, false otherwise
      */
-    public static function deleteModule();
+    public  function deleteModule();
 
     /**
      * Should be called whenever there's a problem with the settings
      *
      * Tries to fix or recreate the settings.
      * @return  boolean             False, always.
-     * @static
+     * 
      */
-    public static function errorHandler();
+    public  function errorHandler();
 }
