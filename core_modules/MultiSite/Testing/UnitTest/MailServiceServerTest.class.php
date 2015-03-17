@@ -89,6 +89,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
             $mailServiceServer->enableService($website);
             
             $this->assertInstanceOf('\Cx\Core_Modules\MultiSite\Model\Entity\Domain', $website->getMailDn());
+            $this->assertInstanceOf('\Cx\Core_Modules\MultiSite\Model\Entity\Domain', $website->getWebmailDn());
         } else {
             $this->setExpectedException('Failed to enable mail service account.');
         }
@@ -106,6 +107,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
             $mailServiceServer->disableService($website);
             
             $this->assertEmpty($website->getMailDn());
+            $this->assertEmpty($website->getWebmailDn());
         } else {
             $this->setExpectedException('Failed to disable mail service account.');
         }

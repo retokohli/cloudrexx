@@ -396,9 +396,11 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         
         if ($hostingController->enableMailService($accountId)) {
             $website->setMailDn();
+			$website->setWebmailDn();
             \Env::get('em')->persist($website);
             \Env::get('em')->flush();
             \DBG::log('Successfully mapped the domain of type mail with host ' . $website->getMailDn()->getName());
+            \DBG::log('Successfully mapped the domain of type mail with host ' . $website->getMailDn()->getName() . ' and the domain of type webmail with host ' . $website->getWebmailDn()->getName());
             return true;
         }
         \DBG::log('Failed to enable the mail service account.');
@@ -430,15 +432,22 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         if ($hostingController->disableMailService($accountId)) {
             
             $mailDomain = $website->getMailDn();
+            $webmailDomain = $website->getWebmailDn();
             
             if (!($mailDomain instanceof Domain)) {
                 \DBG::log('Their is no domains found by the given criteria.');
                 return false;
             }
             
+            if ($webmailDomain instanceof Domain) {
+                $website->unMapDomain($webmailDomain);
+                \DBG::log('Successfully unmapped the domain of type webmail with host ' . $webmailDomain->getName() . ' of type webmail.');
+            }
+            
             $website->unMapDomain($mailDomain);
+            \Env::get('em')->persist($website);
             \Env::get('em')->flush();
-            \DBG::log('Successfully unmapped the  domain of type mail with host ' . $mailDomain->getName() . ' of type mail.');
+            \DBG::log('Successfully unmapped the domain of type mail with host ' . $mailDomain->getName() . ' of type mail.');
             return true;
         }
         \DBG::log('Failed to disable mail service account.');

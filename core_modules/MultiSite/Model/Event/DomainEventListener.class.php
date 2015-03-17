@@ -53,7 +53,8 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                         $this->manipulateDnsRecord($domain, 'remove', 'postRemove', $eventArgs);
-                        if($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN) {
+                        if($domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN ||
+                           $domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_WEBMAIL_DOMAIN) {
                             return;
                         }
                         //update the domain cache file
@@ -297,6 +298,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 $value= $domain->getWebsite()->getFqdn()->getName();
                 break;
             case \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN:
+            case \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_WEBMAIL_DOMAIN:
                 
                 $type = 'A';
 

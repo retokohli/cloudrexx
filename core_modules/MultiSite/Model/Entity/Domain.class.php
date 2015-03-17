@@ -25,6 +25,7 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     const TYPE_BASE_DOMAIN = 'baseDn';
     const TYPE_EXTERNAL_DOMAIN = 'alias';
     const TYPE_MAIL_DOMAIN = 'mail';
+    const TYPE_WEBMAIL_DOMAIN = 'webmail';
 
     /**
      * @var integer

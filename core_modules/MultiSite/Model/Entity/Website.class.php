@@ -109,6 +109,11 @@ class Website extends \Cx\Model\Base\EntityBase {
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
      */
+    protected $webmailDn;
+    
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
+     */
     protected $domainAliases;
     
     /**
@@ -1391,12 +1396,43 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * Set mailDn
      */
     public function setMailDn() {
-        $mailDn = new Domain('mail' . '.' . $this->getBaseDn()->getName());
+        $mailDn = new Domain($this->name . '.'. 'mail' . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
         $mailDn->setType(Domain::TYPE_MAIL_DOMAIN);
         $mailDn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
         $mailDn->setComponentId($this->getId());
         $this->mapDomain($mailDn);
         \Env::get('em')->persist($mailDn);
+    }
+    
+    /**
+     * Get webmailDn
+     * 
+     * @return $webmailDn Cx\Core_Modules\MultiSite\Model\Entity\Domain
+     */
+    public function getWebmailDn() {
+        // fetch webmailDn from Domain repository
+        if (!$this->webmailDn) {
+            foreach ($this->domains as $domain) {
+                if ($domain->getType() == Domain::TYPE_WEBMAIL_DOMAIN) {
+                    $this->webmailDn= $domain;
+                    break;
+                }
+            }
+        }
+
+        return $this->webmailDn;
+    }
+    
+    /**
+     * Set webmailDn
+     */
+    public function setWebmailDn() {
+        $webmailDn = new Domain($this->name . '.'. 'webmail' . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
+        $webmailDn->setType(Domain::TYPE_WEBMAIL_DOMAIN);
+        $webmailDn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
+        $webmailDn->setComponentId($this->getId());
+        $this->mapDomain($webmailDn);
+        \Env::get('em')->persist($webmailDn);
     }
     
     /**
@@ -1446,6 +1482,10 @@ throw new WebsiteException('implement secret-key algorithm first!');
             
             case DOMAIN::TYPE_MAIL_DOMAIN:
                 $this->mailDn = $domain;
+                break;
+            
+            case DOMAIN::TYPE_WEBMAIL_DOMAIN:
+                $this->webmailDn = $domain;
                 break;
             
             case DOMAIN::TYPE_EXTERNAL_DOMAIN:
