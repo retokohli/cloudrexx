@@ -605,10 +605,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $websiteServiceServers = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
                 foreach ($websiteServiceServers as $websiteServiceServer) {
                     $ftpAccounts[$websiteServiceServer->getId()] = array();
-                    $ftpAccountsResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getFtpAccounts', array(), $websiteServiceServer);
+                    $ftpAccountsResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getFtpAccounts', array(), $websiteServiceServer);                    
                     if ($ftpAccountsResp && $ftpAccountsResp->status == 'success') {
-                        foreach ($ftpAccountsResp->data as $ftpAccount) {
-                            $ftpAccounts[$websiteServiceServer->getId()][$ftpAccount->name] = $ftpAccount[$ftpAccount->path];
+                        foreach ($ftpAccountsResp->data->data as $ftpAccount) {
+                            $ftpAccounts[$websiteServiceServer->getId()][$ftpAccount->name] = $ftpAccount->path;
                         }
                     }
                 }
