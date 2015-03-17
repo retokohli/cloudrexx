@@ -31,7 +31,7 @@ class FileSystem extends Engine{
      * Path to the configuration file used as storage location
      * @var string
      */
-    static $filename = null;
+    protected $filename = null;
 
     /**
      * Initialize the settings entries from the file with key/value pairs
@@ -51,18 +51,18 @@ class FileSystem extends Engine{
      *                                to the storage location of config files (/config) which shall be used for the engine 'File System'.
      * @return  boolean               True on success, false otherwise
      */
-    static function init($section, $group=null, $configRepository = null) {
+     function init($section, $group=null, $configRepository = null) {
         if (!$configRepository) {
             $configRepository = \Env::get('cx')->getWebsiteConfigPath();
         }
 
-        self::flush();
-        self::$section = $section;
-        self::$group = $group;
-        self::$filename =  $configRepository . '/'.$section.'.yml';
+        $this->flush();
+        $this->section = $section;
+        $this->group = $group;
+        $this->filename =  $configRepository . '/'.$section.'.yml';
 
         try {
-            $file = new \Cx\Lib\FileSystem\File(self::$filename);
+            $file = new \Cx\Lib\FileSystem\File($this->filename);
             $file->touch();
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new \Cx\Core\Setting\Controller\SettingException($e->getMessage());
@@ -70,48 +70,49 @@ class FileSystem extends Engine{
 
         try {
             //call DataSet importFromFile method @return array
-            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load(self::$filename);
+            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($this->filename);
             if (!empty($objDataSet)) {
-                self::$arrSettings = array();
+                $this->arrSettings = array();
                 foreach ($objDataSet as $value) {
-                    self::$arrSettings[$value['name']] = $value;
+                    $this->arrSettings[$value['name']] = $value;
                 }
             }
         } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
+            \DBG::log($e->getMessage());
             throw new \Cx\Core\Setting\Controller\SettingException($e->getMessage());
         }
     }
-
+    
     /**
      * Returns the settings array for the given section and group
      * @return  array
      */
-    static function getArraySetting()
+    public function getArraySetting()
     { 
         $settingArray=array();
-        if (!empty(self::$group)) {
-            foreach (self::$arrSettings as $value) {
-                if ($value['group']==self::$group) {
+        if (!empty($this->group)) {
+            foreach ($this->arrSettings as $value) {
+                if ($value['group']==$this->group) {
                     $settingArray[$value['name']]= $value;
                 }
             }
         } else {
-            $settingArray=self::$arrSettings;
+            $settingArray=$this->arrSettings;
         }
         return $settingArray;
     }
     
-   public static function getArray($section, $group = null)
+    public  function getArray($section, $group = null)
     { 
         $groupArray = array();
-        if ($group !== null && self::$section == $section) {
-            foreach (self::$arrSettings as $value) {
+        if ($group !== null && $this->section == $section) {
+            foreach ($this->arrSettings as $value) {
                 if ($value['group'] == $group) {
                     $groupArray[$value['name']] = $value;
                 }
             }
         } else {
-            $groupArray = self::$arrSettings;
+            $groupArray = $this->arrSettings;
         }
         return $groupArray;
     }
@@ -130,31 +131,31 @@ class FileSystem extends Engine{
      * @return  boolean                   True on success, null on noop,
      *                                    false otherwise
      */
-    static function updateAll()
+    function updateAll()
     { 
         //global $_CORELANG;
-        if (!self::$changed) {
+        if (!$this->changed) {
         // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
         // Find a way around this.
         // Message::information($_CORELANG['TXT_CORE_SETTING_INFORMATION_NO_CHANGE']);
             return null;
         }
         // TODO: Add error messages for section errors
-        if (empty(self::$section)) {
+        if (empty($this->section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::updateAll(): ERROR: Empty section!");
             return false;
         }
         // TODO: Add error messages for setting array errors
-        if (empty(self::$arrSettings)) {
+        if (empty($this->arrSettings)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::updateAll(): ERROR: Empty section!");
             return false;
         }
         $success = true;
         //call DataSet exportToFile method to update file
-        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), self::$filename);
+        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($this->arrSettings);
+        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $this->filename);
         if ($success) {
-            self::$changed = false;
+            $this->changed = false;
             //return Message::ok($_CORELANG['TXT_CORE_SETTING_STORED_SUCCESSFULLY']);
             return true;
         }
@@ -175,12 +176,12 @@ class FileSystem extends Engine{
      * @param   string    $name   The settings name
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
-     * @static
+     * 
      */
-    static function update($name)
+     function update($name)
     {
         // TODO: Add error messages for individual errors
-        if (empty(self::$section)) {
+        if (empty($this->section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Empty section!");
             return false;
         }
@@ -190,13 +191,13 @@ class FileSystem extends Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Empty name!");
             return false;
         }
-        if (!isset(self::$arrSettings[$name])) {
+        if (!isset($this->arrSettings[$name])) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
-        if(!empty(self::$arrSettings)){
-            $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), self::$filename);
+        if(!empty($this->arrSettings)){
+            $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($this->arrSettings);
+            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $this->filename);
             return true;
         }else{
             return false;
@@ -221,9 +222,9 @@ class FileSystem extends Engine{
      * @param   string    $group    The optional group
      * @return  boolean             True on success, false otherwise
      */ 
-    static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
+    function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
-        if (!isset(self::$section)) {
+        if (!isset($this->section)) {
             // TODO: Error message
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Empty section!");
             return false;
@@ -236,36 +237,36 @@ class FileSystem extends Engine{
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
-            if (!self::$group) {
+            if (!$this->group) {
                 \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Empty group!");
                 return false;
             }
-            $group = self::$group;
+            $group = $this->group;
         }
         // Initialize if necessary
-        if (is_null(self::$arrSettings) || self::$group != $group){
-            self::init(self::$section, $group);
+        if (is_null($this->arrSettings) || $this->group != $group){
+            $this->init($this->section, $group);
         }
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
-        $old_value = self::getValue($name);
+        $old_value = $this->getValue($name);
         if (isset($old_value)) {
-            // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
         $addValue =   Array(  
                             'name'=> addslashes($name),
-                            'section'=> addslashes(self::$section),
+                            'section'=> addslashes($this->section),
                             'group'=> addslashes($group),
                             'value'=> addslashes($value),
                             'type' => addslashes($type),
                             'values'=> $values,
                             'ord'=> intval($ord)
                         );
-        self::$arrSettings[addslashes($name)]=$addValue;
-        if (!empty(self::$arrSettings)) {                     
-            $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), self::$filename);
+        $this->arrSettings[addslashes($name)]=$addValue;
+        if (!empty($this->arrSettings)) {                     
+            $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($this->arrSettings);
+            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $this->filename);
         }
         return true;
     }
@@ -284,18 +285,18 @@ class FileSystem extends Engine{
      *                              Defaults to null
      * @return  boolean             True on success, false otherwise
      */
-    static function delete($name=null, $group=null)
+    function delete($name=null, $group=null)
     { 
         // Fail if both parameter values are empty
-        if (empty($name) && empty($group) && empty(self::$section)) return false;
+        if (empty($name) && empty($group) && empty($this->section)) return false;
          
         $arrSetting=array();
-        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load(self::$filename);
+        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($this->filename);
         // if get blank or invalid file
         if (empty($objDataSet)) return false;
-        
-        foreach ($objDataSet as $value) {
-            if ($value['group']!=$group || $value['name']!=$name) {
+       
+        foreach ($objDataSet as $value) {            
+            if ($value['group']!=$group && $value['name']!=$name) {
                 $arrSetting[$value['name']]= $value;
             }
         }
@@ -303,7 +304,7 @@ class FileSystem extends Engine{
         if (empty($arrSetting)) return false;
         
         $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($arrSetting);
-        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), self::$filename);
+        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $this->filename);
         return true;                   
     }
 
@@ -311,14 +312,14 @@ class FileSystem extends Engine{
      * Deletes all entries for the current section
      *
      * This is for testing purposes only.  Use with care!
-     * The static $section determines the module affected.
+     * The $section determines the module affected.
      * @return    boolean               True on success, false otherwise
      */
-    static function deleteModule()
+     function deleteModule()
     {
-        if (empty(self::$section))return false;
+        if (empty($this->section))return false;
         try {
-            $objFile = new \Cx\Lib\FileSystem\File(self::$filename);
+            $objFile = new \Cx\Lib\FileSystem\File($this->filename);
             $objFile->delete();       
             return true;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
@@ -331,17 +332,16 @@ class FileSystem extends Engine{
      *
      * Tries to fix or recreate the settings.
      * @return  boolean             False, always.
-     * @static
+     * 
      */
-    static function errorHandler()
+    function errorHandler()
     {
         try {
-            $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml');
+            $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getWebsiteConfigPath() . '/'.$this->section.'.yml');
             $file->touch();
             return false;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
-        }
-       
+        }       
     } 
 }

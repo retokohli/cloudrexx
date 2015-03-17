@@ -44,15 +44,15 @@ class DbEngine extends Engine{
      * @return  boolean               True on success, false otherwise
      * @global  ADOConnection   $objDatabase
      */
-    static function init($section, $group=null) {
+    function init($section, $group=null, $configRepository = null) {
         global $objDatabase;
 
         if (empty($section)) {
             die("\Cx\Core\Setting\Model\Entity\DbEngine::init($section, $group): ERROR: Missing \$section parameter!");
             //return false;
         }
-        self::flush();
-        //echo("self::init($section, $group): Entered<br />");
+        $this->flush();
+        //echo("$this->init($section, $group): Entered<br />");
         $objResult = $objDatabase->Execute("
             SELECT `name`, `group`, `value`,
                    `type`, `values`, `ord`
@@ -60,13 +60,13 @@ class DbEngine extends Engine{
              WHERE `section`='".addslashes($section)."'".
              ($group ? " AND `group`='".addslashes($group)."'" : '')."
              ORDER BY `group` ASC, `ord` ASC, `name` ASC");
-        if (!$objResult) return self::errorHandler();
+        if (!$objResult) return $this->errorHandler();
         // Set the current group to the empty string if empty
-        self::$section = $section;
-        self::$group = $group;
-        self::$arrSettings = array();
+        $this->section = $section;
+        $this->group = $group;
+        $this->arrSettings = array();
         while (!$objResult->EOF) {
-            self::$arrSettings[$objResult->fields['name']] = array(
+            $this->arrSettings[$objResult->fields['name']] = array(
                 'section' => $section,
                 'group' => $objResult->fields['group'],
                 'value' => $objResult->fields['value'],
@@ -83,9 +83,9 @@ class DbEngine extends Engine{
      * Returns the settings array for the given section and group
      * @return  array
      */
-    static function getArraySetting()
+    function getArraySetting()
     {
-       return self::$arrSettings;
+       return $this->arrSettings;
     }
 
     /**
@@ -102,22 +102,22 @@ class DbEngine extends Engine{
      * @return  boolean                   True on success, null on noop,
      *                                    false otherwise
      */
-    static function updateAll()
+    function updateAll()
     {
         //        global $_CORELANG;
 
-        if (!self::$changed) {
+        if (!$this->changed) {
             // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
             // Find a way around this.
             // Message::information($_CORELANG['TXT_CORE_SETTING_INFORMATION_NO_CHANGE']);
             return null;
         }
         $success = true;
-        foreach (self::$arrSettings as $name => $arrSetting) {
-            $success &= self::update($name);
+        foreach ($this->arrSettings as $name => $arrSetting) {
+            $success &= $this->update($name);
         }
         if ($success) {
-            self::$changed = false;
+            $this->changed = false;
             //return Message::ok($_CORELANG['TXT_CORE_SETTING_STORED_SUCCESSFULLY']);
             return true;
         }
@@ -138,14 +138,15 @@ class DbEngine extends Engine{
      * @param   string    $name   The settings name
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
-     * @static
+     * 
      * @global  mixed     $objDatabase    Database connection object
      */
-    static function update($name)
+    function update($name)
     {   
         global $objDatabase;
+
         // TODO: Add error messages for individual errors
-        if (empty(self::$section)) {
+        if (empty($this->section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::update(): ERROR: Empty section!");
             return false;
         }
@@ -155,19 +156,19 @@ class DbEngine extends Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::update(): ERROR: Empty name!");
             return false;
         }
-        if (!isset(self::$arrSettings[$name])) {
+        if (!isset($this->arrSettings[$name])) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."core_setting`
-               SET `value`='".addslashes(self::$arrSettings[$name]['value'])."'
+               SET `value`='".addslashes($this->arrSettings[$name]['value'])."'
              WHERE `name`='".addslashes($name)."'
-               AND `section`='".addslashes(self::$section)."'".
-            (self::$group
-                ? " AND `group`='".addslashes(self::$group)."'" : ''));
-        if (!$objResult) return self::errorHandler();
-        self::$changed = true;
+               AND `section`='".addslashes($this->section)."'".
+            ($this->group
+                ? " AND `group`='".addslashes($this->group)."'" : ''));
+        if (!$objResult) return $this->errorHandler();
+        $this->changed = true;
         return true;
     }
 
@@ -189,10 +190,10 @@ class DbEngine extends Engine{
      * @param   string    $group    The optional group
      * @return  boolean             True on success, false otherwise
      */ 
-    static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
+    function add($name, $value, $ord=false, $type='text', $values='', $group=null)
     {
         global $objDatabase;
-        if (!isset(self::$section)) {
+        if (!isset($this->section)) {
             // TODO: Error message
             \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Empty section!");
             return false;
@@ -205,21 +206,21 @@ class DbEngine extends Engine{
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
-            if (!self::$group) {
+            if (!$this->group) {
                 \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Empty group!");
                 return false;
             }
-            $group = self::$group;
+            $group = $this->group;
         }
         // Initialize if necessary
-        if (is_null(self::$arrSettings) || self::$group != $group){
-            self::init(self::$section, $group);
+        if (is_null($this->arrSettings) || $this->group != $group){
+            $this->init($this->section, $group); 
         }
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
-        $old_value = self::getValue($name);
+        $old_value = $this->getValue($name);
         if (isset($old_value)) {
-            // \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
 
@@ -229,7 +230,7 @@ class DbEngine extends Engine{
                 `section`, `group`, `name`, `value`,
                 `type`, `values`, `ord`
             ) VALUES (
-                '".addslashes(self::$section)."',
+                '".addslashes($this->section)."',
                 '".addslashes($group)."',
                 '".addslashes($name)."',
                 '".addslashes($value)."',
@@ -237,11 +238,20 @@ class DbEngine extends Engine{
                 '".addslashes($values)."',
                 ".intval($ord)."
             )";
+
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\DbEngine::add(): ERROR: Query failed: $query");
             return false;
         }
+        $this->arrSettings[$name] = array(
+            'section'   => $this->section,
+            'group'     => $group,
+            'value'     => $value,
+            'type'      => $type,
+            'values'    => $values,
+            'ord'       => $ord,
+        );
         return true;
     }
 
@@ -259,10 +269,9 @@ class DbEngine extends Engine{
      *                              Defaults to null
      * @return  boolean             True on success, false otherwise
      */
-    static function delete($name=null, $group=null)
+    function delete($name=null, $group=null)
     {
         global $objDatabase;
-
         // Fail if both parameter values are empty
         if (empty($name) && empty($group)) return false;
         $objResult = $objDatabase->Execute("
@@ -270,8 +279,8 @@ class DbEngine extends Engine{
              WHERE 1".
             ($name ? " AND `name`='".addslashes($name)."'" : '').
             ($group  ? " AND `group`='".addslashes($group)."'"   : ''));
-        if (!$objResult) return self::errorHandler();
-        self::flush();
+        if (!$objResult) return $this->errorHandler();
+        $this->flush();
         return true;
     }
 
@@ -279,21 +288,21 @@ class DbEngine extends Engine{
      * Deletes all entries for the current section
      *
      * This is for testing purposes only.  Use with care!
-     * The static $section determines the module affected.
+     * The $section determines the module affected.
      * @return    boolean               True on success, false otherwise
      */
-    static function deleteModule()
+    function deleteModule()
     {
         global $objDatabase;
 
-        if (empty(self::$section)) {
+        if (empty($this->section)) {
             // TODO: Error message
             return false;
         }
         $objResult = $objDatabase->Execute("
             DELETE FROM `".DBPREFIX."core_setting`
-             WHERE `section`='".self::$section."'");
-        if (!$objResult) return self::errorHandler();
+             WHERE `section`='".$this->section."'");
+        if (!$objResult) return $this->errorHandler();
         return true;
     }
 
@@ -302,9 +311,9 @@ class DbEngine extends Engine{
      *
      * Tries to fix or recreate the settings table.
      * @return  boolean             False, always.
-     * @static
+     * 
      */
-    static function errorHandler()
+    function errorHandler()
     {
         $table_name = DBPREFIX.'core_setting';
         $table_structure = array(
@@ -319,15 +328,30 @@ class DbEngine extends Engine{
         // TODO: The index array structure is wrong here!
         $table_index =  array();
         \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
-        //echo("self::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
+        //echo("$this->errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
-        //Use self::add(); in your module code to add settings; example:
-        //self::init('core', 'country');
-        //self::add('numof_countries_per_page_backend', 30, 1, self::TYPE_TEXT);
+        //Use $this->add(); in your module code to add settings; example:
+        //$this->init('core', 'country');
+        //$this->add('numof_countries_per_page_backend', 30, 1, $this->TYPE_TEXT);
 
         //More to come...
 
         //Always!
         return false;
+    }
+    
+    public function getArray($section, $group = null)
+    { 
+        $groupArray = array();
+        if ($group !== null && $this->section == $section) {
+            foreach ($this->arrSettings as $key => $value) {
+                if ($value['group'] == $group) {
+                    $groupArray[$key] = $value;
+                }
+            }
+        } else {
+            $groupArray = $this->arrSettings;
+        }
+        return $groupArray;
     }
 }

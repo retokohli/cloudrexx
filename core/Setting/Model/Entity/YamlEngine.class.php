@@ -31,8 +31,8 @@ class YamlEngine extends Engine{
      * Path to the configuration file used as storage location
      * @var string
      */
-    static $filename = null;
-    static $yamlSettingRepo = null;
+    protected $filename = null;
+    protected $yamlSettingRepo = null;
 
     /**
      * Initialize the settings entries from the file with key/value pairs
@@ -52,22 +52,24 @@ class YamlEngine extends Engine{
      *                                to the storage location of config files (/config) which shall be used for the engine 'File System'.
      * @return  boolean               True on success, false otherwise
      */
-    static function init($section, $group=null, $configRepository = null) {
+     function init($section, $group=null, $configRepository = null) {
         if (!$configRepository) {
             $configRepository = \Env::get('cx')->getWebsiteConfigPath();
         }
 
-        self::flush();
-        self::$section = $section;
-        self::$group = $group;
-        self::$filename =  $configRepository . '/'.$section.'.yml';
-        self::$yamlSettingRepo = new \Cx\Core\Setting\Model\Repository\YamlSettingRepository(self::$filename);
-        self::$arrSettings = self::load();
+        $this->flush();
+        $this->section = $section;
+        $this->group = $group;
+        $this->filename =  $configRepository . '/'.$section.'.yml';     
+
+        $this->yamlSettingRepo = new \Cx\Core\Setting\Model\Repository\YamlSettingRepository($this->filename);
+        $this->arrSettings = $this->load();
+
     }
 
-    static function load() {
-        if (!empty(self::$yamlSettingRepo)) {
-            $yamlSettings = self::$yamlSettingRepo->findAll();
+    function load() {
+        if (!empty($this->yamlSettingRepo)) {
+            $yamlSettings = $this->yamlSettingRepo->findAll();
             $yamlSettingArray = array();
             if (isset($yamlSettings)) {
                 foreach ($yamlSettings As $yamlSetting) {
@@ -84,39 +86,39 @@ class YamlEngine extends Engine{
                 return $yamlSettingArray;
             }
         }
-        return false;
+        return array();
     }
-
+    
     /**
      * Returns the settings array for the given section and group
      * @return  array
      */
-    static function getArraySetting()
+    public function getArraySetting()
     { 
         $settingArray=array();
-        if (!empty(self::$group)) {
-            foreach (self::$arrSettings as $value) {
-                if ($value['group']==self::$group) {
+        if (!empty($this->group)) {
+            foreach ($this->arrSettings as $value) {
+                if ($value['group']==$this->group) {
                     $settingArray[$value['name']]= $value;
                 }
             }
         } else {
-            $settingArray=self::$arrSettings;
+            $settingArray=$this->arrSettings;
         }
         return $settingArray;
     }
 
-    public static function getArray($section, $group = null)
+    public function getArray($section, $group = null)
     { 
         $groupArray = array();
-        if ($group !== null && self::$section == $section) {
-            foreach (self::$arrSettings as $value) {
+        if ($group !== null && $this->section == $section) {
+            foreach ($this->arrSettings as $value) {
                 if ($value['group'] == $group) {
                     $groupArray[$value['name']] = $value;
                 }
             }
         } else {
-            $groupArray = self::$arrSettings;
+            $groupArray = $this->arrSettings;
         }
         return $groupArray;
     }
@@ -134,39 +136,39 @@ class YamlEngine extends Engine{
      * @return  boolean                   True on success, null on noop,
      *                                    false otherwise
      */
-    static function updateAll()
+    function updateAll()
     { 
         //global $_CORELANG;
-        if (!self::$changed) {
+        if (!$this->changed) {
         // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
         // Find a way around this.
         // Message::information($_CORELANG['TXT_CORE_SETTING_INFORMATION_NO_CHANGE']);
             return null;
         }
         // TODO: Add error messages for section errors
-        if (empty(self::$section)) {
+        if (empty($this->section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::updateAll(): ERROR: Empty section!");
             return false;
         }
         // TODO: Add error messages for setting array errors
-        if (empty(self::$arrSettings)) {
+        if (empty($this->arrSettings)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::updateAll(): ERROR: Empty section!");
             return false;
         }
         $success = true;
         try {
-            foreach (self::$arrSettings As $yamlSettingName => $yamlSettingValue) {
-                $objYamlSetting = self::$yamlSettingRepo->findOneBy(array('name' => $yamlSettingName, 'section' => self::$section));
+            foreach ($this->arrSettings As $yamlSettingName => $yamlSettingValue) {
+                $objYamlSetting = $this->yamlSettingRepo->findOneBy(array('name' => $yamlSettingName, 'section' => $this->section));
                 $objYamlSetting->setValue($yamlSettingValue['value']);
             
             }
-            self::$yamlSettingRepo->flush();
+            $this->yamlSettingRepo->flush();
         } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
             \DBG::msg($e->getMessage());
             return false;
         }
         if ($success) {
-            self::$changed = false;
+            $this->changed = false;
             //return Message::ok($_CORELANG['TXT_CORE_SETTING_STORED_SUCCESSFULLY']);
             return true;
         }
@@ -187,12 +189,12 @@ class YamlEngine extends Engine{
      * @param   string    $name   The settings name
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
-     * @static
+     * 
      */
-    static function update($name)
+     function update($name)
     {
         // TODO: Add error messages for individual errors
-        if (empty(self::$section)) {
+        if (empty($this->section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::update(): ERROR: Empty section!");
             return false;
         }
@@ -202,16 +204,16 @@ class YamlEngine extends Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::update(): ERROR: Empty name!");
             return false;
         }
-        if (!isset(self::$arrSettings[$name])) {
+        if (!isset($this->arrSettings[$name])) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
-        if (!empty(self::$arrSettings)) {
+        if (!empty($this->arrSettings)) {
             try {
-                $objYamlSetting = self::$yamlSettingRepo->findOneBy(array('name' => $name, 'section' => self::$section));
-                $objYamlSetting->setValue(self::$arrSettings[$name]['value']);
+                $objYamlSetting = $this->yamlSettingRepo->findOneBy(array('name' => $name, 'section' => $this->section));
+                $objYamlSetting->setValue($this->arrSettings[$name]['value']);
             
-                self::$yamlSettingRepo->flush();
+                $this->yamlSettingRepo->flush();
             } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
                 \DBG::msg($e->getMessage());
                 return false;
@@ -240,9 +242,9 @@ class YamlEngine extends Engine{
      * @param   string    $group    The optional group
      * @return  boolean             True on success, false otherwise
      */ 
-    static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
+    function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
-        if (!isset(self::$section)) {
+        if (!isset($this->section)) {
             // TODO: Error message
             \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::add(): ERROR: Empty section!");
             return false;
@@ -255,19 +257,19 @@ class YamlEngine extends Engine{
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
-            if (!self::$group) {
+            if (!$this->group) {
                 \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::add(): ERROR: Empty group!");
                 return false;
             }
-            $group = self::$group;
+            $group = $this->group;
         }
         // Initialize if necessary
-        if (is_null(self::$arrSettings) || self::$group != $group){
-            self::init(self::$section, $group);
+        if (is_null($this->arrSettings) || $this->group != $group){
+            $this->init($this->section, $group);
         }
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
-        $old_value = self::getValue($name);
+        $old_value = $this->getValue($name);
         if (isset($old_value)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\YamlEngine::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
@@ -275,7 +277,7 @@ class YamlEngine extends Engine{
         
         try {
             $objYamlSetting = new \Cx\Core\Setting\Model\Entity\YamlSetting($name);
-            $objYamlSetting->setSection(self::$section);
+            $objYamlSetting->setSection($this->section);
             $objYamlSetting->setGroup($group);
             $objYamlSetting->setValue($value);
             $objYamlSetting->setValue($value);
@@ -283,14 +285,14 @@ class YamlEngine extends Engine{
             $objYamlSetting->setValues($values);
             $objYamlSetting->setOrd($ord);
         
-            self::$yamlSettingRepo->add($objYamlSetting);
-            self::$yamlSettingRepo->flush();
+            $this->yamlSettingRepo->add($objYamlSetting);
+            $this->yamlSettingRepo->flush();
             } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
             \DBG::msg($e->getMessage());
             return false;
         }
         
-        self::$arrSettings = self::load();
+        $this->arrSettings = $this->load();
         return true;
     }
 
@@ -308,30 +310,29 @@ class YamlEngine extends Engine{
      *                              Defaults to null
      * @return  boolean             True on success, false otherwise
      */
-    static function delete($name=null, $group=null)
-    { 
+    function delete($name=null, $group=null)
+    {
         // Fail if both parameter values are empty
-        if (empty($name) && empty($group) && empty(self::$section)) return false;
-         
+        if (empty($name) && empty($group) && empty($this->section)) return false;
+
         try {
             if (!empty($name) && !empty($group)) {
-                $yamlSettings = self::$yamlSettingRepo->findBy(array('name' => $name, 'group' => $group, 'section' => self::$section));
+                $yamlSettings = $this->yamlSettingRepo->findBy(array('name' => $name, 'group' => $group, 'section' => $this->section));
             } else if (!empty ($name)) {
-                $yamlSettings = self::$yamlSettingRepo->findBy(array('name' => $name, 'section' => self::$section));
+                $yamlSettings = $this->yamlSettingRepo->findBy(array('name' => $name, 'section' => $this->section));
             } else if (!empty ($group)) {
-                $yamlSettings = self::$yamlSettingRepo->findBy(array('group' => $group, 'section' => self::$section));
+                $yamlSettings = $this->yamlSettingRepo->findBy(array('group' => $group, 'section' => $this->section));                
             }
-        
             foreach ($yamlSettings As $yamlSetting) {
-                \Env::get('em')->remove($yamlSetting);
+                $this->yamlSettingRepo->remove($yamlSetting);
             }
-            \Env::get('em')->flush();
+            $this->yamlSettingRepo->flush();
         } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
             \DBG::msg($e->getMessage());
             return false;
         }
-        
-        self::$arrSettings = self::load();
+
+        $this->arrSettings = $this->load();
         return true;                   
     }
 
@@ -339,19 +340,19 @@ class YamlEngine extends Engine{
      * Deletes all entries for the current section
      *
      * This is for testing purposes only.  Use with care!
-     * The static $section determines the module affected.
+     * The $section determines the module affected.
      * @return    boolean               True on success, false otherwise
      */
-    static function deleteModule()
+    function deleteModule()
     {
-        if (empty(self::$section))return false;
+        if (empty($this->section)) return false;
         
         try {
-            $yamlSettings = self::$yamlSettingRepo->findBy(array('section' => self::$section));
+            $yamlSettings = $this->yamlSettingRepo->findBy(array('section' => $this->section));
             foreach ($yamlSettings As $yamlSetting) {
-                \Env::get('em')->remove($yamlSetting);
+                $this->yamlSettingRepo->remove($yamlSetting);
             }
-            \Env::get('em')->flush();
+            $this->yamlSettingRepo->flush();
             return true;
         } catch (\Cx\Core\Setting\Model\Entity\YamlSettingException $e) {
             \DBG::msg($e->getMessage());
@@ -364,17 +365,16 @@ class YamlEngine extends Engine{
      *
      * Tries to fix or recreate the settings.
      * @return  boolean             False, always.
-     * @static
+     * 
      */
-    static function errorHandler()
+    function errorHandler()
     {
         try {
-            $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml');
+            $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getWebsiteConfigPath() . '/'.$this->section.'.yml');
             $file->touch();
             return false;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
-        }
-       
+        }       
     } 
 }
