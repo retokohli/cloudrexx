@@ -223,7 +223,7 @@ class Login
         global $_CORELANG, $sessionObj;
 
         $objFWUser = \FWUser::getFWUserObject();
-
+        
         if (isset($_REQUEST['redirect'])) {
             $redirect = contrexx_strip_tags($_REQUEST['redirect']);
         } elseif (isset($_SESSION['redirect'])) {
@@ -240,10 +240,13 @@ class Login
                 return $providerLogin;
             }
         }
-        if (isset($_POST['login']) && $objFWUser->objUser->login()) {
-            if ($objFWUser->checkLogin()) {
+        if ($objFWUser->objUser->login()) {
+            if (
+                   (isset($_POST['login']) && $objFWUser->checkLogin())
+                || (isset($_GET['auth-token']) && isset($_GET['user-id']))
+            ) {
                 $objFWUser->objUser->reset();
-                $objFWUser->logoutAndDestroySession();                
+                $objFWUser->logoutAndDestroySession();
                 $sessionObj = \cmsSession::getInstance();
             } else {
                 $_GET['relogin'] = 'true';
