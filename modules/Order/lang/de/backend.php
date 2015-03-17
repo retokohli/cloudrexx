@@ -8,6 +8,16 @@
  */
 global $_ARRAYLANG;
 
+// Here come the ACTs:
+$_ARRAYLANG['TXT_MODULE_ORDER_ORDERS']      = 'Bestellungen';
+$_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTIONS']      = 'Abos';
+$_ARRAYLANG['TXT_MODULE_ORDER_INVOICES']      = 'Rechnungen';
+$_ARRAYLANG['TXT_MODULE_ORDER_PAYMENTS']      = 'Zahlungen';
+$_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT']      = 'Bestellungen';
+$_ARRAYLANG['TXT_MODULE_ORDER_ACT_SUBSCRIPTION'] = 'Abos';
+$_ARRAYLANG['TXT_MODULE_ORDER_ACT_INVOICE']      = 'Rechnungen';
+$_ARRAYLANG['TXT_MODULE_ORDER_ACT_PAYMENT']      = 'Zahlungen';
+
 $_ARRAYLANG['TXT_MODULE_ORDER_DELETE_USER_ERROR_MSG'] = 'Der Kunde kann nicht entfernt werden, da von diesem noch Bestellungen vorhanden sind.';
 
 //filter
