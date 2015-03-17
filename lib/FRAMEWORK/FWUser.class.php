@@ -272,8 +272,7 @@ class FWUser extends User_Setting
         if (isset($_SESSION['auth'])) {
             unset($_SESSION['auth']);
         }
-        session_destroy();
-        setcookie(session_name(), '', time() - 3600, ASCMS_PATH_OFFSET.'/');
+        \cmsSession::getInstance()->destroy();
     }
 
     /**

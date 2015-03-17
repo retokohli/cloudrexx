@@ -151,6 +151,15 @@ class cmsSession extends RecursiveArrayAccess {
     }
 
     /**
+     * Destroy the session and session object
+     */
+    public function destroy()
+    {
+        session_destroy();
+        self::$instance = null;
+    }
+    
+    /**
      * Return true if the session is initialized and false otherwise.
      * 
      * @return boolean true if the session is initialized and false otherwise.
