@@ -4723,7 +4723,7 @@ INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (3,'D
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (4,'Dear Mr');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (5,'Chère Madame');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (6,'Cher Monsieur');
-INSERT INTO `contrexx_module_pim_price` (`id`, `currency_id`, `product_id`, `amount`) VALUES (1,80,2,'49');
+INSERT INTO `contrexx_module_pim_price` (`id`, `currency_id`, `product_id`, `amount`) VALUES (1,80,2,'45');
 INSERT INTO `contrexx_module_pim_price` (`id`, `currency_id`, `product_id`, `amount`) VALUES (2,80,4,'20');
 INSERT INTO `contrexx_module_pim_price` (`id`, `currency_id`, `product_id`, `amount`) VALUES (3,80,5,'30');
 INSERT INTO `contrexx_module_pim_price` (`id`, `currency_id`, `product_id`, `amount`) VALUES (4,80,6,'850');
