@@ -1284,6 +1284,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
                     $resultArr[$result['id']] = array(
                         'name' => $result['name'],
                         'path' => $result['home'],
+                        'isValid' => file_exists($result['home']) ? 1 : 0,
                     );
                 } else {
                     $resultArr[$result['id']] = $result['name'];

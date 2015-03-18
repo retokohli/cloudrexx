@@ -29,15 +29,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getCommands() {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case ComponentController::MODE_SERVICE:
-                return array('maintenance' => array('ftp'), 'statistics', 'settings'=> array('codebases','website_templates'));
+                return array('Maintenance' => array('Ftp'), 'statistics', 'settings'=> array('codebases','website_templates'));
                 break;
 
             case ComponentController::MODE_MANAGER:
-                return array('maintenance' => array('ftp'), 'statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers', 'mail_service_servers' ));
+                return array('Maintenance' => array('Ftp'), 'statistics', 'notifications', 'settings'=> array('email','website_templates','website_service_servers', 'mail_service_servers' ));
                 break;
 
             case ComponentController::MODE_HYBRID:
-                return array('maintenance' => array('ftp'), 'statistics', 'notifications', 'settings'=> array('email','codebases','website_templates', 'mail_service_servers' ));
+                return array('Maintenance' => array('Ftp'), 'statistics', 'notifications', 'settings'=> array('email','codebases','website_templates', 'mail_service_servers' ));
                 break;
 
             case ComponentController::MODE_NONE:
@@ -83,7 +83,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $this->parseSectionStatistics($template, $cmd);
                 break;
 
-            case 'maintenance':
+            case 'Maintenance':
                 $this->parseSectionMaintenance($template, $cmd);
                 break;
                 
@@ -591,61 +591,106 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     
     public function parseSectionMaintenance(\Cx\Core\Html\Sigma $template, array $cmd) 
     {
-        if ($cmd[1] == 'ftp') {
-            $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
+        $section = isset($cmd[1]) ? $cmd[1] : '';
+        switch ($section) {
+            case 'Ftp':
+                $this->parseSectionFtp($template, $cmd);
+                break;
+
+            default:
+                $this->parseSectionDomains($template, $cmd);
+                break;
+        }
+    }
+
+    /**
+     * Parse the section Ftp
+     * List all Ftp accounts
+     * 
+     * @param \Cx\Core\Html\Sigma $template Template object
+     * @param array               $cmd      Commands             
+     */
+    public function parseSectionFtp(\Cx\Core\Html\Sigma $template, array $cmd)
+    {
+        $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
             
-            $ftpAccounts = array();
-            if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode') , array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
-                $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
-                $ftpAccountsArr    = $hostingController->getFtpAccounts(true);
-                foreach ($ftpAccountsArr as $ftpAccount) {
-                    $ftpAccounts[$ftpAccount['name']] = $ftpAccount['path'];
-                }
-            } else {
-                $websiteServiceServers = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
-                foreach ($websiteServiceServers as $websiteServiceServer) {
-                    $ftpAccounts[$websiteServiceServer->getId()] = array();
-                    $ftpAccountsResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getFtpAccounts', array(), $websiteServiceServer);                    
-                    if ($ftpAccountsResp && $ftpAccountsResp->status == 'success') {
-                        foreach ($ftpAccountsResp->data->data as $ftpAccount) {
-                            $ftpAccounts[$websiteServiceServer->getId()][$ftpAccount->name] = $ftpAccount->path;
-                        }
-                    }
-                }
-            }
-            
-            $websiteArr = array();
-            foreach ($websites as $website) {
-                $ftpStatus = 0;
-                $ftpPath   = '';
-                $websiteServiceServer = '';
-                
-                // get website service server
-                if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
-                    $objWebsiteServiceServer = $website->getWebsiteServiceServer();
-                    if ($objWebsiteServiceServer) {
-                        $websiteServiceServer = $objWebsiteServiceServer->getlabel();                        
-                    }
-                }
-                
-                // get FTP details
-                $currentFtpAccounts = (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER)
-                                        ? ($objWebsiteServiceServer ? $ftpAccounts[$objWebsiteServiceServer->getId()] : array())
-                                        : $ftpAccounts;
-                if (array_key_exists($website->getFtpUser(), $currentFtpAccounts)) {
-                    $ftpStatus = 1;
-                    $ftpPath   = $currentFtpAccounts[$website->getFtpUser()];
-                }
-                $websiteArr[] = array(
-                    'status'               => $ftpStatus,
-                    'name'                 => $website->getName(),
-                    'ftpUser'              => $website->getFtpUser(),
-                    'ftpPath'              => $ftpPath,
-                    'websiteServiceServer' => $websiteServiceServer
+        $ftpAccounts = array();
+        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode') , array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+            $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+            $ftpAccountsArr    = $hostingController->getFtpAccounts(true);
+            foreach ($ftpAccountsArr as $ftpAccount) {
+                $ftpAccounts[$ftpAccount['name']] = array(
+                    'path'    => $ftpAccount['path'],
+                    'isValid' => $ftpAccount['isValid']
                 );
             }
-            $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteArr);
-            $view = new \Cx\Core\Html\Controller\ViewGenerator($dataSet, array(
+        } else {
+            $websiteServiceServers = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
+            foreach ($websiteServiceServers as $websiteServiceServer) {
+                $ftpAccounts[$websiteServiceServer->getId()] = $this->getFtpAccountsFromService($websiteServiceServer);
+            }
+        }
+        
+        $websiteArr = $inValidFtp = array();
+        foreach ($websites as $website) {
+            $ftpStatus = 0;
+            $ftpPath   = '';
+            $websiteServiceServer = '';
+
+            // get website service server
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
+                $objWebsiteServiceServer = $website->getWebsiteServiceServer();
+                if ($objWebsiteServiceServer) {
+                    $websiteServiceServer = $objWebsiteServiceServer->getlabel();
+                }
+            }
+
+            // get FTP details
+            $currentFtpAccounts = (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER)
+                                    ? ($objWebsiteServiceServer ? $ftpAccounts[$objWebsiteServiceServer->getId()] : array())
+                                    : $ftpAccounts;
+            
+            $arrayFtpKey = array_key_exists($website->getFtpUser(), $currentFtpAccounts) ? $website->getFtpUser() : '';
+            if ($arrayFtpKey) {
+                $ftpStatus = $currentFtpAccounts[$arrayFtpKey]['isValid'];
+                $ftpPath   = $currentFtpAccounts[$arrayFtpKey]['path'];
+            }
+            $ftpArr = array(
+                'status'               => $ftpStatus,
+                'name'                 => $website->getName(),
+                'ftpUser'              => $website->getFtpUser(),
+                'ftpPath'              => $ftpPath,
+                'websiteServiceServer' => $websiteServiceServer
+            );
+            if (!$ftpStatus) {                
+                $inValidFtp[] = $ftpArr;
+            }
+            $websiteArr[] = $ftpArr;
+        }
+        
+        $this->parseFtpAccountsToMaintenanceSection($websiteArr, $template, 'MULTISITE_MAINTENANCE_FTP_TABLE_ALL');
+        
+        if (!empty($inValidFtp)) {
+            $this->parseFtpAccountsToMaintenanceSection($inValidFtp, $template, 'MULTISITE_MAINTENANCE_FTP_TABLE_ERROR');
+            $template->touchBlock('ftpTabError');
+            $template->touchBlock('ftpTabErrorTable');
+        } else {
+            $template->hideBlock('ftpTabError');
+            $template->hideBlock('ftpTabErrorTable');
+        }
+    }
+    
+    /**
+     * Parse the Ftp accounts to the maintenance section
+     * 
+     * @param array               $websiteArray Array variables to parse
+     * @param \Cx\Core\Html\Sigma $template     Template object
+     * @param string              $placeholder  Placeholder for parsing
+     */
+    public function parseFtpAccountsToMaintenanceSection($websiteArray, \Cx\Core\Html\Sigma $template, $placeholder)
+    {        
+        $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteArray);
+        $view    = new \Cx\Core\Html\Controller\ViewGenerator($dataSet, array(
                         'header' => 'FTP',
                         'fields' => array(
                             'name'    => array('header' => 'TXT_CORE_MODULE_MULTISITE_WEBSITENAME'),
@@ -665,11 +710,31 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'showOverview' => \Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER,
                             )
                         )
-                    ));
-            $template->setVariable('TABLE', $view->render());
-        } else {
-            $this->parseSectionDomains($template, $cmd);
+                   ));
+        $template->setVariable($placeholder, $view->render());
+    }
+    
+    /**
+     * Get all Ftp accounts of the given service server
+     * 
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer $websiteServiceServer
+     * 
+     * @return array return ftp accounts of service server
+     */
+    public function getFtpAccountsFromService(\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer $websiteServiceServer)
+    {
+        $ftpAccounts     = array();
+        $ftpAccountsResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getFtpAccounts', array(), $websiteServiceServer);                    
+        if ($ftpAccountsResp && $ftpAccountsResp->status == 'success') {
+            foreach ($ftpAccountsResp->data->data as $ftpAccount) {                
+                $ftpAccounts[$ftpAccount->name] = array(
+                    'path'    => $ftpAccount->path,
+                    'isValid' => $ftpAccount->isValid
+                );
+            }
         }
+        
+        return $ftpAccounts;
     }
 
     public function parseSectionDomains(\Cx\Core\Html\Sigma $template, array $cmd)

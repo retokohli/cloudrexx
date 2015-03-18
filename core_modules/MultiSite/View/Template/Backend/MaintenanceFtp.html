@@ -1,0 +1,14 @@
+<ul id="tabmenu">
+  <li><a id="ftpTab_all" class="active" href="javascript:{}" onclick="selectTab('all');" title="{TXT_CORE_MODULE_MULTISITE_ALL}">{TXT_CORE_MODULE_MULTISITE_ALL}</a></li>
+  <!-- BEGIN ftpTabError -->
+  <li><a id="ftpTab_error" href="javascript:{}" onclick="selectTab('error');" title="{TXT_CORE_MODULE_MULTISITE_ERROR}">{TXT_CORE_MODULE_MULTISITE_ERROR}</a></li>  
+  <!-- END ftpTabError -->
+</ul>
+<div class="ftpTab" id="all">
+  {MULTISITE_MAINTENANCE_FTP_TABLE_ALL}
+</div>
+<!-- BEGIN ftpTabErrorTable -->
+<div class="ftpTab" id="error" style="display: none">
+  {MULTISITE_MAINTENANCE_FTP_TABLE_ERROR}
+</div>
+<!-- END ftpTabErrorTable -->
