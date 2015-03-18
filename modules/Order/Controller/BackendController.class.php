@@ -31,7 +31,21 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return array List of acts
      */
     public function getCommands() {
-        return array('subscription', 'invoice', 'payment');
+        $commands = array();
+        
+        if (\Permission::checkAccess(ComponentController::SUBSCRIPTION_ACCESS_ID, 'static', true)) {
+            $commands[] = 'subscription';
+        }
+        
+        if (\Permission::checkAccess(ComponentController::INVOICE_ACCESS_ID, 'static', true)) {
+            $commands[] = 'invoice';
+        }
+        
+        if (\Permission::checkAccess(ComponentController::PAYMENT_ACCESS_ID, 'static', true)) {
+            $commands[] = 'payment';
+        }
+        
+        return $commands;
     }
     
     /**
@@ -62,6 +76,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function connectToController($act)
     {
+        //Check whether the page has the permission to access
+        $this->checkAccessPermission($act);
+        
         $act = ucfirst($act);
         if (!empty($act)) {
             $controllerName = __NAMESPACE__.'\\'.$act.'Controller';
@@ -75,6 +92,29 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $objController = new DefaultController($this->getSystemComponentController(), $this->cx);
         }
         $objController->parsePage($this->template);
-    }   
+    }
+    
+    /**
+     * Check the Access Permission
+     * 
+     * @param string $act
+     */
+    public function checkAccessPermission($act) {
+        
+        switch ($act) {
+            case 'subscription':
+                \Permission::checkAccess(ComponentController::SUBSCRIPTION_ACCESS_ID, 'static');
+                break;
+            case 'invoice':
+                \Permission::checkAccess(ComponentController::INVOICE_ACCESS_ID, 'static');
+                break;
+            case 'payment':
+                \Permission::checkAccess(ComponentController::PAYMENT_ACCESS_ID, 'static');
+                break;
+            default :
+                \Permission::checkAccess(ComponentController::ORDER_ACCESS_ID, 'static');
+                break;
+        }
+    }
       
 }
