@@ -77,11 +77,12 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
                                 $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
                                 $mainDomainName = $domainRepository->getMainDomain()->getName();
                             }
+                            $domainName = contrexx_raw2xhtml(\Cx\Core\Net\Controller\ComponentController::convertIdnToUtf8Format($value)) . ' (' . $value . ')';
                             $mainDomainIcon = '';
                             if ($value == $mainDomainName) {
                                 $mainDomainIcon = ' <img src="'.\Env::get('cx')->getCodeBaseCoreWebPath().'/Core/View/Media/icons/Home.png" title="'.$_ARRAYLANG['TXT_CORE_CONFIG_MAINDOMAINID'].'" />';
                             }
-                            return $value.$mainDomainIcon;
+                            return $domainName.$mainDomainIcon;
                         },
                     ),
                 ),

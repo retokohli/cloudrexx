@@ -50,7 +50,7 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
      * @param   string  $name   Domain name of new domain
      */
     public function __construct($name) {
-        $this->name = $name;
+        $this->setName($name);
     }
 
     /**
@@ -74,7 +74,7 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
      * @param   string $name    Domain name to set the domain to
      */
     public function setName($name) {
-        $this->name = $name;
+        $this->name = \Cx\Core\Net\Controller\ComponentController::convertIdnToAsciiFormat($name);
     }
 
     /**
