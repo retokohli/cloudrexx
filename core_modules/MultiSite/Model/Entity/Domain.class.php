@@ -73,7 +73,6 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
 
     public function __construct($name) {
         parent::__construct($name);
-        $this->name = $name;
         $this->type = self::TYPE_EXTERNAL_DOMAIN;
     }
 
