@@ -27,6 +27,11 @@ class OrderException extends \Exception {}
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     
+    const ORDER_ACCESS_ID        = 184;
+    const SUBSCRIPTION_ACCESS_ID  = 185;
+    const INVOICE_ACCESS_ID       = 186;
+    const PAYMENT_ACCESS_ID      = 187;
+
     /*
      * Constructor
      */
