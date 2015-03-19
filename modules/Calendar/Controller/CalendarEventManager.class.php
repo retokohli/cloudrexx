@@ -615,7 +615,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 $_LANGID = $objEvent->availableLang;       
             }            
 
-            $picThumb = file_exists(ASCMS_PATH.$objEvent->pic.".thumb") ? $objEvent->pic.".thumb" : $objEvent->pic;
+            $picThumb = file_exists(\Env::get('cx')->getWebsitePath().$objEvent->pic.".thumb") ? $objEvent->pic.".thumb" : $objEvent->pic;
                         
             $numRegistrations  = (int) $objEvent->registrationCount;                         
             $numDeregistration = (int) $objEvent->cancellationCount;
@@ -729,11 +729,11 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 } */
                 
                 //place map
-                $arrInfo   = getimagesize(ASCMS_PATH.$objEvent->place_map);
+                $arrInfo   = getimagesize(\Env::get('cx')->getWebsitePath().$objEvent->place_map);
                 $picWidth  = $arrInfo[0]+20;
                 $picHeight = $arrInfo[1]+20;
                 
-                $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
+                $map_thumb_name = file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
 
                 
                 $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
@@ -880,7 +880,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 } else {
                     $editLink = CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=edit&id='.$objEvent->id;
                 }
-                $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
+                $picThumb = file_exists(\Env::get('cx')->getWebsitePath()."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
                 
                 $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
                 $placeLinkSource   = $objEvent->place_link;
@@ -931,11 +931,11 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     $this->moduleLangVar.'_EVENT_ACCESS'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 ));              
             
-                $arrInfo   = getimagesize(ASCMS_PATH.$objEvent->place_map);
+                $arrInfo   = getimagesize(\Env::get('cx')->getWebsitePath().$objEvent->place_map);
                 $picWidth  = $arrInfo[0]+20;
                 $picHeight = $arrInfo[1]+20;
                 
-                $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
+                $map_thumb_name = file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
                 $objTpl->setVariable(array(                                                          
                     $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $objEvent->place,
                     $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'       => $objEvent->place_street,
