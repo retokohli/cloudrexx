@@ -459,7 +459,7 @@ class cmsSession extends RecursiveArrayAccess {
     {        
         
         $this->sessionid = $aKey;        
-        $this->sessionPath = ASCMS_TEMP_WEB_PATH . '/' . $this->sessionPathPrefix . $this->sessionid;
+        $this->sessionPath = \Env::get('cx')->getWebsiteTempWebPath() . '/' . $this->sessionPathPrefix . $this->sessionid;
         
         $objResult = \Env::get('db')->Execute('SELECT `user_id`, `status` FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . $aKey . '"');
         if ($objResult !== false) {
@@ -599,7 +599,7 @@ class cmsSession extends RecursiveArrayAccess {
             return false;
         }
 
-        return ASCMS_INSTANCE_PATH . $this->sessionPath;
+        return \Env::get('cx')->getWebsitePath() . $this->sessionPath;
     }
 
     /**

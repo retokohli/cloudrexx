@@ -474,8 +474,8 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             self::get($id);
         }
         
-        $this->uploadImgPath    = ASCMS_PATH.ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
-        $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
+        $this->uploadImgPath    = \Env::get('cx')->getWebsiteImagesPath().'/'.$this->moduleName.'/';
+        $this->uploadImgWebPath = \Env::get('cx')->getWebsiteImagesWebPath().'/'.$this->moduleName.'/';
         
         parent::getSettings();
     }
@@ -956,9 +956,9 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         }
         
         // create thumb if not exists
-        if (!file_exists(ASCMS_PATH."$placeMap.thumb")) {                    
+        if (!file_exists(\Env::get('cx')->getWebsitePath()."$placeMap.thumb")) {                    
             $objImage = new \ImageManager();
-            $objImage->_createThumb(dirname(ASCMS_PATH."$placeMap")."/", '', basename($placeMap), 180);
+            $objImage->_createThumb(dirname(\Env::get('cx')->getWebsitePath()."$placeMap")."/", '', basename($placeMap), 180);
         }
 
         //frontend picture upload & thumbnail creation
@@ -984,9 +984,9 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             }
         } else {
             // create thumb if not exists
-            if (!file_exists(ASCMS_PATH."$pic.thumb")) {
+            if (!file_exists(\Env::get('cx')->getWebsitePath()."$pic.thumb")) {
                 $objImage = new \ImageManager();
-                $objImage->_createThumb(dirname(ASCMS_PATH."$pic")."/", '', basename($pic), 180);
+                $objImage->_createThumb(dirname(\Env::get('cx')->getWebsitePath()."$pic")."/", '', basename($pic), 180);
             }
         }
         
@@ -1578,7 +1578,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     function _handleUpload($fieldName, $id)
     {
         $tup              = self::getTemporaryUploadPath($fieldName, $id);
-        $tmpUploadDir     = ASCMS_PATH.$tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here                       
+        $tmpUploadDir     = \Env::get('cx')->getWebsitePath().$tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here  
         $depositionTarget = $this->uploadImgPath; //target folder
         $pic              = '';
 
