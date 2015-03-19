@@ -1279,17 +1279,17 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
                 $formText =
                         isset($_POST['contactFormText'][$langID])
-                        ? contrexx_input2raw(html_entity_decode($_POST['contactFormText'][$langID], ENT_QUOTES, CONTREXX_CHARSET))
+                        ? contrexx_input2raw($_POST['contactFormText'][$langID])
                         : '';
 
                 $formFeedback =
                         isset($_POST['contactFormFeedback'][$langID])
-                        ? contrexx_input2raw(html_entity_decode($_POST['contactFormFeedback'][$langID], ENT_QUOTES, CONTREXX_CHARSET))
+                        ? contrexx_input2raw($_POST['contactFormFeedback'][$langID])
                         : '';
 
                 $formMailTemplate =
                         isset($_POST['contactMailTemplate'][$langID])
-                        ? preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}', contrexx_input2raw(html_entity_decode($_POST['contactMailTemplate'][$langID], ENT_QUOTES, CONTREXX_CHARSET)))
+                        ? preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}', contrexx_input2raw($_POST['contactMailTemplate'][$langID]))
                         :'';
 
                 $this->insertFormLangValues(
