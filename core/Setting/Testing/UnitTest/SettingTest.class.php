@@ -1,14 +1,14 @@
 <?php
 
 /**
- * ResolverTest
+ * SettingTest
  * 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
- * @author      SS4U <ss4u.comvation@gmail.com>
- * @version     1.0.0
+ * @author      Sergei Popov <sergei.popov@comvation.com>
+ * @version     3.0.0
  * @package     contrexx
- * @subpackage  core_resolver
+ * @subpackage  core_setting
  */
 
 namespace Cx\Core\Setting\Testing\UnitTest;
@@ -16,14 +16,14 @@ use Cx\Core\Setting\Controller\Setting as Setting;
 
 
 /**
- * ResolverTest
+ * SettingTest
  * 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
- * @author      SS4U <ss4u.comvation@gmail.com>
- * @version     1.0.0
+ * @author      Sergei Popov <sergei.popov@comvation.com>
+ * @version     3.0.0
  * @package     contrexx
- * @subpackage  core_resolver
+ * @subpackage  core_setting
  */
 class SettingTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
 {
