@@ -101,7 +101,7 @@ class Setting{
     protected static $engine = 'Database';
     protected static $section = NULL;
     protected static $group = NULL;
-    protected static $tab_index = 0;
+    protected static $tab_index = 1;
     
     
     /**
@@ -495,10 +495,10 @@ class Setting{
             'CORE_SETTING_TAB_INDEX', self::$tab_index);
         // Set up tab, if any        
         if (!empty($tab_name)) {
-            $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 0);
+            $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
                 'CORE_SETTING_TAB_NAME' => $tab_name,
-            //  'CORE_SETTING_TAB_INDEX' => self::$tab_index,
+                'CORE_SETTING_TAB_INDEX' => self::$tab_index,
                 'CORE_SETTING_TAB_CLASS' => (self::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTING_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
                 'CORE_SETTING_CURRENT_TAB'=>'tab-'.$active_tab
@@ -793,9 +793,10 @@ class Setting{
         {
             $objTemplateLocal->setGlobalVariable(array(
                                                         'CORE_SETTING_TAB_NAME' => $tab_name,
-                                        //                'CORE_SETTING_TAB_INDEX' => self::$tab_index,
+                                                        'CORE_SETTING_TAB_INDEX' => self::$tab_index,
                                                         'CORE_SETTING_TAB_CLASS' => (self::$tab_index == $active_tab ? 'active' : ''),
                                                         'CORE_SETTING_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
+                                                        'CORE_SETTING_CURRENT_TAB'=>'tab-'.$active_tab
                                                 ));
             $objTemplateLocal->touchBlock('core_setting_tab_row');
             $objTemplateLocal->parse('core_setting_tab_row');
