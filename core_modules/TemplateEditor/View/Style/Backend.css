@@ -246,8 +246,8 @@ body {
 }
 
 
-.sidebar button.save.spinner:hover {
-    background: #8c8c8c;
+.sidebar button.save.saved {
+    background: #029711;
 }
 
 /***

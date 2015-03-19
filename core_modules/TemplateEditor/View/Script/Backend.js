@@ -28,10 +28,12 @@ function updateOption(optionName,optionData, callback){
 }
 
 var saveOptions = function (){
-    jQuery(this).addClass('spinner');
     var that = this;
     jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=saveOptions&tid="+cx.variables.get('themeid','TemplateEditor'), {}, function (response) {
-        jQuery(that).removeClass('spinner');
+        jQuery(that).addClass('saved');
+        setTimeout(function(){
+            jQuery(that).removeClass('saved');
+        }, 2000);
     }, "json");
 };
 
@@ -45,6 +47,7 @@ jQuery(function(){
 
     jQuery('#saveOptionsButton').click(saveOptions);
     jQuery('#layout').change(function(){
-        location.href = location.href.replace("tid="+cx.variables.get('themeid','TemplateEditor'), "tid="+jQuery(this).val());
+        var newloaction = location.href.replace("tid="+cx.variables.get('themeid','TemplateEditor'), "tid="+jQuery(this).val());
+        window.location.href = newloaction.search('tid') === false ? newloaction+ "&tid="+jQuery(this).val() : newloaction;
     });
 });
