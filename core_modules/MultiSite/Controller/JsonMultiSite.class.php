@@ -4522,7 +4522,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             \DBG::log('JsonException::enableMailService() failed: Unable to create mail service account.');
                             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
                         }
-                        \Env::get('em')->refresh($website);
                         $mailServiceServer = $website->getMailServiceServer();
                     }
                     if (
