@@ -1,0 +1,67 @@
+DlcInfo:
+  name: Catastrophic
+  description: 'A cat based layout'
+  type: template
+  publisher: 'Comvation AG'
+  versions:
+    -
+      state: stable
+      number: 1
+      releaseDate: 13.03.2015
+  dependencies:
+    -
+      name: jquery
+      type: lib
+      minimumVersionNumber: 1.9.1
+      maximumVersionNumber: 1.9.1
+  options:
+    -
+      name: main_title
+      specific:
+        textvalue: 'Awesome Cat Blog'
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption
+      translation:
+        1: Haupttitel
+        2: 'Main Title'
+    -
+      name: subtitle
+      specific:
+        textvalue: 'My blog with everything about cats.'
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption
+      translation:
+        1: Haupttitel
+        2: 'Main Title'
+    -
+      name: main_color
+      specific:
+        color: '#34495e'
+        choice: ['#1ABC9C', '#16A085', '#2ECC71', '#27AE60', '#3498DB', '#2980B9', '#9B59B6', '#8E44AD', '#34495E', '#2C3E50', '#F1C40F', '#F39C12', '#E67E22', '#D35400', '#E74C3C', '#C0392B', '#ECF0F1', '#BDC3C7', '#95A5A6', '#7F8C8D']
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption
+      translation:
+        1: Hauptfarbe
+        2: 'Main Color'
+    -
+      name: secondary_color
+      specific:
+        color: '#2c3e50'
+        choice: ['#1ABC9C', '#16A085', '#2ECC71', '#27AE60', '#3498DB', '#2980B9', '#9B59B6', '#8E44AD', '#34495E', '#2C3E50', '#F1C40F', '#F39C12', '#E67E22', '#D35400', '#E74C3C', '#C0392B', '#ECF0F1', '#BDC3C7', '#95A5A6', '#7F8C8D']
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption
+      translation:
+        1: Sekundärfarbe
+        2: 'Secondary color'
+    -
+      name: news_area
+      specific:
+        active: true
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption
+      translation:
+        1: 'News anzeigen'
+        2: 'Show News'
+    -
+      name: logo_image
+      specific:
+        url: 'https://placekitten.com/305/300'
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+      translation:
+        1: 'Sidebar Bild'
+        2: 'Sidebar picture'

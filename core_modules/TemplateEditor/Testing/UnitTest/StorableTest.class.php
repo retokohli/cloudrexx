@@ -7,6 +7,7 @@ use Cx\Core\View\Model\Entity\Theme;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\ThemeOptionsRepository;
+use Cx\Core_Modules\TemplateEditor\Model\Storable;
 use Cx\Core_Modules\TemplateEditor\Model\TestStorage;
 
 /**
@@ -50,9 +51,15 @@ class StorableTest extends ContrexxTestCase
         $newColor = 'dddddd';
         $this->assertTrue($themeOption instanceof ThemeOptions);
         if ($themeOption instanceof ThemeOptions) {
+            /**
+             * @var $color ColorOption
+             */
             $color = $themeOption->getOption('main_color');
             $color->handleChange($newColor);
+            $this->assertTrue($color->getColor() == $newColor);
         }
+
+        $this->assertTrue($this->themeOptionRepository->save($themeOption));
     }
 
 }

@@ -35,7 +35,12 @@ class JSONTemplateEditor implements JsonAdapter
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('updateOption', 'saveOptions');
+        if ( \Permission::checkAccess(47, 'static', true)){
+            return array('updateOption', 'saveOptions');
+        }
+        else {
+            return array();
+        }
     }
 
     /**

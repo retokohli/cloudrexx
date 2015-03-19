@@ -41,7 +41,8 @@ class ImageOption extends Option
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            'core_modules/TemplateEditor/View/Template/Backend/ImageOption.html'
+            Cx::instanciate()->getCodeBaseCoreModulePath()
+            . '/TemplateEditor/View/Template/Backend/ImageOption.html'
         );
         $subTemplate->setGlobalVariable($_ARRAYLANG);
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->url);

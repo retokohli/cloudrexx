@@ -43,9 +43,11 @@ class ThemeOptionsRepository
      * Save a ThemeOptions entity to the component.yml file.
      *
      * @param ThemeOptions $entity
+     *
+     * @return bool
      */
     public function save($entity) {
-        $this->storage->persist($entity->getName(), $entity);
+        return $this->storage->persist($entity->getName(), $entity);
     }
 
 }

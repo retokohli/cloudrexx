@@ -46,7 +46,8 @@ class ImageSeriesOption extends Option
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            'core_modules/TemplateEditor/View/Template/Backend/ImagesSeriesOption.html'
+            Cx::instanciate()->getCodeBaseCoreModulePath()
+            . '/TemplateEditor/View/Template/Backend/ImagesSeriesOption.html'
         );
         $subTemplate->setGlobalVariable($_ARRAYLANG);
 

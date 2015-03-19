@@ -127,11 +127,16 @@ class BackendController extends SystemComponentBackendController
             $template->parse('no_options');
         }
         $template->setVariable(
-            'TEMPLATEEDITOR_IFRAME_URL', Url::fromModuleAndCmd(
-            'home', '', null,
-            array('preview' => $this->theme->getId(), 'templateEditor' => 1)
-        ),
-            'TEMPLATEEDITOR_BACKURL', './index.php?cmd=ViewManager'
+            array(
+                'TEMPLATEEDITOR_IFRAME_URL' => Url::fromModuleAndCmd(
+                    'home', '', null,
+                    array(
+                        'preview' => $this->theme->getId(),
+                        'templateEditor' => 1
+                    )
+                ),
+                'TEMPLATEEDITOR_BACKURL' => './index.php?cmd=ViewManager'
+            )
         );
         $template->setGlobalVariable($_ARRAYLANG);
         \ContrexxJavascript::getInstance()->setVariable(

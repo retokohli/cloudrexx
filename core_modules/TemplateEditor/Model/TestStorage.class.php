@@ -23,8 +23,12 @@ class TestStorage implements Storable
      * @return array
      */
     public function retrieve($name) {
-        return require_once Cx::instanciate()->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/Testing/UnitTest/Component.php';
+        return Yaml::load(
+            file_get_contents(
+                Cx::instanciate()->getCodeBaseCoreModulePath()
+                . '/TemplateEditor/Testing/UnitTest/component.yml'
+            )
+        );
     }
 
     /**

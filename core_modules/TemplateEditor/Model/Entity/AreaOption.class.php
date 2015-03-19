@@ -2,6 +2,7 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
+use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Html\Sigma;
 
 /**
@@ -38,7 +39,8 @@ class AreaOption extends Option
     public function renderBackend($template) {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            'core_modules/TemplateEditor/View/Template/Backend/AreaOption.html'
+            Cx::instanciate()->getCodeBaseCoreModulePath()
+            . '/TemplateEditor/View/Template/Backend/AreaOption.html'
         );
         $subTemplate->setVariable(
             'TEMPLATEEDITOR_OPTION_VALUE', ($this->active) ? 'checked' : ''

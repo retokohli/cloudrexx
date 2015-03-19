@@ -2,7 +2,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
-use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Html\Sigma;
 use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 
@@ -20,17 +19,17 @@ abstract class Option implements YamlSerializable
     /**
      * @var void
      */
-    public $name;
+    protected $name;
 
     /**
      * @var array
      */
-    public $translations;
+    protected $translations;
 
     /**
      * @var String
      */
-    public $humanName;
+    protected $humanName;
 
     /**
      * @param String $name
@@ -91,13 +90,6 @@ abstract class Option implements YamlSerializable
 
     /**
      * @return array
-     *     -
-     * name: slider_images
-     * specific:
-     * urls: [ "images/content/slideshow/slide_1.jpg", "images/content/slideshow/slide_2.jpg" ]
-     * type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageSeriesOption
-     * translation:
-     * 1: "Haupt Slider"
      */
     public function yamlSerialize() {
         return array(

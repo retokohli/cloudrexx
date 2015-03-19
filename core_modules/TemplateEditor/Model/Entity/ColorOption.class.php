@@ -2,6 +2,7 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
+use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Html\Sigma;
 
 /**
@@ -48,7 +49,8 @@ class ColorOption extends Option
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            'core_modules/TemplateEditor/View/Template/Backend/ColorOption.html'
+            Cx::instanciate()->getCodeBaseCoreModulePath()
+            . '/TemplateEditor/View/Template/Backend/ColorOption.html'
         );
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->color);
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);

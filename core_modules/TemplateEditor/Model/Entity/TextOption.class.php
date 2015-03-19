@@ -2,6 +2,7 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
+use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Html\Sigma;
 
 /**
@@ -29,6 +30,13 @@ class TextOption extends Option
     protected $regex = null;
 
     /**
+     * Error message which is shown if the regex doesn't match.
+     *
+     * @var string
+     */
+    protected $regexError = "";
+
+    /**
      * @var bool
      */
     protected $html = false;
@@ -43,6 +51,7 @@ class TextOption extends Option
         $this->string = isset($data['textvalue']) ? $data['textvalue'] : '';
         $this->regex  = isset($data['regex']) ? $data['regex'] : null;
         $this->html   = isset($data['html']) ? $data['html'] : false;
+        $this->regexError   = isset($data['regexError']) ? $data['regexError'] : '';
     }
 
     /**
@@ -51,7 +60,8 @@ class TextOption extends Option
     public function renderBackend($template) {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            'core_modules/TemplateEditor/View/Template/Backend/TextOption.html'
+            Cx::instanciate()->getCodeBaseCoreModulePath()
+            . '/TemplateEditor/View/Template/Backend/TextOption.html'
         );
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->string);
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
@@ -80,8 +90,24 @@ class TextOption extends Option
      * @throws OptionValueNotValidException
      */
     public function handleChange($data) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_LANGID;
         if ($this->regex && !preg_match($this->regex, $data)) {
+            if (!empty($this->regexError[$_LANGID])){
+                throw new OptionValueNotValidException(
+                    sprintf(
+                        $this->regexError[$_LANGID],
+                        $data
+                    )
+                );
+            }
+            elseif (!empty($this->regexError[2])){
+                throw new OptionValueNotValidException(
+                    sprintf(
+                        $this->regexError[2],
+                        $data
+                    )
+                );
+            }
             throw new OptionValueNotValidException(
                 sprintf(
                     $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_TEXT_WRONG_FORMAT'],
@@ -99,7 +125,10 @@ class TextOption extends Option
     public function yamlSerialize() {
         $option             = parent::yamlSerialize();
         $option['specific'] = array(
-            'textvalue' => $this->string
+            'textvalue' => $this->string,
+            'regex' => $this->regex,
+            'regexError' => $this->regexError,
+            'html' => $this->html
         );
         return $option;
     }
