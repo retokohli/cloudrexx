@@ -50,7 +50,9 @@
             setTimeout(function () {
                 parent.removeClass('saved');
             }, 2000);
-            parent.hide();
+            parent.slideUp(function(){
+                parent.remove();
+            });
         })
     };
 
@@ -89,6 +91,7 @@
             jQuery('.image-list').append(newImage);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).change(changeImage);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).trigger('change');
+            jQuery('.options').animate({ scrollTop: (jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId).offset().top)}, 2000);
         }
     }
 
