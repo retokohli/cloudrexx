@@ -237,7 +237,8 @@ class Setting{
     {
         
         if ($section != null) {
-            if (empty(Setting::getSettings($section, self::$engine))) {
+            $aSectionEngine = Setting::getSettings($section, self::$engine);
+            if (empty($aSectionEngine)) {
                 $oldsection = self::$section;
                 self::$section = $section;                
                 $engineType = self::getEngineType();
@@ -494,7 +495,7 @@ class Setting{
             'CORE_SETTING_TAB_INDEX', self::$tab_index);
         // Set up tab, if any        
         if (!empty($tab_name)) {
-            $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
+            $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 0);
             $objTemplateLocal->setGlobalVariable(array(
                 'CORE_SETTING_TAB_NAME' => $tab_name,
             //  'CORE_SETTING_TAB_INDEX' => self::$tab_index,
@@ -655,7 +656,7 @@ class Setting{
                     'onclick=\''.
                       'if (confirm("'.$_ARRAYLANG[$prefix.strtoupper($name).'_CONFIRM'].'")) {'.
                         'document.getElementById("'.$name.'").value=1;'.
-                        'document.formSettings_'.$engineType->$tab_index.'.submit();'.
+                        'document.formSettings_'.self::$tab_index.'.submit();'.
                       '}\'';
 //DBG::log("\Cx\Core\Setting\Controller\Setting::show_section(): Event: $event");
                 $element =
@@ -784,7 +785,7 @@ class Setting{
         $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
         // The tabindex must be set in the form name in any case
         $objTemplateLocal->setGlobalVariable(array(
-                                                    'CORE_SETTING_TAB_INDEX' => $engineType->tab_index,
+                                                    'CORE_SETTING_TAB_INDEX' => self::$tab_index,
                                                     'CORE_SETTING_EXTERNAL' => $content,
                                                 ));
         // Set up the tab, if any
@@ -793,8 +794,8 @@ class Setting{
             $objTemplateLocal->setGlobalVariable(array(
                                                         'CORE_SETTING_TAB_NAME' => $tab_name,
                                         //                'CORE_SETTING_TAB_INDEX' => self::$tab_index,
-                                                        'CORE_SETTING_TAB_CLASS' => ($engineType->tab_index == $active_tab ? 'active' : ''),
-                                                        'CORE_SETTING_TAB_DISPLAY' => ($engineType->tab_index++ == $active_tab ? 'block' : 'none'),
+                                                        'CORE_SETTING_TAB_CLASS' => (self::$tab_index == $active_tab ? 'active' : ''),
+                                                        'CORE_SETTING_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
                                                 ));
             $objTemplateLocal->touchBlock('core_setting_tab_row');
             $objTemplateLocal->parse('core_setting_tab_row');
