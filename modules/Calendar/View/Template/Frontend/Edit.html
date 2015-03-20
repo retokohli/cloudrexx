@@ -11,6 +11,7 @@
         <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
         <input type="hidden" name="map_id" value="{CALENDAR_MAP_ID}" />
         <input type="hidden" name="picture_id" value="{CALENDAR_PICTURE_ID}" />
+        <input type="hidden" name="attachment_id" value="{CALENDAR_ATTACHMENT_ID}" />
         <fieldset class="show_in" style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
             <legend>{TXT_CALENDAR_LANGUAGE}</legend>
             <!-- BEGIN eventShowIn -->
@@ -197,6 +198,14 @@
                     <div id="pictureUpload_uploadWidget"></div>
                     <input type="file" name="pictureUpload" id="pictureUpload" />
                     <input type="hidden" name="picture" value="{CALENDAR_EVENT_PICTURE}" />
+                </div>
+            </div>
+            <div>
+                <label>{TXT_CALENDAR_EVENT_ATTACHMENT}</label>
+                <div class="formUploadedFiles">
+                    <div id="attachmentUpload_uploadWidget"></div>
+                    <input type="file" name="attachmentUpload" id="attachmentUpload" />
+                    <input type="hidden" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" />
                 </div>
             </div>
             <div>

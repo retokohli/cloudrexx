@@ -126,6 +126,13 @@ class CalendarLibrary
     const PICTURE_FIELD_KEY = 'picture_id';
     
     /**
+     * Attachment field key
+     * 
+     * @var string
+     */
+    const ATTACHMENT_FIELD_KEY = 'attachment_id';
+    
+    /**
      * Assign the template path
      * Sets the Global variable for the calendar module
      * 
