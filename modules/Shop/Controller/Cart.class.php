@@ -840,7 +840,7 @@ die("Cart::view(): ERROR: No template");
                     $objTemplate->setVariable(
                         'SHOP_PRODUCT_OPTIONS', $arrProduct['options_long']);
                 }
-                if (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable')) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable','Shop')) {
                     $objTemplate->setVariable(array(
                         'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($arrProduct['weight']),
                         'TXT_WEIGHT' => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
@@ -946,26 +946,26 @@ die("Cart::view(): ERROR: No template");
                     $_SESSION['shop']['countryId2']),
             ));
         }
-        if (   \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min') > 0
-            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min') > self::get_price()
+        if (   \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min','Shop') > 0
+            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min','Shop') > self::get_price()
         ) {
             $objTemplate->setVariable(
                 'MESSAGE_TEXT',
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'],
                         Currency::formatPrice(
-                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min')),
+                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min','Shop')),
                         Currency::getActiveCurrencySymbol()));
         } elseif (
-               \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max') > 0
-            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max') < self::get_price()
+               \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max','Shop') > 0
+            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max','Shop') < self::get_price()
         ) {
             $objTemplate->setVariable(
                 'MESSAGE_TEXT',
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX'],
                         Currency::formatPrice(
-                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max')),
+                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max','Shop')),
                         Currency::getActiveCurrencySymbol()));
         } else {
             $objTemplate->setVariable(

@@ -110,8 +110,8 @@ class Customers
 
         if (empty($arrGroupId)) {
             $arrGroupId = array(
-                \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller'),
-                \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer'));
+                \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop'),
+                \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer','Shop'));
         }
         $user_count = 0;
         foreach ($arrGroupId as $usergroup_id) {
@@ -241,8 +241,8 @@ class Customers
     {
         // Consider members of the customer groups only
         $arrFilter = array('group' => array(
-            \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller'),
-            \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer'),
+            \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop'),
+            \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer','Shop'),
         ));
         if (!$inactive) $arrFilter['active'] = true;
         $objCustomer = Customers::get($arrFilter, null,

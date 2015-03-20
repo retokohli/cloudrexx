@@ -138,8 +138,8 @@ FORMTEMPLATE;
         JS::registerJS('modules/shop/payments/paymill/js/creditcardBrandDetection.js');
         JS::registerJS(self::$paymillJsBridge);
         
-        $testMode = intval(\Cx\Core\Setting\Controller\Setting::getValue('paymill_use_test_account')) == 0;        
-        $apiKey   = $testMode ? \Cx\Core\Setting\Controller\Setting::getValue('paymill_test_public_key') : \Cx\Core\Setting\Controller\Setting::getValue('paymill_live_public_key');
+        $testMode = intval(\Cx\Core\Setting\Controller\Setting::getValue('paymill_use_test_account','Shop')) == 0;        
+        $apiKey   = $testMode ? \Cx\Core\Setting\Controller\Setting::getValue('paymill_test_public_key','Shop') : \Cx\Core\Setting\Controller\Setting::getValue('paymill_live_public_key','Shop');
         $mode     = $testMode ? 'true' : 'false';
         
         $code = <<< APISETTING

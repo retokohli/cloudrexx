@@ -68,7 +68,7 @@ class Config
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
             .(in_array('Wysiwyg', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=Config&amp;act=Wysiwyg" class="'.($this->act == 'Wysiwyg' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CORE_WYSIWYG'].'</a>' : '')
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '')
-            . (\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isWebsiteOwner() && \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser') ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
+            . (\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isWebsiteOwner() && \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','FileSystem') ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
         );
     }
 
@@ -283,10 +283,10 @@ class Config
             }
             $this->setDebuggingVariables($templateObj);
         }
-        \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
+        \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
         \Cx\Core\Setting\Controller\Setting::storeFromPost();
         
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'site', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'site');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -295,7 +295,7 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'contactInformation');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -304,7 +304,7 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'administrationArea');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -313,7 +313,7 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'security', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'security');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -329,7 +329,7 @@ class Config
                 $templateObj->get()
             );
         }
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'otherConfigurations');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -345,7 +345,7 @@ class Config
             && \Permission::hasAllAccess()
             && isset($_GET['all'])
         ) {
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'core', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'core');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -354,7 +354,7 @@ class Config
                     'TXT_CORE_CONFIG_',
                     true
                     );
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'release', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'release');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -363,7 +363,7 @@ class Config
                     'TXT_CORE_CONFIG_',
                     true
                     );
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'component', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'component');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -372,7 +372,7 @@ class Config
                     'TXT_CORE_CONFIG_',
                     !$this->isWritable()
                     );
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'license', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'license');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -381,7 +381,7 @@ class Config
                     'TXT_CORE_CONFIG_',
                     true
                     );
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'cache', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'cache');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -1609,7 +1609,7 @@ class Config
         $objDomain   = $domainRepo->findOneBy(array('id' => 0));
         //get the ftp user name
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
-        $ftpUserName = \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser');
+        $ftpUserName = \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','FileSystem');
         
         if (empty($ftpUserName)) {
             throw new \Exception('FTP Failed to load: Website Ftp User is empty');

@@ -1114,7 +1114,7 @@ class Coupon
                 $objSorting->getHeaderForField('payment_id'),
         ));
         $count = 0;
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_coupon_per_page_backend');
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_coupon_per_page_backend','Shop');
         if (empty ($limit)) self::errorHandler ();
         $arrCoupons = self::getArray(
             \Paging::getPosition(), $limit, $count,

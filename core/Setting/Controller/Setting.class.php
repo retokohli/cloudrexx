@@ -158,13 +158,13 @@ class Setting{
      * @return  boolean               True on success, false otherwise
      * @global  ADOConnection   $objDatabase
      */
-    static function init($section, $group = null, $engine = 'Database', $fileSystemConfigRepository = null, $populate = 2)
+    static function init($section, $group = null, $engine = 'Database', $fileSystemConfigRepository = null, $populate = 0)
     {
         if (self::setEngineType($section, $engine, $group)){
             $engineType = self::getEngineType();
             $engine = self::getSectionEngine();
-            $callers=debug_backtrace();
-            /*\DBG::log('*** INIT:' . $callers[1]['class'] . ' Line ' . $callers[1]['line'] . ':' . "\r\n" 
+            /*$callers=debug_backtrace();
+            \DBG::log('*** INIT:' . $callers[1]['class'] . ' Line ' . $callers[1]['line'] . ':' . "\r\n" 
                     . ' Pop.mode: ' . $populate . ' (0 - ignore, 1 - add, 2 - replace) ' . "\r\n"
                     . ' Section: ' . self::$section . "\r\n"
                     . ' Engine: ' . self::$engine . "\r\n"
@@ -235,14 +235,16 @@ class Setting{
      */
     static function getValue($name, $section = null)
     {
-        
+        /* if section is not null - loading from that section */
         if ($section != null) {
-            $aSectionEngine = Setting::getSettings($section, self::$engine);
+            $aSectionEngine = Setting::getSectionEngine($section, null);
+            /* if section is empty - initializin section first*/
             if (empty($aSectionEngine)) {
                 $oldsection = self::$section;
                 self::$section = $section;                
                 $engineType = self::getEngineType();
                 $oSectionEngine = new $engineType(); 
+                $oSectionEngine->init($section, null, self::$engine);
                 self::setSectionEngine($oSectionEngine, self::POPULATE); 
                 self::$section = $oldsection;
             }
@@ -465,8 +467,7 @@ class Setting{
     static function show(&$objTemplateLocal, $uriBase, $section = '', $tab_name = '', $prefix = 'TXT_', $readOnly = false) 
     {
         global $_CORELANG;
-        $engineType = self::getSectionEngine();
-        $arrSettings = $engineType->getArraySetting();
+        $arrSettings = self::getCurrentSettings();
         self::verify_template($objTemplateLocal);
         \Html::replaceUriParameter($uriBase, 'active_tab=' . self::$tab_index);
         // Default headings and elements
@@ -541,8 +542,7 @@ class Setting{
     static function show_section(&$objTemplateLocal, $section = '', $prefix = 'TXT_', $readOnly = false)
     {
         global $_ARRAYLANG, $_CORELANG; 
-        $engineType = self::getSectionEngine();
-        $arrSettings=$engineType->getArraySetting();
+        $arrSettings = self::getCurrentSettings();
         self::verify_template($objTemplateLocal);
         // This is set to multipart if necessary
         $enctype = '';
@@ -1221,5 +1221,15 @@ class Setting{
                 return false;
             } 
         }
+    }
+    
+    
+    /**
+     * Gets current settings based on currently set section, engine and group
+     * 
+     * @return array | false
+     */
+    static function getCurrentSettings() {
+        return self::getSettings(self::$section, self::$engine, self::$group);
     }
 }

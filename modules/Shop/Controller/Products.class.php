@@ -669,9 +669,9 @@ class Products
                     ASCMS_SHOP_IMAGES_PATH.'/',
                     ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                     $imageName,
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'),
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality')
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop'),
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height','Shop'),
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality','Shop')
                 );
                 $width  = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
@@ -1084,7 +1084,7 @@ class Products
             3 => $_ARRAYLANG['TXT_SHOP_PRODUCT_SORTING_PRODUCTCODE'],
         );
         return \Html::getOptions($arrAvailableOrder,
-            \Cx\Core\Setting\Controller\Setting::getValue('product_sorting'));
+            \Cx\Core\Setting\Controller\Setting::getValue('product_sorting','Shop'));
     }
 
 

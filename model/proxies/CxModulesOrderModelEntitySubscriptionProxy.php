@@ -39,10 +39,10 @@ class CxModulesOrderModelEntitySubscriptionProxy extends \Cx\Modules\Order\Model
         return parent::setId($id);
     }
 
-    public function setOrder(\Cx\Modules\Order\Model\Entity\Order $order)
+    public function setOrder(\Cx\Modules\Order\Model\Entity\Order $order, $updatePaymentAmount = false)
     {
         $this->_load();
-        return parent::setOrder($order);
+        return parent::setOrder($order, $updatePaymentAmount);
     }
 
     public function getOrder()
