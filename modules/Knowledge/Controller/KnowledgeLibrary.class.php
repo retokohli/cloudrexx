@@ -89,7 +89,7 @@ class KnowledgeLibrary {
 	{
             //return the global setting('useKnowledgePlaceholders') value
             \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
-            return \Cx\Core\Setting\Controller\Setting::getValue('useKnowledgePlaceholders');
+            return \Cx\Core\Setting\Controller\Setting::getValue('useKnowledgePlaceholders','Config');
 	}
 	
 	/**

@@ -70,7 +70,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // && MODULE_INDEX == ''
                 ) {
                     \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('shopnavbar_on_all_pages')) {
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('shopnavbar_on_all_pages','Shop')) {
                         Shop::init();
                         Shop::setNavbar();
                     }

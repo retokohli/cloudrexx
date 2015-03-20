@@ -42,7 +42,7 @@ class ShopProductEventListener implements \Cx\Core\Event\Model\Entity\EventListe
         global $_ARRAYLANG;
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Shop');
                     if (!empty($options['Product']) && $options['Product'] > 0) {

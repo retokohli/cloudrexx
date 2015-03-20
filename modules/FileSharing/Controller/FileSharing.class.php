@@ -303,10 +303,10 @@ class FileSharing extends FileSharingLib
         global $_ARRAYLANG;
 
         \Cx\Core\Setting\Controller\Setting::init('FileSharing', 'config');
-        $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission');
+        $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission','FileSharing');
         if (!$permissionNeeded) {
             \Cx\Core\Setting\Controller\Setting::add('permission', 'off');
-            $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission');
+            $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission','FileSharing');
         }
 
         if ($permissionNeeded == 'off' || (is_numeric($permissionNeeded) && !\Permission::checkAccess($permissionNeeded, 'dynamic'))) {

@@ -103,7 +103,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                             $websiteObj->getName(),
                             $objUser->getEmail(),
                             $objUser->getEmail(),
-                            $websiteObj->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                            $websiteObj->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
                             \FWUser::getParsedUserTitle($objUser)
                         );
             
@@ -115,7 +115,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                         'WEBSITE_CREATION_DATE' => $website->getCreationDate()->format(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME),
                         'WEBSITE_NAME'          => $website->getName(),
                         'WEBSITE_MAIL'          => $objUser->getEmail(),
-                        'WEBSITE_DOMAIN'        => $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain')
+                        'WEBSITE_DOMAIN'        => $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite')
                     );
                 }
             }

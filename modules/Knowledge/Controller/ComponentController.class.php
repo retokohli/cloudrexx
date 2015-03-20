@@ -70,7 +70,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // get knowledge content
                 \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
-                if (MODULE_INDEX < 2 && \Cx\Core\Setting\Controller\Setting::getValue('useKnowledgePlaceholders')) {
+                if (MODULE_INDEX < 2 && \Cx\Core\Setting\Controller\Setting::getValue('useKnowledgePlaceholders','Config')) {
                     $knowledgeInterface = new KnowledgeInterface();
                     if (preg_match('/{KNOWLEDGE_[A-Za-z0-9_]+}/i', \Env::get('cx')->getPage()->getContent())) {
                         $knowledgeInterface->parse(\Env::get('cx')->getPage()->getContent());

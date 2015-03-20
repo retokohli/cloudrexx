@@ -285,10 +285,10 @@ class Orders
             $customer_type = intval($_REQUEST['customer_type']);
             \Html::replaceUriParameter($uri, 'customer_type='.$customer_type);
             if ($customer_type == 0) {
-                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
+                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer','Shop');
             }
             if ($customer_type == 1) {
-                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
+                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
             }
             $objFWUser = \FWUser::getFWUserObject();
             $objGroup  = $objFWUser->objGroup->getGroup($usergroup_id);
@@ -378,7 +378,7 @@ class Orders
             'SHOP_CURRENCY', Currency::getDefaultCurrencySymbol()
         ));
         $count = 0;
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend');
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend','Shop');
 // TODO: Obsolete ASAP
 if (!$limit) {
     ShopSettings::errorHandler();

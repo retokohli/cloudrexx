@@ -321,7 +321,7 @@ class Saferpay
 /*        'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
         'CURRENCY' => \Cx\Modules\Shop\Controller\Currency::getActiveCurrencyCode(),
         'ORDERID' => $_SESSION['shop']['order_id'],
-        'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'),
+        'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'),
         'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.'&cmd=success&result=1&handler=saferpay'),
         'FAILLINK' => urlencode('http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.'&cmd=success&result=0&handler=saferpay'),
         'BACKLINK' => urlencode('http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.'&cmd=success&result=2&handler=saferpay'),
@@ -332,7 +332,7 @@ class Saferpay
         'DELIVERY' => 'no',
         'PROVIDERSET' = $arrCards; // if set*/
         $payInitUrl = self::payInit($arrOrder,
-            \Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account'));
+            \Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account','Shop'));
 //DBG::log("Saferpay::getForm(): payInit URL: $payInitUrl");
         if (   !$payInitUrl
             || strtoupper(substr($payInitUrl, 0, 5)) == 'ERROR') {
@@ -346,7 +346,7 @@ class Saferpay
                 "</b></font>";
         }
         $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option','Shop')) {
             case 0: // iframe -- UNUSED, because it does not work reliably!
                 return
                     $return.
@@ -492,7 +492,7 @@ window.setTimeout(3000, function() {
             // Business account *ONLY*, like the test account.
             // There is no password setting (yet), so this is for
             // future testing purposes *ONLY*
-            (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account')
+            (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account','Shop')
               ? '&spPassword=XAjc3Kna'
               : '');
         // This won't work without allow_url_fopen

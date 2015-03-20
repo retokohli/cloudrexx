@@ -676,14 +676,14 @@ class ShopSettings
                     break;
                 }
                 if ($name) {
-                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name) === NULL
+                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name,'Shop') === NULL
                         && !\Cx\Core\Setting\Controller\Setting::add($name, $value, ++$i)) {
                         throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to add \Cx\Core\Setting entry for '$name'");
                     }
                 }
                 if ($name_status) {
-                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name_status) === NULL
+                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name_status,'Shop') === NULL
                         && !\Cx\Core\Setting\Controller\Setting::add($name_status, $status, ++$i)) {
                         throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to add \Cx\Core\Setting entry for status '$name_status'");

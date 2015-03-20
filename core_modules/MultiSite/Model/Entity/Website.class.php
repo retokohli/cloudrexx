@@ -180,7 +180,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         }
 
         // set IP of Website
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                 if ($this->id) {
                     break;
@@ -201,7 +201,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                $this->ipAddress = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
+                $this->ipAddress = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp','MultiSite');
                 break;
 
             default:
@@ -210,7 +210,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         $this->secretKey = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey();
         $this->validate();
-        $this->codeBase = \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase');
+        $this->codeBase = \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase','MultiSite');
         $this->setFqdn();
         $this->setBaseDn();
     }
@@ -612,20 +612,20 @@ class Website extends \Cx\Model\Base\EntityBase {
 
             \DBG::msg('Website: Set state to '.self::STATE_ONLINE);
             $this->status = self::STATE_ONLINE;
-            $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
+            $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp','MultiSite');
         }
 
         \Env::get('em')->persist($this);
         \Env::get('em')->flush();
 
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE) {
             throw new WebsiteException('MultiSite mode was set to Website at the end of setup process. No E-Mail was sent to '.$this->owner->getEmail());
         }
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
-            || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
+            || \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID
         ) {
-            $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-            $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+            $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
+            $websiteUrl = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
 
             // set user account password
             $websitePassword = '';
@@ -633,7 +633,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $websiteVerificationUrl = '';
             
             if (isset($options['initialSignUp']) && $options['initialSignUp']) {
-                switch (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod')) {
+                switch (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod','MultiSite')) {
                     case 'interactive':
                         \DBG::msg('Website: generate reset password link for Cloudrexx user..');
                         $passwordBlock = 'WEBSITE_PASSWORD_INTERACTIVE';
@@ -660,7 +660,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 
             } else {
                 $params = \Cx\Core_Modules\MultiSite\Model\Event\AccessUserEventListener::fetchUserData($this->owner);
-                switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                         \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateUser', $params, $this->websiteServiceServer);
                         break;
@@ -693,7 +693,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                     '[[CUSTOMER_NAME]]',
                     '[[SUBSCRIPTION_NAME]]'),
                 'replace' => array(
-                    \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                    \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
                     $websiteDomain,
                     $websiteUrl,
                     $websiteName,
@@ -782,7 +782,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         $websiteName = $name;
 
         // verify that name is not a blocked word
-        $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes'));
+        $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes','MultiSite'));
         if (in_array($websiteName, $unavailablePrefixesValue)) {
             throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'], "<strong>$websiteName</strong>"));
         }
@@ -791,11 +791,11 @@ class Website extends \Cx\Model\Base\EntityBase {
         if (preg_match('/[^a-z0-9]/', $websiteName)) {
             throw new WebsiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_WRONG_CHARS']);
         }
-        if (strlen($websiteName) < \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength')) {
-            throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_SHORT'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength')));
+        if (strlen($websiteName) < \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite')) {
+            throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_SHORT'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite')));
         }
-        if (strlen($websiteName) > \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength')) {
-            throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_LONG'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength')));
+        if (strlen($websiteName) > \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite')) {
+            throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_LONG'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite')));
         }
 
         // existing website
@@ -811,10 +811,10 @@ class Website extends \Cx\Model\Base\EntityBase {
     * */
     protected function setupDatabase($langId, $objUser, $objDb, $objDbUser){
         $objDbUser->setPassword(\User::make_password(8, true));
-        $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix').$this->id);      
+        $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix','MultiSite').$this->id);      
 
-        $objDb->setHost(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost'));
-        $objDb->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix').$this->id);
+        $objDb->setHost(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost','MultiSite'));
+        $objDb->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix','MultiSite').$this->id);
 
         $websitedb = $this->initDatabase($objDb, $objDbUser);
         if (!$websitedb) {
@@ -834,9 +834,9 @@ class Website extends \Cx\Model\Base\EntityBase {
     * */
     protected function setupDataFolder($websiteName){
         // website's data repository
-        $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+        $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
         $codeBaseWebsiteSkeletonPath = $codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton';
-        if(!\Cx\Lib\FileSystem\FileSystem::copy_folder($codeBaseWebsiteSkeletonPath, \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName)) {
+        if(!\Cx\Lib\FileSystem\FileSystem::copy_folder($codeBaseWebsiteSkeletonPath, \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/'.$websiteName)) {
             throw new WebsiteException('Unable to setup data folder');
         }
     }    
@@ -850,9 +850,9 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         // setup base configuration (configuration.php)
         try {
-            $newConf = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/configuration.php');
+            $newConf = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/'.$websiteName . '/config/configuration.php');
             $newConfData = $newConf->getData();
-            $installationRootPath = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase : $_PATHCONFIG['ascms_installation_root'];
+            $installationRootPath = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite').'/'.$this->codeBase : $_PATHCONFIG['ascms_installation_root'];
 
             // set database configuration
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'host\'\\] = \'.*?\';/', '$_DBCONFIG[\'host\'] = \'' .$objDb->getHost() . '\';', $newConfData);
@@ -865,7 +865,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'password\'\\] = \'.*?\';/', '$_DBCONFIG[\'password\'] = \'' . $objDbUser->getPassword() . '\';', $newConfData);
             
             // set path configuration
-            $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_root\'] = \'' . \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '\';', $newConfData);
+            $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_root\'] = \'' . \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/'.$websiteName . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_installation_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_installation_root\'] = \'' . $installationRootPath . '\';', $newConfData);          
                         
             $newConf->write($newConfData);
@@ -875,7 +875,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         // setup basic configuration (settings.php)
         try {
-            $newSettings = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/settings.php');
+            $newSettings = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/'.$websiteName . '/config/settings.php');
             $settingsData = preg_replace_callback(
                 '/(\$_CONFIG\[([\'"])((?:(?!\2).)*)\2\]\s*=\s*([\'"]))(?:(?:(?!\4).)*)(\4;)/',
                 function($match) {
@@ -908,7 +908,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     protected function initializeConfig() {
         try {
             $params = array(
-                'dashboardNewsSrc' => \Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc'),
+                'dashboardNewsSrc' => \Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc','MultiSite'),
                 'coreAdminEmail'   => $this->owner->getEmail(),
                 'contactFormEmail' => $this->owner->getEmail()
             );
@@ -930,71 +930,71 @@ class Website extends \Cx\Model\Base\EntityBase {
 
     protected function setupMultiSiteConfig($websiteName)
     {
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
         $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
 
         $config = \Env::get('config');
         $serviceInstallationId = $config['installationId'];
         $serviceHostname = $config['domainUrl'];
-        $websiteHttpAuthMethod   = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod');
-        $websiteHttpAuthUsername = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername');
-        $websiteHttpAuthPassword = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword');
+        $websiteHttpAuthMethod   = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod','MultiSite');
+        $websiteHttpAuthUsername = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername','MultiSite');
+        $websiteHttpAuthPassword = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword','MultiSite');
         
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem', $websiteConfigPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('mode', \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE.':'.\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE, 'config')){
                     throw new WebsiteException("Failed to add Setting entry for MultiSite mode");
             }
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem', $websiteConfigPath);
-            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHostname') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHostname','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHostname', $serviceHostname, 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add Setting entry for Hostname of Website Service");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceSecretKey', $this->secretKey, 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add Setting entry for SecretKey of Website Service");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceInstallationId', $serviceInstallationId, 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add Setting entry for InstallationId of Website Service");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteUserId', 0, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add Setting entry for InstallationId of Website User Id");
             }
 // TODO: HTTP-Authentication details of Website Service Server must be set
-            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthMethod', $websiteHttpAuthMethod, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'website')){
                     throw new WebsiteException("Failed to add Setting entry for HTTP Authentication Method of Website Service");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthUsername', $websiteHttpAuthUsername, 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add Setting entry for HTTP Authentication Username of Website Service");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthPassword', $websiteHttpAuthPassword, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add Setting entry for HTTP Authentication Password of Website Service");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteState', $this->status, 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::STATE_ONLINE.':'.self::STATE_ONLINE.','.self::STATE_OFFLINE.':'.self::STATE_OFFLINE.','.self::STATE_INIT.':'.self::STATE_INIT.','.self::STATE_SETUP.':'.self::STATE_SETUP, 'website')){
                     throw new WebsiteException("Failed to add website entry for website state");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteName') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteName', $this->name, 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add website entry for website name");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteFtpUser', $this->ftpUser, 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add website entry for website FTP user");
@@ -1017,11 +1017,11 @@ class Website extends \Cx\Model\Base\EntityBase {
      * @throws WebsiteException
      */
     protected function setupSupportConfig($websiteName) {
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
         $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
 
-        $faqUrl = \Cx\Core\Setting\Controller\Setting::getValue('supportFaqUrl');
-        $recipientMailAddress = \Cx\Core\Setting\Controller\Setting::getValue('supportRecipientMailAddress');
+        $faqUrl = \Cx\Core\Setting\Controller\Setting::getValue('supportFaqUrl','MultiSite');
+        $recipientMailAddress = \Cx\Core\Setting\Controller\Setting::getValue('supportRecipientMailAddress','MultiSite');
 
         try {
             \Cx\Core\Setting\Controller\Setting::init('Support', 'setup', 'Yaml', $websiteConfigPath);
@@ -1049,9 +1049,9 @@ class Website extends \Cx\Model\Base\EntityBase {
      */
     protected function setupRobotsFile($websiteName) {
         try {
-            $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+            $codeBaseOfWebsite = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
             $setupRobotFile = new \Cx\Lib\FileSystem\File($codeBaseOfWebsite . \Env::get('cx')->getCoreModuleFolderName() . '/MultiSite/Data/WebsiteSkeleton/robots.txt');
-            $setupRobotFile->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/robots.txt');
+            $setupRobotFile->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/'.$websiteName . '/robots.txt');
         }  catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new WebsiteException('Unable to setup robot file: '.$e->getMessage());
         }
@@ -1103,7 +1103,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         \DBG::msg('MultiSite (Website): destroy');
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     // remove the mail service of website
                     if ($this->mailServiceServer && $this->mailAccountId) {
@@ -1144,12 +1144,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
 
                     //remove the database and its user
                     $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
-                    $objDb->setHost(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost'));
-                    $objDb->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix') . $this->id);
+                    $objDb->setHost(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost','MultiSite'));
+                    $objDb->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix','MultiSite') . $this->id);
                     
                     //remove the database user
                     $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
-                    $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') . $this->id);
+                    $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix','MultiSite') . $this->id);
                     $removedDbUser = $hostingController->removeDbUser($objDbUser, $objDb);
 
                     //remove the database
@@ -1157,8 +1157,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
                         $hostingController->removeDb($objDb);
                     }
                     //remove the website's data repository
-                    if(file_exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name)) {
-                        if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $this->name, true)) {
+                    if(file_exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $this->name)) {
+                        if (!\Cx\Lib\FileSystem\FileSystem::delete_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $this->name, true)) {
                             throw new WebsiteException('Unable to delete the website data repository');
                         }
                     }
@@ -1205,7 +1205,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @throws WebsiteException
      */
     protected function initDb($type, $objUser, $objDbUser, $langId, $websitedb) {
-        $dumpFilePath = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+        $dumpFilePath = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
         $fp = @fopen($dumpFilePath.'/installer/data/contrexx_dump_' . $type . '.sql', "r");
         if ($fp === false) {
             throw new WebsiteException('File not found');
@@ -1307,7 +1307,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */    
     function setFqdn(){
         $config = \Env::get('config');
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
             $serviceServerHostname = $this->websiteServiceServer->getHostname();
         } else {
             $serviceServerHostname = $config['domainUrl'];
@@ -1342,10 +1342,10 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */    
     function setBaseDn(){
-        $baseDn = new Domain($this->name.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
+        $baseDn = new Domain($this->name.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'));
         $baseDn->setType(Domain::TYPE_BASE_DOMAIN);
         $baseDn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
             return;
         }
         $this->mapDomain($baseDn);
@@ -1396,7 +1396,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * Set mailDn
      */
     public function setMailDn() {
-        $mailDn = new Domain($this->name . '.'. 'mail' . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
+        $mailDn = new Domain($this->name . '.'. 'mail' . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'));
         $mailDn->setType(Domain::TYPE_MAIL_DOMAIN);
         $mailDn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
         $mailDn->setComponentId($this->getId());
@@ -1427,7 +1427,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * Set webmailDn
      */
     public function setWebmailDn() {
-        $webmailDn = new Domain($this->name . '.'. 'webmail' . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
+        $webmailDn = new Domain($this->name . '.'. 'webmail' . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'));
         $webmailDn->setType(Domain::TYPE_WEBMAIL_DOMAIN);
         $webmailDn->setComponentType(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE);
         $webmailDn->setComponentId($this->getId());
@@ -1520,7 +1520,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function setupLicense($options)
     {
         $websiteTemplateRepo    = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate');
-        $defaultWebsiteTemplate = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate');
+        $defaultWebsiteTemplate = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate','MultiSite');
         
         //If the $options['websiteTemplate] is empty, take value from default websiteTemplate
         if (empty($options['websiteTemplate'])) {
@@ -1581,7 +1581,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         
         if (!empty($legalComponents)) {
             $validTo = !empty($options['subscriptionExpiration']) ? $options['subscriptionExpiration'] : 2733517333;
-            $codeBase = !\FWValidator::isEmpty($websiteTemplate->getCodeBase()) ? $websiteTemplate->getCodeBase() : \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase');
+            $codeBase = !\FWValidator::isEmpty($websiteTemplate->getCodeBase()) ? $websiteTemplate->getCodeBase() : \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase','MultiSite');
             $params = array(
                 'websiteId'         => $this->id,
                 'legalComponents'   => $legalComponents,
@@ -1675,17 +1675,17 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function setupFtpAccount($websiteName) {
         try {
-            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup')) {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup','MultiSite')) {
                 //create FTP-Account
                 //validate FTP user name if website name doesn't starts with alphabetic letters, add the prefix to website name
-                $ftpUser   = (\Cx\Core\Setting\Controller\Setting::getValue('forceFtpAccountFixPrefix')) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') . $websiteName : 
-                             !preg_match('#^[a-z]#i', $websiteName) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') . $websiteName : $websiteName;
+                $ftpUser   = (\Cx\Core\Setting\Controller\Setting::getValue('forceFtpAccountFixPrefix','MultiSite')) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix','MultiSite') . $websiteName : 
+                             !preg_match('#^[a-z]#i', $websiteName) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix','MultiSite') . $websiteName : $websiteName;
                 
                 if (
-                       \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName')
-                    && strlen($ftpUser) > \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName')
+                       \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName','MultiSite')
+                    && strlen($ftpUser) > \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName','MultiSite')
                         ) {
-                    $ftpUser = substr($ftpUser, 0, \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName') - 1);                    
+                    $ftpUser = substr($ftpUser, 0, \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName','MultiSite') - 1);                    
                 }
                 
                 $existingFtpAccounts = $this->websiteController->getFtpAccounts();
@@ -1698,7 +1698,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 $ftpUser = $tmpFtpUser;
 
                 $password  = \User::make_password(8, true);
-                $accountId = $this->websiteController->addFtpAccount($ftpUser, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
+                $accountId = $this->websiteController->addFtpAccount($ftpUser, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath','MultiSite') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId','MultiSite'));
 
                 if ($accountId) {
                     $this->ftpUser = $ftpUser;
@@ -1722,7 +1722,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         // hard-coded to 1 day
         $this->owner->setRestoreKeyTime(86400);
         \Env::get('em')->flush();
-        $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
+        $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite'));
         return $websitePasswordUrl;
     }
 
@@ -1780,7 +1780,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 // do only append logs from executed command, if command was not executed on our own system,
                 // otherwise we would re-add our existing log-messages (-> duplicating whole log stack)
-                if (   \Cx\Core\Setting\Controller\Setting::getValue('mode') != \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
+                if (   \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') != \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
                     && isset($resp->data->log)
                 ) {
                     \DBG::appendLogs(array_map(function($logEntry) {return '(Manager) '.$logEntry;}, $resp->data->log));
@@ -1789,7 +1789,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             } else {
                 // do only append logs from executed command, if command was not executed on our own system,
                 // otherwise we would re-add our existing log-messages (-> duplicating whole log stack)
-                if (   \Cx\Core\Setting\Controller\Setting::getValue('mode') != \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
+                if (   \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') != \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
                     && isset($resp->log)
                 ) {
                     \DBG::appendLogs(array_map(function($logEntry) {return '(Manager) '.$logEntry;}, $resp->log));

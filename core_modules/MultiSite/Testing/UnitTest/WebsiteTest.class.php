@@ -35,16 +35,16 @@ class WebsiteTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
         $websiteName = 'mytestsite';
 
         // verify that name is not a blocked word
-        $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes'));
+        $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue'unavailablePrefixes','MultiSite');
         $this->assertNotContains($websiteName, $unavailablePrefixesValue);
         
         // verify that name complies with naming scheme
         $this->assertNotRegExp('/[^a-z0-9]/', $websiteName);
         
         // verify that website name length
-        $this->assertLessThan(strlen($websiteName), \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength'));
+        $this->assertLessThan(strlen($websiteName), \Cx\Core\Setting\Controller\Setting::getValue'websiteNameMinLength','MultiSite');
         
-        $this->assertGreaterThan(strlen($websiteName), \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength'));
+        $this->assertGreaterThan(strlen($websiteName), \Cx\Core\Setting\Controller\Setting::getValue'websiteNameMaxLength','MultiSite');
 
         // Check existing website
         $website = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('name' => $websiteName));

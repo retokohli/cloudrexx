@@ -789,7 +789,7 @@ class Country
             'order_country'
         );
         \Cx\Core\Setting\Controller\Setting::init('core', 'country');
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_countries_per_page_backend');
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_countries_per_page_backend','core');
         $count = 0;
         $arrCountries = self::getArray(
             $count, null, $limit, \Paging::getPosition(),

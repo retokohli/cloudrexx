@@ -61,7 +61,7 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         $isWebsiteInactive = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED
                             || $website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
         
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                 //disable website mail service
                 if ($isWebsiteInactive) {
@@ -69,7 +69,7 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 }
                 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                $websiteConfigPath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $website->getName() . \Env::get('cx')->getConfigFolderName();
+                $websiteConfigPath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $website->getName() . \Env::get('cx')->getConfigFolderName();
                 if (!file_exists($websiteConfigPath)) {
                     break;
                 }

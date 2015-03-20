@@ -81,16 +81,16 @@ class CxCoreWysiwygModelEntityWysiwygTemplateProxy extends \Cx\Core\Wysiwyg\Mode
         return parent::getHtmlContent();
     }
 
-    public function setInactive($inactive)
+    public function setActive($active)
     {
         $this->_load();
-        return parent::setInactive($inactive);
+        return parent::setActive($active);
     }
 
-    public function getInactive()
+    public function getActive()
     {
         $this->_load();
-        return parent::getInactive();
+        return parent::getActive();
     }
 
     public function __get($name)
@@ -132,7 +132,7 @@ class CxCoreWysiwygModelEntityWysiwygTemplateProxy extends \Cx\Core\Wysiwyg\Mode
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'title', 'description', 'imagePath', 'htmlContent', 'inactive');
+        return array('__isInitialized__', 'id', 'title', 'description', 'imagePath', 'htmlContent', 'active');
     }
 
     public function __clone()

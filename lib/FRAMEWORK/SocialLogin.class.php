@@ -74,7 +74,7 @@ class SocialLogin
     {
         \Cx\Core\Setting\Controller\Setting::init('Access', 'sociallogin');
 
-        $settingProviders = json_decode(\Cx\Core\Setting\Controller\Setting::getValue('providers'));
+        $settingProviders = json_decode(\Cx\Core\Setting\Controller\Setting::getValue('providers', 'Access'));
         foreach ($settingProviders as $providerName => $providerData) {
             $class = self::getClassByProvider($providerName);
             if ($class != null) {

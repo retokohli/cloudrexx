@@ -267,7 +267,7 @@ class Customer extends \User
      */
     function companynote($companynote=null)
     {
-        $index = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes');
+        $index = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes','Shop');
         if (!$index) return null;
         if (isset($companynote)) {
             $this->setProfile(array($index => array(0 => $companynote)));
@@ -285,15 +285,15 @@ class Customer extends \User
     function is_reseller($is_reseller=null)
     {
         // get defined groups in shop
-        $group_reseller = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
+        $group_reseller = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
         if (empty($group_reseller)) {
             self::errorHandler();
-            $group_reseller = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
+            $group_reseller = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
         }
-        $group_customer = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
+        $group_customer = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer','Shop');
                 if (empty($group_customer)) {
                     self::errorHandler();
-                    $group_customer = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
+                    $group_customer = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer','Shop');
                 }
 
         // return the value
@@ -327,7 +327,7 @@ class Customer extends \User
      */
     function group_id($group_id=null)
     {
-        $index = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_group_id');
+        $index = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_group_id','Shop');
         if (!$index) return false;
         if (isset($group_id)) {
             $this->setProfile(array($index => array(0 => $group_id)));
@@ -472,7 +472,7 @@ class Customer extends \User
         global $_ARRAYLANG;
 
         // Only final customers may be unregistered
-        $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
+        $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer','Shop');
         if (!$usergroup_id) {
             \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
             \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_DIRECTORY_INDEX.'?section=Shop');
@@ -534,9 +534,9 @@ class Customer extends \User
         global $_ARRAYLANG;
 
 // See below.
-//        $index_notes = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes');
-//        $index_type = \Cx\Core\Setting\Controller\Setting::getValue('user_attribute_customer_type');
-//        $index_reseller = \Cx\Core\Setting\Controller\Setting::getValue('user_attribute_reseller_status');
+//        $index_notes = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes','Shop');
+//        $index_type = \Cx\Core\Setting\Controller\Setting::getValue('user_attribute_customer_type','Shop');
+//        $index_reseller = \Cx\Core\Setting\Controller\Setting::getValue('user_attribute_reseller_status','Shop');
         $gender = strtoupper($this->gender());
         $title = $_ARRAYLANG['TXT_SHOP_TITLE_'.$gender];
         $format_salutation = $_ARRAYLANG['TXT_SHOP_SALUTATION_'.$gender];
@@ -675,7 +675,7 @@ class Customer extends \User
         \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
         $objUser = \FWUser::getFWUserObject()->objUser;
         // Create new User_Profile_Attributes
-        $index_notes = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes');
+        $index_notes = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_notes','Shop');
         if (!$index_notes) {
 //DBG::log("Customer::errorHandler(): Adding notes attribute...");
 //            $objProfileAttribute = new \User_Profile_Attribute();
@@ -708,7 +708,7 @@ class Customer extends \User
 //DBG::log("Customer::errorHandler(): Stored notes attribute ID setting");
         }
 
-        $index_group = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_group_id');
+        $index_group = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_group_id','Shop');
         if (!$index_group) {
 //            $objProfileAttribute = new \User_Profile_Attribute();
             $objProfileAttribute = $objUser->objAttribute->getById(0);
@@ -748,7 +748,7 @@ class Customer extends \User
 
         // Create missing UserGroups for customers and resellers
         $objGroup = null;
-        $group_id_customer = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
+        $group_id_customer = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer','Shop');
         if ($group_id_customer) {
             $objGroup = \FWUser::getFWUserObject()->objGroup->getGroup(
                 $group_id_customer);
@@ -782,7 +782,7 @@ class Customer extends \User
         }
         $group_id_customer = $objGroup->getId();
         $objGroup = null;
-        $group_id_reseller = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
+        $group_id_reseller = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
         if ($group_id_reseller) {
             $objGroup = \FWUser::getFWUserObject()->objGroup->getGroup($group_id_reseller);
         }

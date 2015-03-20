@@ -35,9 +35,9 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         $objUser = $eventArgs->getEntity();
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
                     if (empty($websiteUserId)) {
                         //set user's id to websiteUserId
                         \Cx\Core\Setting\Controller\Setting::set('websiteUserId', $objUser->getId());
@@ -67,7 +67,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                  case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
 // TODO: add language variable
@@ -94,7 +94,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         $objUser = $eventArgs->getEntity();
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     //Check Admin Users quota
                     $adminUsersList = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
@@ -102,7 +102,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         self::checkAdminUsersQuota($objUser);
                     }
                     
-                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
                         if (!$objUser->isVerified()) {
                             throw new \Exception('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
@@ -155,9 +155,9 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         $objUser = $eventArgs->getEntity();
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
 // TODO: add language variable
                         throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
@@ -177,7 +177,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         throw new \Exception('This user is linked with Websites, cannot able to delete');
                     }
                     
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
                         $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
                         foreach ($websiteServiceServers as $serviceServer) {
                             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('removeUser', array('userId' => $objUser->getId()), $serviceServer);
@@ -211,7 +211,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         $params = self::fetchUserData($objUser);
         try {
             $objJsonData = new \Cx\Core\Json\JsonData();
-            switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     //Find each associated service servers
                     $webServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');

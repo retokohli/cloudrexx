@@ -1187,12 +1187,12 @@ class CrmSettings extends CrmLibrary
                 'CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE_DROPDOWN' =>\Html::getSelect(
                                                                 'user_profile_attribute_industry_typ',
                                                                 \User_Profile_Attribute::getCustomAttributeNameArray(),
-                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ'),
+                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ', 'Crm'),
                                                                 '', '', 'tabindex="0" style="width: 270px;"'),
                 'CRM_PROFILE_ATTRIBUT_COMPANY_SIZE_DROPDOWN' => \Html::getSelect(
                                                                 'user_profile_attribute_company_size',
                                                                 \User_Profile_Attribute::getCustomAttributeNameArray(),
-                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size'),
+                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size', 'Crm'),
                                                                 '', '', 'tabindex="0" style="width: 270px;"'),
         ));
         
@@ -1228,7 +1228,7 @@ class CrmSettings extends CrmLibrary
             $objTemplate,
             $_CORELANG['TXT_CORE_MAILTEMPLATES'],
             \Cx\Core\MailTemplate\Controller\MailTemplate::overview('Crm', 'config',
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend')
+                \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend', 'Crm')
             )->get()
         );
         

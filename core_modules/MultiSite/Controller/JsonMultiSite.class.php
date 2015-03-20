@@ -75,7 +75,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        $multiSiteProtocol = (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') == 'mixed')? \Env::get('cx')->getRequest()->getUrl()->getProtocol(): \Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol');
+        $multiSiteProtocol = (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite') == 'mixed')? \Env::get('cx')->getRequest()->getUrl()->getProtocol(): \Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite');
         return array(
             'signup'                => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'email'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
@@ -195,7 +195,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (!\User::isUniqueEmail($params['post']['multisite_email_address'])) {
             self::loadLanguageData();
 
-            $loginUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain') . '/')->toString();
+            $loginUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite') . '/')->toString();
             $loginLink = '<a class="alert-link" href="'.$loginUrl.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'].'</a>';
             throw new MultiSiteJsonException(array(
                 'object'    => 'email',
@@ -273,7 +273,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
             // TODO: Product ID should be supplied by POST-data.
             //       If not set, then the ID should be taken from a MultiSite configuration option 'defaultProductId'
-            $id = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
+            $id = isset($params['post']['product_id']) ? contrexx_input2raw($params['post']['product_id']) : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct','MultiSite');
 
             // create new subscription of selected product
             $renewalOption = isset($params['post']['renewalOption']) ? $params['post']['renewalOption'] : 'monthly';
@@ -299,7 +299,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             // Set user's verification state to pending in case the related
             // password-setup-method has been configured.
-            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') == 'auto-with-verification') {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod','MultiSite') == 'auto-with-verification') {
                 \DBG::msg('HOTFIX: set verification state to pending on Cloudrexx user..');
                 // set state of user account to unverified
                 $objUser->setVerification(false);
@@ -315,7 +315,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
 // TODO: remove once setup process works flawlessly
             // send setup protocol anyway
-            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError','MultiSite')) {
                 $config = \Env::get('config');
                 \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
                 \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
@@ -339,7 +339,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             $authToken = null;
             $autoLoginUrl = null;
-            if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin')) {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin','MultiSite')) {
                 \DBG::msg('Website: generate auth-token for Cloudrexx user..');
                 try {
                     list($ownerUserId, $authToken) = $website->generateAuthToken();
@@ -364,7 +364,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
         } catch (\Exception $e) {
             $config = \Env::get('config');
-            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError','MultiSite')) {
                 \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
                 \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                     'section' => 'MultiSite',
@@ -495,13 +495,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
            
             $productPrice = $product->getPaymentAmount($renewalUnit, $renewalQuantifier, $currency);
             $credit = 0;
-            $externalPaymentCustomerId = $objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'));
+            $externalPaymentCustomerId = $objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId','MultiSite'));
             if (   !\FWValidator::isEmpty($productPrice)
                 && !\FWValidator::isEmpty($externalPaymentCustomerId)
             ) {
                 
-                $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-                $apiSecret    = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+                $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount','MultiSite');
+                $apiSecret    = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret','MultiSite');
                 $payrexx      = new \Payrexx\Payrexx($instanceName, $apiSecret);
 
                 $subscription = new \Payrexx\Models\Request\Subscription();
@@ -702,12 +702,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
         $themeId     = isset($params['post']['themeId']) ? contrexx_input2raw($params['post']['themeId']) : '';
         
-        $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
         $websiteServiceServer = null;
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == ComponentController::MODE_MANAGER) {
             //get default service server
             $defaultWebsiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer')));
+            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer','MultiSite')));
             $websiteServiceServer = $defaultWebsiteServiceServer[0];
         }
 
@@ -869,7 +869,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $objFWUser = \FWUser::getFWUserObject();
         $data = $params['post'];
         
-        switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
@@ -880,7 +880,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 if(isset($params['post']['websiteUserId'])){
                     $websiteUserId = $params['post']['websiteUserId'];
                 } else {
-                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
                 }
                 $objUser = $objFWUser->objUser->getUser(intval($websiteUserId), true);
                 break;
@@ -1009,7 +1009,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             ));
         }
         
-        switch(\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                 $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => $data['currentEmail']));
@@ -1027,7 +1027,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         if (!\User::isUniqueEmail($data['newEmail'], $objUser->getId())) {
-            return array('status' => 'error', 'customerPanelDomain' => \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
+            return array('status' => 'error', 'customerPanelDomain' => \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite'));
         }
     
         return array('status' => 'success');
@@ -1086,7 +1086,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         $config = \Env::get('config');
         $installationId = $config['installationId'];
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_MANAGER:
                 try {
                     $WebsiteServiceServerRepository = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
@@ -1104,8 +1104,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             case ComponentController::MODE_SERVICE:
             case ComponentController::MODE_HYBRID:
                 //Check if the sender is manager or not
-                if ($authenticationValue['sender'] == \Cx\Core\Setting\Controller\Setting::getValue('managerHostname')) {
-                    $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
+                if ($authenticationValue['sender'] == \Cx\Core\Setting\Controller\Setting::getValue('managerHostname','MultiSite')) {
+                    $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey','MultiSite');
                 } else {
                     try {
                         $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
@@ -1122,7 +1122,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 break;
                 
             case ComponentController::MODE_WEBSITE:
-                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
+                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey','MultiSite');
                 break;
         }
         
@@ -1275,7 +1275,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
 
                 case ComponentController::MODE_WEBSITE:
-                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                         case ComponentController::MODE_MANAGER:
                             // componentId is the ID of a Website that the domain shall be mapped to
                             $componentId = $params['post']['componentId'];
@@ -1300,7 +1300,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             break;
 
                         default:
-                            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode'));
+                            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
                             break;
                     }
 
@@ -1354,7 +1354,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 
                 case ComponentController::MODE_WEBSITE:
                     $domain = new \Cx\Core\Net\Model\Entity\Domain();
@@ -1393,7 +1393,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 
                 case ComponentController::MODE_WEBSITE:
                     $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
@@ -1438,7 +1438,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     $domainRepo  = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
                     $objDomain   = $domainRepo->findOneBy(array('id' => $params['post']['domainId']));
@@ -1501,7 +1501,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
 
                 case ComponentController::MODE_WEBSITE:
-                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                         case ComponentController::MODE_MANAGER:
                             // componentId is the ID of a Website that the domain shall be unmapped from
                             $componentId = $params['post']['componentId'];
@@ -1526,7 +1526,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             break;
 
                         default:
-                            throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode'));
+                            throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
                             break;
                     }
                     break;
@@ -1607,13 +1607,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             //|| !isset($params['post']['coreNetDomainId'])
         ) {
             \DBG::dump($params);
-            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied: '.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied: '.var_export($params, true));
         }
 
         $authenticationValue = json_decode($params['post']['auth'], true);
         if (empty($authenticationValue) || !is_array($authenticationValue)) {
             \DBG::dump($params);
-            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied.'.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied.'.var_export($params, true));
         }
         //check the black listed domains
         if (!self::checkBlackListDomains($params['post']['domainName'])) {
@@ -1652,7 +1652,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
 
                 case ComponentController::MODE_WEBSITE:
-                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                    switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                         case ComponentController::MODE_MANAGER:
                             // componentId is the ID of a Website that the domain shall be updated of
                             $componentId = $params['post']['componentId'];
@@ -1677,7 +1677,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             break;
 
                         default:
-                            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode'));
+                            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
                             break;
                     }
                     break;
@@ -1726,7 +1726,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (empty($domainName)) {
             return false;
         }
-        if (in_array($domainName, array_map('trim', explode(',', \Cx\Core\Setting\Controller\Setting::getValue('domainBlackList'))))) {
+        if (in_array($domainName, array_map('trim', explode(',', \Cx\Core\Setting\Controller\Setting::getValue('domainBlackList','MultiSite'))))) {
             return false;
         }
         return true;
@@ -1763,7 +1763,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         self::loadLanguageData();
 
         if (!empty($params['post'])) {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if ($this->setWebsiteState($params)){
@@ -1794,7 +1794,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($params['post']['websiteId']);
 
@@ -1838,7 +1838,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $objDatabase;
 
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_SERVICE:
                     $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website = $webRepo->findOneById($params['post']['websiteId']);
@@ -2106,10 +2106,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Manager and pass it to the method executeCommand()
      */
     public static function executeCommandOnManager($command, $params = array()) {
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
         }
-        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
             \DBG::msg(__METHOD__. " ($command): executing locally on manager (not going to execute through JsonData adapter)");
             $config = \Env::get('config');
             $params['auth'] = json_encode(array('sender' => $config['domainUrl']));
@@ -2124,13 +2124,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException($e->getMessage());
             }
         }
-        $host = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
-        $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
-        $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
+        $host = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname','MultiSite');
+        $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId','MultiSite');
+        $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey','MultiSite');
         $httpAuth = array(
-            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod'),
-            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername'),
-            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword'),
+            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod','MultiSite'),
+            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername','MultiSite'),
+            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword','MultiSite'),
         );
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
@@ -2140,16 +2140,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
     public static function executeCommandOnMyServiceServer($command, $params) {
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_WEBSITE))) {
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_WEBSITE))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode WEBSITE.');
         }
-        $host = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
-        $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');
-        $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
+        $host = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname','MultiSite');
+        $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId','MultiSite');
+        $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey','MultiSite');
         $httpAuth = array(
-            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod'),
-            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername'),
-            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
+            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod','MultiSite'),
+            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername','MultiSite'),
+            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword','MultiSite'),
         );
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
@@ -2159,7 +2159,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
     public static function executeCommandOnServiceServerOfWebsite($command, $params, $website) {
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER))) {
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER.');
         }
         $websiteServiceServer = $website->getWebsiteServiceServer();
@@ -2179,7 +2179,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Service and pass it to the method executeCommand():
      */
     public static function executeCommandOnServiceServer($command, $params, $websiteServiceServer) {
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER))) {
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER.');
         }
         $host = $websiteServiceServer->getHostname();
@@ -2198,12 +2198,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Fetch connection data to Website and pass it to the method executeCommand():
      */
     public static function executeCommandOnWebsite($command, $params, $website) {
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
-            throw new MultiSiteJsonException('Command '.__METHOD__.' is only available in MultiSite-mode MODE_MANAGER, HYBRID or SERVICE (running on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' '.$website->getName().')');
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
+            throw new MultiSiteJsonException('Command '.__METHOD__.' is only available in MultiSite-mode MODE_MANAGER, HYBRID or SERVICE (running on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' '.$website->getName().')');
         }
 
         // In case mode is Manager, the request shall be routed through the associated Service Server
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == ComponentController::MODE_MANAGER) {
             return self::executeCommandOnServiceServerOfWebsite('executeOnWebsite', array('command' => $command, 'params' => $params, 'websiteId' => $website->getId()), $website);
         }
 
@@ -2213,9 +2213,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $installationId = $website->getInstallationId();
         $secretKey = $website->getSecretKey();
         $httpAuth = array(
-            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod'),
-            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername'),
-            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword'),
+            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod','MultiSite'),
+            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername','MultiSite'),
+            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword','MultiSite'),
         );
         return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
     }
@@ -2223,7 +2223,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function executeOnManager($params) {
         if (empty($params['post']['command'])) {
             \DBG::dump($params);
-            throw new MultiSiteJsonException('JsonMultiSite::executeOnManager() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient arguments supplied: '.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSite::executeOnManager() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
         }
 
         $passedParams = !empty($params['post']['params']) ? $params['post']['params'] : null;
@@ -2258,7 +2258,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function executeOnWebsite($params) {
         if (empty($params['post']['command']) || empty($params['post']['websiteId'])) {
             \DBG::dump($params);
-            throw new MultiSiteJsonException('JsonMultiSite::executeOnWebsite() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient arguments supplied: '.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSite::executeOnWebsite() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
         }
         
         $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
@@ -2285,7 +2285,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
     public function generateAuthToken($params) {
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if (empty($params['post']['ownerId'])) {
@@ -2297,7 +2297,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $websiteUserId = $params['post']['ownerId'];
                     break;
                 case ComponentController::MODE_WEBSITE:
-                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+                    $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
                     break;
                 default:
                     break;
@@ -2330,7 +2330,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function setupConfig($params) {
         if (empty($params['post']['coreAdminEmail']) || empty($params['post']['contactFormEmail']) || empty($params['post']['dashboardNewsSrc'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::setupConfig() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient arguments supplied: '.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSite::setupConfig() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
         }
         
         \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
@@ -2366,13 +2366,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     public function getDefaultWebsiteIp() {
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') != ComponentController::MODE_SERVICE) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') != ComponentController::MODE_SERVICE) {
             throw new MultiSiteJsonException('JsonMultiSite::getDefaultWebsiteIp() failed: Command is only on Website Service Server available.');
         }
 
         return array(
             'status'            => 'success',
-            'defaultWebsiteIp'  => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp'),
+            'defaultWebsiteIp'  => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp','MultiSite'),
             'log'               => \DBG::getMemoryLogs(),
         );
     }
@@ -2435,7 +2435,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         //Check the user is website owner or not
-        if (\FWUser::getFWUserObject()->objUser->getId() == \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId')) {
+        if (\FWUser::getFWUserObject()->objUser->getId() == \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite')) {
             return true;
         }
         return false;
@@ -2451,13 +2451,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function getFtpUser($params) {
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_SERVICE:
                 case ComponentController::MODE_HYBRID:    
                     $authenticationValue = json_decode($params['post']['auth'], true);
                     if (empty($authenticationValue) || !is_array($authenticationValue)) {
                         \DBG::dump($params);
-                        throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
+                        throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
                     }
 
                     $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
@@ -2496,7 +2496,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function getFtpAccounts($params) {
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_SERVICE:
                 case ComponentController::MODE_HYBRID:
                     $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
@@ -2529,7 +2529,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         self::loadLanguageData();
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     $response = self::executeCommandOnMyServiceServer('resetFtpPassword', array());
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
@@ -2552,7 +2552,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $authenticationValue = json_decode($params['post']['auth'], true);
                     if (empty($authenticationValue) || !is_array($authenticationValue)) {
                         \DBG::dump($params);
-                        throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
+                        throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
                     }
 
                     $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
@@ -2591,7 +2591,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function checkResetFtpPasswordAccess($params) {
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_WEBSITE:
                 if (self::isWebsiteOwner()) {
                     return true;
@@ -2613,7 +2613,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function checkExecuteSqlAccess($params) {
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_MANAGER:
             case ComponentController::MODE_HYBRID:
                 if ($this->checkPermission()) {
@@ -2636,7 +2636,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function checkGetLicenseAccess($params) {
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_MANAGER:
             case ComponentController::MODE_HYBRID:
             case ComponentController::MODE_SERVICE:
@@ -2658,7 +2658,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function checkSendAccountActivation($params) {
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_MANAGER:
             case ComponentController::MODE_SERVICE:
                 if ($this->auth($params)) {
@@ -2786,7 +2786,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         //load the multisite language
         self::loadLanguageData();
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if (empty($params['post']['query'])) {
@@ -2955,7 +2955,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function executeQueryBySession($params) {
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                     $sqlQuery = array();
                     $randomKey = isset($params['post']['randomKey']) ? $params['post']['randomKey'] : '';
@@ -3013,11 +3013,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         self::loadLanguageData();
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if (!isset($params['post']['mailServiceServerId']) && empty($params['post']['mailServiceServerId'])) {
-                        \DBG::log('JsonMultiSite::getMailServicePlans() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode') . ' failed: Insufficient mapping information supplied: ' . var_export($params, true));
+                        \DBG::log('JsonMultiSite::getMailServicePlans() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient mapping information supplied: ' . var_export($params, true));
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND']);
                     }
                     $mailServiceServerId   = contrexx_input2raw($params['post']['mailServiceServerId']);
@@ -3060,11 +3060,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
         self::loadLanguageData();
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if (!isset($params['post']['websiteId'])) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getLicense() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' failed: Insufficient mapping information supplied: '.var_export($params, true));
+                        throw new MultiSiteJsonException('JsonMultiSite::getLicense() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied: '.var_export($params, true));
                     }
                     //find User's Website
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
@@ -3083,7 +3083,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
                     if (!$license) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getLicense(): on '.\Cx\Core\Setting\Controller\Setting::getValue('mode').' $license was not set properly');
+                        throw new MultiSiteJsonException('JsonMultiSite::getLicense(): on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' $license was not set properly');
                     }
                     $dashboardMessages = array();
                     $licenseMessage = array();
@@ -3214,7 +3214,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $_ARRAYLANG;
         
         self::loadLanguageData();
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
@@ -3262,7 +3262,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         $loginType = ($params['post']['loginType'] == 'customerpanel') ? 'customerpanel' : 'website';
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
@@ -3277,7 +3277,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_FAILED'], $loginType));
                         }
                         $successMessage = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_CUSTOMERPANELDOMAIN_SUCCESS'];
-                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'). '/index.php?section=Login&user-id='.$response->data->userId.'&auth-token='.$response->data->authToken);
+                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite'). '/index.php?section=Login&user-id='.$response->data->userId.'&auth-token='.$response->data->authToken);
                     } else {
                         list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
                         
@@ -3314,7 +3314,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::editLicense.');
         }
         try{
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $dateFormatArr = array("coreCmsReleaseDate", "licenseValidTo", "licenseCreatedAt");
@@ -3347,7 +3347,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function sendAccountActivation($params) {
         global $_ARRAYLANG;
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     if (empty($params['post']['ownerEmail']) || empty($params['post']['websiteName'])) {
                         throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Insufficient arguments supplied: ' . var_export($params, true));
@@ -3390,8 +3390,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
-                    $ownerEmail = \FWUser::getFWUserObject()->objUser->getUser(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId'))->getEmail();
+                    $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
+                    $ownerEmail = \FWUser::getFWUserObject()->objUser->getUser(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite'))->getEmail();
                     if (!empty($ownerEmail) && !empty($websiteName)) {
                         $resp = self::executeCommandOnMyServiceServer('sendAccountActivation', array('ownerEmail' => $ownerEmail, 'websiteName' => $websiteName));
                         self::loadLanguageData();
@@ -3453,8 +3453,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: Insufficient mapping information supplied: ' . var_export($params, true));
             }
             
-            $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-            $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+            $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount','MultiSite');
+            $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret','MultiSite');
 
             $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
             
@@ -3516,7 +3516,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::modifyMultisiteConfig.');
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
@@ -3653,7 +3653,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function websiteBackup($param) {
         $websiteId         = isset($param['post']['websiteId']) ? contrexx_input2raw($param['post']['websiteId']) : '';
-        $backupLocation    = !empty($param['post']['backupLocation']) ? $param['post']['backupLocation'] : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation');
+        $backupLocation    = !empty($param['post']['backupLocation']) ? $param['post']['backupLocation'] : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
         $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
         $websites          = (!\FWValidator::isEmpty($websiteId)) ? $websiteRepository->findBy(array('id' => $websiteId)) : $websiteRepository->findAll();
 
@@ -3686,7 +3686,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function websiteDataBackup(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $backupLocation) {
         $websiteName       = $website->getName();
-        $websitePath       = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName;
+        $websitePath       = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $websiteName;
         $websiteBackupPath = $backupLocation . '/' . $website->getName();
         
         if (!\Cx\Lib\FileSystem\FileSystem::exists($websitePath)) {
@@ -3797,7 +3797,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
@@ -3948,7 +3948,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
         $websiteBackupFilePath = !empty($params['post']['websiteBackupFilePath']) ? $params['post']['websiteBackupFilePath'] : '';
         if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupFilePath) 
-            || \Cx\Lib\FileSystem\FileSystem::exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName)
+            || \Cx\Lib\FileSystem\FileSystem::exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $websiteName)
            ) {
             \DBG::log('The website datafolder/backup repository doesnot exists!.');
             return array('status' => 'error', 'message' => 'Failed to Restore the website.');
@@ -4027,7 +4027,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function websiteDataRestore($websiteName, $websiteBackupFilePath)
     {
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . '/' . $websiteName;
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $websiteName;
         
         if (!$this->extractWebsiteDatabase($websitePath, $websiteBackupFilePath)) {
             return false;
@@ -4339,12 +4339,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
     protected function activateDebuggingToMemory() {
         // check if memory logging shall be activated
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_MANAGER:
             case ComponentController::MODE_SERVICE:
             case ComponentController::MODE_HYBRID:
                 // don't activate memory-logging if debug log shall not be sent to admin
-                if (!\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError')) {
+                if (!\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError','MultiSite')) {
                     return;
                 }
                 break;
@@ -4386,7 +4386,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         try {
             // check the mode
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')
@@ -4396,7 +4396,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
                     }
                     $defaultMailServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')
-                                                               ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer')));
+                                                               ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer','MultiSite')));
                     $accountId = $defaultMailServiceServer->createAccount($website);
                     if ($accountId) {
                         $website->setMailAccountId($accountId);
@@ -4442,7 +4442,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         try {
             // check the mode
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
@@ -4507,7 +4507,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                
         try {
             // check the mode
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
@@ -4570,7 +4570,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                
         try {
             // check the mode
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
@@ -4625,7 +4625,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                
         try {
             // check the mode
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
@@ -4743,7 +4743,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return;
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     $userRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User');
                     $user = $userRepo->findBy(array('id' => $userId));
@@ -4775,7 +4775,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         self::loadLanguageData();
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     $resourcesUsage = array();
                     $modulesArray = array(
@@ -4841,7 +4841,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
                     if (!$website) {
@@ -4858,7 +4858,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $clientIp = !\FWValidator::isEmpty($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))) : $_SERVER['REMOTE_ADDR'];
                     $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
 
-                    $pleskLoginUrl = $hostingController->getPanelAutoLoginUrl($website->getMailAccountId(), $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain'));
+                    $pleskLoginUrl = $hostingController->getPanelAutoLoginUrl($website->getMailAccountId(), $clientIp, ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite'));
                     
                     if ($pleskLoginUrl) {
                         return array('status' => 'success', 'autoLoginUrl' => $pleskLoginUrl);
@@ -4893,7 +4893,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
         }
 
-        $profileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId');
+        $profileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId','MultiSite');
         if (\FWValidator::isEmpty($profileAttributeId)) {
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
         }
@@ -4903,8 +4903,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
         }
 
-        $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-        $apiSecret = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+        $instanceName = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount','MultiSite');
+        $apiSecret = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret','MultiSite');
         
         try {   
             $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
@@ -4934,7 +4934,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function getMainDomain() {
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
                     $mainDomain       = $domainRepository->getMainDomain()->getName();
@@ -5004,7 +5004,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_FAILED']);
             }
             
-            $marketingWebsiteUrl = ComponentController::getApiProtocol().\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
+            $marketingWebsiteUrl = ComponentController::getApiProtocol().\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
             return array('status' => 'success', 'marketingWebsiteUrl' => $marketingWebsiteUrl);
         } catch (\Exception $e) {
              \DBG::log('JsonMultiSite::deleteAccount() failed:' . $e->getMessage());
@@ -5029,7 +5029,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     \Cx\Core\Setting\Controller\Setting::init('Config', 'site', 'Yaml');
                     \Cx\Core\Setting\Controller\Setting::set('mainDomainId', $params['post']['mainDomainId']);
@@ -5068,7 +5068,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $websiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
@@ -5152,7 +5152,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $moduleName     = isset($params['post']['moduleName']) ? $params['post']['moduleName'] : '';
         $additionalType = isset($params['post']['additionalType']) ? $params['post']['additionalType'] : '';
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     $additionalData = ComponentController::getModuleAdditionalDataByType($moduleName, $additionalType);
                     if (\FWValidator::isEmpty($additionalData)) {
@@ -5190,7 +5190,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $planId = isset($params['post']['planId']) ? $params['post']['planId'] : '';
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
@@ -5254,7 +5254,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('Unknown component requested.');
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     if((in_array($params['post']['component'], \Env::get('cx')->getLicense()->getLegalComponentsList()))) {
                         return array('status' => 'success');
@@ -5291,7 +5291,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('name' => $params['post']['websiteName']));
@@ -5357,7 +5357,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return false;
         }
         
-        $multiSiteDomain = \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+        $multiSiteDomain = \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
         if (preg_match('/'.preg_quote('.'.$multiSiteDomain, '/').'$/i', $domainName)) {
             return true;
         }

@@ -56,11 +56,11 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
          * The mail account created from the manager mode so check the mode and website object
          */
         if ($website && 
-            \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
+            \Cx\Core\Setting\Controller\Setting::getValue'mode','MultiSite' == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
             // get default mail service server
             $defaultMailServiceServer = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')
-                                                       ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer')));
+                                                       ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue'defaultMailServiceServer','MultiSite'));
             
             // create a mail service account in controller and flush the data into db
             $accountId = $defaultMailServiceServer->createAccount($website);
@@ -83,7 +83,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
     function testEnableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         if ($website && 
-            \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
+            \Cx\Core\Setting\Controller\Setting::getValue'mode','MultiSite' == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
             $mailServiceServer = $website->getMailServiceServer();  // get the mail service server
             $mailServiceServer->enableService($website);
@@ -101,7 +101,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
     function testDisableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {   
         if ($website && 
-            \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
+            \Cx\Core\Setting\Controller\Setting::getValue'mode','MultiSite' == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
             $mailServiceServer = $website->getMailServiceServer();  // get the mail service server
             $mailServiceServer->disableService($website);
@@ -119,7 +119,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
     function testDeleteAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         if ($website && 
-            \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
+            \Cx\Core\Setting\Controller\Setting::getValue'mode','MultiSite' == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
             $website->getMailServiceServer()->deleteAccount($website->getMailAccountId());
             $website->getMailServiceServer()->removeWebsite($website);

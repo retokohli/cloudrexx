@@ -376,8 +376,8 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         
         if ($this->externalSubscriptionId) {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-            $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+            $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount','MultiSite');
+            $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret','MultiSite');
             if(empty($instanceName) || empty($apiSecret)) {
                 return;
             }

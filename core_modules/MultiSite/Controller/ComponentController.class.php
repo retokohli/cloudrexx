@@ -60,8 +60,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         self::errorHandler();
 
         // add marketing website as valid redirection after logout
-        \FWUser::$allowedHosts[] = 'http://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
-        \FWUser::$allowedHosts[] = 'https://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
+        \FWUser::$allowedHosts[] = 'http://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
+        \FWUser::$allowedHosts[] = 'https://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
     }
     
     /**
@@ -110,7 +110,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         // allow access only if mode is MODE_MANAGER or MODE_HYBRID
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(self::MODE_MANAGER, self::MODE_HYBRID))) {
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(self::MODE_MANAGER, self::MODE_HYBRID))) {
             return;
         }
 
@@ -130,7 +130,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $page->setCmd($pageCmd);
         $page->setModule('MultiSite');
         $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
-        \LinkGenerator::parseTemplate($pageContent, true, new \Cx\Core\Net\Model\Entity\Domain(\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')));
+        \LinkGenerator::parseTemplate($pageContent, true, new \Cx\Core\Net\Model\Entity\Domain(\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite')));
         $objTemplate = new \Cx\Core\Html\Sigma();                
         $objTemplate->setTemplate($pageContent);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -221,12 +221,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
         $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
         $paymentUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=getPayrexxUrl');
-        $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl'));
+        $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl','MultiSite'));
         \LinkGenerator::parseTemplate($termsUrlValue);
         $termsUrl = '<a href="'.$termsUrlValue.'" target="_blank">'.$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'].'</a>';
-        $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
-        $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
-        if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin')) {
+        $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite');
+        $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite');
+        if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin','MultiSite')) {
             $buildWebsiteMsg = $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG_AUTO_LOGIN'];
         } else {
             $buildWebsiteMsg = $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_MSG'];
@@ -240,7 +240,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
             'TXT_MULTISITE_ORDER_NOW'       => $_ARRAYLANG['TXT_MULTISITE_ORDER_BUTTON'],
             'MULTISITE_PATH'                => ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getWebsiteOffsetPath(),
-            'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+            'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
             'POST_URL'                      => '',
             'MULTISITE_ADDRESS_MIN_LENGTH'  => $websiteNameMinLength,
             'MULTISITE_ADDRESS_MAX_LENGTH'  => $websiteNameMaxLength,
@@ -262,7 +262,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'TXT_MULTISITE_EMAIL_INFO'      => sprintf($_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO'], 'info@cloudrexx.com'),
             'TXT_CORE_MODULE_MULTISITE_LOADING_TEXT' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'],
         ));
-        $productId = !empty($arguments['product-id']) ? $arguments['product-id'] : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct');
+        $productId = !empty($arguments['product-id']) ? $arguments['product-id'] : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct','MultiSite');
         if (!empty($productId)) {
             $productRepository = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
             $product = $productRepository->findOneBy(array('id' => $productId));
@@ -460,7 +460,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $subscription = null;
         $website      = null;
-        $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl'));
+        $termsUrlValue = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' ,\Cx\Core\Setting\Controller\Setting::getValue('termsUrl','MultiSite'));
         \LinkGenerator::parseTemplate($termsUrlValue);
         $termsUrl = '<a href="'.$termsUrlValue.'" target="_blank">'.$_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'].'</a>';
         
@@ -563,7 +563,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'MULTISITE_WEBSITE_NAME'                => $websiteName,    
             'MULTISITE_SUBSCRIPTION_RENEWAL_PLAN'   => $renewalPlan,    
             'MULTISITE_ACCEPT_TERMS_URL'            => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
-            'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId'))) ? 'true' : 'false',            
+            'MULTISITE_IS_USER_HAS_PAYREXX_ACCOUNT' => !\FWValidator::isEmpty($objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId','MultiSite'))) ? 'true' : 'false',            
         ));
         return $objTemplate->get();
     }
@@ -755,8 +755,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $mainDomain = $domainRepository->getMainDomain()->getName();
             $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
             
-            $websiteNameMinLength = \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
-            $websiteNameMaxLength = \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
+            $websiteNameMinLength = \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite');
+            $websiteNameMaxLength = \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite');
             
             $queryArguments = array(
                 'addWebsite' => 1,
@@ -765,7 +765,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'page_reload'  => (isset($_GET['multisite_page_reload']) && $_GET['multisite_page_reload'] == 'reload_page' ? 'reload_page' : ''),
             );
             $objTemplate->setVariable(array(
-                'MULTISITE_DOMAIN'             => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                'MULTISITE_DOMAIN'             => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
                 'MULTISITE_RELOAD_PAGE'        => (isset($_GET['multisite_page_reload']) && $_GET['multisite_page_reload'] == 'reload_page' ? 'reload_page' : ''),
                 'MULTISITE_ADDRESS_URL'        => $addressUrl->toString(),
                 'MULTISITE_ADD_WEBSITE_URL'    => '/api/MultiSite/SubscriptionAddWebsite?' . self::buildHttpQueryString($queryArguments),
@@ -1378,8 +1378,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         
-        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+        $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount','MultiSite');
+        $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret','MultiSite');
 
         $payrexx = new \Payrexx\Payrexx($instanceName, $apiSecret);
 
@@ -1430,7 +1430,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'backupLocation' => $backupLocation
                 );
             } else {
-                $defaultServiceServerId = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer');
+                $defaultServiceServerId = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer','MultiSite');
                 if (\FWValidator::isEmpty($defaultServiceServerId)) {
                     return 'Invalid Service server Id.';
                 }
@@ -1485,7 +1485,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return 'Failed to restore the website for the given website name.';
             }
             
-            $defaultServiceServerId = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer');
+            $defaultServiceServerId = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer','MultiSite');
             if (empty($defaultServiceServerId)) {
                 return 'Invalid Service server Id.';
             }
@@ -1869,10 +1869,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $_DBCONFIG;
 
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('websiteController','MultiSite')) {
             case 'plesk':
                 $hostingController = \Cx\Core_Modules\MultiSite\Controller\PleskController::fromConfig();
-                $hostingController->setWebspaceId(\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
+                $hostingController->setWebspaceId(\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId','MultiSite'));
                 break;
 
             case 'xampp':
@@ -1926,13 +1926,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
 
             // abort in case the Contrexx installation is in MultiSite website operation mode
-            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == self::MODE_WEBSITE) {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == self::MODE_WEBSITE) {
                 return false;
             }
 
             // config group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem');
-            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('mode',self::MODE_NONE, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::MODE_NONE.':'.self::MODE_NONE.','.self::MODE_MANAGER.':'.self::MODE_MANAGER.','.self::MODE_SERVICE.':'.self::MODE_SERVICE.','.self::MODE_HYBRID.':'.self::MODE_HYBRID, 'config')){
                     throw new MultiSiteException("Failed to add Setting entry for Database Mode");
@@ -1940,7 +1940,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             // server group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'server','FileSystem');
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteController','xampp', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'xampp:XAMPP,plesk:Plesk', 'server')){
                     throw new MultiSiteException("Failed to add Setting entry for Database user website Controller");
@@ -1948,108 +1948,108 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             // setup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup','FileSystem');
-            if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('multiSiteProtocol','mixed', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'mixed:Allow insecure (HTTP) and secure (HTTPS) connections,http:Allow only insecure (HTTP) connections,https:Allow only secure (HTTPS) connections', 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Multisite Protocol");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('multiSiteDomain',$_CONFIG['domainUrl'], 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Database multiSite Domain");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('marketingWebsiteDomain',$_CONFIG['domainUrl'], 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Marketing Website Domain");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('dashboardNewsSrc','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc', 'http://'.$_CONFIG['domainUrl'].'/feed/news_headlines_de.xml', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for dashboardNewsSrc");
             }
 // TODO: this should be an existing domain from Cx\Core\Net
-            if (\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('customerPanelDomain',$_CONFIG['domainUrl'], 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Customer Panel Domain");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('unavailablePrefixes', 'account,admin,demo,dev,mail,media,my,staging,test,www', 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Unavailable website names");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMaxLength',80, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Maximal length of website names");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMinLength',4, 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Minimal length of website names");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('sendSetupError','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('sendSetupError','0', 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated,0:Deactivated', 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for sendSetupError");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('termsUrl') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('termsUrl','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('termsUrl','[[NODE_AGB]]', 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for URL to T&Cs");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('createFtpAccountOnSetup', 0, 11,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Create FTP account during website setup");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('passwordSetupMethod','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('passwordSetupMethod', 'auto', 12,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'auto:Automatically,auto-with-verification:Automatically (with email verification),interactive:Interactive', 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Password set method during website setup");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('autoLogin','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('autoLogin', '0', 13,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Auto Login during website setup");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('ftpAccountFixPrefix', 'cx', 14,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for ftp account fix prefix during website setup");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('forceFtpAccountFixPrefix') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('forceFtpAccountFixPrefix','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('forceFtpAccountFixPrefix', 0, 15,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for force ftp account fix prefix during website setup");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('supportFaqUrl') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('supportFaqUrl','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('supportFaqUrl', 'https://www.cloudrexx.com/FAQ', 16,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for support faq url during website setup");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('supportRecipientMailAddress') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('supportRecipientMailAddress','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('supportRecipientMailAddress', $_CONFIG['coreAdminEmail'], 17,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for support recipient mail address during website setup");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('maxLengthFtpAccountName', 16, 18,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for maximum length for the FTP account name");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('payrexxAccount', '', 19,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for URL to Payrexx form");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('payrexxApiSecret', '', 21,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Payrexx API Secret");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('domainBlackList') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('domainBlackList','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('domainBlackList', self::getAllDomainsName(), 22,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXTAREA, null, 'setup')){
                     throw new MultiSiteException("Failed to add Setting entry for Domain Black list");
@@ -2057,62 +2057,62 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             // websiteSetup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websitePath') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websitePath',\Env::get('cx')->getCodeBaseDocumentRootPath().'/websites', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting entry for websites path");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultCodeBase','', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add SettingDb entry for Database Default code base");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseHost','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteDatabaseHost','localhost', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting entry for website database host");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteDatabasePrefix','cloudrexx_', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting entry for Database prefix for websites");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteDatabaseUserPrefix','clx_', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting entry for Database user prefix for websites");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteIp', $_SERVER['SERVER_ADDR'], 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting entry for Database user plesk IP");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthMethod', '', 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting entry for HTTP Authentication Method of Website");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthUsername', '', 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting entry for HTTP Authentication Username of Website");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthPassword', '', 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting entry for HTTP Authentication Password of Website");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('codeBaseRepository', \Env::get('cx')->getCodeBaseDocumentRootPath() . '/codeBases', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting Repository for Contrexx Code Bases");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteFtpPath', '', 11,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting Repository for website FTP path");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteBackupLocation', \Env::get('cx')->getCodeBaseDocumentRootPath().'/', 12,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new MultiSiteException("Failed to add Setting Repository for website Backup Location");
@@ -2120,32 +2120,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             // websiteManager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager','FileSystem');
-            if (\Cx\Core\Setting\Controller\Setting::getValue('managerHostname') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('managerHostname','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerHostname',$_CONFIG['domainUrl'], 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
                     throw new MultiSiteException("Failed to add Setting entry for Database Manager Hostname");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerSecretKey','', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
                     throw new MultiSiteException("Failed to add Setting entry for Database Manager Secret Key");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerInstallationId','', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
                     throw new MultiSiteException("Failed to add Setting entry for Database Manager Installation Id");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerHttpAuthMethod','', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'websiteManager')){
                     throw new MultiSiteException("Failed to add Setting entry for Database Manager HTTP Authentication Method");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerHttpAuthUsername','', 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
                     throw new MultiSiteException("Failed to add Setting entry for Database Manager HTTP Authentication Username");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('managerHttpAuthPassword','', 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteManager')){
                     throw new MultiSiteException("Failed to add Setting entry for Database Manager HTTP Authentication Password");
@@ -2153,32 +2153,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             // plesk group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'plesk','FileSystem');
-            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskHost') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskHost','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskHost','localhost', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
                     throw new MultiSiteException("Failed to add Setting entry for Database user plesk Host");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskLogin') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskLogin','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskLogin','', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
                     throw new MultiSiteException("Failed to add Setting entry for Database user plesk Login");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskPassword') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskPassword','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskPassword','', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_PASSWORD,'plesk')){
                     throw new MultiSiteException("Failed to add Setting entry for Database user plesk Password");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskApiVersion') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskApiVersion','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskApiVersion','', 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT,'plesk')){
                     throw new MultiSiteException("Failed to add Setting entry for Plesk Api Version");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskWebsitesSubscriptionId',0, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
                     throw new MultiSiteException("Failed to add Setting entry for Database user plesk Subscription Id");
             }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId') === NULL
+            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskMasterSubscriptionId',0, 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
                     throw new MultiSiteException("Failed to add Setting entry for Database ID of master subscription");
@@ -2186,25 +2186,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             //manager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager','FileSystem');
             if (!\FWValidator::isEmpty(\Env::get('db'))
-                && \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer') === NULL
+                && \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteServiceServer', self::getDefaultEntityId('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer'), 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteServiceServerList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Default Website Service Server");
             }
             if (!\FWValidator::isEmpty(\Env::get('db'))
-                && \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer') === NULL
+                && \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultMailServiceServer', self::getDefaultEntityId('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer'), 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getMailServiceServerList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Default mail Service Server");
             }
             if (!\FWValidator::isEmpty(\Env::get('db'))
-                && \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate') === NULL
+                && \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteTemplate', self::getDefaultEntityId('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate'), 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getWebsiteTemplateList()}', 'manager')) {
                     throw new MultiSiteException("Failed to add Setting entry for default Website Template");
             }
             if (!\FWValidator::isEmpty(\Env::get('db'))
-                && \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct') === NULL 
+                && \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct','MultiSite') === NULL 
                 && !\Cx\Core\Setting\Controller\Setting::add('defaultPimProduct', self::getDefaultPimProductId(), 4,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getProductList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Product List");
@@ -2238,7 +2238,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         $dbProfileAttributeId      = self::getProfileAttributeIdByConfigOptionName($configOptionName, $attributeName);
-        $settingProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName);
+        $settingProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName,'MultiSite');
 
         if ($settingProfileAttributeId != $dbProfileAttributeId) {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager', 'FileSystem');
@@ -2267,7 +2267,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function registerEventListener(){
         // do not register any Event Listeners in case MultiSite mode is not set
-        if (!\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        if (!\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             return;
         }
 
@@ -2276,7 +2276,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case self::MODE_MANAGER:
                 $this->registerDomainEventListener();
                 $this->registerNetDomainEventListener();
@@ -2444,7 +2444,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         // Abort in case this Contrexx installation has not been set up as a Website Service.
         // If the MultiSite module has not been configured, then 'mode' will be set to null.
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case self::MODE_MANAGER:
                 $this->verifyRequest($cx);
                 break;
@@ -2476,7 +2476,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
 
                 // deploy website when in online-state and request is a regular http request
-                if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState') == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('websiteState','MultiSite') == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
                     break;
                 }
 
@@ -2493,8 +2493,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     protected function verifyRequest($cx) {
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $managerDomain = $domainRepository->getMainDomain();
-        $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
-        $marketingWebsiteDomainName = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain');
+        $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite');
+        $marketingWebsiteDomainName = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
         $requestedDomainName = $_SERVER['HTTP_HOST'];
 
         // Allow access to backend only through Manager domain (-> Main Domain).
@@ -2544,7 +2544,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     protected function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
         $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
-        $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $_SERVER['HTTP_HOST']);
+        $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/', $_SERVER['HTTP_HOST']);
         if ($website) {
             // Recheck the system state of the Website Service Server (1st check
             // has already been performed before executing the preInit-Hooks),
@@ -2554,7 +2554,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // has activated the maintenance-mode.
             $cx->checkSystemState(true);
 
-            $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$website->getName().'/config/configuration.php';
+            $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/'.$website->getName().'/config/configuration.php';
             $requestInfo =    isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'JsonData'
                            && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
                            && isset($_REQUEST['act'])
@@ -2562,7 +2562,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 : '';
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
             // set SERVER_NAME to BaseDN of Website
-            $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+            $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
             \Cx\Core\Core\Controller\Cx::instanciate($cx->getMode(), true, $configFile, true);
 
             // In cx-mode MODE_MINIMAL we must not abort
@@ -2592,14 +2592,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function setCustomerPanelDomainAsMainDomain() {
         global $_CONFIG, $plainCmd;
 
-        if (!\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        if (!\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             return;
         }
         
         $config = \Env::get('config');
         self::$cxMainDomain = $config['domainUrl'];
         
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') != self::MODE_MANAGER) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') != self::MODE_MANAGER) {
             return;
         }
 
@@ -2607,7 +2607,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
-        $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain');
+        $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite');
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $customerPanelDomain = $domainRepository->findOneBy(array('name' => $customerPanelDomainName));
         if ($customerPanelDomain) {
@@ -2624,7 +2624,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return string $protocolUrl
      */
     public static function getApiProtocol() {
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite')) {
             case 'http':
                 $protocolUrl = 'http://';
                 break;
@@ -2798,7 +2798,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public static function getProfileAttributeIdByConfigOptionName($configOptionName, $attrName) {
         $objUser = \FWUser::getFWUserObject()->objUser;
         
-        $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName);
+        $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName,'MultiSite');
 
         if ($externalPaymentCustomerIdProfileAttributeId) {
             $objProfileAttribute = $objUser->objAttribute->getById($externalPaymentCustomerIdProfileAttributeId);
@@ -2838,7 +2838,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         // check the mode
         $adminUsers = array();
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_WEBSITE:
 
                 $userRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User');
@@ -2956,12 +2956,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-        $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId');
+        $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
         if (!$websiteUserId) {
             return;
         }
 
-        $websiteUser = \FWUser::getFWUserObject()->objUser->getUser(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId'));
+        $websiteUser = \FWUser::getFWUserObject()->objUser->getUser(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite'));
         if (!$websiteUser) {
             return;
         }
@@ -3049,7 +3049,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case self::MODE_HYBRID:
             case self::MODE_MANAGER:
                 // only show modal contact information modal if user is signed-in
@@ -3060,8 +3060,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // get user attribut field id for customer typ and company size out of crm, because we can not save this
                 // 2 settings for a crm user, they are only available for crm companies
                 \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
-                $attributIdForCustomerType = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ');
-                $attributIdForCompanySize = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size');
+                $attributIdForCustomerType = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ','MultiSite');
+                $attributIdForCompanySize = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size','MultiSite');
 
                 $profileAttributes = array(
                                         'firstname',
@@ -3167,7 +3167,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $this->cx->getTemplate()->setVariable(
             array(
-                'MULTISITE_AGB_URL' => \Cx\Core\Setting\Controller\Setting::getValue('termsUrl'),
+                'MULTISITE_AGB_URL' => \Cx\Core\Setting\Controller\Setting::getValue('termsUrl','MultiSite'),
                 'TXT_MULTISITE_ACCEPT_TERMS_URL_NAME' => $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'],
             )
         );

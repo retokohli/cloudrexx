@@ -89,8 +89,8 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
             $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_HAVE_QUESTION']
         );
         \Cx\Core\Setting\Controller\Setting::init('Support', 'setup','Yaml');
-        $faqUrl = \Cx\Core\Setting\Controller\Setting::getValue('faqUrl');
-        $recipientMailAddress = \Cx\Core\Setting\Controller\Setting::getValue('recipientMailAddress');
+        $faqUrl = \Cx\Core\Setting\Controller\Setting::getValue('faqUrl','Support');
+        $recipientMailAddress = \Cx\Core\Setting\Controller\Setting::getValue('recipientMailAddress','Support');
         $faqLink = '<a target="_blank" title="click to FAQ page" href='.$faqUrl.'>'.$_ARRAYLANG['TXT_SUPPORT_FEEDBACK_FAQ'].'</a>';
         
         //Get License information

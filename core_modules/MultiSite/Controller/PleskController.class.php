@@ -478,9 +478,9 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * Static function to set default configuration 
      */
     public static function fromConfig() {
-        $pleskHost      = \Cx\Core\Setting\Controller\Setting::getValue('pleskHost');
-        $pleskLogin     = \Cx\Core\Setting\Controller\Setting::getValue('pleskLogin');
-        $pleskPassword  = \Cx\Core\Setting\Controller\Setting::getValue('pleskPassword');
+        $pleskHost      = \Cx\Core\Setting\Controller\Setting::getValue('pleskHost','MultiSite');
+        $pleskLogin     = \Cx\Core\Setting\Controller\Setting::getValue('pleskLogin','MultiSite');
+        $pleskPassword  = \Cx\Core\Setting\Controller\Setting::getValue('pleskPassword','MultiSite');
         return new static($pleskHost, $pleskLogin, $pleskPassword);
     }
     

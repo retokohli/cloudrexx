@@ -30,9 +30,9 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository {
         $objDomains = $this->findAll();
         $websiteDomainContent = $codeBaseRepositoryContent = array();
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
         $websiteOffsetPath = substr($websitePath, strlen(\Env::get('cx')->getWebsiteDocumentRootPath()));
-        $codeBaseRepositoryPath = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository');
+        $codeBaseRepositoryPath = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite');
         $codeBaseRepositoryOffsetPath = substr($codeBaseRepositoryPath, strlen(\Env::get('cx')->getCodeBaseDocumentRootPath()));
         foreach ($objDomains As $objDomain) {
             if ($objDomain->getWebsite() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {

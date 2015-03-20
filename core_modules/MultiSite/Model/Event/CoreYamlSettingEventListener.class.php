@@ -43,9 +43,9 @@ class CoreYamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventL
         $entity = $eventArgs->getEntity();
         
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
                 if ($entity->getName() === 'mainDomainId' && !\FWValidator::isEmpty($websiteName)) {
                     $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
                     $domain = $domainRepo->findOneBy(array('id' => $entity->getValue()));

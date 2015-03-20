@@ -103,7 +103,8 @@ class YamlRepository {
             throw new YamlRepositoryException('No repository specified!');
         }
 
-        $this->repositoryPath = $repositoryPath;
+        $this->repositoryPath = $repositoryPath;        
+        $this->fileExists($this->repositoryPath);
         $this->load();
     }
 
@@ -123,7 +124,7 @@ class YamlRepository {
      */
     protected function load() {
         $this->reset();
-
+        
         list($meta, $entities) = $this->loadData();
 
         $this->entityAutoIncrement = $meta['auto_increment'];
@@ -357,6 +358,35 @@ class YamlRepository {
             $identifierKey = $this->entityIdentifier;
         }
         return call_user_func(array($entity, "get".ucfirst($identifierKey)));
+    }
+        
+    /**
+     * Checks if file exists, if not - creates new one
+     * 
+     * @param string $filename
+     * @return boolean
+     * @throws \Cx\Core\Setting\Controller\SettingException
+     */
+    protected function fileExists($filename) {
+        
+        if(file_exists($filename) && filesize($filename) > 0) return true;
+        \DBG::log('Creating new file');
+        try {
+            $file = new \Cx\Lib\FileSystem\File($filename);
+            $file->touch();
+            if(empty(trim($file->getData()))) {
+                $inidata = 
+                    "meta:\n" .
+                    "   auto_increment: 1\n" .
+                    "   identifier: id\n" .
+                    "   unique_keys:\n" .
+                    "        - name";
+                $file->write($inidata);
+            }
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::log('EX ' . $e->getMessage());
+            throw new \Cx\Core\Setting\Controller\SettingException($e->getMessage());
+        }  
     }
 }
 

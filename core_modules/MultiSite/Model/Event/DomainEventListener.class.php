@@ -36,7 +36,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function postRemove($eventArgs) {
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
             $domain  = $eventArgs->getEntity();
             $em = $eventArgs->getEntityManager();
             if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
@@ -69,7 +69,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
                         if (\FWValidator::isEmpty($websiteName)) {
                             break;
                         }
@@ -93,7 +93,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function preUpdate($eventArgs) {
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode   = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $mode   = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
             $domain = $eventArgs->getEntity();
             if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                 switch ($mode) {
@@ -116,7 +116,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
                         if (\FWValidator::isEmpty($websiteName)) {
                             break;
                         }
@@ -148,7 +148,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function prePersist($eventArgs) {
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
             $domain  = $eventArgs->getEntity();
             if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain) {
                 switch ($mode) {
@@ -181,7 +181,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function postPersist($eventArgs) {
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
             $em = $eventArgs->getEntityManager();
             $domain  = $eventArgs->getEntity();
             switch ($mode) {
@@ -191,7 +191,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     break;
                 
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                    $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                    $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
                     if (!($domain instanceof \Cx\Core\Net\Model\Entity\Domain) || \FWValidator::isEmpty($websiteName)) {
                         break;
                     }
@@ -215,12 +215,12 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function postUpdate($eventArgs) {
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
             $domain  = $eventArgs->getEntity();
             if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
                 switch ($mode) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName');
+                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
                         if (\FWValidator::isEmpty($websiteName)) {
                             break;
                         }
@@ -284,7 +284,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 // In case MultiSite is operated in 'hybrid'-mode, then
                 // the BaseDN is the same as FQDN. In that case we won't create the
                 // BaseDN record as it would be an invalid DNS-record.
-                if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
                     return;
                 }
                 $type = 'CNAME';
@@ -325,7 +325,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         switch ($operation) {
             case 'add':
                 $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
-                $recordId = $hostingController->addDnsRecord($type, $domain->getName(), $value, \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'));
+                $recordId = $hostingController->addDnsRecord($type, $domain->getName(), $value, \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'), \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId','MultiSite'));
                 \DBG::msg(__METHOD__.": Set pleskId: $recordId");
                 $domain->setPleskId($recordId);
                 break;
@@ -337,7 +337,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
             case 'update':
                 $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
-                $recordId = $hostingController->updateDnsRecord($type, $domain->getName(), $value, \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'), $domain->getPleskId());
+                $recordId = $hostingController->updateDnsRecord($type, $domain->getName(), $value, \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'), \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId','MultiSite'), $domain->getPleskId());
 
                 // check if DNS-record was updated
                 if ($recordId == $domain->getPleskId()) {

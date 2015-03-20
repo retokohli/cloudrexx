@@ -96,7 +96,7 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
 
         //If the $productOptions['websiteTemplate] is empty, take the value from multisite option defaultWebsiteTemplate
         if (empty($productOptions['websiteTemplate'])) {
-            $productOptions['websiteTemplate'] = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate');
+            $productOptions['websiteTemplate'] = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteTemplate','MultiSite');
         }
         
         //Assigning the websiteTemplate specified by the websiteTemplate of the selected Product.

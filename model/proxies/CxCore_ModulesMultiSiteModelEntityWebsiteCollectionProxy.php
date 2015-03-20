@@ -69,10 +69,10 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteCollectionProxy extends \Cx\Core_
         return parent::getWebsites();
     }
 
-    public function setWebsite(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
+    public function setWebsites($websites)
     {
         $this->_load();
-        return parent::setWebsite($website);
+        return parent::setWebsites($websites);
     }
 
     public function addWebsite(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)

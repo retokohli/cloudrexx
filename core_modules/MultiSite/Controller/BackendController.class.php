@@ -36,7 +36,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         //$permissionAccess => array of the permission access Ids should be listed here.
         //$subCommandsArray => array of subcommands should be listed here.
         
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_SERVICE:
                 if (\Permission::checkAccess(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID, 'static', true)) {
                    return array('Maintenance' => array('Ftp'), 'statistics', 'settings'=> array('codebases','website_templates')); 
@@ -187,7 +187,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $communicationManagementAccess = \Permission::checkAccess(self::MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID, 'static', true);
         $systemManagementAccess        = \Permission::checkAccess(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID, 'static', true);
         
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_NONE:
             case ComponentController::MODE_WEBSITE:
                 $cmd = array('settings');
@@ -234,7 +234,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         global $_ARRAYLANG;
 
         $config = \Env::get('config');
-        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
         
         if (   \Permission::checkAccess(self::MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID, 'static', true)
             && !\Permission::checkAccess(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID, 'static', true)
@@ -314,7 +314,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             );
             $template->setVariable('TABLE', $view->render());
         } elseif (!empty($cmd[1]) && $cmd[1]=='codebases') {
-            $codeBasePath   = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository');
+            $codeBasePath   = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite');
             $codebaseScannedDir = array_values(array_diff(scandir($codeBasePath), array('..', '.')));
             $codebaseRepositoryDataArray[] = array(
                 'Version_number'  => $config['coreCmsVersion'],
@@ -354,7 +354,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'header'  => 'Default',
                             'table' => array(
                                 'parse' => function($value) {
-                                    $checked = ($value == \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase')) ? 'checked="checked"' : '';
+                                    $checked = ($value == \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase','MultiSite')) ? 'checked="checked"' : '';
                                     $content = '<input type = "radio" class="defaultCodeBase" name = "defaultCodeBase" '.$checked.' value ="'.$value.'"/>';
                                     return $content;
                                 },
@@ -504,7 +504,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         //dynamic use websites path
         //self::errorHandler();
         //\Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config');
-        $websitesPath=\Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $websitesPath=\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
         // this a very ugly BETA with no much comment and wrong english in it
         $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
         $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll());
@@ -591,29 +591,29 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
             'header' => 'Websites',
             'functions' => array(
-                'edit' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
-                'delete' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                'edit' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                'delete' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
                 'sorting' => true,
                 'paging' => true,       // cannot be turned off yet
                 'filtering' => false,   // this does not exist yet
                 'actions' => function($rowData) {
-                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions = \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, false);
                                 }
-                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::showLicense($rowData, false);
                                 }
-                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::remoteLogin($rowData, false);
                                 }
-                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $domainRepo = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
-                                    $domain     = $domainRepo->findOneBy(array('name' => \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain')));
+                                    $domain     = $domainRepo->findOneBy(array('name' => \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite')));
                                     if ($domain) {
                                         $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::remoteLogin($rowData, true);
                                     }
                                 }
-                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::multiSiteConfig($rowData, false);
                                 }
                                 return $actions;
@@ -626,7 +626,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'readonly' => true,
                     'table' => array(
                         'parse' => function($value) {
-                            $websiteUrl = '<a href="'.ComponentController::getApiProtocol() . $value . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'" target="_blank">' . $value . '</a>';
+                            $websiteUrl = '<a href="'.ComponentController::getApiProtocol() . $value . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite').'" target="_blank">' . $value . '</a>';
                             return $websiteUrl;
                         },
                     ),
@@ -635,7 +635,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'table' => array(
                         'parse' => function($value, $arrData) {
                             // changing a Website's status must only be allowed from within the MANAGER (or HYBRID)
-                            if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                            if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                 return $value;
                             }
                             $stateOnline = \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE;
@@ -763,7 +763,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
             
         $ftpAccounts = array();
-        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode') , array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') , array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
             $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
             $ftpAccountsArr    = $hostingController->getFtpAccounts(true);
             foreach ($ftpAccountsArr as $ftpAccount) {
@@ -786,7 +786,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $websiteServiceServer = '';
 
             // get website service server
-            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == ComponentController::MODE_MANAGER) {
                 $objWebsiteServiceServer = $website->getWebsiteServiceServer();
                 if ($objWebsiteServiceServer) {
                     $websiteServiceServer = $objWebsiteServiceServer->getlabel();
@@ -794,7 +794,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
 
             // get FTP details
-            $currentFtpAccounts = (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER)
+            $currentFtpAccounts = (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == ComponentController::MODE_MANAGER)
                                     ? ($objWebsiteServiceServer ? $ftpAccounts[$objWebsiteServiceServer->getId()] : array())
                                     : $ftpAccounts;
             
@@ -858,7 +858,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             ),
                             'websiteServiceServer' => array(
                                 'header' => 'TXT_CORE_MODULE_MULTISITE_WEBSITE_SERVICE_SERVER',
-                                'showOverview' => \Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER,
+                                'showOverview' => \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == ComponentController::MODE_MANAGER,
                             )
                         )
                    ));
@@ -895,8 +895,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $view = new \Cx\Core\Html\Controller\ViewGenerator($domains, array(
             'header' => 'Domains',
             'functions' => array(
-                'edit' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
-                'delete' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                'edit' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                'delete' => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
                 'sorting' => true,
                 'paging' => true, 
                 'filtering' => false,
@@ -947,7 +947,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 ),
                 'pleskId' => array(
                     'header' => 'DNS status',
-                    'showOverview'  => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
+                    'showOverview'  => in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)),
                     'table' => array(
                         'parse' => function($value) {                           
                            $status  = isset(self::$dnsRecords[$value]) ? true : false;
@@ -971,7 +971,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     static function settings($objTemplate)
     { 
         global $_ARRAYLANG;
-        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', null, 'FileSystem');  
             //check form post
@@ -1001,10 +1001,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
 
             // fetch MultiSite operation mode and set websiteController
-            $websiteController = \Cx\Core\Setting\Controller\Setting::getValue('websiteController');
+            $websiteController = \Cx\Core\Setting\Controller\Setting::getValue('websiteController','MultiSite');
 
             if ($mode != ComponentController::MODE_WEBSITE) {
-                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config', 'FileSystem');    
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'config');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
@@ -1015,7 +1015,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             
             if (in_array($mode, array(ComponentController::MODE_MANAGER,ComponentController::MODE_HYBRID))) {
-                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager', 'FileSystem');    
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'manager');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
@@ -1026,7 +1026,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
           
             if (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
-                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'server', 'FileSystem');
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'server');
+                //\DBG::dump(\Cx\Core\Setting\Controller\Setting::getSettings('MultiSite', 'FileSystem', 'server'));
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
@@ -1037,7 +1038,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
 
             if (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
-                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup', 'FileSystem');    
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'setup');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
@@ -1050,7 +1051,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             
             if ($mode == ComponentController::MODE_SERVICE) {
-                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager', 'FileSystem');
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'websiteManager');
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
@@ -1061,7 +1062,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             
            if (in_array($mode, array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
-                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup', 'FileSystem');    
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'websiteSetup');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
@@ -1074,7 +1075,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (   in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))
                 && $websiteController == 'plesk'
             ) {
-                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'plesk', 'FileSystem');
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'plesk');
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
@@ -1086,7 +1087,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
             if ($mode == ComponentController::MODE_WEBSITE) {
                 // config section if the MultiSite is run as Website
-                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website', 'FileSystem');
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'website');
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',

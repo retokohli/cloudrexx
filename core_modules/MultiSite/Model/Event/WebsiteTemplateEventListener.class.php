@@ -66,7 +66,7 @@ class WebsiteTemplateEventListener implements \Cx\Core\Event\Model\Entity\EventL
             return;
         }
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
                     

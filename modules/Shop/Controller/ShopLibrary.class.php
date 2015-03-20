@@ -183,8 +183,8 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
      */
     static function scaleImageSizeToThumbnail(&$arrSize)
     {
-        $thumbWidthMax = \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width');
-        $thumbHeightMax = \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height');
+        $thumbWidthMax = \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop');
+        $thumbHeightMax = \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height','Shop');
         $ratioWidth = $thumbWidthMax/$arrSize[0];
         $ratioHeight = $thumbHeightMax/$arrSize[1];
         if ($ratioWidth > $ratioHeight) {
@@ -316,7 +316,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
             'lang_id' => $arrSubstitution['LANG_ID'],
             'to' =>
                 $arrSubstitution['CUSTOMER_EMAIL'].','.
-                \Cx\Core\Setting\Controller\Setting::getValue('email_confirmation'),
+                \Cx\Core\Setting\Controller\Setting::getValue('email_confirmation','Shop'),
             'substitution' => &$arrSubstitution,
         );
 //DBG::log("sendConfirmationMail($order_id, $create_accounts): Template: ".var_export($arrMailTemplate, true));
@@ -382,7 +382,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
     static function getSubstitutionArray()
     {
         return array(
-            'SHOP_COMPANY' => \Cx\Core\Setting\Controller\Setting::getValue('company'),
+            'SHOP_COMPANY' => \Cx\Core\Setting\Controller\Setting::getValue('company','Shop'),
             'SHOP_HOMEPAGE' => \Cx\Core\Routing\Url::fromModuleAndCmd(
                 'Shop', '', FRONTEND_LANG_ID)->toString(),
         );

@@ -139,12 +139,12 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
             return;
         }
         
-        $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
         $websiteServiceServer = null;
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
             //get default service server
             $defaultWebsiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer')));
+            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer','MultiSite')));
             $websiteServiceServer = $defaultWebsiteServiceServer[0];
         }
         
