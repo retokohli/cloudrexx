@@ -964,6 +964,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         //frontend picture upload & thumbnail creation
         if($objInit->mode == 'frontend') {
             $unique_id = intval($_REQUEST[self::PICTURE_FIELD_KEY]);
+            $attachmentUniqueId = intval($_REQUEST[self::ATTACHMENT_FIELD_KEY]);
             
             if (!empty($unique_id)) {
                 $picture = $this->_handleUpload('pictureUpload', $unique_id);
@@ -982,6 +983,18 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     $pic = $picture;
                 }
             }
+            
+            if (!empty($attachmentUniqueId)) {
+                $attachment = $this->_handleUpload('attachmentUpload', $attachmentUniqueId);
+                if ($attachment) {
+                    //delete file
+                    if (file_exists("{$this->uploadImgPath}$attach")) {
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($this->uploadImgPath."/.$attach");
+                    }
+                    $attach = $attachment;
+                }
+            }
+            
         } else {
             // create thumb if not exists
             if (!file_exists(\Env::get('cx')->getWebsitePath()."$pic.thumb")) {
@@ -1201,7 +1214,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $formData['status']    = $status;
             $formData['confirmed'] = $confirmed;
             $formData['author']    = $author;
-                                  
+            
             $query = \SQL::insert("module_{$this->moduleTablePrefix}_event", $formData);
             
             $objResult = $objDatabase->Execute($query); 
@@ -1605,9 +1618,10 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                         $objFile->move($depositionTarget.$prefix.$f, false);
                         
                         $imageName = $prefix.$f;
-                        $objImage = new \ImageManager();
-                        $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
-
+                        if ($fieldName != 'attachmentUpload') {
+                            $objImage = new \ImageManager();
+                            $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
+                        }
                         $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());                        
