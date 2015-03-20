@@ -840,6 +840,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($websiteArray);
         $view    = new \Cx\Core\Html\Controller\ViewGenerator($dataSet, array(
                         'header' => 'FTP',
+                        'functions' => array(
+                          'paging'  => true  
+                        ),
                         'fields' => array(
                             'name'    => array('header' => 'TXT_CORE_MODULE_MULTISITE_WEBSITENAME'),
                             'ftpUser' => array('header' => 'TXT_CORE_MODULE_MULTISITE_FTPUSER'),
