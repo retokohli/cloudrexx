@@ -119,7 +119,7 @@ $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS_SUBSCRIBER'] = "Nombre de participants";
 $_ARRAYLANG['TXT_CALENDAR_NOTIFICATION_ACTIVATE'] = "Activer la notification";
 $_ARRAYLANG['TXT_CALENDAR_REG_NO_ESCORT'] = "Non accompagné";
 $_ARRAYLANG['TXT_CALENDAR_FRONTENDSAVEOK'] = "Inscription enregistrée.";
-$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is not activated.";
+$_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Désolé, cette fonction n'est pas activée.";
 $_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE'] = "Terminaison de fichier non valable. ";
 $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_PIC'] = "Envoyer une image ";
 $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_ATTACHMENT'] = "Envoyer une annexe";
@@ -131,7 +131,7 @@ $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "Votre inscription
 $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'] = "sélectionnez svp.";  
 $_ARRAYLANG['TXT_CALENDAR_EVENT_IN_PAST'] = "Es können keine weiteren Anmeldungen entgegen genommen werden, da diese Veranstaltung bereits in der Vergangenheit liegt.";
 
-$_ARRAYLANG['TXT_CALENDAR_OCLOCK'] = "Uhr";
+$_ARRAYLANG['TXT_CALENDAR_OCLOCK'] = "Heure";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Event successfull saved";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'] = "Corrupt save";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT'] = "Exportieren";
@@ -139,6 +139,6 @@ $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_NOTHING'] = "";
 $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_SPACE'] = " ";
 $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_HYPHEN'] = " - ";
 $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_COLON'] = " : ";
-$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_TO'] = " bis ";
+$_ARRAYLANG['TXT_CALENDAR_SEPARATOR_TO'] = " au ";
 $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_BREAK'] = "<br/>";
 ?>
