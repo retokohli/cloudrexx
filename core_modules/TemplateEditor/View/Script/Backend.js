@@ -6,6 +6,7 @@
  */
 
 function updateOption(optionName,optionData, callback){
+    jQuery('#saveOptionsButton').attr("disabled", "disabled");
     jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=updateOption&tid="+cx.variables.get('themeid','TemplateEditor'), { optionName: optionName, optionData:optionData }, function (reponse) {
         if (reponse.status != 'error'){
             var domainurl = cx.variables.get('domainurl','TemplateEditor');
@@ -24,17 +25,48 @@ function updateOption(optionName,optionData, callback){
 
         }
         callback(reponse);
+        jQuery('#saveOptionsButton').removeAttr("disabled");
     }, "json");
 }
 
 var saveOptions = function (){
+    if (jQuery(this).attr('disabled')){
+        return;
+    }
+
     var that = this;
-    jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=saveOptions&tid="+cx.variables.get('themeid','TemplateEditor'), {}, function (response) {
-        jQuery(that).addClass('saved');
-        setTimeout(function(){
-            jQuery(that).removeClass('saved');
-        }, 2000);
-    }, "json");
+    bootbox.dialog({
+        title: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_TITLE','TemplateEditor'),
+        message: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_CONTENT','TemplateEditor'),
+        buttons: {
+            success: {
+                label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE','TemplateEditor'),
+                className: "btn-success",
+                callback: function() {
+                    var loading = bootbox.dialog({
+                        message: '<img style="margin: 30px auto; display:block;" src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" alt=""/>',
+                        title: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE','TemplateEditor'),
+                        onEscape: function() {},
+                        closeButton: false
+                    });
+                    jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=saveOptions&tid="+cx.variables.get('themeid','TemplateEditor'), {}, function (response) {
+                        jQuery(that).addClass('saved');
+                        setTimeout(function(){
+                            jQuery(that).removeClass('saved');
+                        }, 2000);
+                        loading.modal('hide');
+                    }, "json");
+                }
+            },
+            main: {
+                label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL','TemplateEditor'),
+                className: "btn-danger",
+                callback: function() {
+                }
+            }
+        }
+    });
+
 };
 
 jQuery(function(){
@@ -48,6 +80,6 @@ jQuery(function(){
     jQuery('#saveOptionsButton').click(saveOptions);
     jQuery('#layout').change(function(){
         var newloaction = location.href.replace("tid="+cx.variables.get('themeid','TemplateEditor'), "tid="+jQuery(this).val());
-        window.location.href = newloaction.search('tid') === false ? newloaction+ "&tid="+jQuery(this).val() : newloaction;
+        window.location.href = (newloaction.search('tid=') == -1 ? newloaction + "&tid=" + jQuery(this).val() : newloaction);
     });
 });

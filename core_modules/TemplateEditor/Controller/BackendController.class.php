@@ -141,6 +141,10 @@ class BackendController extends SystemComponentBackendController
         $template->setGlobalVariable($_ARRAYLANG);
         \ContrexxJavascript::getInstance()->setVariable(
             array(
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_CONTENT' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_CONTENT'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_TITLE'],
                 'themeid' => $this->theme->getId(),
                 'iframeUrl' => Url::fromModuleAndCmd(
                     'home', '', null,
