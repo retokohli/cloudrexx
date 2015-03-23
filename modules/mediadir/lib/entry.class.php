@@ -1065,6 +1065,24 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                             $strDefault = $arrDefault;
                         }
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
+                    } else if (
+                        // attribute's VALUE of certain frontend language ($intLangId) is empty
+                        empty($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId])
+                        // or the process is parsing the user's current interface language
+                        || $intLangId == $_LANGID
+                    ) {
+                            $strMaster =
+                                (isset($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0])
+                                  ? $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0]
+                                  : null);
+                            $strNewDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID];
+                            if ($strNewDefault != $strMaster) {
+                                $strDefault = $strMaster;
+                            } else {
+                                $strDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId];
+                            }
+                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault);
+        
                     } else {
                         // regular attribute get parsed
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId]);
