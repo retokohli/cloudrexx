@@ -74,7 +74,7 @@ class MediaDirectoryInputfieldClassification extends \Cx\Modules\MediaDir\Contro
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown" style="width: 302px">';
+                    $strInputfield = '<select name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldDropdown" style="width: 302px">';
 
                     for ($i=1;$i<=$this->arrSettings['settingsClassificationPoints'];$i++){
                         if($strValue == $i) {
@@ -88,7 +88,7 @@ class MediaDirectoryInputfieldClassification extends \Cx\Modules\MediaDir\Contro
 
                     $strInputfield .= '</select>';
                 } else {
-                    $strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown '.$strInfoClass.'" '.$strInfoValue.'>';
+                    $strInputfield = '<select name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldDropdown '.$strInfoClass.'" '.$strInfoValue.'>';
 
                     for ($i=1;$i<=$this->arrSettings['settingsClassificationPoints'];$i++){
                         if($strValue == $i) {
