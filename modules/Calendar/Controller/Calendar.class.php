@@ -495,7 +495,7 @@ EOF;
                 $javascript .= <<< UPLOADER
                 {$this->getUploaderCode($this->handleUniqueId(self::PICTURE_FIELD_KEY), 'pictureUpload')}
                 {$this->getUploaderCode($this->handleUniqueId(self::MAP_FIELD_KEY), 'mapUpload')}
-                {$this->getUploaderCode($this->handleUniqueId(self::ATTACHMENT_FIELD_KEY), 'attachmentUpload')}
+                {$this->getUploaderCode($this->handleUniqueId(self::ATTACHMENT_FIELD_KEY), 'attachmentUpload', 'uploadFinished', false)}
 UPLOADER;
             } catch(Exception $e) {
                 \DBG::msg("Error in initializing uploader");
@@ -967,7 +967,7 @@ UPLOADER;
         }
     }
         
-    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished")
+    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
         try {                        
             //init the uploader
@@ -1005,7 +1005,7 @@ UPLOADER;
             $uploader = $f->newUploader('exposedCombo', $submissionId, true);
             $uploader->setJsInstanceName($uploaderInstanceName);
             $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Calendar/Controller/Calendar.class.php','\Cx\Modules\Calendar\Controller\Calendar', $uploadCallBack));
-            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName));
+            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName, 'allowImageOnly' => $allowImageOnly));
             
             $strJs  = $uploader->getXHtml();
         $strJs .= $folderWidget->getXHtml("#{$fieldName}_uploadWidget", "uploadWidget".$submissionId);
@@ -1065,10 +1065,10 @@ JAVASCRIPT;
                 if($file == '.' || $file == '..') { continue; }
                 
                 //delete unwanted files
-                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes) && $data['field_name'] != 'attachmentUpload') {
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes) && $data['allowImageOnly']) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        $lang["TXT_{$this->moduleLangVar}_IMAGE_UPLOAD_ERROR"],
+                        $lang["TXT_CALENDAR_IMAGE_UPLOAD_ERROR"],
                         $file
                     );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);

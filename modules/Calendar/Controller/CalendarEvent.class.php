@@ -1615,10 +1615,11 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     // move file
                     try {
                         $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                        $fileInfo = pathinfo($tmpUploadDir.$f);
                         $objFile->move($depositionTarget.$prefix.$f, false);
                         
                         $imageName = $prefix.$f;
-                        if ($fieldName != 'attachmentUpload') {
+                        if (in_array($fileInfo['extension'], array('gif', 'jpg', 'jpeg', 'png'))) {
                             $objImage = new \ImageManager();
                             $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
                         }
