@@ -990,6 +990,7 @@ class CalendarEvent extends CalendarLibrary
         //frontend picture upload & thumbnail creation
         if($objInit->mode == 'frontend') {
             $unique_id = intval($_REQUEST[self::PICTURE_FIELD_KEY]);
+            $attachmentUniqueId = intval($_REQUEST[self::ATTACHMENT_FIELD_KEY]);
             
             if (!empty($unique_id)) {
                 $picture = $this->_handleUpload('pictureUpload', $unique_id);
@@ -1008,6 +1009,18 @@ class CalendarEvent extends CalendarLibrary
                     $pic = $picture;
                 }
             }
+            
+            if (!empty($attachmentUniqueId)) {
+                $attachment = $this->_handleUpload('attachmentUpload', $attachmentUniqueId);
+                if ($attachment) {
+                    //delete file
+                    if (file_exists("{$this->uploadImgPath}$attach")) {
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($this->uploadImgPath."/.$attach");
+                    }
+                    $attach = $attachment;
+                }
+            }
+            
         } else {
             // create thumb if not exists
             if (!file_exists(ASCMS_PATH."$pic.thumb")) {
@@ -1628,12 +1641,15 @@ class CalendarEvent extends CalendarLibrary
                     // move file
                     try {
                         $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                        $fileInfo = pathinfo($tmpUploadDir.$f);
                         $objFile->move($depositionTarget.$prefix.$f, false);
                         
                         $imageName = $prefix.$f;
-                        $objImage = new ImageManager();
-                        $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
-
+                        if (in_array($fileInfo['extension'], array('gif', 'jpg', 'jpeg', 'png'))) {
+                            $objImage = new ImageManager();
+                            $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
+                        }
+                        
                         $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());                        

@@ -520,6 +520,7 @@ EOF;
                 $javascript .= <<< UPLOADER
                 {$this->getUploaderCode($this->handleUniqueId(self::PICTURE_FIELD_KEY), 'pictureUpload')}
                 {$this->getUploaderCode($this->handleUniqueId(self::MAP_FIELD_KEY), 'mapUpload')}
+                {$this->getUploaderCode($this->handleUniqueId(self::ATTACHMENT_FIELD_KEY), 'attachmentUpload', 'uploadFinished', false)}
 UPLOADER;
             } catch(Exception $e) {
                 \DBG::msg("Error in initializing uploader");
@@ -553,6 +554,7 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_LINK'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'],
             'TXT_'.$this->moduleLangVar.'_EVENT_EMAIL'              => $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_PICTURE'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_PICTURE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_ATTACHMENT'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ATTACHMENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_CATEGORY'           => $_ARRAYLANG['TXT_CALENDAR_CAT'] ,
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT'       => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHECK_INPUT'],
@@ -576,6 +578,7 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+            $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
             $this->moduleLangVar.'_EVENT_CATEGORIES'                => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),            
             $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,            
             $this->moduleLangVar.'_EVENT_PLACE'                     => $objEvent->place,
@@ -989,7 +992,7 @@ UPLOADER;
         }
     }
         
-    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished")
+    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
         try {                        
             //init the uploader
@@ -1027,7 +1030,7 @@ UPLOADER;
             $uploader = $f->newUploader('exposedCombo', $submissionId, true);
             $uploader->setJsInstanceName($uploaderInstanceName);
             $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/calendar/index.class.php','Calendar', $uploadCallBack));
-            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName));
+            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName, 'allowImageOnly' => $allowImageOnly));
             
             $strJs  = $uploader->getXHtml();
         $strJs .= $folderWidget->getXHtml("#{$fieldName}_uploadWidget", "uploadWidget".$submissionId);
@@ -1087,10 +1090,10 @@ JAVASCRIPT;
                 if($file == '.' || $file == '..') { continue; }
                 
                 //delete unwanted files
-                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {                                     
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes) && $data['allowImageOnly']) {                                     
                     $response->addMessage(
                         UploadResponse::STATUS_ERROR,
-                        $lang["TXT_{$this->moduleLangVar}_IMAGE_UPLOAD_ERROR"],
+                        $lang["TXT_CALENDAR_IMAGE_UPLOAD_ERROR"],
                         $file
                     );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
