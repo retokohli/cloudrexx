@@ -1979,4 +1979,14 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 . $this->getName() . 
                 '</a>' . $websiteDetailLink;
     }
+    
+    /**
+     * Remove or unlink domain from the website
+     * 
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Domain $domain
+     */
+    public function removeDomain(Domain $domain)
+    {
+        $this->domains->removeElement($domain);
+    }
 }

@@ -4455,6 +4455,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                            self::validateWebsiteForMailService($website) 
                         && $website->getMailServiceServer()->deleteAccount($website->getMailAccountId())
                     ) {
+                        //unmap domains which are related to mail service
+                        foreach ($website->getDomains() as $domain) {
+                            if (   $domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_MAIL_DOMAIN
+                                || $domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_WEBMAIL_DOMAIN
+                               ) {
+                                $website->removeDomain($domain);
+                                \Env::get('em')->remove($domain);
+                            }
+                        }
                         $website->getMailServiceServer()->removeWebsite($website);
                         $website->setMailAccountId(null);
                         $website->setMailServiceServer(null);
