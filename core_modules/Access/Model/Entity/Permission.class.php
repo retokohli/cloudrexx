@@ -37,10 +37,24 @@ class Permission {
     /**
      * is Login required or not
      * 
-     * @var mixed 
+     * @var boolean
      */
-    protected $requiresLogin    = null;
+    protected $requiresLogin    = false;
     
+    /**
+     * Valid User Groups
+     * 
+     * @var array 
+     */
+    protected $validUserGroups  = array();
+
+    /**
+     * valid Access ids
+     * 
+     * @var array
+     */
+    protected $validAccessIds   = array();
+
     /**
      * Allowed group users
      * 
@@ -62,7 +76,7 @@ class Permission {
      * @param Array   $allowedMethods
      * @param Boolean $requiresLogin
      */
-    public function __construct($allowedProtocols = array('http', 'https'), $allowedMethods = array('get', 'post'), $requiresLogin = true, $callback = null) {
+    public function __construct($allowedProtocols = array('http', 'https'), $allowedMethods = array('get', 'post'), $requiresLogin = true, $validUserGroups = array(), $validAccessIds = array(), $callback = null) {
         if (!$allowedProtocols) {
             $allowedProtocols = array('http', 'https');
         }
@@ -71,7 +85,12 @@ class Permission {
         }
         $this->allowedProtocols = array_map('strtolower', $allowedProtocols);
         $this->allowedMethods   = array_map('strtolower', $allowedMethods);
+        $this->validUserGroups  = $validUserGroups;
+        $this->validAccessIds   = $validAccessIds;
         $this->requiresLogin    = $requiresLogin;
+        if (count($this->validUserGroups) || count($this->validAccessIds)) {
+            $this->requiresLogin = true;
+        }
         $this->callback         = $callback;
     }
     
@@ -112,7 +131,7 @@ class Permission {
      * 
      * @return boolean
      */
-    private function checkLoginAndUserAccess() {
+    protected function checkLoginAndUserAccess() {
         
         if (!$this->requiresLogin) {
             return true;
@@ -123,13 +142,22 @@ class Permission {
             return false;
         }
         
-        if (!is_array($this->requiresLogin)) {
+        //check user's group access
+        if (   !empty($this->validUserGroups) 
+            && !count(array_intersect($this->validUserGroups, \FWUser::getFWUserObject()->objUser->getAssociatedGroupIds()))
+           ) {
+            return false;
+        }
+        
+        if (empty($this->validAccessIds)) {
             return true;
         }
         
-        //check user's group access
-        if (count(array_intersect($this->requiresLogin, \FWUser::getFWUserObject()->objUser->getAssociatedGroupIds()))) {
-            return true;
+        //check valid access ids
+        foreach ($this->validAccessIds as $accessId) {
+            if (\Permission::checkAccess($accessId, 'static', true)) {
+                return true;
+            }
         }
         
         return false;

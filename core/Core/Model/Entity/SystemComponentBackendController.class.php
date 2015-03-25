@@ -27,6 +27,13 @@ namespace Cx\Core\Core\Model\Entity;
 class SystemComponentBackendController extends Controller {
     
     /**
+     * Default permission
+     * 
+     * @var Cx\Core_Modules\Access\Model\Entity\Permission
+     */
+    protected $defaultPermission;
+    
+    /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
@@ -79,72 +86,12 @@ class SystemComponentBackendController extends Controller {
         
         // todo: Messages
         $this->parsePage($actTemplate, $cmd);
-        
-        // set tabs
-        $navigation = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/Core/View/Template/Backend');
-        $navigation->loadTemplateFile('Navigation.html');
-        $commands = array_merge(array(''), $this->getCommands());
-        foreach ($commands as $key=>$command) {
-            $subnav = array();
-            if (is_array($command)) {
-                $subnav = array_merge(array(''), $command);
-                $command = $key;
-            }
-            
-            if ($key !== '') {
-                if ($cmd[0] == $command) {
-                    $navigation->touchBlock('tab_active');
-                } else {
-                    $navigation->hideBlock('tab_active');
-                }
-                $act = '&amp;act=' . $command;
-                $txt = $command;
-                if (empty($command)) {
-                    $act = '';
-                    $txt = 'DEFAULT';
-                }
-                $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
-                $actTitle = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
-                $navigation->setVariable(array(
-                    'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                    'TITLE' => $actTitle,
-                ));
-                $navigation->parse('tab_entry');
-            }
-            
-            // subnav
-            if ($cmd[0] == $command && count($subnav)) {
-                $first = true;
-                foreach ($subnav as $subcommand) {
-                    if ((!isset($cmd[1]) && $first) || ((isset($cmd[1]) ? $cmd[1] : '') == $subcommand)) {
-                        $navigation->touchBlock('subnav_active');
-                    } else {
-                        $navigation->hideBlock('subnav_active');
-                    }
-                    $act = '&amp;act=' . $cmd[0] . '/' . $subcommand;
-                    $txt = (empty($cmd[0]) ? 'DEFAULT' : $cmd[0]) . '_';
-                    if (empty($subcommand)) {
-                        $act = '&amp;act=' . $cmd[0] . '/';
-                        $txt .= 'DEFAULT';
-                    } else {
-                        $txt .= strtoupper($subcommand);
-                    }
-                    $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
-                    $actTitle = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
-                    $navigation->setVariable(array(
-                        'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                        'TITLE' => $actTitle,
-                    ));
-                    $navigation->parse('subnav_entry');
-                    $first = false;
-                }
-            }
-        }
+        $navigation = $this->parseNavigation($cmd);
         $txt = $cmd[0];
         if (empty($txt)) {
             $txt = 'DEFAULT';
         }
-        
+    
         // default css and js
         if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory(false) . '/View/Style/Backend.css'))) {
             \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Backend.css', 1));
@@ -166,6 +113,136 @@ class SystemComponentBackendController extends Controller {
             'ADMIN_CONTENT' => $page->getContent(),
             'CONTENT_TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
         ));
+    }
+    
+    /**
+     * Parse the navigation
+     * 
+     * @param array $cmd
+     * 
+     * @return \Cx\Core\Html\Sigma
+     */
+    public function parseNavigation($cmd = array()) {
+        // set tabs
+        $navigation = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/Core/View/Template/Backend');
+        $navigation->loadTemplateFile('Navigation.html');
+        
+        $commands = array_merge(
+                        array('' => array('permission' => $this->defaultPermission)), 
+                        $this->getCommands()
+                    );
+        foreach ($commands as $key => $command) {
+            $subNav         = array();
+            $currentCommand = is_array($command) ? $key : $command;
+            
+            if (is_array($command) && isset($command['children'])) {
+                $subNav = array_merge(array('' => array('permission' => $this->defaultPermission)), $command['children']);                          
+            } else {
+                if (isset($command['permission'])) {
+                    unset($command['permission']); // navigation might contain only the permission key, unset it
+                }
+                $subNav = is_array($command) && !empty($command)  ? array_merge(array(''), $command) : array();
+            } 
+            //check the main navigation permission
+            if (!$this->hasAccessToCommand(array($currentCommand))) {
+                continue;
+            }
+            //parse the main navigation
+            $this->parseCurrentNavItem($navigation, 'tab', $currentCommand, '', $cmd[0] == $currentCommand, 0);
+            
+            // subnav
+            if ($cmd[0] == $currentCommand && count($subNav)) {
+                $first = true;
+                foreach ($subNav as $subkey => $subValue) {
+                    $subcommand = is_array($subValue) ? $subkey : $subValue;
+                    if (!$this->hasAccessToCommand(array($currentCommand, $subcommand))) {
+                        continue;
+                    }
+                    $isActiveSubNav = (!isset($cmd[1]) && $first) || ((isset($cmd[1]) ? $cmd[1] : '') == $subcommand);
+                    //parse the subnavigation
+                    $this->parseCurrentNavItem($navigation, 'subnav', $subcommand, $currentCommand, $isActiveSubNav, 1);
+                    $first = false;
+                }
+            }
+        }
+        return $navigation;
+    }
+    
+    /**
+     * Parse the current navigation item
+     * 
+     * @global array $_ARRAYLANG
+     * 
+     * @param \Cx\Core\Html\Sigma $navigation
+     * @param string              $blockName
+     * @param string              $currentCmd
+     * @param string              $mainCmd
+     * @param boolean             $isActiveNav
+     * @param boolean             $isSubNav
+     */
+    public function parseCurrentNavItem(\Cx\Core\Html\Sigma $navigation, $blockName, $currentCmd, $mainCmd, $isActiveNav, $isSubNav) {
+        global $_ARRAYLANG;
+        
+        if (empty($blockName)) {
+            return;
+        }
+        
+        $isActiveNav ? $navigation->touchBlock($blockName . '_active') : $navigation->hideBlock($blockName . '_active');
+        
+        if (empty($isSubNav)) {
+            $act = empty($currentCmd) ? '' : '&amp;act=' . $currentCmd;
+            $txt = empty($currentCmd) ? 'DEFAULT' : $currentCmd;
+        } else {
+            $act = '&amp;act=' . $mainCmd . '/' . $currentCmd;
+            $txt = (empty($mainCmd) ? 'DEFAULT' : $mainCmd) . '_';
+            $txt .= empty($currentCmd) ? 'DEFAULT' : strtoupper($currentCmd);
+        }
+
+        $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
+        $actTitle  = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
+        $navigation->setVariable(array(
+            'HREF' => 'index.php?cmd=' . $this->getName() . $act,
+            'TITLE' => $actTitle,
+        ));
+        $navigation->parse($blockName . '_entry');
+    }
+    
+    /**
+     * Check the access permission based on the command
+     * 
+     * @param array $commands
+     * 
+     * @return boolean
+     */
+    public function hasAccessToCommand($commands = array()) {
+        $currentCommands = array_merge(array('' => array('permission' => $this->defaultPermission)), $this->getCommands());
+        
+        foreach ($commands as $command) {
+            $cmd = isset($currentCommands[$command]) ? $currentCommands[$command] : array();            
+            if (!$this->hasAccess($cmd)) {
+                return false;
+            }
+            unset($cmd['permission']);
+            $currentCommands = isset($cmd['children']) ? $cmd['children'] : $cmd;
+        }
+        return true;
+    }
+    
+    /**
+     * Check the access permission
+     * 
+     * @param array $command
+     * 
+     * @return boolean
+     */
+    public function hasAccess($command) {
+        $objPermission = is_array($command) && isset($command['permission']) ? $command['permission'] : $this->defaultPermission;
+        if ($objPermission instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) {
+            if (!$objPermission->hasAccess()) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**

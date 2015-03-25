@@ -24,6 +24,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     const MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID = 198;
     const MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID         = 199;
      
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
+        parent::__construct($systemComponentController, $cx);
+        $this->defaultPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, null, null);
+    }
+
     /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
@@ -35,91 +40,92 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         //XY => act value should be defined here.
         //$permissionAccess => array of the permission access Ids should be listed here.
         //$subCommandsArray => array of subcommands should be listed here.
-        
+        $systemMgmtPermissionObj = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false, null, array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID), null);
+        $communicationAndSystemMgmtPermissionObj = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false, null, array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID, self::MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID), null);
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_SERVICE:
-                if (\Permission::checkAccess(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID, 'static', true)) {
-                   return array('Maintenance' => array('Ftp'), 'statistics', 'settings'=> array('codebases','website_templates')); 
-                }
-                return array();
+                return array(
+                    'Maintenance' => array(
+                        'permission' => $systemMgmtPermissionObj,
+                        'children'   => array(
+                            ''    => array('permission' => $systemMgmtPermissionObj),
+                            'Ftp' => array('permission' => $systemMgmtPermissionObj)
+                        )
+                    ),
+                    'statistics' => array(
+                        'permission' => $systemMgmtPermissionObj
+                    ),
+                    'settings'    => array(
+                        'permission' => $systemMgmtPermissionObj,
+                        'children'   => array(
+                            '' => array(
+                                'permission' => $systemMgmtPermissionObj,
+                            ),
+                            'codebases' => array(
+                                'permission' => $systemMgmtPermissionObj,
+                            ),
+                            'website_templates' => array(
+                                'permission' => $systemMgmtPermissionObj,
+                            )
+                        )
+                    )
+                );
                 break;
 
             case ComponentController::MODE_MANAGER:
-                $commandsWithAccess = array(
-                  'Maintenance' => array(
-                      'access'       => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID),
-                      'sub_commands' => array(
-                          'Ftp'
-                      )
-                  ),
-                  'statistics' => array(
-                      'access'       => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID)
-                  ),
-                  'notifications' => array(
-                      'access'       => array(
-                                            self::MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID, 
-                                            self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID
-                                        )
-                  ),
-                  'settings' => array(
-                      'access'       => array(
-                                            self::MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID, 
-                                            self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID
-                                        ),
-                      'sub_commands' => array(
-                          'email',
-                          'website_templates' => array(
-                              'access' => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID)
-                          ),
-                          'website_service_servers' => array(
-                              'access' => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID)
-                          ), 
-                          'mail_service_servers' => array(
-                              'access' => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID)
-                          )
-                      )
-                  )
+                return array(
+                    'Maintenance' => array(
+                        'permission' => $systemMgmtPermissionObj,
+                        'children'   => array(
+                            ''    => array('permission' => $systemMgmtPermissionObj),
+                            'Ftp' => array('permission' => $systemMgmtPermissionObj)
+                        )
+                    ),
+                    'statistics' => array(
+                        'permission' => $systemMgmtPermissionObj
+                    ),
+                    'notifications' => array(
+                        'permission' => $communicationAndSystemMgmtPermissionObj
+                    ),
+                    'settings'    => array(
+                        'permission' => $communicationAndSystemMgmtPermissionObj,
+                        'children'   => array(
+                            '' => array('permission' => $systemMgmtPermissionObj),
+                            'email' => array('permission' => $communicationAndSystemMgmtPermissionObj),
+                            'website_templates' => array('permission' => $systemMgmtPermissionObj),
+                            'website_service_servers' => array('permission' => $systemMgmtPermissionObj),
+                            'mail_service_servers' => array('permission' => $systemMgmtPermissionObj)
+                        )
+                    )
                 );
-                return $this->getCommandsByAccess($commandsWithAccess);
                 break;
 
             case ComponentController::MODE_HYBRID:
-                $commandsWithAccess = array(
-                  'Maintenance' => array(
-                      'access'       => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID),
-                      'sub_commands' => array(
-                          'Ftp'
-                      )
-                  ),
-                  'statistics' => array(
-                      'access'       => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID)
-                  ),
-                  'notifications' => array(
-                      'access'       => array(
-                                            self::MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID, 
-                                            self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID
-                                        )
-                  ),
-                  'settings' => array(
-                      'access'       => array(
-                                            self::MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID, 
-                                            self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID
-                                        ),
-                      'sub_commands' => array(
-                          'email',
-                          'codebases' => array(
-                              'access' => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID)
-                          ),
-                          'website_templates' => array(
-                              'access' => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID)
-                          ),
-                          'mail_service_servers' => array(
-                              'access' => array(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID)
-                          )
-                      )
-                  )
+                return array(
+                    'Maintenance' => array(
+                        'permission' => $systemMgmtPermissionObj,
+                        'children'   => array(
+                            '' => array('permission' => $systemMgmtPermissionObj),
+                            'Ftp' => array('permission' => $systemMgmtPermissionObj)
+                        )
+                    ),
+                    'statistics' => array(
+                        'permission' => $systemMgmtPermissionObj
+                    ),
+                    'notifications' => array(
+                        'permission' => $communicationAndSystemMgmtPermissionObj
+                    ),
+                    'settings'    => array(
+                        'permission' => $communicationAndSystemMgmtPermissionObj,
+                        'children'   => array(
+                            '' => array('permission' => $systemMgmtPermissionObj),
+                            'email' => array('permission' => $communicationAndSystemMgmtPermissionObj),
+                            'codebases' => array('permission' => $systemMgmtPermissionObj),
+                            'website_templates' => array('permission' => $systemMgmtPermissionObj),
+                            'mail_service_servers' => array('permission' => $systemMgmtPermissionObj)
+                        )
+                    )
                 );
-                return $this->getCommandsByAccess($commandsWithAccess);
                 break;
 
             case ComponentController::MODE_NONE:
@@ -223,9 +229,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
                 
             default:
-                if (\Permission::hasAllAccess()) {
-                    return $this->parseSectionWebsites($template, $cmd);
-                }
+                $this->parseSectionWebsites($template, $cmd);
                 break;
         }
     }
@@ -238,8 +242,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         
         if (   \Permission::checkAccess(self::MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID, 'static', true)
             && !\Permission::checkAccess(self::MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID, 'static', true)
-            && !empty($cmd[1])
-            && $cmd[1] != 'email'
+            && (   empty($cmd[1]) 
+                || (   !empty($cmd[1]) 
+                    && $cmd[1] != 'email'
+                   )
+                )
            ) {
             \Permission::noAccess();
         }
