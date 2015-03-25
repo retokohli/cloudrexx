@@ -38,13 +38,13 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
      */
     public function getAccessableMethods() {
         return array(
-            'activateTheme'             => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkActivatePermission')),
-            'activateLanguages'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkActivatePermission')),
-            'checkThemeExistsByThemeId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkDeletePermission')),
-            'deleteThemeById'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkDeletePermission')),
-            'delete'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),            
-            'rename'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),
-            'newWithin'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, array($this, 'checkManipulationPermission')),            
+            'activateTheme'             => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(46), null),
+            'activateLanguages'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(46), null),
+            'checkThemeExistsByThemeId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
+            'deleteThemeById'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
+            'delete'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
+            'rename'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
+            'newWithin'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
             );
     }
 
@@ -248,49 +248,6 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
         }
         
         
-    }
-    
-    /**
-     * Callback authentication for checking the user's access permission
-     * 
-     * @return boolean
-     */
-    public function checkActivatePermission() 
-    {
-        if (\Permission::checkAccess(46, 'static', true)) {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Callback authentication for checking the user's access permission
-     * 
-     * @return boolean
-     */
-    public function checkDeletePermission() 
-    {
-        if (\Permission::checkAccess(47, 'static', true)) {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    
-    /**
-     * Callback authentication for checking the user's access permission
-     * 
-     * @return boolean
-     */
-    public function checkManipulationPermission() 
-    {
-        if (\Permission::checkAccess(47, 'static', true)) {
-            return true;
-        }
-        
-        return false;
     }
     
     /**
