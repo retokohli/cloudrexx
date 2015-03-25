@@ -1717,17 +1717,24 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * 
      * @return string
      */
-    public function generatePasswordRestoreUrl() {
-        $this->owner->setRestoreKey($this->getRestoreKey());
+    public function generatePasswordRestoreUrl()
+    {
+        $this->owner->setRestoreKey();
         // hard-coded to 1 day
         $this->owner->setRestoreKeyTime(86400);
         \Env::get('em')->flush();
         $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite'));
         return $websitePasswordUrl;
     }
-
-    public function generateVerificationUrl() {
-        $this->owner->setRestoreKey($this->getRestoreKey());
+    
+    /**
+     * Generate verification url
+     * 
+     * @return string
+     */
+    public function generateVerificationUrl()
+    {
+        $this->owner->setRestoreKey();
         // hard-coded to 30 days
         $this->owner->setRestoreKeyTime(86400 * 30);
         \Env::get('em')->flush();
@@ -1735,15 +1742,6 @@ throw new WebsiteException('implement secret-key algorithm first!');
         return $websiteVerificationUrl;
     }
 
-    /**
-     * Get the restore key
-     * 
-     * @return string
-     */
-    public function getRestoreKey() {
-        return md5($this->owner->getEmail().$this->owner->getRegdate().time());
-    }
-    
     public function generateAuthToken() {
         try {
             $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('generateAuthToken', array(), $this);
