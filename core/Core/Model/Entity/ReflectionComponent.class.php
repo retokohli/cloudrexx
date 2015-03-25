@@ -619,11 +619,12 @@ class ReflectionComponent {
         global $_DBCONFIG;
         
         // load tables
-        $objResult = $this->db->query('SHOW TABLES LIKE "'. DBPREFIX .'module_'. strtolower($this->componentName) .'_%"');
+        $tblSyntax = DBPREFIX . $this->componentType . '_' . strtolower($this->componentName);
+        $objResult = $this->db->query('SHOW TABLES LIKE "'. $tblSyntax .'_%"');
         
         $componentTables = array();
         while (!$objResult->EOF) {
-            $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. DBPREFIX .'module_'. strtolower($this->componentName) .'_%)'];
+            $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. $tblSyntax .'_%)'];
             $objResult->MoveNext();
         } 
         
@@ -1989,9 +1990,9 @@ class ReflectionComponent {
         $replacements = array('section' => $newComponent->getName());
         $this->copyDataFromQuery($table, $replacements, $query);
         
-        $componentTables = $this->getComponentTables();                
+        $componentTables = $this->getComponentTables();
         foreach ($componentTables as $table) {
-            $newTable = preg_replace('/(\w)module_'. strtolower($this->componentName) .'_(\w)/', '$1module_'. strtolower($newComponent->getName()) .'_$2', $table);
+            $newTable = preg_replace('/(\w)'. $this->componentType .'_'. strtolower($this->componentName) .'_(\w)/', '$1'. $newComponent->getType() .'_'. strtolower($newComponent->getName()) .'_$2', $table);
             $query = 'CREATE TABLE '. $newTable .' LIKE '. $table ;
             $this->db->query($query);
             $query = 'INSERT '. $newTable .' SELECT * FROM '. $table;
