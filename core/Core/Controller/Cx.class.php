@@ -2002,12 +2002,21 @@ namespace Cx\Core\Core\Controller {
                 //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
                 //ob_start("ob_gzhandler");
 
-                $this->template->show();
                 /*echo '<pre>';
                 print_r($_SESSION);
                 /*echo '<b>Overall time: ' . (microtime(true) - $timeAtStart) . 's<br />';
                 echo 'Max RAM usage: ' . formatBytes(memory_get_peak_usage()) . '<br />';
                 echo 'End RAM usage: ' . formatBytes(memory_get_usage()) . '<br /></b>';*/
+                
+                $endcode = $this->template->get();
+                
+                // replace links from before contrexx 3
+                $ls = new \LinkSanitizer(
+                    ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
+                    $endcode);
+                $endcode = $ls->replace();
+
+                echo $endcode;
             }
         }
         
