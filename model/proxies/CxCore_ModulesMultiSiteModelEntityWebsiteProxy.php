@@ -333,12 +333,6 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::generateVerificationUrl();
     }
 
-    public function getRestoreKey()
-    {
-        $this->_load();
-        return parent::getRestoreKey();
-    }
-
     public function generateAuthToken()
     {
         $this->_load();
@@ -415,6 +409,12 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
     {
         $this->_load();
         return parent::getEditLink();
+    }
+
+    public function removeDomain(\Cx\Core_Modules\MultiSite\Model\Entity\Domain $domain)
+    {
+        $this->_load();
+        return parent::removeDomain($domain);
     }
 
     public function __get($name)
