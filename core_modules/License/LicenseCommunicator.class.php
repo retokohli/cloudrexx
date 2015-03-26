@@ -310,6 +310,7 @@ class LicenseCommunicator {
      * @param boolean $autoexec (optional) Wheter to perform update check automaticly or on form submit
      */
     public function addJsUpdateCode(&$_CORELANG, $license, $intern = false, $autoexec = true) {
+        return;
         $v = preg_split('#\.#', $this->coreCmsVersion);
         $version = current($v);
         unset($v[key($v)]);
