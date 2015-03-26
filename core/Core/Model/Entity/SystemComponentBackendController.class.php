@@ -138,7 +138,7 @@ class SystemComponentBackendController extends Controller {
             if (is_array($command) && isset($command['children'])) {
                 $subNav = array_merge(array('' => array('permission' => $this->defaultPermission)), $command['children']);                          
             } else {
-                if (isset($command['permission'])) {
+                if (array_key_exists('permission', $command)) {
                     unset($command['permission']); // navigation might contain only the permission key, unset it
                 }
                 $subNav = is_array($command) && !empty($command)  ? array_merge(array(''), $command) : array();
