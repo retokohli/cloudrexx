@@ -1440,6 +1440,21 @@ namespace Cx\Core\Core\Controller {
                 
             } else {
                 global $cmd, $act, $isRegularPageRequest, $plainCmd;
+                
+                // resolve pretty url's
+                $path = preg_replace('#' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
+                if ($path != 'index.php' && $path != '') {
+                    $path = explode('/', $path, 2);
+                    $_REQUEST['cmd'] = $path[0];
+                    if (isset($path[1])) {
+                        if (substr($path[1], -1, 1) == '/') {
+                            $path[1] = substr($path[1], 0, -1);
+                        }
+                        $_REQUEST['act'] = $path[1];
+                    }
+                    $_GET['cmd'] = $_REQUEST['cmd'];
+                    $_GET['act'] = $_REQUEST['act'];
+                }
 
                 $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
                 $this->resolvedPage->setVirtual(true);

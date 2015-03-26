@@ -96,10 +96,25 @@ class LinkSanitizer {
             if (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
                 $ret .= \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName();
             }
-            if (!isset($testPath[1])) {
-                $ret .= '/';
-            } else {
-                $ret .= '/?' . $testPath[1];
+            $ret .= '/';
+            if (isset($testPath[1])) {
+                $args = preg_split('/&(amp;)?/', $testPath[1]);
+                $params = array();
+                foreach ($args as $arg) {
+                    $split = explode('=', $arg, 2);
+                    $params[$split[0]] = $split[1];
+                }
+                if (isset($params['cmd'])) {
+                    $ret .= $params['cmd'];
+                    unset($params['cmd']);
+                    if (isset($params['act'])) {
+                        $ret .= '/' . $params['act'];
+                        unset($params['act']);
+                    }
+                }
+                if (count($params)) {
+                    $ret .= '?' . http_build_query($params);
+                }
             }
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
             $ret .
