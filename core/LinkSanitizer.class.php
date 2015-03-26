@@ -90,7 +90,21 @@ class LinkSanitizer {
         // For this reason, we replace escaped slashes by slashes.
         $matches[\LinkSanitizer::FILE_PATH] = str_replace('\\/', '/', $matches[\LinkSanitizer::FILE_PATH]);
 
-        if ($this->fileExists(ASCMS_DOCUMENT_ROOT . '/' . $matches[\LinkSanitizer::FILE_PATH])) {
+        $testPath = explode('?', $matches[\LinkSanitizer::FILE_PATH], 2);
+        if ($testPath[0] == 'index.php' || $testPath[0] == '' || $testPath[0] == './') {
+            $ret = ASCMS_INSTANCE_OFFSET;
+            if (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+                $ret .= \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName();
+            }
+            if (!isset($testPath[1])) {
+                $ret .= '/';
+            } else {
+                $ret .= '/?' . $testPath[1];
+            }
+            return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
+            $ret .
+            $matches[\LinkSanitizer::CLOSE_QUOTE];
+        } else if ($this->fileExists(ASCMS_DOCUMENT_ROOT . '/' . $matches[\LinkSanitizer::FILE_PATH])) {
             // this is an existing file, do not add virtual language dir
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
             ASCMS_INSTANCE_OFFSET .

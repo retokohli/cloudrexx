@@ -339,7 +339,17 @@ class Csrf {
             'IMAGES_PATH'       => ASCMS_ADMIN_WEB_PATH.'/images/csrfprotection',
         ));
         $tpl->parse();
-        die($tpl->get());
+        
+        $endcode = $tpl->get();
+        
+        // replace links from before contrexx 3
+        $ls = new \LinkSanitizer(
+            ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
+            $endcode);
+        $endcode = $ls->replace();
+        
+        echo $endcode;
+        die();
     }
 
 

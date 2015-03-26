@@ -4,7 +4,7 @@
 function logout() {
     Check = confirm("{TXT_LOGOUT_WARNING}")
     if (Check == true) {
-        location.href = "index.php?cmd=logout&{CSRF_PARAM}";
+        location.href = cx.variables.get("cadminPath", "contrexx") + "index.php?cmd=logout&{CSRF_PARAM}";
     }
 }
 cx.jQuery(document).ready(function() {
