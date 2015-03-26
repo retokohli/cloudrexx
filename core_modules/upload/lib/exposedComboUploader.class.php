@@ -45,8 +45,14 @@
  */
 class ExposedComboUploader extends ComboUploader
 {
+    protected $starterSelector = '#exposedComboUploaderStarter:first';
+    
     public function __construct($backend) {
         parent::__construct($backend);
+    }
+    
+    public function setStarterSelector($starterSelector) {
+        $this->starterSelector = $starterSelector;
     }
 
     public function getXHtml(){
@@ -68,6 +74,7 @@ class ExposedComboUploader extends ComboUploader
 
         $tpl->setVariable(array(
             'COMBO_CODE' => $comboXHtml,
+            'STARTER_SELECTOR' => $this->starterSelector,
             'DIALOG_TITLE' => $_CORELANG['UPLOAD_EXPOSED_DIALOG_TITLE']
         ));
 
