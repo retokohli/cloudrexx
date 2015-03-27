@@ -10,17 +10,33 @@ namespace Cx\Core\Html\Controller;
  * 
  */
 class FormGenerator {
+    protected static $formIncrement = 0;
+    protected $formId;
     protected $form = null;
+    protected $options;
     
     public function __construct($entity, $actionUrl = null, $entityClass = '', $options = array()) {
+        $this->formId = static::$formIncrement;
+        static::$formIncrement++;
+        $this->options = $options;
+        $this->entity = $entity;
         // Remove the virtual element from array
         unset($entity['virtual']);
         if (empty($entityClass) && is_object($entity)) {
             $entityClass = get_class($entity);
         }
         \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
-        $this->form = new \Cx\Core\Html\Model\Entity\FormElement($actionUrl);
-        $this->form->setAttribute('id', 'form-X');
+        $this->form = new \Cx\Core\Html\Model\Entity\FormElement(
+            $actionUrl,
+            'post',
+            \Cx\Core\Html\Model\Entity\FormElement::ENCTYPE_MULTIPART_FORMDATA,
+            (
+                !isset($options['functions']) ||
+                !isset($options['functions']['formButtons']) ||
+                $options['functions']['formButtons'] == true
+            )
+        );
+        $this->form->setAttribute('id', 'form-' . $this->formId);
         $this->form->setAttribute('class', 'cx-ui');
         $em = \Env::get('em');
         $title = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
@@ -76,30 +92,42 @@ class FormGenerator {
             if (empty($dataElement)) {
                 continue;
             }
-            $dataElement->setAttribute('id', 'form-X-' . $field);
-            $this->form->addChild(static::getDataElementGroup($field, $dataElement, $fieldOptions));
+            $dataElement->setAttribute('id', 'form-' . $this->formId . '-' . $field);
+            $this->form->addChild($this->getDataElementGroup($field, $dataElement, $fieldOptions));
         }
         if (isset($options['cancelUrl'])) {
-            $this->form->cancelUrl =$options['cancelUrl'];
+            $this->form->cancelUrl = $options['cancelUrl'];
         }
     }
     
-    public static function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
+    public function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
+        global $_ARRAYLANG;
+
         $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $group->setAttribute('class', 'group');
         $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
-        $label->setAttribute('for', 'form-X-' . $field);
+        $label->setAttribute('for', 'form-' . $this->formId . '-' . $field);
         $fieldHeader = $field;
         if (isset($fieldOptions['formtext'])){
             $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'formtext');
         } else if (isset($fieldOptions['header'])) {
             $fieldHeader = FormGenerator::getFormLabel($fieldOptions, 'header');
         }
-        $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($fieldHeader));
+        $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($fieldHeader . ' '));
         $group->addChild($label);
         $controls = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $controls->setAttribute('class', 'controls');
         $controls->addChild($dataElement);
+        if (isset($fieldOptions['tooltip'])) {
+            $tooltipTrigger = new \Cx\Core\Html\Model\Entity\HtmlElement('span');
+            $tooltipTrigger->setAttribute('class', 'icon-info tooltip-trigger');
+            $tooltipTrigger->allowDirectClose(false);
+            $tooltipMessage = new \Cx\Core\Html\Model\Entity\HtmlElement('span');
+            $tooltipMessage->setAttribute('class', 'tooltip-message');
+            $tooltipMessage->addChild(new \Cx\Core\Html\Model\Entity\TextElement($fieldOptions['tooltip']));
+            $controls->addChild($tooltipTrigger);
+            $controls->addChild($tooltipMessage);
+        }
         $group->addChild($controls);
         return $group;
     }
@@ -116,6 +144,9 @@ class FormGenerator {
                 return $formField;
             }
         }
+        if (isset($options['showDetail']) && $options['showDetail'] === false) {
+            return '';
+        }
         switch ($type) {
             case 'bool':
             case 'boolean':
@@ -124,19 +155,19 @@ class FormGenerator {
                 $inputYes = new \Cx\Core\Html\Model\Entity\DataElement($name, 'yes');
                 $inputYes->setAttribute('type', 'radio');
                 $inputYes->setAttribute('value', '1');
-                $inputYes->setAttribute('id', 'form-X-' . $name . '_yes');
+                $inputYes->setAttribute('id', 'form-' . $this->formId . '-' . $name . '_yes');
                 $fieldset->addChild($inputYes);
                 $labelYes = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
-                $labelYes->setAttribute('for', 'form-X-' . $name . '_yes');
+                $labelYes->setAttribute('for', 'form-' . $this->formId . '-' . $name . '_yes');
                 $labelYes->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_YES']));
                 $fieldset->addChild($labelYes);
                 $inputNo = new \Cx\Core\Html\Model\Entity\DataElement($name, 'no');
-                $inputNo->setAttribute('id', 'form-X-' . $name . '_no');
+                $inputNo->setAttribute('id', 'form-' . $this->formId . '-' . $name . '_no');
                 $inputNo->setAttribute('type', 'radio');
                 $inputNo->setAttribute('value', '0');
                 $fieldset->addChild($inputNo);
                 $labelNo = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
-                $labelNo->setAttribute('for', 'form-X-' . $name . '_no');
+                $labelNo->setAttribute('for', 'form-' . $this->formId . '-' . $name . '_no');
                 $labelNo->addChild(new \Cx\Core\Html\Model\Entity\TextElement($_ARRAYLANG['TXT_NO']));
                 $fieldset->addChild($labelNo);
                 if ($value) {
@@ -211,6 +242,88 @@ class FormGenerator {
                         });
                         ');
                 return $input;
+                break;
+            case 'multiselect':
+            case 'select':
+                $values = array();
+                if (isset($options['validValues'])) {
+                    $values = explode(',', $options['validValues']);
+                    $values = array_combine($values, $values);
+                }
+                if ($type == 'multiselect') {
+                    $value = explode(',', $value);
+                    $value = array_combine($value, $value);
+                }
+                $options = \Html::getOptions($values, $value);
+                $select = new \Cx\Core\Html\Model\Entity\DataElement(
+                    $name,
+                    $options,
+                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                );
+                if ($type == 'multiselect') {
+                    $select->setAttribute('multiple');
+                }
+                return $select;
+                break;
+            case 'slider':
+                // this code should not be here
+                
+                // create sorrounding div
+                $element = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                // create div for slider
+                $slider = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                $slider->setAttribute('class', 'slider');
+                $element->addChild($slider);
+                // create hidden input for slider value
+                $input = new \Cx\Core\Html\Model\Entity\DataElement(
+                    $name,
+                    $value,
+                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_INPUT
+                );
+                $input->setAttribute('type', 'hidden');
+                $element->addChild($input);
+                // add javascript to update input value
+                $min = 0;
+                $max = 10;
+                if (isset($options['validValues'])) {
+                    $values = explode(',', $options['validValues']);
+                    $min = $values[0];
+                    if (isset($values[1])) {
+                        $max = $values[1];
+                    }
+                }
+                if (!isset($value)) {
+                    $value = 0;
+                }
+                $script = new \Cx\Core\Html\Model\Entity\HtmlElement('script');
+                $script->addChild(new \Cx\Core\Html\Model\Entity\TextElement('
+                    cx.jQuery("#form-' . $this->formId . '-' . $name . ' .slider").slider({
+                        value: ' . ($value+0) . ',
+                        min: ' . ($min+0) . ',
+                        max: ' . ($max+0) . '
+                    });
+                '));
+                $element->addChild($script);
+                return $element;
+                break;
+            case 'checkboxes':
+                $dataElementGroupType = \Cx\Core\Html\Model\Entity\DataElementGroup::TYPE_CHECKBOX;
+            case 'radio':
+                $values = array();
+                if (isset($options['validValues'])) {
+                    $values = explode(',', $options['validValues']);
+                    $values = array_combine($values, $values);
+                }
+                if (!isset($dataElementGroupType)) {
+                    $dataElementGroupType = \Cx\Core\Html\Model\Entity\DataElementGroup::TYPE_RADIO;
+                }
+                $radio = new \Cx\Core\Html\Model\Entity\DataElementGroup(
+                    $name,
+                    $values,
+                    $value,
+                    $dataElementGroupType
+                );
+                return $radio;
                 break;
             case 'text':
                 // textarea
@@ -348,6 +461,9 @@ CODE;
                 }
                 // input field with type text
                 $input = new \Cx\Core\Html\Model\Entity\DataElement($name, $value);
+                if (isset($options['validValues'])) {
+                    $input->setValidator(new \Cx\Core\Validate\Model\Entity\RegexValidator('/^' . $options['validValues'] . '$/'));
+                }
                 $input->setAttribute('type', 'text');
                 if (isset($options['readonly']) && $options['readonly']) {
                     $input->setAttribute('disabled');
@@ -367,6 +483,10 @@ CODE;
     
     public function getData() {
         return $this->form->getData();
+    }
+    
+    public function getEntity() {
+        return $this->entity;
     }
     
     public function render() {

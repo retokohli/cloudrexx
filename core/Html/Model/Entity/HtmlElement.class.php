@@ -11,12 +11,21 @@ namespace Cx\Core\Html\Model\Entity;
  */
 class HtmlElement {
     private $name;
+    private $classes = array();
     private $attributes = array();
     private $children = array();
     private $output = null;
+    private $allowDirectClose = true;
     
     public function __construct($elementName) {
         $this->setName($elementName);
+    }
+    
+    public function allowDirectClose($allow = null) {
+        if ($allow === null) {
+            return $this->allowDirectClose;
+        }
+        $this->allowDirectClose = $allow;
     }
     
     public function getName() {
@@ -29,6 +38,9 @@ class HtmlElement {
     }
     
     public function setAttribute($name, $value = null) {
+        if ($name == 'class') {
+            return $this->setClass($value);
+        }
         if ($value === null) {
             $value = $name;
         }
@@ -37,6 +49,10 @@ class HtmlElement {
     }
     
     public function setAttributes($attributes) {
+        if (isset($attributes['class'])) {
+            $this->setClass($attributes['class']);
+            unset($attributes['class']);
+        }
         $this->output = null;
         $this->attributes += $attributes;
     }
@@ -50,6 +66,36 @@ class HtmlElement {
     
     public function getAttributes() {
         return $this->attributes;
+    }
+    
+    public function setClass($string) {
+        if (!is_array($string)) {
+            $string = explode(' ', $string);
+        }
+        $this->classes = $string;
+    }
+    
+    public function getClasses(&$classes = array()) {
+        $classes = $this->classes;
+        return implode(' ', $this->classes);
+    }
+    
+    public function hasClass($className) {
+        return in_array($className, $this->classes);
+    }
+    
+    public function addClass($className) {
+        if ($this->hasClass($className)) {
+            return;
+        }
+        $this->classes[] = $className;
+    }
+    
+    public function removeClass($className) {
+        $key = array_search($className, $this->classes);
+        if ($key !== false) {
+            unset($this->classes[$key]);
+        }
     }
     
     public function getChildren() {
@@ -106,11 +152,12 @@ class HtmlElement {
         $template->setVariable(array(
             'ELEMENT_NAME' => $this->name,
         ));
-        if ($parsedChildren === null) {
+        if ($parsedChildren === null && $this->allowDirectClose) {
             $template->hideBlock('children');
             $template->touchBlock('nochildren');
         } else {
             $template->hideBlock('nochildren');
+            $template->touchBlock('children');
             $template->setVariable(array(
                 'CHILDREN' => $parsedChildren,
             ));
@@ -122,6 +169,11 @@ class HtmlElement {
             ));
             $template->parse('attribute');
         }
+        $template->setVariable(array(
+            'ATTRIBUTE_NAME' => 'class',
+            'ATTRIBUTE_VALUE' => contrexx_raw2xhtml($this->getClasses()),
+        ));
+        $template->parse('attribute');
         $this->output = $template->get();
         return $this->output;
     }

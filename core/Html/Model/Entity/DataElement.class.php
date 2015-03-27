@@ -45,6 +45,10 @@ class DataElement extends HtmlElement {
         return $this->validator;
     }
     
+    public function setValidator($validator) {
+        $this->validator = $validator;
+    }
+    
     public function getIdentifier() {
         switch ($this->type) {
             case self::TYPE_INPUT:
@@ -77,5 +81,10 @@ class DataElement extends HtmlElement {
                 // error handling
                 break;
         }
+    }
+    
+    public function render() {
+        $this->setAttribute('onkeyup', $this->getValidator()->getJavaScriptCode());
+        return parent::render();
     }
 }

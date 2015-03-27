@@ -61,7 +61,7 @@ class ViewGenerator {
              *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
              */
             $add=(!empty($_GET['add'])? contrexx_input2raw($_GET['add']):null);
-            if (!empty($add) && !empty($this->options['functions']['add'])) {
+            if (!empty($add) && !empty($this->options['functions']['add']) && $this->options['functions']['add'] != false) {
                 $form = $this->renderFormForEntry(null);
                 if ($form === false) {
                     // cannot save, no such entry
@@ -95,22 +95,19 @@ class ViewGenerator {
                     $entityObj = $entityObject->newInstance();
                     foreach($entityColumnNames as $column) {
                         $field = $entityObject->getFieldName($column);
+                        if (
+                            isset($this->options['fields']) &&
+                            isset($this->options['fields'][$field]) &&
+                            isset($this->options['fields'][$field]['storecallback']) &&
+                            is_callable($this->options['fields'][$field]['storecallback'])
+                        ) {
+                            $storecallback = $this->options['fields'][$field]['storecallback'];
+                            $_POST[$field] = $storecallback(contrexx_input2raw($_POST[$field]));
+                        }
                         if (isset($_POST[$field]) && $field != $primaryKeyName) {
                             $fieldDefinition = $entityObject->getFieldMapping($field);
-                            if (
-                                isset($this->options['fields']) &&
-                                isset($this->options['fields'][$field]) &&
-                                isset($this->options['fields'][$field]['storecallback']) &&
-                                is_callable($this->options['fields'][$field]['storecallback'])
-                            ) {
-                                $storecallback = $this->options['fields'][$field]['storecallback'];
-                                $newValue = $storecallback(contrexx_input2raw($_POST[$field]));
-                            } else if ($fieldDefinition['type'] == 'datetime') {
-                                if (empty($_POST[$field])) {
-                                    $newValue = null;
-                                } else {
-                                    $newValue = new \DateTime($_POST[$field]);
-                                }
+                            if ($fieldDefinition['type'] == 'datetime') {
+                                $newValue = new \DateTime($_POST[$field]);
                             } elseif ($fieldDefinition['type'] == 'array') {
                                 $newValue = unserialize($_POST[$field]);
                                 // verify that the value is actually an array -> prevent to store other php data
@@ -120,7 +117,7 @@ class ViewGenerator {
                             } else {
                                 $newValue = contrexx_input2raw($_POST[$field]);
                             }
-                            $entityObj->{'set'.ucfirst($field)}($newValue);
+                            $entityObj->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field))}($newValue);
                         }
                     }
 
@@ -160,7 +157,7 @@ class ViewGenerator {
              *  postEdit event
              *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
              */
-            if (isset($_POST['editid'])) {
+            if (isset($_POST['editid']) && !empty($this->options['functions']['edit']) && $this->options['functions']['edit'] != false) {
                 $entityId = contrexx_input2raw($_POST['editid']);
                 // render form for editid
                 $form = $this->renderFormForEntry($entityId);
@@ -199,7 +196,7 @@ class ViewGenerator {
                             $updateArray['set'.ucfirst($name)] = $association;
                         } elseif (   $_POST[$name] != $value
                                   && in_array('set'.ucfirst($name), $classMethods)
-                        ) { 
+                        ) {
                             $fieldDefinition = $entityObj->getFieldMapping($name);
                             if (
                                 isset($this->options['fields']) &&
@@ -225,7 +222,7 @@ class ViewGenerator {
                                 $newValue = contrexx_input2raw($_POST[$name]);
                             }
                             $updateArray['set'.ucfirst($name)] = $newValue;
-                        } 
+                        }
                     }
                 }
                 $id = $entityObject[$primaryKeyName]; //get primary key value  
@@ -255,7 +252,7 @@ class ViewGenerator {
              * execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
              */
             $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
-            if ($deleteId!='') {
+            if ($deleteId!='' && !empty($this->options['functions']['delete']) && $this->options['functions']['delete'] != false) {
                 $entityObject = $this->object->getEntry($deleteId);
                 if (empty($entityObject)) {
                     \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
@@ -283,7 +280,7 @@ class ViewGenerator {
                 \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
         } catch (\Exception $e) {
-            \Message::add($e->getMessage());   
+            \Message::add($e->getMessage());
             return;
         }
     }
@@ -311,8 +308,8 @@ class ViewGenerator {
                 $renderObject->sortColumn($this->options['order']['overview']);
             }
             $addBtn = '';
+            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             if (!empty($this->options['functions']['add'])) {
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', 1);
                 $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
             }
@@ -428,7 +425,18 @@ class ViewGenerator {
             $renderArray = array_merge($sortedData,$renderArray);
         }
         
-        return new FormGenerator($renderArray, $actionUrl,$title, $this->options);
+        $formGenerator = new FormGenerator($renderArray, $actionUrl, $title, $this->options);
+        // This should be moved to FormGenerator as soon as FormGenerator
+        // gets the real entity instead of $renderArray
+        if (isset($this->options['preRenderDetail'])) {
+            $callback = $this->options['preRenderDetail'];
+            $callback($this, $formGenerator, $entityId);
+        }
+        return $formGenerator;
+    }
+    
+    public function getObject() {
+        return $this->object;
     }
     
     public function __toString() {
