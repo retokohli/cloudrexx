@@ -85,10 +85,10 @@ class ViewGenerator {
                     if ($blankPost) {
                         \Message::add('Cannot save, You should fill any one field!', \Message::CLASS_ERROR);
                         return;
-                    }   
-                    $entityObject = \Env::get('em')->getClassMetadata($entityNS);  
-                    $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name 
-                    $entityColumnNames = $entityObject->getColumnNames(); //get all field names                 
+                    }
+                    $entityObject = \Env::get('em')->getClassMetadata($entityNS);
+                    $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
+                    $entityColumnNames = $entityObject->getColumnNames(); //get all field names
 
                     // create new entity without calling the constructor
 // TODO: this might break certain entities!
@@ -185,44 +185,45 @@ class ViewGenerator {
                 $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
                 $classMethods = get_class_methods($entityObj->newInstance());
                 foreach ($entityObject as $name=>$value) {
-                    if (isset ($_POST[$name])) {
+                    if (!isset ($_POST[$name])) {
+                        continue;
+                    }
+                    $methodName = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+                    if (   \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name)
+                        && in_array($methodName, $classMethods)
+                    ) {
+                        // store single-valued-associations
+                        $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
+                        $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
+                        $updateArray[$methodName] = $association;
+                    } elseif (   $_POST[$name] != $value
+                              && in_array($methodName, $classMethods)
+                    ) {
+                        $fieldDefinition = $entityObj->getFieldMapping($name);
                         if (
-                            \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name) &&
-                            in_array('set'.ucfirst($name), $classMethods)
+                            isset($this->options['fields']) &&
+                            isset($this->options['fields'][$name]) &&
+                            isset($this->options['fields'][$name]['storecallback']) &&
+                            is_callable($this->options['fields'][$name]['storecallback'])
                         ) {
-                            // store single-valued-associations
-                            $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
-                            $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
-                            $updateArray['set'.ucfirst($name)] = $association;
-                        } elseif (   $_POST[$name] != $value
-                                  && in_array('set'.ucfirst($name), $classMethods)
-                        ) {
-                            $fieldDefinition = $entityObj->getFieldMapping($name);
-                            if (
-                                isset($this->options['fields']) &&
-                                isset($this->options['fields'][$name]) &&
-                                isset($this->options['fields'][$name]['storecallback']) &&
-                                is_callable($this->options['fields'][$name]['storecallback'])
-                            ) {
-                                $storecallback = $this->options['fields'][$name]['storecallback'];
-                                $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
-                            } else if ($fieldDefinition['type'] == 'datetime') {
-                                if (empty($_POST[$name])) {
-                                    $newValue = null;
-                                } else {
-                                    $newValue = new \DateTime($_POST[$name]);
-                                }
-                            } elseif ($fieldDefinition['type'] == 'array') {
-                                $newValue = unserialize($_POST[$name]);
-                                // verify that the value is actually an array -> prevent to store other php data
-                                if (!is_array($newValue)) {
-                                    $newValue = array();
-                                }
+                            $storecallback = $this->options['fields'][$name]['storecallback'];
+                            $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
+                        } else if ($fieldDefinition['type'] == 'datetime') {
+                            if (empty($_POST[$name])) {
+                                $newValue = null;
                             } else {
-                                $newValue = contrexx_input2raw($_POST[$name]);
+                                $newValue = new \DateTime($_POST[$name]);
                             }
-                            $updateArray['set'.ucfirst($name)] = $newValue;
+                        } elseif ($fieldDefinition['type'] == 'array') {
+                            $newValue = unserialize($_POST[$name]);
+                            // verify that the value is actually an array -> prevent to store other php data
+                            if (!is_array($newValue)) {
+                                $newValue = array();
+                            }
+                        } else {
+                            $newValue = contrexx_input2raw($_POST[$name]);
                         }
+                        $updateArray[$methodName] = $newValue;
                     }
                 }
                 $id = $entityObject[$primaryKeyName]; //get primary key value  
@@ -341,7 +342,7 @@ class ViewGenerator {
             $entityClass = get_class($this->object);
         }
         $entityObject = \Env::get('em')->getClassMetadata($entityClass);
-        $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
+        $primaryKeyNames = $entityObject->getIdentifierFieldNames();
         if (!$entityId && !empty($this->options['functions']['add'])) {
             $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $cancelUrl->setParam('add', null);
@@ -353,14 +354,16 @@ class ViewGenerator {
             if (empty($entityColumnNames)) return false;
             foreach($entityColumnNames as $column) {
                 $field = $entityObject->getFieldName($column);
-                if ($field != $primaryKeyName) {
-                    $fieldDefinition = $entityObject->getFieldMapping($field);
-                    $this->options[$field]['type']=$fieldDefinition['type'];
-                    $renderArray[$field]="";
-                    if (!empty($fieldDefinition['options']['default'])){
-                        $renderArray[$field]=$fieldDefinition['options']['default'];
-                    }
+                if (in_array($field, $primaryKeyNames)) {
+                    continue;
                 }
+                $fieldDefinition = $entityObject->getFieldMapping($field);
+                $this->options[$field]['type'] = $fieldDefinition['type'];
+                if ($entityObject->getFieldValue($this->object, $field) !== null) {
+                    $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
+                    continue;
+                }
+                $renderArray[$field] = '';
             }
             // load single-valued-associations
             $associationMappings = \Env::get('em')->getClassMetadata($entityClass)->getAssociationMappings();
@@ -369,6 +372,10 @@ class ViewGenerator {
                 if (   \Env::get('em')->getClassMetadata($entityClass)->isSingleValuedAssociation($field)
                     && in_array('set'.ucfirst($field), $classMethods)
                 ) {
+                    if ($entityObject->getFieldValue($this->object, $field)) {
+                        $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
+                        continue;
+                    }
                     $renderArray[$field]= new $associationMapping['targetEntity']();
                 }
             }
@@ -385,15 +392,16 @@ class ViewGenerator {
                 if ($name == 'virtual') {
                     continue;
                 }
+                if (in_array($name, $primaryKeyNames)) {
+                    continue;
+                }
 
                 $fieldDefinition['type'] = null;
                 if (!\Env::get('em')->getClassMetadata($entityClass)->hasAssociation($name)) {
                     $fieldDefinition = $entityObject->getFieldMapping($name);
                 }
-                if ($name != $primaryKeyName) {
-                    $this->options[$name]['type'] = $fieldDefinition['type'];
-                    $renderArray[$name] = $value;
-                }
+                $this->options[$name]['type'] = $fieldDefinition['type'];
+                $renderArray[$name] = $value;
             }
 
             // load single-valued-associations

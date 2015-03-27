@@ -297,7 +297,7 @@ class SystemComponentBackendController extends Controller {
         }
     }
     
-    protected function parseEntityClassPage($template, $entityClassName, $classIdentifier) {
+    protected function parseEntityClassPage($template, $entityClassName, $classIdentifier, &$isSingle = false) {
         if (!$template->blockExists('entity_view')) {
             return;
         }
@@ -305,7 +305,8 @@ class SystemComponentBackendController extends Controller {
             $entityClassName,
             $this->getViewGeneratorOptions($entityClassName, $classIdentifier)
         );
-        $template->setVariable('ENTITY_VIEW', $view->render());
+        $renderedContent = $view->render($isSingle);
+        $template->setVariable('ENTITY_VIEW', $renderedContent);
     }
     
     protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
