@@ -3061,8 +3061,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // get user attribut field id for customer typ and company size out of crm, because we can not save this
                 // 2 settings for a crm user, they are only available for crm companies
                 \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
-                $attributIdForCustomerType = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ','MultiSite');
-                $attributIdForCompanySize = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size','MultiSite');
+                $attributIdForCustomerType = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ','Crm');
+                $attributIdForCompanySize = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size','Crm');
 
                 $profileAttributes = array(
                                         'firstname',
