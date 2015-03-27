@@ -37,7 +37,7 @@ $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 \Cx\Core\Setting\Controller\Setting::init('Config', 'wysiwyg', 'Yaml');
 
 $skin = $themeRepo->getDefaultTheme()->getFoldername();
-if(\Cx\Core\Setting\Controller\Setting::getValue('specificStylesheet','Config') && !empty($pageId) && $pageRepo->find($pageId)->getSkin()>0){
+if(\Cx\Core\Setting\Controller\Setting::getValue('specificStylesheet','wysiwyg') && !empty($pageId) && $pageRepo->find($pageId)->getSkin()>0){
     $skin = $themeRepo->findById($pageRepo->find($pageId)->getSkin())->getFoldername();
 }
 //getThemeFileContent
@@ -87,7 +87,7 @@ CKEDITOR.editorConfig = function( config )
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
     
-    config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Config')? 'true' : 'false' ?>;
+    config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','wysiwyg')? 'true' : 'false' ?>;
 
     config.toolbar_Full = config.toolbar_Small = [
         ['Source','-','NewPage','Templates'],
