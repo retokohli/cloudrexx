@@ -2821,6 +2821,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             ));
             $objProfileAttribute->setType('text');
             $objProfileAttribute->setParent(0);
+            $objProfileAttribute->setProtection(false);
             if (!$objProfileAttribute->store()) {
                 throw new MultiSiteException('Failed to create ' . $attrName);
             }
