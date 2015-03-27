@@ -66,7 +66,7 @@ class BackendTable extends HTML_Table {
                             is_array($options['functions']) &&
                             isset($options['functions']['sorting']) &&
                             $options['functions']['sorting'] &&
-                            $sorting!==false
+                            $sorting !== false
                         ) {
                             $order = '';
                             $img = '&uarr;&darr;';
@@ -130,7 +130,6 @@ class BackendTable extends HTML_Table {
                         } else {
                             $this->setCellContents(0, $col, $header, 'th', 0, true);
                         }
-                        $this->updateColAttributes($col, array('style' => 'text-align:right;'));
                     }
                     if (!isset($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
@@ -158,8 +157,8 @@ class BackendTable extends HTML_Table {
                     $actionTitle = $actionName;
                     if (isset($actionProperties['title'])) {
                         $actionTitle = $actionProperties['title'];
-                    } else if (isset($_ARRAYLANG[$value])) {
-                        $actionTitle = $_ARRAYLANG[$value];
+                    } else if (isset($_ARRAYLANG[$actionName])) {
+                        $actionTitle = $_ARRAYLANG[$actionName];
                     }
                     if (isset($actionProperties['jsEvent'])) {
                         $actionName = $actionProperties['jsEvent'];
@@ -244,6 +243,7 @@ class BackendTable extends HTML_Table {
             if (isset($functions['delete']) && $functions['delete']) {
                 $deleteUrl = clone $baseUrl;
                 $deleteUrl->setParam('deleteid', $rowname);
+                $deleteUrl->setParam('vg_increment_number', $functions['vg_increment_number']);
                 $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\Csrf::code();
                 $onclick ='if (confirm(\''.$_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))'.
                         'window.location.replace(\''.$deleteUrl.'\');';
@@ -258,5 +258,4 @@ class BackendTable extends HTML_Table {
         $this->altRowAttributes(2, array('class' => 'row1'), array('class' => 'row2'), true);
         return parent::toHtml();
     }
-
 }

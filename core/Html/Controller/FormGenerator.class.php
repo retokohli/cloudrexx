@@ -514,6 +514,7 @@ CODE;
                     $input->setAttribute('type', 'hidden');
                 } else {
                     $input->setAttribute('type', 'text');
+                    $input->setClass('form-control');
                 }
                 if (isset($options['readonly']) && $options['readonly']) {
                     $input->setAttribute('disabled');
