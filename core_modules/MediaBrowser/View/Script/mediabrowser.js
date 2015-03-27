@@ -279,8 +279,8 @@ cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
         }]);
 
 
-    mediaBrowserApp.controller('UploaderCtrl', ['$scope', '$http',
-        function ($scope, $http) {
+    mediaBrowserApp.controller('UploaderCtrl', ['$scope', '$http', 'mediabrowserConfig',
+        function ($scope, $http, mediabrowserConfig) {
 
             $scope.uploaderData = {
                 filesToUpload: []
@@ -293,13 +293,14 @@ cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
             $scope.template = {
                 url: '../core_modules/MediaBrowser/View/Template/_Uploader.html'
             };
-
+            
             $scope.loadedTemplate = function () {
                 // PLUPLOADER INTEGRATION
                 $scope.uploader = new plupload.Uploader({
                     runtimes: 'html5,flash,silverlight,html4',
                     browse_button: 'selectFileFromComputer',
                     container: 'uploader',
+                    max_file_count: mediabrowserConfig.get('uploadLimit'),
                     drop_element: "uploader",
                     url: '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
                     flash_swf_url: '/lib/plupload/js/Moxie.swf',
@@ -320,13 +321,19 @@ cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
                         "path": ''
                     },
                     init: {
-                        FilesAdded: function (up, files) {
+                        FilesAdded: function (up, files) {                            
                             if ($scope.finishedUpload) {
                                 $scope.uploaderData.filesToUpload = [];
                                 $scope.finishedUpload = false;
                             }
                             for (var file in files) {
                                 $scope.uploaderData.filesToUpload.push(files[file]);
+                            }
+                            if ((up.settings.max_file_count != 0) && $scope.uploaderData.filesToUpload.length > up.settings.max_file_count) {
+                                $('#uploader .tabMediaBrowserFooter .start-upload-button').addClass('disabled');
+                                $('.upload-limit-tooltip').tooltip({
+                                    title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + up.settings.max_file_count
+                                });
                             }
                             $scope.uploader.settings.multipart_params.path = $scope.getPathAsString();
 
@@ -341,10 +348,10 @@ cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
                             $scope.afterUpload();
                         },
                         Error: function (up, err) {
-                            $J('.mediaUploaderListCtrl').find('.uploadPlatform').addClass('fileError');
-                            $J('.mediaUploaderListCtrl').find('.uploadPlatform .error').html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(err.code), 'mediabrowser'));
+                            $('.mediaUploaderListCtrl').find('.uploadPlatform').addClass('fileError');
+                            $('.mediaUploaderListCtrl').find('.uploadPlatform .error').html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(err.code), 'mediabrowser'));
                             setTimeout(function () {
-                                $J('.mediaUploaderListCtrl').find(' .uploadPlatform').removeClass('fileError');
+                                $('.mediaUploaderListCtrl').find(' .uploadPlatform').removeClass('fileError');
                             }, 3000);
                             up.refresh(); // Reposition Flash/Silverlight
                         }
@@ -363,6 +370,10 @@ cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
                     if ($scope.uploaderData.filesToUpload[i] === file) {
                         $scope.uploaderData.filesToUpload.splice(i, 1);
                         $scope.uploader.removeFile(file);
+                        if ($scope.uploaderData.filesToUpload.length <= ($scope.uploader.settings.max_file_count)) {
+                            $('#uploader .tabMediaBrowserFooter .start-upload-button').removeClass('disabled');
+                            $('#uploader .tabMediaBrowserFooter .upload-limit-tooltip').tooltip('destroy');
+                        }
                         return false;
                     }
                 });
@@ -850,6 +861,11 @@ cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
                     mediabrowserConfig.set('modalOpened', false);
                     if (attrs.cxMbCbJsModalopened) {
                         mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
+                    }
+                  
+                    mediabrowserConfig.set('uploadLimit', "0");
+                    if (attrs.cxMbUploadLimit) {
+                        mediabrowserConfig.set('uploadLimit', attrs.cxMbUploadLimit);
                     }
 
                     if (typeof(config) !== 'undefined' && typeof(config.callback) !== 'undefined') {

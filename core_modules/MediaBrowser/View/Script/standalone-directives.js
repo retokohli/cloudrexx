@@ -48,6 +48,9 @@
                     if (!iAttrs.plSilverlightXapUrl) {
                         iAttrs.$set('plSilverlightXapUrl', 'lib/plupload/plupload.flash.silverlight.xap');
                     }
+                    if (!iAttrs.uploadLimit) {
+                        iAttrs.$set('uploadLimit', "0");
+                    }
                     if (typeof scope.plFiltersModel == "undefined") {
                         scope.filters = [
                             {title: "Allowed files", extensions: "jpg,gif,png,bmp,jpeg,tif,tiff"},
@@ -61,12 +64,15 @@
 
                     $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drop-target').attr('id', 'drop-target-' + iAttrs.id);
 
-
+                    var uploaderData = {
+                        filesToUpload: []
+                    };
                     var options = {
                         runtimes: 'html5,flash,silverlight',
                         multi_selection: true,
                         drop_element: 'drop-target-' + iAttrs.id,
                         browse_button: 'drop-target-' + iAttrs.id,
+                        max_file_count: iAttrs.uploadLimit,
                         max_file_size: iAttrs.plMaxFileSize,
                         url: iAttrs.plUrl,
                         flash_swf_url: iAttrs.plFlashSwfUrl,
@@ -152,19 +158,39 @@
                         }
                         up.refresh(); // Reposition Flash/Silverlight
                     });
-
+                    
                     uploader.bind('FilesAdded', function (up, files) {
+                        for (var file in files) {
+                            uploaderData.filesToUpload.push(files[file]);
+                        }
+                        
+                        if ((up.settings.max_file_count!= 0) && uploaderData.filesToUpload.length > up.settings.max_file_count) {
+                            $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').addClass('disabled');
+                            $J('.upload-limit-tooltip').tooltip({
+                                title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + up.settings.max_file_count
+                            });
+                        }
+                        
                         angular.forEach(files, function (file) {
 
                             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + file.name + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + readablizeBytes(file.size) + ' <br/> <a class="remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
                             $J('.file-' + file.id).fadeIn();
                             var removeFile = function () {
-                                $J('.file-' + file.id).fadeOut(function () {
-                                    $J('.file-' + file.id).remove();
-                                    uploader.removeFile(file);
-                                    if (uploader.files.length == 0) {
-                                        $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').slideUp();
-                                    }
+                                $J.each(uploaderData.filesToUpload, function (i) {
+                                    $J('.file-' + file.id).fadeOut(function () {
+                                        if (uploaderData.filesToUpload[i] === file) {
+                                            uploaderData.filesToUpload.splice(i, 1);
+                                            $J('.file-' + file.id).remove();
+                                            uploader.removeFile(file);
+                                            if (uploaderData.filesToUpload.length <= up.settings.max_file_count) {
+                                                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').removeClass('disabled');
+                                                $J('.upload-limit-tooltip').tooltip('destroy');
+                                            }
+                                            if (uploaderData.filesToUpload.length == 0) {
+                                                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').slideUp();
+                                            }
+                                        }
+                                    });
                                 });
                             };
                             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id + ' .remove-file').bind('click', removeFile);

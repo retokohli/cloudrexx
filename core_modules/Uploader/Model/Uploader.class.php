@@ -83,6 +83,21 @@ class Uploader extends EntityBase
     function setOptions($options)
     {
         $this->options = array_merge($this->options, $options);
+        
+        $uploadLimit   = isset($this->options['upload-limit']) ? $this->options['upload-limit'] : '';
+        if (!empty($uploadLimit)) {
+            if (!isset($_SESSION['uploader']['handlers'])) {
+                $_SESSION['uploader']['handlers'] = array();
+            }
+            if (!isset($_SESSION['uploader']['handlers'][$this->id])) {
+                $_SESSION['uploader']['handlers'][$this->id] = array();
+            }
+            if (!isset($_SESSION['uploader']['handlers'][$this->id]['config'])) {
+                $_SESSION['uploader']['handlers'][$this->id]['config'] = array();
+            }
+            
+            $_SESSION['uploader']['handlers'][$this->id]['config']['upload-limit'] = $uploadLimit;
+        }
     }
 
     /**

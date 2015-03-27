@@ -118,7 +118,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             str_replace($this->cx->getCodeBasePath(), '', $uploader['path'])
         );
 
-
+        
         if (isset($_SESSION['uploader']['handlers'][$id]['callback'])) {
 
             /**
@@ -127,6 +127,13 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
              */
             $callback = $_SESSION['uploader']['handlers'][$id]['callback'];
             $data = $_SESSION['uploader']['handlers'][$id]['data'];
+            
+            if (   isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit']) 
+                && $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] == 0
+                ) {
+                return array('status' => 'error');
+            }
+            
             if (!is_string($callback)) {
                 $callback = $callback->toArray();
             }
@@ -136,7 +143,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             }
 
             $filePath = dirname( $uploader['path']);
-
+            
             if (!is_array($callback)) {
                 $class = new \ReflectionClass($callback);
                 if ($class->implementsInterface(
@@ -175,7 +182,11 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 $fileLocation[1] . '/' . $uploader['name']
             );
         }
-
+        
+        if (isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit'])) {
+            $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] = $this->checkUploadFileLimitBySession($id);
+        }
+        
         if (isset($uploader['error'])) {
             throw new UploaderException(UploaderController::getErrorCode());
         } else {
@@ -185,7 +196,23 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             );
         }
     }
-
+    
+    /**
+     * Check Upload FileLimit By Session
+     * 
+     * @param integer $id uploderId
+     * 
+     * @return int
+     */
+    public function checkUploadFileLimitBySession($id)
+    {
+        if (isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit']) && ($_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] > 0)) {
+            return $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] - 1;
+        }
+        
+        return 0;
+    }
+    
     public function createDir($params)
     {
         global $_ARRAYLANG;
