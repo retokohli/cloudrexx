@@ -19,6 +19,7 @@ class ViewGenerator {
     protected $object;
     protected $options;
     protected $number;
+    protected $formGenerator = null;
     
     /**
      *
@@ -82,7 +83,8 @@ class ViewGenerator {
             $add=(!empty($_GET['add'])? contrexx_input2raw($_GET['add']):null);
             if (!empty($add) && !empty($this->options['functions']['add']) && $this->options['functions']['add'] != false) {
                 
-                $form = $this->renderFormForEntry(null);
+                $this->renderFormForEntry(null);
+                $form = $this->formGenerator;
                 if ($form === false) {
                     // cannot save, no such entry
                     \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
@@ -181,10 +183,11 @@ class ViewGenerator {
              *  postEdit event
              *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
              */
-            if (isset($_POST['editid']) && !empty($this->options['functions']['edit']) && $this->options['functions']['edit'] != false) {
-                $entityId = contrexx_input2raw($_POST['editid']);
+            if ($this->isInEditMode() && !empty($this->options['functions']['edit']) && $this->options['functions']['edit'] != false) {
+                $entityId = contrexx_input2raw($this->isInEditMode());
                 // render form for editid
-                $form = $this->renderFormForEntry($entityId);
+                $this->renderFormForEntry($entityId);
+                $form = $this->formGenerator;
                 if ($form === false) {
                     // cannot save, no such entry
                     \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
@@ -310,6 +313,41 @@ class ViewGenerator {
         }
     }
     
+    protected function isInEditMode() {
+        if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
+            return false;
+        }
+        if (isset($_GET['editid'])) {
+            $edits = explode('},{', substr($_GET['editid'], 1, -1));
+            foreach ($edits as $edit) {
+                $edit = explode(',', $edit);
+                if ($edit[0] != $this->number) {
+                    continue;
+                }
+                unset($edit[0]);
+                if (count($edit) == 1) {
+                    return current($edit);
+                }
+                return $edit;
+            }
+        }
+        if (isset($_POST['editid'])) {
+            $edits = explode('},{', substr($_POST['editid'], 1, -1));
+            foreach ($edits as $edit) {
+                $edit = explode(',', $edit);
+                if ($edit[0] != $this->number) {
+                    continue;
+                }
+                unset($edit[0]);
+                if (count($edit) == 1) {
+                    return current($edit);
+                }
+                return $edit;
+            }
+        }
+        return false;
+    }
+    
     public function render(&$isSingle = false) {
         global $_ARRAYLANG;
         if (!empty($_GET['add']) 
@@ -321,9 +359,9 @@ class ViewGenerator {
         $entityClass = get_class($this->object);
         $entityId = '';
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
-            && isset($_GET['editid'])) {
+            && $this->isInEditMode()) {
             $entityClass = $this->object->getDataType();
-            $entityId = contrexx_input2raw($_GET['editid']);
+            $entityId = contrexx_input2raw($this->isInEditMode());
             if ($this->object->entryExists($entityId)) {
                 $renderObject = $this->object->getEntry($entityId);
             }
@@ -462,14 +500,15 @@ class ViewGenerator {
             $renderArray = array_merge($sortedData,$renderArray);
         }
         
-        $formGenerator = new FormGenerator($renderArray, $actionUrl, $title, $this->options);
+        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClass, $title, $this->options);
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
+        $additionalContent = '';
         if (isset($this->options['preRenderDetail'])) {
             $callback = $this->options['preRenderDetail'];
-            $callback($this, $formGenerator, $entityId);
+            $additionalContent = $callback($this, $this->formGenerator, $entityId);
         }
-        return $formGenerator;
+        return $this->formGenerator . $additionalContent;
     }
     
     public function getObject() {

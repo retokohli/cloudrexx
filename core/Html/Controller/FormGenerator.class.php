@@ -14,8 +14,9 @@ class FormGenerator {
     protected $formId;
     protected $form = null;
     protected $options;
+    protected $entityClass;
     
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $options = array()) {
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array()) {
         $this->formId = static::$formIncrement;
         static::$formIncrement++;
         $this->options = $options;
@@ -24,6 +25,10 @@ class FormGenerator {
         unset($entity['virtual']);
         if (empty($entityClass) && is_object($entity)) {
             $entityClass = get_class($entity);
+        }
+        $this->entityClass = $entityClass;
+        if (empty($title)) {
+            $title = $entityClass;
         }
         \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
         $this->form = new \Cx\Core\Html\Model\Entity\FormElement(
@@ -39,9 +44,9 @@ class FormGenerator {
         $this->form->setAttribute('id', 'form-' . $this->formId);
         $this->form->setAttribute('class', 'cx-ui');
         $em = \Env::get('em');
-        $title = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
-        $title->addChild(new \Cx\Core\Html\Model\Entity\TextElement($entityClass));
-        $this->form->addChild($title);
+        $titleElement = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
+        $titleElement->addChild(new \Cx\Core\Html\Model\Entity\TextElement($title));
+        $this->form->addChild($titleElement);
         // @todo replace this by auto-find editid
         if (isset($_REQUEST['editid'])) {
             $editIdField = new \Cx\Core\Html\Model\Entity\DataElement('editid', contrexx_input2raw($_REQUEST['editid']), 'input');
@@ -208,8 +213,15 @@ class FormGenerator {
             case 'Cx\Model\Base\EntityBase':
                 $entityClass = get_class($value);
                 $entities = \Env::get('em')->getRepository($entityClass)->findAll();
-                $primaryKeyName = \Env::get('em')->getClassMetadata($entityClass)->getSingleIdentifierFieldName();
-                $selected = \Env::get('em')->getClassMetadata($entityClass)->getFieldValue($value, $primaryKeyName);
+                $foreignMetaData = \Env::get('em')->getClassMetadata($entityClass);
+                $primaryKeyName = $foreignMetaData->getSingleIdentifierFieldName();
+                $selected = $foreignMetaData->getFieldValue($value, $primaryKeyName);
+                $arrEntities = array();
+                $closeMetaData = \Env::get('em')->getClassMetadata($this->entityClass);
+                $assocMapping = $closeMetaData->getAssociationMapping($name);
+                if (!isset($assocMapping['joinColumns'][0]['nullable']) || $assocMapping['joinColumns'][0]['nullable']) {
+                    $arrEntities['NULL'] = $_ARRAYLANG['TXT_CORE_NONE'];
+                }
                 foreach ($entities as $entity) {
                     $arrEntities[\Env::get('em')->getClassMetadata($entityClass)->getFieldValue($entity, $primaryKeyName)] = $entity;
                 }
@@ -242,6 +254,7 @@ class FormGenerator {
                 break;
             case 'DateTime':
             case 'datetime':
+            case 'date':
                 // input field with type text and class datepicker
                 if ($value instanceof \DateTime) {
                     $value = $value->format(ASCMS_DATE_FORMAT);
@@ -270,8 +283,12 @@ class FormGenerator {
             case 'select':
                 $values = array();
                 if (isset($options['validValues'])) {
-                    $values = explode(',', $options['validValues']);
-                    $values = array_combine($values, $values);
+                    if (is_array($options['validValues'])) {
+                        $values = $options['validValues'];
+                    } else {
+                        $values = explode(',', $options['validValues']);
+                        $values = array_combine($values, $values);
+                    }
                 }
                 if ($type == 'multiselect') {
                     $value = explode(',', $value);

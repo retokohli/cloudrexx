@@ -110,7 +110,7 @@ class BackendTable extends HTML_Table {
                         $data = '<i>' . ($data ? $_ARRAYLANG['TXT_YES'] : $_ARRAYLANG['TXT_NO']) . '</i>';
                         $encode = false;
                     } else if ($data === null) {
-                        $data = '<i>NULL</i>';
+                        $data = '<i>' . $_ARRAYLANG['TXT_CORE_NONE'] . '</i>';
                         $encode = false;
                     } else if (empty($data)) {
                         $data = '<i>(empty)</i>';
@@ -119,7 +119,7 @@ class BackendTable extends HTML_Table {
                     $this->setCellContents($row, $col, $data, 'TD', 0, $encode);
                     $col++;
                 }
-                if (is_array($options['functions'])) {
+                if ($this->hasRowFunctions($options['functions'], $virtual)) {
                     if ($first) {
                         $header = 'Functions';
                         if (isset($_ARRAYLANG['TXT_FUNCTIONS'])) {
@@ -225,6 +225,25 @@ class BackendTable extends HTML_Table {
         }
     }
     
+    protected function hasRowFunctions($functions, $virtual = false) {
+        if (!is_array($functions)) {
+            return false;
+        }
+        if ($virtual) {
+            return false;
+        }
+        if (isset($functions['actions']) && is_callable($functions['actions'])) {
+            return true;
+        }
+        if (isset($functions['edit']) && $functions['edit']) {
+            return true;
+        }
+        if (isset($functions['delete']) && $functions['delete']) {
+            return true;
+        }
+        return false;
+    }
+    
     protected function getFunctionsCode($rowname, $rowData, $functions, $virtual = false ) {
         global $_ARRAYLANG;
         
@@ -237,7 +256,12 @@ class BackendTable extends HTML_Table {
             
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl = clone $baseUrl;
-                $editUrl->setParam('editid', $rowname);
+                $params = $editUrl->getParamArray();
+                $editId = '';
+                if (isset($params['editid'])) {
+                    $editId = $params['editid'] . ',';
+                }
+                $editUrl->setParam('editid', $editId . '{' . $functions['vg_increment_number'] . ',' . $rowname . '}');
                 $code .= '<a href="' . $editUrl . '" class="edit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'].'"></a>';
             }
             if (isset($functions['delete']) && $functions['delete']) {
@@ -254,8 +278,197 @@ class BackendTable extends HTML_Table {
         return $code . '</span>';
     }
 
-    public function toHtml() {
+    /**
+     * Returns an HTML formatted attribute string
+     * Use Sigma for parsing
+     * @param    array   $attributes
+     * @return   string
+     * @access   private
+     */
+    function _getAttrString($attributes)
+    {
+        $template = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template/Generic/');
+        $template->loadTemplateFile('Attribute.html');
+        
+        $strAttr = '';
+
+        if (is_array($attributes)) {
+            $charset = HTML_Common::charset();
+            foreach ($attributes as $key => $value) {
+                $template->setVariable(array(
+                    'ATTRIBUTE_NAME' => $key,
+                    'ATTRIBUTE_VALUE' => htmlspecialchars($value, ENT_COMPAT, $charset),
+                ));
+                $template->parse('attribute');
+            }
+        }
+        return $template->get();
+    } // end func _getAttrString
+    
+    /**
+     * This is a soft override of Storage's toHtml()
+     * in order to use Sigma for parsing
+     */
+    protected function parseStorage($template, $storage) {
+        for ($i = 0; $i < $storage->_rows; $i++) {
+            if (isset($storage->_structure[$i]['attr'])) {
+                $template->setVariable('TR_ATTRIBUTES', $this->_getAttrString($storage->_structure[$i]['attr']));
+            }
+            for ($j = 0; $j < $storage->_cols; $j++) {
+                $attr     = '';
+                $contents = '';
+                $type     = 'td';
+                if (isset($storage->_structure[$i][$j]) && $storage->_structure[$i][$j] == '__SPANNED__') {
+                    continue;
+                }
+                if (isset($storage->_structure[$i][$j]['type'])) {
+                    $type = (strtolower($storage->_structure[$i][$j]['type']) == 'th' ? 'th' : 'td');
+                }
+                if (isset($storage->_structure[$i][$j]['attr'])) {
+                    $attr = $storage->_structure[$i][$j]['attr'];
+                }
+                if (isset($storage->_structure[$i][$j]['contents'])) {
+                    $contents = $storage->_structure[$i][$j]['contents'];
+                }
+                if (is_object($contents)) {
+                    // changes indent and line end settings on nested tables
+                    if (is_subclass_of($contents, 'html_common')) {
+                        $contents->setTab($tab . $extraTab);
+                        $contents->setTabOffset($storage->_tabOffset + 3);
+                        $contents->_nestLevel = $storage->_nestLevel + 1;
+                        $contents->setLineEnd($storage->_getLineEnd());
+                    }
+                    if (method_exists($contents, 'toHtml')) {
+                        $contents = $contents->toHtml();
+                    } elseif (method_exists($contents, 'toString')) {
+                        $contents = $contents->toString();
+                    }
+                }
+                if (is_array($contents)) {
+                    $contents = implode(', ', $contents);
+                }
+                if (isset($storage->_autoFill) && $contents === '') {
+                    $contents = $storage->_autoFill;
+                }
+                $template->setVariable(array(
+                    'CELL_ATTRIBUTES' => $this->_getAttrString($attr),
+                    'CELL_CONTENTS' => $contents,
+                ));
+                $template->parse('row_' . $type);
+            }
+            $template->parse('row');
+        }
+    }
+
+    /**
+     * Returns the table structure as HTML
+     * Override in order to use Sigma for parsing
+     * @access  public
+     * @return  string
+     */
+    function toHtml()
+    {
         $this->altRowAttributes(2, array('class' => 'row1'), array('class' => 'row2'), true);
-        return parent::toHtml();
+        $strHtml = '';
+        $tabs = $this->_getTabs();
+        $tab = $this->_getTab();
+        $lnEnd = $this->_getLineEnd();
+        $tBodyColCounts = array();
+        for ($i = 0; $i < $this->_tbodyCount; $i++) {
+            $tBodyColCounts[] = $this->_tbodies[$i]->getColCount();
+        }
+        $tBodyMaxColCount = 0;
+        if (count($tBodyColCounts) > 0) {
+            $tBodyMaxColCount = max($tBodyColCounts);
+        }
+        if ($this->_comment) {
+            $strHtml .= $tabs . "<!-- $this->_comment -->" . $lnEnd;
+        }
+        $template = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template/Generic/');
+        $template->loadTemplateFile('Table.html');
+        if ($this->getRowCount() > 0 && $tBodyMaxColCount > 0) {
+            $template->setVariable('TABLE_ATTRIBUTES', $this->_getAttrString($this->_attributes));
+            if (!empty($this->_caption)) {
+                $attr = $this->_caption['attr'];
+                $contents = $this->_caption['contents'];
+                if (is_array($contents)) {
+                    $contents = implode(', ', $contents);
+                }
+                $template->setVariable(array(
+                    'CAPTION_ATTRIBUTES' => $this->_getAttrString($attr),
+                    'CAPTION_CONTENTS' => $contents,
+                ));
+                $template->parse('caption');
+            }
+            if (!empty($this->_colgroup)) {
+                foreach ($this->_colgroup as $g => $col) {
+                    $attr = $this->_colgroup[$g]['attr'];
+                    $contents = $this->_colgroup[$g]['contents'];
+                    $template->setVariable(array(
+                        'COLGROUP_ATTRIBUTES' => $this->_getAttrString($attr),
+                    ));
+                    if (!empty($contents)) {
+                        $strHtml .= $lnEnd;
+                        if (!is_array($contents)) {
+                            $contents = array($contents);
+                        }
+                        foreach ($contents as $a => $colAttr) {
+                            $attr = $this->_parseAttributes($colAttr);
+                            $template->setVariable(array(
+                                'COL_ATTRIBUTES' => $this->_getAttrString($attr),
+                            ));
+                            $template->parse('col');
+                        }
+                    }
+                    $template->parse('colgroup');
+                }
+            }
+            if ($this->_useTGroups) {
+                $tHeadColCount = 0;
+                if ($this->_thead !== null) {
+                    $tHeadColCount = $this->_thead->getColCount();
+                }
+                $tFootColCount = 0;
+                if ($this->_tfoot !== null) {
+                    $tFootColCount = $this->_tfoot->getColCount();
+                }
+                $maxColCount = max($tHeadColCount, $tFootColCount, $tBodyMaxColCount);
+                if ($this->_thead !== null) {
+                    $this->_thead->setColCount($maxColCount);
+                    if ($this->_thead->getRowCount() > 0) {
+                        $template->setVariable(array(
+                            'THEAD_ATTRIBUTES' => $this->_getAttrString($this->_thead->_attributes),
+                        ));
+                        $this->parseStorage($template, $this->_thead);
+                        $template->touchBlock('thead_close');
+                    }
+                }
+                if ($this->_tfoot !== null) {
+                    $this->_tfoot->setColCount($maxColCount);
+                    if ($this->_tfoot->getRowCount() > 0) {
+                        $template->setVariable(array(
+                            'TFOOT_ATTRIBUTES' => $this->_getAttrString($this->_tfoot->_attributes),
+                        ));
+                        $this->parseStorage($template, $this->_tfoot);
+                        $template->touchBlock('tfoot_close');
+                    }
+                }
+                for ($i = 0; $i < $this->_tbodyCount; $i++) {
+                    $this->_tbodies[$i]->setColCount($maxColCount);
+                    if ($this->_tbodies[$i]->getRowCount() > 0) {
+                        $template->setVariable(array(
+                            'TBODY_ATTRIBUTES' => $this->_getAttrString($this->_tbodies[$i]->_attributes),
+                        ));
+                        $this->parseStorage($template, $this->_tbodies[$i]);
+                        $template->touchBlock('tbody_close');
+                    }
+                }
+            } else {
+                for ($i = 0; $i < $this->_tbodyCount; $i++) {
+                    $this->parseStorage($template, $this->_tbodies[$i]);
+                }
+            }
+        }
+        return $template->get();
     }
 }
