@@ -22,19 +22,23 @@ class BackendTable extends HTML_Table {
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
         
-    	if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+        if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
             if ($hasMasterTableHeader) {
                 $this->addRow(array(0 => $options['header']), null, 'th');
             }
-    		$first = true;
-    		$row = 1 + $hasMasterTableHeader;
+            $first = true;
+            $row = 1 + $hasMasterTableHeader;
             foreach ($attrs as $rowname=>$rows) {
-    			$col = 0;
-                        $virtual = $rows['virtual'];
-                        unset($rows['virtual']);
-                        foreach ($rows as $header=>$data) {
+                $col = 0;
+                $virtual = $rows['virtual'];
+                unset($rows['virtual']);
+                if (isset($options['multiActions'])) {
+                    $this->setCellContents($row, $col, '<input name="select-' . $rowname . '" value="' . $rowname . '" type="checkbox" />', 'TD', '0', false);
+                    $col++;
+                }
+                foreach ($rows as $header=>$data) {
                     $encode = true;
                     if (
                         isset($options['fields']) &&
@@ -44,6 +48,7 @@ class BackendTable extends HTML_Table {
                     ) {
                         continue;
                     }
+                    
                     $origHeader = $header;
                     if(isset($options['fields'][$header]['sorting'])) {
                         $sorting = $options['fields'][$header]['sorting'];
@@ -112,7 +117,7 @@ class BackendTable extends HTML_Table {
                         $encode = false;
                     }
                     $this->setCellContents($row, $col, $data, 'TD', 0, $encode);
-    				$col++;
+                    $col++;
                 }
                 if (is_array($options['functions'])) {
                     if ($first) {
@@ -131,17 +136,67 @@ class BackendTable extends HTML_Table {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
                     }
                     $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $rows, $options['functions'], $virtual), 'TD', 0);
-    			}
-    			$first = false;
-    			$row++;
-    		}
+                }
+                $first = false;
+                $row++;
+            }
             // adjust colspan of master-table-header-row
             if ($hasMasterTableHeader) {
                 $this->setCellAttributes(0, 0, array('colspan' => $col + is_array($options['functions'])));
                 $this->updateRowAttributes(1, array('class' => 'row3'), true);
             }
-    		$attrs = array();
-    	}
+            // add multi-actions
+            if (isset($options['multiActions'])) {
+                $multiActionsCode = '
+                    <img src="images/icons/arrow.gif" width="38" height="22" alt="^" title="^">
+                    <a href="#" onclick="jQuery(\'input[type=checkbox]\').prop(\'checked\', true);return false;">' . $_ARRAYLANG['TXT_SELECT_ALL'] . '</a> /
+                    <a href="#" onclick="jQuery(\'input[type=checkbox]\').prop(\'checked\', false);return false;">' . $_ARRAYLANG['TXT_DESELECT_ALL'] . '</a>
+                    <img alt="-" title="-" src="images/icons/strike.gif">
+                ';
+                $multiActions = array(''=>$_ARRAYLANG['TXT_SUBMIT_SELECT']);
+                foreach ($options['multiActions'] as $actionName=>$actionProperties) {
+                    $actionTitle = $actionName;
+                    if (isset($actionProperties['title'])) {
+                        $actionTitle = $actionProperties['title'];
+                    } else if (isset($_ARRAYLANG[$value])) {
+                        $actionTitle = $_ARRAYLANG[$value];
+                    }
+                    if (isset($actionProperties['jsEvent'])) {
+                        $actionName = $actionProperties['jsEvent'];
+                    }
+                    $multiActions[$actionName] = $actionTitle;
+                }
+                $select = new \Cx\Core\Html\Model\Entity\DataElement(
+                    'cxMultiAction',
+                    \Html::getOptions($multiActions),
+                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                );
+                // this is not a nice place for this code
+                // but we should cleanup this complete class and make
+                // it base on templates
+                $select->setAttribute(
+                    'onchange',
+                    '
+                        var regex = /([a-zA-Z\/]+):([a-zA-Z\/]+)/;
+                        var matches = jQuery(this).val().match(regex);
+                        if (!matches) {
+                            return false;
+                        }
+                        var checkboxes = jQuery(this).closest("table").find("input[type=checkbox]");
+                        var activeRows = [];
+                        checkboxes.filter(":checked").each(function(el) {
+                            activeRows.push(jQuery(this).val());
+                        });
+                        cx.trigger(matches[1], matches[2], activeRows);
+                        checkboxes.prop("checked", false);
+                        jQuery(this).val("");
+                    '
+                );
+                $this->setCellContents($row, 0, $multiActionsCode . $select, 'TD', 0);
+                $this->setCellAttributes($row, 0, array('colspan' => $col + is_array($options['functions'])));
+            }
+            $attrs = array();
+        }
         parent::__construct(array_merge($attrs, array('class' => 'adminlist', 'width' => '100%')));
     }
 
@@ -177,7 +232,7 @@ class BackendTable extends HTML_Table {
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
         if(!$virtual){
-            if (isset($functions['actions']) && $functions['actions']) {
+            if (isset($functions['actions']) && is_callable($functions['actions'])) {
                 $code .= $functions['actions']($rowData);                
             }
             
