@@ -552,7 +552,7 @@ namespace Cx\Core\Core\Controller {
         }
         
         /* STAGE 2: __construct(), early initializations */
-        
+
         /**
          * Initializes the Cx class
          * This does everything related to Contrexx.
@@ -657,7 +657,7 @@ namespace Cx\Core\Core\Controller {
                     return;
                 }
                 $this->loadContrexx();
-            }    
+            }
 
             /**
              * Globally catch InstanceException
@@ -1442,7 +1442,7 @@ namespace Cx\Core\Core\Controller {
                 global $cmd, $act, $isRegularPageRequest, $plainCmd;
                 
                 // resolve pretty url's
-                $path = preg_replace('#' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
+                $path = preg_replace('#^' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
                 if ($path != 'index.php' && $path != '') {
                     $path = explode('/', $path, 2);
                     $_REQUEST['cmd'] = $path[0];
