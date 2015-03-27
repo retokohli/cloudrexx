@@ -105,7 +105,17 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                 'filtering' => false,
                 ),
             'fields' => array(
+                'id' => array(
+                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_ID']  
+                ),
+                'subscriptionDate' => array(
+                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_DATE']  
+                ),
+                'expirationDate' => array(
+                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_EXPIRATION_DATE']  
+                ),
                 'productEntityId' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PRODUCT_ENTITY'],
                     'table' => array(
                         'parse' => function($value, $rowData) {
                             $subscription  = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
@@ -122,7 +132,44 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                         }
                     )
                 ),
+                'paymentAmount' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PAYMENT_AMOUNT'],
+                    'table' => array(
+                        'parse' => function($value, $rowData) {
+                            $subscription    = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
+                            $currency = '';
+                            $order = $subscription->getOrder();
+                            if ($order) {
+                                $currency  = !\FWValidator::isEmpty($order->getCurrency()) ? $order->getCurrency() : '';
+                            }
+                            $paymentInterval = $subscription->getRenewalUnit();
+                            return ($value) ? $value . ' ' . $currency . ' / ' . $paymentInterval : '';
+                        }
+                    )
+                ),
+                'renewalUnit' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_RENEWAL_UNIT']
+                ),
+                'renewalQuantifier' => array(
+                    'showOverview' => false
+                ),
+                'renewalDate' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_RENEWAL_DATE']
+                ),
+                'description' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_DESCRIPTION']
+                ),
+                'state' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_STATE']
+                ),
+                'terminationDate' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_TERMI_DATE']
+                ),
+                'note' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_NOTE']
+                ),
                 'product'  => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PRODUCT'],
                     'table' => array(
                         'parse' => function($value, $rowData) {
                             $subscription  = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
@@ -133,6 +180,15 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                             return $product->getName();
                         }
                     )
+                ),
+                'paymentState' => array(
+                    'showOverview' => false
+                ),
+                'externalSubscriptionId' => array(
+                    'showOverview' => false
+                ),
+                'order' => array(
+                    'showOverview' => false
                 ),
                 
             ),
