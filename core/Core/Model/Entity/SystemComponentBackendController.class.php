@@ -297,9 +297,15 @@ class SystemComponentBackendController extends Controller {
         }
     }
     
-    protected function parseEntityClassPage($template, $entityClassName, $classIdentifier, &$isSingle = false) {
+    protected function parseEntityClassPage($template, $entityClassName, $classIdentifier, $filter = array(), &$isSingle = false) {
         if (!$template->blockExists('entity_view')) {
             return;
+        }
+        // this should be moved to view generator
+        if (count($filter)) {
+            $em = $this->cx->getDb()->getEntityManager();
+            $repo = $em->getRepository($entityClassName);
+            $entityClassName = $repo->findBy($filter);
         }
         $view = new \Cx\Core\Html\Controller\ViewGenerator(
             $entityClassName,
@@ -312,8 +318,13 @@ class SystemComponentBackendController extends Controller {
     protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
         global $_ARRAYLANG;
         
+        $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
+        $header = '';
+        if (isset($_ARRAYLANG[$langVarName])) {
+            $header = $_ARRAYLANG[$langVarName];
+        }
         return array(
-            'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
+            'header' => $header,
             'functions' => array(
                 'add'       => true,
                 'edit'      => true,
