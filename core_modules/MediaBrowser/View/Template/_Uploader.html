@@ -37,8 +37,8 @@
                             </progressbar>
                         </td>
                         <td class="text-right table-action">
-                            <a href="#" data-ng-click="removeFile(file)" data-ng-show="file.percent != 100">
-
+                            <a href="#" class = "remove-file" data-ng-click="removeFile(file)" data-ng-show="file.percent != 100">
+                             {{'TXT_CORE_MODULE_UPLOADER_REMOVE_FILE' | translate}}
                             </a>
                         </td>
                     </tr>
@@ -56,8 +56,10 @@
     </div>
     <div class="tabMediaBrowserFooter">
         <button type="submit" class="btn btn-primary" data-ng-click="cancel()"> {{ 'TXT_FILEBROWSER_CANCEL' | translate }}</button>
-        <button  data-ng-show="!finishedUpload" type="submit" class="btn btn-primary" data-ng-click="startUpload()"
+        <div class="upload-limit-tooltip" >
+        <button  data-ng-show="!finishedUpload" type="submit" class="btn btn-primary start-upload-button" data-ng-click="startUpload()"
                 data-ng-class="uploaderData.filesToUpload.length > 0 ? 'visible' : 'hidden'">{{ 'TXT_FILEBROWSER_UPLOAD_BUTTON' | translate }}
         </button>
+        </div>
     </div>
 </div>

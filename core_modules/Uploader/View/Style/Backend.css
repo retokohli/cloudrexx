@@ -4,3 +4,6 @@
  * \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/FileName.css', 1));
  * or remove this file if you don't need it
  */
+.upload-limit-tooltip{
+    display: inline-block;
+}
