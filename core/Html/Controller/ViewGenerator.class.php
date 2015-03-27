@@ -15,8 +15,10 @@ class ViewGeneratorException extends \Exception {}
  * @todo    Refactor
  */
 class ViewGenerator {
+    protected static $increment = 0;
     protected $object;
     protected $options;
+    protected $number;
     
     /**
      *
@@ -26,6 +28,8 @@ class ViewGenerator {
      */
     public function __construct($object, $options = array()) {
         global $_ARRAYLANG;
+        
+        $this->number = static::$increment++;
         try {
             $this->options = $options;
             $entityNS=null;
@@ -56,12 +60,28 @@ class ViewGenerator {
                 }
             }
             
+            if (
+                (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->number) &&
+                (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->number)
+            ) {
+                $vgIncrementNo = 'empty';
+                if (isset($_POST['vg_increment_number'])) {
+                    $vgIncrementNo = '#' . $_POST['vg_increment_number'];
+                } else if (isset($_GET['vg_increment_number'])) {
+                    $vgIncrementNo = '#' . $_GET['vg_increment_number'];
+                }
+                // do not make any changes to entities of other view generator instances!
+                \DBG::msg('Omitting changes, my ID is #' . $this->number . ', supplied number was ' . $vgIncrementNo);
+                return;
+            }
+
             /** 
              *  postSave event
              *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
              */
             $add=(!empty($_GET['add'])? contrexx_input2raw($_GET['add']):null);
             if (!empty($add) && !empty($this->options['functions']['add']) && $this->options['functions']['add'] != false) {
+                
                 $form = $this->renderFormForEntry(null);
                 if ($form === false) {
                     // cannot save, no such entry
@@ -102,7 +122,11 @@ class ViewGenerator {
                             is_callable($this->options['fields'][$field]['storecallback'])
                         ) {
                             $storecallback = $this->options['fields'][$field]['storecallback'];
-                            $_POST[$field] = $storecallback(contrexx_input2raw($_POST[$field]));
+                            $postedValue = null;
+                            if (isset($_POST['field'])) {
+                                $postedValue = contrexx_input2raw($_POST[$field]);
+                            }
+                            $_POST[$field] = $storecallback($postedValue);
                         }
                         if (isset($_POST[$field]) && $field != $primaryKeyName) {
                             $fieldDefinition = $entityObject->getFieldMapping($field);
@@ -322,6 +346,7 @@ class ViewGenerator {
             }
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, array(), $this->options['functions']);
             $renderObject = $listingController->getData();
+            $this->options['functions']['vg_increment_number'] = $this->number;
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
 
             return $backendTable.$addBtn;
@@ -334,7 +359,11 @@ class ViewGenerator {
     protected function renderFormForEntry($entityId) {
         global $_CORELANG;
 
-        $renderArray=array();
+        $renderArray=array('vg_increment_number' => $this->number);
+        if (!isset($this->options['fields'])) {
+            $this->options['fields'] = array();
+        }
+        $this->options['fields']['vg_increment_number'] = array('type' => 'hidden');
         $entityTitle = isset($this->options['entityName']) ? $this->options['entityName'] : $_CORELANG['TXT_CORE_ENTITY'];
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
