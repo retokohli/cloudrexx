@@ -113,6 +113,7 @@ class JsonData {
         }
         // new adapter
         $object = new $adapter($component->getSystemComponent(), \Env::get('cx'));
+        \Env::get('init')->loadLanguageData($component->getName());
         $this->adapters[$object->getName()] = $object;
     }
 
