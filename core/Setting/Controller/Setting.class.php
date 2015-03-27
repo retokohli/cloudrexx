@@ -210,7 +210,7 @@ class Setting{
      * @return  array                 The settings array on success,
      *                                false otherwise
      */
-     static function getArray($section = null, $group=null)
+    static function getArray($section = null, $group=null)
     {
         $engineType = self::getSectionEngine($section);
         if ($engineType != NULL) {
