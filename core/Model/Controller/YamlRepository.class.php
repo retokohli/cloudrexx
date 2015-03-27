@@ -101,10 +101,9 @@ class YamlRepository {
     public function __construct($repositoryPath) {
         if (empty($repositoryPath)) {
             throw new YamlRepositoryException('No repository specified!');
-        }
+       }
 
-        $this->repositoryPath = $repositoryPath;        
-        $this->fileExists($this->repositoryPath);
+        $this->repositoryPath = $repositoryPath; 
         $this->load();
     }
 
@@ -124,6 +123,8 @@ class YamlRepository {
      */
     protected function load() {
         $this->reset();
+        
+        if(!$this->fileExistsAndNotEmpty($this->repositoryPath)) return false;
         
         list($meta, $entities) = $this->loadData();
 
@@ -275,7 +276,8 @@ class YamlRepository {
         foreach ($this->updatedEntities as $entity) {
             \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
-
+        
+        $this->prepareFile($this->repositoryPath, $this->entityUniqueKeys);
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
         $dataSet->add('data', $entitiesToPersist);
         $dataSet->add('meta', $this->getMetaDefinition());
@@ -361,32 +363,48 @@ class YamlRepository {
     }
         
     /**
-     * Checks if file exists, if not - creates new one
+     * Checks if file exists, if not - creates new one with metadata
      * 
      * @param string $filename
+     * @param array $unique_keys
      * @return boolean
      * @throws \Cx\Core\Setting\Controller\SettingException
      */
-    protected function fileExists($filename) {
+    protected function prepareFile($filename, $unique_keys = array()) {
         
-        if(file_exists($filename) && filesize($filename) > 0) return true;
+        if($this->fileExistsAndNotEmpty($filename)) return true;
         \DBG::log('Creating new file');
         try {
             $file = new \Cx\Lib\FileSystem\File($filename);
             $file->touch();
-            if(empty(trim($file->getData()))) {
+            $data = trim($file->getData());
+            if(empty($data)) {
                 $inidata = 
                     "meta:\n" .
                     "   auto_increment: 1\n" .
-                    "   identifier: id\n" .
-                    "   unique_keys:\n" .
-                    "        - name";
+                    "   identifier: id\n";
+                if(!empty($unique_keys)) {
+                    $inidata .= "   unique_keys:\n";
+                    foreach($unique_keys as $key) {        
+                        $inidata .= "        - $key";
+                    }
+                }    
                 $file->write($inidata);
             }
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::log('EX ' . $e->getMessage());
-            throw new \Cx\Core\Setting\Controller\SettingException($e->getMessage());
+            throw new \Cx\Core\Setting\Controller\YamlRepositoryException($e->getMessage());
         }  
+    }
+    
+    /**
+     * Checks if file exists and is not empty
+     * 
+     * @param string $filename
+     * @return bool
+     */
+    protected function fileExistsAndNotEmpty($filename) {
+        return (file_exists($filename) && filesize($filename) > 0);
     }
 }
 

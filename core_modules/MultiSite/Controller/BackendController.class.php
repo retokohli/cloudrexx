@@ -1034,7 +1034,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
           
             if (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
                 \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'server');
-                //\DBG::dump(\Cx\Core\Setting\Controller\Setting::getSettings('MultiSite', 'FileSystem', 'server'));
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
