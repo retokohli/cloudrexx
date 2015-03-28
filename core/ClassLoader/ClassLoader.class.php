@@ -217,7 +217,7 @@ class ClassLoader {
      */
     public function classExists($class, $useLegacy = false, $useCustomizing = true) {
         if ($useLegacy) {
-            return class_exists($class);
+            return class_exists($class) || interface_exists($class, false);
         }
         $legacy = $this->legacyClassLoader;
         $this->legacyClassLoader = null;
@@ -225,7 +225,7 @@ class ClassLoader {
         if (!$useCustomizing) {
             $customizing = null;
         }
-        $ret = class_exists($class);
+        $ret = class_exists($class) || interface_exists($class, false);
         $this->legacyClassLoader = $legacy;
         $this->customizingPath = $customizing;
         return $ret;
