@@ -1,8 +1,13 @@
 <?php
+
 /**
- * @copyright   Comvation AG 
- * @author Robin Glauser <robin.glauser@comvation.com>
+ * Class WysiwygEventListener
+ *
+ * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
+ * @subpackage  core_wysiwyg
+ * @version     1.0.0
  */
 
 namespace Cx\Core\Wysiwyg\Model\Event;
@@ -20,15 +25,25 @@ class WysiwygEventListener implements EventListener {
      */
     protected $cx;
 
+    /**
+     * @param Cx $cx
+     */
     function __construct(Cx $cx)
     {
         $this->cx = $cx;
     }
 
+    /**
+     * @param       $eventName
+     * @param array $eventArgs
+     */
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
     }
 
+    /**
+     * @param MediaBrowserConfiguration $mediaBrowserConfiguration
+     */
     public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
