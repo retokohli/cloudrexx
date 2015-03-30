@@ -40,7 +40,6 @@ class MediaBrowserEventListener implements \Cx\Core\Event\Model\Entity\EventList
             $this->cx->getWebsiteImagesContentPath(),
             $this->cx->getWebsiteImagesContentWebPath(),
         ));
-        $mediaType->getAccessIds(array());
         $mediaType->setPosition(1);
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
