@@ -41,7 +41,7 @@ class MediaDirEventListener implements EventListener {
             $this->cx->getWebsiteImagesMediaDirPath(),
             $this->cx->getWebsiteImagesMediaDirWebPath(),
         ));
-        $mediaType->getAccessIds(array(153));
+        $mediaType->setAccessIds(array(153));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

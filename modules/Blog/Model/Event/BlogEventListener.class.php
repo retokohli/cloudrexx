@@ -40,7 +40,7 @@ class BlogEventListener implements EventListener {
             $this->cx->getWebsiteImagesBlogPath(),
             $this->cx->getWebsiteImagesBlogWebPath(),
         ));
-        $mediaType->getAccessIds(array(119));
+        $mediaType->setAccessIds(array(119));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

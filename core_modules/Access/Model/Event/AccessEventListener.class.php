@@ -40,7 +40,7 @@ class AccessEventListener implements EventListener {
             $this->cx->getWebsiteImagesAccessPath(),
             $this->cx->getWebsiteImagesAccessWebPath(),
         ));
-        $mediaType->getAccessIds(array(18));
+        $mediaType->setAccessIds(array(18));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
