@@ -444,7 +444,7 @@ class FileBrowser {
                 \Permission::checkAccess(7, 'static');       //Access Media-Archive
                 \Permission::checkAccess(38, 'static');  //Edit Media-Files
                 \Permission::checkAccess(39, 'static');  //Upload Media-Files
-    
+
             //Hier soll wirklich kein break stehen! Beabsichtig!
     
     
