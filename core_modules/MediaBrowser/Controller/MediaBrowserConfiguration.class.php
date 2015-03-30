@@ -11,7 +11,7 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
-use Cx\Core_Modules\MediaBrowser\Model\MediaType;
+use Cx\Core\Model\Model\Entity\MediaType;
 
 class MediaBrowserConfiguration
 {

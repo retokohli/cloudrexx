@@ -11,7 +11,7 @@ namespace Cx\Modules\Downloads\Model\Event;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Event\Model\Entity\EventListener;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core_Modules\MediaBrowser\Model\MediaType;
+use Cx\Core\Model\Model\Entity\MediaType;
 
 class DownloadsEventListener implements EventListener {
 

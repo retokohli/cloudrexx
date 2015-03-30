@@ -7,7 +7,7 @@
  * @subpackage  coremodule_mediabrowser
  */
 
-namespace Cx\Core_Modules\MediaBrowser\Model;
+namespace Cx\Core\Model\Model\Entity;
 
 
 class MediaType {

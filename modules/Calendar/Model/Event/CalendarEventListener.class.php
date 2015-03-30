@@ -12,7 +12,7 @@
 namespace Cx\Modules\Calendar\Model\Event;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core_Modules\MediaBrowser\Model\MediaType;
+use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
  * EventListener for Calendar
