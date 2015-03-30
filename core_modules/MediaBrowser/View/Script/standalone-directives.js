@@ -166,7 +166,7 @@
                         
                         if ((up.settings.max_file_count!= 0) && uploaderData.filesToUpload.length > up.settings.max_file_count) {
                             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').addClass('disabled');
-                            $J('.upload-limit-tooltip').tooltip({
+                            $J('#uploader-modal-' + iAttrs.uploaderId+ ' .upload-limit-tooltip').tooltip({
                                 title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + up.settings.max_file_count
                             });
                         }
@@ -216,7 +216,16 @@
                             if (response.status != 'error') {
                                 $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-success');
                                 $J('.file-' + file.id).addClass('success');
-                                files.push(response.data.file[1]);
+                                if ((response.data.status == 'error')) {
+                                    $J('.file-' + file.id).addClass('danger');
+                                    $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-danger');
+                                    $J('.file-' + file.id).find('.errorMessage').html(response.data.message);
+                                    this.trigger('Error', {
+                                        file: file
+                                    });
+                                } else {
+                                    files.push(response.data.file[1]);
+                                }
                             } else {
                                 $J('.file-' + file.id).addClass('danger');
                                 $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-danger');

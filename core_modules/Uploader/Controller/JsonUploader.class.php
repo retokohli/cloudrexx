@@ -78,6 +78,8 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
 
     public function upload($params)
     {
+        global $_ARRAYLANG;
+        
         if (isset($params['get']['id'])
             && is_int(
                 intval($params['get']['id'])
@@ -131,7 +133,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             if (   isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit']) 
                 && $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] == 0
                 ) {
-                return array('status' => 'error');
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_REACHED']);
             }
             
             if (!is_string($callback)) {
