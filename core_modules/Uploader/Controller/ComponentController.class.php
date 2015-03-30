@@ -52,11 +52,9 @@ class ComponentController extends SystemComponentController
             }
 
             \JS::activate('mediabrowser');
-            \JS::registerCSS(
-                substr(
-                    $this->cx->getCoreModuleFolderName()
-                    . '/MediaBrowser/View/Style/mediabrowser.css', 1
-                )
+
+            $template->setGlobalVariable(
+                'MEDIABROWSER_ANGULAR_APP', 'ng-app="contrexxApp"'
             );
 
         }
