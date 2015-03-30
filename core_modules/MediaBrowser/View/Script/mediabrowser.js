@@ -31,7 +31,7 @@ cx.variables.set({"jquery": jQuery.noConflict(true)},'mediabrowser');
         return {
             get: function (type) {
                 var deferred = $q.defer();
-                $http.get('cadmin/index.php?cmd=jsondata&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter) {
+                $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=jsondata&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter) {
                     if (jsonadapter.data instanceof Object) {
                         deferred.resolve(jsonadapter.data);
                     }
