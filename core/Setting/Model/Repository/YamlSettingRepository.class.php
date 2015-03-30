@@ -37,5 +37,12 @@ class YamlSettingRepository extends \Cx\Core\Model\Controller\YamlRepository {
     public function __construct($repositoryPath) {
         parent::__construct($repositoryPath);
     }
+    
+    protected function load() {
+        if (!parent::load()) {
+            $this->entityIdentifier = 'id';
+            $this->entityUniqueKeys = array('name');
+        }
+    }
 }
 
