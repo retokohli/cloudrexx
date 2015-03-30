@@ -85,8 +85,8 @@ class SystemComponentBackendController extends Controller {
         $actTemplate->loadTemplateFile($filename);
         
         // todo: Messages
-        $this->parsePage($actTemplate, $cmd);
         $navigation = $this->parseNavigation($cmd);
+        $this->parsePage($actTemplate, $cmd);
         $txt = $cmd[0];
         if (empty($txt)) {
             $txt = 'DEFAULT';
@@ -122,7 +122,7 @@ class SystemComponentBackendController extends Controller {
      * 
      * @return \Cx\Core\Html\Sigma
      */
-    public function parseNavigation($cmd = array()) {
+    public function parseNavigation(&$cmd = array()) {
         // set tabs
         $navigation = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/Core/View/Template/Backend');
         $navigation->loadTemplateFile('Navigation.html');
@@ -131,6 +131,7 @@ class SystemComponentBackendController extends Controller {
                         array('' => array('permission' => $this->defaultPermission)), 
                         $this->getCommands()
                     );
+        $this->checkAndModifyCmdByPermission($cmd, $commands);
         foreach ($commands as $key => $command) {
             $subNav         = array();
             $currentCommand = is_array($command) ? $key : $command;
@@ -166,6 +167,31 @@ class SystemComponentBackendController extends Controller {
             }
         }
         return $navigation;
+    }
+    
+    /**
+     * Check and modify the cmd based on the permission
+     * 
+     * @param array $cmd
+     * @param array $currentCommands
+     */
+    public function checkAndModifyCmdByPermission(&$cmd, $currentCommands) {
+        $command  = array();
+        $keys     = array_keys($currentCommands);
+        $cmd[1]   = !isset($cmd[1]) ? '' : $cmd[1];
+        foreach ($cmd as $cmdKey => $cmdValue) {
+            $command[$cmdKey] = $cmdValue;
+            while (!$this->hasAccessToCommand($command)) {
+                $pos = array_search($cmdValue, $keys);
+                if (!isset($keys[$pos + 1])) {
+                    \Permission::noAccess();
+                    exit();
+                }
+                $cmdValue = $command[$cmdKey] = $keys[$pos + 1];
+            }
+            $keys = isset($currentCommands[$cmdValue]['children']) ? array_keys($currentCommands[$cmdValue]['children']) : '';
+        }
+        $cmd = $command;
     }
     
     /**
