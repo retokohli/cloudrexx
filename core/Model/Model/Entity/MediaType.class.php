@@ -48,6 +48,14 @@ class MediaType {
      */
     protected $accessIds = array();
 
+    function __construct($name = '',$humanName = '', $directory  = array(), $accessIds = array(), $position = '') {
+        $this->name      = $name;
+        $this->position  = $position;
+        $this->humanName = $humanName;
+        $this->directory = $directory;
+        $this->accessIds = $accessIds;
+    }
+
     /**
      * @return string
      */
