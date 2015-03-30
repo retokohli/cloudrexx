@@ -59,7 +59,7 @@ class CalendarEventListener implements \Cx\Core\Event\Model\Entity\EventListener
             $this->cx->getWebsiteImagesCalendarPath(),
             $this->cx->getWebsiteImagesCalendarWebPath(),
         ));
-        $mediaType->getAccessIds(array(16));
+        $mediaType->setAccessIds(array(16));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 }

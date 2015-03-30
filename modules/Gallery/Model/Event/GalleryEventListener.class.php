@@ -81,7 +81,7 @@ class GalleryEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
             $this->cx->getWebsiteImagesGalleryPath(),
             $this->cx->getWebsiteImagesGalleryWebPath(),
         ));
-        $mediaType->getAccessIds(array(12,67));
+        $mediaType->setAccessIds(array(12,67));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

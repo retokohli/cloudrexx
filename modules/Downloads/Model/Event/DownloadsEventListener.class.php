@@ -40,7 +40,7 @@ class DownloadsEventListener implements EventListener {
             $this->cx->getWebsiteImagesDownloadsPath(),
             $this->cx->getWebsiteImagesDownloadsWebPath(),
         ));
-        $mediaType->getAccessIds(array(141));
+        $mediaType->setAccessIds(array(141));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

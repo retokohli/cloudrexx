@@ -49,7 +49,7 @@ class MediaEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 call_user_func(array($this->cx,'getWebsiteMediaarchive'.$i.'Path')),
                 call_user_func(array($this->cx,'getWebsiteMediaarchive'.$i.'WebPath')),
             ));
-            $mediaType->getAccessIds(array(7,39,38));
+            $mediaType->setAccessIds(array(7,39,38));
             $mediaBrowserConfiguration->addMediaType($mediaType);
         }
     }

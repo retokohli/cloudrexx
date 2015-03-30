@@ -77,7 +77,7 @@ class PodcastEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
             $this->cx->getWebsiteImagesPodcastPath(),
             $this->cx->getWebsiteImagesPodcastWebPath(),
         ));
-        $mediaType->getAccessIds(array(87));
+        $mediaType->setAccessIds(array(87));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 }

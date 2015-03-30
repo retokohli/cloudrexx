@@ -75,7 +75,7 @@ class ShopEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $this->cx->getWebsiteImagesShopPath(),
             $this->cx->getWebsiteImagesShopWebPath(),
         ));
-        $mediaType->getAccessIds(array(13));
+        $mediaType->setAccessIds(array(13));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

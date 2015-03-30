@@ -39,7 +39,7 @@ class WysiwygEventListener implements EventListener {
             $this->cx->getWebsiteImagesPath() . '/Wysiwyg',
             $this->cx->getWebsiteImagesWebPath() . '/Wysiwyg',
         ));
-        $mediaType->getAccessIds(array(16));
+        $mediaType->setAccessIds(array(16));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 
