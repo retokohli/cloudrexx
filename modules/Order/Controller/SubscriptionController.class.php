@@ -136,6 +136,9 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                     'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PAYMENT_AMOUNT'],
                     'table' => array(
                         'parse' => function($value, $rowData) {
+                            if (empty($value)) {
+                                return null;
+                            }
                             $subscription    = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
                             $currency = '';
                             $order = $subscription->getOrder();
@@ -143,12 +146,28 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                                 $currency  = !\FWValidator::isEmpty($order->getCurrency()) ? $order->getCurrency() : '';
                             }
                             $paymentInterval = $subscription->getRenewalUnit();
-                            return ($value) ? $value . ' ' . $currency . ' / ' . $paymentInterval : '';
+                            return $value . ' ' . $currency . ' / ' . $paymentInterval;
                         }
                     )
                 ),
                 'renewalUnit' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_RENEWAL_UNIT']
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_RENEWAL_UNIT'],
+                    'table' => array(
+                        'parse' => function($value, $rowData) {
+                            if (empty($value)) {
+                                return null;
+                            }
+                            $subscription    = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
+                            $renewalDate     = '';
+                            if ($subscription->getRenewalDate()) {
+                                $renewalDate  = $subscription->getRenewalDate();
+                                $quantifier   = $subscription->getRenewalQuantifier();
+                                $renewalDate->modify("-$quantifier $value");
+                                return $renewalDate->format('d.M.Y H:i:s');
+                            }
+                            return $renewalDate;
+                        }
+                    )
                 ),
                 'renewalQuantifier' => array(
                     'showOverview' => false
