@@ -55,7 +55,6 @@ class ContactEventListener implements EventListener  {
             $this->cx->getWebsiteImagesAttachPath(),
                 $this->cx->getWebsiteImagesAttachWebPath(),
         ));
-        $mediaType->getAccessIds(array());
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 }
