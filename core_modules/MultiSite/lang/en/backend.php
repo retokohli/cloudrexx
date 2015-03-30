@@ -89,6 +89,11 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYREXXFORMID'] = 'Payrexx Form Id';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYREXXAPISECRET'] = 'Payrexx API Secret';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITEBACKUPLOCATION'] = 'Website Backup Location';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DOMAINBLACKLIST'] = 'Domain blacklist';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATEIDQUERYSTRINGKEY'] = 'Affiliate ID query string key';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATEIDQUERYSTRINGKEY_TOOLTIP'] = 'The query string key that shall be used to track the Affiliate ID in a request.
+I.e.: http://www.example.com/?*ref*=&lt;affiliateId&gt;';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATEIDREFERENCEPROFILEATTRIBUTEID'] = 'Affiliate ID (reference) user profile attribute ID';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATEIDREFERENCEPROFILEATTRIBUTEID_TOOLTIP'] = 'ID of profile attribute to store the referenced Affiliate ID on user sign-up';
 
 // settings status messages
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTCODEBASE_SUCCESSFUL_CREATION']      = "Default Code Base has been set successfully";

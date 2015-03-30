@@ -58,7 +58,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         parent::__construct($systemComponent, $cx);
         //multisite configuration setting
         self::errorHandler();
-
+        
         // add marketing website as valid redirection after logout
         \FWUser::$allowedHosts[] = 'http://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
         \FWUser::$allowedHosts[] = 'https://'.\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
@@ -2215,6 +2215,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                                                            'External Payment Customer Id Profile Attribute Id', 5);
                 self::addOrUpdateConfigurationOptionUserProfileAttributeId('affiliateIdProfileAttributeId', 
                                                                            'Affiliate Id Profile Attribute Id', 6);
+                self::addOrUpdateConfigurationOptionUserProfileAttributeId('affiliateIdReferenceProfileAttributeId', 
+                                                                           'Affiliate ID (reference) user profile attribute ID', 8);
+            }
+            if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('affiliateIdQueryStringKey', 'ref', 7, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT)
+            ) {
+                   throw new MultiSiteException("Failed to add Setting entry for Affiliate ID query string key");
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -2807,9 +2814,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         }
         if (!$externalPaymentCustomerIdProfileAttributeId) {
-            $attributeName = ($configOptionName == 'affiliateIdProfileAttributeId') 
-                                ? 'Affiliate ID user profile attribute ID' 
-                                : 'MultiSite External Payment Customer ID';
+            $attributeName = '';
+            switch ($configOptionName) {
+                case 'affiliateIdProfileAttributeId':
+                    $attributeName = 'Affiliate ID user profile attribute ID';
+                    break;
+                case 'externalPaymentCustomerIdProfileAttributeId':
+                    $attributeName = 'MultiSite External Payment Customer ID';
+                    break;
+                case 'affiliateIdReferenceProfileAttributeId':
+                    $attributeName = 'Affiliate ID (reference) user profile attribute ID';
+                    break;
+                default :
+                    break;
+            }
+            if (!$attributeName) {
+                return;
+            }
             $externalIdInDatabase = $objUser->objAttribute->getAttributeIdByName($attributeName);
             if ($externalIdInDatabase) {
                 return $externalIdInDatabase;
@@ -3172,5 +3193,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'TXT_MULTISITE_ACCEPT_TERMS_URL_NAME' => $_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS_URL_NAME'],
             )
         );
+    }
+
+    /**
+     * Check whether the affiliate id is valid or not
+     * 
+     * @param string $affiliateId User affiliate id
+     * 
+     * @return boolean True, when affiliate id is valid false otherwise
+     */
+    public static function isValidAffiliateId($affiliateId)
+    {
+        $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId', 'MultiSite');
+        $filter = array(
+            $affiliateIdProfileAttributeId => $affiliateId
+        );
+        $objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter);
+        if (!$objUser) {
+            return false;
+        }
+        $userExists = false;
+        while (!$objUser->EOF) {
+            if ($affiliateId == $objUser->getProfileAttribute($affiliateIdProfileAttributeId)) {
+                $userExists = true;
+            }
+            $objUser->next();
+        }
+        return $userExists;
     }
 }

@@ -149,6 +149,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'domainManipulation'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'isUniqueEmail'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'getMailServicePlans'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, array(183), null),
+            'trackAffiliateId'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
         );  
     }
 
@@ -3045,6 +3046,34 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (\Exception $e) {
             \DBG::log('JsonMultiSite::getMailServicePlans() failed: to get service plans from mail service server: ' . $e->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN']);
+        }
+    }
+    
+    /**
+     * Track Affiliate Id
+     */
+    public function trackAffiliateId($params)
+    {
+        $post = isset($params['post']) ? $params['post'] : array();
+        $url  = isset($post['url']) ? $post['url'] : '';
+        if (empty($url)) {
+            return;
+        }
+        
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $affiliateIdQueryStringKey = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite');
+                    $urlParams = \Cx\Core\Routing\Url::params2array($url);
+                    if (!array_key_exists($affiliateIdQueryStringKey, $urlParams)) {
+                        return;
+                    }
+                    $affiliateId = $urlParams[$affiliateIdQueryStringKey];
+                    if (ComponentController::isValidAffiliateId($affiliateId)) {
+                        setcookie('MultiSiteAffiliateId', $affiliateId, time() + (86400 * 30), "/");
+                    }
+                default:
+                    break;
         }
     }
 

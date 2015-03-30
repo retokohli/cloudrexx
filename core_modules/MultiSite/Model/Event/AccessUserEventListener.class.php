@@ -68,6 +68,20 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
+                     $multiSiteAffiliateId = isset($_COOKIE['MultiSiteAffiliateId']) ? $_COOKIE['MultiSiteAffiliateId'] : '';                     
+                     if (   !empty($multiSiteAffiliateId)
+                         && !\FWUser::getFWUserObject()->objUser->login()
+                         && \Cx\Core_Modules\MultiSite\Controller\ComponentController::isValidAffiliateId($multiSiteAffiliateId)
+                     ) {
+                        $objUser->setProfile(
+                            array(
+                                \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite') => array(0 => $multiSiteAffiliateId)
+                            )
+                        );
+                     }
+                     break;
                  case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
 // TODO: add language variable
