@@ -2211,12 +2211,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             
             if (!\FWValidator::isEmpty(\Env::get('db'))) {
-                self::addOrUpdateConfigurationOptionUserProfileAttributeId('externalPaymentCustomerIdProfileAttributeId', 
-                                                                           'External Payment Customer Id Profile Attribute Id', 5);
-                self::addOrUpdateConfigurationOptionUserProfileAttributeId('affiliateIdProfileAttributeId', 
-                                                                           'Affiliate Id Profile Attribute Id', 6);
-                self::addOrUpdateConfigurationOptionUserProfileAttributeId('affiliateIdReferenceProfileAttributeId', 
-                                                                           'Affiliate ID (reference) user profile attribute ID', 8);
+                self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                    'externalPaymentCustomerIdProfileAttributeId', 
+                    'MultiSite External Payment Customer ID',
+                    5);
+                self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                    'affiliateIdProfileAttributeId', 
+                    'Affiliate ID user profile attribute ID',
+                    6);
+                self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                    'affiliateIdReferenceProfileAttributeId', 
+                    'Affiliate ID (reference) user profile attribute ID',
+                    8);
             }
             if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('affiliateIdQueryStringKey', 'ref', 7, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT)
@@ -2797,12 +2803,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Get the External Payment Customer Id Profile Attribute Id
      * 
      * @param string $configOptionName config option name 
-     * @param string $attrName         attribute name
+     * @param string $attributeName    attribute name
      * 
      * @return integer attribute id
      * @throws MultiSiteException
      */
-    public static function getProfileAttributeIdByConfigOptionName($configOptionName, $attrName) {
+    public static function getProfileAttributeIdByConfigOptionName($configOptionName, $attributeName) {
         $objUser = \FWUser::getFWUserObject()->objUser;
         
         $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName,'MultiSite');
@@ -2813,21 +2819,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $externalPaymentCustomerIdProfileAttributeId = false;
             }
         }
-        if (!$externalPaymentCustomerIdProfileAttributeId) {
-            $attributeName = '';
-            switch ($configOptionName) {
-                case 'affiliateIdProfileAttributeId':
-                    $attributeName = 'Affiliate ID user profile attribute ID';
-                    break;
-                case 'externalPaymentCustomerIdProfileAttributeId':
-                    $attributeName = 'MultiSite External Payment Customer ID';
-                    break;
-                case 'affiliateIdReferenceProfileAttributeId':
-                    $attributeName = 'Affiliate ID (reference) user profile attribute ID';
-                    break;
-                default :
-                    break;
-            }
+        if (!$externalPaymentCustomerIdProfileAttributeId) {            
             if (!$attributeName) {
                 return;
             }
@@ -2844,7 +2836,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objProfileAttribute->setParent(0);
             $objProfileAttribute->setProtection(array());
             if (!$objProfileAttribute->store()) {
-                throw new MultiSiteException('Failed to create ' . $attrName);
+                throw new MultiSiteException('Failed to create ' . $attributeName);
             }
             
         }

@@ -149,7 +149,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'domainManipulation'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'isUniqueEmail'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'getMailServicePlans'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, array(183), null),
-            'trackAffiliateId'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
+            'trackAffiliateId'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get', 'post'), false),
         );  
     }
 
