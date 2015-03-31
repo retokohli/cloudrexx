@@ -92,15 +92,15 @@ class Setting{
     const TYPE_PASSWORD = 'password';
     
     public static $arrSettings = array();
-    protected static $engineTypes = array(
+    protected static $engines = array(
 	'Database' => '\Cx\Core\Setting\Model\Entity\DbEngine',
 	'FileSystem' => '\Cx\Core\Setting\Model\Entity\FileSystem',
 	'Yaml'	=> '\Cx\Core\Setting\Model\Entity\YamlEngine',
     );
 
     protected static $engine = 'Database';
-    protected static $section = NULL;
-    protected static $group = NULL;
+    protected static $section = null;
+    protected static $group = null;
     protected static $tab_index = 1;
     
     
@@ -113,12 +113,11 @@ class Setting{
      */
     static function changed()
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {
-            return $engineType->changed();
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
         }
+        return $engine->changed();
     }
     /**
      * Optionally sets and returns the value of the tab index    
@@ -127,12 +126,11 @@ class Setting{
      */
     static function tab_index($tab_index=null)
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {
-            return $engineType->tab_index($tab_index);
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
         }
+        return $engine->tab_index($tab_index);
     }
     /**
      * Initialize the settings entries from the database with key/value pairs    
@@ -171,7 +169,7 @@ class Setting{
                     . ' Group: ' .  $group . "\r\n"
                     . ' Repo: ' .  $fileSystemConfigRepository . "\r\n"
                 . ' ***');*/
-            if ($populate || $engine == NULL || $engine->getArraySetting() == NULL) {
+            if ($populate || $engine == null || $engine->getArraySetting() == null) {
                 $oSectionEngine = new $engineType(); 
                 $oSectionEngine->init($section, $group, $fileSystemConfigRepository);
                 self::setSectionEngine($oSectionEngine, $populate); 
@@ -191,12 +189,11 @@ class Setting{
      */
     static function flush()
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {
-            return $engineType->flush();
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
         }
+        return $engine->flush();
     }
     /**
      * Returns the settings array for the given section and group
@@ -212,13 +209,11 @@ class Setting{
      */
     static function getArray($section = null, $group=null)
     {
-        $engineType = self::getSectionEngine($section);
-        if ($engineType != NULL) {
-            return $engineType->getArray($section,$group);
-        } else {
+        $engine = self::getSectionEngine($section);
+        if ($engine == null) {
             return false;
         }
-        
+        return $engine->getArray($section,$group);        
     }
     /**
      * Returns the settings value stored in the section for the name given.
@@ -250,12 +245,11 @@ class Setting{
             }
         }
         
-        $engineType = self::getSectionEngine($section);
-        if ($engineType != null) {
-            return $engineType->getValue($name);
-        } else {
+        $engine = self::getSectionEngine($section);
+        if ($engine == null) {
             return false;
         }
+        return $engine->getValue($name);
     }
     /**
      * Returns the true or false, if settings name is exist or not .
@@ -269,12 +263,11 @@ class Setting{
      */
     static function isDefined($name)
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {
-            return $engineType->isDefined($name);
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
         }
+        return $engine->isDefined($name);
     }
     /**
      * Updates a setting
@@ -290,12 +283,11 @@ class Setting{
      */
     static function set($name, $value)
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {
-            return $engineType->set($name, $value); 
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
         }
+        return $engine->set($name, $value); 
     }
     /**
      * Stores all settings entries present in the $arrSettings object
@@ -313,12 +305,11 @@ class Setting{
      */
     static function updateAll()
     {
-        $engineType = self::getSectionEngine(); 
-        if ($engineType != NULL) {
-            return $engineType->updateAll(); 
-        } else {
+        $engine = self::getSectionEngine(); 
+        if ($engine == null) {
             return false;
         }
+        return $engine->updateAll();
     }
     /**
      * Updates the value for the given name in the settings table
@@ -338,12 +329,11 @@ class Setting{
      */
     static function update($name)
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {
-            return $engineType->update($name);
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
         }
+        return $engine->update($name);
     }
     /**
      * Add a new record to the settings
@@ -365,13 +355,15 @@ class Setting{
      */ 
     static function add( $name, $value, $ord = false, $type = 'text', $values = '', $group = null)
     {
-        $engineType=self::getSectionEngine();
-        if ($engineType != NULL) {
-            if ($group == NULL) $group = self::$group;
-            return $engineType->add( $name, $value, $ord, $type, $values, $group);  
-        } else {
+        $engine=self::getSectionEngine();
+        if ($engine == null) {
             return false;
-        } 
+        }
+        if ($group == null) {
+            $group = self::$group;
+        }
+        return $engine->add( $name, $value, $ord, $type, $values, $group);  
+
     }
     
     static function setGroup()
@@ -400,12 +392,11 @@ class Setting{
      */
     static function delete($name = null, $group = null)
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {
-            return $engineType->delete($name, $group);
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
         }
+        return $engine->delete($name, $group);
     }
     /**
      * Display the settings present in the $arrSettings class array
@@ -772,9 +763,7 @@ class Setting{
      * @return  boolean                                 True on success
      */
     static function show_external( &$objTemplateLocal, $tab_name, $content)
-    {
-        $engineType = self::getSectionEngine();
-        
+    {   
         if (empty($objTemplateLocal)|| !$objTemplateLocal->blockExists('core_setting_row')) 
         {
             $objTemplateLocal = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Setting/View/Template/Generic');
@@ -850,8 +839,11 @@ class Setting{
         // TODO: You *MUST* call this yourself *before* in order to
         // properly initialize the section!
         // self::init();
-        $engineType=self::getSectionEngine();
-        $arrSettings=$engineType->getArraySetting();
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
+            return false;
+        }
+        $arrSettings = $engine->getArraySetting();
         unset($_POST['bsubmit']);
         $result = true;
         // Compare POST with current settings and only store what was changed.
@@ -944,12 +936,11 @@ class Setting{
      */
     static function deleteModule()
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {
-            return $engineType->deleteModule();
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
         }
+        return $engine->deleteModule();
     } 
     /**
      * Splits the string value at commas and returns an array of strings    
@@ -1026,12 +1017,11 @@ class Setting{
      */
     static function errorHandler()
     {
-        $engineType = self::getSectionEngine();
-        if ($engineType != NULL) {            
-            return $engineType->errorHandler(); 
-        } else {
+        $engine = self::getSectionEngine();
+        if ($engine == null) {
             return false;
-        }
+        }        
+        return $engine->errorHandler(); 
     }
     /**
      * Returns the settings from the old settings table for the given module ID,    
@@ -1071,6 +1061,7 @@ class Setting{
 
     
     /**
+     * Returns engine from section
      * 
      * @param type $section
      * @param type $engine
@@ -1079,16 +1070,22 @@ class Setting{
      */
     static function getSectionEngine($section = null, $engine = null)
     {  
-        if ($section == NULL) $section = self::$section;
-        if ($engine == NULL) $engine = self::$engine;
+        if ($section == null) {
+            $section = self::$section;
+        }
+        if ($engine == null) {
+            $engine = self::$engine;
+        }
         if (isset(self::$arrSettings[$section][$engine])) {
            return self::$arrSettings[$section][$engine];
         }
-        if (isset(self::$arrSettings[$section]['default_engine'])) {
+        if (isset(self::$arrSettings[$section]['default_engine']) && 
+            isset(self::$arrSettings[$section][self::$arrSettings[$section]['default_engine']])
+        ) {
             return self::$arrSettings[$section][self::$arrSettings[$section]['default_engine']];
         }
-        \DBG::log("Section engine don't exist. Section: $section, Engine: $enigne");
-        throw new Exception("Section engine don't exist. Section: $section, Engine: $enigne");
+        // \DBG::log("Section engine don't exist. Section: $section, Engine: $engine");
+        return null;
     }
     
     /**
@@ -1129,12 +1126,12 @@ class Setting{
     /**
      * Set engineType    
      *
-     * @param string $engineType
+     * @param string $engine
      */
     static function setEngineType($section, $engine, $group = null)
     { 
         if (empty($section)) die('missing section parameter');
-        if (isset(self::$engineTypes[$engine])) {
+        if (isset(self::$engines[$engine])) {
             self::$engine = $engine; 
             self::$section = $section; 
             self::$group = $group;
@@ -1152,7 +1149,7 @@ class Setting{
      */
     static function getEngineType()
     {
-        return self::$engineTypes[self::$engine];
+        return self::$engines[self::$engine];
     }
     
     /**
@@ -1190,12 +1187,11 @@ class Setting{
      * @return boolean
      */
     static function addToArray($name, $value) {
-        $engineType=self::getSectionEngine(); 
-        if ($engineType != NULL) {
-            return $engineType->addToArray($name, $value); 
-        } else {
+        $engine=self::getSectionEngine(); 
+        if ($engine == null) {
             return false;
         }
+        return $engine->addToArray($name, $value); 
     }
     
     /**
@@ -1209,17 +1205,16 @@ class Setting{
      */
     static function getSettings($section = null, $engine = null, $group = null) 
     {
-        if ($section == NULL) {
+        if ($section == null) {
             return self::$arrSettings;
-        }elseif ($engine == NULL) {
+        }elseif ($engine == null) {
             return self::$arrSettings[$section];        
         } else {
-            $engineType = self::getSectionEngine($section, $engine);
-            if ($engineType != NULL) {
-                return $engineType->getArray($section, $group);
-            } else {
+            $engine = self::getSectionEngine($section, $engine);
+            if ($engine == null) {
                 return false;
-            } 
+            }
+            return $engine->getArray($section, $group);
         }
     }
     
