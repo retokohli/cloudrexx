@@ -466,10 +466,8 @@ class FileBrowser {
     
                 if (count($this->_arrFiles) > 0) {
                     $arrEscapedPaths = array();
-                    $filterThumbFiles = 'thumb_thumbnail|thumb_medium|thumb_large';
                     foreach ($this->_arrFiles as $arrFile) {
                         $arrEscapedPaths[] = contrexx_raw2encodedUrl($arrFile['path']);
-                        if (!preg_match('/^.*\.(' . $filterThumbFiles . ').*$/i', $arrFile['name'])) {
                             $this->_objTpl->setVariable(array(
                                 'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
                                 'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
@@ -482,7 +480,6 @@ class FileBrowser {
                             ));
                             $this->_objTpl->parse('content_files');
                             $rowNr++;
-                        }
                     }
     
                     $this->_objTpl->setVariable('FILEBROWSER_FILES_JS', "'".implode("','",$arrEscapedPaths)."'");
@@ -662,7 +659,7 @@ class FileBrowser {
             while ($file !== false) {
 // TODO: This match won't work for arbitrary thumbnail file names as they
 // may be created by the Image class!
-                if ($file == '.' || $file == '..' || preg_match('/\.thumb$/', $file) || $file == 'index.php') {
+                if ($file == '.' || $file == '..' || preg_match('/^.*\.(thumb|thumb_thumbnail|thumb_medium|thumb_large).*$/i', $file)  || $file == 'index.php') {
                     $file = readdir($objDir);
                     continue;
                 }
