@@ -1,0 +1,34 @@
+<div id="multisite_affiliate_profile_attribute_id">
+    <div class="grid-elm grid-align-1-1 grid-offset">
+        <!-- BEGIN showAffiliateId -->
+        <div class="affiliate-profile-attribute-id">
+            {TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID} : {MULTISITE_AFFILIATE_PROFILE_ATTR_ID}
+        </div>
+        <!-- END showAffiliateId -->
+        <!-- BEGIN showAffiliateIdForm -->
+        <div class="affiliate-profile-attribute-id-form">
+            <form method="post" id="setAffiliateId">
+                {TXT_CORE_MODULE_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID} : 
+                <input type="text" id="affiliateProfileAttributeId" style="width: 100px;"/> 
+                <button style="margin-top: 0px;" type="submit" disabled class="btn save loadingProcess" onclick="saveAffiliateId(jQuery(this))" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+            </form>
+        </div>
+        <!-- END showAffiliateIdForm -->
+    </div>
+</div>
+<script type="text/javascript">
+    /* <![CDATA[ */
+    cx.ready(function(){
+       jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function(){
+            jQuery("#affiliateProfileAttributeId").bind("input",function(){
+                this.value = this.value.toLowerCase();
+                var minLength = cx.variables.get('websiteNameMinLength', 'affiliateSetup');
+                if (this.value.length >= minLength) {
+                    checkAvailablityOfAffiliateId(this.value);
+                }
+            });
+       }); 
+    });
+   /* ]]> */
+</script>
+
