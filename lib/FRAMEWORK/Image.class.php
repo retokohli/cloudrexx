@@ -158,7 +158,7 @@ class ImageManager
         
         if ($generateThumbnailByRatio && !$_objImage->resizeImageWithAspectRatio($thumbWidth, $thumbHeight, $quality)) {
             return false;
-        } elseif (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) {
+        } elseif (!$generateThumbnailByRatio && !$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) {
             return false;
         }
         
@@ -250,11 +250,11 @@ class ImageManager
         //Create a new image for given size
 	$this->createNewImageForResize($width, $height, $quality);
         if (function_exists('imagecopyresampled')) { //resampled is gd2 only
--           imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
+            imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
         } else {
--           imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
+            imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
         }
-        
+
 	if ($this->newImage) {
             return true;
         }
