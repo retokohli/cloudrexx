@@ -585,3 +585,5 @@ $_ARRAYLANG['TXT_CRM_COMPANY_SIZE']         = "Company Size";
 $_ARRAYLANG['TXT_CRM_ADD_COMPANY_SIZE']     = 'Add Company Size';
 $_ARRAYLANG['TXT_CRM_EDIT_COMPANY_SIZE']    = 'Edit Company Size';
 $_ARRAYLANG['TXT_CRM_NUMBER_OF_COMPANIES']  = 'Number of Companies';
+$_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE']  = 'Profile attribute for industry';
+$_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_COMPANY_SIZE']  = 'Profile attribute for company size';

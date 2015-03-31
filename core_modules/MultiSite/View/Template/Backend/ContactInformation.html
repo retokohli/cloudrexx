@@ -10,6 +10,9 @@
   .row .half-row:last-child {
     margin-left: 3%;
   }
+  #multisite_contact_information_form label{
+    display: inline-block;
+  }
 </style>
 <div aria-hidden="true" class="modal fade" id="multisite_contact_informaiton" role="dialog" tabindex="-1">
   <div class="modal-dialog">
@@ -68,14 +71,14 @@
             <!-- END multisite_user_profile_attribute_country -->
             <div class="row">
               <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_INDUSTRY_TYPE}</label><br />
-                <select tabindex="6" name="{MULTISITE_INDUSTRY_TYPE_POST_NAME}" id="industryType">
+                <select name="{MULTISITE_INDUSTRY_TYPE_POST_NAME}" id="industryType">
                 <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
                 {CRM_INDUSTRY_DROPDOWN}
               </select>
             </div>
             <div class="row">
               <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_SIZE}</label><br />
-              <select tabindex="9" name="{MULTISITE_COMPANY_SIZE_POST_NAME}" id="companySize">
+              <select name="{MULTISITE_COMPANY_SIZE_POST_NAME}" id="companySize">
                 <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
                 <!-- BEGIN companySize -->
                 <option value="{CRM_COMPANY_SIZE_ID}" {CRM_COMPANY_SIZE_SELECTED}>{CRM_COMPANY_SIZE}</option>
@@ -84,7 +87,7 @@
             </div>
             <div class="row">
               <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP}</label> <font color="red">*</font><br />
-              <select tabindex="8" name="customer_type" id="customer_type">
+              <select name="customer_type" id="customer_type">
                 <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
                 <!-- BEGIN customerTypes -->
                 <option value="{CRM_CUSTOMER_TYPE_ID}" {CRM_CUSTOMER_TYPE_SELECTED}>{CRM_CUSTOMER_TYPE}</option>

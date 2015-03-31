@@ -1025,6 +1025,7 @@ class CrmSettings extends CrmLibrary
         $objTpl = $this->_objTpl;
         $objFWUser = \FWUser::getFWUserObject();
         $objTpl->hideBlock('insufficient-warning');
+        \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
         if (isset($_POST['save'])) {
                                     
             $settings = array(
@@ -1037,8 +1038,7 @@ class CrmSettings extends CrmLibrary
                     'emp_default_user_group'             => isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0,
                     'default_country_value'              => isset ($_POST['default_country_value']) ? (int) $_POST['default_country_value'] : 0
             );
-	    // save industry_typ and company_size user profil attribut id 
-            \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
+	    // save industry_typ and company_size user profil attribut id
             \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_industry_typ', $_POST['user_profile_attribute_industry_typ']);
             \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_company_size', $_POST['user_profile_attribute_company_size']);
             \Cx\Core\Setting\Controller\Setting::updateAll();

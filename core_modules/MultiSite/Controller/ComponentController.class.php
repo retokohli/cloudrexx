@@ -3098,6 +3098,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // get the crm Contact to find out if customerType isset, because this is a must in our form
                     $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
                     $crmContact->load($userCrmId);
+                    $valueForCustomerType = $userData[$attributIdForCustomerType];
+                    $valueForCompanySize = $userData[$attributIdForCompanySize];
+                    unset($userData[$attributIdForCompanySize], $userData[$attributIdForCustomerType]);
                     if (count($userData) === count(array_filter($userData)) && $crmContact->__get('customerType') != 0) {
                         return;
                     }
@@ -3122,7 +3125,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 $crmComponent = new \Cx\Modules\Crm\Controller\CrmManager('crm');
                 // get required information out of crm, so we can display them in our modal
-                $crmComponent->parseCrmForMultiSite($userCrmId, $objContactTpl, $userData[$attributIdForCustomerType], $userData[$attributIdForCompanySize]);
+                $crmComponent->parseCrmForMultiSite($userCrmId, $objContactTpl, $valueForCustomerType, $valueForCompanySize);
                 $objAccessLib->parseAccountAttributes($objUser);
                 $objContactTpl->setVariable(array(
                     'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'             => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'],
