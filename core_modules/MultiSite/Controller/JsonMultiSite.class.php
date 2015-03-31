@@ -5408,8 +5408,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * Set AffiliateId to the customer.
      * 
-     * @param type $params 
-     * @return boolean
+     * @param array $params 
+     * @return array
      */
     public function setAffiliateId($params)
     {
@@ -5458,6 +5458,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }        
     }
     
+    /**
+     * Check availability of AffiliateId
+     * 
+     * @param array $params 
+     * @return array
+     */    
     public function checkAvailabilityOfAffiliateId($params) {
         global $_ARRAYLANG;
         
@@ -5483,6 +5489,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
+    /**
+     * Validate the affiliateId
+     * 
+     * @param string $affiliateId
+     * @return array
+     */
     public static function validateAffiliateId($affiliateId)
     {
         global $_ARRAYLANG;
