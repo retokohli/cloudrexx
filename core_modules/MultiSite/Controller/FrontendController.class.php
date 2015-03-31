@@ -69,6 +69,38 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setContentTitle($_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION'].' '.$subscriptionTitle);
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setMetaTitle($subscriptionTitle);
                 break;
+            case 'AffiliateSetup':
+                global $_ARRAYLANG;
+                
+                $template->setGlobalVariable($_ARRAYLANG);
+
+                if (!self::isUserLoggedIn()) {
+                    return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
+                }
+                
+                $objUser = \FWUser::getFWUserObject()->objUser;
+                $crmContactId = $objUser->getCrmUserId();
+                if (empty($crmContactId)) {
+                    return ' '; // Do not show AffiliateSetup detail
+                }
+                //get the minimum length of websiteName
+                $objJs = \ContrexxJavascript::getInstance();
+                $objJs->setVariable('websiteNameMinLength', \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite'), 'affiliateSetup');
+                $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
+                $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
+                if (!empty($affiliateId)) {
+                    $template->setVariable(array(
+                        'TXT_MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_PROFILE_ATTR_ID'],
+                        'MULTISITE_AFFILIATE_PROFILE_ATTR_ID'     => $affiliateId
+                    ));
+                    $template->touchBlock('showAffiliateId');
+                } else {
+                    $template->setVariable(array(
+                        'TXT_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID' => $_ARRAYLANG['TXT_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID']
+                    ));
+                    $template->touchBlock('showAffiliateIdForm');
+                }
+                break;
             default:
         }
     }

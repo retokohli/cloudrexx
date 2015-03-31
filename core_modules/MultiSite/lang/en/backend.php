@@ -374,3 +374,11 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_FTPPATH'] = 'FTP path';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_SERVICE_SERVER'] = 'Website service server';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ALL'] ='All';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ERROR'] ='Error';
+
+// Maintaine AffiliateId
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_NOT_AVAILABLE'] = 'AffiliateId not Available.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_FORMAT_ERROR'] = 'The AffiliateId Must Contain letters and numbers between the certain length.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED'] = 'Given AffiliateId is blocked, try anothor value.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR'] = 'Error in set AffiliateId.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SET_ALREADY'] = 'The AffiliateId set already, can not reset again';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SAVED'] = 'The AffiliateId saved successfully';

@@ -208,7 +208,80 @@ function enableOrDisableMailService($this) {
         error: function() { }
     });
 }
-    
+
+/**
+ * validate AffiliateId
+ */
+function checkAvailablityOfAffiliateId(affiliateId) {
+    var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=checkAvailabilityOfAffiliateId';    
+    lastXhr = jQuery.ajax({
+        dataType: "json",
+        url: url,
+        data: {
+            affiliateProfileAttributeId :  affiliateId
+        },
+        type: "POST",
+        beforeSend: function (xhr, settings) {
+            jQuery(".save").prop('disabled', true);
+        },
+        success: function(response, status, xhr) {
+            if (xhr === lastXhr) {
+                if (response.status == 'success') {
+                    resp = response.data;
+                    if (resp.status == 'success') {
+                        jQuery(".save").removeAttr('disabled');
+                    } else {
+                        showMessage(resp.message, 'error', 3000);
+                    }
+                } else {
+                    showMessage(response.message, 'error', 3000);
+                }
+            }
+        },
+        error: function() { }
+    });
+}
+
+/**
+ * save AffiliateId
+ * 
+ * @param object elm jQuery button object
+ */
+function saveAffiliateId($this) {
+    var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=setAffiliateId';    
+    var affiliateId = jQuery("#affiliateProfileAttributeId").val();
+
+    jQuery.ajax({
+        dataType: "json",
+        url: url,
+        data: {
+            affiliateProfileAttributeId :  affiliateId
+        },
+        type: "POST",
+        beforeSend: function (xhr, settings) {
+            $this.button('loading');
+            $this.prop('disabled', true);
+        },
+        success: function(response) {
+            if (response.status == 'success') {
+                resp = response.data;
+                if (resp.status == 'success') {
+                    showMessage(resp.message, 'success');
+                    window.location.reload();
+                } else {
+                    showMessage(resp.message, 'error', 3000);
+                }
+            } else {
+                showMessage(response.message, 'error', 3000);
+            }
+        },
+        complete: function (xhr, settings) {
+            $this.button('reset');
+        },
+        error: function() { }
+    });
+}
+
 function pleskAutoLogin($this) {
       var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=getPanelAutoLoginUrl';
       var data = {websiteId: $this.data('id')};
