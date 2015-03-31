@@ -136,7 +136,7 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                     'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PAYMENT_AMOUNT'],
                     'table' => array(
                         'parse' => function($value, $rowData) {
-                            if (empty($value)) {
+                            if (\FWValidator::isEmpty(floatval($value))) {
                                 return null;
                             }
                             $subscription    = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
