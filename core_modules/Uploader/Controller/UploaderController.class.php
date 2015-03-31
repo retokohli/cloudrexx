@@ -8,7 +8,9 @@
  */
 
 namespace Cx\Core_Modules\Uploader\Controller;
+
 use Cx\Core\Core\Controller\Cx;
+use Cx\Lib\FileSystem\FileSystem;
 
 /**
  * UploaderExceptions thrown by uploader
@@ -19,7 +21,7 @@ use Cx\Core\Core\Controller\Cx;
  * @subpackage  coremodule_uploader
  */
 class UploaderException extends \Exception {
-    
+
 }
 
 define('PLUPLOAD_MOVE_ERR', 103);
@@ -74,7 +76,9 @@ class UploaderController {
     }
 
     /**
-     * 
+     * @param array $conf
+     *
+     * @return array|bool
      */
     static function handleRequest($conf = array()) {
 
@@ -161,16 +165,24 @@ class UploaderController {
                 $new_path = $conf['target_dir'] . $fileName;
                 \Cx\Lib\FileSystem\FileSystem::move($tmp_path, $new_path, true);
 
-                $rootPath = $cx->getCodeBaseDocumentRootPath() . $conf['target_dir'];
-                $rootPathFull = $cx->getCodeBaseDocumentRootPath() . $new_path;
-                $filePathinfo = pathinfo($rootPathFull);
+                $rootPath      = $cx->getWebsitePath() . $conf['target_dir'];
+                $rootPathFull  = $cx->getWebsitePath() . $new_path;
+                $filePathinfo  = pathinfo($rootPathFull);
                 $fileExtension = $filePathinfo['extension'];
                 $fileNamePlain = $filePathinfo['filename'];
 
                 $im = new \ImageManager();
                 if ($im->_isImage($rootPathFull)) {
-                    foreach (UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail) {
-                        $im->_createThumb($rootPath, $conf['target_dir'], $fileName, $thumbnail['size'], $thumbnail['quality'], $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension);
+                    foreach (
+                        UploaderConfiguration::getInstance()->getThumbnails() as
+                        $thumbnail
+                    ) {
+                        $im->_createThumb(
+                            $rootPath, $conf['target_dir'], $fileName,
+                            $thumbnail['size'], $thumbnail['quality'],
+                            $fileNamePlain . $thumbnail['value'] . '.'
+                            . $fileExtension
+                        );
                     }
                 }
 
@@ -190,7 +202,7 @@ class UploaderController {
     }
 
     /**
-     * Writes either a multipart/form-data message or a binary stream 
+     * Writes either a multipart/form-data message or a binary stream
      * to the specified file.
      *
      * @throws UploaderException In case of error generates exception with the corresponding code
@@ -304,7 +316,8 @@ class UploaderController {
         // Remove old temp files	
         if (file_exists(self::$conf['tmp_dir'])) {
             foreach (glob(self::$conf['tmp_dir'] . '/*.part') as $tmpFile) {
-                if (time() - filemtime($tmpFile) < self::$conf['max_file_age']) {
+                if (time() - filemtime($tmpFile) < self::$conf['max_file_age']
+                ) {
                     continue;
                 }
                 if (is_dir($tmpFile)) {
@@ -328,31 +341,27 @@ class UploaderController {
      * @author WordPress
      *
      * @param string $filename The filename to be sanitized
+     *
      * @return string The sanitized filename
      */
     public static function sanitizeFileName($filename) {
-        $special_chars = array("?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}");
-        $filename = str_replace($special_chars, '', $filename);
-        $filename = preg_replace('/[\s-]+/', '-', $filename);
-        $filename = trim($filename, '.-_ ');
-        if ((boolean) preg_match("/^[a-z]+$/", $filename) || empty($filename)) {
-            $filename = 'File_'.date('U').'.'.$filename;
-        }
-        return $filename;
+        FileSystem::replaceCharacters($filename);
+        var_dump($filename);
     }
 
     /**
-     * Concise way to recursively remove a directory 
+     * Concise way to recursively remove a directory
      * http://www.php.net/manual/en/function.rmdir.php#108113
      *
      * @param string $dir Directory to remove
      */
     private static function rrmdir($dir) {
         foreach (glob($dir . '/*') as $file) {
-            if (is_dir($file))
+            if (is_dir($file)) {
                 self::rrmdir($file);
-            else
+            } else {
                 unlink($file);
+            }
         }
         rmdir($dir);
     }
