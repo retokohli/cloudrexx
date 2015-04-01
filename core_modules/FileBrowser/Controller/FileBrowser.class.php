@@ -659,7 +659,7 @@ class FileBrowser {
             while ($file !== false) {
 // TODO: This match won't work for arbitrary thumbnail file names as they
 // may be created by the Image class!
-                if ($file == '.' || $file == '..' || preg_match('/^.*\.(thumb|thumb_thumbnail|thumb_medium|thumb_large).*$/i', $file)  || $file == 'index.php') {
+                if ($file == '.' || $file == '..' || preg_match('(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i', $file)  || $file == 'index.php') {
                     $file = readdir($objDir);
                     continue;
                 }
