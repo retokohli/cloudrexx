@@ -640,6 +640,8 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (222,0,'function','backend','TXT_MODULE_SUPPORT',1,'index.php?cmd=Support','_self',100,15,192);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (224,3,'navigation','backend','TXT_NET_MANAGER',1,'index.php?cmd=NetManager','_self',105,2,196);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (225,17,'function','backend','TXT_CORE_WYSIWYG',1,'index.php?cmd=Wysiwyg','_self',106,16,193);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (226,211,'function','backend','TXT_CORE_MODULE_MULTISITE_COMMUNICATION_MANAGEMENT',1,'index.php?cmd=MultiSite','_self',89,1,198);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (227,211,'function','backend','TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT',1,'index.php?cmd=MultiSite','_self',89,2,199);
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (2,'Stats','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (3,'Gallery','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (4,'Newsletter','module');
