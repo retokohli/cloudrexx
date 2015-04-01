@@ -751,9 +751,9 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse image attribute
         $image = $objCategory->getImage();
-        if (!empty($image) && file_exists(ASCMS_PATH.$image)) {
+        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$image)) {
             $thumb_name = \ImageManager::getThumbnailFilename($image);
-            if (file_exists(ASCMS_PATH.$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                 $imageSrc = $thumb_name;
             } else {
                 $imageSrc = $image;
@@ -1577,9 +1577,9 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse image attribute
         $image = $objDownload->getImage();
-        if (!empty($image) && file_exists(ASCMS_PATH.$image)) {
+        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$image)) {
             $thumb_name = \ImageManager::getThumbnailFilename($image);
-            if (file_exists(ASCMS_PATH.$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                 $imageSrc = $thumb_name;
             } else {
                 $imageSrc = $image;
