@@ -376,9 +376,11 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ALL'] ='All';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ERROR'] ='Error';
 
 // Maintaine AffiliateId
-$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_NOT_AVAILABLE'] = 'AffiliateId not Available.';
-$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_FORMAT_ERROR'] = 'The AffiliateId Must Contain letters and numbers between the certain length.';
-$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED'] = 'Given AffiliateId is blocked, try anothor value.';
-$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR'] = 'Error in set AffiliateId.';
-$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SET_ALREADY'] = 'The AffiliateId set already, can not reset again';
-$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SAVED'] = 'The AffiliateId saved successfully';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_NOT_AVAILABLE'] = "This Affiliate-ID can't be used. Please set another one.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_TOO_SHORT'] = 'Affiliate-ID must be at least %s characters.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_TOO_LONG'] = 'Affiliate-ID can be no longer than %s characters.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_WRONG_CHARS'] = 'The Affiliate-ID must contain only lowercase letters (a-z) and numbers.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED'] = "This Affiliate-ID can't be used. Please set another one.";
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR'] = 'Unable to set the Affiliate-ID';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SET_ALREADY'] = 'Unable to change the Affiliate-ID';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SAVED'] = 'Your Affiliate-ID has been set.';

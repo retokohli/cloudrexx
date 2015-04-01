@@ -69,11 +69,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setContentTitle($_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION'].' '.$subscriptionTitle);
                 \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->setMetaTitle($subscriptionTitle);
                 break;
-            case 'AffiliateSetup':
-                global $_ARRAYLANG;
-                
-                $template->setGlobalVariable($_ARRAYLANG);
-
+            case 'Affiliate':
                 if (!self::isUserLoggedIn()) {
                     return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];            
                 }

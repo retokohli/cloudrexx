@@ -237,3 +237,10 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_ENDED_DATE'] = "Abgelaufen a
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_SUBSCRIPTION_DOWNGRADE_ERROR'] = 'Downgrade von %1$s nach %2$s ist nicht möglich.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT'] = 'Dieser Benutzer ist verknüpft mit einem CRM Kontakt, klicken um direkt zum CRM Kontakt zu gelangen.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MODIY_USER_ACCOUNT'] = 'Benutzerkonto bearbeiten';
+
+// Maintaine AffiliateId
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_NOT_AVAILABLE'] = 'Die gewählte Affiliate ID kann nicht verwendet werden. Bitte wählen Sie eine andere ID aus.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED'] = 'Die gewählte Affiliate ID kann nicht verwendet werden. Bitte wählen Sie eine andere ID aus.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR'] = 'Die Affiliate ID konnte nicht gesetzt werden.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SET_ALREADY'] = 'Die Affiliate ID kann nicht geändert werden.';
+$_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SAVED'] = 'Ihre Affiliate ID wurde gespeichert.';

@@ -213,7 +213,12 @@ function enableOrDisableMailService($this) {
  * validate AffiliateId
  */
 function checkAvailablityOfAffiliateId(affiliateId) {
-    var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=checkAvailabilityOfAffiliateId';    
+    var url        = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=checkAvailabilityOfAffiliateId',
+        errorBlock = jQuery('#setAffiliateId .errorBlock');
+    
+    errorBlock
+        .removeClass('has-error')
+        .html('');
     lastXhr = jQuery.ajax({
         dataType: "json",
         url: url,
@@ -226,16 +231,19 @@ function checkAvailablityOfAffiliateId(affiliateId) {
         },
         success: function(response, status, xhr) {
             if (xhr === lastXhr) {
+                var errMsg = false;
                 if (response.status == 'success') {
                     resp = response.data;
                     if (resp.status == 'success') {
                         jQuery(".save").removeAttr('disabled');
                     } else {
-                        showMessage(resp.message, 'error', 3000);
+                        errMsg = resp.message;                                              
                     }
                 } else {
-                    showMessage(response.message, 'error', 3000);
+                    errMsg = response.message;                                     
                 }
+                if (errMsg !== false) {
+                    showErrorBlock(errorBlock, errMsg);               }
             }
         },
         error: function() { }
@@ -248,8 +256,9 @@ function checkAvailablityOfAffiliateId(affiliateId) {
  * @param object elm jQuery button object
  */
 function saveAffiliateId($this) {
-    var url = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=setAffiliateId';    
-    var affiliateId = jQuery("#affiliateProfileAttributeId").val();
+    var url         = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=setAffiliateId',    
+        affiliateId = jQuery("#affiliateProfileAttributeId").val(),
+        errorBlock  = jQuery('#setAffiliateId .errorBlock');
 
     jQuery.ajax({
         dataType: "json",
@@ -263,16 +272,20 @@ function saveAffiliateId($this) {
             $this.prop('disabled', true);
         },
         success: function(response) {
+            var errMsg = false;
             if (response.status == 'success') {
                 resp = response.data;
                 if (resp.status == 'success') {
                     showMessage(resp.message, 'success');
                     window.location.reload();
                 } else {
-                    showMessage(resp.message, 'error', 3000);
+                    errMsg = resp.message;
                 }
             } else {
-                showMessage(response.message, 'error', 3000);
+                errMsg = response.message; 
+            }
+            if (errMsg !== false) {
+                showErrorBlock(errorBlock, errMsg);
             }
         },
         complete: function (xhr, settings) {
@@ -280,6 +293,12 @@ function saveAffiliateId($this) {
         },
         error: function() { }
     });
+}
+
+function showErrorBlock(errorBlock, errMsg) {
+    errorBlock
+        .addClass('has-error')
+        .html('<div class="help-block" role="alert">' + errMsg + '</div>');
 }
 
 function pleskAutoLogin($this) {

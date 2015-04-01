@@ -5408,8 +5408,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * Set AffiliateId to the customer.
      * 
-     * @param array $params 
+     * @param array $params
+     * 
      * @return array
+     * @throws MultiSiteJsonException
      */
     public function setAffiliateId($params)
     {
@@ -5435,9 +5437,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
 
                 $affiliateIdValue = $params['post']['affiliateProfileAttributeId'];
-                $validate = self::validateAffiliateId($affiliateIdValue);
-                if ($validate['status'] == 'error') {
-                    return $validate;
+                if (!self::validateAffiliateId($affiliateIdValue)) {
+                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
                 }
                 $objUser->setProfile(
                     array(
@@ -5456,17 +5457,20 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
         } catch (\Exception $e) {
             \DBG::msg('JsonMultiSite::setAffiliateId() failed: ' . $e->getMessage());
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
+            throw new MultiSiteJsonException($e->getMessage());
         }        
     }
     
     /**
      * Check availability of AffiliateId
      * 
-     * @param array $params 
+     * @param array $params
+     * 
      * @return array
+     * @throws MultiSiteJsonException
      */    
-    public function checkAvailabilityOfAffiliateId($params) {
+    public function checkAvailabilityOfAffiliateId($params)
+    {
         global $_ARRAYLANG;
         
         if (empty($params['post']) 
@@ -5480,14 +5484,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $affiliateId = $params['post']['affiliateProfileAttributeId'];
-                    return self::validateAffiliateId($affiliateId);
+                    if (self::validateAffiliateId($affiliateId)) {
+                        return array('status' => 'success');
+                    }
                     break;
                 default:
                     break;
             }
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
         } catch (\Exception $e) {
             \DBG::msg('JsonMultiSite::checkAvailabilityOfAffiliateId() failed:' . $e->getMessage());
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
+            throw new MultiSiteJsonException($e->getMessage());
         }
     }
     
@@ -5495,25 +5502,40 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * Validate the affiliateId
      * 
      * @param string $affiliateId
-     * @return array
+     * 
+     * @return boolean
+     * @throws MultiSiteJsonException
      */
     public static function validateAffiliateId($affiliateId)
     {
         global $_ARRAYLANG;
+        if (empty($affiliateId)) {
+            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: Insufficient arguments supplied.');
+            return false;
+        } 
         if (ComponentController::isValidAffiliateId($affiliateId)) {
-            \DBG::msg('JsonMultiSite::checkAvailabilityOfAffiliateId() failed: AffiliateId not available.');
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_NOT_AVAILABLE']);
+            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: AffiliateId not available.');
+            throw new MultiSiteException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_NOT_AVAILABLE']);
         }
-        if (!preg_match('/^[a-z0-9]{' . \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite') . ',' . \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite') . '}$/' , $affiliateId)) {
-            \DBG::msg('JsonMultiSite::checkAvailabilityOfAffiliateId() failed: AffiliateId format error.');
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_FORMAT_ERROR']);
+        // verify that affiliateId complies with naming scheme
+        if (preg_match('/[^a-z0-9]/', $affiliateId)) {
+            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: AffiliateId must contain only lowercase letters (a-z) and numbers.');
+            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_WRONG_CHARS']);
+        }
+        if (strlen($affiliateId) < \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite')) {
+            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: Affiliate-ID too shorter.');
+            throw new MultiSiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_TOO_SHORT'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite')));
+        }
+        if (strlen($affiliateId) > \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite')) {
+            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: Affiliate-ID too longer.');
+            throw new MultiSiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_TOO_LONG'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite')));
         }
         // verify that AffiliateId is not a blocked word
         $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes','MultiSite'));
         if (in_array($affiliateId, $unavailablePrefixesValue)) {
-            \DBG::msg('JsonMultiSite::checkAvailabilityOfAffiliateId() failed: AffiliateId is a blocked word.');
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED']);
+            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: AffiliateId is a blocked word.');
+            throw new MultiSiteException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED']);
         }
-        return array('status' => 'success');
+        return true;
     }
 }
