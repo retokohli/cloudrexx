@@ -261,6 +261,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     // TODO: add configuration option for contact details and replace the hard-coded e-mail address on the next line
             'TXT_MULTISITE_EMAIL_INFO'      => sprintf($_ARRAYLANG['TXT_MULTISITE_EMAIL_INFO'], 'info@cloudrexx.com'),
             'TXT_CORE_MODULE_MULTISITE_LOADING_TEXT' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_TEXT'],
+            'MULTISITE_SELECTED_THEME_ID'   => isset($_GET['theme-id']) ? contrexx_input2int($_GET['theme-id']) : null,
         ));
         $productId = !empty($arguments['product-id']) ? $arguments['product-id'] : \Cx\Core\Setting\Controller\Setting::getValue('defaultPimProduct','MultiSite');
         if (!empty($productId)) {
