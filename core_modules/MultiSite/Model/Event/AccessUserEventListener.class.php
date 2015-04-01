@@ -78,7 +78,8 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         $objUser->setProfile(
                             array(
                                 \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite') => array(0 => $multiSiteAffiliateId)
-                            )
+                            ),
+                            true    
                         );
                      }
                      break;

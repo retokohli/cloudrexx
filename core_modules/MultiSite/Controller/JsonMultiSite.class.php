@@ -149,7 +149,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'domainManipulation'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'isUniqueEmail'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'getMailServicePlans'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, array(183), null),
-            'trackAffiliateId'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('get', 'post'), false),
+            'trackAffiliateId'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
             'checkAvailabilityOfAffiliateId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'setAffiliateId'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
         );  
@@ -5440,9 +5440,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     return $validate;
                 }
                 $objUser->setProfile(
-                                array(
-                                    $affiliateIdProfileAttributeId => array(0 => $affiliateIdValue)
-                                ));
+                    array(
+                        $affiliateIdProfileAttributeId => array(0 => $affiliateIdValue)
+                    ),
+                    true
+                );
                 if (!$objUser->store()) {
                     \DBG::msg('JsonMultiSite::setAffiliateId() failed: can not store the AffiliateId.');
                     return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);

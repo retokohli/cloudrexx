@@ -213,9 +213,10 @@ class OrderRepository extends \Doctrine\ORM\EntityRepository {
                             ) {
                                 \DBG::msg(__METHOD__.": set externalPaymentCustomerIdProfileAttributeId of user to ".$transactionData['contact']['id']);
                                 $objUser->setProfile(
-                                        array(
-                                            \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId','MultiSite') => array(0 => $transactionData['contact']['id'])
-                                        )
+                                    array(
+                                        \Cx\Core\Setting\Controller\Setting::getValue('externalPaymentCustomerIdProfileAttributeId','MultiSite') => array(0 => $transactionData['contact']['id'])
+                                    ),
+                                    true
                                 );
                                 
                                 if (!$objUser->store()) {
