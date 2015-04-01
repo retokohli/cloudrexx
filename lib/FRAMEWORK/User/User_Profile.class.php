@@ -58,7 +58,7 @@ class User_Profile
     }
 
 
-    public function setProfile($arrProfile)
+    public function setProfile($arrProfile, $ignoreAccessPermissions = false)
     {
         $arrDate = array();
         $arrDateFormat = array();
@@ -118,6 +118,7 @@ class User_Profile
 
                     if ($objAttribute->getId() &&
                         (
+                            $ignoreAccessPermissions ||
                             !$objAttribute->isProtected() ||
                             (
                                 Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true) ||
