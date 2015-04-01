@@ -640,9 +640,9 @@ class Downloads extends DownloadsLibrary
         }
 
         $imageSrc = $objCategory->getImage();
-        if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-            if (file_exists(ASCMS_PATH.$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                 $thumbnailSrc = $thumb_name;
             } else {
                 $thumbnailSrc = \ImageManager::getThumbnailFilename(
@@ -877,9 +877,9 @@ JS_CODE;
         }
 
         $imageSrc = $objCategory->getImage();
-        if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-            if (file_exists(ASCMS_PATH.$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                 $thumbnailSrc = $thumb_name;
             } else {
                 $thumbnailSrc = \ImageManager::getThumbnailFilename(
@@ -1076,9 +1076,9 @@ JS_CODE;
         }
 
         $imageSrc = $objDownload->getImage();
-        if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-            if (file_exists(ASCMS_PATH.$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                 $thumbnailSrc = $thumb_name;
             } else {
                 $thumbnailSrc = \ImageManager::getThumbnailFilename(
@@ -1203,9 +1203,9 @@ JS_CODE;
                 }
 
                 $imageSrc = $objRelatedDownload->getImage();
-                if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+                if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
                     $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-                    if (file_exists(ASCMS_PATH.$thumb_name)) {
+                    if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                         $thumbnailSrc = $thumb_name;
                     } else {
                         $thumbnailSrc = \ImageManager::getThumbnailFilename(

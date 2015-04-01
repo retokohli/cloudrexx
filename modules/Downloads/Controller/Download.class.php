@@ -402,7 +402,7 @@ class Download {
     public function send($langId = LANG_ID)
     {
         $objHTTPDownload = new \HTTP_Download();
-        $objHTTPDownload->setFile(ASCMS_PATH.$this->getSource($langId));
+        $objHTTPDownload->setFile(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$this->getSource($langId));
         $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $this->getSourceName($langId)));
         $objHTTPDownload->setContentType();
         $objHTTPDownload->send('application/force-download');
