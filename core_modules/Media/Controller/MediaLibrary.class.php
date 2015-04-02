@@ -1183,7 +1183,7 @@ END;
      * 
      * @return string the directory to move to
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response){
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos){
         $path = $data['path'];
         $webPath = $data['webPath'];
 
@@ -1204,11 +1204,11 @@ END;
                 }
                 
                 if (self::isIllegalFileName($file)) {
-                    $response->addMessage(
-                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        "You are not able to create the requested file.",
-                        $file
-                    );
+//                    $response->addMessage(
+//                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
+//                        "You are not able to create the requested file.",
+//                        $file
+//                    );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
                 }
