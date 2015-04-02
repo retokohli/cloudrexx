@@ -2732,8 +2732,8 @@ class CrmLibrary
 
                     //insert address
                     if (!empty ($arrFormData['address'][0]) || !empty ($arrFormData['city'][0]) || !empty ($arrFormData['zip'][0]) || !empty ($arrFormData['country'][0])) {
-                        $addressExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE is_primary = 1 AND contact_id = '{$this->contact->id}'");
-                        if ($addressExists) {
+                        $addressExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE is_primary = '1' AND contact_id = '{$this->contact->id}'");
+                        if ($addressExists && $addressExists->RecordCount()) {
                             $query = "UPDATE `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` SET
                                     address      = '". contrexx_input2db($arrFormData['address'][0]) ."',
                                     city         = '". contrexx_input2db($arrFormData['city'][0]) ."',
@@ -2765,7 +2765,7 @@ class CrmLibrary
                             'is_primary'    => '1',
                             'contact_id'    => $this->contact->id
                         );
-                        if ($phoneExists) {
+                        if ($phoneExists && $phoneExists->RecordCount()) {
                             $query  = \SQL::update("module_{$this->moduleNameLC}_customer_contact_phone", $fields, array('escape' => true))." WHERE is_primary = '1' AND `contact_id` = {$this->contact->id}";
                         } else {
                             $query  = \SQL::insert("module_{$this->moduleNameLC}_customer_contact_phone", $fields, array('escape' => true));
