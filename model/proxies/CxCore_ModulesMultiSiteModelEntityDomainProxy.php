@@ -135,10 +135,10 @@ class CxCore_ModulesMultiSiteModelEntityDomainProxy extends \Cx\Core_Modules\Mul
         return parent::getParts();
     }
 
-    public function __toString()
+    public function getNameWithPunycode()
     {
         $this->_load();
-        return parent::__toString();
+        return parent::getNameWithPunycode();
     }
 
     public function __get($name)
@@ -169,6 +169,12 @@ class CxCore_ModulesMultiSiteModelEntityDomainProxy extends \Cx\Core_Modules\Mul
     {
         $this->_load();
         return parent::validate();
+    }
+
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
     }
 
 
