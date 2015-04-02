@@ -346,7 +346,7 @@ class UploaderController {
      */
     public static function sanitizeFileName($filename) {
         FileSystem::replaceCharacters($filename);
-        var_dump($filename);
+        return $filename;
     }
 
     /**
