@@ -542,13 +542,19 @@ class MediaManager extends MediaLibrary
             'webPath' => $this->webPath
         );
         
-        \JS::activate('mediabrowser');        
         $uploader = new \Cx\Core_Modules\Uploader\Model\Uploader();
+        $uploader->setCallback('mediaCallbackJs');
         $uploader->setFinishedCallback(array(
             ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php',
             '\Cx\Core_modules\Media\Controller\MediaLibrary',
             'uploadFinished'
         ));
+        $uploader->setOptions( //Set html attributes for styling or javascript.
+            array(
+            'id' => 'media_browse_button',
+            'type' => 'button'
+            )
+        );
         $uploader->setData($data);
         $this->_objTpl->setVariable(
             'MEDIA_UPLOADER_BUTTON', $uploader->getXHtml($_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'])

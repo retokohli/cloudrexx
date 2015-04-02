@@ -92,14 +92,24 @@ function openWindow(theURL,winName,features)
     objPopup.focus();
 }
 </script>
-
+<script type="text/javascript">
+    $J(document).ready(function(){
+       $J('#media_browse_button').hide(); 
+       $J('#uploaderStarter').click(function() {
+          $J('#media_browse_button').trigger('click'); 
+       });
+    });
+    function mediaCallbackJs(callback) {
+        window.location = window.location;
+    }
+</script>
 {MEDIA_JAVA_SCRIPT_PREVIEW}
 
 {CONTENT_SUBNAVIGATION}
 
 <ul id="tabmenu">
   <li><a id="mediaTab_newdir" href="javascript:{}" onclick="selectTab('newdir')" title="">{TXT_MEDIA_NEW_DIRECTORY}</a></li>
-  <li><a id="exposedComboUploaderStarter" href="" title="">{TXT_MEDIA_UPLOAD_FILES}</a></li>
+  <li><a id="uploaderStarter" href="javascript:{}" title="">{TXT_MEDIA_UPLOAD_FILES}</a></li>
 </ul>
 
 <div id="newdir" class="mediaTab" style="display:none;">
