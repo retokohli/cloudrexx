@@ -974,10 +974,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 $isBaseDomain = $domain->getType() == \Cx\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN;        
                 $domainId     = $isBaseDomain ? $domain->getId() : $domain->getCoreNetDomainId(); 
-                $domainName   = $domain->getName();
                 $objTemplate->setVariable(array(
-                        'MULTISITE_WEBSITE_DOMAIN'                    => contrexx_raw2xhtml($domainName),
-                        'MULTISITE_WEBSITE_DOMAIN_NAME'               => contrexx_raw2xhtml(\Cx\Core\Net\Controller\ComponentController::convertIdnToUtf8Format($domainName)) . ' (' . contrexx_raw2xhtml($domainName) . ')',
+                        'MULTISITE_WEBSITE_DOMAIN'                    => contrexx_raw2xhtml($domain->getName()),
+                        'MULTISITE_WEBSITE_DOMAIN_NAME'               => contrexx_raw2xhtml($domain->getNameWithPunycode()),
                         'MULTISITE_WEBSITE_DOMAIN_ID'                 => contrexx_raw2xhtml($domainId),
                         'MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED' => ($domain->getName() === $mainDomainName) ? 'checked' : '',
                         'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL'         => '/api/MultiSite/Domain?action=Select&website_id=' . $website->getId() . '&domain_id=' . contrexx_raw2xhtml($domainId) . '&domain_name=' . contrexx_raw2xhtml($domain->getName())
