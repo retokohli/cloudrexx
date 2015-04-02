@@ -121,8 +121,8 @@ class User_Setting_Mail
         'user_account_invitation'    => array(
             'title'    => 'TXT_ACCESS_USER_ACCOUNT_INVITATION',
             'placeholders'    => array(
-                '[[FIRSTNAME]]'    => 'TXT_FIRST_NAME',
-                '[[LASTNAME]]'        => 'TXT_LAST_NAME',
+                '[[FIRSTNAME]]'    => 'TXT_ACCESS_FIRSTNAME',
+                '[[LASTNAME]]'        => 'TXT_ACCESS_LASTNAME',
                 '[[WEBSITE]]'        => 'TXT_SETTINGS_DOMAIN_URL',
                 '[[LINK]]'        => 'TXT_ACCESS_LINK_DESC',
                 '[[EMAIL]]'        => 'TXT_ACCESS_EMAIL_DESC',
