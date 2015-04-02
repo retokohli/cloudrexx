@@ -1715,6 +1715,10 @@ class GalleryManager extends GalleryLibrary
             'TXT_EXTENDED'                =>    $_ARRAYLANG['TXT_GALLERY_EXTENDED']
         ));
 
+        // Hide "Show image size" checbox when the settings option "Show image size" is not set
+        if ($this->arrSettings['show_image_size'] == 'off') {
+            $this->_objTpl->hideBlock('showImageSize');
+        }
         $objResult = $objDatabase->Execute('    SELECT        '.DBPREFIX.'module_gallery_categories.comment,
                                                             '.DBPREFIX.'module_gallery_categories.voting,
                                                             '.DBPREFIX.'module_gallery_pictures.id AS pID
@@ -2011,6 +2015,7 @@ class GalleryManager extends GalleryLibrary
             'TXT_GALLERY_SLIDE_SHOW_SECONDS'        =>    $_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW_SECONDS'],
             'TXT_GALLERY_SINGLE_IMAGE_VIEW'         =>    $_ARRAYLANG['TXT_GALLERY_SINGLE_IMAGE_VIEW'] ,
             'TXT_GALLERY_SHOW_FILE_NAME'            =>    $_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'],
+            'TXT_IMAGE_SIZE_SHOW'                   =>    $_ARRAYLANG['TXT_IMAGE_SIZE_SHOW']
 
             ));
 
@@ -2028,6 +2033,7 @@ class GalleryManager extends GalleryLibrary
                 case 'show_latest':
                 case 'show_random':
                 case 'show_ext':
+                case 'show_image_size':
                     if ($objResult->fields['value'] == 'on') {
                         $strValue = 'checked';
                     }
@@ -2176,7 +2182,11 @@ class GalleryManager extends GalleryLibrary
         if (empty($_POST['show_file_name']) || $_POST['show_file_name'] != 'on') {
             $_POST['show_file_name'] = "off";
         }
-
+        
+        if ($_POST['show_image_size'] != 'on') {
+            // the value is not allowed, reset to off
+            $_POST['show_image_size'] = 'off';
+        }
 
         foreach ($_POST as $strKey => $strValue) {
             $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_settings

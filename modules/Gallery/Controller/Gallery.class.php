@@ -161,6 +161,8 @@ class Gallery
             $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
+            //show image size based on the settings of "Show image size"
+            $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
             $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
             $strImageWebPath = ASCMS_PROTOCOL .'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
@@ -215,7 +217,7 @@ class Gallery
         if ($this->arrSettings['show_ext'] == 'off') {
             $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
         }
-
+        
         if ($this->arrSettings['show_file_name'] == 'off') {
             $strImageTitle = "";
             $imageSize="";
@@ -243,7 +245,7 @@ class Gallery
             'GALLERY_IMAGE_LINK'        => $strImageWebPath,
             'GALLERY_IMAGE_NAME'        => $imageName,
             'GALLERY_IMAGE_DESCRIPTION' => $imageDesc,
-            'GALLERY_IMAGE_FILESIZE'    => $openBracket.$imageSize.$kB.$closeBracket,
+            'GALLERY_IMAGE_FILESIZE'    => ($showImageSize) ? $openBracket.$imageSize.$kB.$closeBracket : '',
         ));
 
         if ($this->arrSettings['header_type'] == 'hierarchy') {
@@ -441,11 +443,13 @@ class Gallery
             $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
+            //show image size based on the settings of "Show image size"
+            $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
             $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
             $strImageWebPath = ASCMS_PROTOCOL .'://'.$_SERVER['SERVER_NAME'].CONTREXX_SCRIPT_PATH.'?section=Gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
-
+        
         // get pictures of the current category
         $objResult = $objDatabase->Execute(
             "SELECT id FROM ".DBPREFIX."module_gallery_pictures ".
@@ -487,6 +491,8 @@ class Gallery
             'TXT_NEXT_IMAGE'      => $_ARRAYLANG['TXT_NEXT_IMAGE'],
             'TXT_USER_DEFINED'    => $_ARRAYLANG['TXT_USER_DEFINED']
         ));
+        
+        $imageSize     = ($showImageSize) ? $_ARRAYLANG['TXT_FILESIZE'].': '.$imageSize.' kB<br />' : '';
         // set variables
         $objTpl->setVariable(array(
             'CONTREXX_CHARSET'        => CONTREXX_CHARSET,
@@ -502,10 +508,12 @@ class Gallery
             'IMAGE_HEIGHT'          => $imageReso[1],
             'IMAGE_LINK'            => $strImageWebPath,
             'IMAGE_NAME'            => $strImageTitle, //$imageName,
-            'IMAGE_DESCRIPTION'     => $_ARRAYLANG['TXT_IMAGE_NAME'].': '.$imageName.'<br />'.$_ARRAYLANG['TXT_FILESIZE'].': '.$imageSize.' kB<br />'.$_ARRAYLANG['TXT_RESOLUTION'].': '.$imageReso[0].'x'.$imageReso[1].' Pixel',
+            'IMAGE_DESCRIPTION'     => $_ARRAYLANG['TXT_IMAGE_NAME'].': '.$imageName.'<br />'
+                                       . $imageSize
+                                       . $_ARRAYLANG['TXT_RESOLUTION'].': '.$imageReso[0].'x'.$imageReso[1].' Pixel',
             'IMAGE_DESC'            => (!empty($imageDesc)) ? $imageDesc.'<br /><br />' : '',
         ));
-
+        
         $objTpl->setGlobalVariable('CONTREXX_DIRECTORY_INDEX', CONTREXX_DIRECTORY_INDEX);
 
         //voting
@@ -849,7 +857,8 @@ class Gallery
                     $arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
                     $objSubResult->MoveNext();
                 }
-
+                
+                $showImageSizeCheck = $this->arrSettings['show_image_size'] == 'on';
                 if (empty($arrCategoryImages[$objResult->fields['id']])) {
                     // no pictures in this gallery, show the empty-image
                     $strName     = $arrCategoryLang['name'];
@@ -857,14 +866,14 @@ class Gallery
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="modules/Gallery/View/Media/no_images.gif" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': 0';
-                    $strInfo     .= '<br />'.$_CORELANG['TXT_SIZE'].': 0kB';
+                    $strInfo     .= $showImageSizeCheck ? '<br />'.$_CORELANG['TXT_SIZE'].': 0kB' : '';
                 } else {
                     $strName    = $arrCategoryLang['name'];
                     $strDesc    = $arrCategoryLang['desc'];
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="'.$arrCategoryImages[$objResult->fields['id']].'" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': '.$arrCategoryImageCounter[$objResult->fields['id']];
-                    $strInfo     .= '<br />'.$_CORELANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB';
+                    $strInfo     .= $showImageSizeCheck ? '<br />'.$_CORELANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB' : '';
                 }
 
                 $this->_objTpl->setVariable(array(
@@ -938,7 +947,7 @@ class Gallery
                 $imageTitle = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : ($this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '');
                 $imageLinkName = $objSubResult->fields['desc'];
                 $imageLink = $objResult->fields['link'];
-                $imageSizeShow = $objResult->fields['size_show'];
+                $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
                 $imageLinkOutput = '';
                 $imageSizeOutput = '';
                 $imageTitleTag = '';
@@ -973,7 +982,7 @@ class Gallery
                 if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
                     $imageSizeOutput = $imageName;
                     $imageTitleTag   = $imageName;
-                    if ($this->arrSettings['show_file_name'] == 'on' || $imageSizeShow) {
+                    if ($this->arrSettings['show_file_name'] == 'on' || $showImageSize) {
                         $imageData = array();
                         if ($this->arrSettings['show_file_name'] == 'on') {
                             if ($this->arrSettings['show_names'] == 'off') {
@@ -987,7 +996,7 @@ class Gallery
                         if (!empty($imageData)) {
                             $imageTitleTag .= ' ('.join(' ', $imageData).')';
                         }
-                        if ($imageSizeShow == '1') {
+                        if ($showImageSize) {
                             // the size of the file has to be shown
                             $imageData[] = $imageFileSize.' kB';
                         }
