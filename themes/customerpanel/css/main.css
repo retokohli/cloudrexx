@@ -922,6 +922,10 @@ button.actions:after {
     z-index: 999;
 }
 
+.notification_email {
+    float: left;
+}
+
 /**
  ******************** media queries :: replace images for retina displays ********************
  *
