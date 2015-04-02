@@ -275,6 +275,8 @@ EOF;
             $objGoogleMap->setMapZoom($strValueZoom);
             $objGoogleMap->setMapCenter($strValueLon, $strValueLat);
 
+            $objGoogleMap->setMapIndex($intEntryId + $intId);
+
             $objGoogleMap->addMapMarker($intId, $strValueLon, $strValueLat, null, true);
 
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
