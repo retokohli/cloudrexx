@@ -270,12 +270,12 @@ EOF;
 
         if(!empty($strValue)) {
             $objGoogleMap = new \googleMap();
-            $objGoogleMap->setMapId($this->moduleNameLC.'Inputfield_'.$intId.'_map');
+            $objGoogleMap->setMapId($this->moduleNameLC.'Inputfield_'.$intId.'_'.$intEntryId.'_map');
             $objGoogleMap->setMapStyleClass('map');
             $objGoogleMap->setMapZoom($strValueZoom);
             $objGoogleMap->setMapCenter($strValueLon, $strValueLat);
 
-            $objGoogleMap->setMapIndex($intEntryId + $intId);
+            $objGoogleMap->setMapIndex($intId.'_'.$intEntryId);
 
             $objGoogleMap->addMapMarker($intId, $strValueLon, $strValueLat, null, true);
 
