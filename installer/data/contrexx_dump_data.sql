@@ -3898,6 +3898,7 @@ INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (2
 INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (22,'show_file_name','off');
 INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (23,'slide_show','slideshow');
 INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (24,'slide_show_seconds','3');
+INSERT INTO `contrexx_module_gallery_settings` (`id`, `name`, `value`) VALUES (25,'show_image_size','off');
 INSERT INTO `contrexx_module_guestbook` (`id`, `status`, `name`, `forename`, `gender`, `url`, `email`, `comment`, `ip`, `location`, `lang_id`, `datetime`) VALUES (1,1,'COMVATION','Internet Solutions AG','M','http://www.contrexx.com/','nospam@example.com','This is a sample entry.\r\n\r\nsincerely yours\r\nCOMVATION AG','127.0.0.1','Schweiz',2,'2010-12-13 09:00:10');
 INSERT INTO `contrexx_module_guestbook_settings` (`name`, `value`) VALUES ('guestbook_send_notification_email','0');
 INSERT INTO `contrexx_module_guestbook_settings` (`name`, `value`) VALUES ('guestbook_activate_submitted_entries','0');
