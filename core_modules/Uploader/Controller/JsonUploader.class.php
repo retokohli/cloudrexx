@@ -86,6 +86,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             )
         ) {
             $id = intval($params['get']['id']);
+            $uploadedFileCount = isset($params['get']['uploadedFileCount']) ? intval($params['get']['uploadedFileCount']) : 0;
             $path = $_SESSION->getTempPath() . '/'.$id.'/';
             $tmpPath = $path;
         } elseif (isset($params['post']['path'])) {
@@ -131,7 +132,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $data = $_SESSION['uploader']['handlers'][$id]['data'];
 
             if (   isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit'])
-                && $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] == 0
+                && $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] <= $uploadedFileCount
                 ) {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_REACHED']);
             }
@@ -184,11 +185,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 $fileLocation[1] . '/' . $uploader['name']
             );
         }
-
-        if (isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit'])) {
-            $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] = $this->checkUploadFileLimitBySession($id);
-        }
-
+        
         if (isset($uploader['error'])) {
             throw new UploaderException(UploaderController::getErrorCode());
         } else {
@@ -197,22 +194,6 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 'file' => $fileLocation
             );
         }
-    }
-
-    /**
-     * Check Upload FileLimit By Session
-     *
-     * @param integer $id uploderId
-     *
-     * @return int
-     */
-    public function checkUploadFileLimitBySession($id)
-    {
-        if (isset($_SESSION['uploader']['handlers'][$id]['config']['upload-limit']) && ($_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] > 0)) {
-            return $_SESSION['uploader']['handlers'][$id]['config']['upload-limit'] - 1;
-        }
-
-        return 0;
     }
 
     public function createDir($params)

@@ -2063,7 +2063,7 @@ input#FileSearchIsRegex {
 }
 
 .file-list-wrapper::-webkit-scrollbar,
-.uploadlist::-webkit-scrollbar,
+.uploadlist::-webkit-scrollbar
 {
     width: 10px;
     height: 10px
@@ -2289,4 +2289,8 @@ input#FileSearchIsRegex {
 
 .media-browser-modal-window, .bootbox {
     z-index: 10050 !important;
+}
+
+.upload-limit-tooltip{
+    display: inline-block;
 }
