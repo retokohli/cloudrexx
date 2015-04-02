@@ -21,12 +21,13 @@ namespace Cx\Core_Modules\MultiSite\Controller;
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
     
     static $dnsRecords = array();
+    const MULTISITE_DEFAULT_ACCESS_ID = 183;
     const MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID = 198;
     const MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID         = 199;
      
     public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponentController, $cx);
-        $this->defaultPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, null, null);
+        $this->defaultPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, array(self::MULTISITE_DEFAULT_ACCESS_ID), null);
     }
 
     /**
@@ -74,6 +75,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
             case ComponentController::MODE_MANAGER:
                 return array(
+                    'Affiliate',
                     'Maintenance' => array(
                         'permission' => $systemMgmtPermissionObj,
                         'children'   => array(
@@ -102,6 +104,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
             case ComponentController::MODE_HYBRID:
                 return array(
+                    'Affiliate',
                     'Maintenance' => array(
                         'permission' => $systemMgmtPermissionObj,
                         'children'   => array(
@@ -134,48 +137,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 return array();
                 break;
         }
-    }
-
-    /**
-     * Get the commands by their access permission
-     * 
-     * @param  array $commandsWithAccess
-     * @return array $commands
-     */
-    public function getCommandsByAccess($commandsWithAccess)
-    {
-        $commands = array();
-        foreach ($commandsWithAccess as $key => $commandSettings) {
-            $command     = null;
-            $subCommands = array();
-            if (is_array($commandSettings)) {
-                if (isset($commandSettings['access'])) {
-                    $commandAccess = $commandSettings['access'];
-                    if (is_array($commandAccess)) {
-                        foreach ($commandAccess as $access) {
-                            if (\Permission::checkAccess($access, 'static', true)) {
-                                $command = $key;                                                   
-                                break;
-                            }
-                        }
-                    }
-                }
-                if ($command && isset($commandSettings['sub_commands'])) {
-                    $subCommands = $this->getCommandsByAccess($commandSettings['sub_commands']);
-                }
-            } else {
-                $command = $commandSettings;
-            }
-            
-            if ($command) {
-                if (!empty($subCommands)) {
-                    $commands[$command] = $subCommands;
-                } else {                                
-                    array_push($commands, $command);
-                }
-            }
-        }
-        return $commands;
     }
     
     /**
@@ -228,6 +189,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $this->parseSectionMaintenance($template, $cmd);
                 break;
                 
+            case 'Affiliate':
+                \Permission::checkAccess(self::MULTISITE_DEFAULT_ACCESS_ID, 'static');
+                $this->parseSectionAffiliate($template, $cmd);
+                break;
             default:
                 $this->parseSectionWebsites($template, $cmd);
                 break;
@@ -681,28 +646,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'owner' => array(
                     'header' => 'Owner',
                     'table' => array(
-                        'parse' => function($value) {
-                            global $_ARRAYLANG;
+                        'parse' => function($value) {                            
                             $objUser = \FWUser::getFWUserObject()->objUser->getUser($value->getId());
                             if (empty($objUser)) {
                                 return '';
                             }
-                            $crmDetailImg = '';
-                            if (!\FWValidator::isEmpty($objUser->getCrmUserId())) {
-                                $crmDetailImg = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$objUser->getCrmUserId()}' 
-                                                    title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'>
-                                                    <img 
-                                                        src='../core/Core/View/Media/navigation_level_1_189.png' 
-                                                        width='16' height='16' 
-                                                        alt='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'
-                                                    />
-                                                </a>";
-                            }
-                            return "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$value->getId()}'
-                                        title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MODIY_USER_ACCOUNT']}'>" .
-                                        \FWUser::getParsedUserTitle($value) .
-                                    "</a>" . 
-                                    $crmDetailImg;
+                            return self::parseUser($objUser);                            
                         },
                     ),
                 ),
@@ -758,6 +707,67 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
     }
 
+    /**
+     * Parse the section Affiliate
+     * 
+     * @param \Cx\Core\Html\Sigma $template Template object
+     * @param array               $cmd      Url commands
+     */
+    public function parseSectionAffiliate(\Cx\Core\Html\Sigma $template, array $cmd)
+    {
+        $affiliateIds = array();
+        
+        $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
+        $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
+             $affiliateIdProfileAttributeId =>'_'
+        ));
+        while (!$objUser->EOF) {
+            $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
+            $affiliateIds[] = array(
+                'affiliateId' => $affiliateId,
+                'user'        => $objUser->getId(),
+                'paypal'      => $objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite')),
+                'referrals'   => $affiliateId,
+            );
+            $objUser->next();
+        }
+        $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($affiliateIds);
+        $view    = new \Cx\Core\Html\Controller\ViewGenerator($dataSet, array(
+                        'header' => 'Affiliate IDs',
+                        'functions' => array(
+                          'paging'  => true  
+                        ),
+                        'fields' => array(
+                            'affiliateId' => array('header' => 'TXT_CORE_MODULE_MULTISITE_AFFILIATEID'),
+                            'user'        => array(
+                                'header' => 'TXT_CORE_MODULE_MULTISITE_USER',
+                                'table' => array(
+                                    'parse' => function($userId, $arrData) {
+                                        $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
+                                        if (empty($objUser)) {
+                                            return '';
+                                        }
+                                        return self::parseUser($objUser);
+                                    }
+                                )
+                            ),
+                            'paypal'      => array('header' => 'TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL'),
+                            'referrals'   => array(
+                                'header' => 'TXT_CORE_MODULE_MULTISITE_REFERRALS',
+                                'table' => array(
+                                    'parse' => function($affiliateId, $arrData) {
+                                        return self::getReferralCountByAffiliateId($affiliateId);
+                                    }
+                                )
+                            ),
+                        )
+                   ));
+        $template->setVariable(array(
+            'MULTISITE_AFFILIATE_ID_LIST'   => $view->render(),
+            'MULTISITE_TRACK_AFFILIATE_URL' => \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&amp;object=MultiSite&amp;act=trackAffiliateId',
+        ));
+    }
+    
     /**
      * Parse the section Ftp
      * List all Ftp accounts
@@ -1314,5 +1324,62 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
         return implode(",<br>", $domainArray);
     }
+    
+    /**
+     * Parse the user object to view
+     *
+     * @param \User $objUser user object
+     * 
+     * @return string formatted user object
+     */
+    public static function parseUser(\User $objUser)
+    {
+        global $_ARRAYLANG;
+        
+        $crmDetailImg = '';
+        if (!\FWValidator::isEmpty($objUser->getCrmUserId())) {
+            $crmDetailImg = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$objUser->getCrmUserId()}' 
+                                title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'>
+                                <img 
+                                    src='../core/Core/View/Media/navigation_level_1_189.png' 
+                                    width='16' height='16' 
+                                    alt='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'
+                                />
+                            </a>";
+        }
+        return "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$objUser->getId()}'
+                    title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MODIY_USER_ACCOUNT']}'>" .
+                    \FWUser::getParsedUserTitle($objUser) .
+                "</a>" . 
+                $crmDetailImg;
+    }
+    
+    /**
+     * Get the Referral count by Affiliate ID
+     * 
+     * @staticvar array  $referrals   Holds the referral count
+     * @param     string $affiliateId User affiliate id
+     * 
+     * @return integer Return the Referral count by Affiliate ID
+     */
+    public static function getReferralCountByAffiliateId($affiliateId)
+    {
+        static $referrals = null;
+        
+        if (empty($referrals)) {
+            $affiliateIdReferenceProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite');
+            $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
+                 $affiliateIdReferenceProfileAttributeId =>'_'
+            ));
+            while (!$objUser->EOF) {                
+                $userAffiliateId = $objUser->getProfileAttribute($affiliateIdReferenceProfileAttributeId);
+                $referrals[$userAffiliateId] = isset($referrals[$userAffiliateId]) ? $referrals[$userAffiliateId] + 1 : 1;
+                $objUser->next();
+            }
+        }
+        
+        return isset($referrals[$affiliateId]) ? $referrals[$affiliateId] : 0;
+    }
+    
 }
 
