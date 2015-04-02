@@ -1593,7 +1593,7 @@ class Config
         $domains = $objMainDomain->findAll();
         $display = array();
         foreach ($domains As $domain) {
-            $display[] = $domain->getId() . ':' . $domain->getName();
+            $display[] = $domain->getId() . ':' . $domain->getNameWithPunycode();
         }
         return implode(',', $display);
     }

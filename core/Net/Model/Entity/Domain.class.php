@@ -102,6 +102,19 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
         $parts = array_reverse(explode('.', $this->getName()));
         return $parts;
     }
+    
+    /**
+     * Return the domain name with the following schema <idn notation> (<punycode notation>)
+     * Attention. Returns the punycode notation only when needed
+     * @return  string Domain name of domain
+     */
+    public function getNameWithPunycode() {
+        $domainName = \Cx\Core\Net\Controller\ComponentController::convertIdnToUtf8Format($this->name);
+        if($domainName!=$this->name) {
+            $domainName.= ' (' . $this->name . ')';
+        }
+        return $domainName;
+    }
 
 }
 
