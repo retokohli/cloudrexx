@@ -1,35 +1,58 @@
 <div id="multisite_affiliate_profile_attribute_id">
     <div class="grid-elm grid-align-1-1 grid-offset">
         <!-- BEGIN showAffiliateId -->
-        <div class="affiliate-profile-attribute-id">
-            {TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID} : {MULTISITE_AFFILIATE_PROFILE_ATTR_ID}
-        </div>
+        <div class="affiliate-profile-attribute-id" id="setAffiliateId">
+            <div> <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID} : </label>{MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</div>
+       </div>
         <!-- END showAffiliateId -->
+        <form id="affiliate-form" method="post">
         <!-- BEGIN showAffiliateIdForm -->
-        <div class="affiliate-profile-attribute-id-form">
-            <form method="post" id="setAffiliateId" role="form">                
-                {TXT_CORE_MODULE_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID} : 
-                <input type="text" id="affiliateProfileAttributeId" required="" style="width: 100px;"/> 
-                <button style="margin-top: 0px;" type="submit" disabled class="btn save loadingProcess" onclick="saveAffiliateId(jQuery(this))" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
-                <div class="errorBlock"></div>
-            </form>
+        <div id="setAffiliateId">
+            <label>{TXT_CORE_MODULE_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID} : </label>
+                    <input type="text" name="affiliateProfileAttributeId" id="affiliateProfileAttributeId" style="width: 20%;" value="">
+                    <div class="errorBlock"></div>
         </div>
         <!-- END showAffiliateIdForm -->
+        <div id="paypal-mail">            
+            <label style="width: 25%;">{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS} : </label>
+                <input type="email" id="paypalEmail" style="width: 20%;" name="paypalEmailAddress" value="{MULTISITE_PAYPAL_EMAIL_ADDRESS}">
+                <div class="errorBlock"></div>
+        </div>
+        </form>
+        <button style="margin-top: 0px;" type="submit" class="btn save loadingProcess" onclick="saveAffiliateIdAndPayPalMailAddress(jQuery(this))" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+         
     </div>
 </div>
 <script type="text/javascript">
     /* <![CDATA[ */
     cx.ready(function(){
-       jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function(){
+        jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function(){
            jQuery.getScript(cx.variables.get('path', 'contrexx') + "lib/javascript/jquery/bootstrapvalidator/js/bootstrapValidator.min.js", function() {
                jQuery("#affiliateProfileAttributeId").bind("input",function(){
                     this.value = this.value.toLowerCase();
-                    var minLength = cx.variables.get('websiteNameMinLength', 'affiliateSetup');
-                    if (this.value.length >= minLength) {
+                    if (this.value.length > 0) {
                         checkAvailablityOfAffiliateId(this.value);
-                        return false;
+                    } else {
+                        jQuery('#setAffiliateId .errorBlock')
+                        .removeClass('has-error')
+                        .html('');
+                        jQuery(".save").prop('disabled', false);
                     }
-                    jQuery(".save").prop('disabled', true);
+                });
+                jQuery("#paypalEmail").blur("change",function(){
+                    if (this.value.length > 0) {                        
+                        var pattern = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+                        if (pattern.test(jQuery("#paypalEmail").val()) === false) {
+                            jQuery('#paypal-mail .errorBlock')
+                           .addClass('has-error')
+                           .html('<div class="help-block" role="alert">' + 'pls enter correct value' + '</div>');
+                        }
+                    } else {
+                        jQuery('#paypal-mail .errorBlock')
+                        .removeClass('has-error')
+                        .html('');
+                        jQuery(".save").prop('disabled', false);
+                    }                                        
                 });
            });            
        }); 
