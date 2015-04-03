@@ -750,7 +750,12 @@ class CrmSettings extends CrmLibrary
         global $objDatabase,$_ARRAYLANG;
 
         //For task type Upload
-        $uploaderCodeTaskType = $this->initUploader('taskType', true, 'taskUploadFinished', '', 'task_type_files_');
+        $options = array(
+            'id' => 'taskUploader',
+            'style' => 'display:none;',
+            'upload-limit' => 1
+        );
+        $uploaderCodeTaskType = $this->initUploader('taskUploadFinished', 'taskCallbackJs', '', $_ARRAYLANG['TXT_BROWSE'], $options);
         $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
             'COMBO_UPLOADER_CODE_TASK_TYPE' => $uploaderCodeTaskType,
