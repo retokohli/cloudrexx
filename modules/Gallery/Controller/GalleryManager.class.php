@@ -1715,10 +1715,6 @@ class GalleryManager extends GalleryLibrary
             'TXT_EXTENDED'                =>    $_ARRAYLANG['TXT_GALLERY_EXTENDED']
         ));
 
-        // Hide "Show image size" checbox when the settings option "Show image size" is not set
-        if ($this->arrSettings['show_image_size'] == 'off') {
-            $this->_objTpl->hideBlock('showImageSize');
-        }
         $objResult = $objDatabase->Execute('    SELECT        '.DBPREFIX.'module_gallery_categories.comment,
                                                             '.DBPREFIX.'module_gallery_categories.voting,
                                                             '.DBPREFIX.'module_gallery_pictures.id AS pID
@@ -1730,7 +1726,7 @@ class GalleryManager extends GalleryLibrary
                                             ');
         $boolComment     = $objResult->fields['comment'];
         $boolVoting        = $objResult->fields['voting'];
-
+        
         if ($this->arrSettings['show_comments'] == 'off' || $boolComment == 0) {
             $this->_objTpl->hideBlock('tabComment');
             if ($_GET['active'] == 'comment') {
@@ -1787,6 +1783,11 @@ class GalleryManager extends GalleryLibrary
                                                         lang_id='.$objFWUser->objUser->getFrontendLanguage().'
                                                 LIMIT    1');
 
+        // Hide "Show image size" checbox when the settings option "Show image size" is not set
+        if ($this->arrSettings['show_image_size'] != 'on') {
+            $this->_objTpl->hideBlock('showImageSize');
+        }
+        
         $boolSizeShow = ($objResult->fields['size_show'] == '1') ? 'checked' : '';
 
         $this->_objTpl->setVariable(array(

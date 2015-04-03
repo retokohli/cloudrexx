@@ -162,8 +162,8 @@ class Gallery
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
             //show image size based on the settings of "Show image size"
-            $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
-            $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+            $showImageSize   = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
+            $imageSize       = ($showImageSize) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
             $strImageWebPath = ASCMS_PROTOCOL .'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
@@ -445,7 +445,7 @@ class Gallery
             $imageDesc = $objSubResult->fields['desc'];
             //show image size based on the settings of "Show image size"
             $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
-            $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+            $imageSize = ($showImageSize) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
             $strImageWebPath = ASCMS_PROTOCOL .'://'.$_SERVER['SERVER_NAME'].CONTREXX_SCRIPT_PATH.'?section=Gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
@@ -936,8 +936,7 @@ class Gallery
                 $objSubResult = $objDatabase->Execute(
                     "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
                     "WHERE picture_id=".$objResult->fields['id']." AND lang_id=$this->langId LIMIT 1");
-
-                $imageFileSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+                
 // Never used
 //                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
                 $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
@@ -948,6 +947,7 @@ class Gallery
                 $imageLinkName = $objSubResult->fields['desc'];
                 $imageLink = $objResult->fields['link'];
                 $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
+                $imageFileSize = ($showImageSize) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
                 $imageLinkOutput = '';
                 $imageSizeOutput = '';
                 $imageTitleTag = '';
