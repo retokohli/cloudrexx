@@ -100,8 +100,8 @@ class FolderWidget {
             throw  new FolderWidgetException("could not find my directory '".$this->folder."' to list files");
         $h = opendir($this->folder);
         while(false !== ($f = readdir($h))) {
-            //skip . and ..
-            if($f == '.' || $f == '..')
+            // skip folders and thumbnails
+            if($f == '.' || $f == '..' || preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $f))
                 continue;
 
             array_push($arrFileNames, $f);
