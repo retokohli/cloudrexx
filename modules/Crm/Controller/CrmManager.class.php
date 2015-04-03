@@ -499,7 +499,7 @@ class CrmManager extends CrmLibrary
         \JS::registerCSS("modules/Crm/View/Style/main.css");
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_customer_overview.html');
-
+        
         $settings = $this->getSettings();
 
         $delValue         = isset($_GET['delId']) ? intval($_GET['delId']) : 0;
@@ -878,7 +878,12 @@ class CrmManager extends CrmLibrary
 
         if ($contactId) {
             //For Profile Photo Upload
-                $uploaderCode2 = $this->initUploader(2, true, 'proPhotoUploadFinished', $contactId, 'profile_files_');
+            $options = array(
+                'id' => 'proPhotoUploader',
+                'upload-limit' => 1,
+                'style' => 'display:none;'
+            );
+            $uploaderCode2 = $this->initUploader('proPhotoUploadFinished', 'proPhotoCallbackJs', array($contactId), '', $options);
             $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename&custId='.$contactId);
             $this->_objTpl->setVariable(array(
                 'COMBO_UPLOADER_CODE2' => $uploaderCode2,
@@ -886,7 +891,7 @@ class CrmManager extends CrmLibrary
             ));
 
             //For document Upload
-            $uploaderCode3 = $this->initUploader(3, false, 'docUploadFinished', $contactId, 'document_files_');
+            $uploaderCode3 = $this->initUploader('docUploadFinished', 'docUploadCallbackJs', array($contactId), '', array('id' => 'documentUploader', 'style' => 'display:none;'));
             $this->_objTpl->setVariable(array(
                 'COMBO_UPLOADER_CODE3' => $uploaderCode3
             ));
@@ -2848,7 +2853,12 @@ END;
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
 
         //For notes type Upload
-        $uploaderCodeTaskType = $this->initUploader('notesType', true, 'notesUploadFinished', '', 'notes_type_files_');
+        $options = array(
+            'id' => 'notesUploader',
+            'upload-limit' => 1,
+            'style' => 'display:none;'
+        );
+        $uploaderCodeTaskType = $this->initUploader('notesUploadFinished', 'notesCallbackJs', '', $_ARRAYLANG['TXT_BROWSE'], $options);
         $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
             'COMBO_UPLOADER_CODE_TASK_TYPE' => $uploaderCodeTaskType,
@@ -5736,21 +5746,21 @@ END;
                 $sizeLimit = 10485760;
                 $size = filesize($tempPath.'/'.$file);
                 if ($size > $sizeLimit) {
-                    $response->addMessage(
-                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        "Server error. Increase post_max_size and upload_max_filesize to $size.",
-                        $file
-                    );
+//                    $response->addMessage(
+//                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
+//                        "Server error. Increase post_max_size and upload_max_filesize to $size.",
+//                        $file
+//                    );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
                 }
 
                 if (!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-                    $response->addMessage(
-                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        'Please choose a csv to upload',
-                        $file
-                    );
+//                    $response->addMessage(
+//                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
+//                        'Please choose a csv to upload',
+//                        $file
+//                    );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
                 }
@@ -5799,16 +5809,16 @@ END;
      * @param string     $tempWebPath the temporary file path which is accessable by web browser
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
-     * @param array      $fileInfos   the file infos  
-     * @param String     $response    the respose
+     * @param array      $fileInfos   the file infos 
      * 
      * @return array the target paths
      */
-    public static function docUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    public static function docUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos)
     {
 
-        global $objDatabase, $objFWUser;
-
+        global $objDatabase;
+        
+        $objFWUser = \FWUser::getFWUserObject();
         $depositionTarget = ASCMS_MEDIA_PATH.'/Crm/'; //target folder
         $h = opendir($tempPath);
         if ($h) {
@@ -5841,7 +5851,7 @@ END;
                             'document_name' => trim($prefix.$file),
                             'added_by'      => $objFWUser->objUser->getId(),
                             'uploaded_date' => date('Y-m-d H:i:s'),
-                            'contact_id'    => $data
+                            'contact_id'    => $data[0]
                         );
                         $sql = \SQL::insert("module_crm_customer_documents", $fields, array('escape' => true));
                         $objDatabase->Execute($sql);
@@ -5869,11 +5879,10 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos  
-     * @param String     $response    the respose
      * 
      * @return array the target paths
      */
-    public static function proPhotoUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    public static function proPhotoUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos)
     {
 
         global $objDatabase, $objFWUser;
@@ -5934,9 +5943,9 @@ END;
                         $fields = array(
                             'profile_picture' => $imageName
                         );
-                        $sql = \SQL::update("module_crm_contacts", $fields, array('escape' => true))." WHERE `id` = {$data}";
+                        $sql = \SQL::update("module_crm_contacts", $fields, array('escape' => true))." WHERE `id` = {$data[0]}";
                         $objDatabase->Execute($sql);
-                        $accountId = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$data}");
+                        $accountId = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$data[0]}");
                         if (!empty ($accountId) && !empty ($imageName)) {
                             $objUser  = $objFWUser->objUser->getUser($accountId);
                             if (!file_exists(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$imageName)) {
@@ -5981,11 +5990,10 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos  
-     * @param String     $response    the respose
      * 
      * @return array the target paths
      */
-    public static function taskUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    public static function taskUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos)
     {
 
         global $objDatabase, $objFWUser;
@@ -6056,12 +6064,11 @@ END;
      * @param string     $tempWebPath the temporary file path which is accessable by web browser
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
-     * @param array      $fileInfos   the file infos  
-     * @param String     $response    the respose
+     * @param array      $fileInfos   the file infos 
      * 
      * @return array the target paths
      */
-    public static function notesUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    public static function notesUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos)
     {
 
         global $objDatabase, $objFWUser;

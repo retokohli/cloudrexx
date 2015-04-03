@@ -2911,90 +2911,40 @@ class CrmLibrary
     /**
      * Inits the uploader when displaying a contact form.
      *
-     * @param Integer $fieldId
-     * @param Boolean $restrictUpload2SingleFile
-     * @param String  $callBackFun
-     * @param Integer $data
-     * @param String  $dir
+     * @param string  $callBackFun
+     * @param string  $callBackJs
+     * @param array   $data
+     * @param string  $buttonText
+     * @param array   $options
      *
      * @return null
      */
-    function initUploader($fieldId, $restrictUpload2SingleFile = true, $callBackFun = 'uploadFinished', $data, $dir) {
+    function initUploader($callBackFun, $callBackJs, $data, $buttonText, $options = array()) {
         global $_ARRAYLANG;
         
         try {
             //init the uploader
-            \JS::activate('cx'); //the uploader needs the framework
-            $f = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance();
-
-            /**
-            * Name of the upload instance
-            */
-            $uploaderInstanceName = 'exposed_combo_uploader_'.$fieldId;
-
-            /**
-            * jQuery selector of the HTML-element where the upload folder-widget shall be put in
-            */
-            $uploaderFolderWidgetContainer = '#contactFormField_uploadWidget_'.$fieldId;
-            $uploaderWidgetName = 'uploadWidget'.$fieldId;
-
-            $uploader = $f->newUploader('exposedCombo', 0, $restrictUpload2SingleFile);
-            $uploadId = $uploader->getUploadId();
-
-            //set instance name so we are able to catch the instance with js
-            $uploader->setJsInstanceName($uploaderInstanceName);
-
-            // specifies the function to call when upload is finished. must be a static function
-            $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Crm/Controller/CrmManager.class.php', '\Cx\Modules\Crm\Controller\CrmManager', $callBackFun));
-            $uploadId = $uploader->getUploadId();
+            $uploader = new \Cx\Core_Modules\Uploader\Model\Uploader();
+            
+            if (!empty($callBackJs)) {
+                $uploader->setCallback($callBackJs);
+            }
+            
+            if (!empty($callBackFun)) {
+                $uploader->setFinishedCallback(array(
+                    ASCMS_MODULE_PATH.'/Crm/Controller/CrmManager.class.php',
+                    '\Cx\Modules\Crm\Controller\CrmManager',
+                    $callBackFun
+                ));
+            }
+            $uploader->setOptions($options);
             $uploader->setData($data);
-
-            try {
-                //retrieve temporary location for uploaded files
-                $tup = self::getTemporaryUploadPath($uploadId, $fieldId, $dir);
-            } catch (\Exception $e) {
-                \DBG::log($e->getMessage());
-                \Message::warning(sprintf($_ARRAYLANG['TXT_CRM_TEMP_FOLDER_WRITE_ACCESS_ERROR'], \Env::get('cx')->getWebsiteTempPath()));
+            
+            if (empty($buttonText)) {
+                $buttonText = $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'];
             }
-            //create the folder
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
-                throw new \Cx\Core_Modules\Contact\Controller\ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
-            }
-
-            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
-                //some hosters have problems with ftp and file system sync.
-                //this is a workaround that seems to somehow show php that
-                //the directory was created. clearstatcache() sadly doesn't
-                //work in those cases.
-                @closedir(@opendir($tup[0]));
-
-                if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
-                    throw new \Cx\Core_Modules\Contact\Controller\ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
-                }
-            }
-
-            //initialize the widget displaying the folder contents
-            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2], $uploaderInstanceName);
-
-            $strInputfield = $folderWidget->getXHtml($uploaderFolderWidgetContainer, $uploaderWidgetName);
-            $strInputfield .= $uploader->getXHtml();
-
-            \JS::registerJS('core_modules/Upload/js/uploaders/exposedCombo/extendedFileInput.js');
-
-            $strInputfield .= <<<CODE
-            <script type="text/javascript">
-            cx.ready(function() {
-                    var ef = new ExtendedFileInput({
-                            field:  cx.jQuery('#contactFormFieldId_$fieldId'),
-                            instance: '$uploaderInstanceName',
-                            widget: '$uploaderWidgetName'
-                    });
-            });
-            </script>
-CODE;
-            return $strInputfield;
-        }
-        catch (Exception $e) {
+            return $uploader->getXHtml($buttonText); 
+        } catch (Exception $e) {
             return '<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->';
         }
     }
