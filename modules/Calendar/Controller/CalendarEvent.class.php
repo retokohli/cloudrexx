@@ -1602,31 +1602,38 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $h = opendir($tmpUploadDir);
         if ($h) {
             while(false !== ($f = readdir($h))) {
-                if($f != '..' && $f != '.') {
-                    //do not overwrite existing files.
-                    $prefix = '';
-                    while (file_exists($depositionTarget.$prefix.$f)) {
-                        if (empty($prefix)) {
-                            $prefix = 0;
-                        }
-                        $prefix ++;
-                    }
+                // skip folders and thumbnails
+                if($f == '..' || $f == '.' || preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $f)) {
+                    continue;
+                }
 
-                    // move file
-                    try {
-                        $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
-                        $fileInfo = pathinfo($tmpUploadDir.$f);
-                        $objFile->move($depositionTarget.$prefix.$f, false);
-                        
-                        $imageName = $prefix.$f;
-                        if (in_array($fileInfo['extension'], array('gif', 'jpg', 'jpeg', 'png'))) {
-                            $objImage = new \ImageManager();
-                            $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
-                        }
-                        $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
-                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                        \DBG::msg($e->getMessage());                        
-                    }                    
+                //do not overwrite existing files.
+                $prefix = '';
+                while (file_exists($depositionTarget.$prefix.$f)) {
+                    if (empty($prefix)) {
+                        $prefix = 0;
+                    }
+                    $prefix ++;
+                }
+
+                // move file
+                try {
+                    $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                    $fileInfo = pathinfo($tmpUploadDir.$f);
+                    $objFile->move($depositionTarget.$prefix.$f, false);
+                    
+                    $imageName = $prefix.$f;
+                    if (in_array($fileInfo['extension'], array('gif', 'jpg', 'jpeg', 'png'))) {
+                        $objImage = new \ImageManager();
+                        $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
+                    }
+                    $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
+
+                    // abort after one file has been fetched, as all event upload
+                    // fields do allow a single file only anyway
+                    break;
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                    \DBG::msg($e->getMessage());                        
                 }
             }    
         }
