@@ -1338,3 +1338,5 @@ $_ARRAYLANG['TXT_NET_MANAGER'] = "Domains";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] = "MultiSite";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_COMMUNICATION_MANAGEMENT'] = "Communication Management";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "System Management";
+
+$_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'This user is a crm contact, click to open the crm contact.';

@@ -621,6 +621,47 @@ class FWUser extends User_Setting
     }
 
     /**
+     * Get the user details link
+     * 
+     * @param mixed $user \User or
+     *                    \Cx\Core\User\Model\Entity\User or
+     *                    $userId (Id of a user)
+     * 
+     * @return string Returns the parsed user detail link(crm and access)
+     */
+    public static function getParsedUserLink($user)
+    {
+        global $_CORELANG;
+        
+        if ($user instanceof \Cx\Core\User\Model\Entity\User) {
+            $user = self::getFWUserObject()->objUser->getUser($user->getId());
+        }
+        if (!is_object($user)) {
+            $user = self::getFWUserObject()->objUser->getUser($user);
+        }
+        if (!($user instanceof \User)) {
+            return '';
+        }
+        
+        $crmDetailImg = '';
+        if (!\FWValidator::isEmpty($user->getCrmUserId())) {
+            $crmDetailImg = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$user->getCrmUserId()}' 
+                                title='{$_CORELANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT']}'>
+                                <img 
+                                    src='../core/Core/View/Media/navigation_level_1_189.png' 
+                                    width='16' height='16' 
+                                    alt='{$_CORELANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT']}'
+                                />
+                            </a>";
+        }
+        return "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$user->getId()}'
+                    title='{$_CORELANG['TXT_EDIT_USER_ACCOUNT']}'>" .
+                    self::getParsedUserTitle($user) .
+                "</a>" . 
+                $crmDetailImg;
+    }
+
+    /**
      * Format the author and publisher title
      * @global array
      * @param   mixed   Either the ID of the user account to parse or a User object

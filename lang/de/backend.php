@@ -1407,3 +1407,5 @@ $_ARRAYLANG['TXT_NET_MANAGER'] = "Domains";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] = "MultiSite";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_COMMUNICATION_MANAGEMENT'] = "Kommunikationsverwaltung";
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "Systemverwaltung";
+
+$_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'Dieser Benutzer ist verknüpft mit einem CRM Kontakt, klicken um direkt zum CRM Kontakt zu gelangen.';
