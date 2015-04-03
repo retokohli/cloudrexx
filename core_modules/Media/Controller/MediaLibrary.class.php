@@ -632,12 +632,8 @@ class MediaLibrary
 // This won't work for .jpg thumbnails made from .png images and other
 // ways to create thumbnail file names.  See the Image class.
                         if (preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $name)) {
-                            if (substr($name, -6) == '.thumb') {
-                                $tmpName = substr($name, 0, strlen($name) - strlen(substr($name, -6)));
-                            } else {
-                                $tmpName = preg_replace("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[\.]*)/i", '.', $name);
-                            }
-                            if (!file_exists($path . $tmpName)) {
+                            $originalFileName = preg_replace("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)(\.[^.]+)$)|(?:\.thumb)$/mi", "$1", $name);
+                            if (!file_exists($path . $originalFileName)) {
                                 @unlink($path . $name);
                             }
                         } else {
