@@ -216,9 +216,6 @@ function checkAvailablityOfAffiliateId(affiliateId) {
     var url        = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=checkAvailabilityOfAffiliateId',
         errorBlock = jQuery('#setAffiliateId .errorBlock');
     
-    errorBlock
-        .removeClass('has-error')
-        .html('');
     lastXhr = jQuery.ajax({
         dataType: "json",
         url: url,
@@ -235,6 +232,9 @@ function checkAvailablityOfAffiliateId(affiliateId) {
                 if (response.status == 'success') {
                     resp = response.data;
                     if (resp.status == 'success') {
+                        errorBlock
+                            .removeClass('has-error')
+                            .html('');
                         jQuery(".save").removeAttr('disabled');
                     } else {
                         errMsg = resp.message;                                              
@@ -243,45 +243,53 @@ function checkAvailablityOfAffiliateId(affiliateId) {
                     errMsg = response.message;                                     
                 }
                 if (errMsg !== false) {
-                    showErrorBlock(errorBlock, errMsg);               }
+                    showErrorBlock(errorBlock, errMsg);
+                }
             }
+        },
+        complete: function (xhr, settings) {
+            jQuery(".save").button('reset');
         },
         error: function() { }
     });
 }
 
 /**
- * save AffiliateId
+ * Save AffiliateId and PayPal mail address
  * 
  * @param object elm jQuery button object
  */
-function saveAffiliateId($this) {
-    var url         = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=setAffiliateId',    
-        affiliateId = jQuery("#affiliateProfileAttributeId").val(),
-        errorBlock  = jQuery('#setAffiliateId .errorBlock');
+function saveAffiliateIdAndPayPalMailAddress($this) {
+    var data = jQuery( "form" ).serialize();
+    if (jQuery.isEmptyObject(data)) {
+        $this.prop('disabled', true);
+        return false;
+    }
 
     jQuery.ajax({
         dataType: "json",
-        url: url,
-        data: {
-            affiliateProfileAttributeId :  affiliateId
-        },
+        url: cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=setAffiliate',
+        data: data,
         type: "POST",
         beforeSend: function (xhr, settings) {
             $this.button('loading');
             $this.prop('disabled', true);
+            jQuery('#errorBlock').removeClass('has-error').html('');
         },
         success: function(response) {
             var errMsg = false;
+            var errorBlock = '';
             if (response.status == 'success') {
                 resp = response.data;
                 if (resp.status == 'success') {
                     showMessage(resp.message, 'success');
                     window.location.reload();
                 } else {
+                    errorBlock = (resp.type == 'mail') ? jQuery('#paypal-mail .errorBlock') : jQuery('#setAffiliateId .errorBlock');
                     errMsg = resp.message;
                 }
             } else {
+                errorBlock = (response.type == 'mail') ? jQuery('#paypal-mail .errorBlock') : jQuery('#setAffiliateId .errorBlock');
                 errMsg = response.message; 
             }
             if (errMsg !== false) {

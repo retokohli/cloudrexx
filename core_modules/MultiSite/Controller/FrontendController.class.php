@@ -79,20 +79,24 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 if (empty($crmContactId)) {
                     return ' '; // Do not show AffiliateSetup detail
                 }
-                //get the minimum length of websiteName
-                $objJs = \ContrexxJavascript::getInstance();
-                $objJs->setVariable('websiteNameMinLength', \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite'), 'affiliateSetup');
                 $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
                 $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
+                $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
+                $paypalEmailAddress = $objUser->getProfileAttribute($paypalEmailAddressProfileAttribute);
                 if (!empty($affiliateId)) {
                     $template->setVariable(array(
-                        'TXT_MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_PROFILE_ATTR_ID'],
-                        'MULTISITE_AFFILIATE_PROFILE_ATTR_ID'     => $affiliateId
+                        'TXT_MULTISITE_AFFILIATE_PROFILE_ATTR_ID'        => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_PROFILE_ATTR_ID'],
+                        'MULTISITE_AFFILIATE_PROFILE_ATTR_ID'            => $affiliateId,
+                        'TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS'],
+                        'MULTISITE_PAYPAL_EMAIL_ADDRESS'                 => $paypalEmailAddress,
+                        'TXT_CORE_MODULE_MULTISITE_CHANGE_PAYPAL_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_PAYPAL_EMAIL_ADDRESS']
                     ));
                     $template->touchBlock('showAffiliateId');
                 } else {
                     $template->setVariable(array(
-                        'TXT_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID' => $_ARRAYLANG['TXT_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID']
+                        'TXT_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID'        => $_ARRAYLANG['TXT_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID'],
+                        'TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS'],
+                        'MULTISITE_PAYPAL_EMAIL_ADDRESS'                        => $paypalEmailAddress,
                     ));
                     $template->touchBlock('showAffiliateIdForm');
                 }

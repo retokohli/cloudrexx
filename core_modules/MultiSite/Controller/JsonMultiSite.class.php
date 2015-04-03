@@ -151,7 +151,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getMailServicePlans'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, array(183), null),
             'trackAffiliateId'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
             'checkAvailabilityOfAffiliateId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
-            'setAffiliateId'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'setAffiliate'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
         );  
     }
 
@@ -5406,21 +5406,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
     
     /**
-     * Set AffiliateId to the customer.
+     * Set Affiliate to the customer.
      * 
      * @param array $params
      * 
      * @return array
      * @throws MultiSiteJsonException
      */
-    public function setAffiliateId($params)
+    public function setAffiliate($params)
     {
         global $_ARRAYLANG;
         
-        if (empty($params['post']) 
-            || !isset($params['post']['affiliateProfileAttributeId'])
-        ) {
-            \DBG::msg('JsonMultiSite::setAffiliateId() failed: Insufficient arguments supplied: ' . var_export($params, true));
+        if (empty($params['post'])) {
+            \DBG::msg('JsonMultiSite::setAffiliate() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
         }
         
@@ -5428,35 +5426,50 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                $objUser = \FWUser::getFWUserObject()->objUser;
-                $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
-                $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
-                if (!empty($affiliateId)) {
-                    \DBG::msg('JsonMultiSite::setAffiliateId() failed: Already the AffiliateId value present.');
-                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SET_ALREADY']);
-                }
+                    $objUser = \FWUser::getFWUserObject()->objUser;
+                    if (isset($params['post']['paypalEmailAddress'])) {
+                        if (!self::validateEmailAddress($params['post']['paypalEmailAddress'])) {
+                            return array('status' => 'error', 'type' => 'mail',  'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL']);                        
+                        }
+                        $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
+                        $paypalEmailAddress = $params['post']['paypalEmailAddress'];
+                        $objUser->setProfile(
+                            array(
+                                $paypalEmailAddressProfileAttribute => array(0 => $paypalEmailAddress)
+                            ),
+                            true
+                        );           
+                    }
+                    if (isset($params['post']['affiliateProfileAttributeId']) && !empty($params['post']['affiliateProfileAttributeId'])) {
+                        $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
+                        $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
+                        if (!empty($affiliateId)) {
+                            \DBG::msg('JsonMultiSite::setAffiliate() failed: Already the AffiliateId value present.');
+                            return array('status' => 'error', 'type' => 'affiliateId', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SET_ALREADY']);
+                        }
 
-                $affiliateIdValue = $params['post']['affiliateProfileAttributeId'];
-                if (!self::validateAffiliateId($affiliateIdValue)) {
-                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
-                }
-                $objUser->setProfile(
-                    array(
-                        $affiliateIdProfileAttributeId => array(0 => $affiliateIdValue)
-                    ),
-                    true
-                );
-                if (!$objUser->store()) {
-                    \DBG::msg('JsonMultiSite::setAffiliateId() failed: can not store the AffiliateId.');
-                    return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
-                }
-                return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SAVED']);
-                break;
-            default :
-                break;
+                        $affiliateIdValue = $params['post']['affiliateProfileAttributeId'];
+                        if (!self::validateAffiliateId($affiliateIdValue)) {
+                            return array('status' => 'error', 'type' => 'affiliateId', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
+                        }
+                        $objUser->setProfile(
+                            array(
+                                $affiliateIdProfileAttributeId => array(0 => $affiliateIdValue)
+                            ),
+                            true
+                        );
+                    }
+                    if (!$objUser->store()) {
+                        \DBG::msg('JsonMultiSite::setAffiliate() failed: can not store the AffiliateId.');
+                        return array('status' => 'error', 'type' => 'affiliateId', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
+                    }
+                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SAVED']);
+                    break;
+                default :
+                    break;
             }
         } catch (\Exception $e) {
-            \DBG::msg('JsonMultiSite::setAffiliateId() failed: ' . $e->getMessage());
+            \DBG::msg('JsonMultiSite::setAffiliate() failed: ' . $e->getMessage());
             throw new MultiSiteJsonException($e->getMessage());
         }        
     }
@@ -5535,6 +5548,27 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (in_array($affiliateId, $unavailablePrefixesValue)) {
             \DBG::msg('JsonMultiSite::validateAffiliateId() failed: AffiliateId is a blocked word.');
             throw new MultiSiteException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED']);
+        }
+        return true;
+    }
+    
+    /**
+     * Validate the email address
+     * 
+     * @param string $emailAddress
+     * 
+     * @return boolean
+     * @throws MultiSiteJsonException
+     */
+    public static function validateEmailAddress($emailAddress)
+    {
+        if (empty($emailAddress)) {
+            \DBG::msg('JsonMultiSite::validateEmailAddress() failed: Insufficient arguments supplied.');
+            return false;
+        } 
+        if (!\FWValidator::isEmail($emailAddress)) {
+            \DBG::msg('JsonMultiSite::validateEmailAddress() failed: Invalid email address.');
+            return false;
         }
         return true;
     }
