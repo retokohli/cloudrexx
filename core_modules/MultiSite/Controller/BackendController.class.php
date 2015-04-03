@@ -646,12 +646,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'owner' => array(
                     'header' => 'Owner',
                     'table' => array(
-                        'parse' => function($value) {                            
-                            $objUser = \FWUser::getFWUserObject()->objUser->getUser($value->getId());
-                            if (empty($objUser)) {
-                                return '';
-                            }
-                            return self::parseUser($objUser);                            
+                        'parse' => function($user) {
+                            return \FWUser::getParsedUserLink($user);
                         },
                     ),
                 ),
@@ -721,15 +717,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
              $affiliateIdProfileAttributeId =>'_'
         ));
-        while (!$objUser->EOF) {
-            $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
-            $affiliateIds[] = array(
-                'affiliateId' => $affiliateId,
-                'user'        => $objUser->getId(),
-                'paypal'      => $objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite')),
-                'referrals'   => $affiliateId,
-            );
-            $objUser->next();
+        if ($objUser) {
+            while (!$objUser->EOF) {
+                $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
+                $affiliateIds[] = array(
+                    'affiliateId' => $affiliateId,
+                    'user'        => $objUser->getId(),
+                    'paypal'      => $objUser->getProfileAttribute(\Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite')),
+                    'referrals'   => $affiliateId,
+                );
+                $objUser->next();
+            }
         }
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($affiliateIds);
         $view    = new \Cx\Core\Html\Controller\ViewGenerator($dataSet, array(
@@ -743,11 +741,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'header' => 'TXT_CORE_MODULE_MULTISITE_USER',
                                 'table' => array(
                                     'parse' => function($userId, $arrData) {
-                                        $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
-                                        if (empty($objUser)) {
-                                            return '';
-                                        }
-                                        return self::parseUser($objUser);
+                                        return \FWUser::getParsedUserLink($userId);
                                     }
                                 )
                             ),
@@ -762,9 +756,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             ),
                         )
                    ));
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $mainDomain       = $domainRepository->getMainDomain()->getName();
+        $affiliateUrl     = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $mainDomain . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&amp;object=MultiSite&amp;act=trackAffiliateId');
         $template->setVariable(array(
             'MULTISITE_AFFILIATE_ID_LIST'   => $view->render(),
-            'MULTISITE_TRACK_AFFILIATE_URL' => \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&amp;object=MultiSite&amp;act=trackAffiliateId',
+            'MULTISITE_TRACK_AFFILIATE_URL' => $affiliateUrl->toString(true),
         ));
     }
     
@@ -1366,15 +1363,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     {
         static $referrals = null;
         
-        if (empty($referrals)) {
+        if (!isset($referrals)) {
+            $referrals = array();
             $affiliateIdReferenceProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite');
             $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
                  $affiliateIdReferenceProfileAttributeId =>'_'
             ));
-            while (!$objUser->EOF) {                
-                $userAffiliateId = $objUser->getProfileAttribute($affiliateIdReferenceProfileAttributeId);
-                $referrals[$userAffiliateId] = isset($referrals[$userAffiliateId]) ? $referrals[$userAffiliateId] + 1 : 1;
-                $objUser->next();
+            if ($objUser) {
+                while (!$objUser->EOF) {
+                    $userAffiliateId = $objUser->getProfileAttribute($affiliateIdReferenceProfileAttributeId);
+                    $referrals[$userAffiliateId] = isset($referrals[$userAffiliateId]) ? $referrals[$userAffiliateId] + 1 : 1;
+                    $objUser->next();
+                }
             }
         }
         

@@ -17,11 +17,12 @@
       <tr class="row1">
         <td>
           <textarea style="width: 100%; height: 250px;">
-if (typeof jQuery == 'undefined') {  
+if (typeof jQuery == 'undefined') {
     return; // jQuery is needed.
 }
-jQuery.get('{MULTISITE_TRACK_AFFILIATE_URL}', {url : window.location.href});
-
+jQuery( document ).ready(function() {
+    jQuery.get('{MULTISITE_TRACK_AFFILIATE_URL}', {url : window.location.href});
+});
 </textarea>
         </td>
       </tr>
