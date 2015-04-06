@@ -750,7 +750,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'header' => 'TXT_CORE_MODULE_MULTISITE_REFERRALS',
                                 'table' => array(
                                     'parse' => function($affiliateId, $arrData) {
-                                        return self::getReferralCountByAffiliateId($affiliateId);
+                                        return \Cx\Core_Modules\MultiSite\Controller\BackendController::getReferralCountByAffiliateId($affiliateId);
                                     }
                                 )
                             ),
