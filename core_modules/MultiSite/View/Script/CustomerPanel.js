@@ -232,10 +232,7 @@ function checkAvailablityOfAffiliateId(affiliateId) {
                 if (response.status == 'success') {
                     resp = response.data;
                     if (resp.status == 'success') {
-                        errorBlock
-                            .removeClass('has-error')
-                            .html('');
-                        jQuery(".save").removeAttr('disabled');
+                        hideErrorBlock(errorBlock);
                     } else {
                         errMsg = resp.message;                                              
                     }
@@ -248,10 +245,20 @@ function checkAvailablityOfAffiliateId(affiliateId) {
             }
         },
         complete: function (xhr, settings) {
+            enableOrDisableButton();
             jQuery(".save").button('reset');
         },
         error: function() { }
     });
+}
+
+function isValidEmail(mailId) {
+    var pattern = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+    
+    if (pattern.test(mailId) === false) {
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -260,21 +267,35 @@ function checkAvailablityOfAffiliateId(affiliateId) {
  * @param object elm jQuery button object
  */
 function saveAffiliateIdAndPayPalMailAddress($this) {
-    var data = jQuery( "form" ).serialize();
-    if (jQuery.isEmptyObject(data)) {
+    if (   (   jQuery("#affiliateProfileAttributeId").length
+            && jQuery("#paypalEmail").val() === ''
+            && jQuery("#affiliateProfileAttributeId").val() === ''
+            )
+            || (   !jQuery("#affiliateProfileAttributeId").length 
+                && jQuery("#paypalEmail").val() === ''
+               )
+        ) {
+        $this.prop('disabled', true);
+        showMessage(cx.variables.get('TXT_CORE_MODULE_MULTISITE_NO_INPUT_ERROR', 'AffiliateSetup'), 'error');
+        return false;
+    }
+    
+    if (jQuery("#paypalEmail").val() !== '' && !isValidEmail(jQuery("#paypalEmail").val())) {
+        showErrorBlock(jQuery('#paypal-mail .errorBlock'), cx.variables.get('TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR', 'AffiliateSetup'));
         $this.prop('disabled', true);
         return false;
     }
 
+    var data = jQuery( "form" ).serialize();
     jQuery.ajax({
         dataType: "json",
         url: cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=setAffiliate',
         data: data,
         type: "POST",
         beforeSend: function (xhr, settings) {
+            hideErrorBlock(jQuery('.errorBlock'));
             $this.button('loading');
             $this.prop('disabled', true);
-            jQuery('#errorBlock').removeClass('has-error').html('');
         },
         success: function(response) {
             var errMsg = false;
@@ -307,6 +328,20 @@ function showErrorBlock(errorBlock, errMsg) {
     errorBlock
         .addClass('has-error')
         .html('<div class="help-block" role="alert">' + errMsg + '</div>');
+}
+
+function hideErrorBlock(errorBlock) {
+    errorBlock
+        .removeClass('has-error')
+        .html('');
+}
+
+function enableOrDisableButton() {
+    if (jQuery(".errorBlock .help-block").length === 0) {
+        jQuery(".save").prop('disabled', false);
+    } else {
+        jQuery(".save").prop('disabled', true);
+    }
 }
 
 function pleskAutoLogin($this) {

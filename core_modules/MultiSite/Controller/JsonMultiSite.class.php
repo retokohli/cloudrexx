@@ -5417,7 +5417,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     {
         global $_ARRAYLANG;
         
-        if (empty($params['post'])) {
+        if (   empty($params['post']) 
+            || (   empty($params['post']['affiliateProfileAttributeId'])
+                && empty($params['post']['paypalEmailAddress']))
+            ) {
             \DBG::msg('JsonMultiSite::setAffiliate() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
         }
@@ -5427,19 +5430,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     $objUser = \FWUser::getFWUserObject()->objUser;
-                    if (isset($params['post']['paypalEmailAddress'])) {
-                        if (!self::validateEmailAddress($params['post']['paypalEmailAddress'])) {
-                            return array('status' => 'error', 'type' => 'mail',  'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL']);                        
-                        }
-                        $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
-                        $paypalEmailAddress = $params['post']['paypalEmailAddress'];
-                        $objUser->setProfile(
-                            array(
-                                $paypalEmailAddressProfileAttribute => array(0 => $paypalEmailAddress)
-                            ),
-                            true
-                        );           
-                    }
                     if (isset($params['post']['affiliateProfileAttributeId']) && !empty($params['post']['affiliateProfileAttributeId'])) {
                         $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
                         $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
@@ -5459,11 +5449,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             true
                         );
                     }
+                    if (isset($params['post']['paypalEmailAddress']) && !empty($params['post']['paypalEmailAddress'])) {
+                        $paypalEmailAddress = $params['post']['paypalEmailAddress'];
+                        if (!\FWValidator::isEmail($paypalEmailAddress)) {
+                            return array('status' => 'error', 'type' => 'mail',  'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_INVALID_EMAIL']);                        
+                        }
+                        $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
+                        $objUser->setProfile(
+                            array(
+                                $paypalEmailAddressProfileAttribute => array(0 => $paypalEmailAddress)
+                            ),
+                            true
+                        );
+                    }
                     if (!$objUser->store()) {
                         \DBG::msg('JsonMultiSite::setAffiliate() failed: can not store the AffiliateId.');
                         return array('status' => 'error', 'type' => 'affiliateId', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
                     }
-                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SAVED']);
+                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']);
                     break;
                 default :
                     break;
@@ -5551,25 +5554,4 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         return true;
     }
-    
-    /**
-     * Validate the email address
-     * 
-     * @param string $emailAddress
-     * 
-     * @return boolean
-     * @throws MultiSiteJsonException
-     */
-    public static function validateEmailAddress($emailAddress)
-    {
-        if (empty($emailAddress)) {
-            \DBG::msg('JsonMultiSite::validateEmailAddress() failed: Insufficient arguments supplied.');
-            return false;
-        } 
-        if (!\FWValidator::isEmail($emailAddress)) {
-            \DBG::msg('JsonMultiSite::validateEmailAddress() failed: Invalid email address.');
-            return false;
-        }
-        return true;
-    }
-}
+} 

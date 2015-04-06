@@ -79,27 +79,26 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 if (empty($crmContactId)) {
                     return ' '; // Do not show AffiliateSetup detail
                 }
+                //get the affiliateIdProfileAttributeId
                 $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
                 $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
+                //get the payPalProfileAttributeId
                 $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
                 $paypalEmailAddress = $objUser->getProfileAttribute($paypalEmailAddressProfileAttribute);
-                if (!empty($affiliateId)) {
-                    $template->setVariable(array(
-                        'TXT_MULTISITE_AFFILIATE_PROFILE_ATTR_ID'        => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_PROFILE_ATTR_ID'],
-                        'MULTISITE_AFFILIATE_PROFILE_ATTR_ID'            => $affiliateId,
-                        'TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS'],
-                        'MULTISITE_PAYPAL_EMAIL_ADDRESS'                 => $paypalEmailAddress,
-                        'TXT_CORE_MODULE_MULTISITE_CHANGE_PAYPAL_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_PAYPAL_EMAIL_ADDRESS']
-                    ));
-                    $template->touchBlock('showAffiliateId');
-                } else {
-                    $template->setVariable(array(
-                        'TXT_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID'        => $_ARRAYLANG['TXT_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID'],
-                        'TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS'],
-                        'MULTISITE_PAYPAL_EMAIL_ADDRESS'                        => $paypalEmailAddress,
-                    ));
-                    $template->touchBlock('showAffiliateIdForm');
-                }
+                
+                !empty($affiliateId) ? $template->touchBlock('showAffiliateId') : $template->touchBlock('showAffiliateIdForm');
+                
+                $template->setVariable(array(
+                    'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => !empty($affiliateId) ? $affiliateId : '',
+                    'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => $paypalEmailAddress
+                ));
+                //initialize
+                $objJs = \ContrexxJavascript::getInstance();
+                $objJs->setVariable(array(
+                    'TXT_CORE_MODULE_MULTISITE_NO_INPUT_ERROR' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NO_INPUT_ERROR'],
+                    'TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR']
+                ), 'AffiliateSetup');
+                
                 break;
             default:
         }
