@@ -794,8 +794,10 @@ class Gallery
         $objResult = $objDatabase->Execute(
             "SELECT id, catid, path FROM ".DBPREFIX."module_gallery_pictures ".
             "ORDER BY catimg ASC, sorting ASC, id ASC");
+        
+        $showImageSizeOverview   = $this->arrSettings['show_image_size'] == 'on';
         while (!$objResult->EOF) {
-            $arrImageSizes[$objResult->fields['catid']][$objResult->fields['id']] = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+            $arrImageSizes[$objResult->fields['catid']][$objResult->fields['id']] = ($showImageSizeOverview) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
             $arrstrImagePaths[$objResult->fields['catid']][$objResult->fields['id']] = $this->strThumbnailWebPath.$objResult->fields['path'];
             $objResult->MoveNext();
         }
@@ -858,7 +860,6 @@ class Gallery
                     $objSubResult->MoveNext();
                 }
                 
-                $showImageSizeCheck = $this->arrSettings['show_image_size'] == 'on';
                 if (empty($arrCategoryImages[$objResult->fields['id']])) {
                     // no pictures in this gallery, show the empty-image
                     $strName     = $arrCategoryLang['name'];
@@ -866,14 +867,14 @@ class Gallery
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="modules/Gallery/View/Media/no_images.gif" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': 0';
-                    $strInfo     .= $showImageSizeCheck ? '<br />'.$_CORELANG['TXT_SIZE'].': 0kB' : '';
+                    $strInfo    .= $showImageSizeOverview ? '<br />'.$_CORELANG['TXT_SIZE'].': 0kB' : '';
                 } else {
                     $strName    = $arrCategoryLang['name'];
                     $strDesc    = $arrCategoryLang['desc'];
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="'.$arrCategoryImages[$objResult->fields['id']].'" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': '.$arrCategoryImageCounter[$objResult->fields['id']];
-                    $strInfo     .= $showImageSizeCheck ? '<br />'.$_CORELANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB' : '';
+                    $strInfo    .= $showImageSizeOverview ? '<br />'.$_CORELANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB' : '';
                 }
 
                 $this->_objTpl->setVariable(array(
