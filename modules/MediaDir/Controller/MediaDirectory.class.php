@@ -298,10 +298,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             } else {
                 $bolLatest = false;
                 $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
-
-                $strPagingCmdParam = $intCategoryCmd != 0 ? "&amp;cmd=".$intCategoryCmd : ($intCmdFormId ? '&amp;cmd='.$_GET['cmd']: '');
-                $strPagingCatParam = $intCategoryId != 0 ? "&amp;cid=".$intCategoryId : '';
-                $strPagingLevelParam = $intLevelId != 0 ? "&amp;lid=".$intLevelId : '';
             }                 
 
             //check show entries
@@ -314,7 +310,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 if(!$bolLatest) {
                     $intNumEntries = intval($objEntries->countEntries());
                     if($intNumEntries > $intLimitEnd) {
-                        $strPaging = getPaging($intNumEntries, $intLimitStart, $strPagingCmdParam.$strPagingLevelParam.$strPagingCatParam, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
+                        $objUrl           = clone \Env::get('Resolver')->getUrl();                        
+                        $currentUrlParams = $objUrl->getSuggestedParams();
+                        $strPaging = getPaging($intNumEntries, $intLimitStart, $currentUrlParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
                         $this->_objTpl->setGlobalVariable(array(
                             $this->moduleLangVar.'_PAGING' =>  $strPaging
                         ));
