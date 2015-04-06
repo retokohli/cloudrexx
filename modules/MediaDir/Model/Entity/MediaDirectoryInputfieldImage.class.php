@@ -39,8 +39,8 @@ class MediaDirectoryInputfieldImage extends \Cx\Modules\MediaDir\Controller\Medi
      */
     function __construct($name)
     {
-        $this->imagePath = constant('ASCMS_'.$this->moduleConstVar.'_IMAGES_PATH').'/';
-        $this->imageWebPath = constant('ASCMS_'.$this->moduleConstVar.'_IMAGES_WEB_PATH').'/';
+        $this->imagePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesMediaDirPath() . '/';
+        $this->imageWebPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesMediaDirWebPath() . '/';
         parent::__construct('.', $name);
         parent::getSettings();
     }

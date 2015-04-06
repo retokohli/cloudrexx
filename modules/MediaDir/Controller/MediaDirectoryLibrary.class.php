@@ -747,7 +747,6 @@ EOF;
 // TODO: do we need the shadowbox every time?
         \JS::activate('shadowbox');
 
-        $strLibPath = ASCMS_LIBRARY_WEB_PATH;    
         $strJavascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
 /* <![CDATA[ */

@@ -40,7 +40,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $this->limit = $_CONFIG['corePagingLimit'];
         $this->offset = !empty($_GET['pos']) ? $_GET['pos'] : 0;
 
-        parent::__construct(ASCMS_MODULE_PATH.'/MediaDir/View/Template/Backend', $name);
+        parent::__construct(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/MediaDir/View/Template/Backend', $name);
         parent::getFrontendLanguages();    
     }
     private function setNavigation()
