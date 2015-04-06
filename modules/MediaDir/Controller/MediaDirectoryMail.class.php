@@ -159,7 +159,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
         }
 
         $strProtocol = ASCMS_PROTOCOL;
-        $strDomain = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
+        $strDomain = $_CONFIG['domainUrl'].\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
         $strDate = date(ASCMS_DATE_FORMAT);
         $strEntryLink = urldecode($strProtocol."://".$strDomain.'/index.php?section='.$this->moduleName.'&cmd='.$strDetailCmd.'&eid='.$this->intEntryId);
         
@@ -181,10 +181,10 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CONFIG;
         
-        if (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) {
+        if (\Env::get('ClassLoader')->loadFile(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseLibraryPath().'/phpmailer/class.phpmailer.php')) {
             $objMail = new \phpmailer();
 
-                if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
+                if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCorePath().'/SmtpSettings.class.php')) {
                 $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
                 if ($arrSmtp !== false) {
                     $objMail->IsSMTP();

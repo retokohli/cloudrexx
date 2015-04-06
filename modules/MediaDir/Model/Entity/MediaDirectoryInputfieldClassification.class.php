@@ -109,7 +109,7 @@ class MediaDirectoryInputfieldClassification extends \Cx\Modules\MediaDir\Contro
             case 2:
                 //search View
                 $strValue = $_GET[$intId];
-                $strImagePath = ASCMS_PATH_OFFSET.ASCMS_MODULE_FOLDER.'/'.$this->moduleName.'/View/Media/';
+                $strImagePath = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath().'/'.$this->moduleName.'/View/Media/';
                 $intNumPoints = $this->arrSettings['settingsClassificationPoints'];
                 $strFieldName = $this->moduleName."Classification_";
                 $strImageName = $this->moduleName."rClassificationImage_";
@@ -214,7 +214,7 @@ EOF;
                 $strImage = 'classification_off.png';
             }
 
-            $strValue .= '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" />';
+            $strValue .= '<img src="'.\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath().'/'.$this->moduleName.'/View/Media/'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" />';
         }
 
         if(!empty($strValue)) {
