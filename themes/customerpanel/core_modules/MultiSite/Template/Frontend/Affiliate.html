@@ -26,6 +26,15 @@
 <script type="text/javascript">
     /* <![CDATA[ */
     cx.ready(function(){
+        //Disable the save button if no input given.
+        if (   (   jQuery("#affiliateProfileAttributeId").length 
+                && jQuery("#affiliateProfileAttributeId").val() === ''
+               )
+               || jQuery("#paypalEmail").val() === ''
+            ) {
+            jQuery(".save").prop('disabled', true);
+        }
+        
         jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function(){
            jQuery.getScript(cx.variables.get('path', 'contrexx') + "lib/javascript/jquery/bootstrapvalidator/js/bootstrapValidator.min.js", function() {
                jQuery("#affiliateProfileAttributeId").bind("input",function(){
@@ -33,26 +42,18 @@
                     if (this.value.length > 0) {
                         checkAvailablityOfAffiliateId(this.value);
                     } else {
-                        jQuery('#setAffiliateId .errorBlock')
-                        .removeClass('has-error')
-                        .html('');
-                        jQuery(".save").prop('disabled', false);
+                        hideErrorBlock(jQuery('#setAffiliateId .errorBlock'));
+                        enableOrDisableButton();
                     }
                 });
                 jQuery("#paypalEmail").blur("change",function(){
-                    if (this.value.length > 0) {                        
-                        var pattern = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
-                        if (pattern.test(jQuery("#paypalEmail").val()) === false) {
-                            jQuery('#paypal-mail .errorBlock')
-                           .addClass('has-error')
-                           .html('<div class="help-block" role="alert">' + 'pls enter correct value' + '</div>');
-                        }
+                    var mailId  = this.value;
+                    if ((mailId.length > 0) && !isValidEmail(mailId)) {
+                        showErrorBlock(jQuery('#paypal-mail .errorBlock'), '{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR}');
                     } else {
-                        jQuery('#paypal-mail .errorBlock')
-                        .removeClass('has-error')
-                        .html('');
-                        jQuery(".save").prop('disabled', false);
-                    }                                        
+                        hideErrorBlock(jQuery('#paypal-mail .errorBlock'));                        
+                    }
+                    enableOrDisableButton();
                 });
            });            
        }); 
