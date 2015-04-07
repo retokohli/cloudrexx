@@ -105,7 +105,7 @@ class EntityInterface implements Exportable, Importable
                 }
                 
                 //checks if the string a serialized array
-                if(preg_match('/^([adObis]:|N;)/', $entityValue)) {
+                if(\FWValidator::is_serialized($entityValue)) {
                     $entityValue = unserialize($entityValue);
                 }
                 
