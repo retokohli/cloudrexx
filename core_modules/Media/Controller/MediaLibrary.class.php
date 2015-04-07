@@ -435,6 +435,8 @@ class MediaLibrary
             if (!$this->_objImage->showNewImage()) {
                 throw new \Exception('Is not a valid image or image type');
             }
+
+            return;
         }
         
         throw new \Exception('Path or file is empty');
