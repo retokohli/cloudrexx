@@ -242,6 +242,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         $websiteServiceServer   = $webServerRepo->findOneBy(array('id' => $websiteServiceServerId));
                     
                         if ($websiteServiceServer) {
+                            \DBG::msg('Going to update user '.$objUser->getId().' on WebsiteServiceServer '.$websiteServiceServer->getLabel());
                             \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateUser', $params, $websiteServiceServer);
                         }
                     }
