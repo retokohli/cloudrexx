@@ -475,6 +475,11 @@ namespace Cx\Core\Core\Controller {
          */
         protected $websiteFeedPath = null;
 
+        
+        protected $id = 0;
+        
+        static protected  $autoIncrementValueOfId = 0;
+        
 
         protected $websiteImagesContentPath;
         protected $websiteImagesAttachPath;
@@ -561,7 +566,11 @@ namespace Cx\Core\Core\Controller {
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
          */
-        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false) {
+        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false) {            
+            
+            /** setting up id of new initialized object**/
+            self::$autoIncrementValueOfId++;
+            $this->id = self::$autoIncrementValueOfId;
             if (!count(self::$instances) || $setAsPreferred) {
                 self::$preferredInstance = $this;
             }
@@ -569,6 +578,7 @@ namespace Cx\Core\Core\Controller {
                 self::$instances[$configFilePath] = array();
             }
             self::$instances[$configFilePath][] = $this;
+            
             try {
                 /**
                  * This starts time measurement
@@ -2899,6 +2909,17 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsitePublicTempWebPath() {
             return $this->websitePublicTempWebPath;
+        }
+        
+        /** 
+         * @return int
+         */
+        public function getId() {
+            return $this->id;
+        }
+        
+        public function getInstances() {
+            return self::$instances;
         }
     }
 }

@@ -102,6 +102,7 @@ class Setting{
     protected static $section = null;
     protected static $group = null;
     protected static $tab_index = 1;
+    protected static $instanceId = null;
     
     
     /**
@@ -239,7 +240,7 @@ class Setting{
                 self::$section = $section;                
                 $engineType = self::getEngineType();
                 $oSectionEngine = new $engineType(); 
-                $oSectionEngine->init($section, null, self::$engine);
+                $oSectionEngine->init($section, null);
                 self::setSectionEngine($oSectionEngine, self::POPULATE); 
                 self::$section = $oldsection;
             }
@@ -1076,13 +1077,13 @@ class Setting{
         if ($engine == null) {
             $engine = self::$engine;
         }
-        if (isset(self::$arrSettings[$section][$engine])) {
-           return self::$arrSettings[$section][$engine];
+        if (isset(self::$arrSettings[self::getInstanceId()][$section][$engine])) {
+           return self::$arrSettings[self::getInstanceId()][$section][$engine];
         }
-        if (isset(self::$arrSettings[$section]['default_engine']) && 
-            isset(self::$arrSettings[$section][self::$arrSettings[$section]['default_engine']])
+        if (isset(self::$arrSettings[self::getInstanceId()][$section]['default_engine']) && 
+            isset(self::$arrSettings[self::getInstanceId()][$section][self::$arrSettings[$section]['default_engine']])
         ) {
-            return self::$arrSettings[$section][self::$arrSettings[$section]['default_engine']];
+            return self::$arrSettings[self::getInstanceId()][$section][self::$arrSettings[$section]['default_engine']];
         }
         // \DBG::log("Section engine don't exist. Section: $section, Engine: $engine");
         return null;
@@ -1101,11 +1102,11 @@ class Setting{
      */
     static function setSectionEngine($oSectionEngine, $populate)
     {
-        if (!isset(self::$arrSettings[self::$section])) {
-            self::$arrSettings[self::$section] = array();
+        if (!isset(self::$arrSettings[self::getInstanceId()][self::$section])) {
+            self::$arrSettings[self::getInstanceId()][self::$section] = array();
             return;
         }
-        if (isset(self::$arrSettings[self::$section][self::$engine])) {
+        if (isset(self::$arrSettings[self::getInstanceId()][self::$section][self::$engine])) {
             switch ($populate) {
                 case self::NOT_POPULATE: return;
                     break;
@@ -1116,11 +1117,11 @@ class Setting{
                     return;
                     break;
                 case  self::REPOPULATE:
-                    self::$arrSettings[self::$section][self::$engine] = $oSectionEngine; 
+                    self::$arrSettings[self::getInstanceId()][self::$section][self::$engine] = $oSectionEngine; 
                     return;
             }
         }
-        self::$arrSettings[self::$section][self::$engine] = $oSectionEngine;        
+        self::$arrSettings[self::getInstanceId()][self::$section][self::$engine] = $oSectionEngine;        
     }
 
     /**
@@ -1135,8 +1136,8 @@ class Setting{
             self::$engine = $engine; 
             self::$section = $section; 
             self::$group = $group;
-            if (!isset(self::$arrSettings[$section]['default_engine'])) {
-                self::$arrSettings[$section]['default_engine'] = $engine;
+            if (!isset(self::$arrSettings[self::getInstanceId()][$section]['default_engine'])) {
+                self::$arrSettings[self::getInstanceId()][$section]['default_engine'] = $engine;
             }          
             return true;
 	}
@@ -1206,9 +1207,9 @@ class Setting{
     static function getSettings($section = null, $engine = null, $group = null) 
     {
         if ($section == null) {
-            return self::$arrSettings;
+            return self::$arrSettings[self::getInstanceId()];
         }elseif ($engine == null) {
-            return self::$arrSettings[$section];        
+            return self::$arrSettings[self::getInstanceId()][$section];        
         } else {
             $engine = self::getSectionEngine($section, $engine);
             if ($engine == null) {
@@ -1227,4 +1228,25 @@ class Setting{
     static function getCurrentSettings() {
         return self::getSettings(self::$section, self::$engine, self::$group);
     }
+    
+    /**
+     * Returns Id of current instance
+     * 
+     */
+    static function getInstanceId() {
+        if(self::$arrSettings == null) {
+            self::$instanceId = \Cx\Core\Core\Controller\Cx::instanciate()->getId();
+        }
+        return self::$arrSettings[self::$instanceId];
+    }
+    
+    /**
+     * Sets instance id
+     */
+    static function setInstanceId($id = null) {
+        if(isset(self::$arrSettings[$id])) {
+            self::$arrSettings = $id;
+        }
+    }
+    
 }
