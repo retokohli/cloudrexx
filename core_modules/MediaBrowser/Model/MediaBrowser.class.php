@@ -25,7 +25,7 @@ class MediaBrowser extends EntityBase
 
         $this->options = array(
             'data-cx-mb',
-            'class' => "button"
+            'class' => "mediabrowser-button button"
         );
     }
 
