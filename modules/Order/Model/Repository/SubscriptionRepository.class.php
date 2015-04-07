@@ -138,4 +138,28 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
         
         return $qb->getQuery()->getResult();
     }
+    
+    /**
+     * Get the subscriptions based on the user crmId
+     * 
+     * @param integer $crmId
+     * 
+     * @return mixed booleean|array
+     */
+    public function getSubscriptionsByUserCrmId($crmId) {
+        if (empty($crmId)) {
+            return;
+        }
+        
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('s')
+           ->from('\Cx\Modules\Order\Model\Entity\Subscription', 's')
+           ->leftJoin('s.order', 'o')
+           ->leftJoin('s.product', 'p')
+           ->where('p.entityClass = :entityClass')->setParameter('entityClass', 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection')
+           ->andWhere('o.contactId = :contactId')->setParameter('contactId', $crmId);
+        $subscriptions = $qb->getQuery()->getResult();
+        
+        return !empty($subscriptions) ? $subscriptions : array();
+    }
 }
