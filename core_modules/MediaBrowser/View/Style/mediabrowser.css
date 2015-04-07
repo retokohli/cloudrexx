@@ -1529,6 +1529,12 @@ li.active-tab .icon-folder, a:hover .icon-folder {
     margin: auto;
 }
 
+.loadingPlatform {
+    position: absolute;
+    background: #fff;
+    z-index: 10;
+}
+
 .uploadPlatform {
     padding-top: 60px;
     padding-bottom: 60px;
