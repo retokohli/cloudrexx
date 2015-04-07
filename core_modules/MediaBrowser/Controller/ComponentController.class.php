@@ -51,6 +51,11 @@ class ComponentController extends
         );
     }
 
+    public function preContentLoad(Page $page) {
+        $eventHandlerInstance = $this->cx->getEvents();
+        $eventHandlerInstance->addEvent('LoadMediaTypes');
+    }
+
     public function preContentParse(Page $page) {
         $this->cx->getEvents()->addEventListener(
             'LoadMediaTypes', new MediaBrowserEventListener($this->cx)
