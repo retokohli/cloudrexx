@@ -53,6 +53,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         // Not an entity, parse overview or settings
         switch (current($cmd)) {
             case 'Settings':
+                \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
+                
                 if(isset($_POST) && isset($_POST['bsubmit'])) {
                     \Cx\Core\Setting\Controller\Setting::set('specificStylesheet', isset($_POST["specificStylesheet"])?1:0);
                     \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST["replaceActualContents"])?1:0);
@@ -62,23 +64,21 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 
                 $i = 0;
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('specificStylesheet')
-                    && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '1', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'wysiwyg')
+                    && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '1', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
                 ){
                     throw new \Exception("Failed to add new configuration option");
                 }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('replaceActualContents')
-                    && !\Cx\Core\Setting\Controller\Setting::add('replaceActualContents', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'wysiwyg')
+                    && !\Cx\Core\Setting\Controller\Setting::add('replaceActualContents', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
                 ){
                     throw new \Exception("Failed to add new configuration option");
                 }
-                
-                \Cx\Core\Setting\Controller\Setting::init('Config', 'wysiwyg', 'Yaml');
                 
                 $tmpl = new \Cx\Core\Html\Sigma();
                 \Cx\Core\Setting\Controller\Setting::show(
                     $tmpl,
                     'index.php?cmd=Config&act=Wysiwyg&tpl=Settings',
-                    $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS'],
+                    $_ARRAYLANG['TXT_CORE_WYSIWYG'],
                     $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS'],
                     'TXT_CORE_WYSIWYG_'
                 );
