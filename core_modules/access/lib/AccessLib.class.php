@@ -1043,7 +1043,12 @@ class AccessLib
                         }
                     }
                 } else {
-                    $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId(), $historyId));
+                    // if menu is not set, the function returns false and we need to set 0 "Please select" as selected value
+                    if($objUser->getProfileAttribute($objAttribute->getId(), $historyId) !== false){
+                        $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId(), $historyId));
+                    }else{
+                        $objSelectedAttribute = $objAttribute->getById(0);
+                    }
                     $value = $objSelectedAttribute->getName();
                 }
 
