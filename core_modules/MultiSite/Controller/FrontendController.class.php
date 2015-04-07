@@ -85,10 +85,20 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 //get the payPalProfileAttributeId
                 $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
                 $paypalEmailAddress = $objUser->getProfileAttribute($paypalEmailAddressProfileAttribute);
-                
-                !empty($affiliateId) ? $template->touchBlock('showAffiliateId') : $template->touchBlock('showAffiliateIdForm');
+                if (!empty($affiliateId)) {
+                    list($soloCnt, $nonProfitCnt, $businessCnt) = ComponentController::getSubscriptionsCountBasedOnProductForReferralsSubscribe($affiliateId);
+                    $template->setVariable(array(
+                        'MULTISITE_AFFILIATE_REFERRALS_COUNT'                       => BackendController::getReferralCountByAffiliateId($affiliateId),
+                        'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_SOLO'       => $soloCnt,
+                        'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_NON_PROFIT' => $nonProfitCnt,
+                        'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_BUSINESS'   => $businessCnt,
+                    ));
+                }
+                !empty($affiliateId) ? $template->touchBlock('showAffiliateId') : $template->hideBlock('showAffiliateId');
+                empty($affiliateId) ? $template->touchBlock('showAffiliateIdForm') : $template->hideBlock('showAffiliateIdForm');
                 
                 $template->setVariable(array(
+                    'MULTISITE_AFFILIATE_ID_NOT_SET_NOTE' => empty($affiliateId) ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_NOT_SET_NOTE'] : '',
                     'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => !empty($affiliateId) ? $affiliateId : '',
                     'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => $paypalEmailAddress
                 ));

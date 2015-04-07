@@ -3220,4 +3220,53 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         return $userExists;
     }
+    
+    /**
+     * Get the subscriptions count based on the Product for referrals subscribe
+     * 
+     * @param integer $affiliateId
+     * 
+     * @return array
+     */
+    public static function getSubscriptionsCountBasedOnProductForReferralsSubscribe($affiliateId) {
+        $affiliateIdReferenceProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite');
+        $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
+             $affiliateIdReferenceProfileAttributeId =>'_'
+        ));
+        
+        $soloReferrersCount = 0;
+        $nonProfitReferrersCount = 0;
+        $businessReferrersCount = 0;
+        
+        if (!$objUser) {
+            return array($soloReferrersCount, $nonProfitReferrersCount, $businessReferrersCount);
+        }
+                
+        $subscriptionRepo = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Subscription');
+        while (!$objUser->EOF) {
+            $userAffiliateId = $objUser->getProfileAttribute($affiliateIdReferenceProfileAttributeId);
+            if ($userAffiliateId === $affiliateId) {
+                $subscriptions = $subscriptionRepo->getSubscriptionsByUserCrmId($objUser->getCrmUserId());
+                if (!empty($subscriptions)) {
+                    foreach ($subscriptions as $subscription) {
+                        $productObj = $subscription->getProduct();
+                        switch ($productObj->getName()) {
+                            case 'Business':
+                                $businessReferrersCount++;
+                                break;
+                            case 'Solo':
+                                $soloReferrersCount++;
+                                break;
+                            case 'Non-Profit':
+                                $nonProfitReferrersCount++;
+                                break;
+                        }
+                    }
+                }
+            }
+            $objUser->next();
+        }
+
+        return array($soloReferrersCount, $nonProfitReferrersCount, $businessReferrersCount);
+    }
 }
