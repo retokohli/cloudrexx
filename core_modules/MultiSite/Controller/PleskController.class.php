@@ -1281,7 +1281,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             $responseArr = (count($respArr['result']) == count($respArr['result'], COUNT_RECURSIVE)) ? $respArr : $respArr['result'];
             foreach ($responseArr as $result) {
                 if ($extendedData) {
-                    $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath') . substr($result['home'], strlen(\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath')));
+                    $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . substr($result['home'], strlen(\Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath','MultiSite')));
                     
                     $resultArr[$result['id']] = array(
                         'name' => $result['name'],
