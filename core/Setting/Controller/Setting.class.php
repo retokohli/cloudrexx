@@ -240,7 +240,7 @@ class Setting{
                 self::$section = $section;                
                 $engineType = self::getEngineType();
                 $oSectionEngine = new $engineType(); 
-                $oSectionEngine->init($section, null);
+                $oSectionEngine->init($section, null, self::$engine);
                 self::setSectionEngine($oSectionEngine, self::POPULATE); 
                 self::$section = $oldsection;
             }
@@ -1234,19 +1234,6 @@ class Setting{
      * 
      */
     static function getInstanceId() {
-        if(self::$arrSettings == null) {
-            self::$instanceId = \Cx\Core\Core\Controller\Cx::instanciate()->getId();
-        }
-        return self::$arrSettings[self::$instanceId];
-    }
-    
-    /**
-     * Sets instance id
-     */
-    static function setInstanceId($id = null) {
-        if(isset(self::$arrSettings[$id])) {
-            self::$arrSettings = $id;
-        }
-    }
-    
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getId();
+    }    
 }
