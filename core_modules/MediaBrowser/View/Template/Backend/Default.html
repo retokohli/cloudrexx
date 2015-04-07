@@ -1,10 +1,5 @@
-
 <h1 style="float: none;">Beispielseite mit Uploadern</h1>
-
-
 {MB_EXAMPLE_BUTTON}
-
-
 <h3>MediaBrowser mit allen Inhalten</h3>
 
 {MEDIABROWSER_CODE1}
@@ -13,14 +8,14 @@
 <hr />
 
 <h3>Attribute data-cx-mb-startview: | default: MediaBrowserList</h3>
-<button data-cx-mb="" data-cx-mb-startview="sitestructure">MediaBrowser</button>
+<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-startview="sitestructure">MediaBrowser</button>
 <p><code>&lt;button data-cx-mb="" data-cx-mb-startview=&quot;sitestructure&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
 <p>"mb-startview" definiert das StartView des MediaBrowsers: Verfügbar sind: 'sitestructure, 'uploader' sowie 'filebrowser' </p>
 <hr />
 
 
 <h3>Attribute data-cx-mb-views: | default: all</h3>
-<button data-cx-mb="" data-cx-mb-views="sitestructure,uploader">MediaBrowser</button>
+<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-views="sitestructure,uploader">MediaBrowser</button>
 <p><code>&lt;button data-cx-mb="" data-cx-mb-views=&quot;sitestructure,uploader&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
 <p>
     "mb-views" definiert welche Views angezeigt werden sollen. Verfügbar sind: 'sitestructure, 'uploader' sowie 'filebrowser'. Wird nur ein View angegeben, so wird die Navigation ausgeblendet.
@@ -29,7 +24,7 @@
 
 
 <h3>Attribute data-cx-mb-startmediatype | default: files</h3>
-<button data-cx-mb="" data-cx-mb-startmediatype="gallery">MediaBrowser</button>
+<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-startmediatype="gallery">MediaBrowser</button>
 <p><code>&lt;button data-cx-mb="" data-cx-mb-startmediatype=&quot;gallery&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
 <p>
     "mb-startmediatype" definiert welche Dateien vorgeladen werden.
@@ -37,7 +32,8 @@
 <hr />
 
 <h3>Attribute data-cx-mb-mediatypes | default: all</h3>
-<button data-cx-mb="" data-cx-mb-startmediatype="gallery" data-cx-mb-mediatypes="files, gallery">MediaBrowser</button>
+<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-startmediatype="gallery" data-cx-mb-mediatypes="files, gallery">MediaBrowser</button>
+
 <p><code>&lt;button data-cx-mb="" data-cx-mb-startmediatype=&quot;gallery&quot; data-cx-mb-mediatypes=&quot;files, gallery&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
 <p>
     "mb-mediatypes" definiert welche Sources angezeigt werden sollen. Wird der Parameter nicht angegeben, so werden alle angezeigt.
@@ -45,7 +41,7 @@
 <hr />
 
 <h3>Attribute data-cx-mb-multipleselect | default: false</h3>
-<button data-cx-mb="" data-cx-mb-cb-js-modalclosed="testFunction" data-cx-mb-multipleselect="true" data-cx-mb-views="filebrowser" data-cx-Mb-Cb-Js-Modalclosed="callback">MediaBrowser</button>
+<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-cb-js-modalclosed="gallery.fancyCallback" data-cx-mb-multipleselect="true" data-cx-mb-views="filebrowser" data-cx-Mb-Cb-Js-Modalclosed="callback">MediaBrowser</button>
 <p><code>&lt;button data-cx-mb="" data-cx-mb-multipleselect=&quot;true&quot; data-cx-mb-views=&quot;filebrowser&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
 <p>
     "mb-multipleselect": können mehrere Dateien ausgewählt werden oder nur eine?
@@ -54,9 +50,49 @@
 
 
 <h3>Attribute data-cx-mb-cb-js-modalopened | default: null</h3>
-<button data-cx-mb="" data-cx-mb-cb-js-modalopened="testFunction" data-cx-mb-cb-js-modalclosed="testFunction">MediaBrowser</button>
+<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-cb-js-modalopened="testFunction" data-cx-mb-cb-js-modalclosed="testFunction">MediaBrowser</button>
 
 <script>
+    var gallery = {
+        fancyCallback: function(callback){
+
+            if (callback.type == 'close'){
+//            bootbox.alert({
+//                message: 'Close Event',
+//                title: "Close"
+//            });
+                return;
+            }
+
+            if (callback.data[0].hasOwnProperty('level')){
+                console.table(callback.data);
+                return;
+            }
+
+
+            if (callback.data[0].hasOwnProperty('datainfo')){
+                var images = "Pictures:";
+                for (var i in callback.data) {
+                    if (callback.data.hasOwnProperty(i)){
+                        if (callback.data[i].datainfo.extension == 'Jpg' || callback.data[i].datainfo.extension == 'Png' || callback.data[i].datainfo.extension == 'Gif'){
+                            console.log(callback.data[i].datainfo.filepath);
+                            images += "<img class='img-responsive' style=\"max-width:100%; height: auto;\" s"+"rc='"+callback.data[i].datainfo.filepath+"' />";
+                        }
+                        else {
+                            images += callback.data[i].datainfo.filepath;
+                        }
+                    }
+                }
+
+                bootbox.alert({
+                    message: images,
+                    title: "Chosen Files"
+                });
+            }
+        }
+    }
+
+
     function testFunction(data) {
         alert(data);
     }
@@ -69,41 +105,7 @@
         console.log(callback);
     }
 
-    function fancyCallback(callback){
-
-        if (callback.type == 'close'){
-            bootbox.alert({
-                message: 'Close Event',
-                title: "Close"
-            });
-            return;
-        }
-
-        if (callback.data[0].hasOwnProperty('level')){
-            console.table(callback.data);
-            return;
-        }
-
-
-        if (callback.data[0].hasOwnProperty('datainfo')){
-            var images = "Pictures:";
-            for (var i in callback.data) {
-                if (callback.data.hasOwnProperty(i)){
-                    if (callback.data[i].datainfo.extension == 'Jpg' || callback.data[i].datainfo.extension == 'Png' || callback.data[i].datainfo.extension == 'Gif'){
-                        images += "<img class='img-responsive' style=\"max-width:100%; height: auto;\" src='"+callback.data[i].datainfo.filepath+"' />";
-                    }
-                    else {
-                        images += callback.data[i].datainfo.filepath;
-                    }
-                }
-            }
-
-            bootbox.alert({
-                message: images,
-                title: "Chosen Files"
-            });
-        }
-    }
+    var fancyCallback = gallery.fancyCallback;
 </script>
 
 <p>
@@ -163,7 +165,7 @@
 <div class="imageList2">
 </div>
 <script>
-    function callback3(response) {
+    gallery.uploader = function(response) {
         console.log(response);
         for (var i in response) {
             var image = cx.jQuery(new Image()).appendTo('.imageList');
@@ -171,11 +173,11 @@
         }
     }
 
-    function callback2(response) {
+    gallery.uploader2 = function(response) {
         console.log(response);
         for (var i in response) {
             var image = cx.jQuery(new Image()).appendTo('.imageList2');
-            image.attr('src', response[i]);
+            image.attr('src',response[i]);
         }
     }
 </script>

@@ -57,7 +57,7 @@ class Uploader extends EntityBase
         $this->options = array(
             'data-pl-upload',
             'data-uploader-id' => $this->id,
-            'class' => "button"
+            'class' => "uploader-button button"
         );
     }
 

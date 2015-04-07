@@ -72,7 +72,7 @@ class BackendController extends SystemComponentBackendController
         $uploader->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );
-        $uploader->setCallback('callback3');
+        $uploader->setCallback('gallery.uploader');
         $template->setVariable(
             'UPLOADER_CODE', $uploader->getXHtml('Open Uploader 1')
         );
@@ -81,13 +81,13 @@ class BackendController extends SystemComponentBackendController
         $uploader2->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );
-        $uploader2->setOptions(array('data-on-file-uploaded' => 'callback2'));
+        $uploader2->setCallback('gallery.uploader2');
         $template->setVariable(
             'UPLOADER_CODE2', $uploader2->getXHtml('Open Uploader 2')
         );
 
         $mediaBrowser = new MediaBrowser();
-        $mediaBrowser->setCallback('fancyCallback');
+        $mediaBrowser->setCallback('gallery.fancyCallback');
         $template->setVariable(
             'MEDIABROWSER_CODE1', $mediaBrowser->getXHtml('MediaBrowser')
         );
