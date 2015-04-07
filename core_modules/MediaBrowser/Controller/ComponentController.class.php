@@ -30,45 +30,41 @@ class ComponentController extends
     protected $mediaBrowserInstances = array();
 
 
-    public function __construct(SystemComponent $systemComponent, Cx $cx)
-    {
+    public function __construct(SystemComponent $systemComponent, Cx $cx) {
         parent::__construct($systemComponent, $cx);
     }
-    
+
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array('Backend', 'Frontend', 'Default');
+        return array('Backend', 'Default');
     }
-    
-    public function addMediaBrowser(MediaBrowser $mediaBrowser)
-    {
+
+    public function addMediaBrowser(MediaBrowser $mediaBrowser) {
         $this->mediaBrowserInstances[] = $mediaBrowser;
     }
 
 
-    public function getControllersAccessableByJson()
-    {
+    public function getControllersAccessableByJson() {
         return array(
             'JsonMediaBrowser',
         );
     }
 
-    public function preContentLoad(Page $page) {
-        $eventHandlerInstance = $this->cx->getEvents();
-        $eventHandlerInstance->addEvent('LoadMediaTypes');
-    }
-
     public function preContentParse(Page $page) {
-        $this->cx->getEvents()->addEventListener('LoadMediaTypes', new MediaBrowserEventListener($this->cx));
+        $this->cx->getEvents()->addEventListener(
+            'LoadMediaTypes', new MediaBrowserEventListener($this->cx)
+        );
     }
 
     /**
      * @param Sigma $template
      */
-    public function preFinalize(Sigma $template)
-    {
-        if (count($this->mediaBrowserInstances) > 0) {
+    public function preFinalize(Sigma $template) {
+        if (count($this->mediaBrowserInstances) == 0) {
+            return;
+        }
+        else {
             global $_ARRAYLANG;
             /**
              * @var $init \InitCMS
@@ -85,7 +81,8 @@ class ComponentController extends
 
             $thumbnailsTemplate = new Sigma();
             $thumbnailsTemplate->loadTemplateFile(
-                $this->cx->getCoreModuleFolderName().'/MediaBrowser/View/Template/Thumbnails.html'
+                $this->cx->getCoreModuleFolderName()
+                . '/MediaBrowser/View/Template/Thumbnails.html'
             );
             $thumbnailsTemplate->setVariable(
                 'TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE', sprintf(
@@ -116,18 +113,12 @@ class ComponentController extends
                 'mediabrowser'
             );
 
-            $template->setGlobalVariable('MEDIABROWSER_ANGULAR_APP','ng-app="contrexxApp"');
-            \JS::activate('mediabrowser');
-            \JS::registerCSS(
-                substr(
-                    $this->cx->getCoreModuleFolderName()
-                    . '/MediaBrowser/View/Style/mediabrowser.css', 1
-                )
+            $template->setGlobalVariable(
+                'MEDIABROWSER_ANGULAR_APP', '<div ng-app="MediaBrowser"></div>'
             );
-
+            \JS::activate('mediabrowser');
         }
     }
-
 
 
 }
