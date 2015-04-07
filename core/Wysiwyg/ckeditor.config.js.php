@@ -34,7 +34,7 @@ $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')
 $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
 $themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
 $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-\Cx\Core\Setting\Controller\Setting::init('Config', 'wysiwyg', 'Yaml');
+\Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
 
 $skin = $themeRepo->getDefaultTheme()->getFoldername();
 if(\Cx\Core\Setting\Controller\Setting::getValue('specificStylesheet','wysiwyg') && !empty($pageId) && $pageRepo->find($pageId)->getSkin()>0){
