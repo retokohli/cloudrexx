@@ -231,6 +231,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         
         return array(
             'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
+            'entityName' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ENTITY'],
             'order' => array(
                 'overview' => array(
                     'active',
