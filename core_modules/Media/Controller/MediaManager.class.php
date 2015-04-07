@@ -359,7 +359,7 @@ class MediaManager extends MediaLibrary
             case 'getImage':
                 try {
                     $this->getImage($_GET);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     \DBG::msg('Could not get image preview: '.$e->getMessage());
                 }
                 die();
@@ -367,7 +367,7 @@ class MediaManager extends MediaLibrary
             case 'editImage':
                 try {
                     $data = $this->editImage($_POST);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     \DBG::msg('Could not edit image: '.$e->getMessage());
                 }
                 die($data);
@@ -888,7 +888,7 @@ class MediaManager extends MediaLibrary
         try {
             // Get quality options from the settings
             $arrImageSettings = $this->getImageSettings();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             \DBG::msg('Could not query image settings: '.$e->getMessage());
         }
         
