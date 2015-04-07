@@ -86,7 +86,7 @@ class WebsiteCollectionEventListener implements \Cx\Core\Event\Model\Entity\Even
             switch ($website->getStatus()) {
                 case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
                     // perform initial sign-up in case the user has not yet been verified
-                    $entityAttributes['initialSignUp'] = !$website->getOwner()->getVerified();
+                    $entityAttributes['initialSignUp'] = !\FWUser::getFWUserObject()->objUser->getUser($website->getOwner()->getId(), true)->isVerified();
                     $website->setup($entityAttributes);
                     break;
                 
