@@ -79,9 +79,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 if (empty($crmContactId)) {
                     return ' '; // Do not show AffiliateSetup detail
                 }
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
                 //get the affiliateIdProfileAttributeId
                 $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
-                $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
+                $affiliateId = $objUser->getProfileAttribute((int)$affiliateIdProfileAttributeId);
                 //get the payPalProfileAttributeId
                 $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
                 $paypalEmailAddress = $objUser->getProfileAttribute($paypalEmailAddressProfileAttribute);
