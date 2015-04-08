@@ -10,6 +10,15 @@
             <div> <label>Business : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_BUSINESS}</label></div>
        </div>
         <!-- END showAffiliateId -->
+        <!-- BEGIN showPaypalEmailAddress -->
+        <div id="PaypalEmailAddress">
+            <div>
+                <label>{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS} : </label> {MULTISITE_PAYPAL_EMAIL_ADDRESS}&nbsp;
+                <a class="entypo-tools" href="#" data-target="#multisite_paypal_email_address_form" data-toggle="modal"></a>
+            </div>
+        </div>
+        <!-- END showPaypalEmailAddress -->
+        <!-- BEGIN showAffiliateForm -->
         <form id="affiliate-form" method="post">
         <!-- BEGIN showAffiliateIdForm -->
         <div id="setAffiliateId">
@@ -18,15 +27,72 @@
                     <div class="errorBlock"></div>
         </div>
         <!-- END showAffiliateIdForm -->
-        <div id="paypal-mail">            
+        <!-- BEGIN showPaypalEmailAddressForm -->
+        <div id="paypal-mail">
             <label style="width: 25%;">{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS} : </label>
-                <input type="email" id="paypalEmail" style="width: 20%;" name="paypalEmailAddress" value="{MULTISITE_PAYPAL_EMAIL_ADDRESS}">
+                <input type="email" id="paypalEmail" style="width: 20%;" name="paypalEmailAddress" value="">
                 <div class="errorBlock"></div>
         </div>
+        <!-- END showPaypalEmailAddressForm -->
         </form>
         <button style="margin-top: 0px;" type="submit" class="btn save loadingProcess" onclick="saveAffiliateIdAndPayPalMailAddress(jQuery(this))" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
         <span>{MULTISITE_AFFILIATE_ID_NOT_SET_NOTE}</span> 
+        <!-- END showAffiliateForm -->
     </div>
+</div>
+<div aria-hidden="true" class="modal fade" id="multisite_paypal_email_address_form" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="grid-elm grid-align-1-1 grid-offset">
+                <form role="form" action="{MULTISITE_USER_PROFILE_SUBMIT_URL}" id="multisite_user_profile_form">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h2>Paypal Email Address</h2>
+                    <fieldset>
+                        <!-- BEGIN multisite_user_profile_attribute_list -->       
+                        <div class="row">
+                            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE}
+                            <div class="errorBlock"></div>
+                        </div>
+                        <!-- END multisite_user_profile_attribute_list --> 			
+                        <div class="row">
+                            <button type="submit" class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+                            <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+                        </div>
+                    </fieldset>
+                </form>    
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+            $paypalEmailAddress = '{MULTISITE_PAYPAL_EMAIL_ADDRESS}';
+            $paypalEmailAddressId = 'input[name="multisite_user_profile_attribute[{MULTISITE_PAYPAL_EMAIL_ATTRIBUTE_ID}][0]"]';
+            
+            jQuery('#multisite_paypal_email_address_form').on('hidden.bs.modal', function() {
+                jQuery($paypalEmailAddressId).val($paypalEmailAddress);
+            });
+            
+            jQuery('#multisite_paypal_email_address_form').submit(function(){
+                var paypalEmailId = jQuery($paypalEmailAddressId).val();
+                if ((paypalEmailId.length > 0) && !isValidEmail(paypalEmailId)) {
+                    showErrorBlock(jQuery('#multisite_paypal_email_address_form .errorBlock'), '{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR}');
+                    return false;
+                } else {
+                    hideErrorBlock(jQuery('#multisite_paypal_email_address_form .errorBlock'));                        
+                }
+                var options = {
+                    callback: function() {
+                        window.location.reload();
+                    }
+                };
+                sendApiFormRequest('#multisite_user_profile_form', 
+                                   '#multisite_paypal_email_address_form', ' ', ' ', 
+                                   options
+                                  );
+                return false;
+            });
+        });
+        </script>
 </div>
 <script type="text/javascript">
     /* <![CDATA[ */
