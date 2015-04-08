@@ -1323,35 +1323,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
     
     /**
-     * Parse the user object to view
-     *
-     * @param \User $objUser user object
-     * 
-     * @return string formatted user object
-     */
-    public static function parseUser(\User $objUser)
-    {
-        global $_ARRAYLANG;
-        
-        $crmDetailImg = '';
-        if (!\FWValidator::isEmpty($objUser->getCrmUserId())) {
-            $crmDetailImg = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$objUser->getCrmUserId()}' 
-                                title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'>
-                                <img 
-                                    src='../core/Core/View/Media/navigation_level_1_189.png' 
-                                    width='16' height='16' 
-                                    alt='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_CRM_ACCOUNT']}'
-                                />
-                            </a>";
-        }
-        return "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$objUser->getId()}'
-                    title='{$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MODIY_USER_ACCOUNT']}'>" .
-                    \FWUser::getParsedUserTitle($objUser) .
-                "</a>" . 
-                $crmDetailImg;
-    }
-    
-    /**
      * Get the Referral count by Affiliate ID
      * 
      * @staticvar array  $referrals   Holds the referral count
