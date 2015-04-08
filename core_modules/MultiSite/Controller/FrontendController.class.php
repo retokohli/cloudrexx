@@ -85,7 +85,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $affiliateId = $objUser->getProfileAttribute((int)$affiliateIdProfileAttributeId);
                 //get the payPalProfileAttributeId
                 $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
-                $paypalEmailAddress = $objUser->getProfileAttribute($paypalEmailAddressProfileAttribute);
+                $paypalEmailAddress = $objUser->getProfileAttribute((int)$paypalEmailAddressProfileAttribute);
                 if (!empty($affiliateId)) {
                     list($soloCnt, $nonProfitCnt, $businessCnt) = ComponentController::getSubscriptionsCountBasedOnProductForReferralsSubscribe($affiliateId);
                     $template->setVariable(array(
@@ -95,8 +95,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_BUSINESS'   => $businessCnt,
                     ));
                 }
+                //parse block for Affiliate Id
                 !empty($affiliateId) ? $template->touchBlock('showAffiliateId') : $template->hideBlock('showAffiliateId');
                 empty($affiliateId) ? $template->touchBlock('showAffiliateIdForm') : $template->hideBlock('showAffiliateIdForm');
+                //parse block for paypal email address
+                !empty($paypalEmailAddress) ? $template->touchBlock('showPaypalEmailAddress') : $template->hideBlock('showPaypalEmailAddress');
+                empty($paypalEmailAddress) ? $template->touchBlock('showPaypalEmailAddressForm') : $template->hideBlock('showPaypalEmailAddressForm');
+                //parse the form 
+                !empty($affiliateId) && !empty($paypalEmailAddress) ? $template->hideBlock('showAffiliateForm') : $template->touchBlock('showAffiliateForm');
                 
                 $template->setVariable(array(
                     'MULTISITE_AFFILIATE_ID_NOT_SET_NOTE' => empty($affiliateId) ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_NOT_SET_NOTE'] : '',
@@ -109,7 +115,33 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     'TXT_CORE_MODULE_MULTISITE_NO_INPUT_ERROR' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NO_INPUT_ERROR'],
                     'TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR']
                 ), 'AffiliateSetup');
-                
+                //parse the paypal email address edit modal
+                if (!empty($paypalEmailAddress)) {
+                    $blockName = 'multisite_user';
+                    $placeholderPrefix = strtoupper($blockName).'_';
+                    $objAccessLib = new \Cx\Core_Modules\Access\Controller\AccessLib($template);
+                    $objAccessLib->setModulePrefix($placeholderPrefix);
+                    $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+                    $objAccessLib->setAccountAttributeNamePrefix($blockName.'_account_');
+                    
+                    $objUser->objAttribute->first();
+                    while (!$objUser->objAttribute->EOF) {
+                        $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+                        if ((int)$paypalEmailAddressProfileAttribute === $objUser->objAttribute->getId()) {
+                            $template->setVariable(array(
+                                'MULTISITE_USER_PROFILE_ATTRIBUTE_ID'   =>  $objUser->objAttribute->getId(),
+                                'MULTISITE_USER_PROFILE_ATTRIBUTE_DESC' =>  htmlentities($objUser->objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+                                'MULTISITE_USER_PROFILE_ATTRIBUTE'      =>  $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, true, true)
+                            ));
+                            $template->parse('multisite_user_profile_attribute_list');
+                        }
+                        $objUser->objAttribute->next();
+                    }
+                    $template->setVariable(array(
+                        'MULTISITE_USER_PROFILE_SUBMIT_URL'   => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
+                        'MULTISITE_PAYPAL_EMAIL_ATTRIBUTE_ID' => $paypalEmailAddressProfileAttribute,
+                    ));
+                }
                 break;
             default:
         }

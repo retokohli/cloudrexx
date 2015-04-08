@@ -397,7 +397,7 @@ function showRemoteModal(options) {
     });
 }
 
-function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector, apiUrl) {
+function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector, apiUrl, callbackOptions) {
   if (!jsFormSelector || !jsModalSelector || !loadContentSelector || !apiUrl) {
     return;
   }
@@ -422,7 +422,11 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
       });
       jQuery(jsModalSelector).modal('hide');
       if (response.status == 'success') {
-        loadContent(loadContentSelector, apiUrl);
+          if (callbackOptions) {
+              callbackOptions.callback();              
+          } else {
+            loadContent(loadContentSelector, apiUrl);
+          }
       }
     },
     complete: function (xhr, settings) {
