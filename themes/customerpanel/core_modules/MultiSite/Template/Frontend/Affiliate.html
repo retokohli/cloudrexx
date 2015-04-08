@@ -2,7 +2,12 @@
     <div class="grid-elm grid-align-1-1 grid-offset">
         <!-- BEGIN showAffiliateId -->
         <div class="affiliate-profile-attribute-id" id="setAffiliateId">
-            <div> <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID} : </label>{MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</div>
+            <div> <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID} : </label> {MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</div>
+            <div> <label>{TXT_CORE_MODULE_MULTISITE_REFERRALS_LABEL} : </label> {MULTISITE_AFFILIATE_REFERRALS_COUNT}</div>
+            <div> <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_REFERRALS_LABEL} : </label></div>
+            <div> <label>Solo : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_SOLO}</label></div>
+            <div> <label>Non-Profit : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_NON_PROFIT}</label></div>
+            <div> <label>Business : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_BUSINESS}</label></div>
        </div>
         <!-- END showAffiliateId -->
         <form id="affiliate-form" method="post">
@@ -20,7 +25,7 @@
         </div>
         </form>
         <button style="margin-top: 0px;" type="submit" class="btn save loadingProcess" onclick="saveAffiliateIdAndPayPalMailAddress(jQuery(this))" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
-         
+        <span>{MULTISITE_AFFILIATE_ID_NOT_SET_NOTE}</span> 
     </div>
 </div>
 <script type="text/javascript">
