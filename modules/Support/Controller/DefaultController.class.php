@@ -96,7 +96,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         //Get License information
         $license        = \Env::get('cx')->getLicense();
         $licenseName    = $license->getEditionName();
-        $licenseValid   = $license->getValidToDate();
+        $licenseValid   = date(ASCMS_DATE_FORMAT_DATE, $license->getValidToDate());
         $licenseVersion = $license->getVersion()->getNumber();
         
         //get the input datas
@@ -220,7 +220,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     <table cellpadding ="0" cellspacing ="0" style="width: 100%; font-size: 13px;">
         <tbody>
             <tr>
-                <td valign="top" width="15%">' . $_ARRAYLANG['TXT_SUPPORT_LICENSE_NAME'] . '</td>
+                <td valign="top" >' . $_ARRAYLANG['TXT_SUPPORT_LICENSE_NAME'] . '</td>
                 <td>&nbsp;: ' . $arrFields['licenseName'] . '</td>
             </tr>
             <tr>
@@ -240,7 +240,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     <table cellpadding="0" cellspacing="0" style="width:100%; font-size: 13px;">
         <tbody>
             <tr>
-                <td valign="top" width="15%">' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC'] . '</td>
+                <td valign="top" >' . $_ARRAYLANG['TXT_SUPPORT_FEEDBACK_TOPIC'] . '</td>
                 <td>&nbsp;: ' . $arrFields['feedBackType'] . '</td>
             </tr>
             <tr>
