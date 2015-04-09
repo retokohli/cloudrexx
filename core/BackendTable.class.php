@@ -250,18 +250,20 @@ class BackendTable extends HTML_Table {
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
         if(!$virtual){
+            $editUrl = clone $baseUrl;
+            $params = $editUrl->getParamArray();
+            $editId = '';
+            if (isset($params['editid'])) {
+                $editId = $params['editid'] . ',';
+            }
+            $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
+
             if (isset($functions['actions']) && is_callable($functions['actions'])) {
-                $code .= $functions['actions']($rowData);                
+                $code .= $functions['actions']($rowData, $editId);
             }
             
             if (isset($functions['edit']) && $functions['edit']) {
-                $editUrl = clone $baseUrl;
-                $params = $editUrl->getParamArray();
-                $editId = '';
-                if (isset($params['editid'])) {
-                    $editId = $params['editid'] . ',';
-                }
-                $editUrl->setParam('editid', $editId . '{' . $functions['vg_increment_number'] . ',' . $rowname . '}');
+                $editUrl->setParam('editid', $editId);
                 $code .= '<a href="' . $editUrl . '" class="edit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'].'"></a>';
             }
             if (isset($functions['delete']) && $functions['delete']) {
