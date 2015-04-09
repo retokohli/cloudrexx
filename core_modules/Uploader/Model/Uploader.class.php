@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Class Uploader
+ *
  * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
@@ -15,6 +17,14 @@ use Cx\Core\Html\Sigma;
 use Cx\Lib\FileSystem\File;
 use Cx\Model\Base\EntityBase;
 
+/**
+ * Class Uploader
+ *
+ * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_uploader
+ */
 class Uploader extends EntityBase
 {
 
@@ -65,6 +75,8 @@ class Uploader extends EntityBase
      * Saves the callback in the session.
      *
      * @param $callback
+     *
+     * @return $this
      */
     function setFinishedCallback($callback)
     {
@@ -75,6 +87,7 @@ class Uploader extends EntityBase
             $_SESSION['uploader']['handlers'][$this->id] = array();
         }
         $_SESSION['uploader']['handlers'][$this->id]['callback'] = $callback;
+        return $this;
     }
 
     /**
@@ -146,11 +159,43 @@ class Uploader extends EntityBase
 
     /**
      * Set a javascript callback on a global function.
+     *
      * @param String $string
+     *
+     * @return $this
      */
     public function setCallback($string)
     {
         $this->setOptions(array('data-on-file-uploaded' => $string));
+        return $this;
+    }
+
+    /**
+     * Set a file upload limit.
+     * @param $limit
+     *
+     * @return self
+     */
+    public function setUploadLimit($limit){
+        $this->setOptions(array('data-upload-limit' => $limit));
+        return $this;
+    }
+
+    /**
+     * Add a class to the button
+     *
+     * @param $class
+     *
+     * @return self
+     */
+    public function addClass($class){
+        $classString = $this->getOption('class');
+        $classes = explode(' ',$classString);
+        if (!in_array($class, $classes)){
+            $classes[] = $class;
+        }
+        $this->setOptions(array('class' => $classes));
+        return $this;
     }
 
     /**
@@ -166,6 +211,7 @@ class Uploader extends EntityBase
             $_SESSION['uploader']['handlers'][$this->id] = array();
         }
         $_SESSION['uploader']['handlers'][$this->id]['data'] = $data;
+        return $this;
     }
 
 } 
