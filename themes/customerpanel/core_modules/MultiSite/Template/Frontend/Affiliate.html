@@ -4,10 +4,16 @@
         <div class="affiliate-profile-attribute-id" id="setAffiliateId">
             <div> <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID} : </label> {MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</div>
             <div> <label>{TXT_CORE_MODULE_MULTISITE_REFERRALS_LABEL} : </label> {MULTISITE_AFFILIATE_REFERRALS_COUNT}</div>
+            <!-- BEGIN showReferralsSubscriptionCount -->
             <div> <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_REFERRALS_LABEL} : </label></div>
-            <div> <label>Solo : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_SOLO}</label></div>
-            <div> <label>Non-Profit : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_NON_PROFIT}</label></div>
-            <div> <label>Business : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_BUSINESS}</label></div>
+            <!-- BEGIN showSubscriptionsCountByProduct -->
+            <div> <label>{MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME} : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT}</label></div>
+            <!-- END showSubscriptionsCountByProduct -->
+            <!-- END showReferralsSubscriptionCount -->
+            
+            <!-- BEGIN showNoReferralsErrorMsg -->
+            <div> <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_NO_REFERRALS_SIGNUP}</label></div>
+            <!-- END showNoReferralsErrorMsg -->
        </div>
         <!-- END showAffiliateId -->
         <!-- BEGIN showPaypalEmailAddress -->
