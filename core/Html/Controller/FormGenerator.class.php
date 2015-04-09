@@ -152,6 +152,8 @@ class FormGenerator {
             $formField = $formFieldGenerator($name, $type, $length, $value, $options);
             if (is_a($formField, 'Cx\Core\Html\Model\Entity\HtmlElement')) {
                 return $formField;
+            } else {
+                $value = $formField;
             }
         }
         if (isset($options['showDetail']) && $options['showDetail'] === false) {

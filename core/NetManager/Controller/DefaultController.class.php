@@ -88,6 +88,9 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
                             return $domainName.$mainDomainIcon;
                         },
                     ),
+                    'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                        return \Cx\Core\Net\Controller\ComponentController::convertIdnToUtf8Format($fieldvalue);
+                    },
                 ),
                 'id'    => array(
                     'showOverview' => false,
@@ -100,7 +103,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
-                'actions'   => function($rowData) {
+                'actions'   => function($rowData, $rowId) {
                             global $_CORELANG;
                             static $mainDomainName;
                             if (empty($mainDomainName)) {
@@ -110,8 +113,8 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
                             $actionIcons = '';
                             $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
                             if ($mainDomainName !== $rowData['name']) {
-                                $actionIcons = '<a href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;editid=' . $rowData['id'] .'" class="edit" title="Edit entry"></a>';
-                                $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;deleteid=' . $rowData['id'] . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
+                                $actionIcons = '<a href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;editid=' . $rowId . '" class="edit" title="Edit entry"></a>';
+                                $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;deleteid=' . $rowId . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
                             }
                             return $actionIcons;
                     }
