@@ -214,7 +214,7 @@ class Config
         $cx = Cx::instanciate();
         $em = $cx->getDB()->getEntityManager();
         $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $wysiwyg = $componentRepo->findOneBy(array('name'=>'WYSIWYG'));
+        $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
         $wysiwygBackendController = $wysiwyg->getController('Backend');
         
         $objTpl = new \Cx\Core\Html\Sigma($wysiwyg->getDirectory(true) . '/View/Template/Backend');

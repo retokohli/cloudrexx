@@ -56,8 +56,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
                 
                 if(isset($_POST) && isset($_POST['bsubmit'])) {
-                    \Cx\Core\Setting\Controller\Setting::set('specificStylesheet', isset($_POST["specificStylesheet"])?1:0);
-                    \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST["replaceActualContents"])?1:0);
+                    \Cx\Core\Setting\Controller\Setting::set('specificStylesheet', isset($_POST['specificStylesheet'])?1:0);
+                    \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST['replaceActualContents'])?1:0);
                     
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }
