@@ -1,16 +1,25 @@
 <?php
 
 /**
+ * Class MediaBrowser
+ *
  * @copyright   Comvation AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_mediabrowser
  */
-
 namespace Cx\Core_Modules\MediaBrowser\Model;
 
 use Cx\Model\Base\EntityBase;
 
+/**
+ * Class MediaBrowser
+ *
+ * @copyright   Comvation AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_mediabrowser
+ */
 class MediaBrowser extends EntityBase
 {
     /**
@@ -84,6 +93,6 @@ class MediaBrowser extends EntityBase
      */
     function getXHtml($buttonName = "MediaBrowser")
     {
-        return '<'.$this->tagName.' ' . $this->getOptionsString() . ' >' . $buttonName . '</'.$this->tagName.' >';
+        return '<'.$this->tagName.' ' . $this->getOptionsString() . ' >' . $buttonName . '</'.$this->tagName.' ><div class="mediaBrowserScope"></div>';
     }
 }

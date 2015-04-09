@@ -118,10 +118,8 @@ class ComponentController extends
                 'mediabrowser'
             );
 
-            $template->setGlobalVariable(
-                'MEDIABROWSER_ANGULAR_APP', '<div ng-app="MediaBrowser"></div>'
-            );
             \JS::activate('mediabrowser');
+            \JS::registerJS('core_modules/MediaBrowser/View/Script/mediabrowser.js');
         }
     }
 

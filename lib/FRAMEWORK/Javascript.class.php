@@ -418,12 +418,15 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/angularjs/angular-animate.js',
                 'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
                 'lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js',
-                'lib/javascript/bootbox.min.js',
-                'core_modules/MediaBrowser/View/Script/mediabrowser.js',
-                'core_modules/MediaBrowser/View/Script/standalone-directives.js'
+                'lib/javascript/bootbox.min.js'
+            ),
+            'cssfiles' => array(
+                'core_modules/MediaBrowser/View/Style/mediabrowser.css'
             ),
             'dependencies' => array('twitter-bootstrap' => '3.2.0', 'cx'),
-            'specialcode' => ''
+            'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){
+    cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
+}'
         ),
     );
 
