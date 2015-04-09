@@ -27,28 +27,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function onEvent($eventName, array $eventArgs) {
         switch ($eventName) {
             case 'wysiwygCssReload':
-                $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
                 $skinId = $eventArgs[0]['skin'];
                 $result = $eventArgs[1];
-
-                $skin = $themeRepo->getDefaultTheme()->getFoldername();
-                //0 is default theme so you dont must change the themefolder
-                if(!empty($skinId) && $skinId>0){
-                    $skin = $themeRepo->findById($skinId)->getFoldername();
+                
+                foreach ($this->getCustomCSSVariables($skinId) as $key => $val) {
+                    $result[$key] = $val;
                 }
-                //getThemeFileContent
-                $filePath = $skin.'/index.html';
-                $content = '';
-
-                if (file_exists($this->cx->getWebsiteThemesPath().'/'.$filePath)) {
-                    $content = file_get_contents($this->cx->getWebsiteThemesPath().'/'.$filePath);
-                } elseif (file_exists($this->cx->getCodeBaseThemesPath().'/'.$filePath)) {
-                    $content = file_get_contents($this->cx->getCodeBaseThemesPath().'/'.$filePath);
-                }
-
-                $cssArr = \JS::findCSS($content);
-                $result['wysiwygCss'] = $cssArr;
-
                 break;
             default:
                 break;
@@ -77,6 +61,48 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         return json_encode($containerArr);
+    }
+    
+    
+    /**
+     * find all custom css variables and return an array with the values
+     */
+    public function getCustomCSSVariables($skinId) {
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $skin = $themeRepo->getDefaultTheme()->getFoldername();
+        $componentData = $themeRepo->getDefaultTheme()->getComponentData();
+        \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
+        //0 is default theme so you dont must change the themefolder
+        if(\Cx\Core\Setting\Controller\Setting::getValue('specificStylesheet','Wysiwyg') && !empty($skinId) && $skinId>0){
+            $skin = $themeRepo->findById($skinId)->getFoldername();
+            $componentData = $themeRepo->findById($skinId)->getComponentData();
+        }
+        //getThemeFileContent
+        $filePath = $skin.'/index.html';
+        $content = '';
+
+        if (file_exists($this->cx->getWebsiteThemesPath().'/'.$filePath)) {
+            $content = file_get_contents($this->cx->getWebsiteThemesPath().'/'.$filePath);
+        } elseif (file_exists($this->cx->getCodeBaseThemesPath().'/'.$filePath)) {
+            $content = file_get_contents($this->cx->getCodeBaseThemesPath().'/'.$filePath);
+        }
+
+        $cssArr = \JS::findCSS($content);
+
+        $ymlOption = array();
+        if(!empty($componentData['rendering']['wysiwyg'])){
+            $ymlOption = $componentData['rendering']['wysiwyg'];
+        }
+
+        if(!empty($ymlOption['css'])){
+            $cssArr[] = ltrim($this->cx->getWebsiteThemesWebPath().'/'.$skin.'/','/').$ymlOption['css'];
+        }
+
+        return array(
+            'wysiwygCss' => $cssArr,
+            'bodyClass' => !empty($ymlOption['bodyClass'])?$ymlOption['bodyClass']:'',
+            'bodyId' => !empty($ymlOption['bodyId'])?$ymlOption['bodyId']:'',
+        );
     }
 
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {

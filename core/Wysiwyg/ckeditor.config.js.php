@@ -25,37 +25,20 @@ $defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
 $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
                    .'?cmd=FileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
-//$defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
-//\DBG::activate();
-
 //find the right css files and put it into the wysiwyg
 $em = $cx->getDb()->getEntityManager();
 $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
 $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
-$themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
 $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
 
-$skin = $themeRepo->getDefaultTheme()->getFoldername();
-if(\Cx\Core\Setting\Controller\Setting::getValue('specificStylesheet','wysiwyg') && !empty($pageId) && $pageRepo->find($pageId)->getSkin()>0){
-    $skin = $themeRepo->findById($pageRepo->find($pageId)->getSkin())->getFoldername();
-}
-//getThemeFileContent
-$filePath = $skin.'/index.html';
-$content = '';
-
-if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath)) {
-    $content = file_get_contents(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath);
-} elseif (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath)) {
-    $content = file_get_contents(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath);
-}
-
-$cssArr = \JS::findCSS($content);
-
+$ymlOption = $wysiwyg->getCustomCSSVariables($pageRepo->find($pageId)->getSkin());
 ?>
-//if the wysiwyg css not defined in the session, then load the css files and put it into the session
+//if the wysiwyg css not defined in the session, then load the css variables and put it into the session
 if(!cx.variables.get('wysiwygCss', 'wysiwyg')) {
-    cx.variables.set('wysiwygCss', [<?php echo '\'' . implode($cssArr, '\',\'') . '\'' ?>], 'wysiwyg')
+    cx.variables.set('wysiwygCss', [<?php echo '\'' . implode($ymlOption['wysiwygCss'], '\',\'') . '\'' ?>], 'wysiwyg');
+    cx.variables.set('bodyClass', <?php echo '\'' . $ymlOption['bodyClass'] . '\'' ?>, 'wysiwyg');
+    cx.variables.set('bodyId', <?php echo '\'' . $ymlOption['bodyId'] . '\'' ?>, 'wysiwyg');
 }
 
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/ckeditor-mediabrowser.js'   ?>' );
@@ -87,7 +70,7 @@ CKEDITOR.editorConfig = function( config )
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
     
-    config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','wysiwyg')? 'true' : 'false' ?>;
+    config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
     config.toolbar_Full = config.toolbar_Small = [
         ['Source','-','NewPage','Templates'],
@@ -133,8 +116,10 @@ CKEDITOR.editorConfig = function( config )
     ];
     config.extraPlugins = 'codemirror';
     
-    //Set the CSS
+    //Set the CSS Stuff
     config.contentsCss = cx.variables.get('wysiwygCss', 'wysiwyg');
+    config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
+    config.bodyId = cx.variables.get('bodyId', 'wysiwyg');
 };
 
 //loading the templates
@@ -229,6 +214,8 @@ cx.bind("loadingEnd", function(myArgs) {
                     //cant set the css on the run, so you must destroy the wysiwyg and recreate it
                     CKEDITOR.instances[instanceName].destroy();
                     cx.variables.set('wysiwygCss', data.wysiwygCssReload.wysiwygCss, 'wysiwyg')
+                    cx.variables.set('bodyClass', data.wysiwygCssReload.bodyClass, 'wysiwyg')
+                    cx.variables.set('bodyId', data.wysiwygCssReload.bodyId, 'wysiwyg')
                     var config = {
                         customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
