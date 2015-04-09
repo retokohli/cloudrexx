@@ -4351,9 +4351,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             $websiteCollection = $website->getWebsiteCollection();
             $subscriptionRepo  = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-            $subscriptions     = !empty($websiteCollection) ? $subscriptionRepo->getSubscriptionsByProductEntity(array(
-                                                                                                            'ids' => array($websiteCollection->getId()),
-                                                                                                            'entityClass' => 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection'
+            $subscriptions     = !empty($websiteCollection) ? $subscriptionRepo->getSubscriptionsByCriteria(array(
+                                                                                                            'in' => array('0' => array('s.productEntityId', array($websiteCollection->getId()))),
+                                                                                                            'p.entityClass' => 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection'
                                                                                                             )) 
                                                             : $subscriptionRepo->findOneBy(array(
                                                                                             'productEntityId' => $websiteId

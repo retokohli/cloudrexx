@@ -81,7 +81,7 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
             $filter    = array('term' => $term, 'filterProduct' => $filterProduct, 'filterState' => $filterState);
             $subscriptions = $this->subscriptionRepo->findSubscriptionsBySearchTerm($filter);
         } else {
-            $subscriptions = $this->subscriptionRepo->getAllByDesc();
+            $subscriptions = $this->subscriptionRepo->getSubscriptionsByCriteria(null, array('s.id' => 'DESC'));
         }
         
         $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();

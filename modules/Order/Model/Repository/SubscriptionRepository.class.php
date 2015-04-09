@@ -78,31 +78,31 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
                     foreach ($entities as $entity) {
                         $ids[] = $entity->$methodName();
                     }
-                    $options = array('ids' => $ids, 'entityClass' => $product->getEntityClass());
+                    $options = array('in' => array(array('s.productEntityId', $ids)), 'p.entityClass' => $product->getEntityClass());
                 }
             }
             
             if (!empty($filter['filterProduct'])) {
-                $options['filterProduct']   = $filter['filterProduct'];
+                $options['in'][]   = array('p.id', $filter['filterProduct']);
             }
             if (!empty($filter['filterState'])) {
-                $options['filterState']   = $filter['filterState'];
+                $options['in'][]   = array('s.state', $filter['filterState']);
             }
-            $subscriptions = array_merge($subscriptions, $this->getSubscriptionsByProductEntity($options));
+            $subscriptions = array_merge($subscriptions, $this->getSubscriptionsByCriteria($options));
         }
         
         return $subscriptions;
     }
     
     /**
-     * Get the subscriptions by product entity
+     * Get the subscriptions by criteria
      * 
      * @param array $criteria
      * 
      * @return array
      */
-    function getSubscriptionsByProductEntity($criteria) {
-        if (empty($criteria)) {
+    function getSubscriptionsByCriteria($criteria, $order) {
+        if (empty($criteria) && empty($order)) {
             return array();
         }
 
@@ -110,54 +110,26 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
         $qb
             ->select('s')
             ->from('\Cx\Modules\Order\Model\Entity\Subscription', 's')
-            ->leftJoin('s.product', 'p');
-                
-        $criteria['ids']           ? $qb->where($qb->expr()->in('s.productEntityId', $criteria['ids'])) 
-                                   : '';
-        $criteria['entityClass']   ? $qb->andWhere('p.entityClass = :entityClass')
-                                        ->setParameter('entityClass', $criteria['entityClass'])
-                                   : '';
-        $criteria['filterProduct'] ? $qb->andWhere($qb->expr()->in('p.id', $criteria['filterProduct'])) 
-                                   : '';
-        $criteria['filterState']   ? $qb->andWhere($qb->expr()->in('s.state', $criteria['filterState'])) 
-                                   : '';
-        $subscriptions = $qb->getQuery()->getResult();
-        
-        return !empty($subscriptions) ? $subscriptions : array();
-    }
-    /**
-     * Get all subscriptions ordered by ID in descending order.
-     * 
-     * @return array
-     */
-    public function getAllByDesc() {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('s')
-           ->from('\Cx\Modules\Order\Model\Entity\Subscription', 's')
-           ->orderBy('s.id', 'DESC');
-        
-        return $qb->getQuery()->getResult();
-    }
-    
-    /**
-     * Get the subscriptions based on the user crmId
-     * 
-     * @param integer $crmId
-     * 
-     * @return mixed booleean|array
-     */
-    public function getSubscriptionsByUserCrmId($crmId) {
-        if (empty($crmId)) {
-            return;
+            ->leftJoin('s.product', 'p')
+            ->leftJoin('s.order', 'o');
+            
+        if (!empty($order)) {
+            foreach ($order as $field => $type) {
+                $qb->orderBy($field, $type);
+            }
         }
         
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('s')
-           ->from('\Cx\Modules\Order\Model\Entity\Subscription', 's')
-           ->leftJoin('s.order', 'o')
-           ->leftJoin('s.product', 'p')
-           ->where('p.entityClass = :entityClass')->setParameter('entityClass', 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection')
-           ->andWhere('o.contactId = :contactId')->setParameter('contactId', $crmId);
+        $i = 1;
+        foreach ($criteria as $fieldType => $value) {
+            if (method_exists($qb->expr(), $fieldType) && is_array($value)) {
+                foreach ($value as $condition) {
+                    $qb->andWhere(call_user_func(array($qb->expr(), $fieldType), $condition[0], $condition[1]));
+                }
+            } else {
+                $qb->andWhere($fieldType . ' = ?' . $i)->setParameter($i, $value);
+            }
+            $i++;
+        }
         $subscriptions = $qb->getQuery()->getResult();
         
         return !empty($subscriptions) ? $subscriptions : array();

@@ -87,12 +87,26 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
                 $paypalEmailAddress = $objUser->getProfileAttribute((int)$paypalEmailAddressProfileAttribute);
                 if (!empty($affiliateId)) {
-                    list($soloCnt, $nonProfitCnt, $businessCnt) = ComponentController::getSubscriptionsCountBasedOnProductForReferralsSubscribe($affiliateId);
+                    //show the solo, non-profit and business subscription counts
+                    $productCntList = ComponentController::getReferralsCountBasedOnProduct($affiliateId);
+                    $affiliateReferralsCnt = 0;
+                    if (empty($productCntList)) {
+                        $template->touchBlock('showNoReferralsErrorMsg');
+                        $template->hideBlock('showReferralsSubscriptionCount');
+                    } else {
+                        foreach ($productCntList as $productName => $productCnt) {
+                            if (!empty($productCnt)) {
+                                $template->setVariable(array(
+                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME'           => $productName,
+                                    'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT' => $productCnt
+                                ));
+                                $template->parse('showSubscriptionsCountByProduct');
+                                $affiliateReferralsCnt = $affiliateReferralsCnt + $productCnt;
+                            }
+                        }
+                    }
                     $template->setVariable(array(
-                        'MULTISITE_AFFILIATE_REFERRALS_COUNT'                       => BackendController::getReferralCountByAffiliateId($affiliateId),
-                        'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_SOLO'       => $soloCnt,
-                        'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_NON_PROFIT' => $nonProfitCnt,
-                        'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT_BUSINESS'   => $businessCnt,
+                        'MULTISITE_AFFILIATE_REFERRALS_COUNT' => $affiliateReferralsCnt
                     ));
                 }
                 //parse block for Affiliate Id

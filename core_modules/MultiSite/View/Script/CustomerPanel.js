@@ -422,7 +422,7 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
       });
       jQuery(jsModalSelector).modal('hide');
       if (response.status == 'success') {
-          if (callbackOptions) {
+          if (callbackOptions !== 'undefined') {
               callbackOptions.callback();              
           } else {
             loadContent(loadContentSelector, apiUrl);

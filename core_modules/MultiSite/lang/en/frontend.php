@@ -81,3 +81,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NO_INPUT_ERROR'] = 'Please give any one i
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_NOT_SET_NOTE'] = 'There are no affiliates linked to your account yet';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REFERRALS_LABEL'] = 'Your referrals';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_REFERRALS_LABEL'] = 'Subscriptions your referrals signed up for';
+
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_NO_REFERRALS_SIGNUP'] = 'Non of your referrals signed up for a subscription yet.';

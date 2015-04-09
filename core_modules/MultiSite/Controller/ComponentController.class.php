@@ -3228,10 +3228,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @return array
      */
-    public static function getSubscriptionsCountBasedOnProductForReferralsSubscribe($affiliateId) {
+    public static function getReferralsCountBasedOnProduct($affiliateId) {
         $affiliateIdReferenceProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite');
         $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
-             $affiliateIdReferenceProfileAttributeId =>'_'
+             $affiliateIdReferenceProfileAttributeId => $affiliateId
         ));
         
         $soloReferrersCount = 0;
@@ -3239,14 +3239,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $businessReferrersCount = 0;
         
         if (!$objUser) {
-            return array($soloReferrersCount, $nonProfitReferrersCount, $businessReferrersCount);
+            return array();
         }
                 
         $subscriptionRepo = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Subscription');
         while (!$objUser->EOF) {
             $userAffiliateId = $objUser->getProfileAttribute($affiliateIdReferenceProfileAttributeId);
             if ($userAffiliateId === $affiliateId) {
-                $subscriptions = $subscriptionRepo->getSubscriptionsByUserCrmId($objUser->getCrmUserId());
+                $criteria = array('o.contactId'   => $objUser->getCrmUserId(), 
+                                  'p.entityClass' => 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection');
+                $subscriptions = $subscriptionRepo->getSubscriptionsByCriteria($criteria);
                 if (!empty($subscriptions)) {
                     foreach ($subscriptions as $subscription) {
                         $productObj = $subscription->getProduct();
@@ -3267,6 +3269,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objUser->next();
         }
 
-        return array($soloReferrersCount, $nonProfitReferrersCount, $businessReferrersCount);
+        if (   empty($soloReferrersCount)
+            && empty($nonProfitReferrersCount)
+            && empty($businessReferrersCount)
+           ) {
+            return array();
+        }
+        
+        return array(
+            'Solo'       => $soloReferrersCount,
+            'Non-Profit' => $nonProfitReferrersCount,
+            'Business'   => $businessReferrersCount
+        );
     }
 }
