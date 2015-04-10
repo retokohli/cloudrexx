@@ -41,3 +41,10 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG'] = "Bitte 
 // AffiliateId
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID'] = 'Ihre Affiliate ID';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID'] = 'Wählen Sie Ihre persönliche Affiliate ID';
+
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL'] = 'PayPal Konto E-Mail Adresse';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL_LABEL'] = 'Bitte geben Sie Ihre PayPal Konto E-Mail Adresse an, auf welche Ihre Provision ausbezahlt werden soll';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_NOT_SET_NOTE'] = 'Es gibt noch keine Registrierungen, welche durch Ihre Empfehlung ausgelöst wurde';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REFERRALS_LABEL'] = 'Ihre Empfehlungen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_REFERRALS_LABEL'] = 'Abos welche durch Ihre Empfehlungen gelöst wurden';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_NO_REFERRALS_SIGNUP'] = 'Durch Ihre Empfehlungen sind noch keine Abos gelöst worden.';

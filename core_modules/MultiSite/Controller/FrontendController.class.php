@@ -75,10 +75,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 }
                 
                 $objUser = \FWUser::getFWUserObject()->objUser;
-                $crmContactId = $objUser->getCrmUserId();
-                if (empty($crmContactId)) {
-                    return ' '; // Do not show AffiliateSetup detail
-                }
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
                 //get the affiliateIdProfileAttributeId
                 $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
@@ -89,7 +85,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 if (!empty($affiliateId)) {
                     //show the solo, non-profit and business subscription counts
                     $productCntList = ComponentController::getReferralsCountBasedOnProduct($affiliateId);
-                    $affiliateReferralsCnt = 0;
                     if (empty($productCntList)) {
                         $template->touchBlock('showNoReferralsErrorMsg');
                         $template->hideBlock('showReferralsSubscriptionCount');
@@ -101,12 +96,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                                     'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT' => $productCnt
                                 ));
                                 $template->parse('showSubscriptionsCountByProduct');
-                                $affiliateReferralsCnt = $affiliateReferralsCnt + $productCnt;
                             }
                         }
                     }
                     $template->setVariable(array(
-                        'MULTISITE_AFFILIATE_REFERRALS_COUNT' => $affiliateReferralsCnt
+                        'MULTISITE_AFFILIATE_REFERRALS_COUNT' => BackendController::getReferralCountByAffiliateId($affiliateId)
                     ));
                 }
                 //parse block for Affiliate Id
