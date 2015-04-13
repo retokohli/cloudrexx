@@ -42,7 +42,7 @@
                 jQuery(this).data('plMaxFileSize', '500mb');
             }
             if (!iAttrs.plUrl) {
-                jQuery(this).data('plUrl', '?cmd=jsondata&object=Uploader&act=upload&id=' + iAttrs.uploaderId + '&csrf=' + cx.variables.get('csrf'));
+                jQuery(this).data('plUrl', cx.variables.get('cadminPath','contrexx')+'?cmd=jsondata&object=Uploader&act=upload&id=' + iAttrs.uploaderId + '&csrf=' + cx.variables.get('csrf'));
             }
             if (!iAttrs.plFlashSwfUrl) {
                 jQuery(this).data('plFlashSwfUrl', 'lib/plupload/plupload.flash.swf');
@@ -63,6 +63,7 @@
             } else {
                 scope.filters = scope.plFiltersModel;
             }
+            iAttrs = jQuery(this).data();
 
             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drop-target').attr('id', 'drop-target-' + iAttrs.id);
 
@@ -160,18 +161,20 @@
             $J('#uploader-modal-' + iAttrs.uploaderId).on('hidden.bs.modal', function () {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').removeClass('disabled');
                 var callback = iAttrs.onFileUploaded;
+                if (callback){
+                    var windowScope = window;
+                    var scopeSplit = callback.split('.');
+                    for (var i = 0; i < scopeSplit.length - 1; i++)
+                    {
+                        windowScope = windowScope[scopeSplit[i]];
+                        if (scope == undefined) return;
+                    }
+                    var fn = windowScope[scopeSplit[scopeSplit.length - 1]];
+                    if (typeof fn === 'function') {
+                        fn(files);
+                    }
+                }
 
-                var windowScope = window;
-                var scopeSplit = callback.split('.');
-                for (var i = 0; i < scopeSplit.length - 1; i++)
-                {
-                    windowScope = windowScope[scopeSplit[i]];
-                    if (scope == undefined) return;
-                }
-                var fn = windowScope[scopeSplit[scopeSplit.length - 1]];
-                if (typeof fn === 'function') {
-                    fn(files);
-                }
                 uploader.splice();
                 files = [];
                 $J('.upload-file').remove();
@@ -187,7 +190,7 @@
                     }
 
                     uploaderData.uploaded_file_count = 0;
-                    uploader.settings.url = '?cmd=jsondata&object=Uploader&act=upload&id=' + iAttrs.uploaderId + '&csrf=' + cx.variables.get('csrf');
+                    uploader.settings.url = iAttrs.plUrl + '&csrf=' + cx.variables.get('csrf');
                 }
 
             });
@@ -265,7 +268,7 @@
                         $J('.file-' + file.id).addClass('success');
                         if (up.settings.max_file_count > 0) {
                             ++uploaderData.uploaded_file_count;
-                            uploader.settings.url = '?cmd=jsondata&object=Uploader&act=upload&id=' + iAttrs.uploaderId + '&uploadedFileCount=' + uploaderData.uploaded_file_count + '&csrf=' + cx.variables.get('csrf');
+                            uploader.settings.url =  iAttrs.plUrl + '&csrf=' + cx.variables.get('csrf') + '&uploadedFileCount=' + uploaderData.uploaded_file_count + '&csrf=' + cx.variables.get('csrf');
                         }
                         if ((response.data.status == 'error')) {
                             $J('.file-' + file.id).addClass('danger');
