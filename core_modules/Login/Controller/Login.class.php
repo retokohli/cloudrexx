@@ -133,7 +133,8 @@ class Login
         global $_CORELANG;
 
         $objFWUser = \FWUser::getFWUserObject();
-        $email = isset($_POST['email']) ? contrexx_stripslashes($_POST['email']) : (isset($_GET['email']) ? contrexx_stripslashes($_GET['email']) : '');
+        // if email is passed over $_GET, we have to replace whitespaces with +, because urldecode decodes + white a withescape. And in emails are never whitespaces, so this must be +
+        $email = isset($_POST['email']) ? contrexx_stripslashes($_POST['email']) : (isset($_GET['email']) ? str_replace(' ','+', contrexx_stripslashes($_GET['email'])) : '');
         $restoreKey = isset($_POST['restore_key']) ? contrexx_stripslashes($_POST['restore_key']) : (isset($_GET['restoreKey']) ? contrexx_stripslashes($_GET['restoreKey']) : '');
         $password = isset($_POST['password']) ? trim(contrexx_stripslashes($_POST['password'])) : '';
         $confirmedPassword = isset($_POST['password2']) ? trim(contrexx_stripslashes($_POST['password2'])) : '';
