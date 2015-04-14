@@ -1206,18 +1206,19 @@ class Newsletter extends NewsletterLib
             // find out recipient type
             if ($realUser) {
                 $objUser = \FWUser::getFWUserObject()->objUser->getUser(intval($recipientId));
-                if ($objUser === false) {
-                    return false;
+                $recipientId = null;
+                if ($objUser !== false) {
+                    $recipientId = $objUser->getId();
+                    $recipientType = self::USER_TYPE_ACCESS;
                 }
-                $recipientId = $objUser->getId();
-                $recipientType = self::USER_TYPE_ACCESS;
+
             } else {
                 $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
-                if ($objUser === false || $objUser->RecordCount() != 1) {
-                    return false;
+                $recipientId = null;
+                if (!($objUser === false || $objUser->RecordCount() != 1)) {
+                    $recipientId = $objUser->fields['id'];
+                    $recipientType = self::USER_TYPE_NEWSLETTER;
                 }
-                $recipientId = $objUser->fields['id'];
-                $recipientType = self::USER_TYPE_NEWSLETTER;
             }
         }
         
@@ -1234,7 +1235,7 @@ class Newsletter extends NewsletterLib
         $url = $objLink->fields['url'];
         
         \LinkGenerator::parseTemplate($url);
-        
+
         if (!empty($recipientId)) {
             // save feedback for valid user
             $query = "
