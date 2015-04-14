@@ -2221,9 +2221,7 @@ class GalleryManager extends GalleryLibrary
 //        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
         $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Gallery/Controller/GalleryManager.class.php', '\Cx\Modules\Gallery\Controller\GalleryManager', 'uploadFinished'));
         $uploader->setData($paths);
-        $uploader->setOptions(array(
-               'class' => 'uploadbutton'
-            ));
+        $uploader->addClass('uploadbutton');
 
         $uploader->setCallback('finishedGalleryUpload');
         //set instance name to combo_uploader so we are able to catch the instance with js
@@ -2318,7 +2316,7 @@ class GalleryManager extends GalleryLibrary
 
         //check if file needs to be renamed
         $newName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
-        if (file_exists($path.'/'.$newName)) {
+        if (self::fileExists($path.'/'.$newName, false)) {
             $info     = pathinfo($newName);
             $exte     = $info['extension'];
             $exte     = (!empty($exte)) ? '.'.$exte : '';
@@ -2347,7 +2345,7 @@ class GalleryManager extends GalleryLibrary
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath */
-		return array($path, $webPath);
+		return array($path, $webPath, $newName);
     }
 
 
@@ -3455,14 +3453,13 @@ $strFileNew = '';
 
         $strImportedImageName = $strFile;
         while ($boolChecker == false) {
-            if (file_exists($this->strImagePath . strtolower($strImportedImageName))) {
+            if (self::fileExists($this->strImagePath.$strImportedImageName, false)) {
                 $info     = pathinfo($strImportedImageName);
                 $exte     = $info['extension'];
                 $exte     = (!empty($exte)) ? '.'.$exte : '';
                 $part1    = $info['filename'];
                 $strImportedImageName = $part1.'_'.time().$exte;
             } else {
-                $strImportedImageName = strtolower($strImportedImageName);
                 $boolChecker = true;
             }
         }
@@ -3899,6 +3896,24 @@ $strFileNew = '';
             \Cx\Core\Setting\Controller\Setting::update('lastAccessId');
         }
     }
-}
 
-?>
+    public static function fileExists($fileName, $caseSensitive = true) {
+        if (file_exists($fileName)) {
+            return $fileName;
+        }
+        if ($caseSensitive) {
+            return false;
+        }
+
+        // Handle case insensitive requests
+        $directoryName     = dirname($fileName);
+        $fileArray         = glob($directoryName . '/*', GLOB_NOSORT);
+        $fileNameLowerCase = strtolower($fileName);
+        foreach ($fileArray as $file) {
+            if (strtolower($file) == $fileNameLowerCase) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
