@@ -1225,23 +1225,23 @@ class newsletter extends NewsletterLib
         }
         $emailId = isset($_GET['n']) ? contrexx_input2raw($_GET['n']) : 0;
         $linkId = isset($_GET['l']) ? contrexx_input2raw($_GET['l']) : 0;
-        
+
         if (!empty($recipientId)) {
             // find out recipient type
             if ($realUser) {
-                $objUser = FWUser::getFWUserObject()->objUser->getUser(intval($recipientId));
-                if ($objUser === false) {
-                    return false;
+                $objUser = \FWUser::getFWUserObject()->objUser->getUser(intval($recipientId));
+                $recipientId = null;
+                if ($objUser !== false) {
+                    $recipientId = $objUser->getId();
+                    $recipientType = self::USER_TYPE_ACCESS;
                 }
-                $recipientId = $objUser->getId();
-                $recipientType = self::USER_TYPE_ACCESS;
             } else {
                 $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
-                if ($objUser === false || $objUser->RecordCount() != 1) {
-                    return false;
+                $recipientId = null;
+                if (!($objUser === false || $objUser->RecordCount() != 1)) {
+                    $recipientId = $objUser->fields['id'];
+                    $recipientType = self::USER_TYPE_NEWSLETTER;
                 }
-                $recipientId = $objUser->fields['id'];
-                $recipientType = self::USER_TYPE_NEWSLETTER;
             }
         }
         
