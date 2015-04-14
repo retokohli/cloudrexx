@@ -303,4 +303,37 @@ class CrmContact
         $this->phone            = '';
         $this->added_date       = '';
     }
+
+    /**
+     * store the email address
+     *
+     * @global array $_ARRAYLANG
+     * @access public
+     * @author Adrian Berger <ab@comvation.com>
+     * @return void
+     */
+    function storeEMail(){
+        global $objDatabase;
+        $objDatabase->Execute("INSERT INTO `".DBPREFIX."module_crm_customer_contact_emails`
+                                        SET `email` = '".contrexx_input2db($this->email)."',
+                                            `email_type` = 1, `is_primary` = '1', contact_id = {$this->id}");
+    }
+
+    /**
+     * gets the id of a contact by the customerName
+     *
+     * @global array $_ARRAYLANG
+     * @access public
+     * @author Adrian Berger <ab@comvation.com>
+     * @return int id of contact, or false if no contact exists
+     */
+    function getIdByName(){
+        global $objDatabase;
+        $result = $objDatabase->Execute("SELECT `id` FROM `".DBPREFIX."module_crm_contacts`
+                                        WHERE `customer_name` LIKE '".contrexx_input2db($this->customerName)."'");
+        if(isset($result->fields["id"])){
+            return $result->fields["id"];
+        }
+        return false;
+    }
 }
