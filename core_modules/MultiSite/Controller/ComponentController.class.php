@@ -3078,8 +3078,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // get user attribut field id for customer typ and company size out of crm, because we can not save this
                 // 2 settings for a crm user, they are only available for crm companies
                 \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
-                $attributIdForCustomerType = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_typ','Crm');
+                $attributIdForIndustryTyp =\Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_type','Crm');
                 $attributIdForCompanySize = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size','Crm');
+                $attributIdForCustomerTyp = \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm');
 
                 $profileAttributes = array(
                                         'firstname',
@@ -3088,8 +3089,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                         'zip',
                                         'city',
                                         'country',
-                                        $attributIdForCustomerType,
-                                        $attributIdForCompanySize
+                                        $attributIdForIndustryTyp,
+                                        $attributIdForCompanySize,
+                                        $attributIdForCustomerTyp
                 );
                 $userData = array();
                 $userCrmId = $objUser->getCrmUserId();
@@ -3102,12 +3104,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // get the crm Contact to find out if customerType isset, because this is a must in our form
                     $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
                     $crmContact->load($userCrmId);
-                    $valueForCustomerType = $userData[$attributIdForCustomerType];
-                    $valueForCompanySize = $userData[$attributIdForCompanySize];
-                    unset($userData[$attributIdForCompanySize], $userData[$attributIdForCustomerType]);
-                    if (count($userData) === count(array_filter($userData)) && $crmContact->__get('customerType') != 0) {
+                    // temporary unset the indexes for companySize and customerType, because these fields are no mandatory fields
+                    // and so the result for count(array_filter($userData)) would not be correct
+                    $tempUserData = $userData;
+                    unset($userData[$attributIdForCompanySize], $userData[$attributIdForIndustryTyp]);
+                    if (count($userData) === count(array_filter($userData))) {
                         return;
                     }
+                    $userData = $tempUserData;
                 }
 
                 $objTemplate = $this->cx->getTemplate();
@@ -3127,10 +3131,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, true, false, false, false, false);
                     $objUser->objAttribute->next();
                 }
-                $crmComponent = new \Cx\Modules\Crm\Controller\CrmManager('crm');
-                // get required information out of crm, so we can display them in our modal
-                $crmComponent->parseCrmForMultiSite($userCrmId, $objContactTpl, $valueForCustomerType, $valueForCompanySize);
+
+                $this->parseCrmInfoForModal($userData, $objContactTpl);
+
                 $objAccessLib->parseAccountAttributes($objUser);
+
+
                 $objContactTpl->setVariable(array(
                     'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'             => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_TITTLE'],
                     'TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'            => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT_INFO_CONTENT'],
@@ -3141,9 +3147,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_SIZE'       => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_SIZE'],
                     'TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP'],
                     'TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT'                   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT'],
+                    'TXT_CORE_PHONE'                                            => $_ARRAYLANG['TXT_CORE_PHONE'],
                     'MULTISITE_CONTACT_INFO_SUBMIT_URL'                         => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
                     'MULTISITE_COMPANY_SIZE_POST_NAME'                          => 'multisite_user_profile_attribute['.$attributIdForCompanySize.'][0]',
-                    'MULTISITE_INDUSTRY_TYPE_POST_NAME'                         => 'multisite_user_profile_attribute['.$attributIdForCustomerType.'][0]',
+                    'MULTISITE_INDUSTRY_TYPE_POST_NAME'                         => 'multisite_user_profile_attribute['.$attributIdForIndustryTyp.'][0]',
+                    'MULTISITE_CUSTOMER_TYPE_POST_NAME'                         => 'multisite_user_profile_attribute['.$attributIdForCustomerTyp.'][0]',
                 ));
                 $objTemplate->_blocks['__global__'] = preg_replace('/<\/body>/', $objContactTpl->get() . '\\0', $objTemplate->_blocks['__global__']);
                 break;
@@ -3153,7 +3161,36 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    
+    /**
+     * load the needed information out of crm
+     *
+     * @global array $_ARRAYLANG
+     * @access private
+     * @author Adrian Berger <ab@comvation.com>
+     * @copyright 2015 Comvation AG
+     * @param integer $crmContactId
+     * @param object $objContactTpl
+     * @param integer $selectedIdCustomerType
+     * @param integer $selectedIdCompanySize
+     * @return void
+     */
+    private function parseCrmInfoForModal($userData, $objContactTpl){
+
+        global $_ARRAYLANG;
+
+        $crmComponent = new \Cx\Modules\Crm\Controller\CrmManager('crm');
+        $objContactTpl->setGlobalVariable(array(
+            'CRM_INDUSTRY_DROPDOWN'     => $crmComponent->listIndustryTypes($crmComponent->_objTpl, 2,
+                                            $userData[\Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_type','Crm')]),
+            'TXT_CRM_PLEASE_SELECT'     => $_ARRAYLANG['TXT_CRM_COMMENT_DESCRIPTION'],
+        ));
+        $crmComponent->getCompanySizeDropDown($objContactTpl,
+                                              $userData[\Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size','Crm')]);
+        $crmComponent->getCustomerTypeDropDown($objContactTpl,
+                                                $userData[\Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm')]);
+    }
+
+
     /**
      * Get User Currency Object
      * 

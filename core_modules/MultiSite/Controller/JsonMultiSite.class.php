@@ -929,23 +929,69 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (isset($data['multisite_user_account_restore_key_time'])) {
             $objUser->setRestoreKeyTime(intval($data['multisite_user_account_restore_key_time']), true);
         }
-
-        // we save customer_type in crm, because we can and do not need to make a new profile attribut
-        if(isset($data['customer_type'])){
-            // if id is null, there is no crm user, so we create one
-            if($objUser->getCrmUserId() === null){
-                \Cx\Modules\Crm\Controller\CrmLibrary::addCrmContactFromAccessUser($objUser);
-            }
-            $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
-            $crmContact->load($objUser->getCrmUserId());
-            $crmContact->__set('customerType', $data['customer_type']);
-            $crmContact->save();
-        }
         // set profile data
         if (isset($data['multisite_user_profile_attribute'])) {
             $objUser->setProfile(contrexx_input2raw($data['multisite_user_profile_attribute']));
-        }
+            $companyName = $data['multisite_user_profile_attribute']['company'][0];
+            \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
+            $customerType = $data['multisite_user_profile_attribute'][\Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type', 'Crm')][0];
 
+            if($companyName != "") {
+                $compnaySize = $data['multisite_user_profile_attribute'][\Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size', 'Crm')][0];
+                $industryType = $data['multisite_user_profile_attribute'][\Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_type','Crm')][0];
+                $phoneNr = $data['multisite_user_profile_attribute']['phone_office'][0];
+
+                $crmCompany = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                $crmCompany->customerName = $companyName;
+
+                // if there is already a company with that name, we need the id, so we can update it and do not have to create a new one
+                if ($crmCompany->getIdByName() !== false) {
+                    $crmCompany->id = $crmCompany->getIdByName();
+                }
+                $crmCompany->contactType = 1;
+
+                if ($customerType !== false) {
+                    $crmCompany->customerType = $customerType;
+                }
+                if($compnaySize !== false){
+                    $crmCompany->companySize = $compnaySize;
+                }
+                if($industryType !== false){
+                    $crmCompany->industryType = $industryType;
+                }
+                if(isset($phoneNr)){
+                    $crmCompany->phone = $phoneNr;
+                }
+                $crmCompany->save();
+            }
+            if(isset($customerType)){
+                // if id is null, there is no crm user, so we create one
+                if($objUser->getCrmUserId() === null){
+                    \Cx\Modules\Crm\Controller\CrmLibrary::addCrmContactFromAccessUser($objUser);
+                }
+
+                $profileAttributes = array('firstname',  'lastname', 'address', 'zip', 'city', 'country',
+                                            \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm'));
+
+                foreach ($profileAttributes as $profileAttribute) {
+                    $arrFormData[$profileAttribute] = !\FWValidator::isEmpty($objUser->getProfileAttribute($profileAttribute)) ? $objUser->getProfileAttribute($profileAttribute) : '';
+                }
+
+                // update crm user
+                $objCrmLib = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+                $objCrmLib->setContactPersonProfile($arrFormData, $objUser->getId(), $objUser->getFrontendLanguage());
+
+                // if company is set, we save the email address of the user as company email and link the crm user with the company
+                if($companyName != ""){
+                    $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                    $crmContact->load($objUser->getCrmUserId());
+                    $crmCompany->email = $crmContact->email;
+                    $crmCompany->storeEMail();
+                    $crmContact->contact_customer = intval($crmCompany->getIdByName());
+                    $crmContact->save();
+                }
+            }
+        }
         // set md5 hashed password
         if (isset($data['multisite_user_md5_password'])) {
             $objUser->setHashedPassword(contrexx_input2raw($data['multisite_user_md5_password']));

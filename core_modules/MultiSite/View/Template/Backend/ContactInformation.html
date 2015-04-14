@@ -23,11 +23,11 @@
         <form role="form" action="{MULTISITE_CONTACT_INFO_SUBMIT_URL}" id="multisite_contact_information_form" autocomplete="off">
           <div class="alert alert-danger validationError" style="display: none;"></div>
           <fieldset>
-            <!-- BEGIN multisite_user_profile_gender_title -->
+            <!-- BEGIN multisite_user_profile_gender -->
             <div class="row">
               <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER}
             </div>
-            <!-- END multisite_user_profile_gender_title -->
+            <!-- END multisite_user_profile_gender -->
 
             <div class="row ">
               <!-- BEGIN multisite_user_profile_attribute_firstname -->
@@ -38,16 +38,16 @@
               <!-- END multisite_user_profile_attribute_lastname -->
             </div>
 
-            <!-- BEGIN multisite_user_profile_attribute_company -->   
+            <!-- BEGIN multisite_user_profile_attribute_company -->
             <div class="row">
               <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_COMPANY}
             </div>
-            <!-- END multisite_user_profile_attribute_company --> 
-            <!-- BEGIN multisite_user_profile_attribute_address -->  
+            <!-- END multisite_user_profile_attribute_company -->
+            <!-- BEGIN multisite_user_profile_attribute_address -->
             <div class="row">
               <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS}
             </div>
-            <!-- END multisite_user_profile_attribute_address --> 			
+            <!-- END multisite_user_profile_attribute_address -->
 
 
             <div class="row">
@@ -59,11 +59,9 @@
               <!-- END multisite_user_profile_attribute_city -->
             </div>
 
-            <!-- BEGIN multisite_user_profile_attribute_phone_office -->     
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_ID}">{TXT_CORE_PHONE}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE}
             </div>
-            <!-- END multisite_user_profile_attribute_phone_office -->
             <!-- BEGIN multisite_user_profile_attribute_country -->
             <div class="row">
               <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
@@ -87,7 +85,7 @@
             </div>
             <div class="row">
               <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP}</label> <font color="red">*</font><br />
-              <select name="customer_type" id="customer_type">
+              <select name="{MULTISITE_CUSTOMER_TYPE_POST_NAME}" id="customer_type">
                 <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
                 <!-- BEGIN customerTypes -->
                 <option value="{CRM_CUSTOMER_TYPE_ID}" {CRM_CUSTOMER_TYPE_SELECTED}>{CRM_CUSTOMER_TYPE}</option>
