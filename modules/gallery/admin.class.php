@@ -2287,7 +2287,7 @@ class galleryManager extends GalleryLibrary
 
                 //check if file needs to be renamed
                 $newName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
-                if (file_exists($path.'/'.$newName)) {
+                if (self::fileExists($path.'/'.$newName, false)) {
                     $info     = pathinfo($newName);
                     $exte     = $info['extension'];
                     $exte     = (!empty($exte)) ? '.'.$exte : '';
@@ -3500,13 +3500,17 @@ $strFileNew = '';
 
         //check if file exists
         $boolChecker = false;
+        $strImportedImageName = $strFile;
         while ($boolChecker == false) {
-            if (file_exists($this->strImagePath.$strFile)) {
-                $strImportedImageName = time().'_'.$strFile;
+            if (self::fileExists($this->strImagePath.$strImportedImageName, false)) {
+                $info     = pathinfo($strImportedImageName);
+                $exte     = $info['extension'];
+                $exte     = (!empty($exte)) ? '.'.$exte : '';
+                $part1    = $info['filename'];
+                $strImportedImageName = $part1.'_'.time().$exte;
             } else {
-                $strImportedImageName = $strFile;
+                $boolChecker = true;
             }
-            $boolChecker = true;
         }
 
         // gets the quality
@@ -3938,6 +3942,25 @@ $strFileNew = '';
             $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
     }
-}
 
-?>
+
+    public static function fileExists($fileName, $caseSensitive = true) {
+        if (file_exists($fileName)) {
+            return $fileName;
+        }
+        if ($caseSensitive) {
+            return false;
+        }
+
+        // Handle case insensitive requests
+        $directoryName     = dirname($fileName);
+        $fileArray         = glob($directoryName . '/*', GLOB_NOSORT);
+        $fileNameLowerCase = strtolower($fileName);
+        foreach ($fileArray as $file) {
+            if (strtolower($file) == $fileNameLowerCase) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
