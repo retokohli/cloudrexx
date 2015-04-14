@@ -3452,14 +3452,22 @@ $strFileNew = '';
 
         //check if file exists
         $boolChecker = false;
+
+        $strImportedImageName = $strFile;
         while ($boolChecker == false) {
-            if (file_exists($this->strImagePath.$strFile)) {
-                $strImportedImageName = time().'_'.$strFile;
+            if (file_exists($this->strImagePath . strtolower($strImportedImageName))) {
+                $info     = pathinfo($strImportedImageName);
+                $exte     = $info['extension'];
+                $exte     = (!empty($exte)) ? '.'.$exte : '';
+                $part1    = $info['filename'];
+                $strImportedImageName = $part1.'_'.time().$exte;
             } else {
-                $strImportedImageName = $strFile;
+                $strImportedImageName = strtolower($strImportedImageName);
+                $boolChecker = true;
             }
-            $boolChecker = true;
         }
+
+
 
         // gets the quality
         $objResult = $objDatabase->Execute('SELECT     value
