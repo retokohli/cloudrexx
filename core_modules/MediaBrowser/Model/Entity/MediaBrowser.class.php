@@ -10,6 +10,7 @@
  */
 namespace Cx\Core_Modules\MediaBrowser\Model\Entity;
 
+use Cx\Core\Html\Sigma;
 use Cx\Model\Base\EntityBase;
 
 /**
@@ -93,6 +94,12 @@ class MediaBrowser extends EntityBase
      */
     function getXHtml($buttonName = "MediaBrowser")
     {
-        return '<'.$this->tagName.' ' . $this->getOptionsString() . ' >' . $buttonName . '</'.$this->tagName.' ><div class="mediaBrowserScope"></div>';
+        $button = new Sigma();
+        $button->loadTemplateFile($this->cx->getCodeBaseCoreModulePath() . '/MediaBrowser/View/Template/MediaBrowserButton.html');
+        $button->setVariable(array(
+            'MEDIABROWSER_BUTTON_NAME' => $buttonName,
+            'MEDIABROWSER_BUTTON_OPTIONS' =>  $this->getOptionsString()
+        ));
+        return $button->get();
     }
 }
