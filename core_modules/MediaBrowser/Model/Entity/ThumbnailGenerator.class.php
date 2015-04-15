@@ -12,8 +12,9 @@ namespace Cx\Core_Modules\MediaBrowser\Model\Entity;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
+use Cx\Model\Base\EntityBase;
 
-class ThumbnailGenerator
+class ThumbnailGenerator extends EntityBase
 {
 
     const THUMBNAIL_GENERATOR_SUCCESS = 'green';
