@@ -2925,7 +2925,7 @@ class CrmLibrary
         
         try {
             //init the uploader
-            $uploader = new \Cx\Core_Modules\Uploader\Model\Uploader();
+            $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
             
             if (!empty($callBackJs)) {
                 $uploader->setCallback($callBackJs);

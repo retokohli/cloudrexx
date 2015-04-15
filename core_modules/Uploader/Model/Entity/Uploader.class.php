@@ -9,7 +9,7 @@
  * @subpackage  coremodule_uploader
  */
 
-namespace Cx\Core_Modules\Uploader\Model;
+namespace Cx\Core_Modules\Uploader\Model\Entity;
 
 
 use Cx\Core\Core\Controller\Cx;

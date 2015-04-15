@@ -542,7 +542,7 @@ class MediaManager extends MediaLibrary
             'webPath' => $this->webPath
         );
         
-        $uploader = new \Cx\Core_Modules\Uploader\Model\Uploader();
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
         $uploader->setCallback('mediaCallbackJs');
         $uploader->setFinishedCallback(array(
             ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php',

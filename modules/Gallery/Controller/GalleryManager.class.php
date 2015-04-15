@@ -10,7 +10,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\Gallery\Controller;
-use Cx\Core_Modules\Uploader\Model\Uploader;
+use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 use Cx\Lib\FileSystem\FileSystem;
 
 /**
