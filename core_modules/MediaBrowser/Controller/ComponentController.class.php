@@ -29,15 +29,10 @@ class ComponentController extends
 
     protected $mediaBrowserInstances = array();
 
-
-    public function __construct(SystemComponent $systemComponent, Cx $cx) {
-        parent::__construct($systemComponent, $cx);
-    }
-
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array('Backend', 'Default');
+        return array('Backend');
     }
 
     public function addMediaBrowser(MediaBrowser $mediaBrowser) {
