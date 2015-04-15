@@ -424,11 +424,21 @@ class FormGenerator {
                     function javascript_callback_function(data) {
                         if(data.type=="file") {
                             if(data.data[0].datainfo.extension=="Jpg"||data.data[0].datainfo.extension=="Gif"){
-                                cx.jQuery("#'.$name.'").val(data.data[0].datainfo.filepath);
+                                cx.jQuery("#'.$name.'").val(data.data[0].datainfo.filepath).change();
+                                cx.jQuery("#'.$name.'").prevAll(\'.deletePreviewImage\').first().css(\'display\', \'inline-block\');
+                                cx.jQuery("#'.$name.'").prevAll(\'.previewImage\').first().attr(\'src\', data.data[0].datainfo.filepath);
                             }
                         }
-                        //console.log(data.data[0].datainfo.extension);
                     }
+                    jQuery(document).ready(function(){
+                        jQuery(\'.deletePreviewImage\').click(function(){
+                            jQuery(this).prev(\'img\').attr(\'src\', \'/images/Downloads/no_picture.gif\');
+                            jQuery(this).css(\'display\', \'none\');
+                            jQuery(this).nextAll(\'input\').first().attr(\'value\', \'\');
+                        });
+                        cx.jQuery("#'.$name.'").css(\'display\', \'none\');
+                    });
+
                 ');
                 $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
                 $mediaBrowser->setOptions(array('type' => 'button'));
@@ -449,6 +459,23 @@ class FormGenerator {
                 $input->setAttribute('id', $name);
                 
                 $div = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+
+                if((isset($value) && in_array(pathinfo($value, PATHINFO_EXTENSION), Array('gif', 'jpg', 'png'))) || $name == 'imagePath'){
+                    
+                    // this image is meant to be a preview of the selected image
+		    $previewImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                    $previewImage->setAttribute('class', 'previewImage');
+                    $previewImage->setAttribute('src', ($value != '') ? $value : '/images/Downloads/no_picture.gif');
+                    
+                    // this image is uesd as delete function for the selected image over javascript
+		    $deleteImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                    $deleteImage->setAttribute('class', 'deletePreviewImage');
+                    $deleteImage->setAttribute('src', '/core/Core/View/Media/icons/delete.gif');
+
+                    $div->addChild($previewImage);
+                    $div->addChild($deleteImage);
+                    $div->addChild(new \Cx\Core\Html\Model\Entity\HtmlElement('br'));
+                }
                 $div->addChild($input);
                 $div->addChild(new \Cx\Core\Html\Model\Entity\TextElement($mb));
                 
