@@ -22,8 +22,7 @@ class ComponentController extends SystemComponentController
 
     protected $uploaderInstances = array();
 
-    public function addUploader(Uploader $uploader)
-    {
+    public function addUploader(Uploader $uploader) {
         $this->uploaderInstances[] = $uploader;
     }
 
@@ -31,22 +30,24 @@ class ComponentController extends SystemComponentController
         return array();
     }
 
-    public function getControllersAccessableByJson()
-    {
+    public function getControllersAccessableByJson() {
         return array(
             'JsonUploader',
         );
     }
 
-    public function preFinalize(\Cx\Core\Html\Sigma $template)
-    {
-        if (count($this->uploaderInstances) > 0) {
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+        if (count($this->uploaderInstances) == 0) {
+            return;
+        } else {
             global $_ARRAYLANG;
 
             \Env::get('init')->loadLanguageData('Uploader');
             foreach ($_ARRAYLANG as $key => $value) {
                 if (preg_match("/UPLOADER(_[A-Za-z0-9]+)?/", $key)) {
-                    \ContrexxJavascript::getInstance()->setVariable($key, $value, 'mediabrowser');
+                    \ContrexxJavascript::getInstance()->setVariable(
+                        $key, $value, 'mediabrowser'
+                    );
                 }
             }
 
