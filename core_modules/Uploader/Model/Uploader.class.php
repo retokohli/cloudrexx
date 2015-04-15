@@ -137,6 +137,11 @@ class Uploader extends EntityBase
             if (is_int($key)) {
                 $optionsString .= $value . ' ';
             } else {
+                if (!in_array($key, array('class', 'id', 'style','title','value'))){
+                    if ( strpos($key, 'data') !== 0){
+                        $key = 'data-'.$key;
+                    }
+                }
                 $optionsString .= $key . '="' . $value . '" ';
             }
         }
@@ -194,13 +199,16 @@ class Uploader extends EntityBase
         if (!in_array($class, $classes)){
             $classes[] = $class;
         }
-        $this->setOptions(array('class' => $classes));
+        $this->setOptions(array('class' => implode(' ', $classes)));
         return $this;
     }
 
     /**
      * Add additional data for the uploader
+     *
      * @param $data
+     *
+     * @return $this
      */
     public function setData($data)
     {
