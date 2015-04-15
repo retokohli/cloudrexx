@@ -12,7 +12,7 @@
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
 use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
-use Cx\Core_Modules\Uploader\Model\Uploader;
+use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view

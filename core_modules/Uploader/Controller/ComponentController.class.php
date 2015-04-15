@@ -15,7 +15,7 @@ namespace Cx\Core_Modules\Uploader\Controller;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
-use Cx\Core_Modules\Uploader\Model\Uploader;
+use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 
 class ComponentController extends SystemComponentController
 {
