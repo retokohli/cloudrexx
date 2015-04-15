@@ -1,55 +1,150 @@
 <style type="text/css">
 /* <![CDATA[ */
-#PaypalEmailAddress a {color: #000000;}
-#PaypalEmailAddress a:hover {color: #4C9CCF;}
+.actions a {color: #000000;}
+.actions a:hover {color: #4C9CCF;}
+.table {display: table; margin-bottom: 0px;}
+.table-row{display: table-row;}
+.table-cell{display: table-cell;}
 /* ]]> */
 </style>
 <div id="multisite_affiliate_profile_attribute_id">
     <div class="grid-elm grid-align-1-1 grid-offset">
-        <!-- BEGIN showAffiliateId -->
-        <div class="affiliate-profile-attribute-id" id="setAffiliateId">
-            <div> <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID} : </label> {MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</div>
-            <div> <label>{TXT_CORE_MODULE_MULTISITE_REFERRALS_LABEL} : </label> {MULTISITE_AFFILIATE_REFERRALS_COUNT}</div>
-            <!-- BEGIN showReferralsSubscriptionCount -->
-            <div> <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_REFERRALS_LABEL} : </label></div>
-            <!-- BEGIN showSubscriptionsCountByProduct -->
-            <div> <label>{MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME} : {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT}</label></div>
-            <!-- END showSubscriptionsCountByProduct -->
-            <!-- END showReferralsSubscriptionCount -->
-            
-            <!-- BEGIN showNoReferralsErrorMsg -->
-            <div> <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_NO_REFERRALS_SIGNUP}</label></div>
-            <!-- END showNoReferralsErrorMsg -->
-       </div>
-        <!-- END showAffiliateId -->
-        <!-- BEGIN showPaypalEmailAddress -->
-        <div id="PaypalEmailAddress">
-            <div>
-                <label>{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL} : </label> {MULTISITE_PAYPAL_EMAIL_ADDRESS}&nbsp;
-                <a class="entypo-tools" href="#" data-target="#multisite_paypal_email_address_form" data-toggle="modal"></a>
-            </div>
-        </div>
-        <!-- END showPaypalEmailAddress -->
-        <!-- BEGIN showAffiliateForm -->
         <form id="affiliate-form" method="post">
-        <!-- BEGIN showAffiliateIdForm -->
-        <div id="setAffiliateId">
-            <label>{TXT_CORE_MODULE_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID} : </label>
-                    <input type="text" name="affiliateProfileAttributeId" id="affiliateProfileAttributeId" style="width: 20%;" value="">
-                    <div class="errorBlock"></div>
-        </div>
-        <!-- END showAffiliateIdForm -->
-        <!-- BEGIN showPaypalEmailAddressForm -->
-        <div id="paypal-mail">
-            <label style="width: 25%;">{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL} : </label>
-                <input type="email" id="paypalEmail" style="width: 20%;" name="paypalEmailAddress" value="">
-                <div class="errorBlock"></div>
-        </div>
-        <!-- END showPaypalEmailAddressForm -->
+            <div class="show-affiliate-paypal-profile-attribute-id">
+                <div class="table">
+                    <!-- BEGIN showAffiliateIdForm -->
+                    <div class="table-row">
+                        <div class="table-cell" style="width: 25%;">
+                            <label>{TXT_CORE_MODULE_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID}</label>
+                        </div>
+                        <div class="table-cell">:</div>
+                        <div class="table-cell">
+                            <input type="text" name="affiliateProfileAttributeId" id="affiliateProfileAttributeId" style="width: 25%;" value="">
+                        </div>
+                    </div>
+                    <div id="setAffiliateId" class="table-row">
+                        <div class="table-cell"></div>
+                        <div class="table-cell"></div>
+                        <div class="table-cell">
+                            <div class="errorBlock"></div>
+                        </div>
+                    </div>
+                    <!-- END showAffiliateIdForm -->
+
+                    <!-- BEGIN showAffiliateIdPartOne -->
+                    <div class="table-row">
+                        <div class="table-cell" style="width: 20%;">
+                            <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</label>
+                        </div>
+                        <div class="table-cell">:</div>
+                        <div class="table-cell">{MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</div>
+                    </div>
+                    <!-- END showAffiliateIdPartOne -->
+
+                    <!-- BEGIN showPaypalEmailAddressForm -->
+                    <div class="table-row">
+                        <div class="table-cell" style="width: 20%;">
+                            <label>{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL}</label>
+                        </div>
+                        <div class="table-cell">:</div>
+                        <div class="table-cell">
+                            <input type="email" id="paypalEmail" style="width: 25%;" name="paypalEmailAddress" value="{MULTISITE_PAYPAL_EMAIL_ADDRESS}">
+                        </div>
+                    </div>
+                    <div id="paypalAccountAddress" class="table-row">
+                        <div class="table-cell"></div>
+                        <div class="table-cell"></div>
+                        <div class="table-cell">
+                            <div class="errorBlock"></div>
+                        </div>
+                    </div>
+                    <!-- END showPaypalEmailAddressForm -->
+
+                    <!-- BEGIN showPaypalEmailAddress -->
+                    <div class="table-row">
+                        <div class="table-cell" style="width: 20%;">
+                            <label>{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL}</label>
+                        </div>
+                        <div class="table-cell">:</div>
+                        <div class="table-cell actions">
+                            {MULTISITE_PAYPAL_EMAIL_ADDRESS}
+                            <a class="entypo-tools" href="#" data-target="#multisite_paypal_email_address_form" data-toggle="modal"></a>
+                        </div>
+                    </div>
+                    <!-- END showPaypalEmailAddress -->
+                </div>
+
+                <div class="table">
+                    <div class="table-row">
+                        <!-- BEGIN showAffiliateForm -->
+                        <div class="table-cell" style="width: 10%;">
+                            <button style="margin-top: 0px;" type="submit" class="btn save loadingProcess" onclick="saveAffiliateIdAndPayPalMailAddress(jQuery(this))" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+                        </div>
+                        <!-- END showAffiliateForm -->
+
+                        <!-- BEGIN showNoAffiliateErrorMsg -->
+                        <div class="table-cell">
+                            <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_NOT_SET_NOTE}</label>
+                        </div>
+                        <!-- END showNoAffiliateErrorMsg -->
+                    </div>
+                </div>
+
+                <!-- BEGIN showAffiliateIdPartTwo -->
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-cell" style="width:12%">
+                            <label>{TXT_CORE_MODULE_MULTISITE_REFERRALS_LABEL}</label>
+                        </div>
+                        <div class="table-cell" style="width:1%">:</div>
+                        <div class="table-cell">
+                            {MULTISITE_AFFILIATE_REFERRALS_COUNT}
+                        </div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
+                </div>
+
+                <!-- BEGIN showReferralsSubscriptionCount -->
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-cell">
+                            <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_REFERRALS_LABEL} : </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="table" style="margin-left: 40px;">
+                    <!-- BEGIN showSubscriptionsCountByProduct -->
+                    <div class="table-row">
+                        <div class="table-cell" style="width:8%">
+                            <label>{MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME}</label>
+                        </div>
+                        <div class="table-cell" style="width:1%">:</div>
+                        <div class="table-cell">
+                            {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT}
+                        </div>
+                    </div>
+                    <!-- END showSubscriptionsCountByProduct -->
+                </div>
+
+                <!-- END showReferralsSubscriptionCount -->
+
+                <!-- BEGIN showNoReferralsErrorMsg -->
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-cell">
+                            <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_NO_REFERRALS_SIGNUP}</label>
+                        </div>
+                    </div>
+                </div>
+                <!-- END showNoReferralsErrorMsg -->
+                <!-- END showAffiliateIdPartTwo -->
+           </div>
         </form>
-        <button style="margin-top: 0px;" type="submit" class="btn save loadingProcess" onclick="saveAffiliateIdAndPayPalMailAddress(jQuery(this))" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
-        <span>{MULTISITE_AFFILIATE_ID_NOT_SET_NOTE}</span> 
-        <!-- END showAffiliateForm -->
     </div>
 </div>
 <div aria-hidden="true" class="modal fade" id="multisite_paypal_email_address_form" role="dialog" tabindex="-1">
@@ -83,6 +178,9 @@
             $paypalEmailAddress = '{MULTISITE_PAYPAL_EMAIL_ADDRESS}';
             $paypalEmailAddressId = 'input[name="multisite_user_profile_attribute[{MULTISITE_PAYPAL_EMAIL_ATTRIBUTE_ID}][0]"]';
             
+            jQuery('#multisite_paypal_email_address_form').on('shown.bs.modal', function() {
+                enableOrDisableButton();
+            });
             jQuery('#multisite_paypal_email_address_form').on('hidden.bs.modal', function() {
                 jQuery($paypalEmailAddressId).val($paypalEmailAddress);
             });
@@ -98,6 +196,16 @@
                 var options = {
                     callback: function() {
                         window.location.reload();
+                    },
+                    beforesend: function($opt) {
+                        $opt.button('loading');
+                        $opt.prop('disabled', true);
+                        $opt.removeClass('save');
+                    },
+                    complete: function($opt) {
+                        $opt.button('reset');
+                        $opt.prop('disabled', false);
+                        $opt.addClass('save');
                     }
                 };
                 sendApiFormRequest('#multisite_user_profile_form', 
@@ -135,9 +243,9 @@
                 jQuery("#paypalEmail").blur("change",function(){
                     var mailId  = this.value;
                     if ((mailId.length > 0) && !isValidEmail(mailId)) {
-                        showErrorBlock(jQuery('#paypal-mail .errorBlock'), '{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR}');
+                        showErrorBlock(jQuery('#paypalAccountAddress .errorBlock'), '{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR}');
                     } else {
-                        hideErrorBlock(jQuery('#paypal-mail .errorBlock'));                        
+                        hideErrorBlock(jQuery('#paypalAccountAddress .errorBlock'));                        
                     }
                     enableOrDisableButton();
                 });
