@@ -19,7 +19,7 @@ use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Html\Sigma;
 use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
-use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Lib\FileSystem\FileSystemException;
 

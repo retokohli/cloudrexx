@@ -353,7 +353,7 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
             }
         }
         
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array('type' => 'button', 'data-cx-mb-views' => 'sitestructure'));
         $mediaBrowser->setCallback('aliasSetUrl');
 

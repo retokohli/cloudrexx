@@ -11,7 +11,7 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
-use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 
 /**

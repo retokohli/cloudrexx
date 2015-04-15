@@ -212,7 +212,7 @@ class ContentManager extends \Module
         }
         
         // Mediabrowser
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array('type' => 'button'));
         $mediaBrowser->setCallback('setWebPageUrlCallback');
         $mediaBrowser->setOptions(array(

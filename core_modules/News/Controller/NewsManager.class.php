@@ -4327,7 +4327,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         
         global $_ARRAYLANG;
         
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions($options);
         if (!empty($callBackName)) {
             $mediaBrowser->setCallback($callBackName);

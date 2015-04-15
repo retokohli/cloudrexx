@@ -959,7 +959,7 @@ class NewsletterManager extends NewsletterLib
         }
 
         // Mediabrowser
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array(
             'data-cx-mb-views' => 'filebrowser',
             'type' => 'button'

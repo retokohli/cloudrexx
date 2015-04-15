@@ -440,7 +440,7 @@ class FormGenerator {
                     });
 
                 ');
-                $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+                $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
                 $mediaBrowser->setOptions(array('type' => 'button'));
                 $mediaBrowser->setCallback('javascript_callback_function');
                 $mediaBrowser->setOptions(
