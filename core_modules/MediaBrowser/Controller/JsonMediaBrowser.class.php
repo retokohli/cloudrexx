@@ -16,7 +16,7 @@ use Cx\Core\Core\Controller\Cx;
 use \Cx\Core\Json\JsonAdapter;
 use Cx\Core\Json\JsonData;
 use Cx\Core\Routing\NodePlaceholder;
-use Cx\Core_Modules\MediaBrowser\Model\ThumbnailGenerator;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Lib\FileSystem\FileSystem;
 

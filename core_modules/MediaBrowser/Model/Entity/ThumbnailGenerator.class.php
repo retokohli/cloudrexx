@@ -7,7 +7,7 @@
  * @subpackage  coremodule_mediabrowser
  */
 
-namespace Cx\Core_Modules\MediaBrowser\Model;
+namespace Cx\Core_Modules\MediaBrowser\Model\Entity;
 
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
