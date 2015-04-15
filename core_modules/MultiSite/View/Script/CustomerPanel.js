@@ -280,8 +280,8 @@ function saveAffiliateIdAndPayPalMailAddress($this) {
         return false;
     }
     
-    if (jQuery("#paypalEmail").val() !== '' && !isValidEmail(jQuery("#paypalEmail").val())) {
-        showErrorBlock(jQuery('#paypal-mail .errorBlock'), cx.variables.get('TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR', 'AffiliateSetup'));
+    if (jQuery("#paypalEmail").length && jQuery("#paypalEmail").val() !== '' && !isValidEmail(jQuery("#paypalEmail").val())) {
+        showErrorBlock(jQuery('#paypalAccountAddress .errorBlock'), cx.variables.get('TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR', 'AffiliateSetup'));
         $this.prop('disabled', true);
         return false;
     }
@@ -306,11 +306,11 @@ function saveAffiliateIdAndPayPalMailAddress($this) {
                     showMessage(resp.message, 'success');
                     window.location.reload();
                 } else {
-                    errorBlock = (resp.type == 'mail') ? jQuery('#paypal-mail .errorBlock') : jQuery('#setAffiliateId .errorBlock');
+                    errorBlock = (resp.type == 'mail') ? jQuery('#paypalAccountAddress .errorBlock') : jQuery('#setAffiliateId .errorBlock');
                     errMsg = resp.message;
                 }
             } else {
-                errorBlock = (response.type == 'mail') ? jQuery('#paypal-mail .errorBlock') : jQuery('#setAffiliateId .errorBlock');
+                errorBlock = (response.type == 'mail') ? jQuery('#paypalAccountAddress .errorBlock') : jQuery('#setAffiliateId .errorBlock');
                 errMsg = response.message; 
             }
             if (errMsg !== false) {
@@ -408,9 +408,13 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
     data: jQuery(jsFormSelector).serialize(),
     type: "POST",
     beforeSend: function (xhr, settings) {
-      jQuery('.loadingProcess').button('loading');
-      jQuery('.loadingProcess').prop('disabled', true);
-      jQuery('.loadingProcess').removeClass('save');
+        if (callbackOptions !== 'undefined') {
+            callbackOptions.beforesend(jQuery(jsFormSelector + ' .loadingProcess'));              
+        } else {
+            jQuery('.loadingProcess').button('loading');
+            jQuery('.loadingProcess').prop('disabled', true);
+            jQuery('.loadingProcess').removeClass('save');
+        }
     },
     success: function (response) {
       message = (response.status == 'success') ? response.data.message : (jQuery.type(response.message) === 'object') 
@@ -430,9 +434,13 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
       }
     },
     complete: function (xhr, settings) {
-        jQuery('.loadingProcess').button('reset');
-        jQuery('.loadingProcess').prop('disabled', false);
-        jQuery('.loadingProcess').addClass('save');
+        if (callbackOptions !== 'undefined') {
+            callbackOptions.complete(jQuery(jsFormSelector + ' .loadingProcess'));              
+        } else {
+            jQuery('.loadingProcess').button('reset');
+            jQuery('.loadingProcess').prop('disabled', false);
+            jQuery('.loadingProcess').addClass('save');
+        }
     },
     fail: function (response) {
     }

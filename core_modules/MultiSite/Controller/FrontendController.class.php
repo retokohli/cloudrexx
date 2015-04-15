@@ -83,6 +83,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
                 $paypalEmailAddress = $objUser->getProfileAttribute((int)$paypalEmailAddressProfileAttribute);
                 if (!empty($affiliateId)) {
+                    $totalRefererCount = BackendController::getReferralCountByAffiliateId($affiliateId);
+                    if (empty($totalRefererCount)) {
+                        $template->touchBlock('showNoAffiliateErrorMsg');
+                    }
                     //show the solo, non-profit and business subscription counts
                     $productCntList = ComponentController::getReferralsCountBasedOnProduct($affiliateId);
                     if (empty($productCntList)) {
@@ -100,11 +104,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         }
                     }
                     $template->setVariable(array(
-                        'MULTISITE_AFFILIATE_REFERRALS_COUNT' => BackendController::getReferralCountByAffiliateId($affiliateId)
+                        'MULTISITE_AFFILIATE_REFERRALS_COUNT' => $totalRefererCount
                     ));
                 }
                 //parse block for Affiliate Id
-                !empty($affiliateId) ? $template->touchBlock('showAffiliateId') : $template->hideBlock('showAffiliateId');
+                !empty($affiliateId) ? $template->touchBlock('showAffiliateIdPartOne') : $template->hideBlock('showAffiliateIdPartOne');
+                !empty($affiliateId) ? $template->touchBlock('showAffiliateIdPartTwo') : $template->hideBlock('showAffiliateIdPartTwo');
                 empty($affiliateId) ? $template->touchBlock('showAffiliateIdForm') : $template->hideBlock('showAffiliateIdForm');
                 //parse block for paypal email address
                 !empty($paypalEmailAddress) ? $template->touchBlock('showPaypalEmailAddress') : $template->hideBlock('showPaypalEmailAddress');
@@ -113,9 +118,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 !empty($affiliateId) && !empty($paypalEmailAddress) ? $template->hideBlock('showAffiliateForm') : $template->touchBlock('showAffiliateForm');
                 
                 $template->setVariable(array(
-                    'MULTISITE_AFFILIATE_ID_NOT_SET_NOTE' => empty($affiliateId) ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_NOT_SET_NOTE'] : '',
                     'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => !empty($affiliateId) ? $affiliateId : '',
-                    'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => $paypalEmailAddress
+                    'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => !empty($paypalEmailAddress) ? $paypalEmailAddress : $objUser->getEmail()
                 ));
                 //initialize
                 $objJs = \ContrexxJavascript::getInstance();
