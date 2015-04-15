@@ -22,14 +22,13 @@ class ComponentController extends SystemComponentController
 
     protected $uploaderInstances = array();
 
-    public function __construct(SystemComponent $systemComponent, Cx $cx)
-    {
-        parent::__construct($systemComponent, $cx);
-    }
-
     public function addUploader(Uploader $uploader)
     {
         $this->uploaderInstances[] = $uploader;
+    }
+
+    public function getControllerClasses() {
+        return array();
     }
 
     public function getControllersAccessableByJson()
