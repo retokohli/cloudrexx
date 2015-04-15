@@ -131,3 +131,22 @@ form.cx-ui > fieldset > .actions {
     text-algin: left;
     margin: 0;
 }
+form.cx-ui #editor-htmlContent {
+    margin: 0px;
+}
+form.cx-ui textarea {
+    width: 292px;
+    max-width: 1000px;
+    max-height: 300px;
+}
+form.cx-ui input[type="text"] {
+    width: 300px;
+    max-width: 300px;
+}
+form.cx-ui input#imagePath {
+    width: 292px;
+}
+form.cx-ui img.previewImage {
+    margin-bottom: 5px;
+    height: 85px;
+}
