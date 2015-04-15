@@ -13,6 +13,7 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
 
 use Cx\Core\ContentManager\Model\Entity\Page;
 use Cx\Core\Core\Controller\Cx;
+use Cx\Core\Core\Model\Entity\SystemComponentController;
 use \Cx\Core\Json\JsonAdapter;
 use Cx\Core\Json\JsonData;
 use Cx\Core\Routing\NodePlaceholder;
@@ -28,7 +29,7 @@ use Cx\Lib\FileSystem\FileSystem;
  * @package     contrexx
  * @subpackage  coremodule_mediabrowser
  */
-class JsonMediaBrowser implements JsonAdapter
+class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 {
 
     protected $_path = "";
