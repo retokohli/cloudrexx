@@ -10,7 +10,7 @@
  */
 
 namespace Cx\Core\Wysiwyg;
-use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 
 /**
  * Wysiqyg class

@@ -4026,7 +4026,7 @@ die("Shopmanager::delete_article_group(): Obsolete method called");
         }
         
         // Mediabrowser
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions($options);
         if ($callback) {
             $mediaBrowser->setCallback($callback);

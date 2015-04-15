@@ -1092,7 +1092,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
     public static function getMediaBrowserButton() {
         global $_ARRAYLANG;
         
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setCallback('mbCallback');
         $mediaBrowser->setOptions(array(
                                     'type'             => 'button',

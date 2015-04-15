@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_mediabrowser
  */
-namespace Cx\Core_Modules\MediaBrowser\Model;
+namespace Cx\Core_Modules\MediaBrowser\Model\Entity;
 
 use Cx\Model\Base\EntityBase;
 

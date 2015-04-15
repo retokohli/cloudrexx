@@ -108,7 +108,7 @@ class EcardManager
         \JS::activate('shadowbox');
         $this->_objTpl->loadTemplateFile('module_ecard_overview.html',true,true);
         $this->_pageTitle = $_ARRAYLANG['TXT_MOTIVE_SELECTION'];
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setCallback('mbCallback');
         $mediaBrowser->setOptions(
                                 array(

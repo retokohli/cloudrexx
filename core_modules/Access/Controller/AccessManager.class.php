@@ -725,7 +725,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         //Display MediaBrowser for selecting webpage
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array(
                     'type'             => 'button',
                     'data-cx-mb-views' => 'sitestructure',

@@ -309,7 +309,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         
         global $_ARRAYLANG;
         
-        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\MediaBrowser();
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
         $mediaBrowser->setOptions(array(
                     'type'             => 'button',
                     'data-cx-mb-views' => $type
