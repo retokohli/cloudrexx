@@ -279,3 +279,5 @@ $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Some file(s) couldn't be uploaded:
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allowed.";
 
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
+
+$_ARRAYLANG['TXT_WELCOME_PAGE'] = 'Welcome page';
