@@ -333,7 +333,7 @@ function showErrorBlock(errorBlock, errMsg) {
 function hideErrorBlock(errorBlock) {
     errorBlock
         .removeClass('has-error')
-        .html('');
+        .html('&nbsp;');
 }
 
 function enableOrDisableButton() {
