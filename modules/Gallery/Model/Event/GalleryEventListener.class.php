@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Class GalleryEventListener
  * EventListener for Gallery
  * 
  * @copyright   Comvation AG
@@ -10,11 +11,13 @@
  */
 
 namespace Cx\Modules\Gallery\Model\Event;
+
+use Cx\Core\Event\Model\Entity\DefaultEventListener;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
 use Cx\Core\Model\Model\Entity\MediaType;
-use Cx\Core\Core\Controller\Cx;
 
 /**
+ * Class GalleryEventListener
  * EventListener for Gallery
  * 
  * @copyright   Comvation AG
@@ -22,22 +25,8 @@ use Cx\Core\Core\Controller\Cx;
  * @package     contrexx
  * @subpackage  module_gallery
  */
-class GalleryEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class GalleryEventListener extends DefaultEventListener {
 
-    /**
-     * @var Cx
-     */
-    protected $cx;
-
-    function __construct(Cx $cx)
-    {
-        $this->cx = $cx;
-    }
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
-   
     public static function SearchFindContent($search) {
         $term_db = $search->getTerm();
 
@@ -70,7 +59,7 @@ class GalleryEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
     }
 
 
-    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('Gallery');

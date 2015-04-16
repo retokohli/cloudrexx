@@ -1,5 +1,8 @@
 <?php
+
 /**
+ * Class BlogEventListener
+ *
  * @copyright   Comvation AG 
  * @author Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
@@ -7,30 +10,20 @@
 
 namespace Cx\Modules\Blog\Model\Event;
 
-
-use Cx\Core\Core\Controller\Cx;
-use Cx\Core\Event\Model\Entity\EventListener;
+use Cx\Core\Event\Model\Entity\DefaultEventListener;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
 use Cx\Core\Model\Model\Entity\MediaType;
 
-class BlogEventListener implements EventListener {
+/**
+ * Class BlogEventListener
+ *
+ * @copyright   Comvation AG
+ * @author Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ */
+class BlogEventListener extends DefaultEventListener {
 
-    /**
-     * @var Cx
-     */
-    protected $cx;
-
-    function __construct(Cx $cx)
-    {
-        $this->cx = $cx;
-    }
-
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
-
-    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         $mediaType = new MediaType();
