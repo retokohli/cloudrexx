@@ -146,6 +146,18 @@ class Login
                 if ($this->_objTpl->blockExists('login_reset_password')) {
                     $this->_objTpl->hideBlock('login_reset_password');
                 }
+                // automaticly login the user after setting the password successfully.
+                $userFilter = array(
+                    'active'           => 1,
+                    'email'            => $email,
+                );
+                $objFWUser->loginUser($objFWUser->objUser->getUsers($userFilter, null, null, null, 1));
+
+                // get the url to the welcome page
+                $homeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Home', '', FRONTEND_LANG_ID);
+
+                $statusMessage .= '<br /><a href="' . $homeUrl->toString(false) . '" title="'.$_CORELANG['TXT_WELCOME_PAGE'].'">'
+                    . $_CORELANG['TXT_WELCOME_PAGE'] . '</a>';
             } else {
                 $statusMessage = $objFWUser->getErrorMsg();
 

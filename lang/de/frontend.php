@@ -288,3 +288,5 @@ $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
 $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) heraufgeladen";
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
+
+$_ARRAYLANG['TXT_WELCOME_PAGE'] = 'Startseite';
