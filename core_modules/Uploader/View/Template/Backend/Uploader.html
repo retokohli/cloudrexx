@@ -1,4 +1,4 @@
-<div class="modal fade uploader-modal" id="uploader-modal-{UPLOADER_ID}">
+<div class="modal fade uploader-modal" id="uploader-modal-{UPLOADER_ID}" >
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -16,11 +16,14 @@
                         <div class="dropzoneText2">- {{ 'TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER_OR' | translate }}
                             -
                         </div>
+                        <div class="upload-limit-tooltip file_choose" >
                         <button type="submit" class="btn btn-default"
                                 style="position: relative; z-index: 1;">
                             {{ 'TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER_CLICK' | translate }}
                         </button>
+                          </div>
                     </div>
+                  <div class="alert alert-warning notify-UploadLimit" ></div>
                     <div class="error"></div>
                 </div>
                 <div class="uploadControl">
@@ -44,7 +47,7 @@
                         <button class="btn btn-success not-finished close-upload-modal">
                             {{ 'TXT_CORE_MODULE_UPLOADER_CLOSE_WINDOW' | translate }}
                         </button>
-                        <div class="upload-limit-tooltip" >
+                        <div class="upload-limit-tooltip file_upload" >
                         <button class="btn btn-primary start-upload-button"> {{ 'TXT_CORE_MODULE_UPLOADER_UPLOAD_BUTTON'
                             | translate }}
                         </button>
