@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Class CalendarEventListener
  * EventListener for Calendar
  * 
  * @copyright   Comvation AG
@@ -10,11 +11,13 @@
  */
 
 namespace Cx\Modules\Calendar\Model\Event;
-use Cx\Core\Core\Controller\Cx;
+
+use Cx\Core\Event\Model\Entity\DefaultEventListener;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
 use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
+ * Class CalendarEventListener
  * EventListener for Calendar
  * 
  * @copyright   Comvation AG
@@ -22,24 +25,9 @@ use Cx\Core\Model\Model\Entity\MediaType;
  * @package     contrexx
  * @subpackage  module_calendar
  */
-class CalendarEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-
-    /**
-     * @var Cx
-     */
-    protected $cx;
-
-    function __construct(Cx $cx)
-    {
-        $this->cx = $cx;
-    }
-
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
+class CalendarEventListener extends DefaultEventListener {
    
-    public static function SearchFindContent($search) {
+    public function SearchFindContent($search) {
         $term_db = $search->getTerm();
         $query = \Cx\Modules\Calendar\Controller\CalendarEvent::getEventSearchQuery($term_db);
         $pageUrl = function($pageUri, $searchData) {
@@ -49,7 +37,7 @@ class CalendarEventListener implements \Cx\Core\Event\Model\Entity\EventListener
         $search->appendResult($result);
     }
 
-    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         $mediaType = new MediaType();

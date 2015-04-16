@@ -64,7 +64,7 @@ class MediaBrowserConfiguration
         /**
          * Loads all mediatypes into $this->allMediaTypePaths
          */
-        $eventHandlerInstance->triggerEvent('LoadMediaTypes', array($this));
+        $eventHandlerInstance->triggerEvent('mediasource.load', array($this));
         ksort($this->allMediaTypePaths);
         foreach ($this->allMediaTypePaths as $mediatype) {
             if ($mediatype->checkAccess()) {

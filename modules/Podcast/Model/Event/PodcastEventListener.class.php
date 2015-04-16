@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Class PodcastEventListener
  * EventListener for Podcast
  * 
  * @copyright   Comvation AG
@@ -10,11 +11,12 @@
  */
 
 namespace Cx\Modules\Podcast\Model\Event;
-use Cx\Core\Core\Controller\Cx;
+use Cx\Core\Event\Model\Entity\DefaultEventListener;
 use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
 use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
+ * Class PodcastEventListener
  * EventListener for Podcast
  * 
  * @copyright   Comvation AG
@@ -22,23 +24,9 @@ use Cx\Core\Model\Model\Entity\MediaType;
  * @package     contrexx
  * @subpackage  module_podcast
  */
-class PodcastEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-
-    /**
-     * @var Cx
-     */
-    protected $cx;
-
-    function __construct(Cx $cx)
-    {
-        $this->cx = $cx;
-    }
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
+class PodcastEventListener extends DefaultEventListener {
    
-    public static function SearchFindContent($search) {
+    public function SearchFindContent($search) {
         $term_db = $search->getTerm();
 
         //For Podcast
@@ -65,9 +53,7 @@ class PodcastEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         $search->appendResult($podcastCategoryResult);
     }
 
-
-
-    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         $mediaType = new MediaType();
