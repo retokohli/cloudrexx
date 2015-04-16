@@ -2300,3 +2300,20 @@ input#FileSearchIsRegex {
 .upload-limit-tooltip{
     display: inline-block;
 }
+.alert-warning {
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+  color: #8a6d3b;
+}
+.alert {
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.notify-UploadLimit{
+    padding: 8px;
+    margin-top: 10px;
+    width: 100%;
+    font-size: 16px;
+    display: none;
+}
