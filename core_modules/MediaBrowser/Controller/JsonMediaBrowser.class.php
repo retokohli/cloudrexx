@@ -62,7 +62,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function getAccessableMethods()
     {
-        return array('getFiles', 'getSites', 'getSources', 'createThumbnails');
+        return array('getFiles', 'getSites', 'getSources', 'createThumbnails', 'folderWidget');
     }
 
     /**
@@ -409,4 +409,44 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         // TODO: Implement getDefaultPermissions() method.
     }
 
+    /**
+     * Folder widget
+     * 
+     * @param array $params
+     * 
+     * @return boolean|array
+     */
+    public function folderWidget($params)
+    {
+        \cmsSession::getInstance();
+        
+        $folderWidgetId = $params['get']['id'];
+        if (   empty($folderWidgetId)
+            || !isset($_SESSION['MediaBrowser'])
+            || !isset($_SESSION['MediaBrowser']['FolderWidget'])
+            || !isset($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
+        ) {
+            return false;
+        }
+        
+        $folder = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
+        
+        $arrFileNames = array();
+        if(!file_exists($folder)) {
+            return false;
+        }
+        $h = opendir($folder);
+        while(false !== ($f = readdir($h))) {
+            // skip folders and thumbnails
+            if($f == '.' || $f == '..' || preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $f))
+                continue;
+            if (!is_dir($folder .'/' . $f)) {                
+                array_push($arrFileNames, $f);
+            }
+        }
+        closedir($h);
+        
+        return $arrFileNames;
+    }
+            
 }
