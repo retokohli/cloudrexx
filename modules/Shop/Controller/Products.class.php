@@ -629,7 +629,7 @@ class Products
                 continue;
             }
             $imageName = $objProduct->pictures();
-            $imagePath = ASCMS_SHOP_IMAGES_PATH.'/'.$imageName;
+            $imagePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath() . '/' . $imageName;
             // only try to create thumbs from entries that contain a
             // plain text file name (i.e. from an import)
             if (   $imageName == ''
@@ -666,8 +666,8 @@ class Products
                 // Deleting the old thumb beforehand is integrated into
                 // _createThumbWhq().
                 $thumbResult = $objImageManager->_createThumbWhq(
-                    ASCMS_SHOP_IMAGES_PATH.'/',
-                    ASCMS_SHOP_IMAGES_WEB_PATH.'/',
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath() . '/', 
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/',
                     $imageName,
                     \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop'),
                     \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height','Shop'),

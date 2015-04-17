@@ -67,7 +67,7 @@ class Cart
             || empty($_REQUEST['quantity'])) {
             return;
         }
-        if (!include_once(ASCMS_LIBRARY_PATH.'/PEAR/Services/JSON.php')) {
+        if (!include_once(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseLibraryPath() . '/PEAR/Services/JSON.php')) {
             return;
         }
         $cart_id = null;
@@ -96,7 +96,7 @@ class Cart
     static function send_json()
     {
         /** @ignore */
-        if (!include_once(ASCMS_LIBRARY_PATH.'/PEAR/Services/JSON.php')) {
+        if (!include_once(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseLibraryPath() . '/PEAR/Services/JSON.php')) {
             die('Could not load JSON library');
         }
         $arrCart = array(

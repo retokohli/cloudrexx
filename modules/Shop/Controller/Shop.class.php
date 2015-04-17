@@ -144,7 +144,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 //\DBG::activate(DBG_LOG_FILE);
         self::init();
         self::registerJavascriptCode();
-        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
+        self::$defaultImage = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName;
         // PEAR Sigma template
         self::$objTemplate = new \Cx\Core\Html\Sigma('.');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -551,7 +551,7 @@ die("Failed to get Customer for ID $customer_id");
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_COULD_NOT_LOAD_CART', $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] ,'shop/cart');
         \ContrexxJavascript::getInstance()->setVariable('TXT_EMPTY_SHOPPING_CART', $_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'] ,'shop/cart');
         \ContrexxJavascript::getInstance()->setVariable("url", (String)\Cx\Core\Routing\URL::fromModuleAndCMd('Shop'.MODULE_INDEX, 'cart', FRONTEND_LANG_ID, array('remoteJs' => 'addProduct')), 'shop/cart');
-        \JS::registerJS(substr(ASCMS_MODULE_FOLDER . '/Shop/View/Script/cart.js', 1));
+        \JS::registerJS(substr(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Shop/View/Script/cart.js', 1));
         \JS::registerCode(
             "cartTpl = '".preg_replace(
               array('/\'/', '/[\n\r]/', '/\//'),
@@ -786,7 +786,7 @@ die("Failed to update the Cart!");
                 if ($imageName) {
                     self::$objTemplate->setVariable(array(
                         'SHOP_CATEGORY_CURRENT_IMAGE' =>
-                            ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageName,
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $imageName,
                         'SHOP_CATEGORY_CURRENT_IMAGE_ALT' => $objCategory->name(),
                     ));
                 }
@@ -810,7 +810,7 @@ die("Failed to update the Cart!");
             $description = nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET));
             $description = preg_replace('/[\n\r]/', '', $description);
             if (empty($arrDefaultImageSize)) {
-                $arrDefaultImageSize = getimagesize(ASCMS_PATH.self::$defaultImage);
+                $arrDefaultImageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
                 self::scaleImageSizeToThumbnail($arrDefaultImageSize);
             }
             $arrSize = $arrDefaultImageSize;
@@ -824,11 +824,11 @@ die("Failed to update the Cart!");
             }
             if ($imageName) {
                 $thumb_name = \ImageManager::getThumbnailFilename($imageName);
-                if (file_exists(ASCMS_SHOP_IMAGES_PATH.'/'.$thumb_name)) {
+                if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath() . '/' . $thumb_name)) {
                     // Image found!  Use that instead of the default.
                     $thumbnailPath =
-                        ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$thumb_name;
-                    $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $thumb_name;
+                    $arrSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath);
                     self::scaleImageSizeToThumbnail($arrSize);
                 }
             }
@@ -836,7 +836,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->setVariable(
                     'SHOP_CATEGORY_IMAGE',
                     contrexx_raw2encodedUrl(
-                        ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$imageName));
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$imageName));
             }
             self::$objTemplate->setVariable(array(
                 'SHOP_CATEGORY_ID' => $id,
@@ -1100,30 +1100,30 @@ die("Failed to update the Cart!");
                     $thumbnailPath = self::$defaultImage;
                     $pictureLink = '#'; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                     if (empty($arrDefaultImageSize)) {
-                        $arrDefaultImageSize = getimagesize(ASCMS_PATH.self::$defaultImage);
+                        $arrDefaultImageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
                         self::scaleImageSizeToThumbnail($arrDefaultImageSize);
                     }
                     $arrSize = $arrDefaultImageSize;
                 } else {
-                    $thumbnailPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
-                        \ImageManager::getThumbnailFilename($image['img']);
+                    $thumbnailPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' .
+                            \ImageManager::getThumbnailFilename($image['img']);
                     if ($image['width'] && $image['height']) {
                         $pictureLink =
-                            contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img']).
-                            // Hack ahead!
+                                contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
+                                // Hack ahead!
                             '" rel="shadowbox['.($formId+1).']';
                         // Thumbnail display size
                         $arrSize = array($image['width'], $image['height']);
                     } else {
                         $pictureLink = '#';
-                        $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
+                        $arrSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath);
                     }
                     self::scaleImageSizeToThumbnail($arrSize);
                     // Use the first available picture in microdata, if any
                     if (!$havePicture) {
                         $picture_url = \Cx\Core\Routing\Url::fromCapturedRequest(
-                            ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img'],
-                            ASCMS_PATH_OFFSET, array());
+                            \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $image['img'], 
+                            \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath(), array());
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
 //\DBG::log("Set image to ".$picture_url->toString());
@@ -1901,7 +1901,7 @@ die("Failed to update the Cart!");
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_PRODUCT_ADDED_TO_CART', $_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'], 'shop');
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_CONFIRM_DELETE_PRODUCT', $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_PRODUCT'], 'shop');
         \ContrexxJavascript::getInstance()->setVariable('TXT_MAKE_DECISION_FOR_OPTIONS', $_ARRAYLANG['TXT_MAKE_DECISION_FOR_OPTIONS'], 'shop');
-        \JS::registerJS(substr(ASCMS_MODULE_FOLDER . '/Shop/View/Script/shop.js', 1));
+        \JS::registerJS(substr(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Shop/View/Script/shop.js', 1));
     }
 
 
@@ -3836,7 +3836,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             $newFileName = $filename.'['.uniqid().']'.$fileext;
             $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
             if (move_uploaded_file($uploadFileName,
-                    ASCMS_DOCUMENT_ROOT.$newFilePath)) {
+                       \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . $newFilePath)) {
                 return $newFileName;
             }
             \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);

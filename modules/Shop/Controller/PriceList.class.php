@@ -322,7 +322,7 @@ class PriceList
         }
         $objPdf = new \Cezpdf('A4');
         $objPdf->setEncryption('', '', array('print'));
-        $objPdf->selectFont(ASCMS_LIBRARY_PATH.'/ezpdf/fonts/'.$this->font);
+        $objPdf->selectFont(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseLibraryPath() . '/ezpdf/fonts/' . $this->font);
         $objPdf->ezSetMargins(0, 0, 0, 0); // Reset margins
         $objPdf->setLineStyle(0.5);
         $marginTop = 30;

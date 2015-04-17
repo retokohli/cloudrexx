@@ -247,7 +247,7 @@ class Orders
         $backend = ($objInit->mode == 'backend');
         if (!$objTemplate) {
             $objTemplate = new \Cx\Core\Html\Sigma(
-                ASCMS_MODULE_PATH.'/Shop/View/Template/Backend');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
 //DBG::log("Orders::view_list(): new Template: ".$objTemplate->get());
             $objTemplate->loadTemplateFile('module_shop_orders.html');
 //DBG::log("Orders::view_list(): loaded Template: ".$objTemplate->get());
@@ -520,7 +520,7 @@ if (!$limit) {
 
         if (!$objTemplate || !$objTemplate->blockExists('no_order')) {
             $objTemplate = new \Cx\Core\Html\Sigma(
-                ASCMS_MODULE_PATH.'/Shop/View/Template/Backend');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
             $objTemplate->loadTemplateFile('module_shop_statistic.html');
         }
         $objTemplate->setGlobalVariable($_ARRAYLANG);

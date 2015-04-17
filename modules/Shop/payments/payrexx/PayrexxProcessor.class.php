@@ -93,8 +93,8 @@ class PayrexxProcessor
         exit;
 
         // modal solution, not yet implemented
-        $modalJs = ASCMS_MODULE_WEB_PATH . '/Shop/payments/payrexx/modal.js';
-        $jqueryJs = ASCMS_PATH_OFFSET . '/lib/javascript/jqeury/2.0.2/js/jquery.min.js';
+        $modalJs = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/payments/payrexx/modal.js';
+        $jqueryJs = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseOffsetPath() . '/lib/javascript/jqeury/2.0.2/js/jquery.min.js';
         $code = <<<EOF
 <a style="display: none;" class="payrexx-modal-window" href="#" data-href="{PAYREXX_LINK}"></a>
 <script type="text/javascript" src= "$jqueryJs"></script>
@@ -278,8 +278,8 @@ class PayrexxProcessor
         exit;
 
         // modal solution, not yet implemented
-        $modalJs = ASCMS_MODULE_WEB_PATH . '/Shop/payments/payrexx/modal.js';
-        $jqueryJs = ASCMS_PATH_OFFSET . '/lib/javascript/jqeury/2.0.2/js/jquery.min.js';
+        $modalJs = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/payments/payrexx/modal.js';
+        $jqueryJs = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseOffsetPath() . '/lib/javascript/jqeury/2.0.2/js/jquery.min.js';
         $code = <<<EOF
 <a style="display: none;" class="payrexx-modal-window" href="#" data-href="{PAYREXX_LINK}"></a>
 <script type="text/javascript" src= "$jqueryJs"></script>
