@@ -145,14 +145,7 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
     {
         global $objInit;
 
-        /*if ($objInit->mode == 'backend') {
-            $strValue = contrexx_addslashes($strValue);
-        } else {
-            //$strValue = strip_tags($strValue, )
-
-            $strValue = $this->BBCodeToHTML(contrexx_stripslashes($strValue));
-        }   */
-        $strValue = contrexx_input2raw($strValue);
+        $strValue = contrexx_raw2xhtml($strValue);
 
         return $strValue;
     }
