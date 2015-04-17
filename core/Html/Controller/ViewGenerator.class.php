@@ -448,7 +448,7 @@ class ViewGenerator {
                 }
             }
         } elseif ($entityId && $this->object->entryExists($entityId)) {
-            if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Model\Entity\Url')) {
+            if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
                 $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
             }
             $this->options['cancelUrl']->setParam('editid', null);
