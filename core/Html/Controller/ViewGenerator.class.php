@@ -411,9 +411,10 @@ class ViewGenerator {
         $entityObject = \Env::get('em')->getClassMetadata($entityClass);
         $primaryKeyNames = $entityObject->getIdentifierFieldNames();
         if (!$entityId && !empty($this->options['functions']['add'])) {
-            $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $cancelUrl->setParam('add', null);
-            $this->options['cancelUrl'] = $cancelUrl;
+            if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
+                $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
+            }
+            $this->options['cancelUrl']->setParam('add', null);
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
             $actionUrl->setParam('add', 1);
@@ -447,9 +448,10 @@ class ViewGenerator {
                 }
             }
         } elseif ($entityId && $this->object->entryExists($entityId)) {
-            $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $cancelUrl->setParam('editid', null);
-            $this->options['cancelUrl'] = $cancelUrl;
+            if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Model\Entity\Url')) {
+                $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
+            }
+            $this->options['cancelUrl']->setParam('editid', null);
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
             $actionUrl->setParam('editid', null);
@@ -499,7 +501,6 @@ class ViewGenerator {
             }
             $renderArray = array_merge($sortedData,$renderArray);
         }
-        
         $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClass, $title, $this->options);
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
