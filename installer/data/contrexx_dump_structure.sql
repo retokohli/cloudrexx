@@ -377,6 +377,42 @@ CREATE TABLE `contrexx_core_module_linkmanager_link` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_affiliate_credit` (
+  `id` int(11) NOT NULL auto_increment,
+  `subscription_id` int(11) default NULL,
+  `currency_id` int(11) default NULL,
+  `referee_id` int(5) unsigned NOT NULL,
+  `payout_id` int(11) default NULL,
+  `credited` tinyint(1) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `UNIQ_4775298D9A1887DC` (`subscription_id`),
+  KEY `IDX_4775298D38248176` (`currency_id`),
+  KEY `IDX_4775298D4A087CA2` (`referee_id`),
+  KEY `IDX_4775298DC6D61B7F` (`payout_id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_4` FOREIGN KEY (`payout_id`) REFERENCES `contrexx_core_module_multisite_affiliate_payout` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_1` FOREIGN KEY (`subscription_id`) REFERENCES `contrexx_module_order_subscription` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_2` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_3` FOREIGN KEY (`referee_id`) REFERENCES `contrexx_access_users` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_affiliate_payout` (
+  `id` int(11) NOT NULL auto_increment,
+  `currency_id` int(11) default NULL,
+  `referee_id` int(5) unsigned NOT NULL,
+  `date` datetime NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `IDX_159AEE7138248176` (`currency_id`),
+  KEY `IDX_159AEE714A087CA2` (`referee_id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_payout_ibfk_2` FOREIGN KEY (`referee_id`) REFERENCES `contrexx_access_users` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_payout_ibfk_1` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_cron_mail` (
   `id` int(11) NOT NULL auto_increment,
   `active` tinyint(1) NOT NULL,
