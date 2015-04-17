@@ -611,6 +611,10 @@ function selectAll(control){
     for (i = 0; i < control.length; ++i) {
         control.options[i].selected = true;
     }
+           
+    \$J.each(instancesToManipulate, function(i, v) {
+        v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+    });        
 }
 
 function deselectAll(control){
@@ -629,7 +633,7 @@ var activeLang = new Array($arrActiveLang);
             var that = \$J(this);
             var id = \$J(this).data('id');
             
-            \$J.each(activeLang, function(i, v) {                
+            \$J.each(activeLang, function(i, v) {
                 if (\$J('#mediadirInputfield_'+ id +'_'+ v).val() == that.data('lastDefaultValue')) {
                     \$J('#mediadirInputfield_'+ id +'_'+ v).val(that.val());
                 }
@@ -649,6 +653,8 @@ var activeLang = new Array($arrActiveLang);
 if ( typeof(CKEDITOR) !== "undefined" ) {
     var lastCKeditorValues = new Array();
     var processedCKeditorInstances = new Array();
+    var instancesToManipulate = new Array();
+    var wysiwygId = 0;
     CKEDITOR.on("instanceReady", function(event)
     {
         for ( instance in CKEDITOR.instances )
@@ -659,20 +665,28 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
                 langId   = fieldArr[3];                
 
                 if (langId == '0') {
-                   lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
-                   CKEDITOR.instances[instance].on('change', function (ev) {                
+                    lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
+                    CKEDITOR.instances[instance].on('focus', function (ev) {
                         fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
-                        var id     = fieldArr[1];                
-                        \$minimized = \$J('#mediadirInputfield_' + id + '_ELEMENT_Minimized');
-
+                        wysiwygId     = fieldArr[1];                
+                        \$minimized = \$J('#mediadirInputfield_' + wysiwygId + '_ELEMENT_Minimized');
+                        instancesToManipulate = [];
                         if (\$minimized.is(":visible")) {                            
-                            \$J.each(activeLang, function(i, v) {                    
-                                if (CKEDITOR.instances['mediadirInputfield['+ id +']['+ v +']'].getData() == lastCKeditorValues[id]) {
-                                    CKEDITOR.instances['mediadirInputfield['+ id +']['+ v +']'].setData(CKEDITOR.instances['mediadirInputfield['+ id +'][0]'].getData());
+                            \$J.each(activeLang, function(i, v) {
+                                if (CKEDITOR.instances['mediadirInputfield['+ wysiwygId +']['+ v +']'].getData() === lastCKeditorValues[wysiwygId]) {
+                                    instancesToManipulate.push(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +']['+ v +']']);
                                 }
                             });
-                            lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
-                        }                
+                        } 
+                   });
+                   CKEDITOR.instances[instance].on('blur', function (ev) {
+                        fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
+                        wysiwygId     = fieldArr[1];                
+                        \$J.each(instancesToManipulate, function(i, v) {
+                            v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+                        });
+                        instancesToManipulate = [];
+                        lastCKeditorValues[wysiwygId] = CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData();
                    });
                 }
                 if (langId == defaultLang) {           
