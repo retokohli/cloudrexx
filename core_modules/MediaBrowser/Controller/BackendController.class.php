@@ -95,5 +95,14 @@ class BackendController extends SystemComponentBackendController
             'MEDIABROWSER_CODE1_RAW',
             htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser'))
         );
+        $template->setVariable(
+            'MEDIABROWSER_FOLDER_WIDGET',
+            new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($this->cx->getWebsiteImagesContentPath())
+        );
+        $template->setVariable(
+            'MEDIABROWSER_FOLDER_WIDGET_VIEW_MODE',
+            new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($this->cx->getWebsiteImagesContentPath(), true)
+        );
+        
     }
 }
