@@ -84,3 +84,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_REFERRALS_LABEL'] = 'Subscr
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_NO_REFERRALS_SIGNUP'] = 'Non of your referrals signed up for a subscription yet.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL'] = 'PayPal account email';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL_LABEL'] = 'Please set your PayPal account email to which your revenue share shall be paid out to';
+$_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NEXT_PAYMENT_LABEL'] = 'Your next payment';

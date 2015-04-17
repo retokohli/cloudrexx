@@ -117,9 +117,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 //parse the form 
                 !empty($affiliateId) && !empty($paypalEmailAddress) ? $template->hideBlock('showAffiliateForm') : $template->touchBlock('showAffiliateForm');
                 
+                //get the sum of affiliate credit amount
+                $affiliateCreditRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit');
+                $totalAffiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
                 $template->setVariable(array(
                     'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => !empty($affiliateId) ? $affiliateId : '',
-                    'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => !empty($paypalEmailAddress) ? $paypalEmailAddress : $objUser->getEmail()
+                    'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => !empty($paypalEmailAddress) ? $paypalEmailAddress : $objUser->getEmail(),
+                    'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> $totalAffiliateTotalCreditAmount
                 ));
                 //initialize
                 $objJs = \ContrexxJavascript::getInstance();

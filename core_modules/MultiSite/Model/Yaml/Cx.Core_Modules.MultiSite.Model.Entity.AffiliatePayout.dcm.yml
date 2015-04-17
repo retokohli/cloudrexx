@@ -1,0 +1,33 @@
+Cx\Core_Modules\MultiSite\Model\Entity\AffiliatePayout:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\AffiliatePayoutRepository
+  table: core_module_multisite_affiliate_payout
+  
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    date:
+      type: datetime
+    amount:
+      type: decimal
+    
+  manyToOne: # owning side
+    currency:
+      targetEntity: Cx\Modules\Crm\Model\Entity\Currency
+      joinColumn:
+        name: currency_id
+        referencedColumnName: id
+        
+    referee:
+      targetEntity: Cx\Core\User\Model\Entity\User
+      joinColumn:
+        name: referee_id
+        referencedColumnName: id
+      
+  oneToMany: # inverse side
+    credits:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit
+      mappedBy: payout

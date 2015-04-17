@@ -1,0 +1,43 @@
+Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\AffiliateCreditRepository
+  table: core_module_multisite_affiliate_credit
+  
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    credited:
+      type: boolean
+    amount:
+      type: decimal
+    
+  oneToOne: #owning side
+    subscription:
+      targetEntity: Cx\Modules\Order\Model\Entity\Subscription
+      joinColumn:
+        name : subscription_id
+        referencedColumnName: id
+          
+  manyToOne:
+    currency:
+      targetEntity: Cx\Modules\Crm\Model\Entity\Currency
+      joinColumn:
+        name: currency_id
+        referencedColumnName: id
+        
+    referee:
+      targetEntity: Cx\Core\User\Model\Entity\User
+      joinColumn:
+        name: referee_id
+        referencedColumnName: id
+
+    payout:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\AffiliatePayout
+      inversedBy: credits
+      joinColumn:
+        name: payout_id
+        referencedColumnName: id
+        cascade: [remove]
