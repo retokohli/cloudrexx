@@ -1026,7 +1026,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return array(
             'status'    => 'success',
             'log'       => \DBG::getMemoryLogs(),
-            'message'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']
+            'message'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS'],
+            'reload'    => true,
         );
     }
     

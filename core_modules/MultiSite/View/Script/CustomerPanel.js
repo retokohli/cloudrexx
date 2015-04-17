@@ -20,7 +20,7 @@ cx.ready(function() {
  * @param string  type           Type of message(error, warning, info, success)
  * @param boolean hideAfterDelay Hide the modal after a delay, default true
  */
-function showMessage(msgTxt, type, hideAfterDelay) {    
+function showMessage(msgTxt, type, hideAfterDelay, reload) {
     type           = jQuery.inArray(type, customerPanel.messageTypes) !== -1 ? type : 'error';
     hideAfterDelay = typeof hideAfterDelay !== 'undefined' ? hideAfterDelay : true;
     
@@ -35,8 +35,12 @@ function showMessage(msgTxt, type, hideAfterDelay) {
     $content.html(msgTxt);
     $objModal.modal('show');
 
-    if (hideAfterDelay) {
-      setTimeout(function() {$objModal.modal('hide');}, 2000);
+    if(reload){
+        window.location.reload();
+    } else if (hideAfterDelay) {
+        setTimeout(function() {
+            $objModal.modal('hide');
+        }, 2000);
     }
 }
 
@@ -422,7 +426,7 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
                                                                          : response.message;
       
       jQuery(jsModalSelector).on('hidden.bs.modal', function () {
-        showMessage(message, response.status);//show status message 
+        showMessage(message, response.status, true, response.data.reload);//show status message
       });
       jQuery(jsModalSelector).modal('hide');
       if (response.status == 'success') {
