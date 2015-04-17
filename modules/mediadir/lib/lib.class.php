@@ -650,6 +650,30 @@ var activeLang = new Array($arrActiveLang);
                 
 });
 
+function rememberWysiwygFields(ev) {
+    fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
+    wysiwygId     = fieldArr[1];                
+    \$minimized = \$J('#mediadirInputfield_' + wysiwygId + '_ELEMENT_Minimized');
+    instancesToManipulate = [];
+    if (\$minimized.is(":visible")) {                            
+        \$J.each(activeLang, function(i, v) {
+            if (CKEDITOR.instances['mediadirInputfield['+ wysiwygId +']['+ v +']'].getData() === lastCKeditorValues[wysiwygId]) {
+                instancesToManipulate.push(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +']['+ v +']']);
+            }
+        });
+    } 
+}
+
+function copyWysiwygFields(ev) {
+    fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
+    wysiwygId     = fieldArr[1];
+    \$J.each(instancesToManipulate, function(i, v) {
+        v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+    });
+    instancesToManipulate = [];
+    lastCKeditorValues[wysiwygId] = CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData();
+}
+
 if ( typeof(CKEDITOR) !== "undefined" ) {
     var lastCKeditorValues = new Array();
     var processedCKeditorInstances = new Array();
@@ -667,26 +691,15 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
                 if (langId == '0') {
                     lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
                     CKEDITOR.instances[instance].on('focus', function (ev) {
-                        fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
-                        wysiwygId     = fieldArr[1];                
-                        \$minimized = \$J('#mediadirInputfield_' + wysiwygId + '_ELEMENT_Minimized');
-                        instancesToManipulate = [];
-                        if (\$minimized.is(":visible")) {                            
-                            \$J.each(activeLang, function(i, v) {
-                                if (CKEDITOR.instances['mediadirInputfield['+ wysiwygId +']['+ v +']'].getData() === lastCKeditorValues[wysiwygId]) {
-                                    instancesToManipulate.push(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +']['+ v +']']);
-                                }
-                            });
-                        } 
+                        rememberWysiwygFields(ev);
                    });
                    CKEDITOR.instances[instance].on('blur', function (ev) {
-                        fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
-                        wysiwygId     = fieldArr[1];                
-                        \$J.each(instancesToManipulate, function(i, v) {
-                            v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
-                        });
-                        instancesToManipulate = [];
-                        lastCKeditorValues[wysiwygId] = CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData();
+                       copyWysiwygFields(ev);
+                   });
+                   CKEDITOR.instances[instance].on('mode', function (ev) {
+                        if ( this.mode == 'source' ) {
+                            rememberWysiwygFields(ev);
+                        }
                    });
                 }
                 if (langId == defaultLang) {           
@@ -694,7 +707,6 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
                         fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
                         var id     = fieldArr[1];
                         \$expand    = \$J('#mediadirInputfield_' + id + '_ELEMENT_Expanded');
-
                         if (\$expand.is(":visible")) {
                             CKEDITOR.instances['mediadirInputfield['+ id +'][0]'].setData(ev.editor.getData());
                             lastCKeditorValues[id] = ev.editor.getData();
@@ -715,7 +727,11 @@ function ExpandMinimize(toggle){
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }                                                                          
 
-function ExpandMinimizeMultiple(toggleId, toggleKey){   
+function ExpandMinimizeMultiple(toggleId, toggleKey){
+    \$J.each(instancesToManipulate, function(i, v) {
+        v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+    });
+
     elm1 = document.getElementById('mediadirInputfield_' + toggleId +  '_' + toggleKey + '_Minimized');  
     elm2 = document.getElementById('mediadirInputfield_' + toggleId +  '_' + toggleKey + '_Expanded');
     
