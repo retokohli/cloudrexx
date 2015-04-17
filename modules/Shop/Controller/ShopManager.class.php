@@ -49,8 +49,8 @@ class ShopManager extends ShopLibrary
         
         $this->checkProfileAttributes();
         
-        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
-        self::$objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Shop/View/Template/Backend');
+        self::$defaultImage = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName;
+        self::$objTemplate = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 //DBG::log("ARRAYLANG: ".var_export($_ARRAYLANG, true));
         self::$objTemplate->setGlobalVariable(
@@ -620,7 +620,7 @@ class ShopManager extends ShopLibrary
                 'IMG_ID' => $arrTemplateArray[$x]['id'],
                 'CLASS_NAME' => 'row'.($x % 2 + 1),
                 // cms offset fix for admin images/icons:
-                'SHOP_CMS_OFFSET' => ASCMS_PATH_OFFSET,
+                'SHOP_CMS_OFFSET' => \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath(),
             ));
             self::$objTemplate->parse('imgRow');
         }
@@ -1645,8 +1645,8 @@ if ($test === NULL) {
                 $virtual = $objCategory->virtual();
                 $pictureFilename = $objCategory->picture();
                 if ($pictureFilename != '') {
-                    $picturePath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$pictureFilename;
-                    $thumbPath = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                    $picturePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$pictureFilename;
+                    $thumbPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
                         \ImageManager::getThumbnailFilename($pictureFilename);
                 }
             }
@@ -1811,8 +1811,8 @@ if ($test === NULL) {
 //DBG::log("store_category(): Making thumb");
             $objImage = new \ImageManager();
             if (!$objImage->_createThumbWhq(
-                ASCMS_SHOP_IMAGES_PATH.'/',
-                ASCMS_SHOP_IMAGES_WEB_PATH.'/',
+                \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/',
+                \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/',
                 $picture,
                 \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop'),
                 \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height','Shop'),
@@ -2087,7 +2087,7 @@ if ($test === NULL) {
             'shop_products_block', 'module_shop_product_manage.html');
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
-            'SHOP_DELETE_ICON' => ASCMS_PATH_OFFSET.'/core/Core/View/Media/icons/delete.gif',
+            'SHOP_DELETE_ICON' => \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseOffsetPath() . '/core/Core/View/Media/icons/delete.gif',
             'SHOP_NO_PICTURE_ICON' => self::$defaultImage
         ));
         if ($product_id > 0) {
@@ -2202,39 +2202,39 @@ if ($test === NULL) {
                 Manufacturer::getMenuoptions($objProduct->manufacturer_id()),
             'SHOP_PICTURE1_IMG_SRC' =>
                 (   !empty($arrImages[1]['img'])
-                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
+                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
                         \ImageManager::getThumbnailFilename($arrImages[1]['img']))
-                    ? contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
                           \ImageManager::getThumbnailFilename($arrImages[1]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE2_IMG_SRC' =>
                 (   !empty($arrImages[2]['img'])
-                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
+                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
                         \ImageManager::getThumbnailFilename($arrImages[2]['img']))
-                    ? contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
                       \ImageManager::getThumbnailFilename($arrImages[2]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE3_IMG_SRC' =>
                 (   !empty($arrImages[3]['img'])
-                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
+                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
                         \ImageManager::getThumbnailFilename($arrImages[3]['img']))
-                    ? contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
                       \ImageManager::getThumbnailFilename($arrImages[3]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE1_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[1]['img'])
-                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[1]['img'])
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[1]['img']
+                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[1]['img'])
+                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[1]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE2_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[2]['img'])
-                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[2]['img'])
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[2]['img']
+                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[2]['img'])
+                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[2]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE3_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[3]['img'])
-                 && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.$arrImages[3]['img'])
-                    ? ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$arrImages[3]['img']
+                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[3]['img'])
+                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[3]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE1_IMG_WIDTH' => $arrImages[1]['width'],
             'SHOP_PICTURE1_IMG_HEIGHT' => $arrImages[1]['height'],
@@ -2455,8 +2455,8 @@ if ($test === NULL) {
             if (   !empty($arrImage['img'])
                 && $arrImage['img'] != ShopLibrary::noPictureName) {
                 if (!$objImage->_createThumbWhq(
-                    ASCMS_SHOP_IMAGES_PATH.'/',
-                    ASCMS_SHOP_IMAGES_WEB_PATH.'/',
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/',
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/',
                     $arrImage['img'],
                     \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop'),
                     \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height','Shop'),

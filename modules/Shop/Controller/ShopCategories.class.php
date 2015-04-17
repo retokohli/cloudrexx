@@ -14,8 +14,8 @@
 
 namespace Cx\Modules\Shop\Controller;
 
-define('SHOP_CATEGORY_IMAGE_PATH',      ASCMS_SHOP_IMAGES_PATH.'/');
-define('SHOP_CATEGORY_IMAGE_WEB_PATH',  ASCMS_SHOP_IMAGES_WEB_PATH.'/');
+define('SHOP_CATEGORY_IMAGE_PATH',      \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath() . '/');
+define('SHOP_CATEGORY_IMAGE_WEB_PATH',  \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/');
 
 
 /**

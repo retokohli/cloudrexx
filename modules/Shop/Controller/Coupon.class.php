@@ -1149,7 +1149,7 @@ class Coupon
                     '<div class="layer_url" id="'.$coupon_uri_id.'">'.
                     \Html::getInputText('dummy',
                         'http://'.$_CONFIG['domainUrl'].
-                        ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/' . CONTREXX_DIRECTORY_INDEX .
                         '?section=Shop'.MODULE_INDEX.
                         '&coupon_code='.$objCoupon->code, false,
                         'readonly="readonly"'.

@@ -134,13 +134,13 @@ class Mail
 die("Mail::send(): Obsolete method called!");
         global $_CONFIG;
 
-        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+        if (!@include_once \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseLibraryPath() . '/phpmailer/class.phpmailer.php') {
             return false;
         }
         $objMail = new \phpmailer();
         if (   isset($_CONFIG['coreSmtpServer'])
             && $_CONFIG['coreSmtpServer'] > 0
-            && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+            && @include_once \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCorePath() . '/SmtpSettings.class.php') {
             if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                 $objMail->IsSMTP();
                 $objMail->Host = $arrSmtp['hostname'];
@@ -346,7 +346,7 @@ die("Mail::storeTemplate(): Obsolete method called!");
      */
     static function errorHandler()
     {
-        if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
+        if (!include_once \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseFrameworkPath() .'/UpdateUtil') return false;
         if (\Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
             // Make sure there are no bodies lying around
             \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_NAME);

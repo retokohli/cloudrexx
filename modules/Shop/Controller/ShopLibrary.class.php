@@ -242,14 +242,14 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         global $_ARRAYLANG;
 
         $arrMatch = array();
-        $shopImageFolderRe = '/^'.preg_quote(ASCMS_SHOP_IMAGES_WEB_PATH.'/', '/').'/';
+        $shopImageFolderRe = '/^'.preg_quote(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/', '/').'/';
         $imageFileTarget = $imageFileSource;
         if (!preg_match($shopImageFolderRe, $imageFileSource))
-            $imageFileTarget = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.basename($imageFileSource);
+            $imageFileTarget = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . basename($imageFileSource);
         // If the image is situated in or below the shop image folder,
         // don't bother to copy it.
         if (!preg_match($shopImageFolderRe, $imageFileSource)) {
-            if (file_exists(ASCMS_PATH.$imageFileTarget)
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileTarget) 
              && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
                 $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
                 \Message::information(sprintf(
@@ -257,7 +257,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
                     basename($imageFileSource), basename($imageFileTarget)
                 ));
             }
-            if (!copy(ASCMS_PATH.$imageFileSource, ASCMS_PATH.$imageFileTarget)) {
+            if (!copy(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileSource, \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileTarget)) {
                 //the function addError() declaration is missing, but defined so those lines are commented
 //                self::addError(
 //                    $imageFileSource.': '.

@@ -1689,7 +1689,7 @@ class Order
               ? 'module_shop_order_edit.html'
               : 'module_shop_order_details.html');
             $objTemplate = new \Cx\Core\Html\Sigma(
-                ASCMS_MODULE_PATH.'/Shop/View/Template/Backend');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
 //DBG::log("Orders::view_list(): new Template: ".$objTemplate->get());
             $objTemplate->loadTemplateFile($template_name);
 //DBG::log("Orders::view_list(): loaded Template: ".$objTemplate->get());

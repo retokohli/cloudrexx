@@ -338,9 +338,9 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
         return
             '<br /><br /><img src="'.
             // Is there a language dependent version?
-            (\File::exists(SHOP_PAYMENT_LOGO_PATH.$imageName_lang)
-              ? ASCMS_PATH_OFFSET.SHOP_PAYMENT_LOGO_PATH.$imageName_lang
-              : ASCMS_PATH_OFFSET.SHOP_PAYMENT_LOGO_PATH.$imageName).
+            (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBasePath() . SHOP_PAYMENT_LOGO_PATH.$imageName_lang)
+              ? \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseOffsetPath() . SHOP_PAYMENT_LOGO_PATH . $imageName_lang 
+              : \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseOffsetPath() . SHOP_PAYMENT_LOGO_PATH . $imageName) .
             '" alt="" title="" /><br /><br />';
     }
 
@@ -355,7 +355,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
     {
         global $_ARRAYLANG;
 
-        $serverBase = $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/';
+        $serverBase = $_SERVER['SERVER_NAME'] . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/';
         $arrShopOrder = array(
             'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
             'CURRENCY' => Currency::getActiveCurrencyCode(),
