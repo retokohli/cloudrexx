@@ -132,7 +132,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objMediadir->getHeadlines($mediadirCheck);
                 }
                 if ($objTemplate->blockExists('mediadirLatest')){
-                    $objMediadir->getLatestEntries();
+                    $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
+                    $foundOne = false;
+                    foreach ($objMediadirForms->getForms() as $key => $arrForm) {
+                        if ($objTemplate->blockExists('mediadirLatest_form_'.$arrForm['formCmd'])) {
+                            $objMediadir->getLatestEntries($key);
+                            $foundOne = true;
+                        }
+                    }
+                    //for the backward compatibility
+                    if(!$foundOne) {
+                        $objMediadir->getLatestEntries();
+                    }
                 }
                 break;
             default:

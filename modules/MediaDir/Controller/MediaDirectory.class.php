@@ -534,12 +534,12 @@ class MediaDirectory extends MediaDirectoryLibrary
     /**
      * Show the latest entries
      */
-    function getLatestEntries()
+    function getLatestEntries($formId = null)
     {
         global $objTemplate;
         
         $objEntry = new MediaDirectoryEntry($this->moduleName);
-        $objEntry->getEntries(null, null, null, null, null, null, true, null, $this->arrSettings['settingsLatestNumHeadlines']);
+        $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumHeadlines'], null, null, $formId);
         $objEntry->setStrBlockName($this->moduleNameLC.'Latest');
         
         $objEntry->listEntries($objTemplate, 2);
