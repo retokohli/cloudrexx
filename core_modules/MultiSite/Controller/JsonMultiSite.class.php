@@ -122,6 +122,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateWebsiteConfig'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteSubscriptionInfo'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'websiteRestore'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
+            'createNewWebsiteBySubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'getUser'               => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
@@ -3901,6 +3902,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             'subscriptionRenewalUnit'       => $subscription->getRenewalUnit(),
                             'subscriptionRenewalQuantifier' => $subscription->getRenewalQuantifier(),
                             'subscriptionProductId'         => $subscription->getProduct()->getId(),
+                            'subscriptionId'                => $subscription->getId()
                         );
                     }
                     return array('status' => 'success', 'websiteInfo' => $metaInfo);
@@ -4072,6 +4074,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath)
     {
+        \DBG::log('Create new website on restore: '.$websiteName);
         $websiteInfoArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'info/meta.yml');
         if (empty($websiteInfoArray)) {
             return false;
@@ -4085,10 +4088,25 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if ($websiteInfoArray['subscription']) {
             $params['product_id']    = $websiteInfoArray['subscription']['subscriptionProductId'];
             $params['renewalOption'] = $websiteInfoArray['subscription']['subscriptionRenewalUnit'];
+            $subscriptionId          = $websiteInfoArray['subscription']['subscriptionId'];
         }
         
-        //create new website
-        $response = JsonMultiSite::executeCommandOnManager('signup', $params);
+        if (empty($subscriptionId) || empty($params['product_id'])) {
+            return false;
+        }
+        
+        $product = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findOneBy(array('id' => $params['product_id']));
+        
+        if (!$product) {
+            return false;
+        }
+        
+        if ($product->getEntityClass() == 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection') {
+            $response = JsonMultiSite::executeCommandOnManager('createNewWebsiteBySubscription', array('subscriptionId' => $subscriptionId, 'websiteName' => $websiteName, 'websiteEmail' => $params['multisite_email_address']));
+        } else {
+            $response = JsonMultiSite::executeCommandOnManager('signup', $params);
+        }
+        
         if ($response->status == 'error' || $response->data->status == 'error') {
             return false;
         }
@@ -4105,6 +4123,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function websiteDataRestore($websiteName, $websiteBackupFilePath)
     {
+        \DBG::log('Restore website DataBase and Repository: '.$websiteName);
         $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $websiteName;
         
         if (!$this->extractWebsiteDatabase($websitePath, $websiteBackupFilePath)) {
@@ -4205,6 +4224,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function websiteInfoRestore($websiteName, $websiteBackupFilePath)
     {
+        \DBG::log('Restore website Info: '.$websiteName);
         $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
         $website = $websiteServiceRepo->findOneBy(array('name' => $websiteName));
         if (!$website) {
@@ -4228,8 +4248,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'websiteConfig'      => $configSettingArray
             );
         
+        
+        if (!$this->updateWebsiteNetDomainsOnRestore($website, $websiteBackupFilePath)) {
+            return false;
+        }
+        
         $resp = JsonMultiSite::executeCommandOnWebsite('updateWebsiteConfig', $websiteConfigInfo, $website);
-       
         if ($resp->status == 'error' || $resp->data->status == 'error') {
             return false;
         }
@@ -4265,6 +4289,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
     
     /**
+     * updateWebsiteNetDomainsOnRestore
+     * 
+     * @param array  $website               websiteObject
+     * @param string $websiteBackupFilePath website backup path
+     * 
+     * @return boolean
+     */
+    public function updateWebsiteNetDomainsOnRestore(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $websiteBackupFilePath)
+    {
+        
+        $websiteDomainObjArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'dataRepository/config/DomainRepository.yml');
+        if (empty($websiteDomainObjArray)) {
+            return true;
+        }
+        
+        foreach ($websiteDomainObjArray['data'] as $domain) {
+            $resp = JsonMultiSite::executeCommandOnWebsite('mapNetDomain', array('domainName' => $domain->getName()), $website);
+            if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Update website configuration settings
      * 
      * @param array $websiteInfo websiteConfig details
@@ -4275,7 +4324,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (empty($websiteInfo)) {
             return false;
         }
-        $updateConfigArray = array('systemStatus', 'languageDetection', 'coreGlobalPageTitle', 'forceDomainUrl', 'coreListProtectedPages',
+        $updateConfigArray = array('systemStatus', 'languageDetection', 'coreGlobalPageTitle', 'mainDomainId', 'forceDomainUrl', 'coreListProtectedPages',
             'searchVisibleContentOnly', 'advancedUploadFrontend', 'forceProtocolFrontend', 'coreAdminEmail', 'contactFormEmail', 'contactCompany',
             'contactAddress', 'contactZip', 'contactPlace', 'contactCountry', 'contactPhone', 'contactFax', 'dashboardNews', 'dashboardStatistics',
             'advancedUploadBackend', 'sessionLifeTime', 'sessionLifeTimeRememberMe', 'forceProtocolBackend', 'coreIdsStatus', 'passwordComplexity',
@@ -4349,20 +4398,18 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function updateWebsiteSubscriptionInfo($params)
     {
-        if (empty($params)) {
+        if (empty($params) || empty($params['post']['websiteId']) || empty($params['post']['subscription'])) {
             return array('status' => 'error');
         }
         try {
             $websiteId         = isset($params['post']['websiteId']) ? $params['post']['websiteId'] : '';
             $subscriptionInfo  = isset($params['post']['subscription']) ? $params['post']['subscription'] : '';
-            if (empty($websiteId) || empty($subscriptionInfo)) {
-                return array('status' => 'error');
-            }
-                    
+                 
             $subscription = $this->getSubscriptionByWebsiteId($websiteId);
             if (!$subscription) {
                 return array('status' => 'error');
             }
+            
             $subscriptionCreatedDate = isset($subscriptionInfo['subscriptionCreatedDate']) ? new \DateTime($subscriptionInfo['subscriptionCreatedDate']) : null;
             $subscriptionExpiredDate = isset($subscriptionInfo['subscriptionExpiredDate']) ? new \DateTime($subscriptionInfo['subscriptionExpiredDate']) : null;
             $subscriptionRenewalDate = isset($subscriptionInfo['subscriptionRenewalDate']) ? new \DateTime($subscriptionInfo['subscriptionRenewalDate']) : null;
@@ -4415,6 +4462,38 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
 
+    /**
+     * createNewWebsiteBySubscription
+     * 
+     * @param array $params
+     * @return array
+     */
+    public function createNewWebsiteBySubscription($params)
+    {
+        
+        $subscriptionId = isset($params['post']['subscriptionId']) ? (int)$params['post']['subscriptionId'] : '';
+        $websiteName    = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
+        $email          = isset($params['post']['websiteEmail']) ? contrexx_input2raw($params['post']['websiteEmail']) : '';
+        
+        if (   empty($subscriptionId) 
+            || empty($websiteName) 
+            || empty($email) 
+            ) {
+            return array('status' => 'error');
+        }
+        
+        $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => $email));
+        if (!$objUser) {
+            return array('status' => 'error');
+        }
+        
+        $response = \Cx\Core_Modules\MultiSite\Controller\ComponentController::createNewWebsiteInSubscription($subscriptionId, $websiteName, $objUser);
+        if (!$response || $response->status == 'error' || $response->data->status == 'error') {
+            return array('status' => 'error');
+        }
+        return array('status' => 'success');
+    }
+    
     protected function activateDebuggingToMemory() {
         // check if memory logging shall be activated
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {

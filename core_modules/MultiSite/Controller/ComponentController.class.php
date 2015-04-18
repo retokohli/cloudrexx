@@ -742,7 +742,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             $resp = array();
             if (!\FWValidator::isEmpty($subscriptionId)) {
-                $resp = $this->createNewWebsiteInSubscription($subscriptionId, $websiteName);
+                $resp = self::createNewWebsiteInSubscription($subscriptionId, $websiteName);
             } elseif (!\FWValidator::isEmpty($productId)) {
                 $resp = $this->createNewWebsiteByProduct($productId, $websiteName);
             }
@@ -1569,10 +1569,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @param integer $subscriptionId Subscription id
      * @param string  $websiteName    Name of the website
+     * @param \User   $userObj        userObj
      * 
      * return array return's array that contains array('status' => success | error, 'message' => 'Status message')
      */
-    public function createNewWebsiteInSubscription($subscriptionId, $websiteName)
+    public static function createNewWebsiteInSubscription($subscriptionId, $websiteName, $userObj = null)
     {
         global $_ARRAYLANG;
         
@@ -1586,8 +1587,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             //get sign-in user crm id!
-            $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
-
+            $objUser = !empty($userObj) ? $userObj : \FWUser::getFWUserObject()->objUser;
+            
+            if (!$objUser) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+            }
+            
+            $crmContactId = $objUser->getCrmUserId();
             if (empty($crmContactId)) {
                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
             }
@@ -1609,7 +1615,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $websiteCollection->getQuota()));
                 }
                 //create new website object and add to website
-                $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, \FWUser::getFWUserObject()->objUser);
+                $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, $objUser);
                 $websiteCollection->addWebsite($website);
                 \Env::get('em')->persist($website);
                 // flush $website to database -> subscription will need the ID of $website
