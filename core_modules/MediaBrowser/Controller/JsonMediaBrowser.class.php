@@ -62,7 +62,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function getAccessableMethods()
     {
-        return array('getFiles', 'getSites', 'getSources', 'createThumbnails', 'folderWidget');
+        return array('getFiles', 'getSites', 'getSources', 'createThumbnails', 'folderWidget', 'removeFile');
     }
 
     /**
@@ -420,7 +420,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     {
         \cmsSession::getInstance();
         
-        $folderWidgetId = $params['get']['id'];
+        $folderWidgetId = isset($params['get']['id']) ? $params['get']['id'] : 0;
         if (   empty($folderWidgetId)
             || !isset($_SESSION['MediaBrowser'])
             || !isset($_SESSION['MediaBrowser']['FolderWidget'])
@@ -448,5 +448,42 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         
         return $arrFileNames;
     }
-            
+
+    /**
+     * Remove the file from Folder widget
+     * 
+     * @param array $params
+     */
+    public function removeFile($params)
+    {
+        \cmsSession::getInstance();
+        
+        $folderWidgetId = isset($params['get']['widget']) ? $params['get']['widget'] : 0;
+        $fileName       = isset($params['get']['file']) ? $params['get']['file'] : '';
+        if (   empty($folderWidgetId)
+            || empty($fileName)
+            || !isset($_SESSION['MediaBrowser'])
+            || !isset($_SESSION['MediaBrowser']['FolderWidget'])
+            || !isset($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
+            || $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['mode'] == \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget::MODE_VIEW_ONLY
+        ) {
+            return false;
+        }
+        
+        $folder = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
+        
+        if(!file_exists($folder .'/'. $fileName)) {
+            return false;
+        }
+        
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($folder .'/'. $fileName);
+            $objFile->delete();
+            return array();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
+        
+        return false;
+    }
 }

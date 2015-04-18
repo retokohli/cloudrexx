@@ -31,6 +31,9 @@ folderWidgetApp.factory('mediabrowserFiles', function ($http, $q) {
       },
       getMedia: function (widgetId) {
           return this.get('folderWidget&id=' + widgetId);
+      },
+      removeMedia: function (file, widgetId) {
+          return this.get('removeFile&file=' + file + '&widget=' + widgetId);
       }
   };
 });
@@ -43,6 +46,13 @@ folderWidgetApp.controller('MediaBrowserFolderWidgetCtrl', ['$scope', 'mediabrow
     mediabrowserFiles.getMedia(folderWidgetConfig.get('widgetId')).then(
         function getFiles(data) {
             $scope.files = data;
+        }
+    );
+  };  
+  $scope.removeFile = function (file) {
+    mediabrowserFiles.removeMedia(file, folderWidgetConfig.get('widgetId')).then(
+        function getFiles(data) {
+            $scope.refreshBrowser();
         }
     );
   };  
