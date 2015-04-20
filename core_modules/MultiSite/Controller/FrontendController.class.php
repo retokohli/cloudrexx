@@ -116,14 +116,22 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 empty($paypalEmailAddress) ? $template->touchBlock('showPaypalEmailAddressForm') : $template->hideBlock('showPaypalEmailAddressForm');
                 //parse the form 
                 !empty($affiliateId) && !empty($paypalEmailAddress) ? $template->hideBlock('showAffiliateForm') : $template->touchBlock('showAffiliateForm');
+                !empty($affiliateId) && !empty($paypalEmailAddress) ? $template->touchBlock('showAffiliateCreditTotalAmt') : $template->hideBlock('showAffiliateCreditTotalAmt');
                 
                 //get the sum of affiliate credit amount
                 $affiliateCreditRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit');
                 $totalAffiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
+                //get the currency id 
+                $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getCurrencyIdByCrmId($objUser->getCrmUserId());
+                if (empty($currencyId)) {
+                    $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
+                }
+                
+                $currencyObj = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
                 $template->setVariable(array(
                     'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => !empty($affiliateId) ? $affiliateId : '',
                     'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => !empty($paypalEmailAddress) ? $paypalEmailAddress : $objUser->getEmail(),
-                    'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> $totalAffiliateTotalCreditAmount
+                    'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> $totalAffiliateTotalCreditAmount . ($currencyObj ? ' ' . $currencyObj->getName() : '')
                 ));
                 //initialize
                 $objJs = \ContrexxJavascript::getInstance();
