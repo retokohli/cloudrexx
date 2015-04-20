@@ -19,11 +19,12 @@ use Cx\Core\Model\Model\Entity\MediaType;
  *
  * @copyright   Comvation AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
  */
 class MediaBrowserEventListener extends DefaultEventListener
 {
-
+    /**
+     * @param MediaBrowserConfiguration $mediaBrowserConfiguration
+     */
     public function mediasourceLoad(
         MediaBrowserConfiguration $mediaBrowserConfiguration
     ) {

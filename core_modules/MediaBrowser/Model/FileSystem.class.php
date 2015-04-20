@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Class FileSystem
+ *
  * @copyright   Comvation AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
@@ -22,8 +24,6 @@ use Cx\Lib\FileSystem\FileSystemException as OldFileSystemException;
  *
  * @copyright   Comvation AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
- * @subpackage  coremodule_mediabrowser
  */
 class FileSystem
 {
@@ -35,8 +35,8 @@ class FileSystem
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::createDirectory('files/Movies','PulpFiction');
      * ```
      *
-     * @param $path      String Path to the directory
-     * @param $directory String Name of the directory
+     * @param $path      string Path to the directory
+     * @param $directory string Name of the directory
      *
      * @throws CreateDirectoryException
      */
@@ -60,8 +60,8 @@ class FileSystem
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::removeDirectory('files/Movies','StarWarsVII');
      * ```
      *
-     * @param String $path      Path to the directory
-     * @param String $directory Name of the directory
+     * @param string $path      Path to the directory
+     * @param string $directory Name of the directory
      * @param bool   $force     Delete directory if it isn't empty
      *
      * @throws RemoveDirectoryException
@@ -86,9 +86,9 @@ class FileSystem
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveDirectory('files/Movies','files/Movies/Tarantino','PulpFiction');
      * ```
      *
-     * @param $sourcePath      String
-     * @param $destinationPath String
-     * @param $directory       String
+     * @param $sourcePath      string
+     * @param $destinationPath string
+     * @param $directory       string
      * @param $force
      *
      * @throws MoveDirectoryException
@@ -120,10 +120,10 @@ class FileSystem
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveFile('files/Movies','files/Movies/Tarantino','ReservoirDogs.jpg');
      * ```
      *
-     * @param $sourcePath             String
-     * @param $destinationPath        String
-     * @param $file                   String
-     * @param $newfileName            String
+     * @param $sourcePath             string
+     * @param $destinationPath        string
+     * @param $file                   string
+     * @param $newfileName            string
      * @param $force                  bool Overwrite existing file
      *
      * @throws MoveFileException
@@ -180,8 +180,8 @@ class FileSystem
      * \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveFile('files/Movies','ReservoirDogs.jpg');
      * ```
      *
-     * @param $path String
-     * @param $file String
+     * @param $path string
+     * @param $file string
      *
      * @throws RemoveFileException
      */
@@ -241,9 +241,9 @@ class FileSystem
      * Get the absolute path from the virtual path.
      * If the path is already absolute nothing will happen to it.
      *
-     * @param $virtualPath String The virtual Path
+     * @param $virtualPath string The virtual Path
      *
-     * @return String The absolute Path
+     * @return string The absolute Path
      */
     public static function getAbsolutePath($virtualPath)
     {
@@ -275,6 +275,8 @@ class FileSystem
     }
 
     /**
+     * Checks permission
+     *
      * @param $path
      *
      * @return bool

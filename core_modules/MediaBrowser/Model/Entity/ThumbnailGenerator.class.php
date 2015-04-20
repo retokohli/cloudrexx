@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Class ThumbnailGenerator
+ *
  * @copyright   Comvation AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
@@ -14,6 +16,12 @@ use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Model\Base\EntityBase;
 
+/**
+ * Class ThumbnailGenerator
+ *
+ * @copyright   Comvation AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ */
 class ThumbnailGenerator extends EntityBase
 {
 

@@ -18,17 +18,21 @@ use Cx\Model\Base\EntityBase;
  *
  * @copyright   Comvation AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
- * @subpackage  coremodule_mediabrowser
  */
 class MediaBrowser extends EntityBase
 {
     /**
+     * The set options for the mediabrowser
      * @var Array
      */
     protected $options = array();
-    protected $tagName = 'button';
 
+    /**
+     * Create new instance of mediabrowser and register in componentcontroller.
+     *
+     * @throws \Cx\Core\Core\Model\Entity\SystemComponentException
+     * @throws \Exception
+     */
     function __construct()
     {
         $this->getComponentController()->addMediaBrowser($this);
@@ -41,6 +45,8 @@ class MediaBrowser extends EntityBase
 
 
     /**
+     * Set a mediabrowser option
+     *
      * @param $options
      */
     function setOptions($options)
@@ -49,6 +55,8 @@ class MediaBrowser extends EntityBase
     }
 
     /**
+     * Get a option
+     *
      * @param $option
      *
      * @return string
@@ -63,7 +71,8 @@ class MediaBrowser extends EntityBase
 
     /**
      * Set a Javascript callback when the modal gets closed
-     * @param $callback
+     *
+     * @param $callback array Callback function name
      */
     function setCallback($callback)
     {
@@ -72,6 +81,7 @@ class MediaBrowser extends EntityBase
 
     /**
      * Get all Options as a String
+     *
      * @return string
      */
     function getOptionsString()
@@ -88,6 +98,8 @@ class MediaBrowser extends EntityBase
     }
 
     /**
+     * Get the rendered mediabrowser button
+     *
      * @param string $buttonName
      *
      * @return string

@@ -10,6 +10,7 @@
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
+
 use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
@@ -19,28 +20,18 @@ use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
  *
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
- * @subpackage  coremodule_mediabrowser
+ *              Robin Glauser <robin.glauser@comvation.com>
  */
 class BackendController extends SystemComponentBackendController
 {
 
     /**
-     * Act param for the URL Reguest;
+     * Act param for the URL Request;
      *
      * @var string $act
      */
     protected $act = '';
 
-    /**
-     * @var \Cx\Core\Html\Sigma
-     */
-    protected $template;
-
-    /**
-     * @var String
-     */
-    protected $submenuName;
 
     /**
      * Returns a list of available commands (?act=XY)
@@ -49,9 +40,7 @@ class BackendController extends SystemComponentBackendController
      */
     public function getCommands()
     {
-        return array(
-
-        );
+        return array();
     }
 
     /**
@@ -66,8 +55,6 @@ class BackendController extends SystemComponentBackendController
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
-        $this->template = $template;
-
         $uploader = new Uploader();
         $uploader->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
@@ -103,6 +90,7 @@ class BackendController extends SystemComponentBackendController
             'MEDIABROWSER_FOLDER_WIDGET_VIEW_MODE',
             new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($this->cx->getWebsiteImagesContentPath(), true)
         );
+
         
     }
 }
