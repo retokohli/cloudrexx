@@ -143,6 +143,7 @@
                 </div>
                 <!-- END showNoReferralsErrorMsg -->
                 <!-- END showAffiliateIdPartTwo -->
+                <!-- BEGIN showAffiliateCreditTotalAmt -->
                 <div class="table">
                     <div class="table-row">
                         <div class="table-cell" style="width:15%">
@@ -154,6 +155,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- END showAffiliateCreditTotalAmt -->
            </div>
         </form>
     </div>
@@ -244,6 +246,7 @@
            jQuery.getScript(cx.variables.get('path', 'contrexx') + "lib/javascript/jquery/bootstrapvalidator/js/bootstrapValidator.min.js", function() {
                jQuery("#affiliateProfileAttributeId").bind("input",function(){
                     this.value = this.value.toLowerCase();
+                }).bind('blur', function(){
                     if (this.value.length > 0) {
                         checkAvailablityOfAffiliateId(this.value);
                     } else {
