@@ -7,19 +7,19 @@
 .table-cell{display: table-cell;}
 /* ]]> */
 </style>
-<div id="multisite_affiliate_profile_attribute_id">
-    <div class="grid-elm grid-align-1-1 grid-offset">
+<div class="grid-container  grid-offset" id="multisite_affiliate_profile_attribute_id">
+    <div class="grid-elm grid-align-2-3 grid-offset-larger-right">
         <form id="affiliate-form" method="post">
             <div class="show-affiliate-paypal-profile-attribute-id">
                 <div class="table">
                     <!-- BEGIN showAffiliateIdForm -->
                     <div class="table-row">
-                        <div class="table-cell" style="width: 25%;">
+                        <div class="table-cell" style="width: 33%;">
                             <label>{TXT_CORE_MODULE_MULTISITE_CHOOSE_AFFILIATE_PROFILE_ATTR_ID}</label>
                         </div>
                         <div class="table-cell">:</div>
                         <div class="table-cell">
-                            <input type="text" name="affiliateProfileAttributeId" id="affiliateProfileAttributeId" style="width: 25%;" value="">
+                            <input type="text" name="affiliateProfileAttributeId" id="affiliateProfileAttributeId" style="width: 33%;" value="">
                         </div>
                     </div>
                     <div id="setAffiliateId" class="table-row">
@@ -33,7 +33,7 @@
 
                     <!-- BEGIN showAffiliateIdPartOne -->
                     <div class="table-row">
-                        <div class="table-cell" style="width: 20%;">
+                        <div class="table-cell" style="width: 33%;">
                             <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</label>
                         </div>
                         <div class="table-cell">:</div>
@@ -43,12 +43,12 @@
 
                     <!-- BEGIN showPaypalEmailAddressForm -->
                     <div class="table-row">
-                        <div class="table-cell" style="width: 20%;">
+                        <div class="table-cell" style="width: 33%;">
                             <label>{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL}</label>
                         </div>
                         <div class="table-cell">:</div>
                         <div class="table-cell">
-                            <input type="email" id="paypalEmail" style="width: 25%;" name="paypalEmailAddress" value="{MULTISITE_PAYPAL_EMAIL_ADDRESS}">
+                            <input type="email" id="paypalEmail" style="width: 33%;" name="paypalEmailAddress" value="{MULTISITE_PAYPAL_EMAIL_ADDRESS}">
                         </div>
                     </div>
                     <div id="paypalAccountAddress" class="table-row">
@@ -62,7 +62,7 @@
 
                     <!-- BEGIN showPaypalEmailAddress -->
                     <div class="table-row">
-                        <div class="table-cell" style="width: 20%;">
+                        <div class="table-cell" style="width: 33%;">
                             <label>{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL}</label>
                         </div>
                         <div class="table-cell">:</div>
@@ -156,9 +156,36 @@
                     </div>
                 </div>
                 <!-- END showAffiliateCreditTotalAmt -->
+
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-cell">
+                            <h2>Add a Cloudrexx banner or links to your website</h2>
+                            <span>Copy and paste these HTML links to your website, or download a Cloudrexx banner image.</span>
+                            <textarea>&lt;a href="http://www.cloudrexx.com/?ref=tomdaeppen"&gt;Cloudrexx - Start your FREE trial now!&lt;/a&gt;</textarea>
+                            <textarea>&lt;a href="http://www.cloudrexx.com/?ref=tomdaeppen"&gt;Cloudrexx Website - Start your FREE trial now!&lt;/a&gt;</textarea>
+                            <textarea>&lt;a href="http://www.cloudrexx.com/?ref=tomdaeppen"&gt;Build business websites online&lt;/a&gt;</textarea>
+                        </div>
+                    </div>
+                </div>
+
            </div>
         </form>
-    </div>
+    </div><aside class="grid-elm grid-align-1-3 grid-offset-left show-on-screen">
+
+        <p><strong>Tracking, Reporting und Auszahlung:</strong></br>
+        <span class="note">Die Provisionsauszahlung erfolgt nur, wenn sich Kunden über die von Cloudrexx für das Partnerprogramm zur Verfügung gestellten Werbemittel anmelden und eines der kostenpflichtigen Cloudrexx Solo, Non-profit- oder Cloudrexx Business-Pakete erwerben. Alle vom Partner geworbenen Kunden werden automatisch Kunden von Cloudrexx.</span></p>
+
+        <p><strong>Gültigkeit der Cookies:</strong></br>
+        <span class="note">Das Tracking der gewonnen Kunden erfolgt über Cookies. Die Cookies haben eine Gültigkeit von 30 Tagen nach Aktivierung. Cloudrexx zahlt die Provision jedoch auch für alle späteren Upgrades auf Cloudrexx Pro oder Cloudrexx Business im Sinne der Customer Lifetime aus (Beispiel: ein potenzieller Kunde klickt auf ein Werbemittel des Partners, meldet sich innerhalb der 30 Tage der Cookie gültigkeit für eine Cloudrexx Free-Seite an und erwirbt erst nach weiteren 60 Tagen das Cloudrexx Business-Paket, so bekommt der Partner diesen Verkauf trotzdem vergütet).</span></p>
+
+        <p><strong>Anrechnung des Provisionsguthabens:</strong></br>
+        <span class="note">90 Tage, nachdem eine Cloudrexx Solo, Non-Profit oder Business-Seite bestellt und bezahlt worden ist, wird dieser „Sale“ dem Partner gutgeschrieben und in dessen Account auf „bestätigt“ gesetzt.</span></p>
+
+        <p><strong>Auszahlung der Provision:</strong></br>
+        <span class="note">Sobald ein Partner die Auszahlungsgrenze von 50,- EUR / 50 CHF an bestätigten Provisionen erreicht hat, kann er die Auszahlung selbst über seinen Bereich „Partner“ auf seiner MyCloudrexx-Seite anfordern.</span></p>
+
+    </aside>
 </div>
 <div aria-hidden="true" class="modal fade" id="multisite_paypal_email_address_form" role="dialog" tabindex="-1">
     <div class="modal-dialog">
