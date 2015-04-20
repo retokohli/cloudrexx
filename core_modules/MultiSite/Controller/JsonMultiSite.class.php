@@ -3983,7 +3983,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 \DBG::log('Failed to create the website databse backup location Folder');
                 return false;
             }
-            exec('mysqldump -h ' . $dbHost . ' -u ' . $dbUserName . ' -p' . $dbPassword . ' ' . $dbName . ' > ' . $websiteBackupPath . '/database/sql_dump.sql');
+            exec("mysqldump -h '". $dbHost . "' -u '" . $dbUserName . "' -p'" . $dbPassword . "' '".$dbName."' > '".$websiteBackupPath."/database/sql_dump.sql'");
         }
         return true;
     }
@@ -4205,7 +4205,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return false;
         }
 
-        exec('mysql -h ' . $dbHost . ' -u ' . $dbUserName . ' -p' . $dbPassword . ' '.$dbName.' < ' . $sqlDumpFile);
+        exec("mysql -h '". $dbHost . "' -u '" . $dbUserName . "' -p'" . $dbPassword . "' '".$dbName."' < '".$sqlDumpFile."'");
 
         //cleanup website tempory folder
         if (!\Cx\Lib\FileSystem\FileSystem::delete_folder($websiteTempPath, true)) {
