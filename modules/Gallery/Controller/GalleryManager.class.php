@@ -3890,10 +3890,14 @@ $strFileNew = '';
      */
     private function updateAccessId($id)
     {
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml');
         if (isset($id)) {
-            \Cx\Core\Setting\Controller\Setting::set('lastAccessId', $id);
-            \Cx\Core\Setting\Controller\Setting::update('lastAccessId');
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('lastAccessId')) {
+                \Cx\Core\Setting\Controller\Setting::add('lastAccessId', $id, 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'core');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set('lastAccessId', $id);
+                \Cx\Core\Setting\Controller\Setting::update('lastAccessId');
+            }
         }
     }
 

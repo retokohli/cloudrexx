@@ -69,15 +69,19 @@ class KnowledgeLibrary {
 	 * @global $objDatabase
 	 */
 	protected function updateGlobalSetting($value)
-	{
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        {
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'component', 'Yaml');
             if (isset($value)) {
-                \Cx\Core\Setting\Controller\Setting::set('useKnowledgePlaceholders', $value);
-                \Cx\Core\Setting\Controller\Setting::update('useKnowledgePlaceholders');
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('useKnowledgePlaceholders')) {
+                    \Cx\Core\Setting\Controller\Setting::add('useKnowledgePlaceholders', $value, 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+                } else {
+                    \Cx\Core\Setting\Controller\Setting::set('useKnowledgePlaceholders', $value);
+                   \Cx\Core\Setting\Controller\Setting::update('useKnowledgePlaceholders');
+                }
             }
-	}
-	
-	/**
+        }
+
+    /**
 	 * Return the global setting
 	 *
 	 * @return string

@@ -855,13 +855,18 @@ class PodcastManager extends PodcastLib
     function _updateHomeContentSettings()
     {
         \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        $status = false;
         if (isset($_POST['setHomeContent'])) {
-            \Cx\Core\Setting\Controller\Setting::set('podcastHomeContent', intval($_POST['setHomeContent']));
-            if (\Cx\Core\Setting\Controller\Setting::update('podcastHomeContent')) {
-                return true;
+            $setHomeContent = intval($_POST['setHomeContent']);
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('podcastHomeContent')) {
+                $status = \Cx\Core\Setting\Controller\Setting::add('podcastHomeContent', $setHomeContent, 1, 
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set('podcastHomeContent', $setHomeContent);
+                $status = \Cx\Core\Setting\Controller\Setting::update('podcastHomeContent');
             }
         }
-        return false;
+        return $status;
     }
 }
 ?>
