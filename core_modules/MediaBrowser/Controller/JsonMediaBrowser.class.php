@@ -26,20 +26,19 @@ use Cx\Lib\FileSystem\FileSystem;
  *
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
- * @package     contrexx
- * @subpackage  coremodule_mediabrowser
  */
 class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 {
 
-    protected $_path = "";
-    protected $_mediaType = "";
-
     /**
+     * Cx instance
      * @var Cx
      */
     protected $cx;
 
+    /**
+     * Instantiates the object
+     */
     function __construct()
     {
         $this->cx = Cx::instanciate();
@@ -75,6 +74,11 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         return '';
     }
 
+    /**
+     * Get all media sources
+     *
+     * @return array
+     */
     public function getSources()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -108,7 +112,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     }
 
     /**
-     *
+     * Get filelist with all files
      *
      * @param $params
      *
@@ -116,9 +120,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function getFiles($params)
     {
-        $this->_path = (strlen($params['get']['path']) > 0)
+        $filePath = (strlen($params['get']['path']) > 0)
             ? $params['get']['path'] : '/';
-        $this->_mediaType = (strlen($params['get']['mediatype']) > 0)
+        $mediaType = (strlen($params['get']['mediatype']) > 0)
             ? $params['get']['mediatype'] : 'files';
 
         /* paramas
@@ -128,14 +132,14 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
          */
 
         if (array_key_exists(
-            $this->_mediaType,
+            $mediaType,
             MediaBrowserConfiguration::getInstance()->getMediaTypePaths()
         )) {
             $strPath = MediaBrowserConfiguration::getInstance(
                 )->getMediaTypePaths();
-             $strPath=    $strPath[$this->_mediaType][0] . $this->_path;
+             $strPath=    $strPath[$mediaType][0] . $filePath;
         } else {
-            $strPath = $this->cx->getWebsiteImagesPath() . $this->_path;
+            $strPath = $this->cx->getWebsiteImagesPath() . $filePath;
         }
 
         $recursiveIteratorIterator = new \RegexIterator(
@@ -249,6 +253,11 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         return ($jsonFileArray);
     }
 
+    /**
+     * Get all content pages.
+     *
+     * @return array
+     */
     public function getSites()
     {
         $jd = new JsonData();
@@ -298,7 +307,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 // TODO: This only works for regular application pages. Pages of type fallback that are linked to an application
 //       will be parsed using their node-id ({NODE_<ID>})
             if (($arrPage['type'] == Page::TYPE_APPLICATION)
-                && ($this->_mediaType !== 'alias')
+//                && ($this->_mediaType !== 'alias')
             ) {
                 $url .= $arrPage['modulename'];
                 if (!empty($arrPage['cmd'])) {
@@ -330,6 +339,15 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         return $return;
     }
 
+    /**
+     * Format bytes
+     *
+     * @param        $bytes
+     * @param string $unit
+     * @param int    $decimals
+     *
+     * @return string
+     */
     protected function formatBytes($bytes, $unit = "", $decimals = 2)
     {
         $units = array(
@@ -360,6 +378,13 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         return sprintf('%.' . $decimals . 'f ' . $unit, $value);
     }
 
+    /**
+     * Create Thumbnails for file
+     *
+     * @param $params array
+     *
+     * @return bool
+     */
     public function createThumbnails($params)
     {
         if (isset($params['get']['file'])) {
