@@ -106,10 +106,15 @@ class Permission
     public static function createNewDynamicAccessId()
     {
         \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml');
-        $newAccessId = \Cx\Core\Setting\Controller\Setting::getValue('lastAccessId','Config') + 1;
-        \Cx\Core\Setting\Controller\Setting::set('lastAccessId', $newAccessId);
-        if (!\Cx\Core\Setting\Controller\Setting::update('lastAccessId')) {
-            return false;
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('lastAccessId')) {
+            $newAccessId = 1;
+            \Cx\Core\Setting\Controller\Setting::add('lastAccessId', $newAccessId, 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'core');
+        } else {
+            $newAccessId = \Cx\Core\Setting\Controller\Setting::getValue('lastAccessId', 'Config') + 1;
+            \Cx\Core\Setting\Controller\Setting::set('lastAccessId', $newAccessId);
+            if (!\Cx\Core\Setting\Controller\Setting::update('lastAccessId')) {
+                return false;
+            }
         }
 
         // verify that the update was successful

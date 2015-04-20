@@ -142,8 +142,12 @@ class FeedManager extends FeedLibrary
 
         \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
         if (isset($feedNewsMLStatus)) {
-            \Cx\Core\Setting\Controller\Setting::set('feedNewsMLStatus', $feedNewsMLStatus);
-            \Cx\Core\Setting\Controller\Setting::update('feedNewsMLStatus');
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('feedNewsMLStatus')) {
+                \Cx\Core\Setting\Controller\Setting::add('feedNewsMLStatus', $feedNewsMLStatus, 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set('feedNewsMLStatus', $feedNewsMLStatus);
+                \Cx\Core\Setting\Controller\Setting::update('feedNewsMLStatus');
+            }
         }
         
         $_SESSION['strOkMessage'] = $_CORELANG['TXT_SETTINGS_UPDATED'];

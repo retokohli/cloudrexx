@@ -2972,8 +2972,12 @@ EOF;
             //update settings
             \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
             if (isset($_POST['setHomeContent'])) {
-                \Cx\Core\Setting\Controller\Setting::set('directoryHomeContent', contrexx_addslashes($_POST['setHomeContent']));
-                \Cx\Core\Setting\Controller\Setting::update('directoryHomeContent');
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('directoryHomeContent')) {
+                    \Cx\Core\Setting\Controller\Setting::add('directoryHomeContent', contrexx_addslashes($_POST['setHomeContent']), 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+                } else {
+                    \Cx\Core\Setting\Controller\Setting::set('directoryHomeContent', contrexx_addslashes($_POST['setHomeContent']));
+                    \Cx\Core\Setting\Controller\Setting::update('directoryHomeContent');
+                }
             }
 
             \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Directory&act=settings&tpl=homecontent');

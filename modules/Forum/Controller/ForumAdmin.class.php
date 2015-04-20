@@ -1029,12 +1029,22 @@ class ForumAdmin extends ForumLibrary {
             //update settings
             \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
             if (isset($_POST['setHomeContent'])) {
-                \Cx\Core\Setting\Controller\Setting::set('forumHomeContent', intval($_POST['setHomeContent']));
-                \Cx\Core\Setting\Controller\Setting::update('forumHomeContent');
+                $setHomeContent = intval($_POST['setHomeContent']);
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('forumHomeContent')) {
+                    \Cx\Core\Setting\Controller\Setting::add('forumHomeContent', $setHomeContent, 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+                } else {
+                    \Cx\Core\Setting\Controller\Setting::set('forumHomeContent', $setHomeContent);
+                    \Cx\Core\Setting\Controller\Setting::update('forumHomeContent');
+                }
             }
             if (isset($_POST['setTagContent'])) {
-                \Cx\Core\Setting\Controller\Setting::set('forumTagContent', intval($_POST['setTagContent']));
-                \Cx\Core\Setting\Controller\Setting::update('forumTagContent');
+                $forumTagContent = intval($_POST['setTagContent']);
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('forumTagContent')) {
+                    \Cx\Core\Setting\Controller\Setting::add('forumTagContent', $forumTagContent, 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+                } else {
+                    \Cx\Core\Setting\Controller\Setting::set('forumTagContent', $forumTagContent);
+                    \Cx\Core\Setting\Controller\Setting::update('forumTagContent');
+                }
             }
         }
 

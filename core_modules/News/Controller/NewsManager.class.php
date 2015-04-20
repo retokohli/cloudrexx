@@ -3086,8 +3086,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='" . implode(";", $defaultTeasers) . "' WHERE name='news_default_teasers'");
             \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
-            \Cx\Core\Setting\Controller\Setting::set('newsTeasersStatus', isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0);
-            \Cx\Core\Setting\Controller\Setting::update('newsTeasersStatus');
+            $newsUseTeasers = isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0;
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('newsTeasersStatus')) {
+                \Cx\Core\Setting\Controller\Setting::add('newsTeasersStatus', $newsUseTeasers, 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set('newsTeasersStatus', $newsUseTeasers );
+                \Cx\Core\Setting\Controller\Setting::update('newsTeasersStatus');
+            }
             $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'];
             $this->getSettings();
             $this->createRSS();

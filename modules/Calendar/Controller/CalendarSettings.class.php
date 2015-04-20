@@ -652,9 +652,14 @@ class CalendarSettings extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         }
 
         if (isset($_POST['settings']['headlinesStatus'])) {
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'license','Yaml');
-            \Cx\Core\Setting\Controller\Setting::set('calendarheadlines', intval($_POST['settings']['headlinesStatus']));
-            \Cx\Core\Setting\Controller\Setting::update('calendarheadlines');
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+            $headLinesStatusIntval = intval($_POST['settings']['headlinesStatus']);
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('calendarheadlines')) {
+                \Cx\Core\Setting\Controller\Setting::add('calendarheadlines', $headLinesStatusIntval, 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set('calendarheadlines', $headLinesStatusIntval);
+                \Cx\Core\Setting\Controller\Setting::update('calendarheadlines');
+            }
         }
                 
         if ($objResult !== false) {

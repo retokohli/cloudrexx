@@ -772,12 +772,22 @@ class BlockLibrary
     {
         \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
         if (isset($arrSettings['blockStatus'])) {
-            \Cx\Core\Setting\Controller\Setting::set('blockStatus', $arrSettings['blockStatus']);
-            \Cx\Core\Setting\Controller\Setting::update('blockStatus');
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('blockStatus')) {
+                \Cx\Core\Setting\Controller\Setting::add('blockStatus', $arrSettings['blockStatus'], 1, 
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set('blockStatus', $arrSettings['blockStatus']);
+                \Cx\Core\Setting\Controller\Setting::update('blockStatus');
+            }
         }
         if (isset($arrSettings['blockRandom'])) {
-            \Cx\Core\Setting\Controller\Setting::set('blockRandom', $arrSettings['blockRandom']);
-            \Cx\Core\Setting\Controller\Setting::update('blockRandom');
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('blockRandom')) {
+                \Cx\Core\Setting\Controller\Setting::add('blockRandom', $arrSettings['blockRandom'], 1, 
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set('blockRandom', $arrSettings['blockRandom']);
+                \Cx\Core\Setting\Controller\Setting::update('blockRandom');
+            }
         }
     }
 

@@ -314,12 +314,15 @@ class Home {
     
     private function deactivateSetting($config)
     {
-        global $objDatabase;
-        
         if (\Permission::checkAccess(17, 'static', true)) {
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml');
-            \Cx\Core\Setting\Controller\Setting::set($config, 'off');
-            if (\Cx\Core\Setting\Controller\Setting::update($config)) {
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined($config)) {
+                $status = \Cx\Core\Setting\Controller\Setting::add($config, 'off', 1, \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'administrationArea');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set($config, 'off');
+                $status = \Cx\Core\Setting\Controller\Setting::update($config);
+            }
+            if ($status) {
                 die('success');
             }
         }
