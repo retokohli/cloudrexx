@@ -341,13 +341,16 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
                 $hostingController->setWebspaceId($subscriptionId);
             }
             $this->addWebsite($website);
-            $hostingController->createUserAccount('info@'.$mainDomain, \User::make_password(8, true), $role, $subscriptionId);
+            
+            $website->setMailDn();
+            $website->setWebmailDn();
+            $hostingController->renameSubscriptionName($website->getMailDn()->getName());
+            
+            $hostingController->createUserAccount('info@'.$website->getMailDn()->getName(), \User::make_password(8, true), $role, $subscriptionId);
             $domains = $website->getDomainAliases();
             if (!\FWValidator::isEmpty($domains)) {
                 foreach ($domains as $domain) {
-                    if ($domain->getName() != $mainDomain) {
-                        $hostingController->createDomainAlias($domain->getName());
-                    }
+                    $hostingController->createDomainAlias($domain->getName());
                 }
             }
             return $subscriptionId;

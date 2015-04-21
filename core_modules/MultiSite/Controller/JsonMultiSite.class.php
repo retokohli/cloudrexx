@@ -5477,13 +5477,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         }
                         
                         //remove the Domain Alias of the newly selected Main Domain
+                        /*
                         if (!$hostingController->deleteDomainAlias($params['post']['mainDomainName'])) {
                             \DBG::msg('JsonMultiSite::updateMainDomain() failed to remove the domain alias.');
                             throw new MultiSiteJsonException('Failed to set the main domain.');
                         }
-                        
+                        */
                         //rename the plesk subscription to the name of the newly selected Main Domain
-                        if (!$hostingController->renameSubscriptionName($params['post']['mainDomainName'])) {
+                        if (!$hostingController->renameSubscriptionName($website->getMailDn()->getName())) {
                             \DBG::msg('JsonMultiSite::updateMainDomain() failed to rename the subscription.');
                             throw new MultiSiteJsonException('Failed to set the main domain.');
                         }
