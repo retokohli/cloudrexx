@@ -1182,6 +1182,29 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => contrexx_raw2xhtml($domainId)
                     ));
                 }
+                
+                if (($loadPageAction == 'Spf') && $objTemplate->blockExists('showSpfDomainInfo')) {
+                    $mailServiceServerStatus = false;
+
+                    if ($website->getMailServiceServer() && !\FWValidator::isEmpty($website->getMailAccountId())) {
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
+                        if (!\FWValidator::isEmpty($response)
+                                && $response->status == 'success' 
+                                && $response->data->status == 'success'
+                        ) {
+                            $mailServiceServerStatus = $response->data->mailServiceStatus;
+                        }
+                    }
+                    
+                    $spfText = 'v=spf1 mx a mx:' . $website->getBaseDn()->getName();
+                    if($mailServiceServerStatus){
+                        $spfText .= ' mx:' . $website->getMailDn()->getName();
+                    }
+                    
+                    $objTemplate->setVariable(array(
+                        'TXT_MULTISITE_SPF_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'], contrexx_raw2xhtml($spfText)),
+                    ));
+                }
             }
 
             $objTemplate->setVariable(array(

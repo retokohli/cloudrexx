@@ -285,6 +285,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_ADD_FAILED'] = 'Failed to 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT_FAILED'] = 'Failed to update the domain.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_DELETE_FAILED'] = 'Failed to remove the domain.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'] = 'Invalid request.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF'] = 'SPF record from this domain';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'] = 'The SPF record is a normal TXT record on the DNS. This looks for your website as follows<br />%s';
 
 //website admin user
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_SUCCESS']  = 'Successfully deleted the selected administrator account.';

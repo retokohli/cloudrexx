@@ -164,6 +164,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_ADD_FAILED'] = 'Die Zuweis
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT_FAILED'] = 'Die Änderung der Domain schlug fehl.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_DELETE_FAILED'] = 'Die Entfernung der Domain schlug fehl.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'] = 'Ungültige Anfrage.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF'] = 'SPF Eintrag dieser Domain';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'] = 'Der SPF-Eintrag ist auf dem DNS ein normaler TXT-Eintrag. Dieser sieht für Ihre Cloudrexx Webseite wie folgt aus:<br />%s';
 
 //website admin user
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_SUCCESS']  = 'Das ausgewählte Administrator-Konto wurde gelöscht.';
