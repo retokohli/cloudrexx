@@ -20,6 +20,7 @@
             </td>
             <td class="actions">
               <!-- BEGIN showWebsiteDomainActions -->
+              <a class="entypo-inbox domainModal" data-remote="/api/MultiSite/Domain/Spf?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainSpf" ></a>&nbsp;
               <a class="entypo-tools domainModal" data-remote="/api/MultiSite/Domain/Edit?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainEdit" ></a>&nbsp;
               <a class="entypo-trash domainModal" data-remote="/api/MultiSite/Domain/Delete?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainDelete" ></a>
               <!-- END showWebsiteDomainActions -->
@@ -44,6 +45,11 @@
     </div>
 </div>
 <div aria-hidden="true" class="modal fade" id="DomainDelete" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<div aria-hidden="true" class="modal fade" id="DomainSpf" role="dialog" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content"></div>
     </div>
