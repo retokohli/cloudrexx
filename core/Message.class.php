@@ -119,7 +119,7 @@ class Message
             self::clear();
             return;
         }
-        $_SESSION['messages'] = array_pop($_SESSION['messages_stack']->toArray());
+        $_SESSION['messages'] = array_pop(self::toArray($_SESSION['messages_stack']));
     }
 
 
@@ -338,6 +338,26 @@ class Message
             return join('<br />', $_SESSION['messages'][$class]->toArray());
         }
         return null;
+    }
+    
+    /** 
+     * Formats variable of an unknown type into array and returns it 
+     * 
+     * @param type $var
+     * @return array
+     */
+    static function toArray($var) {
+        $return = array();
+        if(is_object($var) && method_exists($var, 'toArray')) {
+            $return = $var->toArray();
+        }
+        if(is_array($return)) {
+            return $return;
+        }
+        if(!empty($var)) {
+            return array($var);
+        } \DBG::log('toArray falsevar');
+        return array();
     }
 
 }
