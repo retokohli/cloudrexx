@@ -110,6 +110,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 //parse block for Affiliate Id
                 !empty($affiliateId) ? $template->touchBlock('showAffiliateIdPartOne') : $template->hideBlock('showAffiliateIdPartOne');
                 !empty($affiliateId) ? $template->touchBlock('showAffiliateIdPartTwo') : $template->hideBlock('showAffiliateIdPartTwo');
+                !empty($affiliateId) ? $template->touchBlock('showCloudrexxBannerLinks') : $template->hideBlock('showCloudrexxBannerLinks');
                 empty($affiliateId) ? $template->touchBlock('showAffiliateIdForm') : $template->hideBlock('showAffiliateIdForm');
                 //parse block for paypal email address
                 !empty($paypalEmailAddress) ? $template->touchBlock('showPaypalEmailAddress') : $template->hideBlock('showPaypalEmailAddress');
@@ -131,7 +132,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $template->setVariable(array(
                     'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => !empty($affiliateId) ? $affiliateId : '',
                     'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => !empty($paypalEmailAddress) ? $paypalEmailAddress : $objUser->getEmail(),
-                    'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> $totalAffiliateTotalCreditAmount . ($currencyObj ? ' ' . $currencyObj->getName() : '')
+                    'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> $totalAffiliateTotalCreditAmount . ($currencyObj ? ' ' . $currencyObj->getName() : ''),
+                    'MULTISITE_MARKETING_WEBSITE'         => \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite')
                 ));
                 //initialize
                 $objJs = \ContrexxJavascript::getInstance();
