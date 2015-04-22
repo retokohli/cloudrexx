@@ -295,7 +295,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 $this->_objTpl->parse($this->moduleName.'CategoriesLevelsList');
             }
 
-            if(($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1 || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
+            if((($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1 || $intLevelId === 0) || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
                 $objCategories = new mediaDirectoryCategory(null, $intCategoryId, 1);
                 $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
