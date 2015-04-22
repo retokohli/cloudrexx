@@ -3095,7 +3095,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
-
+        
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case self::MODE_HYBRID:
             case self::MODE_MANAGER:
@@ -3347,5 +3347,41 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'Non-Profit' => $nonProfitReferrersCount,
             'Business'   => $businessReferrersCount
         );
+    }
+    
+    /**
+     * Get the subscription using the websiteId
+     * 
+     * @param string $websiteId websiteId
+     * @return mixed boolean or subscription
+     */
+    public static function getSubscriptionByWebsiteId($websiteId) {
+        if (empty($websiteId)) {
+            return false;
+        }
+        try {
+            $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $website = $websiteServiceRepo->findOneById($websiteId);
+            if (!$website) {
+                return false;
+            }
+
+            $websiteCollection = $website->getWebsiteCollection();
+            $subscriptionRepo  = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+            $subscriptions     = !empty($websiteCollection) ? $subscriptionRepo->getSubscriptionsByCriteria(array(
+                                                                                                            'in' => array('0' => array('s.productEntityId', array($websiteCollection->getId()))),
+                                                                                                            'p.entityClass' => 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection'
+                                                                                                            )) 
+                                                            : $subscriptionRepo->findOneBy(array(
+                                                                                            'productEntityId' => $websiteId
+                                                                                            ));
+
+            $subscription = is_array($subscriptions) ? current($subscriptions) : $subscriptions;
+
+            return $subscription;
+        } catch (\Exception $e) {
+             \DBG::log('ComponentController::getSubscriptionByWebsiteId() failed!. '.$e->getMessage());
+            return false;
+        }
     }
 }

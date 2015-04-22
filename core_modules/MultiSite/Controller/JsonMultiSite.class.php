@@ -3893,7 +3893,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         'websiteEmail' => $website->getOwner()->getEmail()
                     );
                     
-                    $subscription = $this->getSubscriptionByWebsiteId($website->getId());
+                    $subscription = ComponentController::getSubscriptionByWebsiteId($website->getId());
                     if ($subscription) {
                         $metaInfo['subscription'] = array(
                             'subscriptionCreatedDate'       => $subscription->getSubscriptionDate() ? $subscription->getSubscriptionDate()->format('Y-m-d H:i:s') : '',
@@ -4405,7 +4405,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $websiteId         = isset($params['post']['websiteId']) ? $params['post']['websiteId'] : '';
             $subscriptionInfo  = isset($params['post']['subscription']) ? $params['post']['subscription'] : '';
                  
-            $subscription = $this->getSubscriptionByWebsiteId($websiteId);
+            $subscription = ComponentController::getSubscriptionByWebsiteId($websiteId);
             if (!$subscription) {
                 return array('status' => 'error');
             }
@@ -4426,42 +4426,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
     }
     
-    /**
-     * Get the subscription using the websiteId
-     * 
-     * @param string $websiteId websiteId
-     * @return mixed boolean or subscription
-     */
-    public function getSubscriptionByWebsiteId($websiteId) {
-        if (empty($websiteId)) {
-            return false;
-        }
-        try {
-            $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $website = $websiteServiceRepo->findOneById($websiteId);
-            if (!$website) {
-                return false;
-            }
-
-            $websiteCollection = $website->getWebsiteCollection();
-            $subscriptionRepo  = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-            $subscriptions     = !empty($websiteCollection) ? $subscriptionRepo->getSubscriptionsByCriteria(array(
-                                                                                                            'in' => array('0' => array('s.productEntityId', array($websiteCollection->getId()))),
-                                                                                                            'p.entityClass' => 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection'
-                                                                                                            )) 
-                                                            : $subscriptionRepo->findOneBy(array(
-                                                                                            'productEntityId' => $websiteId
-                                                                                            ));
-
-            $subscription = is_array($subscriptions) ? current($subscriptions) : $subscriptions;
-
-            return $subscription;
-        } catch (\Exception $e) {
-             \DBG::log('JsonMultisite::getSubscriptionByWebsiteId() failed!. '.$e->getMessage());
-            return false;
-        }
-    }
-
     /**
      * createNewWebsiteBySubscription
      * 

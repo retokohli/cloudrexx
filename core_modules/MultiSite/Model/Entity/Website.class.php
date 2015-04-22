@@ -501,7 +501,7 @@ class Website extends \Cx\Model\Base\EntityBase {
      * Creates a new website
      */
     public function setup($options) {
-        global $_DBCONFIG, $_ARRAYLANG;
+        global $_DBCONFIG, $_ARRAYLANG, $_CORELANG;
         
         \DBG::msg('Website::setup()');
         \DBG::msg('change Website::$status from "'.$this->status.'" to "'.self::STATE_SETUP.'"');
@@ -674,7 +674,30 @@ class Website extends \Cx\Model\Base\EntityBase {
             }
 
             \DBG::msg('Website: SETUP COMPLETED > OK');
+            
+            $gender = $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'];
+            switch ($this->owner->getUserProfile()->getGender()) {
+                case 'gender_male':
+                    $gender = $_CORELANG['TXT_ACCESS_MALE'];
+                    break;
 
+                case 'gender_female':
+                    $gender = $_CORELANG['TXT_ACCESS_FEMALE'];
+                    break;
+            }
+            
+            $country = '';
+            if ($this->owner->getUserProfile()->getCountry()) {
+                $country    = \Cx\Core\Country\Controller\Country::getNameById($this->owner->getUserProfile()->getCountry());
+            }
+            
+            //get subscription by its wbsite id
+            $subscription = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getSubscriptionByWebsiteId($this->getId());
+            
+            $productName = '';
+            if ($subscription && $subscription->getProduct()) {
+                $productName = $subscription->getProduct()->getName();
+            }
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
             // send ADMIN mail
@@ -690,7 +713,14 @@ class Website extends \Cx\Model\Base\EntityBase {
                     '[[WEBSITE_URL]]',
                     '[[WEBSITE_NAME]]',
                     '[[CUSTOMER_EMAIL]]',
-                    '[[CUSTOMER_NAME]]',
+                    '[[CUSTOMER_GENDER]]',
+                    '[[CUSTOMER_FIRSTNAME]]',
+                    '[[CUSTOMER_LASTNAME]]',
+                    '[[CUSTOMER_COMPANY]]',
+                    '[[CUSTOMER_ZIP]]',
+                    '[[CUSTOMER_CITY]]',
+                    '[[CUSTOMER_COUNTRY]]',
+                    '[[CUSTOMER_PHONE]]',
                     '[[SUBSCRIPTION_NAME]]'),
                 'replace' => array(
                     \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
@@ -698,8 +728,15 @@ class Website extends \Cx\Model\Base\EntityBase {
                     $websiteUrl,
                     $websiteName,
                     $websiteMail,
-                    '<customer-name>',
-                    '<subscription:trial / business>'),
+                    $gender,
+                    $this->owner->getUserProfile()->getFirstname(),
+                    $this->owner->getUserProfile()->getLastname(),
+                    $this->owner->getUserProfile()->getCompany(),
+                    $this->owner->getUserProfile()->getZip(),
+                    $this->owner->getUserProfile()->getCity(),
+                    $country,
+                    $this->owner->getUserProfile()->getPhoneOffice(),
+                    $productName),
             ));
             
             // send CUSTOMER mail
