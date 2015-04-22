@@ -356,7 +356,7 @@ class Message
         }
         if(!empty($var)) {
             return array($var);
-        } \DBG::log('toArray falsevar');
+        }
         return array();
     }
 
