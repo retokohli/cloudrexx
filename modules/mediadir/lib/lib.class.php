@@ -611,10 +611,11 @@ function selectAll(control){
     for (i = 0; i < control.length; ++i) {
         control.options[i].selected = true;
     }
-           
-    \$J.each(instancesToManipulate, function(i, v) {
-        v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
-    });        
+    if ( typeof(CKEDITOR) !== "undefined" ) {
+        \$J.each(instancesToManipulate, function(i, v) {
+            v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+        });
+    }
 }
 
 function deselectAll(control){
@@ -728,9 +729,11 @@ function ExpandMinimize(toggle){
 }                                                                          
 
 function ExpandMinimizeMultiple(toggleId, toggleKey){
-    \$J.each(instancesToManipulate, function(i, v) {
-        v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
-    });
+    if ( typeof(CKEDITOR) !== "undefined" ) {
+        \$J.each(instancesToManipulate, function(i, v) {
+            v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+        });
+    }
 
     elm1 = document.getElementById('mediadirInputfield_' + toggleId +  '_' + toggleKey + '_Minimized');  
     elm2 = document.getElementById('mediadirInputfield_' + toggleId +  '_' + toggleKey + '_Expanded');
