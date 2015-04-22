@@ -48,9 +48,11 @@ class ShopManager extends ShopLibrary
         \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
         
         $this->checkProfileAttributes();
-        
-        self::$defaultImage = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName;
-        self::$objTemplate = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        self::$defaultImage = file_exists($cx->getWebsiteImagesShopPath() . '/' . ShopLibrary::noPictureName) ? 
+                                $cx->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName : 
+                                $cx->getCodeBaseOffsetPath(). '/images/Shop/' . ShopLibrary::noPictureName;
+        self::$objTemplate = new \Cx\Core\Html\Sigma($cx->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 //DBG::log("ARRAYLANG: ".var_export($_ARRAYLANG, true));
         self::$objTemplate->setGlobalVariable(
@@ -2087,7 +2089,7 @@ if ($test === NULL) {
             'shop_products_block', 'module_shop_product_manage.html');
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
-            'SHOP_DELETE_ICON' => \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseOffsetPath() . '/core/Core/View/Media/icons/delete.gif',
+            'SHOP_DELETE_ICON' => \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreWebPath() . '/Core/View/Media/icons/delete.gif',
             'SHOP_NO_PICTURE_ICON' => self::$defaultImage
         ));
         if ($product_id > 0) {

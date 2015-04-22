@@ -17,11 +17,6 @@ namespace Cx\Modules\Shop\Controller;
 define('_PAYMENT_DEBUG', 0);
 
 /**
- * Payment logo folder (e.g. /modules/shop/images/payments/)
- */
-define('SHOP_PAYMENT_LOGO_PATH', '/modules/Shop/View/Media/payments/');
-
-/**
  * Payment Service Provider manager
  *
  * These are the requirements of the current specification
@@ -338,9 +333,9 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
         return
             '<br /><br /><img src="'.
             // Is there a language dependent version?
-            (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBasePath() . SHOP_PAYMENT_LOGO_PATH.$imageName_lang)
-              ? \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseOffsetPath() . SHOP_PAYMENT_LOGO_PATH . $imageName_lang 
-              : \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseOffsetPath() . SHOP_PAYMENT_LOGO_PATH . $imageName) .
+            (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Media/payments/' .$imageName_lang)
+              ? \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/View/Media/payments/' . $imageName_lang 
+              : \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/View/Media/payments/' . $imageName) .
             '" alt="" title="" /><br /><br />';
     }
 

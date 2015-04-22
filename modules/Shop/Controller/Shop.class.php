@@ -144,7 +144,10 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 //\DBG::activate(DBG_LOG_FILE);
         self::init();
         self::registerJavascriptCode();
-        self::$defaultImage = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        self::$defaultImage = file_exists($cx->getWebsiteImagesShopPath() . '/' . ShopLibrary::noPictureName) ? 
+                                $cx->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName : 
+                                $cx->getCodeBaseOffsetPath(). '/images/Shop/' . ShopLibrary::noPictureName;
         // PEAR Sigma template
         self::$objTemplate = new \Cx\Core\Html\Sigma('.');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
