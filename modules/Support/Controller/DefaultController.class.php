@@ -109,6 +109,9 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         
         if (isset($_POST['sendAndSave'])) {
             if (!empty($feedBackSubject) && !empty($feedBackComment)) {
+                //get the hostname domain
+                $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                $domain = $domainRepo->findOneBy(array('id' => 0));
                 $arrFields = array (
                     'name'         => contrexx_raw2xhtml($customerName),
                     'fromEmail'    => contrexx_raw2xhtml($customerEmailId),
@@ -123,7 +126,8 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                     'toEmail'      => $recipientMailAddress,
                     'licenseName'  => $licenseName,
                     'licenseValid' => $licenseValid,
-                    'licenseVersion'=> $licenseVersion
+                    'licenseVersion'=> $licenseVersion,
+                    'domainName'    => $domain ? $domain->getName() : ''
                 );
                 //send the feedBack mail
                 $this->sendMail($arrFields) ? \Message::ok($_ARRAYLANG['TXT_SUPPORT_FEEDBACK_EMAIL_SEND_SUCESSFULLY']) : \Message::error($_ARRAYLANG['TXT_SUPPORT_FEEDBACK_EMAIL_SEND_FAILED']);
@@ -219,6 +223,10 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     
     <table cellpadding ="0" cellspacing ="0" style="width: 100%; font-size: 13px;">
         <tbody>
+            <tr>
+                <td valign="top" >' . $_ARRAYLANG['TXT_SUPPORT_DOMAIN_NAME'] . '</td>
+                <td>&nbsp;: ' . $arrFields['domainName'] . '</td>
+            </tr>
             <tr>
                 <td valign="top" >' . $_ARRAYLANG['TXT_SUPPORT_LICENSE_NAME'] . '</td>
                 <td>&nbsp;: ' . $arrFields['licenseName'] . '</td>
