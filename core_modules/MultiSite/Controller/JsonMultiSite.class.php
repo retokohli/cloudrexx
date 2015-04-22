@@ -2532,7 +2532,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
             throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: Website Ftp user field is empty.');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: to get website FTP user: ' . $e->getMessage());
         }
     }
@@ -2562,7 +2562,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
             throw new MultiSiteJsonException('JsonMultiSite::getFtpAccounts() failed');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getFtpAccounts() failed: ' . $e->getMessage());
         }
     }
@@ -3031,7 +3031,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     return array('status' => 'error', 'message' => 'Failed to execute the Query.');
                     break;    
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite (executeQueryBySession): failed to execute query' . $e->getMessage());
         }
     }
@@ -3277,7 +3277,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 default:
                     break;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getLicense() failed: to get License Information: ' . $e->getMessage());
         }
     }
@@ -3369,7 +3369,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 default:
                     break;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::remoteLogin() failed: to get remote website Login Link: ' . $e->getMessage());
         }
     }
@@ -3412,7 +3412,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 default:
                     break;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::editLicense() failed: to Update License Information of the This Website: ' . $e->getMessage());
         }
     }
@@ -3483,7 +3483,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
             return array('status' => 'error', 'message' => 'JsonMultiSite::sendAccountActivation() failed: to Send Account Activation Mail of this Website.');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: to Send Account Activation Mail of this Website: ' . $e->getMessage());
         }
     }
@@ -3691,7 +3691,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 default:
                     break;
             }
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             throw new MultiSiteJsonException('JsonMultiSite::modifyMultisiteConfig() failed: to Fetch the Multisite Configuration of the This Website: ' . $e->getMessage());
         }
     }
@@ -4573,7 +4573,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATE_MAIL_ACCOUNT_FAILED']);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             \DBG::log('JsonMultiSite::createMailServiceAccount() failed: To create mail service server'. $ex->getMessage());
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATE_MAIL_ACCOUNT_FAILED']);
         }
@@ -4643,7 +4643,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETE_MAIL_ACCOUNT_FAILED'],
                 'log'    => \DBG::getMemoryLogs(),
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException(
                 array(
                     'log'       => \DBG::getMemoryLogs(),
@@ -4710,7 +4710,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             \DBG::log('JsonMultiSite::enableMailService() failed: To enable mail service account.'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
         }
@@ -4765,7 +4765,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             \DBG::log('JsonMultiSite::disableMailService() failed: To disable mail service'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
         }
@@ -4820,7 +4820,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
             return array('status' => 'error');
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             \DBG::log('JsonMultiSite::getMailServiceStatus() failed: To get mail service status.'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
@@ -4890,7 +4890,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 return array('status' => 'success', 'users' => $objDataSet->toArray());
             }
             return array('status' => 'error');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getAdminUsers() failed: To get the Admin users' . $e->getMessage());
         }
     }
@@ -4924,7 +4924,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     return array('status' => 'error');
                     break;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getUser() failed: To get the user' . $e->getMessage());
         }
     }
@@ -4987,7 +4987,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
             return array('status' => 'error');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getResourceUsageStats() failed: To get the website Resource Usage Stats' . $e->getMessage());
         }
     }
@@ -5035,7 +5035,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 default:
                     break;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed:' . $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] . $e->getMessage());
         }
     }
@@ -5400,7 +5400,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 return array('status' => 'success');
             }
             return array('status' => 'error');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             \DBG::log('JsonMultiSite::changePlanOfMailSubscription() failed:'. $e->getMessage());
             throw new MultiSiteJsonException('JsonMultiSite::changePlanOfMailSubscription() failed: Failed to change the plan of mail subscription.');
         }
