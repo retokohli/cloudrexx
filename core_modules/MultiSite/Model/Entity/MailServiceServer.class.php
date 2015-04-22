@@ -398,8 +398,12 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         
         if ($hostingController->enableMailService($accountId)) {
-            $website->setMailDn();
-            $website->setWebmailDn();
+            if(\FWValidator::isEmpty($website->getMailDn())){
+                $website->setMailDn();
+            }
+            if(\FWValidator::isEmpty($website->getWebmailDn())) {
+                $website->setWebmailDn();
+            }
             \Env::get('em')->persist($website);
             \Env::get('em')->flush();
             \DBG::log('Successfully mapped the domain of type mail with host ' . $website->getMailDn()->getName() . ' and the domain of type webmail with host ' . $website->getWebmailDn()->getName());
