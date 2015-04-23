@@ -193,6 +193,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     case 'Cron':
                         $this->executeCommandCron();
                         break;
+                    
+                    case 'Email':
+                        echo $this->executeCommandEmail($objTemplate, $arguments);
+                        break;
+                    
                     default:
                         break;
                 }
@@ -1209,6 +1214,86 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             $objTemplate->setVariable(array(
                 'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL' => '/api/MultiSite/Domain?action=' . $loadPageAction . '&website_id=' . $websiteId . '&domain_id=' . $domainId,
+            ));
+
+            return $objTemplate->get();
+        }
+    }
+    
+    /**
+     * Api Email command 
+     * 
+     * @param object $objTemplate Template object \Cx\Core\Html\Sigma
+     * @param array  $arguments   Array parameters
+     * 
+     * @return string 
+     */
+    public function executeCommandEmail($objTemplate, $arguments) {
+
+        global $_ARRAYLANG;
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
+
+        if (!self::isUserLoggedIn()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_NOACCESS'];
+        }
+
+        $websiteId = isset($arguments['website_id']) ? contrexx_input2raw($arguments['website_id']) : '';
+        if (empty($websiteId)) {
+            return $_ARRAYLANG['TXT_MULTISITE_UNKOWN_WEBSITE'];
+        }
+
+        $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website = $websiteServiceRepo->findOneById($websiteId);
+        if (!$website) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
+        }
+
+        if ($website->getOwner()->getId() != \FWUser::getFWUserObject()->objUser->getId()) {
+            return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER'];
+        }
+        
+        $loadPageAction   = isset($arguments[1]) ? contrexx_input2raw($arguments[1]) : '';
+        $submitFormAction = isset($arguments['action']) ? contrexx_input2raw($arguments['action']) : '';
+        $password         = isset($arguments['pwd']) ? contrexx_input2raw($arguments['pwd']) : '';
+                
+        //processing form values after submit
+        if (!\FWValidator::isEmpty($submitFormAction)) {
+            try {
+                switch ($submitFormAction) {
+                    case 'Edit':
+                        $command = 'resetEmailPassword';
+                        $params = array(
+                            'websiteId' => $websiteId,
+                        );
+                        break;
+                    
+                    default :
+                        return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
+                        break;
+                }
+                if (isset($command) && isset($params)) {
+                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($command, $params);
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return $this->parseJsonMessage($response->data->password, true);
+                    } else {
+                        return $this->parseJsonMessage($response->data->message, false);
+                    }
+                }
+            } catch (\Exception $e) {
+                \DBG::log('Failed to '.$submitFormAction. ' E-Mail'. $e->message());
+                return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_FAILED'], false);
+            }
+        } else {
+            if (($loadPageAction == 'Edit') && $objTemplate->blockExists('showEditEmailName')) {
+                $objTemplate->setVariable(array(
+                    'MULTISITE_EMAIL_USERNAME' => 'info@' . $website->getMailDn()->getName(),
+                    'MULTISITE_EMAIL_SERVER' => $website->getMailDn()->getName(),
+                    'MULTISITE_EMAIL_WEBMAIL' => $website->getWebmailDn()->getName(),
+                    'MULTISITE_EMAIL_PASSWORD' => empty($password)?'********':$password,
+                ));
+            }
+            $objTemplate->setVariable(array(
+                'MULTISITE_WEBSITE_EMAIL_SUBMIT_URL' => '/api/MultiSite/Email?action=' . $loadPageAction . '&website_id=' . $websiteId,
             ));
 
             return $objTemplate->get();

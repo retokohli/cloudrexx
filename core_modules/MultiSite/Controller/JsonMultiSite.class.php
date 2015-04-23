@@ -129,6 +129,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getResourceUsageStats' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'enableMailService'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'verifyWebsiteOwnerOrIscRequest')),            
             'disableMailService'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'verifyWebsiteOwnerOrIscRequest')),
+            'resetEmailPassword'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'verifyWebsiteOwnerOrIscRequest')),            
             'getMailServiceStatus'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'verifyWebsiteOwnerOrIscRequest')),
             'createMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'deleteMailServiceAccount' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
@@ -4521,11 +4522,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     $defaultMailServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')
                                                                ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer','MultiSite')));
-                    $accountId = $defaultMailServiceServer->createAccount($website);
+                    $res = $defaultMailServiceServer->createAccount($website);
+                    $accountId = $res['subscriptionId'];
                     if ($accountId) {
                         $website->setMailAccountId($accountId);
                         \Env::get('em')->flush();
-                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY']);
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY'], 'pwd' => $res['pwd']);
                     } 
                     break;
                 case ComponentController::MODE_WEBSITE:
@@ -4533,7 +4535,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     // forward call to manager server. 
                     $response = self::executeCommandOnManager('createMailServiceAccount', array('websiteId' => $params['post']['websiteId']));
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY']);
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY'], 'pwd' => $response->data->pwd);
                     }
                     break;
                 default:
@@ -4655,13 +4657,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                             \DBG::log('JsonException::enableMailService() failed: Unable to create mail service account.');
                             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
                         }
+                        $pwd = $response->data->pwd;
                         $mailServiceServer = $website->getMailServiceServer();
                     }
                     if (
                            $mailServiceServer && $website->getMailAccountId()
                         && $mailServiceServer->enableService($website)
                     ) {
-                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY']);
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY'], 'pwd' => isset($pwd)?$pwd:'');
                     }
                     break;
 
@@ -4735,6 +4738,70 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (\Exception $ex) {
             \DBG::log('JsonMultiSite::disableMailService() failed: To disable mail service'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
+        }
+    }
+    
+    /**
+     * Reset the E-Mail Password
+     * 
+     * @param array $params
+     * 
+     * @return boolean
+     * @throws MultiSiteJsonException
+     */    
+    public function resetEmailPassword($params)
+    {
+        global $_ARRAYLANG;
+        self::loadLanguageData();
+        
+        if (empty($params['post']['websiteId'])) {
+            \DBG::log('JsonMultiSite::resetEmailPassword() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
+        }
+               
+        try {
+            // check the mode
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
+                    if (!$website) {
+                        \DBG::log('JsonException::disableMailService() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+                        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
+                    }
+                    $mailServiceServer = $website->getMailServiceServer();
+                    if (!$mailServiceServer || \FWValidator::isEmpty($website->getMailAccountId())) {
+                        throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed: Unkown mail service server.');
+                    }
+
+                    $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                    
+                    $password = \User::make_password(8, true);
+                    if ($hostingController->changeUserAccountPassword($website->getMailAccountId(), $password)) {
+                        return array(
+                            'status'    => 'success',
+                            'message'   => $_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_MSG'],
+                            'password'  => $password,
+                            'log'       => \DBG::getMemoryLogs(),
+                        );
+                    }
+                    break;
+
+                case ComponentController::MODE_WEBSITE:
+                case ComponentController::MODE_SERVICE:
+                    // forward call to manager server. 
+                    $response = self::executeCommandOnManager('resetEmailPassword', array('websiteId' => $params['post']['websiteId']));
+                    if ($response && $response->status == 'success' && $response->data->status == 'success') {
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_MSG']);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_ERROR_MSG']);
+        } catch (Exception $ex) {
+            \DBG::log('JsonMultiSite::resetEmailPassword() failed: Updating E-Mail password.'. $ex->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_ERROR_MSG']);
         }
     }
     

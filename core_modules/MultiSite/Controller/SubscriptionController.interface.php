@@ -65,6 +65,16 @@ interface SubscriptionController {
      * @return id 
      */
     public function deleteUserAccount($userAccountId);
+    
+    /**
+     * Change the password from a user account
+     * 
+     * @param int $userAccountId user id
+     * @param string $password
+     * 
+     * @return id 
+     */
+    public function changeUserAccountPassword($userAccountId, $password);
 
     /**
      * Creaye a Customer

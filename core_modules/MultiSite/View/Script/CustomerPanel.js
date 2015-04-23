@@ -195,7 +195,14 @@ function enableOrDisableMailService($this) {
             if (response.status == 'success') {
                 resp = response.data;
                 if (resp.status == 'success') {
-                    showMessage(resp.message, 'success');
+                    if(act == 'enableMailService') {
+                        showRemoteModal({
+                          modalId   : 'EmailEdit',
+                          remoteUrl : '/api/MultiSite/Email/Edit?website_id=' + websiteId + '&pwd='+resp.pwd,
+                        });
+                    } else {
+                        showMessage(resp.message, 'success');
+                    }
                     loadContent('#multisite_website_email', '/api/MultiSite/Website/Email?id=' + websiteId);
                 } else {
                     showMessage(resp.message, 'error');

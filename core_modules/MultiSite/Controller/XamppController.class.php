@@ -204,6 +204,20 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
+     * Change the password from a user account
+     * 
+     * @param int $userAccountId user id
+     * @param string $password
+     * 
+     * @return id 
+     */
+    public function changeUserAccountPassword($userAccountId, $password)
+    {
+        \DBG::msg("MultiSite (XamppController): change the password from user account: $userAccountId");
+        return null;
+    }
+    
+    /**
      * Create a Customer
      * @param \Cx\Core\Model\Model\Entity\Subscription
      * @throws MultiSiteDbException On error

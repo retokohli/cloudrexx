@@ -56,14 +56,15 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
          * The mail account created from the manager mode so check the mode and website object
          */
         if ($website && 
-            \Cx\Core\Setting\Controller\Setting::getValue'mode','MultiSite' == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
+            \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
             // get default mail service server
             $defaultMailServiceServer = self::$cx->getDb()->getEntityManager()->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer')
-                                                       ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue'defaultMailServiceServer','MultiSite'));
+                                                       ->findOneBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultMailServiceServer','MultiSite')));
             
             // create a mail service account in controller and flush the data into db
-            $accountId = $defaultMailServiceServer->createAccount($website);
+            $res = $defaultMailServiceServer->createAccount($website);
+            $accountId = $res['subscriptionId'];
             $website->setMailAccountId($accountId);
             self::$cx->getDb()->getEntityManager()->flush();
             

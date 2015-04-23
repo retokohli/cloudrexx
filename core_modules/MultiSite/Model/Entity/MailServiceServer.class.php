@@ -310,7 +310,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
      * 
      * @param object \Cx\Core_Modules\MultiSite\Model\Entity\Website $website
      * 
-     * @return integer $accountId
+     * @return array ($accountId, $pwd)
      */
     public function createAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
@@ -346,14 +346,15 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             $website->setWebmailDn();
             $hostingController->renameSubscriptionName($website->getMailDn()->getName());
             
-            $hostingController->createUserAccount('info@'.$website->getMailDn()->getName(), \User::make_password(8, true), $role, $subscriptionId);
+            $pwd = \User::make_password(8, true);
+            $hostingController->createUserAccount('info@'.$website->getMailDn()->getName(), $pwd, $role, $subscriptionId);
             $domains = $website->getDomainAliases();
             if (!\FWValidator::isEmpty($domains)) {
                 foreach ($domains as $domain) {
                     $hostingController->createDomainAlias($domain->getName());
                 }
             }
-            return $subscriptionId;
+            return array ('subscriptionId' => $subscriptionId, 'pwd' => $pwd);
         }
         return false;
     }

@@ -751,6 +751,64 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
         return false;
     }
+    
+    /**
+     * Get an auxilary user guid
+     * 
+     * @param string $ownerGuid
+     * 
+     * @return string auxilary user guid
+     * @throws ApiRequestException on error
+     */
+    public function getAuxilaryUserGuid($ownerGuid)
+    {
+        \DBG::msg("MultiSite (PleskController): get auxilary user guid: $ownerGuid");
+        if (\FWValidator::isEmpty($this->webspaceId) || \FWValidator::isEmpty($ownerGuid)) {
+            return false;
+        }
+
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+
+        $user = $xmldoc->createElement('user');
+        $packet->appendChild($user);
+
+        $get = $xmldoc->createElement('get');
+        $user->appendChild($get);
+
+        $filter = $xmldoc->createElement('filter');
+        $get->appendChild($filter);
+
+        $ownerGuidTag = $xmldoc->createElement('owner-guid', $ownerGuid);
+        $filter->appendChild($ownerGuidTag);
+
+        $dataSet = $xmldoc->createElement('dataset');
+        $get->appendChild($dataSet);
+
+        $genInfo = $xmldoc->createElement('gen-info');
+        $dataSet->appendChild($genInfo);
+
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->user->{'get'}->result;
+
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in get Auxilary user guid : {$error}");
+        }
+
+        $responseJson = json_encode($response->user->{'get'});
+        $responseArr = json_decode($responseJson, true);
+        foreach ($responseArr['result'] as $value) {
+            $getInfo = $value['data']['gen-info'];
+            if (isset($getInfo['subscription-domain-id']) && $getInfo['subscription-domain-id'] == $this->webspaceId) {
+                return $getInfo['guid'];
+            }
+        }
+        return false;
+    }
 
     /**
      * Change plan of the subscription 
@@ -875,6 +933,61 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             throw new ApiRequestException("Error in deleting user account: {$error}");
         }
         return $resultNode->id;          
+    }
+    
+    /**
+     * Change the password from a user account
+     * 
+     * @param int $userAccountId user id
+     * @param string $password
+     * 
+     * @return id 
+     * @throws ApiRequestException
+     */
+    public function changeUserAccountPassword($userAccountId, $password)
+    {
+        $this->webspaceId = $userAccountId;
+        $guid = null;
+        $subscriptionOwnerGuid = $this->getSubscriptionOwnerGuid();
+        $guid = !empty($subscriptionOwnerGuid) ? $this->getAuxilaryUserGuid($subscriptionOwnerGuid) : '';
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+
+        $user = $xmldoc->createElement('user');
+        $packet->appendChild($user);
+
+        $setTag = $xmldoc->createElement('set');
+        $user->appendChild($setTag);
+
+        $filterTag = $xmldoc->createElement('filter');
+        $setTag->appendChild($filterTag);
+
+        $guid = $xmldoc->createElement('guid', $guid);
+        $filterTag->appendChild($guid);
+
+        $valuesTag = $xmldoc->createElement('values');
+        $setTag->appendChild($valuesTag);
+        
+        $genInfo = $xmldoc->createElement('gen-info');
+        $valuesTag->appendChild($genInfo);
+
+        $userPasswordValue = $xmldoc->createTextNode($password);
+        $userPassword = $xmldoc->createElement('passwd');
+        $userPassword->appendChild($userPasswordValue);
+        $genInfo->appendChild($userPassword);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->{'user'}->{'set'}->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string)$resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError)?$systemError:$resultNode->errtext);
+            throw new ApiRequestException("Error in updating user account: {$error}");
+        }
+         
+        return $resultNode->id;
     }
     
     /**
