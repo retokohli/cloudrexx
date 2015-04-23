@@ -66,9 +66,9 @@ class MediaDirectorySearch extends MediaDirectoryLibrary
 <form method="get" action="$strSearchFormAction">
 <input name="section" value="$strSectionValue" type="hidden" />
 <input name="type" value="normal" type="hidden" />
-<input type="hidden" value="Suchen" name="search">
 $strSearchFormCmd
-<input name="term" class="$strInputfieldSearch searchbox" value="$strSearchFormTerm" onfocus="this.select();" type="text" /><input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
+<input name="term" class="$strInputfieldSearch searchbox" value="$strSearchFormTerm" onfocus="this.select();" type="text" />
+<input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
 </form>
 </div>
 EOF;
@@ -80,7 +80,6 @@ EOF;
 <div class="normal">
 <input name="section" value="$strSectionValue" type="hidden" />
 <input name="type" value="exp" type="hidden" />
-<input type="hidden" value="Suchen" name="search">
 $strSearchFormCmd
 <p><label>$strTextSearchterm</label><input name="term" class="$strInputfieldSearch searchbox" value="$strSearchFormTerm" onfocus="this.select();" type="text" />
 <input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
