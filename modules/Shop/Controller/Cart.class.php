@@ -420,7 +420,7 @@ class Cart
                 unset($products[$cart_id]);
                 continue;
             }
-            // Check minimum order quanity, when set
+            // Check minimum order quantity, when set
             // Do not add error message if it's an AJAX request
             if (
                 (
