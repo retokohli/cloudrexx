@@ -1,0 +1,81 @@
+<!-- BEGIN showEditEmailName -->
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('#resetPassword').click(function() {
+        jQuery.ajax({
+            dataType: "json",
+            url: jQuery('#multisite_edit_email_form').attr('action'),
+            type: "POST",
+            success: function(response) {
+                if (response.message && response.status == 'error') {
+                    showMessage(response.data.message, 'error');
+                } else {
+                    jQuery('#password').val(response.data.message);
+                }
+            }
+        });
+    });
+});
+/* ]]> */
+</script>
+<div class="grid-elm grid-align-1-1 grid-offset">
+  <form role="form" action="{MULTISITE_WEBSITE_EMAIL_SUBMIT_URL}" id="multisite_edit_email_form">
+    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_EDIT}</h2>
+    <fieldset>
+      <div class="row process">
+        <label for="username_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_USERNAME}</label>
+        <input name="username_email" readonly="readonly" value="{MULTISITE_EMAIL_USERNAME}" />
+      </div>
+      <div class="row process">
+        <label for="reset_password_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PASSWORD}</label>
+        <input id="password" value="{MULTISITE_EMAIL_PASSWORD}" readonly="readonly" /><input id="resetPassword" type="button" name="reset_password_email" value="{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_RESET_PASSWORD}">
+      </div>
+      <div class="row process">
+        <label for="incoming_server_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_INCOMING_MAIL_SERVER} ({TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}/{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP})</label>
+        <input name="incoming_server_email" readonly="readonly" value="{MULTISITE_EMAIL_SERVER}" />
+      </div>
+      <div class="row process">
+        <label for="incoming_server_pop3_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+        <input name="incoming_server_pop3_email" readonly="readonly" value="110" />
+      </div>
+      <div class="row process">
+        <label for="incoming_server_imap_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+        <input name="incoming_server_imap_email" readonly="readonly" value="143" />
+      </div>
+      <div class="row process">
+        <label for="incoming_server_ssl_pop3_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL} {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+        <input name="incoming_server_ssl_pop3_email" readonly="readonly" value="995" />
+      </div>
+      <div class="row process">
+        <label for="incoming_server_ssl_imap_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL} {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+        <input name="incoming_server_ssl_imap_email" readonly="readonly" value="993" />
+      </div>
+      <div class="row process">
+        <label for="outgoing_server_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_OUTGOING_MAIL_SERVER} ({TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SMTP})</label>
+        <input name="outgoing_server_email" readonly="readonly" value="{MULTISITE_EMAIL_SERVER}" />
+      </div>
+      <div class="row process">
+        <label for="outgoing_server_port_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SMTP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+        <input name="outgoing_server_port_email" readonly="readonly" value="25" />
+      </div>
+      <div class="row process">
+        <label for="outgoing_server_ssl_port_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL} {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SMTP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+        <input name="outgoing_server_ssl_port_email" readonly="readonly" value="465" />
+      </div>
+      <div class="row process">
+        <label for="outgoing_server_ssl2_port_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL} {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SMTP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+        <input name="outgoing_server_ssl2_port_email" readonly="readonly" value="587" />
+      </div>
+      <div class="row process">
+        <label for="webmail_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_WEBMAIL}</label>
+        <input name="webmail_email" readonly="readonly" value="https://{MULTISITE_EMAIL_WEBMAIL}" />
+      </div>
+      <div class="row">
+        <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+      </div>
+    </fieldset>
+  </form>
+</div>
+<!-- END showEditEmailName -->
