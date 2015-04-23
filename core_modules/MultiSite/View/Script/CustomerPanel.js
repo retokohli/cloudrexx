@@ -412,7 +412,7 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
     data: jQuery(jsFormSelector).serialize(),
     type: "POST",
     beforeSend: function (xhr, settings) {
-        if (callbackOptions !== 'undefined') {
+        if (typeof(callbackOptions) !== 'undefined') {
             callbackOptions.beforesend(jQuery(jsFormSelector + ' .loadingProcess'));              
         } else {
             jQuery('.loadingProcess').button('loading');
