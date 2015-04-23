@@ -1758,7 +1758,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
     {
         $this->owner->setRestoreKey();
         // hard-coded to 1 day
-        $this->owner->setRestoreKeyTime(86400);
+        $this->owner->setRestoreKeyTime(time() + 86400);
         \Env::get('em')->flush();
         $websitePasswordUrl = \FWUser::getPasswordRestoreLink(false, $this->owner, \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite'));
         return $websitePasswordUrl;
@@ -1773,7 +1773,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
     {
         $this->owner->setRestoreKey();
         // hard-coded to 30 days
-        $this->owner->setRestoreKeyTime(86400 * 30);
+        $this->owner->setRestoreKeyTime(time() + 86400 * 30);
         \Env::get('em')->flush();
         $websiteVerificationUrl = \FWUser::getVerificationLink(true, $this->owner, $this->baseDn->getName());
         return $websiteVerificationUrl;
