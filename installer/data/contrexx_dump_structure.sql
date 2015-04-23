@@ -4440,7 +4440,8 @@ CREATE TABLE `contrexx_session_variable` (
   `key` varchar(100) NOT NULL default '',
   `value` text,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `key_index` (`parent_id`,`key`,`sessionid`)
+  UNIQUE KEY `key_index` (`parent_id`,`key`,`sessionid`),
+  KEY `key_parent_id_sessionid` (`parent_id`,`sessionid`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
