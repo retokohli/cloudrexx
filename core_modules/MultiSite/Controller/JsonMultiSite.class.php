@@ -210,9 +210,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     public static function loadLanguageData() {
-        global $_ARRAYLANG, $objInit;
+        global $_ARRAYLANG, $_CORELANG, $objInit;
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+        
+        $coreLangData = $objInit->loadLanguageData('core');
+        $_CORELANG = array_merge($_ARRAYLANG, $coreLangData);
     }
 
     public function address($params) {
