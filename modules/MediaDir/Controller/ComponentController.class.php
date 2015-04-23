@@ -136,7 +136,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $foundOne = false;
                     foreach ($objMediadirForms->getForms() as $key => $arrForm) {
                         if ($objTemplate->blockExists('mediadirLatest_form_'.$arrForm['formCmd'])) {
-                            $objMediadir->getLatestEntries($key);
+                            $objMediadir->getLatestEntries($key, 'mediadirLatest_form_'.$arrForm['formCmd']);
                             $foundOne = true;
                         }
                     }
