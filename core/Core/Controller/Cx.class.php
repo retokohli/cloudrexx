@@ -495,6 +495,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteMediaarchive2Path;
         protected $websiteMediaarchive4Path;
         protected $websiteMediaarchive3Path;
+        protected $websiteMediaFileSharingPath;
         protected $websiteImagesContentWebPath;
         protected $websiteImagesAttachWebPath;
         protected $websiteImagesShopWebPath;
@@ -509,7 +510,8 @@ namespace Cx\Core\Core\Controller {
         protected $websiteMediaarchive2WebPath;
         protected $websiteMediaarchive3WebPath;
         protected $websiteMediaarchive4WebPath;
-
+        protected $websiteMediaFileSharingWebPath;
+        
         protected $websiteImagesPath;
         protected $websiteImagesWebPath;
         protected $websitePublicTempPath;
@@ -2489,6 +2491,9 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive4Path
                 = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
                 . '/archive4';
+            $this->websiteMediaFileSharingPath
+                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
+                . '/FileSharing';
 
 
 
@@ -2534,6 +2539,9 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive4WebPath
                 = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
                 . '/archive4';
+            $this->websiteMediaFileSharingWebPath
+                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
+                . '/FileSharing';
             
             $this->websitePublicTempPath
                 = $this->websiteTempPath . self::FOLDER_NAME_PUBLIC_TEMP;
@@ -2878,8 +2886,30 @@ namespace Cx\Core\Core\Controller {
         {
             return $this->websiteMediaarchive4WebPath;
         }
+        
+        /**
+         * Return the absolute path to the media FileSharing location (/FileSharing)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_FILESHARING_PATH.
+         * 
+         * @return string
+         */
+        public function getWebsiteMediaFileSharingPath()
+        {
+            return $this->websiteMediaFileSharingPath;
+        }
 
-
+        /**
+         * Return the offset path to the media FileSharing location (/FileSharing)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_FILESHARING_WEB_PATH.
+         * 
+         * @return string
+         */
+        public function getWebsiteMediaFileSharingWebPath()
+        {
+            return $this->websiteMediaFileSharingWebPath;
+        }
 
         /**
          * @return string
