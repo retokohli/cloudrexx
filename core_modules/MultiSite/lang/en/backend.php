@@ -271,6 +271,7 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETE_MAIL_ACCOUNT_FAILED'] = 'Failed to del
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY'] = 'Email account successfully created.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETED_MAIL_ACCOUNT_SUCCESSFULLY'] = 'Email account successfully removed.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Cancel';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CLOSE'] = 'Close';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_ENABLED'] = 'Mail service is active';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_DISABLED'] = 'No mail service';
 
@@ -285,9 +286,11 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_ADD_FAILED'] = 'Failed to 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT_FAILED'] = 'Failed to update the domain.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_DELETE_FAILED'] = 'Failed to remove the domain.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'] = 'Invalid request.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF'] = 'SPF record from this domain';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'] = 'The SPF record is a normal TXT record on the DNS. This looks for your website as follows<br />%s';
-
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF'] = 'Anti-spoofing measurements';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'] = 'We recommend that you create a <a href="http://www.openspf.org/" target="_blank">Sender Policy Framework</a> (SPF) record for the domain %s. An SPF record is a type of Domain Name Service (DNS) record that identifies which mail servers are permitted to send email on behalf of your domain.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_SEE'] = 'For further information see';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_MORE_INFORMATION'] = 'FAQ article regarding SPF';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO_RECORD'] = 'SPF record for %s:';
 //website email
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_EDIT'] = 'E-Mail information';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_INCOMING_MAIL_SERVER'] = 'Incoming mail server';

@@ -145,6 +145,7 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETE_MAIL_ACCOUNT_FAILED'] = 'Die Löschung
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATED_MAIL_ACCOUNT_SUCCESSFULLY'] = 'Das E-Mail Konto wurde erfolgreich erstellt.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_DELETED_MAIL_ACCOUNT_SUCCESSFULLY'] = 'Das E-Mail Konto wurde erfolgreich gelöscht.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Abbrechen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CLOSE'] = 'Schliessen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_ENABLED'] = 'E-Mail Dienst ist aktiv';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_DISABLED'] = 'Kein E-Mail Dienst';
 
@@ -164,8 +165,11 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_ADD_FAILED'] = 'Die Zuweis
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_EDIT_FAILED'] = 'Die Änderung der Domain schlug fehl.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_DELETE_FAILED'] = 'Die Entfernung der Domain schlug fehl.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'] = 'Ungültige Anfrage.';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF'] = 'SPF Eintrag dieser Domain';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'] = 'Der SPF-Eintrag ist auf dem DNS ein normaler TXT-Eintrag. Dieser sieht für Ihre Cloudrexx Webseite wie folgt aus:<br />%s';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF'] = 'Anti-Spoofing-Maßnahmen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'] = 'Wir empfehlen Ihnen die Erstellung eines SPF-Datensatzes (<a href="http://www.openspf.org/" target="_blank">Sender Policy Framework</a>) für die Domain %s. Ein SPF-Datensatz ist eine Art von DNS-Datensatz (TXT-Eintrag im Domain Name System), über den ermittelt wird, welche Mailserver E-Mails für Ihre Domain senden dürfen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_SEE'] = 'Siehe';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_MORE_INFORMATION'] = 'weitere Informationen zu SPF';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO_RECORD'] = 'SPF-Eintrag für %s:';
 
 //website email
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_EDIT'] = 'E-Mail Informationen';

@@ -1207,7 +1207,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     }
                     
                     $objTemplate->setVariable(array(
-                        'TXT_MULTISITE_SPF_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'], contrexx_raw2xhtml($spfText)),
+                        'TXT_MULTISITE_SPF_DOMAIN_INFO' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO'], $domainName),
+                        'TXT_MULTISITE_SPF_DOMAIN_INFO_RECORD' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_INFO_RECORD'], $domainName),
+                        'TXT_MULTISITE_SPF_DOMAIN_RECORD' => contrexx_raw2xhtml($spfText),
                     ));
                 }
             }
