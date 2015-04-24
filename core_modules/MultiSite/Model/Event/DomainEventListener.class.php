@@ -122,10 +122,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         }
                         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
                         $oldDomain = $domainRepository->findOneBy(array('id' => $domain->getId()));
-                        $mainDomainName = $domainRepository->getMainDomain()->getName();
-                        if ($domain->getName() == $mainDomainName) {
-                            break;
-                        }
+                        
                         $params = array(
                                 'websiteName' => $websiteName, 
                                 'command'     => 'renameDomainAlias', 
@@ -209,41 +206,6 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-        }
-    }
-    
-    public function postUpdate($eventArgs) {
-        try {
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
-            $domain  = $eventArgs->getEntity();
-            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                switch ($mode) {
-                    case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
-                        if (\FWValidator::isEmpty($websiteName)) {
-                            break;
-                        }
-                        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-                        $mainDomainName = $domainRepository->getMainDomain()->getName();
-                        if ($domain->getName() !== $mainDomainName) {
-                            break;
-                        }
-                        $params = array(
-                                'websiteName' => $websiteName, 
-                                'command'     => 'renameSubscriptionName', 
-                                'domainName'  => $domain->getName()
-                                ); 
-                        $this->domainManipulation($params);
-                        break;
-                    
-                    default :
-                        break;
-                }
-            }
-        } catch (\Exception $e) {
-            \DBG::msg($e->getMessage());
-            throw new DomainEventListenerException($e->getMessage());
         }
     }
 

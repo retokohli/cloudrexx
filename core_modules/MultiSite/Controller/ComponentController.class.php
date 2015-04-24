@@ -1276,7 +1276,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (isset($command) && isset($params)) {
                     $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($command, $params);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
-                        return $this->parseJsonMessage($response->data->password, true);
+                        return $this->parseJsonMessage(array('message' => $response->data->message, 'pwd' => $response->data->password), true);
                     } else {
                         return $this->parseJsonMessage($response->data->message, false);
                     }
@@ -1291,7 +1291,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'MULTISITE_EMAIL_USERNAME' => 'info@' . $website->getMailDn()->getName(),
                     'MULTISITE_EMAIL_SERVER' => $website->getMailDn()->getName(),
                     'MULTISITE_EMAIL_WEBMAIL' => $website->getWebmailDn()->getName(),
-                    'MULTISITE_EMAIL_PASSWORD' => empty($password)?'********':$password,
+                    'MULTISITE_EMAIL_PASSWORD' => empty($password)?'********':base64_decode($password),
                 ));
             }
             $objTemplate->setVariable(array(

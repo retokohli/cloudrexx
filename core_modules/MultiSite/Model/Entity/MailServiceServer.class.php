@@ -343,18 +343,20 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             $this->addWebsite($website);
             
             $website->setMailDn();
-            $website->setWebmailDn();
             $hostingController->renameSubscriptionName($website->getMailDn()->getName());
             
             $pwd = \User::make_password(8, true);
             $hostingController->createUserAccount('info@'.$website->getMailDn()->getName(), $pwd, $role, $subscriptionId);
             $domains = $website->getDomainAliases();
+            
+            $domains[] = $website->getBaseDn();
+            
             if (!\FWValidator::isEmpty($domains)) {
                 foreach ($domains as $domain) {
                     $hostingController->createDomainAlias($domain->getName());
                 }
             }
-            return array ('subscriptionId' => $subscriptionId, 'pwd' => $pwd);
+            return array ('subscriptionId' => $subscriptionId, 'pwd' => base64_encode($pwd));
         }
         return false;
     }
@@ -399,12 +401,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         
         if ($hostingController->enableMailService($accountId)) {
-            if(\FWValidator::isEmpty($website->getMailDn())){
-                $website->setMailDn();
-            }
-            if(\FWValidator::isEmpty($website->getWebmailDn())) {
-                $website->setWebmailDn();
-            }
+            $website->setWebmailDn();
             \Env::get('em')->persist($website);
             \Env::get('em')->flush();
             \DBG::log('Successfully mapped the domain of type mail with host ' . $website->getMailDn()->getName() . ' and the domain of type webmail with host ' . $website->getWebmailDn()->getName());
@@ -438,23 +435,15 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
         
         if ($hostingController->disableMailService($accountId)) {
             
-            $mailDomain = $website->getMailDn();
             $webmailDomain = $website->getWebmailDn();
-            
-            if (!($mailDomain instanceof Domain)) {
-                \DBG::log('Their is no domains found by the given criteria.');
-                return false;
-            }
             
             if ($webmailDomain instanceof Domain) {
                 $website->unMapDomain($webmailDomain);
                 \DBG::log('Successfully unmapped the domain of type webmail with host ' . $webmailDomain->getName() . ' of type webmail.');
             }
             
-            $website->unMapDomain($mailDomain);
             \Env::get('em')->persist($website);
             \Env::get('em')->flush();
-            \DBG::log('Successfully unmapped the domain of type mail with host ' . $mailDomain->getName() . ' of type mail.');
             return true;
         }
         \DBG::log('Failed to disable mail service account.');

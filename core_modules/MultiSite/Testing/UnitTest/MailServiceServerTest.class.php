@@ -107,7 +107,6 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
             $mailServiceServer = $website->getMailServiceServer();  // get the mail service server
             $mailServiceServer->disableService($website);
             
-            $this->assertEmpty($website->getMailDn());
             $this->assertEmpty($website->getWebmailDn());
         } else {
             $this->setExpectedException('Failed to disable mail service account.');
