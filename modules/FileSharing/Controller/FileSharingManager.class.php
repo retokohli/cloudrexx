@@ -28,7 +28,7 @@ class FileSharingManager extends FileSharingLib
         $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('FileSharing'));
 
         $this->_objTpl = $objTpl;
-        $this->_objTpl->setRoot(ASCMS_MODULE_PATH . '/FileSharing/View/Template/Backend');
+        $this->_objTpl->setRoot(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/FileSharing/View/Template/Backend');
         if ($_GET['act'] == 'settings') {
             $templateFile = 'module_filesharing_settings.html';
         } else {
@@ -41,7 +41,8 @@ class FileSharingManager extends FileSharingLib
     public function getDetailPage()
     {
         global $_ARRAYLANG, $objDatabase;
-        $file = str_replace(ASCMS_PATH_OFFSET, '', $_GET["path"]) . $_GET["file"];
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $file = str_replace($cx->getWebsiteOffsetPath(), '', $_GET["path"]) . $_GET["file"];
         $objResult = $objDatabase->Execute("SELECT `id`, `file`, `source`, `hash`, `check`, `expiration_date` FROM " . DBPREFIX . "module_filesharing WHERE `source` = '" . contrexx_raw2db($file) . "'");
 
         $existing = $objResult !== false && $objResult->RecordCount() > 0;
@@ -51,7 +52,7 @@ class FileSharingManager extends FileSharingLib
             } else {
                 $hash = FileSharingLib::createHash();
                 $check = FileSharingLib::createCheck($hash);
-                $source = str_replace(ASCMS_PATH_OFFSET, '', $_GET["path"]) . $_GET["file"];
+                $source = str_replace($cx->getWebsiteOffsetPath(), '', $_GET["path"]) . $_GET["file"];
                 $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing (`file`, `source`, `hash`, `check`) VALUES ('" . contrexx_raw2db($source) .  "', '" . contrexx_raw2db($source) . "', '" . contrexx_raw2db($hash) . "', '" . contrexx_raw2db($check) . "')");
             }
 

@@ -59,7 +59,9 @@ define('ASCMS_MEDIA4_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_O
 define('ASCMS_MEDIA4_WEB_PATH',             ASCMS_INSTANCE_OFFSET.'/media/archive4');
 define('ASCMS_MEDIA_PATH',                  ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media');
 define('ASCMS_MEDIA_WEB_PATH',              ASCMS_INSTANCE_OFFSET.'/media');
+//Cx::getWebsiteMediaFileSharingPath()
 define('ASCMS_FILESHARING_PATH',            ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/FileSharing');
+//Cx::getWebsiteMediaFileSharingWebPath()
 define('ASCMS_FILESHARING_WEB_PATH',        ASCMS_INSTANCE_OFFSET.'/media/FileSharing');
 // Cx::getModuleFolderName()
 define('ASCMS_MODULE_FOLDER',               '/modules');
