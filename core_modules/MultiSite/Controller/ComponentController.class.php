@@ -2450,7 +2450,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->registerContactFormEventListener();
                 $this->registerShopProductEventListener();
                 $this->registerCrmCustomerEventListener();
-                $this->registerCoreYamlSettingEventListener();
                 break;
 
             default:
@@ -2554,12 +2553,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
         
-    }
-
-    protected function registerCoreYamlSettingEventListener() {
-        $coreYamlSettingEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\CoreYamlSettingEventListener();
-        $evm = \Env::get('cx')->getEvents();
-        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\Setting\\Model\\Entity\\YamlSetting', $coreYamlSettingEventListener);
     }
     
     protected function registerOrderSubscriptionEventListener() {
