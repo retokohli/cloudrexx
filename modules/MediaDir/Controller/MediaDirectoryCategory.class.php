@@ -309,6 +309,10 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $strCategoryCmd = null;
                     }
 
+                    $childrenString = $this->createCategorieTree(
+                        $arrCategory,$strCategoryCmd,$strLevelId
+                    );
+
                     //parse variables
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategory['catId'],
@@ -318,6 +322,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategory['catPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrCategory['catName'][0]).'" />',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategory['catPicture'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategory['catNumEntries'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_CHILDREN' => $childrenString,
                     ));
 
                     $intBlockId = $arrExistingBlocks[$i];
@@ -725,6 +730,26 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         }
 
         return true;
+    }
+
+    /**
+     * @param $arrCategory
+     *
+     * @return array
+     */
+    public function createCategorieTree($arrCategory,$strCategoryCmd,$strLevelId) {
+        $childrenString = '<ul>';
+        if (!empty($arrCategory['catChildren'])) {
+            foreach ($arrCategory['catChildren'] as $children) {
+                $childrenString .= '<li><a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$children['catId'].'">' . $children['catName'][0] .'</a>';
+                if (!empty($children['catChildren'])) {
+                    $childrenString .= $this->createCategorieTree($children,$strCategoryCmd,$strLevelId);
+                }
+                $childrenString .= '</li>';
+            }
+        }
+        $childrenString .= '</ul>';
+        return $childrenString;
     }
 }
 ?>
