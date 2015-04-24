@@ -274,6 +274,24 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CANCEL'] = 'Cancel';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CLOSE'] = 'Close';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_ENABLED'] = 'Mail service is active';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIL_SERVICE_DISABLED'] = 'No mail service';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_ACCESS_DATA'] = "Credentials";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_EMAIL_CONFIG'] = "E-Mail Configuration";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_MAIL_ACCOUNT'] = "Main-E-Mail-Account";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_MORE_MAIL_ACCOUNTS'] = "More E-Mail Accounts";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_OPEN_MANAGER'] = "Open administration";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_WEBMAIL'] = "Webmail";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIL_SETUP'] = "E-Mail Client Setup";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST'] = "Host";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION'] = "Secure connection";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIL_SETUP_INFO'] = "You can find instructions to set up your mail client in our <a target='_blank' href=\"https://contrexx.freshdesk.com/solution/categories/5000113951/folders/5000166090\">helpdesk</a>";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_WEBMAIL_HELP'] = "The webmail is accessable over the following url from everywhere with internet access with a modern browser:";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_USERNAME_HELP'] = "Use the whole E-mail address as the username for the mail account.
+You can manage passwords and the other accounts in the administration.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER'] = "Outbox server (SMTP)";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_INPUT_SERVER'] = "Inbox server (POP3/IMAP)";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER_INFO'] = "Choose the desired configuration to show the needed data to configure your E-mail client.";
+
+
 
 //website domain
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD'] = 'Add';

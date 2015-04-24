@@ -187,6 +187,24 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_RESET_PASSWORD'] = 'Kennwor
 $_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_ERROR_MSG'] = 'Die Rücksetzung Ihres E-Mail Kennworts schlug fehl. Bitte versuchen Sie es erneut.';
 $_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_MSG'] = 'Ihr E-Mail Kennwort wurde erfolgreich zurück gesetzt.';
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SHOW_EMAIL'] = 'E-Mail Konto anzeigen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_ACCESS_DATA'] = "Zugangsdaten";
+
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_EMAIL_CONFIG'] = "E-Mail Konfiguration";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_MAIL_ACCOUNT'] = "Haupt-E-Mail-Konto";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_MORE_MAIL_ACCOUNTS'] = "Weitere E-Mail-Konten";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_OPEN_MANAGER'] = "Verwaltung öffnen";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_WEBMAIL'] = "Webmail";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIL_SETUP'] = "E-Mail Client Setup";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST'] = "Host";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION'] = "Sichere Verbindung";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIL_SETUP_INFO'] = "Diverse Anleitungen zur Einrichtung des E-Mail Kontos in Ihrem E-Mail Client finden Sie <a target='_blank' href=\"https://contrexx.freshdesk.com/solution/categories/5000113951/folders/5000166090\">hier</a>.
+Die folgenden Daten benötigen Sie, um ein E-Mail Konto in Ihrem E-Mail Client einzurichten.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_WEBMAIL_HELP'] = "Das Webmail ist über die folgende Adresse mit einem modernen WebBrowser von überall her mit Internet-Zugriff erreichbar:";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_USERNAME_HELP'] = "Als Benutzername verwenden Sie jeweils die ganze E-Mail Adresse des E-Mail Kontos.
+Die Kennwörter und weitere E-Mail-Konten können Sie in der E-Mail Verwaltung verwalten.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER'] = "Postausgangsserver (SMTP)";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_INPUT_SERVER'] = "Posteingangsserver (POP3/IMAP)";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER_INFO'] = "Wählen Sie Ihre gewünschte Konfiguration aus, um die entsprechenden Daten zur Einrichtung Ihres E-Mail Clients anzeigen zu lassen.";
 
 //website admin user
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADMIN_USER_DELETE_SUCCESS']  = 'Das ausgewählte Administrator-Konto wurde gelöscht.';
