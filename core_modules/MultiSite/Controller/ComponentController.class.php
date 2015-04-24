@@ -989,6 +989,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // hide the edit/delete icons if the domain is selected as main domain or  base domain.
                 $domainActionStatus = !$statusDisabled ? ($domain->getName() !== $mainDomainName && !$isBaseDomain) : false;
                 self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', $domainActionStatus);
+                // hide the spf icon if the domain is the base domain.
+                $domainSpfStatus = !$statusDisabled ? (!$isBaseDomain) : false;
+                self::showOrHideBlock($objTemplate, 'showWebsiteSpfAction', $domainSpfStatus);
                 //hide the selection websiteMainDomain if the website is disabled
                 self::showOrHideBlock($objTemplate, 'showWebsiteMainDomain', !$statusDisabled);
                 $objTemplate->parse('showWebsiteDomains');                
