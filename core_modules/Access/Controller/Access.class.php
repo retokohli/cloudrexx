@@ -490,6 +490,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $arrSettings = \User_Setting::getSettings();
 
+        $objUser = null;
         if (!empty($_SESSION['user_id'])) {
             $objUser = \FWUser::getFWUserObject()->objUser->getUser($_SESSION['user_id']);
             if ($objUser) {
