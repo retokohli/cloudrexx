@@ -1243,7 +1243,7 @@ END;
     */
     function countVoting($intPicId,$intMark)
     {
-        global $objDatabase, $objCache;
+        global $objDatabase;
 
         $intPicId = intval($intPicId);
         $categoryId = $this->getCategoryId($intPicId);
@@ -1284,8 +1284,9 @@ END;
                 "SET picid=$intPicId, date=".time().", ip='".$_SERVER['REMOTE_ADDR']."', ".
                 "md5='".$strMd5."', mark=$intMark");
             setcookie('Gallery_Voting_'.$intPicId,$intMark,$intCookieTime, ASCMS_PATH_OFFSET.'/');
-
-            $objCache->deleteAllFiles();
+            $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
+            $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+            $cacheManager->deleteSingleFile($pageId);
         }
     }
 
