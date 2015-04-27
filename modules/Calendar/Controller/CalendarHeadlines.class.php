@@ -52,13 +52,13 @@ class CalendarHeadlines extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     {
         if($this->arrSettings['headlinesStatus'] == 1 && $this->_objTpl->blockExists('calendar_headlines_row')) {                        
             $startDate = mktime(0, 0, 0, date("m", mktime()), date("d", mktime()), date("Y", mktime()));                                   
-            $enddate = mktime(23, 59, 59, date("m", mktime()), date("d", mktime()), date("Y", mktime())+10);       
+            $endDate = mktime(23, 59, 59, date("m", mktime()), date("d", mktime()), date("Y", mktime())+10);       
             $categoryId = intval($this->arrSettings['headlinesCategory']) != 0 ? intval($this->arrSettings['headlinesCategory']) : null;        
             
             $startPos = 0;   
-            $endPos = $this->arrSettings['headlinesNum'];             
+            $endPos = $this->arrSettings['headlinesNum'];  
 
-            $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate,$endDate,$categoryId,$searchTerm,true,$needAuth,true,$startPos,$endPos);
+            $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate, $endDate, $categoryId, null, true, false, true, $startPos, $endPos);
             $this->objEventManager->getEventList();
         }
     }
