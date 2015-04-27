@@ -639,6 +639,9 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         $blockContent           = array();
         $blockAssociatedPageIds = array();
         $blockLangActive        = array();
+        $blockGlobalAssociatedPageIds   = array();
+        $blockDirectAssociatedPageIds   = array();
+        $blockCategoryAssociatedPageIds = array();
 
         $this->_objTpl->loadTemplateFile('module_block_modify.html');
 
