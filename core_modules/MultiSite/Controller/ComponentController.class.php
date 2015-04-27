@@ -1295,6 +1295,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'MULTISITE_EMAIL_SERVER' => $website->getMailDn()->getName(),
                     'MULTISITE_EMAIL_WEBMAIL' => $website->getWebmailDn()->getName(),
                     'MULTISITE_EMAIL_PASSWORD' => empty($password)?'********':base64_decode($password),
+                    'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($website->getId()),
                 ));
             }
             $objTemplate->setVariable(array(
