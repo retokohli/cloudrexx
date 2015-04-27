@@ -569,8 +569,9 @@ class Forum extends ForumLibrary {
                 $this->_updateNotification($intLastThreadId);
                 $this->_sendNotifications($intLastThreadId, $subject, $content);
                 $this->updateViewsNewItem($intForumId, $lastInsertId);
-                $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                $objCache->deleteAllFiles();
+                $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
+                $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+                $cacheManager->deleteSingleFile($pageId);
             }
             \Cx\Core\Csrf\Controller\Csrf::header('Location: ?section=Forum&cmd=board&id='.$intForumId);
             die();
@@ -923,8 +924,9 @@ class Forum extends ForumLibrary {
                 $this->updateViewsNewItem($intCatId, $lastInsertId, true);
                 $this->_updateNotification($intThreadId);
                 $this->_sendNotifications($intThreadId, $subject, $content);
-                $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                $objCache->deleteAllFiles();
+                $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
+                $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+                $cacheManager->deleteSingleFile($pageId);
             }
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
             die();
@@ -1022,8 +1024,9 @@ class Forum extends ForumLibrary {
 
             if($objDatabase->Execute($updateQuery) !== false){
                 $this->updateViews($intThreadId, $intPostId);
-                $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                $objCache->deleteAllFiles();
+                $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
+                $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+                $cacheManager->deleteSingleFile($pageId);
             }
 
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
