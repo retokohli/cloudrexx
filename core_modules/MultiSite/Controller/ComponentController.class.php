@@ -2058,6 +2058,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     throw new MultiSiteException("Failed to add Setting entry for Database Mode");
             }
             
+            // abort in case MultiSite component is not in use
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == self::MODE_NONE) {
+                return false;
+            }
+
             // server group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'server','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController','MultiSite') === NULL
@@ -2330,28 +2335,30 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    throw new MultiSiteException("Failed to add Setting entry for Product List");
             }
             
-            if (!\FWValidator::isEmpty(\Env::get('db'))) {
-                self::addOrUpdateConfigurationOptionUserProfileAttributeId(
-                    'externalPaymentCustomerIdProfileAttributeId', 
-                    'MultiSite External Payment Customer ID',
-                    5);
-                self::addOrUpdateConfigurationOptionUserProfileAttributeId(
-                    'affiliateIdProfileAttributeId', 
-                    'Affiliate ID user profile attribute ID',
-                    6);
-                self::addOrUpdateConfigurationOptionUserProfileAttributeId(
-                    'affiliateIdReferenceProfileAttributeId', 
-                    'Affiliate ID (reference) user profile attribute ID',
-                    8);
-                self::addOrUpdateConfigurationOptionUserProfileAttributeId(
-                    'payPalProfileAttributeId', 
-                    'PayPal profile attribute ID',
-                    9);
-            }
-            if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('affiliateIdQueryStringKey', 'ref', 7, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT)
-            ) {
-                   throw new MultiSiteException("Failed to add Setting entry for Affiliate ID query string key");
+            if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(self::MODE_MANAGER, self::MODE_HYBRID))) {
+                if (!\FWValidator::isEmpty(\Env::get('db'))) {
+                    self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                        'externalPaymentCustomerIdProfileAttributeId', 
+                        'MultiSite External Payment Customer ID',
+                        5);
+                    self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                        'affiliateIdProfileAttributeId', 
+                        'Affiliate ID user profile attribute ID',
+                        6);
+                    self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                        'affiliateIdReferenceProfileAttributeId', 
+                        'Affiliate ID (reference) user profile attribute ID',
+                        8);
+                    self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                        'payPalProfileAttributeId', 
+                        'PayPal profile attribute ID',
+                        9);
+                }
+                if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('affiliateIdQueryStringKey', 'ref', 7, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT)
+                ) {
+                       throw new MultiSiteException("Failed to add Setting entry for Affiliate ID query string key");
+                }
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
