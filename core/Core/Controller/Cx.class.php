@@ -2423,131 +2423,56 @@ namespace Cx\Core\Core\Controller {
          *               location of the Contrexx installation if it is run in a subdirectory.
          */
         public function setWebsiteRepository($websitePath, $websiteOffsetPath) {
-            $this->websitePath = $websitePath;
-            $this->websiteOffsetPath = $websiteOffsetPath;
-            $this->websiteDocumentRootPath
-                = $this->websitePath . $this->websiteOffsetPath;
-            $this->websiteConfigPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_CONFIG;
-            $this->websiteCustomizingPath
-                =
-                $this->websiteDocumentRootPath . self::FOLDER_NAME_CUSTOMIZING;
-            $this->websiteCustomizingWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_CUSTOMIZING;
-            $this->websiteTempPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_TEMP;
-            $this->websiteTempWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_TEMP;
-            $this->websiteThemesPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_THEMES;
-            $this->websiteThemesWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_THEMES;
-            $this->websiteFeedPath = $this->websiteDocumentRootPath . '/feed';
+            $this->websitePath                  = $websitePath;
+            $this->websiteOffsetPath            = $websiteOffsetPath;
 
-            $this->websiteImagesPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES;
-            $this->websiteImagesWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES;
+            $this->websiteDocumentRootPath      = $this->websitePath . $this->websiteOffsetPath;
+            $this->websiteConfigPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_CONFIG;
+            $this->websiteCustomizingPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_CUSTOMIZING;
+            $this->websiteCustomizingWebPath    = $this->websiteOffsetPath       . self::FOLDER_NAME_CUSTOMIZING;
+            $this->websiteTempPath              = $this->websiteDocumentRootPath . self::FOLDER_NAME_TEMP;
+            $this->websiteTempWebPath           = $this->websiteOffsetPath       . self::FOLDER_NAME_TEMP;
+            $this->websiteThemesPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_THEMES;
+            $this->websiteThemesWebPath         = $this->websiteOffsetPath       . self::FOLDER_NAME_THEMES;
+            $this->websiteFeedPath              = $this->websiteDocumentRootPath . '/feed';
 
-            $this->websiteImagesContentPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/content';
-            $this->websiteImagesAttachPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/attach';
-            $this->websiteImagesShopPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/Shop';
-            $this->websiteImagesGalleryPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/Gallery';
-            $this->websiteImagesAccessPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/Access';
-            $this->websiteImagesMediaDirPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/MediaDir';
-            $this->websiteImagesDownloadsPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/Downloads';
-            $this->websiteImagesCalendarPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/Calendar';
-            $this->websiteImagesPodcastPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/Podcast';
-            $this->websiteImagesBlogPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES
-                . '/Blog';
-            $this->websiteMediaarchive1Path
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
-                . '/archive1';
-            $this->websiteMediaarchive2Path
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
-                . '/archive2';
-            $this->websiteMediaarchive3Path
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
-                . '/archive3';
-            $this->websiteMediaarchive4Path
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
-                . '/archive4';
-            $this->websiteMediaFileSharingPath
-                = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA
-                . '/FileSharing';
+            $this->websiteImagesPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES;
+            $this->websiteImagesWebPath         = $this->websiteOffsetPath       . self::FOLDER_NAME_IMAGES;
 
+            $this->websiteImagesContentPath     = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/content';
+            $this->websiteImagesAttachPath      = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/attach';
+            $this->websiteImagesShopPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Shop';
+            $this->websiteImagesGalleryPath     = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Gallery';
+            $this->websiteImagesAccessPath      = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Access';
+            $this->websiteImagesMediaDirPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/MediaDir';
+            $this->websiteImagesDownloadsPath   = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Downloads';
+            $this->websiteImagesCalendarPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Calendar';
+            $this->websiteImagesPodcastPath     = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Podcast';
+            $this->websiteImagesBlogPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Blog';
+            $this->websiteMediaarchive1Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive1';
+            $this->websiteMediaarchive2Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive2';
+            $this->websiteMediaarchive3Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive3';
+            $this->websiteMediaarchive4Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive4';
+            $this->websiteMediaFileSharingPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
 
-
-            $this->websiteImagesContentWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/content';
-            $this->websiteImagesAttachWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/attach';
-            $this->websiteImagesShopWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/Shop';
-            $this->websiteImagesGalleryWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/Gallery';
-            $this->websiteImagesAccessWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/Access';
-            $this->websiteImagesMediaDirWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/MediaDir';
-            $this->websiteImagesDownloadsWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/Downloads';
-            $this->websiteImagesCalendarWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/Calendar';
-            $this->websiteImagesPodcastWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/Podcast';
-            $this->websiteImagesBlogWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES
-                . '/Blog';
-            $this->websiteMediaarchive1WebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
-                . '/archive1';
-            $this->websiteMediaarchive2WebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
-                . '/archive2';
-            $this->websiteMediaarchive3WebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
-                . '/archive3';
-            $this->websiteMediaarchive4WebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
-                . '/archive4';
-            $this->websiteMediaFileSharingWebPath
-                = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA
-                . '/FileSharing';
+            $this->websiteImagesContentWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/content';
+            $this->websiteImagesAttachWebPath   = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/attach';
+            $this->websiteImagesShopWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Shop';
+            $this->websiteImagesGalleryWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Gallery';
+            $this->websiteImagesAccessWebPath   = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Access';
+            $this->websiteImagesMediaDirWebPath = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/MediaDir';
+            $this->websiteImagesDownloadsWebPath= $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Downloads';
+            $this->websiteImagesCalendarWebPath = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Calendar';
+            $this->websiteImagesPodcastWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Podcast';
+            $this->websiteImagesBlogWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Blog';
+            $this->websiteMediaarchive1WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive1';
+            $this->websiteMediaarchive2WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive2';
+            $this->websiteMediaarchive3WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive3';
+            $this->websiteMediaarchive4WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive4';
+            $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
             
-            $this->websitePublicTempPath
-                = $this->websiteTempPath . self::FOLDER_NAME_PUBLIC_TEMP;
-            $this->websitePublicTempWebPath
-                = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;    
-
+            $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
+            $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;    
         }
 
         /**
