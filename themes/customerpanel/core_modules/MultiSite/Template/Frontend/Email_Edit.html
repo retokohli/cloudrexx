@@ -157,7 +157,7 @@
 
             <p>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_USERNAME_HELP}</p>
 
-            <button type="button" data-id="37"
+            <button type="button" data-id="{MULTISITE_WEBSITE_ID}"
                     data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' ></button> Laden..."
                     onclick="pleskAutoLogin(jQuery(this));">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_OPEN_MANAGER}
             </button>
@@ -180,15 +180,7 @@
                 </ul>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="POP3">
-                        <div class="form-group form-group-narrow">
-                            <label class="col-md-3 control-label" for="incoming_server_email_pop3">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
 
-                            <div class="col-md-9">
-                                <input id="incoming_server_email_pop3" name="incoming_server_email_pop3"
-                                       readonly="readonly" type="text"
-                                       value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
-                            </div>
-                        </div>
 
                         <div class="form-group">
                             <label class="col-md-3 control-label" for="ssl-pop3">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
@@ -220,18 +212,18 @@
                                        class="form-control input-md" value="995">
                             </div>
                         </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="IMAP">
-
                         <div class="form-group form-group-narrow">
-                            <label class="col-md-3 control-label" for="incoming_server_email_imap">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
+                            <label class="col-md-3 control-label" for="incoming_server_email_pop3">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
 
                             <div class="col-md-9">
-                                <input id="incoming_server_email_imap" name="incoming_server_email_imap"
+                                <input id="incoming_server_email_pop3" name="incoming_server_email_pop3"
                                        readonly="readonly" type="text"
                                        value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
                             </div>
                         </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="IMAP">
+
 
                         <div class="form-group">
                             <label class="col-md-3 control-label" for="ssl-imap">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
@@ -263,6 +255,16 @@
                                        class="form-control input-md" value="993">
                             </div>
                         </div>
+                        <div class="form-group form-group-narrow">
+                            <label class="col-md-3 control-label" for="incoming_server_email_imap">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
+
+                            <div class="col-md-9">
+                                <input id="incoming_server_email_imap" name="incoming_server_email_imap"
+                                       readonly="readonly" type="text"
+                                       value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -270,17 +272,7 @@
 
             <p> {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER_INFO}</p>
 
-            <div class="row process form-row-close">
-                <div class="form-group form-group-narrow">
-                    <label class="col-md-3 control-label" for="outgoing_server_email_smtp">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
 
-                    <div class="col-md-9">
-                        <input id="outgoing_server_email_smtp" name="outgoing_server_email_smtp" readonly="readonly"
-                               type="text"
-                               value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
-                    </div>
-                </div>
-            </div>
             <div class="row process">
                 <div class="form-group form-group-narrow">
                     <label class="col-md-3 control-label" for="ssl-smtp">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
@@ -312,6 +304,17 @@
                     <div class="col-md-9">
                         <input id="outgoing_server_ssl_port_email" name="outgoing_server_ssl_port_email"
                                readonly="readonly" type="text" value="465" class="form-control input-md">
+                    </div>
+                </div>
+            </div>
+            <div class="row process form-row-close">
+                <div class="form-group form-group-narrow">
+                    <label class="col-md-3 control-label" for="outgoing_server_email_smtp">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
+
+                    <div class="col-md-9">
+                        <input id="outgoing_server_email_smtp" name="outgoing_server_email_smtp" readonly="readonly"
+                               type="text"
+                               value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
                     </div>
                 </div>
             </div>
