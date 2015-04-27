@@ -212,29 +212,35 @@ class Calendar extends CalendarLibrary
      */
     function loadEventManager()
     {
+        $term   = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $from   = isset($_GET['from']) ? contrexx_input2raw($_GET['from']) : '';
+        $till   = isset($_GET['till']) ? contrexx_input2raw($_GET['till']) : '';
+        $catid  = isset($_GET['catid']) ? contrexx_input2raw($_GET['catid']) : '';        
+        $cmd    = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
+        
         // get startdate
-        if (!empty($_GET['from'])) {
-            $this->startDate = parent::getDateTimestamp($_GET['from']);
-        } else if ($_GET['cmd'] == 'archive') {
+        if (!empty($from)) {
+            $this->startDate = parent::getDateTimestamp($from);
+        } else if ($cmd == 'archive') {
             $this->startDate = null;
             $this->sortDirection = 'DESC';
         } else {
-            $startDay   = isset($_GET['day']) ? $_GET['day'] : date("d", mktime());
-            $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", mktime());
-            $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", mktime());
+            $startDay   = isset($_GET['day']) ? $_GET['day'] : date("d", time());
+            $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", time());
+            $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", time());
 
             $this->startDate = mktime(0, 0, 0, $startMonth, $startDay, $startYear);
         }
 
         // get enddate
-        if (!empty($_GET['till'])) {
-            $this->endDate = parent::getDateTimestamp($_GET['till']);
-        } else if ($_GET['cmd'] == 'archive') {
-            $this->endDate = mktime();
+        if (!empty($till)) {
+            $this->endDate = parent::getDateTimestamp($till);
+        } else if ($cmd == 'archive') {
+            $this->endDate = time();
         } else {
-            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : date("d", mktime());
-            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : date("m", mktime());
-            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : date("Y", mktime());
+            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : date("d", time());
+            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : date("m", time());
+            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : date("Y", time());
 
             $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;
 
@@ -243,7 +249,7 @@ class Calendar extends CalendarLibrary
 
 
         // get datepicker-time
-         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $_GET['cmd'] != 'boxes') {
+         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
             $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
             $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
@@ -264,27 +270,27 @@ class Calendar extends CalendarLibrary
             $this->endDate = $dateObj->getTimestamp();
             
 
-         } elseif ($_GET["yearID"] && $_GET["monthID"] && $_GET["dayID"]) {
+         } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
 
-            $year = $_REQUEST["yearID"] ? $_REQUEST["yearID"] : date('Y', mktime());
-            $month = $_REQUEST["monthID"] ? $_REQUEST["monthID"] : date('m', mktime());
-            $day = $_REQUEST["dayID"] ? $_REQUEST["dayID"] : date('d', mktime());
+            $year = isset($_REQUEST["yearID"]) ? intval($_REQUEST["yearID"]) : date('Y', time());
+            $month = isset($_REQUEST["monthID"]) ? intval($_REQUEST["monthID"]) : date('m', time());
+            $day = isset($_REQUEST["dayID"]) ? intval($_REQUEST["dayID"]) : date('d', time());
 
             $this->startDate = mktime(0, 0, 0, $month, $day, $year);
             $this->endDate = mktime(23, 59, 59, $month, $day, $year);
         }
         
         
-        $this->searchTerm = !empty($_GET['term']) ? contrexx_addslashes($_GET['term']) : null;
-        $this->categoryId = !empty($_GET['catid']) ? intval($_GET['catid']) : null;
+        $this->searchTerm = !empty($term) ? contrexx_raw2db($term) : null;
+        $this->categoryId = !empty($catid) ? intval($catid) : null;
 
 
 
 
-        if ($_GET['cmd'] == 'boxes' || $_GET['cmd'] == 'category') {
+        if ($cmd == 'boxes' || $cmd == 'category') {
             $this->startPos = 0;
             $this->numEvents = 'n';
-        } else if(!isset($_GET['search']) && ($_GET['cmd'] != 'list' && $_GET['cmd'] != 'eventlist' && $_GET['cmd'] != 'archive')) {
+        } else if(!isset($_GET['search']) && ($cmd != 'list' && $cmd != 'eventlist' && $cmd != 'archive')) {
             $this->startPos = 0;
             $this->numEvents = $this->arrSettings['numEntrance'];
         } else {
@@ -292,12 +298,12 @@ class Calendar extends CalendarLibrary
             $this->numEvents = $this->arrSettings['numPaging'];
         }
 
-        if ($_GET['cmd'] == 'detail') {
+        if ($cmd == 'detail') {
             $this->startDate = null;
             $this->numEvents = 'n';
         }
 
-        if ($_GET['cmd'] == 'my_events') {
+        if ($cmd == 'my_events') {
             $objFWUser = \FWUser::getFWUserObject();
             $objUser = $objFWUser->objUser;
             $this->author = intval($objUser->getId());
@@ -306,13 +312,15 @@ class Calendar extends CalendarLibrary
         }
         $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
         
-        if($_GET['cmd'] != 'detail') {
+        if($cmd != 'detail') {
             $this->objEventManager->getEventList();  
         } else { 
             /* if($_GET['external'] == 1 && $this->arrSettings['publicationStatus'] == 1) {
                 $this->objEventManager->getExternalEvent(intval($_GET['id']), intval($_GET['date'])); 
             } else { */
-                $this->objEventManager->getEvent(intval($_GET['id']), intval($_GET['date'])); 
+                $eventId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+                $date    = isset($_GET['date']) ? intval($_GET['date']) : 0;
+                $this->objEventManager->getEvent($eventId, $date);
             /* } */
         }
     }
@@ -349,6 +357,12 @@ EOF;
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
 
+        $term   = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $from   = isset($_GET['from']) ? contrexx_input2raw($_GET['from']) : '';
+        $till   = isset($_GET['till']) ? contrexx_input2raw($_GET['till']) : '';
+        $catid  = isset($_GET['catid']) ? contrexx_input2raw($_GET['catid']) : '';
+        $search = isset($_GET['search']) ? contrexx_input2raw($_GET['search']) : '';
+        $cmd    = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_SEARCH_TERM' =>  $_ARRAYLANG['TXT_CALENDAR_KEYWORD'],
             'TXT_'.$this->moduleLangVar.'_FROM' =>  $_ARRAYLANG['TXT_CALENDAR_FROM'],
@@ -357,21 +371,21 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SEARCH' =>  $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
             'TXT_'.$this->moduleLangVar.'_OCLOCK' =>  $_ARRAYLANG['TXT_CALENDAR_OCLOCK'],
             'TXT_'.$this->moduleLangVar.'_DATE' =>  $_CORELANG['TXT_DATE'],
-            $this->moduleLangVar.'_SEARCH_TERM' =>  $_GET['term'],
-            $this->moduleLangVar.'_SEARCH_FROM' =>  $_GET['from'],
-            $this->moduleLangVar.'_SEARCH_TILL' =>  $_GET['till'],
-            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($_GET['catid']), 1),
+            $this->moduleLangVar.'_SEARCH_TERM' => contrexx_raw2xhtml($term),
+            $this->moduleLangVar.'_SEARCH_FROM' =>  contrexx_raw2xhtml($from),
+            $this->moduleLangVar.'_SEARCH_TILL' => contrexx_raw2xhtml($till),
+            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($catid), 1),
             $this->moduleLangVar.'_JAVASCRIPT'  => $javascript
         ));
          self::showThreeBoxes();
          
         if($this->objEventManager->countEvents > $this->arrSettings['numPaging'] && (isset($_GET['search']) || $_GET['cmd'] == 'list' || $_GET['cmd'] == 'eventlist' || $_GET['cmd'] == 'archive')) {
-            $pagingCmd = !empty($_GET['cmd']) ? '&amp;cmd='.$_GET['cmd'] : '';
-            $pagingCategory = !empty($_GET['catid']) ? '&amp;catid='.intval($_GET['catid']) : '';
-            $pagingTerm = !empty($_GET['term']) ? '&amp;term='.$_GET['term'] : '';
-            $pagingSearch = !empty($_GET['search']) ? '&amp;search='.$_GET['search'] : '';
-            $pagingFrom = !empty($_GET['from']) ? '&amp;from='.$_GET['from'] : '';
-            $pagingTill = !empty($_GET['till']) ? '&amp;till='.$_GET['till'] : '';
+            $pagingCmd = !empty($cmd) ? '&amp;cmd='.  contrexx_raw2xhtml($cmd) : '';
+            $pagingCategory = !empty($catid) ? '&amp;catid='.intval($catid) : '';
+            $pagingTerm = !empty($term) ? '&amp;term='.  contrexx_raw2xhtml($term) : '';
+            $pagingSearch = !empty($search) ? '&amp;search='.  contrexx_raw2xhtml($search) : '';
+            $pagingFrom = !empty($from) ? '&amp;from='.  contrexx_raw2xhtml($from) : '';
+            $pagingTill = !empty($till) ? '&amp;till='.  contrexx_raw2xhtml($till) : '';
 
 
             $this->_objTpl->setVariable(array(
@@ -699,6 +713,10 @@ UPLOADER;
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
+        if (empty($this->objEventManager->eventList)) {
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+            exit;
+        }
         
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
@@ -770,7 +788,7 @@ UPLOADER;
         
         $this->pageTitle = date("d.m.Y", (isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)).": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
-        if(mktime() <= intval($_REQUEST['date'])) {
+        if(time() <= intval($_REQUEST['date'])) {
             if($numRegistrations < $objEvent->numSubscriber) {
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ID'                   =>  intval($_REQUEST['id']),
@@ -891,10 +909,10 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_CATEGORY' =>  $_ARRAYLANG['TXT_CALENDAR_CAT'],
             'TXT_'.$this->moduleLangVar.'_SEARCH' =>  $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
             'TXT_'.$this->moduleLangVar.'_OCLOCK' =>  $_ARRAYLANG['TXT_CALENDAR_OCLOCK'],
-            $this->moduleLangVar.'_SEARCH_TERM' =>  $_GET['term'],
-            $this->moduleLangVar.'_SEARCH_FROM' =>  $_GET['from'],
-            $this->moduleLangVar.'_SEARCH_TILL' =>  $_GET['till'],
-            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($_GET['catid']), 1)
+            $this->moduleLangVar.'_SEARCH_TERM' => isset($_GET['term']) ? contrexx_input2xhtml($_GET['term']) : '',
+            $this->moduleLangVar.'_SEARCH_FROM' => isset($_GET['from']) ? contrexx_input2xhtml($_GET['from']) : '',
+            $this->moduleLangVar.'_SEARCH_TILL' => isset($_GET['till']) ? contrexx_input2xhtml($_GET['till']) : '',
+            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown((isset($_GET['catid']) ? intval($_GET['catid']) : 0), 1)
         ));
 
         if(isset($this->categoryId)) {

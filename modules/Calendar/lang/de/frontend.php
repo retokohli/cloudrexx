@@ -168,3 +168,7 @@ $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'] = "Manuell erfassen";
 $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'] = "Eintrag aus dem Medienverzeichnis wählen";    
 $_ARRAYLANG['TXT_CALENDAR_PREV'] = "Zurück";
 $_ARRAYLANG['TXT_CALENDAR_NEXT'] = "Weiter";
+$_ARRAYLANG['TXT_CALENDAR_ACTIVE'] = "aktiv";
+$_ARRAYLANG['TXT_CALENDAR_COMMENT'] = "Beschreibung";
+$_ARRAYLANG['TXT_CALENDAR_HOST'] = "Host";
+$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'] = "keine Wiederholung";

@@ -333,6 +333,7 @@ class CalendarLibrary
      */
     function buildDropdownmenu($arrOptions, $intSelected=null)
     {
+        $strOptions = '';
         foreach ($arrOptions as $intValue => $strName) {
             $checked = $intValue==$intSelected ? 'selected="selected"' : '';
             $strOptions .= "<option value='".$intValue."' ".$checked.">".htmlspecialchars($strName, ENT_QUOTES, CONTREXX_CHARSET)."</option>";
