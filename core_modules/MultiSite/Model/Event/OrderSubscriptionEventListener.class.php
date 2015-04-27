@@ -136,6 +136,94 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
         $em->flush();
     }
 
+    /**
+     * Pay Complete Event
+     * 
+     * @param type $eventArgs
+     */
+    public function payComplete($eventArgs) {
+        \DBG::msg('MultiSite (WebsiteCollectionEventListener): payComplete');
+        $subscription           = $eventArgs->getEntity();
+        $productEntity          = $subscription->getProductEntity();
+        $entityAttributes       = $subscription->getProduct()->getEntityAttributes();
+        $websiteTemplate        = null;
+        
+        if ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+            $websites = $productEntity->getWebsites();
+        } elseif ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+            $websites = array($productEntity);
+        } else {
+            return;
+        }
+        
+        \DBG::msg(__METHOD__ . ': Subscription::$productEntity is '.get_class($productEntity));
+
+        // load website template
+        if (isset($entityAttributes['websiteTemplate'])) {
+            $websiteTemplate = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate')->findOneById($entityAttributes['websiteTemplate']);
+        }
+
+        // assign website template to WebsiteCollection
+        if ($websiteTemplate && $productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+            $productEntity->setWebsiteTemplate($websiteTemplate);
+        }
+
+        if ($subscription->getExpirationDate()) {
+            $entityAttributes['subscriptionExpiration'] = $subscription->getExpirationDate()->getTimestamp();
+        }
+        
+        foreach ($websites as $website) {
+            if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
+                continue;
+            }
+
+            $entityAttributes['initialSignUp'] = false;
+            switch ($website->getStatus()) {
+                case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
+                    // perform initial sign-up in case the user has not yet been verified
+                    $entityAttributes['initialSignUp'] = !\FWUser::getFWUserObject()->objUser->getUser($website->getOwner()->getId(), true)->isVerified();
+// why return????
+                    $website->setup($entityAttributes);
+                    break;
+                
+                case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED:
+                    $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
+                    
+                case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
+                case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
+                    if ($websiteTemplate instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate) {
+                        $website->setupLicense($entityAttributes);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        
+    }
+
+    /**
+     * Terminated Event Change the website status to offline
+     * 
+     * @param object $eventArgs
+     */
+    public function terminated($eventArgs) {
+        \DBG::msg('MultiSite (WebsiteCollectionEventListener): terminated');
+        $subscription      = $eventArgs->getEntity();
+        $productEntity     = $subscription->getProductEntity();
+        
+        if ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+            // disable all associated websites of websiteCollection
+            foreach ($productEntity->getWebsites() as $website) {
+                $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED);
+            }
+        } elseif ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+            // disable associated website
+            $productEntity->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED);
+        }
+    }
+
     public function onEvent($eventName, array $eventArgs) {
         \DBG::msg(__METHOD__.": $eventName");
         $this->$eventName(current($eventArgs));

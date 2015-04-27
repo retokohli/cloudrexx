@@ -148,43 +148,6 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         } 
     }
 
-    public function payComplete($eventArgs) {
-        \DBG::msg('MultiSite (WebsiteEventListener): payComplete');
-        $subscription = $eventArgs->getEntity();
-        $website      = $subscription->getProductEntity();
-        $entityAttributes = $subscription->getProduct()->getEntityAttributes();
-        // abort in case the event has been triggered by a Subscription that is not based on a Website product
-        if (!($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)) {
-            return;
-        }
-
-        \DBG::msg(__METHOD__ . ': Subscription::$productEntity is Website');
-
-        if ($subscription->getExpirationDate()) {
-            $entityAttributes['subscriptionExpiration'] = $subscription->getExpirationDate()->getTimestamp();
-        }
-
-        $entityAttributes['initialSignUp'] = false;
-        switch ($website->getStatus()) {
-            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_INIT:
-                // perform initial sign-up in case the user has not yet been verified
-                $entityAttributes['initialSignUp'] = !\FWUser::getFWUserObject()->objUser->getUser($website->getOwner()->getId(), true)->isVerified();
-                return $website->setup($entityAttributes);
-                break;
-
-            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_DISABLED:
-                $website->setStatus(\Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
-
-            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE:
-            case \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE:
-                $website->setupLicense($entityAttributes);
-                break;
-
-            default:
-                break;
-        }
-    }
-
     public function onEvent($eventName, array $eventArgs) {        
         $this->$eventName(current($eventArgs));
     }
