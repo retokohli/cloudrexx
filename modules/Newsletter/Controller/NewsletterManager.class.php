@@ -1250,7 +1250,6 @@ class NewsletterManager extends NewsletterLib
             FROM ".DBPREFIX."module_newsletter AS tblMail
             ORDER BY date_create DESC, status, id DESC", $_CONFIG['corePagingLimit'], $pos);
         if ($objResult !== false) {
-            $arrMailRecipientCount = $this->_getMailRecipientCount(NULL, $_CONFIG['corePagingLimit'], $pos);
             while (!$objResult->EOF) {
                 $feedbackCount = isset($arrFeedback[$objResult->fields['id']]) ? $arrFeedback[$objResult->fields['id']] : 0;
                 $feedbackStrFormat = '%1$s (%2$s%%)';
@@ -1268,7 +1267,7 @@ class NewsletterManager extends NewsletterLib
                     'NEWSLETTER_MAIL_TEMPLATE' => htmlentities($arrTemplates[$objResult->fields['template']]['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objResult->fields['date_create']),
                     'NEWSLETTER_MAIL_COUNT' => $objResult->fields['count'],
-                    'NEWSLETTER_MAIL_USERS' => isset($arrMailRecipientCount[$objResult->fields['id']]) ? $arrMailRecipientCount[$objResult->fields['id']] : 0
+                    'NEWSLETTER_MAIL_USERS' => (int) $this->getCurrentMailRecipientCount($objResult->fields['id']), // we need to get user amount anyway for a listing
                 ));
 
                 $this->_objTpl->setGlobalVariable('NEWSLETTER_MAIL_ID', $objResult->fields['id']);
@@ -2523,9 +2522,8 @@ class NewsletterManager extends NewsletterLib
                     $count = $this->getCurrentMailRecipientCount($mailId);
                 }
             }
-
+            
         }
-
 
         return $count;
     }
@@ -2627,7 +2625,11 @@ class NewsletterManager extends NewsletterLib
 
         $mailRecipientCount = $this->_getMailRecipientCount($mailId);
         if ($mailRecipientCount == 0) {
-            die($_ARRAYLANG['TXT_CATEGORY_ERROR']);
+            $arrJsonData = array(
+                'sentComplete' => true,
+                'message' => $_ARRAYLANG['TXT_CATEGORY_ERROR']
+            );
+            die(json_encode($arrJsonData));
         }
 
         //Get some newsletter data
@@ -2647,7 +2649,7 @@ class NewsletterManager extends NewsletterLib
             'NEWSLETTER_MAIL_SUBJECT'       => contrexx_raw2xhtml($newsletterData['subject']),
             'NEWSLETTER_PROGRESSBAR_STATUS' => $progressbarStatus
         ));
-
+        
         // the newsletter was not sent
         if ($newsletterData['status'] == 0) {
             if (!empty($_POST['send'])) {
@@ -5856,7 +5858,7 @@ function MultiAction() {
                     'NEWSLETTER_LINK_ROW_CLASS' => $rowNr % 2 == 1 ? 'row1' : 'row2',
                     'NEWSLETTER_LINK_TITLE'     => $objResult->fields['title'],
                     'NEWSLETTER_LINK_URL'       => $objResult->fields['url'],
-                    'NEWSLETTER_MAIL_USERS'     => $objResult->fields['feedback_count'], // number of users, who have clicked the link
+                    'NEWSLETTER_MAIL_USERS'     => (int) $objResult->fields['feedback_count'], // number of users, who have clicked the link
                     'NEWSLETTER_LINK_FEEDBACK'  => $objResult->fields['count'] > 0 ? round(100 /  $objResult->fields['count'] * $objResult->fields['feedback_count']) : 0
                 ));
 
