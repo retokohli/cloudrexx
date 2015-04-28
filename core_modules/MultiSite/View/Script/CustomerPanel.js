@@ -437,7 +437,7 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
       });
       jQuery(jsModalSelector).modal('hide');
       if (response.status == 'success') {
-          if (callbackOptions !== 'undefined') {
+          if (typeof(callbackOptions) !== 'undefined') {
               callbackOptions.callback();              
           } else {
             loadContent(loadContentSelector, apiUrl);
@@ -445,7 +445,7 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
       }
     },
     complete: function (xhr, settings) {
-        if (callbackOptions !== 'undefined') {
+        if (typeof(callbackOptions) !== 'undefined') {
             callbackOptions.complete(jQuery(jsFormSelector + ' .loadingProcess'));              
         } else {
             jQuery('.loadingProcess').button('reset');
