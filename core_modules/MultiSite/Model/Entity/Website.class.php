@@ -1005,7 +1005,6 @@ class Website extends \Cx\Model\Base\EntityBase {
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add Setting entry for InstallationId of Website User Id");
             }
-// TODO: HTTP-Authentication details of Website Service Server must be set
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthMethod', $websiteHttpAuthMethod, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'website')){
@@ -1038,12 +1037,12 @@ class Website extends \Cx\Model\Base\EntityBase {
             }
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
             throw new WebsiteException('Error in setting up the MultiSite configuration:'. $e->getMessage());
         }
 
         // we must re-initialize the original MultiSite settings of the main installation
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
     }
 
     /**
@@ -1070,11 +1069,11 @@ class Website extends \Cx\Model\Base\EntityBase {
             }
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
             throw new WebsiteException('Error in setting up the Support configuration:' . $e->getMessage());
         }
         // we must re-initialize the original MultiSite settings of the main installation
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
     }
 
     /**
