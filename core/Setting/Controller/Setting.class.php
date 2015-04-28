@@ -170,9 +170,12 @@ class Setting{
                     . ' Group: ' .  $group . "\r\n"
                     . ' Repo: ' .  $fileSystemConfigRepository . "\r\n"
                 . ' ***');*/
-            if ($populate || $engine == null || $engine->getArraySetting() == null) {
+            if ($populate || $engine == null || $engine->getArraySetting() == null || $fileSystemConfigRepository) {
                 $oSectionEngine = new $engineType(); 
                 $oSectionEngine->init($section, $group, $fileSystemConfigRepository);
+                if ($fileSystemConfigRepository) {
+                    $populate = self::REPOPULATE;
+                }
                 self::setSectionEngine($oSectionEngine, $populate); 
             }
         } else{
