@@ -299,33 +299,31 @@
                             uploader.settings.url =  iAttrs.plUrl + '&csrf=' + cx.variables.get('csrf') + '&uploadedFileCount=' + uploaderData.uploaded_file_count + '&csrf=' + cx.variables.get('csrf');
                         }
                         if ((response.data.status == 'error')) {
-                            $J('.file-' + file.id).addClass('danger');
-                            $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-danger');
-                            $J('.file-' + file.id).find('.errorMessage').html(response.data.message);
-                            this.trigger('Error', {
-                                file: file,
-                                code: 200
-                            });
+                            parseStatusMessage(this, file, 'danger', response.data.message, true, 200);
                         } else {
-                            files.push(response.data.file[1]);
+                          files.push(response.data.file[1]);
+                        }
+                        if (typeof response.data.response != 'undefined') {
+                          var displayStatus = 'success';
+                          var html = '<ul>';
+                          var progress = false;
+                          var errorCode = false;
+                          $J(response.data.response).each(function (key, values) {
+                            html += '<li class=' + values.status + '>' + values.message + '</li>';
+                            if (values.status == 'error') {
+                              progress = true;
+                              displayStatus = 'danger';
+                              errorCode = 200;
+                            }
+                          });
+                          html += '</ul>';
+                          parseStatusMessage(this, file, displayStatus, html, progress, errorCode);
                         }
                     } else {
-                        $J('.file-' + file.id).addClass('danger');
-                        $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-danger');
-                        $J('.file-' + file.id).find('.errorMessage').html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(response.message), 'mediabrowser'));
-                        this.trigger('Error', {
-                            code: response.message,
-                            file: file
-                        });
+                        parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(response.message), 'mediabrowser'), true, response.message);
                     }
                 } catch (ex) {
-                    $J('.file-' + file.id).addClass('danger');
-                    $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-danger');
-                    $J('.file-' + file.id).find('.errorMessage').html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_200', 'mediabrowser'));
-                    this.trigger('Error', {
-                        code: 200,
-                        file: file
-                    });
+                  parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_200', 'mediabrowser'), true, 200);
                 }
 
             });
@@ -342,6 +340,20 @@
 
             uploader.init();
 
+            function parseStatusMessage(objElement, file, status, message, progress, code) {
+              $J('.file-' + file.id).addClass(status);
+              if (progress) {
+                $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-danger');
+              }
+              $J('.file-' + file.id).find('.errorMessage').html(message);
+              if (code) {
+                objElement.trigger('Error', {
+                  file: file,
+                  code: code
+                });
+              }
+            }
+            
             if (iAttrs.plInstance) {
                 scope.plInstance = uploader;
             }
