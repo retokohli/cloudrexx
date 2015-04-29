@@ -3,8 +3,10 @@
 .actions a {color: #000000;}
 .actions a:hover {color: #4C9CCF;}
 .table {display: table; margin-bottom: 0px;}
+.table-head{display: table-header-group;}
 .table-row{display: table-row;}
 .table-cell{display: table-cell;}
+input.text-select {background-color: #f5f5f5;}
 /* ]]> */
 </style>
 <div class="grid-container  grid-offset" id="multisite_affiliate_profile_attribute_id">
@@ -12,6 +14,10 @@
         <form id="affiliate-form" method="post">
             <div class="show-affiliate-paypal-profile-attribute-id">
                 <div class="table">
+                    <div class="table-head">
+                        <div class="table-cell"><h4>{TXT_CORE_MODULES_MULTISITE_AFFILIATE_ACCOUNT_LABEL}</h4></div>
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
                     <!-- BEGIN showAffiliateIdForm -->
                     <div class="table-row">
                         <div class="table-cell" style="width: 33%;">
@@ -34,7 +40,9 @@
                         <div class="table-cell" style="width: 33%;">
                             <label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</label>
                         </div>
-                        <div class="table-cell">{MULTISITE_AFFILIATE_PROFILE_ATTR_ID}</div>
+                        <div class="table-cell">
+                            <input type="text" value="{MULTISITE_AFFILIATE_PROFILE_ATTR_ID}" class="text-select" readonly="readonly"/>
+                        </div>
                     </div>
                     <!-- END showAffiliateIdPartOne -->
 
@@ -90,6 +98,10 @@
                         <div class="table-cell">&nbsp;</div>
                     </div>
                     <div class="table-row">
+                        <div class="table-cell"><h4>{TXT_CORE_MODULES_MULTISITE_REFERRAL_LABEL}</h4></div>
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
+                    <div class="table-row">
                         <div class="table-cell" style="width: 33%;">
                             <label>{TXT_CORE_MODULE_MULTISITE_REFERRALS_LABEL}</label>
                         </div>
@@ -110,19 +122,28 @@
                         </div>
                     </div>
                 </div>
-                <div class="table" style="margin-left: 40px;">
-                    <!-- BEGIN showSubscriptionsCountByProduct -->
-                    <div class="table-row">
-                        <div class="table-cell" style="width:12%">
-                            <label>{MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME}</label>
-                        </div>
-                        <div class="table-cell">
-                            {MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT}
-                        </div>
-                    </div>
-                    <!-- END showSubscriptionsCountByProduct -->
+                <div class="grid-elm grid-align-1-1">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
+                                <th>{TXT_CORE_MODULES_MULTISITE_PENDING_LABEL}</th>
+                                <th>{TXT_CORE_MODULES_MULTISITE_CREDITED_LABEL}</th>
+                                <th>{TXT_CORE_MODULES_MULTISITE_PAIDOUT_LABEL}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <!-- BEGIN showSubscriptionsCountByProduct -->
+                            <tr>
+                                <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME}</td>
+                                <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_PENDING_COUNT}</td>
+                                <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_CREDITED_COUNT}</td>
+                                <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_PAYOUT_COUNT}</td>
+                            </tr>
+                        <!-- END showSubscriptionsCountByProduct -->
+                        </tbody>
+                    </table>
                 </div>
-
                 <!-- END showReferralsSubscriptionCount -->
 
                 <!-- BEGIN showNoReferralsErrorMsg -->
@@ -137,12 +158,24 @@
                 <!-- END showAffiliateIdPartTwo -->
                 <!-- BEGIN showAffiliateCreditTotalAmt -->
                 <div class="table">
+                    <div class="table-head">
+                        <div class="table-cell"><h4>{TXT_CORE_MODULES_MULTISITE_PAYOUTS_LABEL}</h4></div>
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
                     <div class="table-row">
                         <div class="table-cell" style="width:33%">
                             <label>{TXT_CORE_MODULES_MULTISITE_NEXT_PAYMENT_LABEL}</label>
                         </div>
                         <div class="table-cell">
                             {MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL}
+                        </div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-cell" style="width:33%">
+                            <label>{TXT_CORE_MODULES_MULTISITE_TOTAL_LABEL}</label>
+                        </div>
+                        <div class="table-cell">
+                            {MULTISITE_AFFILIATE_TOTAL_AMT}
                         </div>
                     </div>
                 </div>
@@ -154,9 +187,9 @@
                        <div class="table-cell">
                             <h2>Add a Cloudrexx banner or links to your website</h2>
                             <span>Copy and paste these HTML links to your website, or download a Cloudrexx banner image.</span>
-                            <textarea>&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx - Start your FREE trial now!&lt;/a&gt;</textarea>
-                            <textarea>&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx Website - Start your FREE trial now!&lt;/a&gt;</textarea>
-                            <textarea>&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Build business websites online&lt;/a&gt;</textarea>
+                            <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx - Start your FREE trial now!&lt;/a&gt;</textarea>
+                            <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx Website - Start your FREE trial now!&lt;/a&gt;</textarea>
+                            <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Build business websites online&lt;/a&gt;</textarea>
                         </div>
                     </div>
                 </div>
@@ -284,6 +317,13 @@
                 });
            });            
        }); 
+    });
+    jQuery(document).ready(function(){
+        jQuery(".text-select").on("click", function(e){
+            var $this = jQuery(this);
+            $this.select();
+            return false;
+        });
     });
    /* ]]> */
 </script>
