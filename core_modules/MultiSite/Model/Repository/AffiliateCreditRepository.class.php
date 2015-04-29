@@ -40,4 +40,44 @@ class AffiliateCreditRepository extends \Doctrine\ORM\EntityRepository {
         $result = $qb->getQuery()->getResult();
         return !empty($result) ? current(current($result)) : 0;
     }
+    
+    /**
+     * Get the subscriptions count by Criteria
+     * 
+     * @param array $criteria
+     * 
+     * @return decimal
+     */
+    public function getSubscriptionCountByCriteria($criteria) {
+        if (empty($criteria)) {
+            return;
+        }
+        
+        $userId = \FWUser::getFWUserObject()->objUser->getId();
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('count(ac.id)')
+           ->from('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit', 'ac')
+           ->leftJoin('ac.referee', 'r')
+           ->leftJoin('ac.subscription', 's')
+           ->groupBy('r.id')->having('r.id = :userId')->setParameter('userId' , $userId);
+        
+        $i = 1;
+        foreach ($criteria as $fieldType => $value) {
+            if ($fieldType === 'payout') {
+                $qb->andWhere('ac.payout ' . $value);
+                continue;
+            }
+            if (method_exists($qb->expr(), $fieldType) && is_array($value)) {
+                foreach ($value as $condition) {
+                    $qb->andWhere(call_user_func(array($qb->expr(), $fieldType), $condition[0], $condition[1]));
+                }
+            } else {
+                $qb->andWhere($fieldType . ' = ?' . $i)->setParameter($i, $value);
+            }
+            $i++;
+        }
+        
+        $result = $qb->getQuery()->getResult();
+        return !empty($result) ? current(current($result)) : 0;
+    }
 }

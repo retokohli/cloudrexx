@@ -3384,15 +3384,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @return array
      */
-    public static function getReferralsCountBasedOnProduct($affiliateId) {
+    public static function getReferralsSubscriptionIdsBasedOnProduct($affiliateId) {
         $affiliateIdReferenceProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite');
         $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
              $affiliateIdReferenceProfileAttributeId => $affiliateId
         ));
         
-        $soloReferrersCount = 0;
-        $nonProfitReferrersCount = 0;
-        $businessReferrersCount = 0;
+        $soloSubscriptions = array();
+        $nonProfitSubscriptions = array();
+        $businessSubscriptions = array();
         
         if (!$objUser) {
             return array();
@@ -3410,13 +3410,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $productObj = $subscription->getProduct();
                         switch ($productObj->getName()) {
                             case 'Business':
-                                $businessReferrersCount++;
+                                $businessSubscriptions[]  = $subscription->getId();
                                 break;
                             case 'Solo':
-                                $soloReferrersCount++;
+                                $soloSubscriptions[]      = $subscription->getId();
                                 break;
                             case 'Non-Profit':
-                                $nonProfitReferrersCount++;
+                                $nonProfitSubscriptions[] = $subscription->getId();
                                 break;
                         }
                     }
@@ -3425,17 +3425,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $objUser->next();
         }
 
-        if (   empty($soloReferrersCount)
-            && empty($nonProfitReferrersCount)
-            && empty($businessReferrersCount)
+        if (   empty($soloSubscriptions)
+            && empty($nonProfitSubscriptions)
+            && empty($businessSubscriptions)
            ) {
             return array();
         }
         
         return array(
-            'Solo'       => $soloReferrersCount,
-            'Non-Profit' => $nonProfitReferrersCount,
-            'Business'   => $businessReferrersCount
+            'Solo'       => $soloSubscriptions,
+            'Non-Profit' => $nonProfitSubscriptions,
+            'Business'   => $businessSubscriptions
         );
     }
     

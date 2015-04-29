@@ -76,28 +76,40 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 
                 $objUser = \FWUser::getFWUserObject()->objUser;
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+                $affiliateCreditRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit');
+                $affiliatePayoutRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliatePayout');
                 //get the affiliateIdProfileAttributeId
                 $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
                 $affiliateId = $objUser->getProfileAttribute((int)$affiliateIdProfileAttributeId);
                 //get the payPalProfileAttributeId
                 $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
                 $paypalEmailAddress = $objUser->getProfileAttribute((int)$paypalEmailAddressProfileAttribute);
+                $affiliateIdForDisplay = '';
                 if (!empty($affiliateId)) {
+                    //display of affiliate-id
+                    $marketingWebsiteDomain = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
+                    $affiliateIdQueryStringKey = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite');
+                    $affiliateIdForDisplay = 'https://' . $marketingWebsiteDomain . '/?' . $affiliateIdQueryStringKey . '=' . $affiliateId;
+                    
+                    //get the total Referrer count
                     $totalRefererCount = BackendController::getReferralCountByAffiliateId($affiliateId);
                     if (empty($totalRefererCount)) {
                         $template->touchBlock('showNoAffiliateErrorMsg');
                     }
+                    
                     //show the solo, non-profit and business subscription counts
-                    $productCntList = ComponentController::getReferralsCountBasedOnProduct($affiliateId);
-                    if (empty($productCntList)) {
+                    $subscriptionListByProduct = ComponentController::getReferralsSubscriptionIdsBasedOnProduct($affiliateId);
+                    if (empty($subscriptionListByProduct)) {
                         $template->touchBlock('showNoReferralsErrorMsg');
                         $template->hideBlock('showReferralsSubscriptionCount');
                     } else {
-                        foreach ($productCntList as $productName => $productCnt) {
-                            if (!empty($productCnt)) {
+                        foreach ($subscriptionListByProduct as $productName => $subscriptionIds) {
+                            if (!empty($subscriptionIds)) {
                                 $template->setVariable(array(
                                     'MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME'           => $productName,
-                                    'MULTISITE_SUBSCRIPTIONS_COUNT_BASED_ON_PRODUCT' => $productCnt
+                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_PENDING_COUNT'  => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'ac.credited' => 0, 'payout' => 'IS NULL')),
+                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_CREDITED_COUNT' => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'ac.credited' => 1, 'payout' => 'IS NULL')),
+                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_PAYOUT_COUNT'   => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'payout' => 'IS NOT NULL')),
                                 ));
                                 $template->parse('showSubscriptionsCountByProduct');
                             }
@@ -120,19 +132,24 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 !empty($affiliateId) && !empty($paypalEmailAddress) ? $template->touchBlock('showAffiliateCreditTotalAmt') : $template->hideBlock('showAffiliateCreditTotalAmt');
                 
                 //get the sum of affiliate credit amount
-                $affiliateCreditRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit');
-                $totalAffiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
+                $affiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
                 //get the currency id 
                 $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getCurrencyIdByCrmId($objUser->getCrmUserId());
                 if (empty($currencyId)) {
                     $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
                 }
                 
-                $currencyObj = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
+                //calculate the Total
+                $affiliatePayoutSum = $affiliatePayoutRepo->getTotalAmountByUser();
+                $total = $affiliatePayoutSum + $affiliateTotalCreditAmount;
+                
+                $currencyObj  = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
+                $currencyCode = $currencyObj ? $currencyObj->getName() : '';
                 $template->setVariable(array(
-                    'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => !empty($affiliateId) ? $affiliateId : '',
+                    'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => $affiliateIdForDisplay,
                     'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => !empty($paypalEmailAddress) ? $paypalEmailAddress : $objUser->getEmail(),
-                    'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> $totalAffiliateTotalCreditAmount . ($currencyObj ? ' ' . $currencyObj->getName() : ''),
+                    'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> number_format($affiliateTotalCreditAmount, 2) . ' ' . $currencyCode,
+                    'MULTISITE_AFFILIATE_TOTAL_AMT'       => number_format($total, 2) . ' ' . $currencyCode,
                     'MULTISITE_MARKETING_WEBSITE'         => \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite')
                 ));
                 //initialize
@@ -156,7 +173,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         if ((int)$paypalEmailAddressProfileAttribute === $objUser->objAttribute->getId()) {
                             $template->setVariable(array(
                                 'MULTISITE_USER_PROFILE_ATTRIBUTE_ID'   =>  $objUser->objAttribute->getId(),
-                                'MULTISITE_USER_PROFILE_ATTRIBUTE_DESC' =>  htmlentities($objUser->objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+                                'MULTISITE_USER_PROFILE_ATTRIBUTE_DESC' =>  $objUser->objAttribute->getName(),
                                 'MULTISITE_USER_PROFILE_ATTRIBUTE'      =>  $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, true, true)
                             ));
                             $template->parse('multisite_user_profile_attribute_list');
