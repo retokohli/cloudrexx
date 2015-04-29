@@ -232,13 +232,13 @@ namespace Cx\Core\Model {
                     $memcache = $objCache->getMemcache();
                     $cache = new \Doctrine\Common\Cache\MemcacheCache();
                     $cache->setMemcache($memcache);
-                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
+                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
                     break;
                 case \Cache::CACHE_ENGINE_MEMCACHED:
                     $memcache = $objCache->getMemcache();
                     $cache = new \Doctrine\Common\Cache\MemcachedCache();
                     $cache->setMemcache($memcache);
-                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
+                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
                     break;
                 case \Cache::CACHE_ENGINE_XCACHE:
                     $cache = new \Doctrine\Common\Cache\XcacheCache();
