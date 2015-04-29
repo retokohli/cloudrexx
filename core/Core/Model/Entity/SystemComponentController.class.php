@@ -202,6 +202,26 @@ class SystemComponentController extends Controller {
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {}
     
     /**
+     * Register your events here
+     * 
+     * Do not do anything else here than list statements like
+     * $this->cx->getEvents()->addEvent($eventName);
+     */
+    public function registerEvents() {}
+    
+    /**
+     * Register your event listeners here
+     * 
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     */
+    public function registerEventListeners() {}
+    
+    /**
      * Called for additional, component specific resolving
      * 
      * If /en/Path/to/Page is the path to a page for this component

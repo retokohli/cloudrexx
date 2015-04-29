@@ -82,6 +82,9 @@ class ComponentHandler {
         //$this->components = $license->getLegalComponentsList();
         $this->systemComponentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
         $this->systemComponentRepo->findAll();
+        
+        $this->callRegisterEventsHooks();
+        $this->callRegisterEventListenersHooks();
     }
     
     /**
@@ -104,6 +107,28 @@ class ComponentHandler {
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Calls hook scripts on legacy and non-legacy components to register events
+     * @param string $mode (optional) One of 'all', 'proper' and 'legacy', default is 'all'
+     */
+    public function callRegisterEventsHooks($mode = 'all') {
+        if ($mode != 'all' && $mode != 'proper') {
+            return;
+        }
+        $this->systemComponentRepo->callRegisterEventsHooks();
+    }
+    
+    /**
+     * Calls hook scripts on legacy and non-legacy components to register event listeners
+     * @param string $mode (optional) One of 'all', 'proper' and 'legacy', default is 'all'
+     */
+    public function callRegisterEventListenersHooks($mode = 'all') {
+        if ($mode != 'all' && $mode != 'proper') {
+            return;
+        }
+        $this->systemComponentRepo->callRegisterEventListenersHooks();
     }
     
     /**

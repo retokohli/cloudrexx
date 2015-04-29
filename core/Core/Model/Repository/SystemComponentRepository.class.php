@@ -187,6 +187,24 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
     }
     
     /**
+     * Call hook script of all SystemComponents to register events
+     */
+    public function callRegisterEventsHooks() {
+        foreach ($this->findActive() as $component) {
+            $component->registerEvents();
+        }
+    }
+    
+    /**
+     * Call hook script of all SystemComponents to register event listeners
+     */
+    public function callRegisterEventListenersHooks() {
+        foreach ($this->findActive() as $component) {
+            $component->registerEventListeners();
+        }
+    }
+    
+    /**
      * Call hook script of all SystemComponents before resolving
      */
     public function callPreResolveHooks() {

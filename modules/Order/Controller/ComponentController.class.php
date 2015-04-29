@@ -133,10 +133,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Register events all should call from here for the Order Component.
      */
-    public static function registerEvents() 
+    /*public static function registerEvents() 
     {
         $evm = \Env::get('cx')->getEvents();
         $evm->addEvent('model/terminated');
         $evm->addEvent('model/payComplete');
-    }
+    }*/
 }
