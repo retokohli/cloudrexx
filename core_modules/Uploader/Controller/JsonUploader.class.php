@@ -146,7 +146,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             }
 
             $filePath = dirname( $uploader['path']);
-
+            $response = new UploadResponse();
             if (!is_array($callback)) {
                 $class = new \ReflectionClass($callback);
                 if ($class->implementsInterface(
@@ -163,7 +163,8 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                             $filePath
                         ), $data,
                         $id,
-                        $uploader
+                        $uploader,
+                        $response
                     );
                 }
             } else {
@@ -171,7 +172,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                     array($callback[1], $callback[2]), $filePath,
                     str_replace(
                         $this->cx->getWebsiteTempPath(), $this->cx->getWebsiteTempWebPath(), $filePath
-                    ), $data, $id, $uploader, null
+                    ), $data, $id, $uploader, $response
                 );
             }
             \Cx\Lib\FileSystem\FileSystem::move(
@@ -189,6 +190,14 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             );
         }
         
+        if ($response->getWorstStatus()) {
+                $result = $response->getResponse();
+                return array(
+                    'OK' => 0,
+                    'file' => $fileLocation,
+                    'response' => $result['messages']
+                );
+        }
         if (isset($uploader['error'])) {
             throw new UploaderException(UploaderController::getErrorCode());
         } else {

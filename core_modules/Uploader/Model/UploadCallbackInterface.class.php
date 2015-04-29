@@ -28,6 +28,6 @@ interface UploadCallbackInterface {
      *               When returning an array, all files left in the temporary directory are moved accordingly.
      *               When returning null, all left files are deleted.
      */
-    function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos);
+    function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response);
 
 }
