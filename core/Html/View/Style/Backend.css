@@ -139,7 +139,13 @@ form.cx-ui textarea {
     max-width: 1000px;
     max-height: 300px;
 }
-form.cx-ui input[type="text"] {
+form.cx-ui input[type="text"],
+form.cx-ui input[type="number"],
+form.cx-ui input[type="email"],
+form.cx-ui input[type="password"],
+form.cx-ui input[type="tel"],
+form.cx-ui input[type="url"],
+form.cx-ui input[type="date"]{
     width: 300px;
     max-width: 300px;
 }
