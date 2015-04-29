@@ -388,11 +388,18 @@ class counter
                 }
             }
         } else { // Client does not use proxy
-            $this->arrClient['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+            $this->arrClient['ip'] = isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];    
             $this->arrProxy['type'] = 0; // No proxy
             $this->arrProxy['ip'] = "";
             $this->arrProxy['host'] = "";
             $this->arrProxy['useragent'] = "";
+        }
+
+        foreach ($this->arrClient as &$client) {
+            $client = contrexx_raw2db(strip_tags($client));
+        }
+        foreach ($this->arrProxy as &$proxy) {
+            $proxy = contrexx_raw2db(strip_tags($proxy));
         }
     }
 
