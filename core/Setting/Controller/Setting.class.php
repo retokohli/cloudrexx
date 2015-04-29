@@ -1083,10 +1083,10 @@ class Setting{
         if (isset(self::$arrSettings[self::getInstanceId()][$section][$engine])) {
            return self::$arrSettings[self::getInstanceId()][$section][$engine];
         }
-        if (isset(self::$arrSettings[self::getInstanceId()][$section]['default_engine']) && 
-            isset(self::$arrSettings[self::getInstanceId()][$section][self::$arrSettings[$section]['default_engine']])
-        ) {
-            return self::$arrSettings[self::getInstanceId()][$section][self::$arrSettings[$section]['default_engine']];
+        $engine = self::$arrSettings[self::getInstanceId()][$section]['default_engine'];
+        if(isset(self::$arrSettings[self::getInstanceId()][$section][$engine]))
+        {
+            return self::$arrSettings[self::getInstanceId()][$section][$engine];
         }
         // \DBG::log("Section engine don't exist. Section: $section, Engine: $engine");
         return null;

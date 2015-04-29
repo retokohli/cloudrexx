@@ -595,6 +595,7 @@ class Config
         \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
         $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
         $intMaxLen = 0;
+        $ymlArrayValues = array();
         foreach ($ymlArray as $key => $ymlValue){
             $_CONFIG[$key] = $ymlValue['value'];
             $ymlArrayValues[$ymlValue['group']][$key] = $ymlValue['value'];
