@@ -423,20 +423,55 @@ class FormGenerator {
                 \JS::registerCode('
                     function javascript_callback_function(data) {
                         if(data.type=="file") {
-                            if(data.data[0].datainfo.extension=="Jpg"||data.data[0].datainfo.extension=="Gif"){
-                                cx.jQuery("#'.$name.'").val(data.data[0].datainfo.filepath).change();
-                                cx.jQuery("#'.$name.'").prevAll(\'.deletePreviewImage\').first().css(\'display\', \'inline-block\');
-                                cx.jQuery("#'.$name.'").prevAll(\'.previewImage\').first().attr(\'src\', data.data[0].datainfo.filepath);
-                            }
+                                cx.jQuery("#'.$name.'").val(data.data[0].datainfo.filepath);
                         }
                     }
+
+                ');
+                $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+                $mediaBrowser->setOptions(array('type' => 'button'));
+                $mediaBrowser->setCallback('javascript_callback_function');
+                $mediaBrowser->setOptions(
+                    array(
+                        'data-cx-mb-views' => 'filebrowser,uploader',
+                        'id' => 'page_target_browse',
+                        'cxMbStartview' => 'MediaBrowserList'
+                    )
+                );
+
+                $input = new \Cx\Core\Html\Model\Entity\DataElement($name, $value);
+                $input->setAttribute('type', 'text');
+                $input->setAttribute('id', $name);
+
+                $div = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+
+                $div->addChild($input);
+                $div->addChild(new \Cx\Core\Html\Model\Entity\TextElement(
+                    $mb = $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+                ));
+
+                return $div;
+                break;
+            case 'image':
+                \JS::registerCode('
+                    function javascript_callback_function(data) {
+                        if ( data.data[0].datainfo.extension=="Jpg"
+                            || data.data[0].datainfo.extension=="Gif"
+                            || data.data[0].datainfo.extension=="Png"
+                        ) {
+                            cx.jQuery("#'.$name.'").attr(\'value\', data.data[0].datainfo.filepath);
+                            cx.jQuery("#'.$name.'").prevAll(\'.deletePreviewImage\').first().css(\'display\', \'inline-block\');
+                            cx.jQuery("#'.$name.'").prevAll(\'.previewImage\').first().attr(\'src\', data.data[0].datainfo.filepath);
+                        }
+                    }
+
                     jQuery(document).ready(function(){
                         jQuery(\'.deletePreviewImage\').click(function(){
-                            jQuery(this).prev(\'img\').attr(\'src\', \'/images/Downloads/no_picture.gif\');
-                            jQuery(this).css(\'display\', \'none\');
-                            jQuery(this).nextAll(\'input\').first().attr(\'value\', \'\');
+                            cx.jQuery("#'.$name.'").attr(\'value\', \'\');
+                            cx.jQuery(this).prev(\'img\').attr(\'src\', \'/images/Downloads/no_picture.gif\');
+                            cx.jQuery(this).css(\'display\', \'none\');
+                            cx.jQuery(this).nextAll(\'input\').first().attr(\'value\', \'\');
                         });
-                        cx.jQuery("#'.$name.'").css(\'display\', \'none\');
                     });
 
                 ');
@@ -450,12 +485,10 @@ class FormGenerator {
                         'cxMbStartview' => 'MediaBrowserList'
                     )
                 );
-                $mb = $mediaBrowser->getXHtml(
-                    $_ARRAYLANG['TXT_CORE_CM_BROWSE']
-                );
-                
+
+                // create hidden input to save image
                 $input = new \Cx\Core\Html\Model\Entity\DataElement($name, $value);
-                $input->setAttribute('type', 'text');
+                $input->setAttribute('type', 'hidden');
                 $input->setAttribute('id', $name);
                 
                 $div = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
@@ -463,12 +496,12 @@ class FormGenerator {
                 if((isset($value) && in_array(pathinfo($value, PATHINFO_EXTENSION), Array('gif', 'jpg', 'png'))) || $name == 'imagePath'){
                     
                     // this image is meant to be a preview of the selected image
-		    $previewImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                    $previewImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
                     $previewImage->setAttribute('class', 'previewImage');
                     $previewImage->setAttribute('src', ($value != '') ? $value : '/images/Downloads/no_picture.gif');
                     
                     // this image is uesd as delete function for the selected image over javascript
-		    $deleteImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
+                    $deleteImage = new \Cx\Core\Html\Model\Entity\HtmlElement('img');
                     $deleteImage->setAttribute('class', 'deletePreviewImage');
                     $deleteImage->setAttribute('src', '/core/Core/View/Media/icons/delete.gif');
 
@@ -477,8 +510,10 @@ class FormGenerator {
                     $div->addChild(new \Cx\Core\Html\Model\Entity\HtmlElement('br'));
                 }
                 $div->addChild($input);
-                $div->addChild(new \Cx\Core\Html\Model\Entity\TextElement($mb));
-                
+                $div->addChild(new \Cx\Core\Html\Model\Entity\TextElement(
+                    $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+                ));
+
                 return $div;
                 break;
             case 'sourcecode':
