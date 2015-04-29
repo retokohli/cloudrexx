@@ -5746,21 +5746,19 @@ END;
                 $sizeLimit = 10485760;
                 $size = filesize($tempPath.'/'.$file);
                 if ($size > $sizeLimit) {
-//                    $response->addMessage(
-//                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-//                        "Server error. Increase post_max_size and upload_max_filesize to $size.",
-//                        $file
-//                    );
+                    $response->addMessage(
+                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
+                        "Server error. Increase post_max_size and upload_max_filesize to $size."
+                    );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
                 }
 
                 if (!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-//                    $response->addMessage(
-//                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-//                        'Please choose a csv to upload',
-//                        $file
-//                    );
+                    $response->addMessage(
+                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
+                        'Please choose a csv to upload'
+                    );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
                 }
@@ -5813,7 +5811,7 @@ END;
      * 
      * @return array the target paths
      */
-    public static function docUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos)
+    public static function docUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
 
         global $objDatabase;
@@ -5882,7 +5880,7 @@ END;
      * 
      * @return array the target paths
      */
-    public static function proPhotoUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos)
+    public static function proPhotoUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
 
         global $objDatabase, $objFWUser;
@@ -5993,7 +5991,7 @@ END;
      * 
      * @return array the target paths
      */
-    public static function taskUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos)
+    public static function taskUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
 
         global $objDatabase, $objFWUser;
@@ -6050,7 +6048,7 @@ END;
             }
             closedir($h);
         }
-
+        
         // return web- and filesystem path. files will be moved there.
         return array($tempPath, $tempWebPath);
     }
@@ -6068,7 +6066,7 @@ END;
      * 
      * @return array the target paths
      */
-    public static function notesUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos)
+    public static function notesUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
 
         global $objDatabase, $objFWUser;
@@ -6208,3 +6206,4 @@ END;
         exit();
     }
 }
+

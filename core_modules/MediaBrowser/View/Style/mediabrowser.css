@@ -2067,6 +2067,9 @@ input#FileSearchIsRegex {
     font-weight: bold;
     display: block;
 }
+.uploader-modal .errorMessage .info, .uploader-modal .errorMessage .warning {
+    color: #000000;
+}
 
 .file-list-wrapper::-webkit-scrollbar,
 .uploadlist::-webkit-scrollbar
