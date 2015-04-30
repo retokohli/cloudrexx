@@ -156,6 +156,8 @@ CKEDITOR.on('instanceReady',function(){
     }
 });
 
+// hide 'browse'-buttons in case the user is a sole frontend-user
+// and is not permitted to access the MediaBrowser or Uploader
 if (<?php
         if (\FWUser::getFWUserObject()->objUser->login()) {
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
