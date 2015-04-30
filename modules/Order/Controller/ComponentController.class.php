@@ -96,19 +96,54 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommandCron()
     {
+        // Let the associated product entities know that their associated subscription
+        // has expired by triggering the model event model/expired on the subscription
+        $this->touchProductEntitiesOfExpiredSubscriptions();
+
         //  Terminate the active and expired subscription.
         $this->terminateExpiredSubscriptions();
     }
+    
+    /**
+     * Inform the product entities that their associated Subscription has expired
+     *
+     * Let the associated product entities know that their associated Subscription
+     * has expired (Subscription::$expirationDate < now) by triggering the model
+     * event model/expired on the Subscription
+     */
+    public function touchProductEntitiesOfExpiredSubscriptions()
+    {
+        $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+        $subscriptions    = $subscriptionRepo->getExpiredSubscriptions();
+        
+        if (\FWValidator::isEmpty($subscriptions)) {
+            return;
+        }
+
+        foreach ($subscriptions as $subscription) {
+            //Trigger the model event model/expired on the Subscription's product entity.
+            \Env::get('cx')->getEvents()->triggerEvent('model/expired', array(new \Doctrine\ORM\Event\LifecycleEventArgs($subscription, \Env::get('em'))));
+        }
+        \Env::get('em')->flush();
+    }
 
     /**
-     * To terminate the expired and active subscription
-     * 
-     * @return type null
+     * Terminate expired Subscriptions
+     *
+     * This method does call the method Subscription::terminate() on all Subscriptions
+     * that are expired (Subscription::$expirationDate < now), but are still
+     * active (Subscription::$state = active) or have been cancelled (Subscription::$state = cancelled).
+     * Expired Subscriptions that are inactive (Subscription::$state = inactive) are not
+     * terminated as long as they are inactive. This allows a Subscription to be re-activated
+     * and resetting a new expiration date without having the Subscription automatically
+     * being terminated.
      */
     public function terminateExpiredSubscriptions()
     {
         $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-        $subscriptions    = $subscriptionRepo->getExpiredSubscriptionsByCriteria(\Cx\Modules\Order\Model\Entity\Subscription::STATE_ACTIVE);
+        $subscriptions    = $subscriptionRepo->getExpiredSubscriptions(array(
+                                \Cx\Modules\Order\Model\Entity\Subscription::STATE_ACTIVE,
+                                \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED));
         
         if (\FWValidator::isEmpty($subscriptions)) {
             return;
