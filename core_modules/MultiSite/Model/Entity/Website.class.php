@@ -366,6 +366,9 @@ class Website extends \Cx\Model\Base\EntityBase {
      */
     public function setWebsiteServiceServer(\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer $websiteServiceServer)
     {
+        if (!$websiteServiceServer) {
+            return;
+        }
         $this->websiteServiceServer = $websiteServiceServer;
         $this->setWebsiteServiceServerId($websiteServiceServer->getId());
     }
@@ -1861,6 +1864,9 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function setMailServiceServer($mailServiceServer)
     {
+        if (!$mailServiceServer) {
+            return;
+        }
         $this->mailServiceServer = $mailServiceServer;
     }
     
