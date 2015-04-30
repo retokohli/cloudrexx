@@ -16,29 +16,35 @@ namespace Cx\Modules\Order\Model\Repository;
  * 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Project Team SS4U <info@comvation.com>
+ * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @package     contrexx
  * @subpackage  module_order
  */
 class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * To get all the past subscriptions and based on the criteria get in the arguments.
+     * Fetch expired Subscriptions
      * 
-     * @return array
+     * @param   mixed   $status Optional argument to filter the expired subscriptions
+     *                          by status (Subscription::$state).
+     *                          Specify single status as string or multiple status as array.
+     * @return  array   Returns an array of Subscription objects. If none are found, NULL is returned.
      */
-    function getExpiredSubscriptionsByCriteria($criteria) 
+    public function getExpiredSubscriptions($status = null) 
     {
         $now = new \DateTime('now');
         $qb  = \Env::get('em')->createQueryBuilder();
         $qb->select('s')
                 ->from('\Cx\Modules\Order\Model\Entity\Subscription', 's')
-                ->where('s.state = :state')
                 ->andWhere('s.expirationDate <= :expirationDate')
-                ->setParameters(array(
-                    'state' => $criteria,
-                    'expirationDate' => $now->format("Y-m-d H:i:s")                 
-                ));
-        
+                ->setParameter('expirationDate', $now->format("Y-m-d H:i:s"));
+        if ($status) {
+            if (is_array($status)) {
+                $qb->andWhere($qb->expr()->in('s.state', $status));
+            } else {
+                $qb->andWhere('s.state = :state')->setParameter('state', $status); 
+            }
+        }
         return $qb->getQuery()->getResult();
     }
     
