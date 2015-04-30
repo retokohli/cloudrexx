@@ -90,12 +90,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function executeCommand($command, $arguments) {
-
-        // Event Listener must be registered before preContentLoad event
-        \Cx\Modules\Order\Controller\ComponentController::registerEvents();
-        $this->registerEventListener();
-        $this->setCustomerPanelDomainAsMainDomain();
-
         $subcommand = null;
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
@@ -2057,12 +2051,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, self::MODE_NONE.':'.self::MODE_NONE.','.self::MODE_MANAGER.':'.self::MODE_MANAGER.','.self::MODE_SERVICE.':'.self::MODE_SERVICE.','.self::MODE_HYBRID.':'.self::MODE_HYBRID, 'config')){
                     throw new MultiSiteException("Failed to add Setting entry for Database Mode");
             }
-            
+
             // abort in case MultiSite component is not in use
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == self::MODE_NONE) {
                 return false;
             }
-
+            
             // server group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'server','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController','MultiSite') === NULL
@@ -2400,16 +2394,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
     
-    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        // Event Listener must be registered before preContentLoad event
-        $this->registerEventListener();
-        $this->setCustomerPanelDomainAsMainDomain();
-    }
-    
     /**
      * Register the Event listeners
      */
-    public function registerEventListener(){
+    public function registerEventListeners() {
         // do not register any Event Listeners in case MultiSite mode is not set
         if (!\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             return;
@@ -2463,6 +2451,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             default:
                 break;
         }
+
+        // set customer panel domain as main domain on website manager
+        $this->setCustomerPanelDomainAsMainDomain();
     }
 
     protected function registerDomainEventListener() {
@@ -2564,7 +2555,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $orderSubscriptionEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderSubscriptionEventListener();
         $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate,'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postFlush, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener('terminated',                    'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener('payComplete',                   'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
@@ -2725,6 +2716,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return false;
     }
 
+    /**
+     * set customer panel domain as main domain on website manager
+     *
+     * @global  array   $_CONFIG
+     * @global  string  $plainCmd
+     */
     public function setCustomerPanelDomainAsMainDomain() {
         global $_CONFIG, $plainCmd;
 

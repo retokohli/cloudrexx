@@ -51,15 +51,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
     /**
-     * call the registered events before the page loads
-     * 
-     * @param \Cx\Core\Routing\Url $request request values
-     */
-    public function preResolve(\Cx\Core\Routing\Url $request) {
-        self::registerEvents();
-    }
-    
-    /**
      * get command mode
      * 
      * @return type array
@@ -79,7 +70,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommand($command, $arguments) 
     {
-        self::registerEvents();
         $subcommand = null;
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
@@ -109,7 +99,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         //  Terminate the active and expired subscription.
         $this->terminateExpiredSubscriptions();
     }
-    
+
     /**
      * To terminate the expired and active subscription
      * 
@@ -131,12 +121,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
     /**
-     * Register events all should call from here for the Order Component.
+     * Register model events related to Order component
      */
-    /*public static function registerEvents() 
-    {
-        $evm = \Env::get('cx')->getEvents();
-        $evm->addEvent('model/terminated');
-        $evm->addEvent('model/payComplete');
-    }*/
+    public function registerEvents() {
+        $this->cx->getEvents()->addEvent('model/expired');
+        $this->cx->getEvents()->addEvent('model/terminated');
+        $this->cx->getEvents()->addEvent('model/payComplete');
+    }
 }
