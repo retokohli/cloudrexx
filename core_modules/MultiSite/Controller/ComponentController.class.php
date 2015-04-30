@@ -1620,9 +1620,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $cron = $this->getController('Cron');
         $cron->sendNotificationMails();
-        
-        //  Terminate the cancelled subscription.
-        $this->disableCancelledWebsites();
     }
 
     /**
@@ -1652,26 +1649,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         \Env::get('em')->flush();
     }
     
-    /**
-     * Terminate the cancelled subscription.
-     * 
-     * @return null
-     */
-    public function disableCancelledWebsites()
-    {
-        $subscriptionRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-        $subscriptions    = $subscriptionRepo->getExpiredSubscriptionsByCriteria(\Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED);
-        
-        if (\FWValidator::isEmpty($subscriptions)) {
-            return;
-        }
-        
-        foreach ($subscriptions as $subscription) {
-            $subscription->terminate();
-        }
-        \Env::get('em')->flush();
-    }
-
     /**
      * Create new website into the existing subscription
      * 
