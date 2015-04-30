@@ -143,6 +143,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 
                 $currencyObj  = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
                 $currencyCode = $currencyObj ? $currencyObj->getName() : '';
+                \FWValidator::isEmpty(floatval($affiliateTotalCreditAmount)) ? $template->hideBlock('showPayoutButton') : $template->touchBlock('showPayoutButton');
                 $template->setVariable(array(
                     'MULTISITE_MARKETING_WEBSITE'         => $marketingWebsiteDomain,
                     'MULTISITE_AFFILIATE_QUERY_STRING'    => $affiliateIdQueryStringKey,

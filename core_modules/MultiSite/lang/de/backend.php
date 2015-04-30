@@ -293,3 +293,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REFERRALS'] = 'Empfehlungen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_TOO_SHORT'] = 'Affiliate ID muss aus mindestens %s Zeichen bestehen.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_TOO_LONG'] = 'Affiliate ID kann maximal %s Zeichen lang sein.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_WRONG_CHARS'] = 'Der Name darf nur aus Kleinbuchstaben (a-z) und Zahlen bestehen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_ERROR'] = 'Die Anforderung konnte nicht ausgelöst werden.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_SUCCESS'] = 'Die Anforderung wurde erfolgreich ausgelöst.';
