@@ -152,15 +152,24 @@ class InitCMS
         }
 
         // set the users default backend language and store it into the db if he has changed the language manually
-        if ($setUserLanguage === true && $objFWUser->objUser->login(true)) {
+        if ($setUserLanguage && $objFWUser->objUser->login(true) && $objFWUser->objUser->getBackendLanguage() != $backendLangId) {
             $objFWUser->objUser->setBackendLanguage($backendLangId);
             $objFWUser->objUser->store();
+
+            // delete cookie for authenticated users
+            setcookie('backendLangId', '', time() - 3600, ASCMS_PATH_OFFSET.'/');
         }
 
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
         $this->currentThemesId = $this->arrLang[$backendLangId]['themesid'];
         $this->backendLangCharset = $this->arrLang[$backendLangId]['charset'];
-        setcookie('backendLangId', $backendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+
+        // Set a COOKIE to remember the selected backend language.
+        // But do this only for non-authenticated users, as authenticated
+        // users have the selected backend language being stored in their profile.
+        if (!$objFWUser->objUser->login(true)) {
+            setcookie('backendLangId', $backendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+        }
     }
 
 
