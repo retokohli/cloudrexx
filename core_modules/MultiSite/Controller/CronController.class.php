@@ -58,6 +58,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                                                           ->findWebsitesByCriteria(array('user.id' => $user->getId()))
                                                      : $result;
                                                         
+                \DBG::msg(__METHOD__.": matched CronMail (ID={$cronMail->getId()}): User=".\FWUser::getParsedUserTitle($user).(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
                 $this->sendMail($cronMail, $user, $website, $cronMailLogRepo);
             }
         }
@@ -106,7 +107,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                             $websiteObj->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
                             \FWUser::getParsedUserTitle($objUser)
                         );
-            
+             $substitution = array();   
         } else {
             $websiteDetails = array();            
             if (!empty($websiteObj) && is_array($websiteObj)) {
@@ -123,13 +124,12 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
             $search  = array(
                             '[[CUSTOMER_MAIL]]',
                             '[[CUSTOMER_NAME]]',
-                            '[[WEBSITE_LISTS]]'
                         );
             $replace = array(
                             $objUser->getEmail(),
                             \FWUser::getParsedUserTitle($objUser),
-                            'WEBSITE_DETAILS' => $websiteDetails
                         );            
+            $substitution = array('WEBSITE_LIST' => array(0 => array('WEBSITE_DETAIL' => $websiteDetails)));
         }
         
         //send mail to website owner
@@ -139,8 +139,10 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                         'key'     => $cronMail->getMailTemplateKey(),
                         'to'      => $objUser->getEmail(),
                         'search'  => $search,
-                        'replace' => $replace);
+                        'replace' => $replace,
+                        'substitution' => $substitution);
         
+        \DBG::msg(__METHOD__." ID={$cronMail->getId()}) / User=".\FWUser::getParsedUserTitle($objUser).(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
         $mailStatus = \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrValues);
         
         //If the owner already have a log and status failed, update the log
