@@ -111,6 +111,12 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteTemplateProxy extends \Cx\Core_Mo
         return parent::addWebsiteCollection($websiteCollection);
     }
 
+    public function getMigrationProductOnExpiration()
+    {
+        $this->_load();
+        return parent::getMigrationProductOnExpiration();
+    }
+
     public function __get($name)
     {
         $this->_load();

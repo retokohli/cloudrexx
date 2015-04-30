@@ -199,4 +199,23 @@ class WebsiteTemplate extends \Cx\Model\Base\EntityBase
     public function addWebsiteCollection(WebsiteCollection $websiteCollection) {
         $this->websiteCollections[] = $websiteCollection;
     }
+
+    /**
+     * @todo    Implement proper attribute & relation WebsiteTemplate::migrationProduct
+     * @return  Cx\Modules\Pim\Model\Entity\Product The Product an associated object shall be migrated to in case it expires
+     */
+    public function getMigrationProductOnExpiration() {
+        $product = null;
+
+        switch ($this->getName()) {
+            case 'Trial':
+                $product = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findOneByName('Free');
+                break;
+
+            default:
+                break;
+        }
+
+        return $product;
+    }
 }

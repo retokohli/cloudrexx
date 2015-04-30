@@ -2534,6 +2534,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate,'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postFlush, 'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
+        $evm->addModelListener('expired',                       'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener('terminated',                    'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener('payComplete',                   'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
     }

@@ -142,7 +142,6 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
      * @param type $eventArgs
      */
     public function payComplete($eventArgs) {
-        \DBG::msg('MultiSite (WebsiteCollectionEventListener): payComplete');
         $subscription           = $eventArgs->getEntity();
         $productEntity          = $subscription->getProductEntity();
         $entityAttributes       = $subscription->getProduct()->getEntityAttributes();
@@ -204,12 +203,70 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
     }
 
     /**
+     * Migrate expired subscriptions to new products
+     * 
+     * @param object $eventArgs
+     */
+    public function expired($eventArgs) {
+        $subscription      = $eventArgs->getEntity();
+        $productEntity     = $subscription->getProductEntity();
+        $entityAttributes  = $subscription->getProduct()->getEntityAttributes();
+        $websiteTemplate   = null;
+
+        // abort in case the subscription is not of our concern (not based on a Website or WebsiteCollection)
+        if (   !($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website)
+            && !($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection)
+        ) {
+            return;
+        }
+
+        // load website template
+        if (isset($entityAttributes['websiteTemplate'])) {
+            $websiteTemplate = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate')->findOneById($entityAttributes['websiteTemplate']);
+        }
+
+        // abort in case the associated product of the expired subscription
+        // does not have a WebsiteTemplate defined
+        if (!$websiteTemplate || !($websiteTemplate instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteTemplate)) {
+            return;
+        }
+
+        // Fetch the Product the expired websites shall be migrated to.
+        // Abort in case no migration path has been defined.
+        $migrationProduct = $websiteTemplate->getMigrationProductOnExpiration();
+        if (!$migrationProduct || !($migrationProduct instanceof \Cx\Modules\Pim\Model\Entity\Product)) {
+            return;
+        }
+
+        // migrate the subscription to the new product
+        \DBG::msg("Migrate subscription {$subscription->getId()} from {$subscription->getProduct()->getName()} to {$migrationProduct->getName()}");
+        $subscription->setProduct($migrationProduct);
+
+        // set new expiration date of subscription
+        if ($migrationProduct->isExpirable()) {
+            $subscription->setExpirationDate($migrationProduct->getExpirationDate());
+        } else {
+            $subscription->setExpirationDate(null);
+        }
+
+        // Flushing the subscription at this point is basically obsolete,
+        // as the cronjob Cx\Modules\Order\Controller\ComponentController::touchProductEntitiesOfExpiredSubscriptions
+        // does also perform a flush afterwards.
+        // However, we could end up in a situation where there are too many subscriptions
+        // to be flushed which could result in a memory overflow or timeout exception.
+        // Therefore we shall perform a flush operation for each individual subscription.
+        // This will slow down the overall operation but shall ensure that the task can
+        // get done, even if it may require for the operation (cronjob) to be run more
+        // then once to get done.
+        \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->flush();
+    }
+
+    /**
      * Terminated Event Change the website status to offline
      * 
      * @param object $eventArgs
      */
     public function terminated($eventArgs) {
-        \DBG::msg('MultiSite (WebsiteCollectionEventListener): terminated');
         $subscription      = $eventArgs->getEntity();
         $productEntity     = $subscription->getProductEntity();
         
