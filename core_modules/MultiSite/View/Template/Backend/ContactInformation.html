@@ -6,12 +6,8 @@
     width: 48%;
     display: inline-block;
   }
-
   .row .half-row:last-child {
     margin-left: 3%;
-  }
-  #multisite_contact_information_form label{
-    display: inline-block;
   }
 </style>
 <div aria-hidden="true" class="modal fade" id="multisite_contact_informaiton" role="dialog" tabindex="-1">
@@ -31,10 +27,10 @@
 
             <div class="row ">
               <!-- BEGIN multisite_user_profile_attribute_firstname -->
-              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}</div>
+              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}&nbsp;<font color="red">*</font></label>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}</div>
               <!-- END multisite_user_profile_attribute_firstname -->
               <!-- BEGIN multisite_user_profile_attribute_lastname -->
-              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}</div>
+              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}&nbsp;<font color="red">*</font></label>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}</div>
               <!-- END multisite_user_profile_attribute_lastname -->
             </div>
 
@@ -45,17 +41,17 @@
             <!-- END multisite_user_profile_attribute_company -->
             <!-- BEGIN multisite_user_profile_attribute_address -->
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS_DESC}&nbsp;<font color="red">*</font></label>{MULTISITE_USER_PROFILE_ATTRIBUTE_ADDRESS}
             </div>
             <!-- END multisite_user_profile_attribute_address -->
 
 
             <div class="row">
               <!-- BEGIN multisite_user_profile_attribute_zip -->
-              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP}</div>
+              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP_DESC}&nbsp;<font color="red">*</font></label>{MULTISITE_USER_PROFILE_ATTRIBUTE_ZIP}</div>
               <!-- END multisite_user_profile_attribute_zip -->
               <!-- BEGIN multisite_user_profile_attribute_city -->
-              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY}</div>
+              <div class="half-row"><label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY_DESC}&nbsp;<font color="red">*</font></label>{MULTISITE_USER_PROFILE_ATTRIBUTE_CITY}</div>
               <!-- END multisite_user_profile_attribute_city -->
             </div>
 
@@ -64,18 +60,18 @@
             </div>
             <!-- BEGIN multisite_user_profile_attribute_country -->
             <div class="row">
-              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}</label>&nbsp;<font color="red">*</font>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
+              <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY_DESC}&nbsp;<font color="red">*</font></label>{MULTISITE_USER_PROFILE_ATTRIBUTE_COUNTRY}
             </div>
             <!-- END multisite_user_profile_attribute_country -->
             <div class="row">
-              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_INDUSTRY_TYPE}</label><br />
+              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_INDUSTRY_TYPE}</label>
                 <select name="{MULTISITE_INDUSTRY_TYPE_POST_NAME}" id="industryType">
                 <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
                 {CRM_INDUSTRY_DROPDOWN}
               </select>
             </div>
             <div class="row">
-              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_SIZE}</label><br />
+              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_SIZE}</label>
               <select name="{MULTISITE_COMPANY_SIZE_POST_NAME}" id="companySize">
                 <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
                 <!-- BEGIN companySize -->
@@ -84,7 +80,7 @@
               </select>
             </div>
             <div class="row">
-              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP}</label> <font color="red">*</font><br />
+              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_COMPANY_TYP}&nbsp;<font color="red">*</font></label>
               <select name="{MULTISITE_CUSTOMER_TYPE_POST_NAME}" id="customer_type">
                 <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
                 <!-- BEGIN customerTypes -->
