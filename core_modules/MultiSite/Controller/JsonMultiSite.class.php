@@ -153,6 +153,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'trackAffiliateId'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
             'checkAvailabilityOfAffiliateId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'setAffiliate'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'sendNotificationForPayoutRequest' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
         );  
     }
 
@@ -5634,5 +5635,54 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED']);
         }
         return true;
+    }
+    
+    /**
+     * Send the notification mail for payout request
+     * 
+     * @global array $_ARRAYLANG
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function sendNotificationForPayoutRequest() {
+        global $_ARRAYLANG;
+        
+        try {
+            $config = \Env::get('config');
+            $objUser = \FWUser::getFWUserObject()->objUser;
+            
+            //Get the balance amount
+            $affiliateCreditRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit');        
+            $affiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
+            //get the currency code
+            $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getCurrencyIdByCrmId($objUser->getCrmUserId());
+            if (empty($currencyId)) {
+                $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
+            }
+            $currencyObj  = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
+            $currencyCode = $currencyObj ? $currencyObj->getName() : '';
+            
+            \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+            \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
+                'section' => 'MultiSite',
+                'key'     => 'payout_request',
+                'to'      => $config['coreAdminEmail'],
+                'search'  => array(
+                    '[[USER_NAME]]',
+                    '[[CREDIT_BALANCE]]',
+                    '[[USER_EMAIL]]'
+                ),
+                'replace' => array(
+                    \FWUser::getParsedUserTitle($objUser->getId()),
+                    $affiliateTotalCreditAmount . ' ' . $currencyCode,
+                    $objUser->getEmail()
+                ),
+            ));
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_ERROR']);
+        }
+        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_SUCCESS']);
     }
 } 

@@ -534,3 +534,34 @@ function addTableSorting(sorterTables) {
         jQuery('.' + v ).tablesorter(headerSetting);
     });
 }
+
+function sendNotificationForPayoutRequest($this) {
+    jQuery.ajax({
+       dataType: 'json',
+       type: 'POST',
+       url: cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=sendNotificationForPayoutRequest',
+       beforeSend: function (xhr, settings) {
+           $this.button('loading');
+           $this.prop('disabled', true);
+       },
+       success: function(response) {
+           if (response.status == 'success') {
+            switch(response.data.status) {
+                case 'success':
+                    showMessage(response.data.message, 'success');
+                    break;
+                case 'error':
+                    showMessage(response.data.message, 'error');
+                    break;
+                }
+           } else {
+               showMessage(response.message, 'error');
+           }
+       },
+       complete: function (xhr, settings) {
+           $this.button('reset');
+           $this.prop('disabled', false);
+       },
+       error: function() { }
+    });
+}
