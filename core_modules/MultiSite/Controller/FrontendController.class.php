@@ -84,12 +84,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 //get the payPalProfileAttributeId
                 $paypalEmailAddressProfileAttribute = \Cx\Core\Setting\Controller\Setting::getValue('payPalProfileAttributeId','MultiSite');
                 $paypalEmailAddress = $objUser->getProfileAttribute((int)$paypalEmailAddressProfileAttribute);
-                $affiliateIdForDisplay = '';
+                //display of affiliate-id
+                $marketingWebsiteDomain = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
+                $affiliateIdQueryStringKey = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite');
                 if (!empty($affiliateId)) {
-                    //display of affiliate-id
-                    $marketingWebsiteDomain = \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
-                    $affiliateIdQueryStringKey = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite');
-                    $affiliateIdForDisplay = 'https://' . $marketingWebsiteDomain . '/?' . $affiliateIdQueryStringKey . '=' . $affiliateId;
                     
                     //get the total Referrer count
                     $totalRefererCount = BackendController::getReferralCountByAffiliateId($affiliateId);
@@ -146,7 +144,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $currencyObj  = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
                 $currencyCode = $currencyObj ? $currencyObj->getName() : '';
                 $template->setVariable(array(
-                    'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => $affiliateIdForDisplay,
+                    'MULTISITE_MARKETING_WEBSITE'         => $marketingWebsiteDomain,
+                    'MULTISITE_AFFILIATE_QUERY_STRING'    => $affiliateIdQueryStringKey,
+                    'MULTISITE_AFFILIATE_PROFILE_ATTR_ID' => !empty($affiliateId) ? $affiliateId : '',
                     'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => !empty($paypalEmailAddress) ? $paypalEmailAddress : $objUser->getEmail(),
                     'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> number_format($affiliateTotalCreditAmount, 2) . ' ' . $currencyCode,
                     'MULTISITE_AFFILIATE_TOTAL_AMT'       => number_format($total, 2) . ' ' . $currencyCode,
