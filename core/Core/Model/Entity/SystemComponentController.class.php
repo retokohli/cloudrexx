@@ -191,6 +191,15 @@ class SystemComponentController extends Controller {
     }
     
     /**
+     * Execute one of the commands listed in getCommandsForCommandMode()
+     * @see getCommandsForCommandMode()
+     * @param string $command Name of command to execute
+     * @param array $arguments List of arguments for the command
+     * @return void
+     */
+    public function executeCommand($command, $arguments) {}
+    
+    /**
      * Do something before system initialization
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
