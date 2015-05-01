@@ -368,6 +368,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                                     }
 
                                     if($bolGetInputfield) {
+                                        var_dump($strType);
+                                        var_dump($strInputfieldClass);
                                         $strInputfield = $objInputfield->getInputfield(1, $arrInputfield, $intEntryId);
                                     } else {
                                         $strInputfield = null;
