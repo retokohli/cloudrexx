@@ -41,8 +41,6 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit;
-        var_dump($_ARRAYLANG['TXT_BROWSE']);
-        die();
 
         switch ($intView) {
             default:
