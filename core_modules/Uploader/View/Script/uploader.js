@@ -54,15 +54,12 @@
                 jQuery(this).data('uploadLimit', "0");
             }
             if (!iAttrs.allowedExtensions) {
-                iAttrs.allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip'];
+                iAttrs.allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx', 'doc'];
             }
             
             if (typeof scope.plFiltersModel == "undefined") {
                 scope.filters = [
-                    {title: "Allowed files", extensions: iAttrs.allowedExtensions.join(',')},
-                    {title: "Compressed files", extensions: "zip,tar,gz"},
-                    {title: "PDF files", extensions: "pdf"},
-                    {title: "Words files", extensions: "doc,docx"}
+                    {title: "Allowed files", extensions: iAttrs.allowedExtensions.join(',')}
                 ];
             } else {
                 scope.filters = scope.plFiltersModel;
