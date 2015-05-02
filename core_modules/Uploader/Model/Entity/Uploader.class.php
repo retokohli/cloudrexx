@@ -45,6 +45,8 @@ class Uploader extends EntityBase
      */
     protected $cx;
 
+    public static $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip');
+    
     function __construct()
     {
         $this->cx = Cx::instanciate();
@@ -66,8 +68,9 @@ class Uploader extends EntityBase
 
         $this->options = array(
             'data-pl-upload',
-            'data-uploader-id' => $this->id,
-            'class' => "uploader-button button"
+            'data-uploader-id'   => $this->id,
+            'class'              => "uploader-button button",
+            'allowed-extensions' => self::$allowedExtensions
         );
     }
 
@@ -97,19 +100,23 @@ class Uploader extends EntityBase
     {
         $this->options = array_merge($this->options, $options);
         
-        $uploadLimit   = isset($this->options['data-upload-limit']) ? $this->options['data-upload-limit'] : '';
-        if (!empty($uploadLimit)) {
-            if (!isset($_SESSION['uploader']['handlers'])) {
-                $_SESSION['uploader']['handlers'] = array();
-            }
-            if (!isset($_SESSION['uploader']['handlers'][$this->id])) {
-                $_SESSION['uploader']['handlers'][$this->id] = array();
-            }
-            if (!isset($_SESSION['uploader']['handlers'][$this->id]['config'])) {
-                $_SESSION['uploader']['handlers'][$this->id]['config'] = array();
-            }
+        if (!isset($_SESSION['uploader']['handlers'])) {
+            $_SESSION['uploader']['handlers'] = array();
+        }
+        if (!isset($_SESSION['uploader']['handlers'][$this->id])) {
+            $_SESSION['uploader']['handlers'][$this->id] = array();
+        }
+        if (!isset($_SESSION['uploader']['handlers'][$this->id]['config'])) {
+            $_SESSION['uploader']['handlers'][$this->id]['config'] = array();
+        }
             
-            $_SESSION['uploader']['handlers'][$this->id]['config']['upload-limit'] = $uploadLimit;
+        //set upload file limit
+        if (isset($this->options['upload-limit'])) {
+            $_SESSION['uploader']['handlers'][$this->id]['config']['upload-limit'] = $this->options['upload-limit'];
+        }
+        //set custom allowed extensions
+        if (isset($this->options['allowed-extensions'])) {
+            $_SESSION['uploader']['handlers'][$this->id]['config']['allowed-extensions'] = $this->options['allowed-extensions'];
         }
     }
 
@@ -142,7 +149,10 @@ class Uploader extends EntityBase
                         $key = 'data-'.$key;
                     }
                 }
-                $optionsString .= $key . '="' . $value . '" ';
+                if (is_array($value)) {
+                    $value = json_encode($value);
+                }
+                $optionsString .= $key . "='" . $value . "' ";
             }
         }
         return $optionsString;
