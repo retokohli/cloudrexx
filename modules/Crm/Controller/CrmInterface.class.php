@@ -135,7 +135,7 @@ class CrmInterface extends CrmLibrary
             ));
             $objTpl->parse('crm_enclosure');
         }
-        $options = array('upload-limit' => 1, 'id' => 'importUploader', 'style' => 'display:block;', 'allowed-extensions' => array('csv'));
+        $options = array('upload-limit' => 1, 'id' => 'importUploader', 'style' => 'display:none;', 'allowed-extensions' => array('csv'));
         $uploaderCode = $this->initUploader('uploadFinished', 'importCallbackJs', '', '', $options);
         $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
