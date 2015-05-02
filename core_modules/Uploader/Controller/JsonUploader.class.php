@@ -33,7 +33,7 @@ use Cx\Lib\FileSystem\FileSystem;
 class JsonUploader extends SystemComponentController implements JsonAdapter
 {
     protected $message = '';
-
+    
     /**
      * @var Cx
      */
@@ -107,10 +107,13 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 )
             );
         }
-
+        $allowedExtensions = \Cx\Core_Modules\Uploader\Model\Entity\Uploader::$allowedExtensions;
+        if (isset($_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'])) {
+            $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'];
+        }
         $uploader = UploaderController::handleRequest(
             array(
-                'allow_extensions' => 'jpg,jpeg,png,pdf,gif,mkv,zip,',
+                'allow_extensions' => explode(', ', $allowedExtensions),
                 'target_dir' => $path,
                 'tmp_dir' => $tmpPath
             )
