@@ -67,6 +67,7 @@ class DbEngine extends Engine{
         $this->arrSettings = array();
         while (!$objResult->EOF) {
             $this->arrSettings[$objResult->fields['name']] = array(
+            	'name' => $$objResult->fields['name'],
                 'section' => $section,
                 'group' => $objResult->fields['group'],
                 'value' => $objResult->fields['value'],
