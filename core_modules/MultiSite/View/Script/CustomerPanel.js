@@ -152,6 +152,7 @@ function getRemoteLoginToken($this) {
                         //Browser has allowed it to be opened
                         newWindow.focus();
                     }
+                    showMessage(resp.message, 'info');
                 } else {
                     showMessage(resp.message, 'error');
                 }
