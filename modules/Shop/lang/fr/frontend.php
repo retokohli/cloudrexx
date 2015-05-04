@@ -398,3 +398,10 @@ $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Si
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Order without registration";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Check this box if you want to order without registration.";
 $_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Gebührenfrei ab";
+// Headers for Product ordering in list view
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'] = "Vorgabe";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_TITLE'] = "Produktname";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_CODE'] = "Artikelnummer";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_PRICE'] = "Preis";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_DATE'] = "Erstelldatum";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_BESTSELLER'] = "Beliebtheit";
