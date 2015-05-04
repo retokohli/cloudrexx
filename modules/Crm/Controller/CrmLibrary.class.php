@@ -2669,11 +2669,14 @@ class CrmLibrary
     }
 
     /**
-     * Adding Crm Contact
+     * Adding Crm Contact and link it with crm company if possible
      *
      * @param Array $arrFormData form data's
+     * @param int $userAccountId
+     * @param int $frontendLanguage
+     * @global <object> $objDatabase
+     * @global int $_LANGID
      *
-     * @return null
      */
     function setContactPersonProfile($arrFormData = array(), $userAccountId = 0, $frontendLanguage)
     {
@@ -2690,7 +2693,6 @@ class CrmLibrary
                 $this->contact->family_name    = !empty ($arrFormData['lastname'][0]) ? contrexx_input2raw($arrFormData['lastname'][0]) : '';
                 $this->contact->contact_language = !empty ($frontendLanguage) ? (int) $frontendLanguage : $_LANGID;
                 $this->contact->contact_gender = !empty ($arrFormData['gender'][0]) ? ($arrFormData['gender'][0] == 'gender_female' ? 1 : ($arrFormData['gender'][0] == 'gender_male' ? 2 : '')) : '';
-                $this->contact->customerType    = !empty ($arrFormData['type'][0]) ? contrexx_input2raw($arrFormData['type'][0]) : '';
 
                 $this->contact->contactType    = 2;
                 $this->contact->datasource     = 2;
@@ -2710,6 +2712,54 @@ class CrmLibrary
                     }
                 } else {
                     $this->contact->profile_picture = 'profile_person_big.png';
+                }
+                // save current setting values, so we can switch back to them after we got our used settings out of database
+                $prevSection = \Cx\Core\Setting\Controller\Setting::getCurrentSection();
+                $prevGroup   = \Cx\Core\Setting\Controller\Setting::getCurrentGroup();
+                $prevEngine  = \Cx\Core\Setting\Controller\Setting::getCurrentEngine();
+
+                \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
+                if($arrFormData["company"][0] != "") {
+                    $crmCompany = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                    if($this->contact->contact_customer != 0){
+                        $crmCompany->load($this->contact->contact_customer);
+                    }
+                    $crmCompany->customerName = $arrFormData["company"][0];
+                    $crmCompany->contactType = 1;
+
+                    $customerType = $arrFormData[
+                                        \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm')
+                                    ]
+                                    [0];
+                    if ($customerType !== false) {
+                        $crmCompany->customerType = $customerType;
+                    }
+
+                    $companySize = $arrFormData[
+                                        \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size','Crm')
+                                    ]
+                                    [0];
+                    if($companySize !== false){
+                        $crmCompany->companySize = $companySize;
+                    }
+
+                    $industryType = $arrFormData[
+                                        \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_type','Crm')
+                                    ]
+                                    [0];
+                    if($industryType !== false){
+                        $crmCompany->industryType = $industryType;
+                    }
+
+                    if(isset($arrFormData["phone_office"])){
+                        $crmCompany->phone = $arrFormData["phone_office"];
+                    }
+                    if($this->contact->email != $crmCompany->email){
+                        $crmCompany->email = $this->contact->email;
+                        $crmCompany->storeEMail();
+                    }
+                    $crmCompany->save();
+                    $this->contact->contact_customer = $crmCompany->id;
                 }
 
                 if ($this->contact->save()) {
@@ -2774,6 +2824,7 @@ class CrmLibrary
                         $objDatabase->Execute($query);
                     }
                 }
+                \Cx\Core\Setting\Controller\Setting::init($prevSection, $prevGroup, $prevEngine);
             }
         }
     }

@@ -16,6 +16,20 @@
 namespace Cx\Modules\Crm\Controller;
 
 /**
+ * CrmSettingsException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Adrian Berger <ab@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_crm
+ * @version     1.0.0
+ */
+class CrmSettingsException extends \Exception
+{
+}
+
+
+/**
  * This is the settings class file for handling the all functionalities under settings menu.
  *
  * @category   Settings
@@ -1218,14 +1232,17 @@ class CrmSettings extends CrmLibrary
     }
 
     /**
-     * This code creates the profil attributs for company size, customerType and industryType if the do not exist
+     *
+     * This code creates the crm setting for company size, customerType and industryType if the do not exist and
+     * also creates the profile attributes and links them with the new settings in the crm
      *
      * @global <type> $_CORELANG
      * @global <type> $_ARRAYLANG
      * @autor Adrian Berger <ab@comvation.com>
      * @return void
      */
-    function createProfilAttributes(){
+    function createProfilAttributes()
+    {
         global $_CORELANG, $_ARRAYLANG;
         $objFWUser = \FWUser::getFWUserObject();
         $objUser = $objFWUser->objUser;
@@ -1242,49 +1259,51 @@ class CrmSettings extends CrmLibrary
         $FWLanguages = new \FWLanguage();
         $languages = $FWLanguages->getLanguageArray();
         $attributNameAfterLang = Array(
-            'TXT_CRM_COMPANY_SIZE' => Array(),
-            'TXT_CRM_INDUSTRY_TYPE' => Array(),
-            'TXT_CRM_CUSTOMER_TYPE' => Array()
+            'TXT_CRM_COMPANY_SIZE' => 'user_profile_attribute_company_size',
+            'TXT_CRM_INDUSTRY_TYPE' => 'user_profile_attribute_industry_type',
+            'TXT_CRM_CUSTOMER_TYPE' => 'user_profile_attribute_customer_type',
         );
-        $placeholderArr = Array();
+        \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
         foreach($attributNameAfterLang as $key => $attributName){
-            $attributId = $objUser->objAttribute->getAttributeIdByName($_ARRAYLANG[$key]);
-            if($attributId !== null){
-                continue;
+
+            if(!\Cx\Core\Setting\Controller\Setting::isDefined($attributName)){
+                if(!$objUser->objAttribute->getAttributeIdByName($_ARRAYLANG[$key]) !== null){
+                    $attribut = $objUser->objAttribute->getById(0);
+                    $attribut->init();
+
+                    $placeholderArr = Array();
+                    foreach($languages as $language){
+                        $objInit->backendLangId = $language["id"];
+                        $langArr = $objInit->loadLanguageData();
+                        $placeholderArr[$language["id"]] = $langArr[$key];
+                    }
+
+                    $attribut->setNames($placeholderArr);
+                    $attribut->setType('text');
+                    $attribut->setParent(0);
+
+                    if(!$attribut->store()){
+                        throw new \Cx\Modules\Crm\Controller\CrmSettingsException('Failed to create User_Profile_Attribute for '.$key);
+                    }
+                }
+                \CX\Core\Setting\Controller\Setting::add(
+                    $attributName,
+                    $objUser->objAttribute->getAttributeIdByName($_ARRAYLANG[$key]),
+                    false,
+                    'dropdown_user_custom_attribute',
+                    '',
+                    'config'
+                );
             }
-            $attribut = $objUser->objAttribute->getById(0);
-            $attribut->init();
-            foreach($languages as $language){
-                $objInit->backendLangId = $language["id"];
-                $langArr = $objInit->loadLanguageData();
-                $placeholderArr[$language["id"]] = $langArr[$key];
-            }
-            $attribut->setNames($placeholderArr);
-            $attribut->setType('text');
-            $attribut->setParent(0);
-            $attribut->setProtection(Array(1));
-            if(!$attribut->store()){
-                throw new \Cx\Lib\Update_DatabaseException('Failed to create User_Profile_Attribute for '.$key);
-            }
+
         }
 
         // restore the original language settings, so the page loads in the correct language
         $objInit->backendLangId = $backendLangId;
         $_CORELANG = $_tempCORELANG;
         $_ARRAYLANG = $_tempARRAYLANG;
-
-        \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
-        $existingSettings = \CX\Core\Setting\Controller\Setting::getArray();
-        if(!isset($existingSettings['user_profile_attribute_industry_type'])){
-            \CX\Core\Setting\Controller\Setting::add('user_profile_attribute_industry_type', $objUser->objAttribute->getAttributeIdByName($_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE']), false, 'dropdown_user_custom_attribute', '', 'config');
-        }
-        if(!isset($existingSettings['user_profile_attribute_company_size'])){
-            \Cx\Core\Setting\Controller\Setting::add( 'user_profile_attribute_company_size', $objUser->objAttribute->getAttributeIdByName($_ARRAYLANG['TXT_CRM_COMPANY_SIZE']), false, 'dropdown_user_custom_attribute', '', 'config');
-        }
-        if(!isset($existingSettings['user_profile_attribute_customer_type'])){
-            \CX\Core\Setting\Controller\Setting::add('user_profile_attribute_customer_type', $objUser->objAttribute->getAttributeIdByName($_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE']), false, 'dropdown_user_custom_attribute', '', 'config');
-        }
     }
+
     /**
      * settings for mail tempalte design
      *
