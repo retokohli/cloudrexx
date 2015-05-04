@@ -309,4 +309,6 @@ $_ARRAYLANG['TXT_ACCESS_USER_TYPE_CRM'] = "only crm";
 $_ARRAYLANG['TXT_ACCESS_NOTIFICATION_EMAIL_TITLE'] = "Password set method";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_MANUALLY'] = "Set password manually";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_GENERATED'] = "Generate random password and send to email address";
+$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION'] = "Conformity mandatory ( profile properties )";
+$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'] = "The mandatory fields must be checked and set";
 ?>

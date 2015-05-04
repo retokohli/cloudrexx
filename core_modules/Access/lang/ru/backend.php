@@ -281,4 +281,6 @@ $_ARRAYLANG['TXT_ACCESS_PASSWORD_WEAK'] = "Weak";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_GOOD'] = "Good";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_STRONG'] = "Strong";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_INVALID'] = "Invalid";
+$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION'] = "СООТВЕТСТВИЕ обязательные ( свойств профиля )";
+$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'] = "Обязательные поля должны быть проверены и установить";
 ?>
