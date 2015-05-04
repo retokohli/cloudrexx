@@ -544,7 +544,14 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         trim(contrexx_stripslashes($_POST['access_user_password_confirmed']))
                     :    ''
                 )
-                && $objUser->checkMandatoryCompliance()
+                &&
+                // if user_account_verification is false (0), then we do not need to do checkMandatoryCompliance(), because
+                // the required fields do not need to be set. This means its not necessary in signup that the required fields are already set
+                // this is a setting which you can set in the user management backend
+                (
+                    $arrSettings['user_account_verification']['value'] === 0
+                    || $objUser->checkMandatoryCompliance()
+                )
                 && $this->checkCaptcha()
                 && $this->checkToS()
                 && $objUser->signUp()

@@ -2018,6 +2018,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_SOCIALLOGIN_ACTIVATED_NOT_AUTOMATICALLY'=> $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATED_NOT_AUTOMATICALLY'],
             'TXT_ACCESS_SOCIALLOGIN_ACTIVATION_TIME'            => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATION_TIME'],
             'TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'        => $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'],
+            'TXT_ACCESS_USER_ACCOUNT_VERIFICATION'              => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION'],
+            'TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'         => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'],
         ));
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.contrexx.com/wiki/de/index.php?title=Social_Login"),
@@ -2112,6 +2114,13 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
             if (!empty($_POST['accessMaxThumbnailPicHeight'])) {
                 $arrSettings['max_thumbnail_pic_height']['value'] = intval($_POST['accessMaxThumbnailPicHeight']);
+            }
+
+            // user_account_verification is a checkbox, if this is not set, its not checked. If it is set, it is checked
+            // 0 = unchecked, false, 1 = checked, active, true
+            $arrSettings['user_account_verification']['value'] = 0;
+            if (isset($_POST['user_account_verification'])) {
+                $arrSettings['user_account_verification']['value'] = 1;
             }
 
             if (!empty($_POST['accessMaxPicSize'])) {
@@ -2284,6 +2293,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY_ENABLED'    => $arrSettings['sociallogin_active_automatically']['status'] ? 'checked="checked"' : '',
             'ACCESS_SOCIALLOGIN_ACTIVATED_AUTOMATICALLY_NOT_ENABLED'=> $arrSettings['sociallogin_active_automatically']['status'] ? '' : 'checked="checked"',
             'ACCESS_SOCIALLOGIN_ACTIVATION_TIMEOUT'                 => intval($arrSettings['sociallogin_activation_timeout']['value']),
+            'ACCESS_USSER_ACCOUNT_VERIFICATION_CHECKED'             => $arrSettings['user_account_verification']['value'] == 1 ? 'checked' : '',
         ));
         $this->_objTpl->parse('module_access_config_general');
     }
