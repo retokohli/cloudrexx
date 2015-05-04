@@ -11,12 +11,12 @@
  */
 
 namespace {
-    
+
     /* STAGE 1: init.php and calling new \Cx\Core\Core\Controller\Cx */
-    
+
     /**
      * Wrapper for new \Cx\Core\Core\Controller\Cx()
-     * 
+     *
      * This is necessary, because we cannot use namespaces in index.php
      * in order to catch errors with PHP versions prior to 5.3
      * @param string $mode (optional) One of 'frontend', 'backend', 'cli', 'minimal'
@@ -48,39 +48,39 @@ namespace Cx\Core\Core\Controller {
         const FOLDER_NAME_MEDIA = '/media';
         /**
          * Commandline interface mode
-         * 
+         *
          * In this mode, Contrexx is initialized for commandline usage
          * This mode is BETA at this time
          */
         const MODE_COMMAND = 'command';
-        
+
         /**
          * Frontend mode
-         * 
+         *
          * In this mode, Contrexx shows the frontend
          */
         const MODE_FRONTEND = 'frontend';
-        
+
         /**
          * Backend mode
-         * 
+         *
          * In this mode, Contrexx show the administrative backend
          */
         const MODE_BACKEND = 'backend';
-        
+
         /**
          * Minimal mode
-         * 
+         *
          * In this mode, the whole environment is loaded, but the
          * main template will not be initialized, no component hooks
          * will be executed and the template will not be parsed
          * This mode is BETA at this time
          */
         const MODE_MINIMAL = 'minimal';
-        
+
         /**
          * Holds references to all currently loaded Cx instances
-         * 
+         *
          * The first one is the normally used one, all others are special.
          * This is a two dimensional array. The first level key is the
          * configuration file path. Each of these entries contains a list of
@@ -88,7 +88,7 @@ namespace Cx\Core\Core\Controller {
          * @var array
          */
         protected static $instances = array();
-        
+
         /**
          * Holds the reference to preferred instance of this class
          *
@@ -98,13 +98,13 @@ namespace Cx\Core\Core\Controller {
          * @var Cx
          */
         protected static $preferredInstance = null;
-        
+
         /**
          * Parsing star time
          * @var array Array in the form array({milliseconds}, {seconds})
          */
         protected $startTime = array();
-        
+
         /**
          * System mode
          * @var string Mode as string (see constants)
@@ -128,37 +128,37 @@ namespace Cx\Core\Core\Controller {
          * @var \Cx\Core\Routing\Url
          */
         protected $request = null;
-        
+
         /**
          * Component handler
          * @var \Cx\Core\Core\Controller\ComponentHandler
          */
         protected $ch = null;
-        
+
         /**
          * Class auto loader
          * @var \Cx\Core\ClassLoader\ClassLoader
          */
         protected $cl = null;
-        
+
         /**
          * If null, customizing is deactivated
          * @var string
          */
         protected $customizingPath = null;
-        
+
         /**
          * If null, page is not resolved yet
          * @var \Cx\Core\ContentManager\Model\Entity\Page
          */
         protected $resolvedPage = null;
-        
+
         /**
          * Resolver used for page resolving (for the moment frontend mode only)
-         * @var \Cx\Core\Routing\Resolver 
+         * @var \Cx\Core\Routing\Resolver
          */
         protected $resolver = null;
-        
+
         /**
          * List of available commands in command mode. Key is
          * command name, value is the responsible component.
@@ -166,32 +166,32 @@ namespace Cx\Core\Core\Controller {
          * @var array
          */
         protected $commands = null;
-        
+
         /**
          * Current language id
          * @var int
          */
         protected $langId = null;
-        
+
         /**
          * License for this instance
          * @var \Cx\Core_Modules\License\License
          */
         protected $license = null;
-        
+
         /**
          * Contrexx toolbox
          * @todo Update FWSystem
          * @var \FWSystem
          */
         protected $toolbox = null;
-        
+
         /**
          * Contrexx event manager
          * @var \Cx\Core\Event\Controller\EventManager
          */
         protected $eventManager = null;
-        
+
         /**
          * The folder name of the storage location of the config files (/config).
          * @var string
@@ -229,28 +229,28 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         const FOLDER_NAME_CUSTOMIZING = '/customizing';
-        
+
         /**
          * The folder name used for the core_modules storage location (/core_modules).
          * Formerly known as ASCMS_CORE_MODULE_FOLDER
          * @var string
          */
         const FOLDER_NAME_CORE_MODULE = '/core_modules';
-        
+
         /**
          * The folder name used for the lib storage location (/lib).
          * Formerly known as ASCMS_LIBRARY_FOLDER
          * @var string
          */
         const FOLDER_NAME_LIBRARY = '/lib';
-        
+
         /**
          * The folder name used for the model storage location (/model).
          * Formerly known as ASCMS_MODEL_FOLDER
          * @var string
          */
         const FOLDER_NAME_MODEL = '/model';
-        
+
         /**
          * The folder name used for the modules storage location (/modules).
          * Formerly known as ASCMS_MODULE_FOLDER
@@ -263,7 +263,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         const FOLDER_NAME_THEMES = '/themes';
-        
+
         /**
          * @var string
          */
@@ -320,7 +320,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseAdminTemplatePath = null;
-        
+
         /**
          * The offset path used to access the backend template
          * of the Code Base of the Contrexx installation.
@@ -328,7 +328,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseAdminTemplateWebPath = null;
-        
+
         /**
          * The absolute path of the core modules(core_modules) folder
          * of the Code Base of the Contrexx installation
@@ -336,7 +336,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseCoreModulePath  = null;
-        
+
         /**
          * The offset path of the core modules(core_modules) folder
          * of the Code Base of the Contrexx installation
@@ -344,7 +344,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseCoreModuleWebPath  = null;
-        
+
         /**
          * The absolute path of the lib folder
          * of the Code Base of the Contrexx installation
@@ -352,7 +352,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseLibraryPath  = null;
-        
+
         /**
          * The absolute path of the FRAMEWORK folder
          * of the Code Base of the Contrexx installation
@@ -360,7 +360,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseFrameworkPath  = null;
-        
+
         /**
          * The absolute path of the model folder
          * of the Code Base of the Contrexx installation
@@ -368,7 +368,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseModelPath  = null;
-        
+
         /**
          * The absolute path of the module folder
          * of the Code Base of the Contrexx installation
@@ -376,7 +376,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseModulePath  = null;
-        
+
         /**
          * The offset path of the module folder
          * of the Code Base of the Contrexx installation
@@ -384,14 +384,14 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $codeBaseModuleWebPath  = null;
-        
+
         /**
          * The absolute path to the themes storage location (/themes)
          * of the Code Base of the Contrexx installation
          * @var string
          */
         protected $codeBaseThemesPath = null;
-        
+
         /**
          * The absolute path to the website's data repository.
          * Formerly known as ASCMS_INSTANCE_PATH.
@@ -443,7 +443,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $websiteTempPath = null;
-        
+
         /**
          * The offset path to the temp storage location (/tmp)
          * of the associated Data repository of the website.
@@ -451,7 +451,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $websiteTempWebPath = null;
-        
+
         /**
          * The absolute path to the themes storage location (/themes)
          * of the associated Data repository of the website.
@@ -466,7 +466,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $websiteThemesWebPath = null;
-        
+
         /**
          * The absolute path to the feed storage location (/feed)
          * of the associated Data repository of the website.
@@ -475,11 +475,11 @@ namespace Cx\Core\Core\Controller {
          */
         protected $websiteFeedPath = null;
 
-        
+
         protected $id = 0;
-        
+
         static protected  $autoIncrementValueOfId = 0;
-        
+
 
         protected $websiteImagesContentPath;
         protected $websiteImagesAttachPath;
@@ -511,7 +511,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteMediaarchive3WebPath;
         protected $websiteMediaarchive4WebPath;
         protected $websiteMediaFileSharingWebPath;
-        
+
         protected $websiteImagesPath;
         protected $websiteImagesWebPath;
         protected $websitePublicTempPath;
@@ -519,7 +519,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * This creates instances of this class
-         * 
+         *
          * Normally the first instance is returned. You may set another instance
          * to be the preferred one using the $setAsPreferred argument.
          * @param string $mode (optional) One of the modes listed in constants above
@@ -528,7 +528,7 @@ namespace Cx\Core\Core\Controller {
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
          * @param boolean $setAsPreferred (optional) Sets this instance as the preferred one for later
-         * @return \Cx\Core\Core\Controller\Cx Instance of this class 
+         * @return \Cx\Core\Core\Controller\Cx Instance of this class
          */
         public static function instanciate($mode = null, $forceNew = false, $configFilePath = null, $setAsPreferred = false) {
             // at least one instance exists (for given config file path) AND not forced to create a new one
@@ -557,7 +557,7 @@ namespace Cx\Core\Core\Controller {
             //            constructor (__construct()).
             return self::$preferredInstance;
         }
-        
+
         /* STAGE 2: __construct(), early initializations */
 
         /**
@@ -568,8 +568,8 @@ namespace Cx\Core\Core\Controller {
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
          */
-        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false) {            
-            
+        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false) {
+
             /** setting up id of new initialized object**/
             self::$autoIncrementValueOfId++;
             $this->id = self::$autoIncrementValueOfId;
@@ -580,7 +580,7 @@ namespace Cx\Core\Core\Controller {
                 self::$instances[$configFilePath] = array();
             }
             self::$instances[$configFilePath][] = $this;
-            
+
             try {
                 /**
                  * This starts time measurement
@@ -628,38 +628,38 @@ namespace Cx\Core\Core\Controller {
                  * the preInit-hook-scripts. Finally it verifies the requested HTTP-Host.
                  */
                 $this->preInit();
-                
+
                 /**
                  * Defines the core constants (ASCMS_*) of Contrexx as defined in config/set_constants.php
-                 * and config/SetCustomizableConstants.php. 
+                 * and config/SetCustomizableConstants.php.
                  */
                 $this->defineLegacyConstants();
-                
+
                 /**
                  * Loads ClassLoader, EventManager and Database connection
                  * For now, this also loads some legacy things like API, AdoDB, Env and InitCMS
                  */
                 $this->init();
-                
+
                 /**
                  * In order to make this file customizable, we explicitly
                  * search for a subclass of Cx\Core\Core\Controller\Cx named Cx\Customizing\Core\Cx
                  * If such a class is found, it is loaded and this request will be stopped
                  */
                 $this->handleCustomizing();
-                
+
                 /**
                  * Load all components to have them ready and initialize request and license
                  * Request is not initialized for command mode
                  */
                 $this->postInit();
-                
+
                 /**
                  * Since we have a valid state now, we can start executing
                  * all of the component's hook methods.
                  * This initializes the main template, executes all hooks
                  * and parses the template.
-                 * 
+                 *
                  * This is not executed automaticly in minimal. Invoke it
                  * yourself if necessary and be sure to handle exceptions.
                  *
@@ -708,12 +708,12 @@ namespace Cx\Core\Core\Controller {
 
             /**
              * Globally catch all exceptions and show offline.html
-             * 
+             *
              * This might have one of the following reasons:
              * 1. CMS is disabled by config
              * 2. Frontend is locked by license
              * 3. An error occured
-             * 
+             *
              * Enable \DBG to see what happened
              */
             catch (\Exception $e) {
@@ -730,14 +730,14 @@ namespace Cx\Core\Core\Controller {
                 die();
             }
         }
-        
+
         /**
          * Starts time measurement for page parsing time
          */
         protected function startTimer() {
             $this->startTime = explode(' ', microtime());
         }
-        
+
         /**
          * Stops time measurement and returns page parsing time
          * @return int Time needed to parse page in seconds
@@ -746,10 +746,10 @@ namespace Cx\Core\Core\Controller {
             $finishTime = explode(' ', microtime());
             return round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$this->startTime[0] + (float)$this->startTime[1]), 5);
         }
-        
+
         /**
          * Load an optional configuration file and sets up the path configuration.
-         * 
+         *
          * Note: The default configuration.php is loaded in index.php in order to
          * load this file from its correct location.
          * @todo Find a way to store configuration by avoiding global variables
@@ -793,7 +793,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * Loads basic configuration (settings.php) and set basic PHP behavior
          * such as character-set, timezone, etc.
-         * 
+         *
          * @todo Find a way to store configuration by avoiding global variables
          * @global array $_CONFIG Configuration array from /config/settings.php
          * @global array $_DBCONFIG Configuration array from /config/settings.php
@@ -808,19 +808,19 @@ namespace Cx\Core\Core\Controller {
              * {@link $_CONFIG[]} global array.
              */
             include_once $this->getWebsiteConfigPath().'/settings.php';
-            
+
             @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
-            
+
             // Set output url seperator
             @ini_set('arg_separator.output', '&amp;');
-            
+
             // Set url rewriter tags
             @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
-            
+
             // Set timezone
             @ini_set('date.timezone', $_DBCONFIG['timezone']);
         }
-            
+
         /**
          * Loads legacy constants (set_constants.php / SetCustomizableConstants.php)
          */
@@ -845,7 +845,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * Verifies if the basic configuration has been initialized (settings.php).
          * If not, the system will halt.
-         * 
+         *
          * @global array $_CONFIG Configuration array from /config/settings.php
          */
         protected function checkBasicConfiguration() {
@@ -880,7 +880,7 @@ namespace Cx\Core\Core\Controller {
                     $rootOffset .= '/'.$directories[$i];
                 }
             }
-            
+
             // fix wrong offset if another file than index.php was requested
             // turning '/myoffset/core_module/somemodule' into '/myoffset'
             $fileRoot = dirname(dirname(dirname(dirname(__FILE__))));
@@ -902,7 +902,7 @@ namespace Cx\Core\Core\Controller {
             if (preg_match("#(.*)". preg_quote($rootOffset) ."#", $scriptPath, $arrMatches) == 1) {
                 $documentRoot = $arrMatches[1];
             }
-            
+
             // fix wrong variable assignment in CLI
             if (empty($documentRoot) && !empty($rootOffset)) {
                 $documentRoot = $rootOffset;
@@ -916,7 +916,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function setMode($mode) {
             global $_CONFIG;
-            
+
             if ((!$mode || $mode == 'command') && php_sapi_name() === 'cli') {
                 $this->mode = self::MODE_COMMAND;
                 return;
@@ -969,9 +969,9 @@ namespace Cx\Core\Core\Controller {
             $this->initClassLoader();
             $this->initLegacyEnv();
             $this->callPreInitHooks();
-            $this->adjustRequest();            
+            $this->adjustRequest();
         }
-        
+
         /**
          * Check whether the system is running
          * @param   boolean $disableAllModes Set to TRUE to stop the system initialization for any mode (not only {@see self::MODE_FRONTEND}) in case the website has been put into maintenance-mode ($_CONFIG['systemStatus'] = 'off').
@@ -1012,7 +1012,7 @@ namespace Cx\Core\Core\Controller {
             if (!class_exists('Env', false)) {
                 require_once($this->cl->getFilePath($this->codeBaseCorePath . '/Env.class.php'));
             }
-            \Env::set('ClassLoader', $this->cl);            
+            \Env::set('ClassLoader', $this->cl);
             \Env::set('config', $_CONFIG);
             \Env::set('ftpConfig', $_FTPCONFIG);
         }
@@ -1057,7 +1057,7 @@ namespace Cx\Core\Core\Controller {
                 return;
             }
             $this->memoryLimit = $memoryLimit[0];
-            
+
             global $objCache;
             if (
                 $objCache->getUserCacheEngine() == \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC ||
@@ -1081,7 +1081,7 @@ namespace Cx\Core\Core\Controller {
             if ($this->mode == self::MODE_MINIMAL || $this->mode == self::MODE_COMMAND) {
                 return;
             }
-            
+
             $domain = $this->checkDomainUrl();
             $protocol = $this->adjustProtocol();
 
@@ -1130,16 +1130,16 @@ namespace Cx\Core\Core\Controller {
         protected function adjustProtocol() {
             global $_CONFIG;
             // check whether Contrexx has to redirect to the correct protocol
-            
+
             $configOption = 'forceProtocolFrontend';
             if ($this->mode == self::MODE_BACKEND) {
                 $configOption = 'forceProtocolBackend';
             }
-            
+
             if (!isset($_CONFIG[$configOption]) || $_CONFIG[$configOption] == 'none') {
                 return null;
             }
-            
+
             if ($_CONFIG[$configOption] == 'https' && empty($_SERVER['HTTPS'])) {
                 return 'https';
             } else if ($_CONFIG[$configOption] == 'http' && !empty($_SERVER['HTTPS'])) {
@@ -1156,7 +1156,7 @@ namespace Cx\Core\Core\Controller {
          * @global array $_CONFIG
          * @global type $_FTPCONFIG
          * @global type $objDatabase
-         * @global type $objInit 
+         * @global type $objInit
          */
         protected function init() {
             global $objDatabase, $objInit, $objCache, $_DBCONFIG;
@@ -1171,7 +1171,7 @@ namespace Cx\Core\Core\Controller {
                 $objCache->deactivateNotUsedOpCaches();
             }
             $this->tryToSetMemoryLimit();
-            
+
             // start contrexx caching
             $objCache->startContrexxCaching();
 
@@ -1209,7 +1209,7 @@ namespace Cx\Core\Core\Controller {
             \Env::set('pageguard', new \PageGuard($this->db->getAdoDb()));
 
             \DBG::set_adodb_debug_mode();
-            
+
             $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
             new \Cx\Core\Event\Controller\ModelEventWrapper($this);
 
@@ -1218,9 +1218,9 @@ namespace Cx\Core\Core\Controller {
             $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::em());
             \Env::set('init', $objInit);
             //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            //$bla->findAll();            
+            //$bla->findAll();
         }
-        
+
         /**
          * Loads a subclass of this class from customizing if available
          * @return null
@@ -1246,7 +1246,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function postInit() {
             global $_CONFIG;
-            
+
             // if path configuration was wrong in loadConfig(), Url is not yet initialized
             if (!$this->request) {
                 // this makes \Env::get('Resolver')->getUrl() return a sensful result
@@ -1256,7 +1256,7 @@ namespace Cx\Core\Core\Controller {
                 switch ($this->mode) {
                     case self::MODE_FRONTEND:
                     case self::MODE_BACKEND:
-                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], 
+                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'],
                                                                                    \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET));
                         break;
                     case self::MODE_MINIMAL:
@@ -1267,7 +1267,7 @@ namespace Cx\Core\Core\Controller {
                 }
             }
             $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
-            
+
             $this->loadComponents();
         }
 
@@ -1277,9 +1277,9 @@ namespace Cx\Core\Core\Controller {
         protected function loadComponents() {
             $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->license, $this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
         }
-        
+
         /* STAGE 3: loadContrexx(), call hook scripts */
-        
+
         /**
          * Initializes global template, executes all component hook methods
          * and parses the template.
@@ -1320,7 +1320,7 @@ namespace Cx\Core\Core\Controller {
             }
             // init template
             $this->loadTemplate();                      // Sigma Template
-            
+
             // @TODO: remove this
             $this->legacyGlobalsHook(1);                // $objUser, $objTemplate, $cl
 
@@ -1344,10 +1344,10 @@ namespace Cx\Core\Core\Controller {
             $this->finalize();                          // Set template vars and display content
             $this->postFinalize();                      // Call post finalize hook scripts
         }
-        
+
         /**
          * Init main template object
-         * 
+         *
          * In backend mode, ASCMS_ADMIN_TEMPLATE_PATH/index.html is opened
          * In all other modes, no file is loaded here
          */
@@ -1359,7 +1359,7 @@ namespace Cx\Core\Core\Controller {
                 $this->template->addBlockfile('CONTENT_FILE', 'index_content', 'IndexContent.html');
             }
         }
-        
+
         /**
          * This populates globals for legacy code
          * @todo Avoid this! All this should be part of some components hook
@@ -1374,7 +1374,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function legacyGlobalsHook($no) {
             global $objFWUser, $objTemplate, $cl, $objInit, $_LANGID, $_CORELANG, $url;
-            
+
             switch ($no) {
                 case 1:
                     // Request URL
@@ -1384,7 +1384,7 @@ namespace Cx\Core\Core\Controller {
                     // populate classloader
                     $cl = $this->cl;
                     break;
-                
+
                 case 2:
                     // Code to set language
                     // @todo: move this to somewhere else
@@ -1393,11 +1393,11 @@ namespace Cx\Core\Core\Controller {
                         $_LANGID = FRONTEND_LANG_ID;
                         $objInit->setFrontendLangId($_LANGID);
                         define('LANG_ID', $_LANGID);
-                        
+
                         // Load interface language data
                         $_CORELANG = $objInit->loadLanguageData('core');
                     }
-                    
+
                     \Env::set('Resolver', $this->resolver);
 
                     // Resolver code
@@ -1426,7 +1426,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Does the resolving
-         * 
+         *
          * For modes other than 'frontend', no actual resolving is done,
          * resolver is just initialized in order to return the correct result
          * for $resolver->getUrl()
@@ -1438,7 +1438,7 @@ namespace Cx\Core\Core\Controller {
             $this->request->getUrl()->setMode($this->mode);
 
             if ($this->mode == self::MODE_FRONTEND) {
-                
+
                 // TODO: Workaround for upload-component as it is loaded in preResolve-hook.
                 // Remove this workaround once the Upload-component has been replaced
                 // by the new Uploader-component which operates only through JsonData
@@ -1449,10 +1449,10 @@ namespace Cx\Core\Core\Controller {
                 } else {
                     $this->resolvedPage = $this->resolver->resolve();
                 }
-                
+
             } else {
                 global $cmd, $act, $isRegularPageRequest, $plainCmd;
-                
+
                 // resolve pretty url's
                 $path = preg_replace('#^' . $this->getWebsiteOffsetPath() . '(' . $this->getBackendFolderName() . ')?/#', '', $_GET['__cap']);
                 if ($path != 'index.php' && $path != '') {
@@ -1474,13 +1474,13 @@ namespace Cx\Core\Core\Controller {
 
                 $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
                 $this->resolvedPage->setVirtual(true);
-                
+
                 if (!isset($plainCmd)) {
                     $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : 'Home';
                     $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
                     $plainCmd = $cmd;
                 }
-                
+
                 // If standalone is set, then we will not have to initialize/load any content page related stuff
                 $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
             }
@@ -1499,15 +1499,15 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          * @global null $moduleStyleFile
          * @global type $plainCmd
-         * @global type $plainSection 
+         * @global type $plainSection
          * @global type $themesPages
          * @global type $page_template
          */
         protected function preContentLoad() {
             global $moduleStyleFile, $plainCmd, $plainSection, $themesPages, $page_template;
-            
+
             $this->ch->callPreContentLoadHooks();
-            
+
             if ($this->mode == self::MODE_FRONTEND) {
                 // load content.html template (or customized version)
                 $this->template->setTemplate($themesPages['index']);
@@ -1523,7 +1523,7 @@ namespace Cx\Core\Core\Controller {
                 //replace the {NODE_<ID>_<LANG>}- placeholders
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
-                
+
                 $moduleStyleFile = null;
             } else if ($this->mode == self::MODE_BACKEND) {
                 // Skip the nav/language bar for modules which don't make use of either.
@@ -1534,7 +1534,7 @@ namespace Cx\Core\Core\Controller {
                 $plainSection = $plainCmd;
             }
         }
-        
+
         /**
          * Set main template placeholders required before parsing the content
          * @todo Does this even make any sense? Couldn't simply everything be set after content parsing?
@@ -1565,23 +1565,23 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * This parses the content
-         * 
+         *
          * This cannot be used in mode self::MODE_COMMAND, since content is added to template directly
          * @todo Write a method, that only returns the content, in order to allow usage in CLI mode
          * @todo Remove usage of globals
          * @global type $plainSection
-         * @global type $_ARRAYLANG 
+         * @global type $_ARRAYLANG
          */
         protected function loadContent() {
             global $plainSection, $_ARRAYLANG;
-            
+
             if ($this->mode == self::MODE_COMMAND) {
                 return;
             }
-            
+
             // init module language
             $_ARRAYLANG = \Env::get('init')->loadLanguageData($plainSection);
-            
+
             // load module
             if (empty($plainSection) && $this->mode != self::MODE_BACKEND) {
                 return;
@@ -1592,7 +1592,7 @@ namespace Cx\Core\Core\Controller {
 
             // This would be a postContentParseHook:
             \Message::show();
-            
+
             $this->ch->callPostContentParseHooks();
         }
 
@@ -1616,7 +1616,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Fetch the application template of a content page.
-         * @param \Cx\Core\ContentManager\Model\Enitty\Page $page The page object of which to fetch the application template from
+         * @param \Cx\Core\ContentManager\Model\Entity\Page $page The page object of which to fetch the application template from
          * @param String $component Optional argument to specify the component to load the template from, instead of using the page's module-attribute
          * @param String $themeType Optional argument to specify the output channel
          * @return String The content of the application template
@@ -1624,11 +1624,11 @@ namespace Cx\Core\Core\Controller {
         public static function getContentTemplateOfPage($page, $component = null, $themeType = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB) {
             try {
                 $component        = empty($component) ? $page->getModule() : $component;
-                $cmd              = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd()); 
+                $cmd              = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
                 $customAppTemplate= !$page->getApplicationTemplate() ? $cmd.'.html' : $page->getApplicationTemplate();
                 $moduleFolderName = contrexx_isCoreModule($page->getModule()) ? 'core_modules' : 'modules';
                 $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
-                
+
                 // use application template for all output channels
                 if ($page->getUseCustomApplicationTemplateForAllChannels() && $page->getSkin()) {
                     $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
@@ -1640,7 +1640,7 @@ namespace Cx\Core\Core\Controller {
                     $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
                     $themeFolderName = $themeRepo->getDefaultTheme($themeType, $page->getLang())->getFoldername();
                 }
-                
+
                 // load custom application template from page's theme
                 $themePath = \Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate;
                 if (file_exists($themePath)) {
@@ -1674,7 +1674,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $objCounter
          * @global type $objBanner
          * @global type $_CORELANG
-         * @return type 
+         * @return type
          */
         protected function setPostContentLoadPlaceholders() {
             global $_CONFIG, $themesPages, $objCounter, $objBanner, $_CORELANG;
@@ -1693,7 +1693,7 @@ namespace Cx\Core\Core\Controller {
                             '#^(\d+\.\d+)\.(\d+)$#',
                             '$1 Service Pack $2',
                             $_CONFIG['coreCmsVersion'])
-                    ), 
+                    ),
                     ENT_QUOTES,
                     CONTREXX_CHARSET
                 ) . ' ' .
@@ -1721,10 +1721,10 @@ namespace Cx\Core\Core\Controller {
                 ));
                 //show Feedback and help block
                 (\Permission::checkAccess(192, 'static', true)) ? $this->template->touchBlock('feedback_help') : $this->template->hideBlock('feedback_help');
-                
+
                 return;
             }
-            
+
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
@@ -1831,7 +1831,7 @@ namespace Cx\Core\Core\Controller {
                                                     </script>',
             ));
         }
-        
+
         /**
          * Calls hooks before finalize() is called
          */
@@ -2029,7 +2029,7 @@ namespace Cx\Core\Core\Controller {
 
 
                 //enable gzip compressing of the output - up to 75% smaller responses!
-                //commented out because of certain php.inis generating a 
+                //commented out because of certain php.inis generating a
                 //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
                 //ob_start("ob_gzhandler");
 
@@ -2038,9 +2038,9 @@ namespace Cx\Core\Core\Controller {
                 /*echo '<b>Overall time: ' . (microtime(true) - $timeAtStart) . 's<br />';
                 echo 'Max RAM usage: ' . formatBytes(memory_get_peak_usage()) . '<br />';
                 echo 'End RAM usage: ' . formatBytes(memory_get_usage()) . '<br /></b>';*/
-                
+
                 $endcode = $this->template->get();
-                
+
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
                     ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
@@ -2050,16 +2050,16 @@ namespace Cx\Core\Core\Controller {
                 echo $endcode;
             }
         }
-        
+
         /**
          * Calls hooks after call to finalize()
          */
         protected function postFinalize() {
             $this->ch->callPostFinalizeHooks();
         }
-        
+
         /* GETTERS */
-        
+
         /**
          * Returns the mode this instance of Cx is in
          * @return string One of 'cli', 'frontend', 'backend', 'minimal'
@@ -2067,7 +2067,7 @@ namespace Cx\Core\Core\Controller {
         public function getMode() {
             return $this->mode;
         }
-        
+
         /**
          * Returns the request URL
          * @return \Cx\Core\Routing\Url Request URL
@@ -2075,7 +2075,7 @@ namespace Cx\Core\Core\Controller {
         public function getRequest() {
             return $this->request;
         }
-        
+
         /**
          * Returns the main template
          * @return \Cx\Core\Html\Sigma Main template
@@ -2083,10 +2083,10 @@ namespace Cx\Core\Core\Controller {
         public function getTemplate() {
             return $this->template;
         }
-        
+
         /**
          * Returns the resolved page
-         * 
+         *
          * Please note, that this works only if mode is self::MODE_FRONTEND by now
          * If resolving has not taken place yet, null is returned
          * @return \Cx\Core\ContentManager\Model\Entity\Page Resolved page or null
@@ -2094,15 +2094,15 @@ namespace Cx\Core\Core\Controller {
         public function getPage() {
             return $this->resolvedPage;
         }
-        
+
         /**
-         * Returns the current user object 
+         * Returns the current user object
          * @return \FWUser Current user
          */
         public function getUser() {
             return \FWUser::getFWUserObject();
         }
-        
+
         /**
          * Returns the Contrexx event manager instance
          * @return \Cx\Core\Event\Controller\EventManager
@@ -2110,7 +2110,7 @@ namespace Cx\Core\Core\Controller {
         public function getEvents() {
             return $this->eventManager;
         }
-        
+
         /**
          * Returns the toolbox
          * @return \FWSystem Toolbox
@@ -2121,7 +2121,7 @@ namespace Cx\Core\Core\Controller {
             }
             return $this->toolbox;
         }
-        
+
         /**
          * Returns the database connection handler
          * @return \Cx\Core\Model\Db DB connection handler
@@ -2129,7 +2129,7 @@ namespace Cx\Core\Core\Controller {
         public function getDb() {
             return $this->db;
         }
-        
+
         /**
          * Returns the license for this instance
          * @return \Cx\Core_Modules\License\License
@@ -2137,7 +2137,7 @@ namespace Cx\Core\Core\Controller {
         public function getLicense() {
             return $this->license;
         }
-        
+
         /**
          * Return ClassLoader instance
          * @return \Cx\Core\ClassLoader\ClassLoader
@@ -2172,7 +2172,7 @@ namespace Cx\Core\Core\Controller {
         public function getConfigFolderName() {
             return self::FOLDER_NAME_CONFIG;
         }
-        
+
         /**
          * Return the folder name of the storage location of the core components(/core).
          * Formerly known as ASCMS_CORE_FOLDER.
@@ -2181,7 +2181,7 @@ namespace Cx\Core\Core\Controller {
         public function getCoreFolderName() {
             return self::FOLDER_NAME_CORE;
         }
-        
+
         /**
          * Return the folder name used to access the backend of the website (/cadmin).
          * Formerly known as ASCMS_BACKEND_PATH
@@ -2190,7 +2190,7 @@ namespace Cx\Core\Core\Controller {
         public function getBackendFolderName() {
             return self::FOLDER_NAME_BACKEND;
         }
-        
+
         /**
          * Return the folder name used for the core_modules storage location (/core_modules).
          * Formerly known as ASCMS_CORE_MODULE_FOLDER.
@@ -2199,7 +2199,7 @@ namespace Cx\Core\Core\Controller {
         public function getCoreModuleFolderName() {
             return self::FOLDER_NAME_CORE_MODULE;
         }
-        
+
         /**
          * Return the folder name used for the lib storage location (/lib).
          * Formerly known as ASCMS_LIBRARY_FOLDER.
@@ -2208,8 +2208,8 @@ namespace Cx\Core\Core\Controller {
         public function getLibraryFolderName() {
             return self::FOLDER_NAME_LIBRARY;
         }
-        
-        
+
+
         /**
          * Return the folder name used for the model storage location (/model).
          * Formerly known as ASCMS_MODEL_FOLDER.
@@ -2218,8 +2218,8 @@ namespace Cx\Core\Core\Controller {
         public function getModelFolderName() {
             return self::FOLDER_NAME_MODEL;
         }
-        
-        
+
+
         /**
          * Return the folder name used for the modules storage location (/modules).
          * Formerly known as ASCMS_MODULE_FOLDER.
@@ -2328,7 +2328,7 @@ namespace Cx\Core\Core\Controller {
         public function getCodeBaseAdminTemplatePath() {
             return $this->codeBaseAdminTemplatePath;
         }
-        
+
         /**
          * Return the offset path used to access the backend template
          * of the Code Base of the Contrexx installation
@@ -2348,7 +2348,7 @@ namespace Cx\Core\Core\Controller {
         public function getCodeBaseCoreModulePath() {
             return $this->codeBaseCoreModulePath;
         }
-        
+
         /**
          * Return the offset path of the core modules(core_modules) folder
          * of the Code Base of the Contrexx installation
@@ -2386,7 +2386,7 @@ namespace Cx\Core\Core\Controller {
         public function getCodeBaseModelPath() {
             return $this->codeBaseModelPath;
         }
-        
+
         /**
          * Return the absolute path of the module folder
          * of the Code Base of the Contrexx installation
@@ -2396,7 +2396,7 @@ namespace Cx\Core\Core\Controller {
         public function getCodeBaseModulePath() {
             return $this->codeBaseModulePath;
         }
-        
+
         /**
          * Return the offset path of the module folder
          * of the Code Base of the Contrexx installation
@@ -2470,9 +2470,9 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive3WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
-            
+
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
-            $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;    
+            $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
         }
 
         /**
@@ -2539,7 +2539,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteTempPath() {
             return $this->websiteTempPath;
         }
-        
+
         /**
          * Return the offset path to the temp storage location (/tmp)
          * of the associated Data repository of the website.
@@ -2549,7 +2549,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteTempWebPath() {
             return $this->websiteTempWebPath;
         }
-        
+
         /**
          * Return the relative path to the backend of the website (/cadmin).
          * @return string
@@ -2557,7 +2557,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteBackendPath() {
             return $this->websiteOffsetPath . self::FOLDER_NAME_BACKEND;
         }
-        
+
         /**
          * Return the absolute path to the themes storage location (/themes)
          * of the associated Data repository of the website.
@@ -2567,7 +2567,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteThemesPath() {
             return $this->websiteThemesPath;
         }
-        
+
         /**
          * Return the offset path to the themes storage location (/themes)
          * of the associated Data repository of the website.
@@ -2577,7 +2577,7 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteThemesWebPath() {
             return $this->websiteThemesWebPath;
         }
-        
+
          /**
          * Return the absolute path to the feed storage location (/feed)
          * of the Code Base of the Contrexx installation
@@ -2811,12 +2811,12 @@ namespace Cx\Core\Core\Controller {
         {
             return $this->websiteMediaarchive4WebPath;
         }
-        
+
         /**
          * Return the absolute path to the media FileSharing location (/FileSharing)
          * of the associated Data repository of the website.
          * Formerly known as ASCMS_FILESHARING_PATH.
-         * 
+         *
          * @return string
          */
         public function getWebsiteMediaFileSharingPath()
@@ -2828,7 +2828,7 @@ namespace Cx\Core\Core\Controller {
          * Return the offset path to the media FileSharing location (/FileSharing)
          * of the associated Data repository of the website.
          * Formerly known as ASCMS_FILESHARING_WEB_PATH.
-         * 
+         *
          * @return string
          */
         public function getWebsiteMediaFileSharingWebPath()
@@ -2851,28 +2851,28 @@ namespace Cx\Core\Core\Controller {
         {
             return $this->websiteImagesWebPath;
         }
-        
+
         /**
          * @return string
          */
         public function getWebsitePublicTempPath() {
             return $this->websitePublicTempPath;
         }
-        
+
         /**
          * @return string
          */
         public function getWebsitePublicTempWebPath() {
             return $this->websitePublicTempWebPath;
         }
-        
-        /** 
+
+        /**
          * @return int
          */
         public function getId() {
             return $this->id;
         }
-        
+
         public function getInstances() {
             return self::$instances;
         }
