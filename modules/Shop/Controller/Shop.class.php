@@ -29,6 +29,16 @@ namespace Cx\Modules\Shop\Controller;
  */
 class Shop extends ShopLibrary
 {
+    /**
+     * Name of the template block for Products
+     *
+     * If present in the main template, selected Products will be parsed.
+     * Optionally append "_category_X" with X being any Category ID.
+     * @see     ComponentController::preFinalize()
+     * @see     Shop::view_product_startpage()
+     */
+    const block_shop_products = 'block_shop_products';
+
     private static $defaultImage = '';
 
     /**
@@ -80,11 +90,10 @@ class Shop extends ShopLibrary
      */
     static function init()
     {
-
 //DBG::log("Shop::init(): Entered");
         if (self::$initialized) {
 die("Shop::init(): ERROR: Shop::init() called more than once!");
-        }        
+        }
         if (self::use_session()) {
             global $sessionObj;
             if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
@@ -98,6 +107,13 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             $_ARRAYLANG = array_merge($_ARRAYLANG,
                 $objInit->loadLanguageData('Shop'));
         }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        self::$defaultImage = file_exists(
+            $cx->getWebsiteImagesShopPath() . '/' . ShopLibrary::noPictureName)
+                ? $cx->getWebsiteImagesShopWebPath() . '/' .
+                    ShopLibrary::noPictureName
+                : $cx->getCodeBaseOffsetPath(). '/images/Shop/' .
+                    ShopLibrary::noPictureName;
         // Check session and user data, log in if present.
         // The Customer is required to properly calculate prices in the Cart
         self::_authenticate();
@@ -140,14 +156,10 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      */
     static function getPage($template)
     {
-//\DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
+//\DBG::activate(DBG_ERROR_FIREPHP);
 //\DBG::activate(DBG_LOG_FILE);
         self::init();
         self::registerJavascriptCode();
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        self::$defaultImage = file_exists($cx->getWebsiteImagesShopPath() . '/' . ShopLibrary::noPictureName) ? 
-                                $cx->getWebsiteImagesShopWebPath() . '/' . ShopLibrary::noPictureName : 
-                                $cx->getCodeBaseOffsetPath(). '/images/Shop/' . ShopLibrary::noPictureName;
         // PEAR Sigma template
         self::$objTemplate = new \Cx\Core\Html\Sigma('.');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -165,7 +177,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 // TODO: This should be set up in a more elegant way
         Vat::is_reseller(self::$objCustomer && self::$objCustomer->is_reseller());
         // The coupon code may be set when entering the Shop already
-        if (isset($_REQUEST['coupon_code'])) {            
+        if (isset($_REQUEST['coupon_code'])) {
             global $sessionObj;
             if (!$sessionObj) {
                 $sessionObj = \cmsSession::getInstance();
@@ -499,7 +511,7 @@ die("Failed to get Customer for ID $customer_id");
     {
         global $_ARRAYLANG, $themesPages;
 
-        if (!\Cx\Core\Setting\Controller\Setting::getValue('use_js_cart','Shop')) return;
+        if (!\Cx\Core\Setting\Controller\Setting::getValue('use_js_cart', 'Shop')) return;
         $objTemplate = new \Cx\Core\Html\Sigma('.');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $match = null;
@@ -547,7 +559,9 @@ die("Failed to get Customer for ID $customer_id");
             self::$use_js_cart = true;
             break;
         }
-        if (!self::$use_js_cart) return;
+        if (!self::$use_js_cart) {
+            return;
+        }
 
         self::registerJavascriptCode();
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_CART_IS_LOADING', $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] ,'shop/cart');
@@ -648,7 +662,7 @@ die("Failed to update the Cart!");
      *
      * Note that $full=true will not log the User off; it just flushes the
      * static Customer object.  That's somewhat experimental.
-     * @param   boolean   $logout   If true, drops the entire Shop session
+     * @param   boolean   $full     If true, drops the entire Shop session
      *                              and the Customer
      * @static
      */
@@ -813,6 +827,7 @@ die("Failed to update the Cart!");
             $description = nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET));
             $description = preg_replace('/[\n\r]/', '', $description);
             if (empty($arrDefaultImageSize)) {
+//\DBG::log("Shop::showCategories(): ".\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
                 $arrDefaultImageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
                 self::scaleImageSizeToThumbnail($arrDefaultImageSize);
             }
@@ -895,7 +910,7 @@ die("Failed to update the Cart!");
 
         // activate javascript shadowbox
         \JS::activate('shadowbox');
-        
+
         $flagSpecialoffer = intval(\Cx\Core\Setting\Controller\Setting::getValue('show_products_default','Shop'));
         if (isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'discounts') {
             $flagSpecialoffer = Products::DEFAULT_VIEW_DISCOUNTS;
@@ -922,19 +937,18 @@ die("Failed to update the Cart!");
         }
         // Validate parameters
         if ($product_id && empty($category_id)) {
-                $objProduct = Product::getById($product_id);
-                if ($objProduct) {
-                    $category_id = $objProduct->category_id();
-                }
+            $objProduct = Product::getById($product_id);
+            if ($objProduct) {
+                $category_id = $objProduct->category_id();
+            }
             if (isset($_SESSION['shop']['previous_category_id'])) {
                 $category_id_previous = $_SESSION['shop']['previous_category_id'];
                 foreach (preg_split('/\s*,\s*/', $category_id) as $id) {
-                    if ($category_id_previous == intval($id)){
+                    if ($category_id_previous == intval($id)) {
                         $category_id = $category_id_previous;
+                    }
+                }
             }
-        }
-            }
-
         }
         $objCategory = null;
         if ($category_id && empty($product_id)) {
@@ -1013,15 +1027,41 @@ die("Failed to update the Cart!");
         // The Product count is passed by reference and set to the total
         // number of records, though only as many as specified by the core
         // paging limit are returned in the array.
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_products_per_page_frontend','Shop');
-// TODO: Use Sorting class for the Product order
-        $order = \Cx\Core\Setting\Controller\Setting::getValue('product_sorting','Shop');
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_products_per_page_frontend', 'Shop');
+
+//\DBG::activate(DBG_ERROR_FIREPHP);
+        // Use Sorting class for the Product order
+        $uri = \Html::getRelativeUri_entities();
+        $arrOrder = array(
+            // Must be disambiguated from Category::ord using the table alias!
+            'product.ord' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'],
+            'name' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_TITLE'],
+            'code' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_CODE'],
+            // Note: The nonexistent "price" field will be substituted with
+            // the proper price for any Product and Customer.
+            'price' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_PRICE'],
+// TODO: Add creation and/or change date to Products.
+            // Substitute the ID which usually results in the same order
+            // as the creation date.
+            'id' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_DATE'],
+            // Adds the number of units sold as "bestseller" to the
+            // resulting dataset only if active!
+            'bestseller' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_BESTSELLER'],
+        );
+        $defaultOrder = \Sorting::getFieldindex(\Products::$arrProductOrder[
+            \Cx\Core\Setting\Controller\Setting::getValue(
+                'product_sorting', 'Shop')]);
+        $objSorting = new \Sorting(
+            $uri, $arrOrder, true, 'shop_order_products', $defaultOrder);
+//\DBG::log("Sorting headers: ".var_export($objSorting->getHeaderArray(), true));
+        $objSorting->parseHeaders(self::$objTemplate, 'shop_product_order');
+
         $count = $limit;
         $arrProduct = Products::getByShopParams(
             $count, \Paging::getPosition(),
             $product_id, $category_id, $manufacturer_id, $term,
             $flagSpecialoffer, $flagLastFive,
-            $order,
+            $objSorting->getOrder(),
             self::$objCustomer && self::$objCustomer->is_reseller()
         );
         if ($count == 0
@@ -1125,7 +1165,7 @@ die("Failed to update the Cart!");
                     // Use the first available picture in microdata, if any
                     if (!$havePicture) {
                         $picture_url = \Cx\Core\Routing\Url::fromCapturedRequest(
-                            \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $image['img'], 
+                            \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $image['img'],
                             \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath(), array());
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
@@ -1416,7 +1456,7 @@ die("Failed to update the Cart!");
                     'SHOP_PRODUCT_FLAG_IMAGE', $strImage
                 );
             }
-            
+
             $minimum_order_quantity = $objProduct->minimum_order_quantity();
             //Activate Quantity-Inputfield when minimum_order_quantity exists
             if (self::$objTemplate->blockExists('orderQuantity') && $minimum_order_quantity > 0) {
@@ -1426,8 +1466,8 @@ die("Failed to update the Cart!");
             } elseif (self::$objTemplate->blockExists('orderQuantity') && !$minimum_order_quantity){
                 self::$objTemplate->hideBlock('orderQuantity');
             }
-            
-            
+
+
             if (self::$objTemplate->blockExists('shopProductRow')) {
                 self::$objTemplate->parse('shopProductRow');
             }
@@ -1436,15 +1476,16 @@ die("Failed to update the Cart!");
         return true;
     }
 
-
     /**
+     * DEPRECATED and OBSOLETE. Use parse_products_blocks().
+     *
      * Sets up a Product list in the given template string with all Products
      * taken from the Category with the given ID
      *
      * Changes the $_REQUEST array temporarily and calls
      * {@see view_product_overview()}, then restores the original request.
      * On failure, the empty string is returned.
-     * @param   string      $objTemplate    The template string
+     * @param   string      $content        The template string
      * @param   integer     $category_id    The Category ID
      * @return  string                      The filled template string
      *                                      on success, the empty string
@@ -1470,6 +1511,45 @@ die("Failed to update the Cart!");
         return $content;
     }
 
+    /**
+     * Sets up a Product list in the given template
+     *
+     * If no Category ID is given, includes Products as indicated by the
+     * show_products_default setting.
+     * Otherwise, includes Products from the Category with the given ID.
+     * Note that you cannot use more than one such block per template!
+     * This would cause duplicate block names.
+     * Changes the $_REQUEST array temporarily and calls
+     * {@see view_product_overview()}, then restores the original request.
+     * @param   \Cx\Core\Html\Sigma $template       The template
+     * @param   integer             $category_id    The optional Category ID
+     * @return  \Cx\Core\Html\Sigma                 The parsed template
+     */
+    static function parse_products_blocks(\Cx\Core\Html\Sigma $template)
+    {
+        global $objInit, $_ARRAYLANG;
+
+        if (!\Cx\Core\Setting\Controller\Setting::init('Shop', 'config')) return false;
+        $_ARRAYLANG += $objInit->loadLanguageData('Shop');
+        $original_REQUEST = &$_REQUEST;
+        self::$objTemplate = $template;
+        $match = null;
+        foreach (array_keys($template->_blocks) as $block) {
+            // Match "block_shop_products" or "block_shop_products_category_X"
+            if (preg_match(
+                    '/^'.self::block_shop_products.'(?:_category_(\d+))?$/',
+                    $block, $match)) {
+                if (!self::$initialized) self::init();
+                $_REQUEST = array();
+                // You might add more parameters here!
+                if (isset($match[1])) $_REQUEST['catId'] = $match[1];
+                self::view_product_overview();
+                break;
+            }
+        }
+        $_REQUEST = &$original_REQUEST;
+        return $template;
+    }
 
     /**
      * Set up the HTML elements for all the Product Attributes of any Product.
@@ -1899,6 +1979,11 @@ die("Failed to update the Cart!");
         \JS::activate('cx');
         \JS::activate('jquery');
 
+// TODO: Fix this bug in \ContrexxJavascript::setVariable():
+//echo("TESTING<br />");
+//\ContrexxJavascript::getInstance()->setVariable('Test', $a['unset index'], 'shop');
+//die("Never reached!");
+
 // Update prices with options included
 // TODO Also consider Customer type (reseller, final customer)
         \ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_PRODUCT_ADDED_TO_CART', $_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'], 'shop');
@@ -1935,7 +2020,7 @@ die("Failed to update the Cart!");
     {
         if (self::$objCustomer) return true;
         $objUser = \FWUser::getFWUserObject()->objUser;
-        
+
         if ($objUser->login()) {
             self::$objCustomer = Customer::getById($objUser->getId());
             if (self::$objCustomer) {

@@ -258,8 +258,13 @@ $_ARRAYLANG['TXT_CORE_MONTH_ARRAY'] = "MONTH_0,Janvier,Février,Mars,Avril,Mai,J
 $_ARRAYLANG['TXT_CORE_PHONE'] = "Téléphone";
 $_ARRAYLANG['TXT_CORE_SEARCH'] = "Recherche";
 $_ARRAYLANG['TXT_CORE_SETTING_NAME'] = "Description";
-$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "assortir monant";
-$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "assortir descendant";
+
+// core Sorting
+$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "montant";
+$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "descendant";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_ASC'] = "%1\$s montant";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_DESC'] = "%1\$s descendant";
+
 $_ARRAYLANG['TXT_CORE_TODAY'] = "Aujourd'hui";
 $_ARRAYLANG['TXT_CORE_UNLIMITED'] = "illimité";
 $_ARRAYLANG['TXT_CORE_YEAR'] = "An";
