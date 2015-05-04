@@ -238,8 +238,10 @@ $_ARRAYLANG['TXT_CORE_FAX'] = "Telefax";
 $_ARRAYLANG['TXT_CORE_SEARCH'] = "Suchen";
 
 // core Sorting
-$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend sortieren";
-$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend sortieren";
+$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_ASC'] = "%1\$s aufsteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_DESC'] = "%1\$s absteigend";
 
 // core general (dates)
 $_ARRAYLANG['TXT_CORE_DAY'] = "Tag";

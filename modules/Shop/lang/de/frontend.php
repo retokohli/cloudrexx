@@ -1,4 +1,11 @@
 <?php
+/**
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_shop
+ */
 global $_ARRAYLANG;
 $_ARRAYLANG['TXT_SHOP_BUTTON_REGISTRATION'] = "Jetzt registrieren";
 $_ARRAYLANG['TXT_SHOP_BUTTON_NO_REGISTRATION'] = "Bestellen ohne Registrierung";
@@ -15,7 +22,7 @@ $_ARRAYLANG['SHOP_PASSWORD_CURRENT'] = "Aktuelles Kennwort";
 $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'] = "Geben Sie die E-Mail Adresse für Ihr Konto ein.<br />Ihnen wird anschliessend ein neues Kennwort zugeschickt.";
 $_ARRAYLANG['SHOP_PASSWORD_NEW'] = "Neues Kennwort";
 $_ARRAYLANG['TXT_ACCEPT_AGB'] = "Bitte bestätigen Sie die Akzeptanz der allgemeinen Geschäftsbedingungen.";
-$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=Agb\" target=\"_blank\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
+$_ARRAYLANG['TXT_ACCEPT_TAC'] = "Ich bestätige die Richtigkeit der gemachten Angaben und die <a href=\"index.php?section=agb\" target=\"_blank\">Geschäftsbedingungen</a> zu kennen und akzeptiere diese.";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Kreditinstitut";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bankleitzahl (BLZ)";
 $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Kontoinhaber";
@@ -86,7 +93,7 @@ $_ARRAYLANG['TXT_PASSWORD'] = "Passwort";
 $_ARRAYLANG['TXT_PASSWORD_MIN_CHARS'] = "Bitte wählen Sie ein Passwort mit mindestens 6 Zeichen.";
 $_ARRAYLANG['TXT_PAYMENT_LSV'] = "Lastschrift (LSV)";
 $_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "Gebühr für LSV";
-$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Wichtig: Füllen Sie <a href='index.php?section=Shop&cmd=lsv_form' target='_blank'>das Formular 'Einzugsermächtigung'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
+$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Wichtig: Füllen Sie <a href='index.php?section=shop&cmd=lsv_form' target='_blank'>das Formular 'Einzugsermächtigung'</a> aus, und faxen oder schicken Sie es ausgefüllt und unterzeichnet an uns. Dort finden Sie auch unsere Faxnummer und Anschrift.<br />Wenn wir den Rechnungsbetrag Ihrem Konto belasten können, werden wir Ihnen die Bestellung zustellen.<br />";
 $_ARRAYLANG['TXT_PAYMENT_TYPE'] = "Zahlungsart";
 $_ARRAYLANG['TXT_PAYMENT_TYPES'] = "Zahlungsarten";
 $_ARRAYLANG['TXT_PAYPAL_SUBMIT'] = "Sie werden nun automatisch zu PayPal weitergeleitet. Falls die Weiterleitung bei Ihnen nicht klappt, klicken sie hier:";
@@ -335,7 +342,6 @@ $_ARRAYLANG['TXT_SHOP_SAFERPAY_INIT_ERROR'] = "Die Bezahlung mit SaferPay konnte
 $_ARRAYLANG['TXT_SHOP_SALUTATION_GENDER_FEMALE'] = "Sehr geehrte %4\$s %1\$s %2\$s";
 $_ARRAYLANG['TXT_SHOP_SALUTATION_GENDER_MALE'] = "Sehr geehrter %4\$s %1\$s %2\$s";
 $_ARRAYLANG['TXT_SHOP_SALUTATION_GENDER_UNDEFINED'] = "Sehr geehrte %4\$s";
-$_ARRAYLANG['TXT_SHOP_SEARCH'] = "Aktualisieren";
 $_ARRAYLANG['TXT_SHOP_SEARCH'] = "Suchen";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_CONDITIONS'] = "Lieferbedingungen:";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_COUNTRIES'] = "Lieferländer";
@@ -387,20 +393,15 @@ $_ARRAYLANG['TXT_WEIGHT'] = "Gewicht";
 $_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED'] = "Ungültiges Gewicht; Änderung ignoriert!";
 $_ARRAYLANG['TXT_YOUR_ACCOUNT_DETAILS'] = "Ihre persönlichen Zugangsdaten";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
-// 20120726
 $_ARRAYLANG['TXT_SHOP_FORM_RESET_CONFIRM'] = "Bestätigen Sie bitte, dass Sie Ihre Eingaben zurückgesetzt werden sollen.";
-// 20120808
-$_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?section=Shop&amp;cmd=terms\" target=\"_blank\">Widerrufsbelehrung</a> habe ich zur Kenntnis genommen.";
+$_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?section=shop&amp;cmd=terms\" target=\"_blank\">Widerrufsbelehrung</a> habe ich zur Kenntnis genommen.";
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";
-// 20120914
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Hersteller";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Ohne Registrierung bestellen";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_REGISTER_NOW'] = "Jetzt registrieren";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Markieren Sie dieses Kästchen, wenn Sie ohne Registrierung bestellen möchten.";
 $_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Gebührenfrei ab";
-// 20130111
 $_ARRAYLANG['TXT_SHOP_PRICE_ONLY'] = "nur";
-
 // Mengenrabatte: ab 1 rez: 1.00%, ab 2 rez: 2.00%, ab 3 rez: 3.00%, ab 4 rez: 4.00%
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_LIST_FORMAT'] = "
 <h3 class=\"discount_count_title\">Mengenrabatte</h3>
@@ -413,8 +414,6 @@ $_ARRAYLANG['TXT_SHOP_ORDER_DATE'] = "Datum";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER'] = "Kunde";
 $_ARRAYLANG['TXT_SHOP_ORDER_SUM'] = "Total";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS'] = "Status";
-//$_ARRAYLANG['TXT_SHOP_ORDER_STATUS_PLEASE_CHOOSE'] = "";
-//$_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER'] = "";
 $_ARRAYLANG['TXT_ORDER_COMPLETE'] = "TXT_ORDER_COMPLETE";
 $_ARRAYLANG['TXT_CUSTOMER_TYP'] = "TXT_CUSTOMER_TYP";
 $_ARRAYLANG['TXT_CUSTOMER'] = "TXT_CUSTOMER";
@@ -425,17 +424,13 @@ $_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
 $_ARRAYLANG['TXT_SHOP_ORDER'] = "Ihre Bestellung";
 $_ARRAYLANG['TXT_SHOP_ORDER_NOTES'] = "TXT_SHOP_ORDER_NOTES";
 $_ARRAYLANG['TXT_SHOP_ALL'] = "TXT_SHOP_ALL";
-
 $_ARRAYLANG['TXT_SHOP_ORDER_DETAILS_VIEW'] = "Details anzeigen";
 $_ARRAYLANG['TXT_SHOP_ORDER_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_SHOP_ORDER_REPEAT'] = "Bestellung wiederholen";
 $_ARRAYLANG['TXT_SHOP_ORDER_RESTORE'] = "Bestellung bearbeiten";
-
 $_ARRAYLANG['TXT_SHOW_DETAILS'] = "TXT_SHOW_DETAILS";
-//$_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED'] = "";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_NOT_FOUND'] = "TXT_SHOP_PRODUCT_NOT_FOUND";
 $_ARRAYLANG['TXT_SHOP_VALIDITY'] = "TXT_SHOP_VALIDITY";
-
 $_ARRAYLANG['TXT_SHOP_ORDER_ID'] = "Bestellnummer";
 $_ARRAYLANG['TXT_SHOP_ITEM_PRICE'] = "Stückpreis";
 $_ARRAYLANG['TXT_SHOP_ITEM_SUM'] = "TXT_SHOP_ITEM_SUM";
@@ -461,14 +456,12 @@ $_ARRAYLANG['TXT_SHOP_OPTION_CART_FORMAT_JOINER'] = ", ";
 $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT'] = "%1\$s&nbsp;(%2\$01.2f&nbsp;%4\$s)";
 $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT_JOINER'] = ", ";
 $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_PRODUCT'] = "Wollen Sie diesen Artikel wirklich aus dem Warenkorb entfernen?";
-// 20130523
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT'] = "Der eingegebene Gutscheincode ist für diese Produkte nicht gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PAYMENT'] = "Der eingegebene Gutscheincode ist für diese Bezahlmethode nicht gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET'] = "Der eingegebene Gutscheincode ist noch nicht gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY'] = "Der eingegebene Gutscheincode ist nicht mehr gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP'] = "Der eingegebene Gutscheincode wurde bereits verwendet und ist nicht mehr gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'] = "Der eingegebene Gutscheincode ist erst ab einer Bestellsumme von %2\$s %1\$.2f gültig";
-// 3.1.0
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'] = "Achtung!<br />Der Gesamtbetrag Ihrer Bestellung erreicht nicht den Mindestbestellwert von %2\$s %1\$0.2f.";
 $_ARRAYLANG['TXT_SHOP_CREDIT_CARD_NUMBER'] = "Kartennummer";
 $_ARRAYLANG['TXT_SHOP_CVC'] = "Prüfziffer (CVC)";
@@ -476,19 +469,26 @@ $_ARRAYLANG['TXT_SHOP_CARD_HOLDER'] = "Kreditkarten-Inhaber";
 $_ARRAYLANG['TXT_SHOP_CARD_EXPIRY'] = "Karte gültig bis";
 $_ARRAYLANG['TXT_SHOP_BUY_NOW'] = "Zahlungspflichtig bestellen";
 $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_HOLDER'] = "Invalid Card holder name";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_CVC']    = "Invalid CVC number";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_CVC'] = "Invalid CVC number";
 $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_NUMBER'] = "Invalid Card number";
 $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_EXPIRY_DATE'] = "Invalid expiry date";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_ACC_NUMBER']  = "Invalid Account Number";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BANK_CODE']   = "Invalid Bank code";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_IBAN']        = "Please enter a valid IBAN.";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BIC']         = "Please enter a valid BIC.";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_ACCOUNT_NUMBER']  = "Konto Nr.";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_BANK_CODE']       = "Bankleitzahl";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_IBAN']                = "IBAN";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_BIC']                 = "BIC";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_ACCOUNT_HOLDER']      = "Kontoinhaber";
-$_ARRAYLANG['TXT_SHOP_CVC_TOOLTIP']                 = "Hinter dem CVV-Code bzw. CVC verbirgt sich ein Sicherheitsmerkmal von Kreditkarten, &uuml;blicherweise handelt es sich dabei um eine drei- bis vierstelligen Nummer. Der CVV-Code befindet sich auf VISA-Kreditkarten. Der gleiche Code ist auch auf MasterCard-Kreditkarten zu finden, hier allerdings unter dem Namen CVC. Die Abk&uuml;rzung CVC steht dabei f&uuml;r Card Validation Code. Bei VISA wird der Code als Card Verification Value-Code bezeichnet. &Auml;hnlich wie bei Mastercard und VISA gibt es auch bei Diners Club, Discover und JCB eine dreistellige  Nummer, die meist auf der R&uuml;ckseite der Karte zu finden ist. Bei Maestro-Karten gibt es mit und ohne dreistelligen CVV. Wird eine Maestro-Karte ohne CVV verwendet kann einfach 000 eingetragen werden. American Express verwendet die CID (Card Identification Number). Dabei handelt es sich um eine vierstellige Nummer, die meist auf der Vorderseite der Karte, rechts oberhalb der Kartennummer zu finden ist.";
-$_ARRAYLANG['TXT_SHOP_ORDER_QUANTITY']                    = "Menge";
-$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY']            = "Mindestbestellmenge";
-$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY_ERROR']      = "Die Bestellmenge entspricht nicht der Mindestbestellmenge.";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_ACC_NUMBER'] = "Invalid Account Number";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BANK_CODE'] = "Invalid Bank code";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_IBAN'] = "Please enter a valid IBAN.";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BIC'] = "Please enter a valid BIC.";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_ACCOUNT_NUMBER'] = "Konto Nr.";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_BANK_CODE'] = "Bankleitzahl";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_IBAN'] = "IBAN";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_BIC'] = "BIC";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_ACCOUNT_HOLDER'] = "Kontoinhaber";
+$_ARRAYLANG['TXT_SHOP_CVC_TOOLTIP'] = "Hinter dem CVV-Code bzw. CVC verbirgt sich ein Sicherheitsmerkmal von Kreditkarten, &uuml;blicherweise handelt es sich dabei um eine drei- bis vierstelligen Nummer. Der CVV-Code befindet sich auf VISA-Kreditkarten. Der gleiche Code ist auch auf MasterCard-Kreditkarten zu finden, hier allerdings unter dem Namen CVC. Die Abk&uuml;rzung CVC steht dabei f&uuml;r Card Validation Code. Bei VISA wird der Code als Card Verification Value-Code bezeichnet. &Auml;hnlich wie bei Mastercard und VISA gibt es auch bei Diners Club, Discover und JCB eine dreistellige  Nummer, die meist auf der R&uuml;ckseite der Karte zu finden ist. Bei Maestro-Karten gibt es mit und ohne dreistelligen CVV. Wird eine Maestro-Karte ohne CVV verwendet kann einfach 000 eingetragen werden. American Express verwendet die CID (Card Identification Number). Dabei handelt es sich um eine vierstellige Nummer, die meist auf der Vorderseite der Karte, rechts oberhalb der Kartennummer zu finden ist.";
+$_ARRAYLANG['TXT_SHOP_ORDER_QUANTITY'] = "Menge";
+$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY'] = "Mindestbestellmenge";
+$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY_ERROR'] = "Die Bestellmenge entspricht nicht der Mindestbestellmenge.";
+// Headers for Product ordering in list view
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'] = "Vorgabe";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_TITLE'] = "Produktname";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_CODE'] = "Artikelnummer";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_PRICE'] = "Preis";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_DATE'] = "Erstelldatum";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_BESTSELLER'] = "Beliebtheit";

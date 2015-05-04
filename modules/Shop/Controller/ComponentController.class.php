@@ -1,7 +1,7 @@
 <?php
 /**
  * Main controller for Shop
- * 
+ *
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
@@ -12,7 +12,7 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Main controller for Shop
- * 
+ *
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
@@ -27,7 +27,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
      /**
      * Load your component.
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -58,7 +58,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     /**
      * Do something after content is loaded from DB
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -78,10 +78,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
-    
+
     /**
      * Do something for search the content
-     * 
+     *
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -89,4 +89,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cx->getEvents()->addEventListener('SearchFindContent',$eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }
+
+    public function preFinalize(\Cx\Core\Html\Sigma $template)
+    {
+        if (    \Cx\Core\Core\Controller\Cx::instanciate()->getMode()
+            !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+        Shop::parse_products_blocks($template);
+    }
+
 }
