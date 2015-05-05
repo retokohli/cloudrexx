@@ -624,7 +624,7 @@ function deselectAll(control){
     }
 }
 var defaultLang = '$_LANGID';
-var activeLang = new Array($arrActiveLang);
+var activeLang = [$arrActiveLang];
 \$J(function(){
     \$J('.mediadirInputfieldDefault').each(function(){
         id = \$J(this).data('id');
