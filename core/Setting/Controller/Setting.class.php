@@ -1,6 +1,6 @@
 <?php
 /**
- * Manages settings stored in the database or file system    
+ * Manages settings stored in the database or file system
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
@@ -10,11 +10,11 @@
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */
- 
+
 namespace Cx\Core\Setting\Controller;
 
 /**
- * Manages settings stored in the database or file system    
+ * Manages settings stored in the database or file system
  *
  * Before trying to access a modules' settings, *DON'T* forget to call
  * {@see Setting::init()} before calling getValue() for the first time!
@@ -25,12 +25,12 @@ namespace Cx\Core\Setting\Controller;
  * @package     contrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
- */ 
+ */
 class SettingException extends \Exception {}
 
 
 /**
- * Manages settings stored in the database or file system    
+ * Manages settings stored in the database or file system
  *
  * Before trying to access a modules' settings, *DON'T* forget to call
  * {@see Setting::init()} before calling getValue() for the first time!
@@ -41,17 +41,17 @@ class SettingException extends \Exception {}
  * @package     contrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
- */ 
+ */
 class Setting{
-     
+
     /**
-     * Upload path for documents    
+     * Upload path for documents
      * Used externally only, see hotelcard module for an example.
      */
     const FILEUPLOAD_FOLDER_PATH = 'media';
 
     /**
-     * Setting types    
+     * Setting types
      * See {@see show()} for examples on how to extend these.
      */
     const TYPE_DROPDOWN = 'dropdown';
@@ -83,14 +83,14 @@ class Setting{
     const REPOPULATE = 2;
 
     /**
-     * Default width for input fields   
+     * Default width for input fields
      *
      * Note that textareas often use twice that value.
      */
     const DEFAULT_INPUT_WIDTH = 300;
 
     const TYPE_PASSWORD = 'password';
-    
+
     public static $arrSettings = array();
     protected static $engines = array(
 	'Database' => '\Cx\Core\Setting\Model\Entity\DbEngine',
@@ -103,10 +103,10 @@ class Setting{
     protected static $group = null;
     protected static $tab_index = 1;
     protected static $instanceId = null;
-    
-    
+
+
     /**
-     * Returns the current value of the changed flag.    
+     * Returns the current value of the changed flag.
      *
      * If it returns true, you probably want to call {@see updateAll()}.
      * @return  boolean           True if values have been changed in memory,
@@ -121,7 +121,7 @@ class Setting{
         return $engine->changed();
     }
     /**
-     * Optionally sets and returns the value of the tab index    
+     * Optionally sets and returns the value of the tab index
      * @param   integer  $tab_index The optional new tab index
      * @return  integer             The current tab index
      */
@@ -134,7 +134,7 @@ class Setting{
         return $engine->tab_index($tab_index);
     }
     /**
-     * Initialize the settings entries from the database with key/value pairs    
+     * Initialize the settings entries from the database with key/value pairs
      * for the current section and the given group
      *
      * An empty $group value is ignored.  All records with the section are
@@ -148,12 +148,12 @@ class Setting{
      * @param   string    $group      The optional group.
      *                                Defaults to null
      * @param   string    $engine     The Engine type Database or File system
-     *                                Default to set Database 
+     *                                Default to set Database
      * @param   string    $fileSystemConfigRepository     An optional path
      *                                to the storage location of config files (/config) which shall be used for the engine 'File System'.
-     *                                Default to set Database 
-     * @param   int       $populate   Defines behavior of what to do when section already exists; NOT_POPULATE(0) - return, 
-     *                                POPULATE(1) - add elements to existing array; REPOPULATE(2) - replace, set by default; 
+     *                                Default to set Database
+     * @param   int       $populate   Defines behavior of what to do when section already exists; NOT_POPULATE(0) - return,
+     *                                POPULATE(1) - add elements to existing array; REPOPULATE(2) - replace, set by default;
      * @return  boolean               True on success, false otherwise
      * @global  ADOConnection   $objDatabase
      */
@@ -163,7 +163,7 @@ class Setting{
             $engineType = self::getEngineType();
             $engine = self::getSectionEngine();
             /*$callers=debug_backtrace();
-            \DBG::log('*** INIT:' . $callers[1]['class'] . ' Line ' . $callers[1]['line'] . ':' . "\r\n" 
+            \DBG::log('*** INIT:' . $callers[1]['class'] . ' Line ' . $callers[1]['line'] . ':' . "\r\n"
                     . ' Pop.mode: ' . $populate . ' (0 - ignore, 1 - add, 2 - replace) ' . "\r\n"
                     . ' Section: ' . self::$section . "\r\n"
                     . ' Engine: ' . self::$engine . "\r\n"
@@ -171,12 +171,12 @@ class Setting{
                     . ' Repo: ' .  $fileSystemConfigRepository . "\r\n"
                 . ' ***');*/
             if ($populate || $engine == null || $engine->getArraySetting() == null || $fileSystemConfigRepository) {
-                $oSectionEngine = new $engineType(); 
+                $oSectionEngine = new $engineType();
                 $oSectionEngine->init($section, $group, $fileSystemConfigRepository);
                 if ($fileSystemConfigRepository) {
                     $populate = self::REPOPULATE;
                 }
-                self::setSectionEngine($oSectionEngine, $populate); 
+                self::setSectionEngine($oSectionEngine, $populate);
             }
         } else{
             throw new SettingException('Invalid engine supplied');
@@ -217,14 +217,14 @@ class Setting{
         if ($engine == null) {
             return false;
         }
-        return $engine->getArray($section,$group);        
+        return $engine->getArray($section,$group);
     }
     /**
      * Returns the settings value stored in the section for the name given.
      *
      * If section name is null, the value is retrieved from the default section;
      * If section name is not null, but not initialized, initialize it first.
-     * 
+     *
      * If the settings have not been initialized (see {@see init()}), or
      * if no setting of that name is present in the current set, null
      * is returned.
@@ -240,15 +240,15 @@ class Setting{
             /* if section is empty - initializin section first*/
             if (empty($aSectionEngine)) {
                 $oldsection = self::$section;
-                self::$section = $section;                
+                self::$section = $section;
                 $engineType = self::getEngineType();
-                $oSectionEngine = new $engineType(); 
+                $oSectionEngine = new $engineType();
                 $oSectionEngine->init($section, null, self::$engine);
-                self::setSectionEngine($oSectionEngine, self::POPULATE); 
+                self::setSectionEngine($oSectionEngine, self::POPULATE);
                 self::$section = $oldsection;
             }
         }
-        
+
         $engine = self::getSectionEngine($section);
         if ($engine == null) {
             return false;
@@ -291,7 +291,7 @@ class Setting{
         if ($engine == null) {
             return false;
         }
-        return $engine->set($name, $value); 
+        return $engine->set($name, $value);
     }
     /**
      * Stores all settings entries present in the $arrSettings object
@@ -309,7 +309,7 @@ class Setting{
      */
     static function updateAll()
     {
-        $engine = self::getSectionEngine(); 
+        $engine = self::getSectionEngine();
         if ($engine == null) {
             return false;
         }
@@ -356,7 +356,7 @@ class Setting{
      *                              defaults to the empty string
      * @param   string    $group    The optional group
      * @return  boolean             True on success, false otherwise
-     */ 
+     */
     static function add( $name, $value, $ord = false, $type = 'text', $values = '', $group = null)
     {
         $engine=self::getSectionEngine();
@@ -366,20 +366,20 @@ class Setting{
         if ($group == null) {
             $group = self::$group;
         }
-        return $engine->add( $name, $value, $ord, $type, $values, $group);  
+        return $engine->add( $name, $value, $ord, $type, $values, $group);
 
     }
-    
+
     static function setGroup()
     {
-         return self::$group;       
-    } 
-    
+         return self::$group;
+    }
+
     static function getGroup()
     {
         return self::$group;
     }
-    
+
     /**
      * Delete one or more records from the database table
      *
@@ -454,12 +454,12 @@ class Setting{
      *          that store them, like add(), update(), and updateAll()
      * @adding tooltip   A tooltip for a configuration option can be defined by simply
      *                   adding a language variable in the corresponding language
-     *                   file, that uses the same key as used for 
-     *                   the configuration variable itself, but with the suffix _TOOLTIP 
-     *                   I.e. if the language variable for an option is TXT_CORE_MODULE_MULTISITE_INSTANCESPATH, 
+     *                   file, that uses the same key as used for
+     *                   the configuration variable itself, but with the suffix _TOOLTIP
+     *                   I.e. if the language variable for an option is TXT_CORE_MODULE_MULTISITE_INSTANCESPATH,
      *                   then the option's tooltip language variable key would be TXT_CORE_MODULE_MULTISITE_INSTANCESPATH_TOOLTIP
      */
-    static function show(&$objTemplateLocal, $uriBase, $section = '', $tab_name = '', $prefix = 'TXT_', $readOnly = false) 
+    static function show(&$objTemplateLocal, $uriBase, $section = '', $tab_name = '', $prefix = 'TXT_', $readOnly = false)
     {
         global $_CORELANG;
         $arrSettings = self::getCurrentSettings();
@@ -474,7 +474,7 @@ class Setting{
 
         if ($objTemplateLocal->blockExists('core_setting_row')){
                 $objTemplateLocal->setCurrentBlock('core_setting_row');
-        }        
+        }
         if (!is_array($arrSettings)) {
             return \Message::error($_CORELANG['TXT_CORE_SETTING_ERROR_RETRIEVING']);
         }
@@ -489,7 +489,7 @@ class Setting{
         // The tabindex must be set in the form name in any case
         $objTemplateLocal->setGlobalVariable(
             'CORE_SETTING_TAB_INDEX', self::$tab_index);
-        // Set up tab, if any        
+        // Set up tab, if any
         if (!empty($tab_name)) {
             $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
@@ -536,7 +536,7 @@ class Setting{
      */
     static function show_section(&$objTemplateLocal, $section = '', $prefix = 'TXT_', $readOnly = false)
     {
-        global $_ARRAYLANG, $_CORELANG; 
+        global $_ARRAYLANG, $_CORELANG;
         $arrSettings = self::getCurrentSettings();
         self::verify_template($objTemplateLocal);
         // This is set to multipart if necessary
@@ -570,11 +570,12 @@ class Setting{
             switch ($type) {
               // Dropdown menu
               case self::TYPE_DROPDOWN:
+                $matches = null;
                 if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
                     $arrValues = self::splitValues(call_user_func($matches[1]));
                 } else {
                     $arrValues = self::splitValues($arrSetting['values']);
-                } 
+                }
 //DBG::log("Values: ".var_export($arrValues, true));
                 $element = \Html::getSelect(
                     $name, $arrValues, $value,
@@ -698,12 +699,12 @@ class Setting{
                 $element =
                     \Html::getInputPassword($name, $value, 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
                 break;
-                
+
                 //datepicker
                 case self::TYPE_DATE:
                     $element = \Html::getDatepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
                     break;
-                //datetimepicker    
+                //datetimepicker
                 case self::TYPE_DATETIME:
                     $element = \Html::getDatetimepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
                     break;
@@ -720,7 +721,7 @@ class Setting{
                         '"'.
                         ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
             }
-            
+
             //add Tooltip
             $toolTips='';
             $toolTipsHelp ='';
@@ -767,8 +768,8 @@ class Setting{
      * @return  boolean                                 True on success
      */
     static function show_external( &$objTemplateLocal, $tab_name, $content)
-    {   
-        if (empty($objTemplateLocal)|| !$objTemplateLocal->blockExists('core_setting_row')) 
+    {
+        if (empty($objTemplateLocal)|| !$objTemplateLocal->blockExists('core_setting_row'))
         {
             $objTemplateLocal = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Setting/View/Template/Generic');
             if (!$objTemplateLocal->loadTemplateFile('Form.html'))
@@ -782,7 +783,7 @@ class Setting{
                                                     'CORE_SETTING_EXTERNAL' => $content,
                                                 ));
         // Set up the tab, if any
-        if (!empty($tab_name)) 
+        if (!empty($tab_name))
         {
             $objTemplateLocal->setGlobalVariable(array(
                                                         'CORE_SETTING_TAB_NAME' => $tab_name,
@@ -836,7 +837,7 @@ class Setting{
 
         //echo("self::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
         //echo("self::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
-        
+
         // There may be several tabs for different groups being edited, so
         // load the full set of settings for the module.
         // Note that this is why setting names should be unique.
@@ -914,7 +915,7 @@ class Setting{
                 }
                 //\DBG::log('setting value ' . $name . ' = ' . $value);
                 self::set($name, $value);
-            }    
+            }
         }
         //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
         $result_update = self::updateAll();
@@ -932,7 +933,7 @@ class Setting{
         return false;
     }
     /**
-     * Deletes all entries for the current section    
+     * Deletes all entries for the current section
      *
      * This is for testing purposes only.  Use with care!
      * The static $section determines the module affected.
@@ -945,9 +946,9 @@ class Setting{
             return false;
         }
         return $engine->deleteModule();
-    } 
+    }
     /**
-     * Splits the string value at commas and returns an array of strings    
+     * Splits the string value at commas and returns an array of strings
      *
      * Commas escaped by a backslash (\) are ignored and replaced by a
      * single comma.
@@ -990,7 +991,7 @@ class Setting{
         return $arrValues;
     }
     /**
-     * Joins the strings in the array with commas into a single values string    
+     * Joins the strings in the array with commas into a single values string
      *
      * Commas within the strings are escaped by a backslash (\).
      * The array keys are prepended to the values, separated by a colon.
@@ -1013,7 +1014,7 @@ class Setting{
         return $strValues;
     }
     /**
-     * Should be called whenever there's a problem with the settings table    
+     * Should be called whenever there's a problem with the settings table
      *
      * Tries to fix or recreate the settings table.
      * @return  boolean             False, always.
@@ -1024,11 +1025,11 @@ class Setting{
         $engine = self::getSectionEngine();
         if ($engine == null) {
             return false;
-        }        
-        return $engine->errorHandler(); 
+        }
+        return $engine->errorHandler();
     }
     /**
-     * Returns the settings from the old settings table for the given module ID,    
+     * Returns the settings from the old settings table for the given module ID,
      * if available
      *
      * If the module ID is missing or invalid, or if the settings cannot be
@@ -1063,17 +1064,17 @@ class Setting{
         return $arrConfig;
     }
 
-    
+
     /**
      * Returns engine from section
-     * 
+     *
      * @param type $section
      * @param type $engine
      * @return type
      * @throws Exception
      */
     static function getSectionEngine($section = null, $engine = null)
-    {  
+    {
         if ($section == null) {
             $section = self::$section;
         }
@@ -1091,15 +1092,15 @@ class Setting{
         // \DBG::log("Section engine don't exist. Section: $section, Engine: $engine");
         return null;
     }
-    
+
     /**
      * Sets engine of section.
-     * 
+     *
      * If engine of section already exists - acts depending of $populate behavior:
      * NOT_POPULATE(0) - return;
      * POPULATE(1) - add elements to existing array
      * REPOPULATE(2) - replaces section with one given
-     * 
+     *
      * @param  object  $oSectionEngine
      * @param  type    $populate
      */
@@ -1111,42 +1112,41 @@ class Setting{
         }
         if (isset(self::$arrSettings[self::getInstanceId()][self::$section][self::$engine])) {
             switch ($populate) {
-                case self::NOT_POPULATE: return;
-                    break;
+                case self::NOT_POPULATE:
+                    return;
                 case self::POPULATE:
                     foreach($oSectionEngine->getArraySetting() as $itemName => $item) {
                         self::addToArray($itemName, $item);
                     }
                     return;
-                    break;
                 case  self::REPOPULATE:
-                    self::$arrSettings[self::getInstanceId()][self::$section][self::$engine] = $oSectionEngine; 
+                    self::$arrSettings[self::getInstanceId()][self::$section][self::$engine] = $oSectionEngine;
                     return;
             }
         }
-        self::$arrSettings[self::getInstanceId()][self::$section][self::$engine] = $oSectionEngine;        
+        self::$arrSettings[self::getInstanceId()][self::$section][self::$engine] = $oSectionEngine;
     }
 
     /**
-     * Set engineType    
+     * Set engineType
      *
      * @param string $engine
      */
     static function setEngineType($section, $engine, $group = null)
-    { 
+    {
         if (empty($section)) die('missing section parameter');
         if (isset(self::$engines[$engine])) {
-            self::$engine = $engine; 
-            self::$section = $section; 
+            self::$engine = $engine;
+            self::$section = $section;
             self::$group = $group;
             if (!isset(self::$arrSettings[self::getInstanceId()][$section]['default_engine'])) {
                 self::$arrSettings[self::getInstanceId()][$section]['default_engine'] = $engine;
-            }          
+            }
             return true;
 	}
 	return false;
-    }    
-    
+    }
+
     /**
      * Retuns class of the engine
      * @return type
@@ -1155,7 +1155,7 @@ class Setting{
     {
         return self::$engines[self::$engine];
     }
-    
+
     /**
      * Returns current Engine name
      * @return type
@@ -1164,55 +1164,55 @@ class Setting{
     {
         return self::$engine;
     }
-    
+
     /**
      * Returns current Section name
      * @return string
      */
-    static function getCurrentSection() 
+    static function getCurrentSection()
     {
         return self::$section;
-    } 
-    
+    }
+
     /**
      * Returns current group name
      * @return type
      */
-    static function getCurrentGroup() 
+    static function getCurrentGroup()
     {
         return self::$group;
     }
-    
-    /** 
+
+    /**
      * Adds element to array
-     * 
+     *
      * @param  string  $name
      * @param  string  $value
      * @return boolean
      */
     static function addToArray($name, $value) {
-        $engine=self::getSectionEngine(); 
+        $engine=self::getSectionEngine();
         if ($engine == null) {
             return false;
         }
-        return $engine->addToArray($name, $value); 
+        return $engine->addToArray($name, $value);
     }
-    
+
     /**
-     * 
-     * Enhanced method of getting settins by section, engine and group; 
+     *
+     * Enhanced method of getting settins by section, engine and group;
      * Recommended for use in future; getArray() is just for backward compatibility
      * @param type $section
      * @param type $engine
      * @param type $group
      * @return boolean
      */
-    static function getSettings($section = null, $engine = null, $group = null) 
+    static function getSettings($section = null, $engine = null, $group = null)
     {
         if ($section == null) {
             return self::$arrSettings[self::getInstanceId()];
         }elseif ($engine == null) {
-            return self::$arrSettings[self::getInstanceId()][$section];        
+            return self::$arrSettings[self::getInstanceId()][$section];
         } else {
             $engine = self::getSectionEngine($section, $engine);
             if ($engine == null) {
@@ -1221,22 +1221,22 @@ class Setting{
             return $engine->getArray($section, $group);
         }
     }
-    
-    
+
+
     /**
      * Gets current settings based on currently set section, engine and group
-     * 
+     *
      * @return array | false
      */
     static function getCurrentSettings() {
         return self::getSettings(self::$section, self::$engine, self::$group);
     }
-    
+
     /**
      * Returns Id of current instance
-     * 
+     *
      */
     static function getInstanceId() {
         return \Cx\Core\Core\Controller\Cx::instanciate()->getId();
-    }    
+    }
 }
