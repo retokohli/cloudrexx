@@ -67,7 +67,7 @@ class DbEngine extends Engine{
         $this->arrSettings = array();
         while (!$objResult->EOF) {
             $this->arrSettings[$objResult->fields['name']] = array(
-            	'name' => $$objResult->fields['name'],
+            	'name' => $objResult->fields['name'],
                 'section' => $section,
                 'group' => $objResult->fields['group'],
                 'value' => $objResult->fields['value'],
@@ -75,7 +75,7 @@ class DbEngine extends Engine{
                 'values' => $objResult->fields['values'],
                 'ord' => $objResult->fields['ord'],
             );
-        //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
+            //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
             $objResult->MoveNext();
         }
     }
@@ -139,11 +139,11 @@ class DbEngine extends Engine{
      * @param   string    $name   The settings name
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
-     * 
+     *
      * @global  mixed     $objDatabase    Database connection object
      */
     function update($name)
-    {   
+    {
         global $objDatabase;
 
         // TODO: Add error messages for individual errors
@@ -190,7 +190,7 @@ class DbEngine extends Engine{
      *                              defaults to the empty string
      * @param   string    $group    The optional group
      * @return  boolean             True on success, false otherwise
-     */ 
+     */
     function add($name, $value, $ord=false, $type='text', $values='', $group=null)
     {
         global $objDatabase;
@@ -215,7 +215,7 @@ class DbEngine extends Engine{
         }
         // Initialize if necessary
         if (is_null($this->arrSettings) || $this->group != $group){
-            $this->init($this->section, $group); 
+            $this->init($this->section, $group);
         }
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
@@ -312,7 +312,7 @@ class DbEngine extends Engine{
      *
      * Tries to fix or recreate the settings table.
      * @return  boolean             False, always.
-     * 
+     *
      */
     function errorHandler()
     {
@@ -340,9 +340,9 @@ class DbEngine extends Engine{
         //Always!
         return false;
     }
-    
+
     public function getArray($section, $group = null)
-    { 
+    {
         $groupArray = array();
         if ($group !== null && $this->section == $section) {
             foreach ($this->arrSettings as $key => $value) {
