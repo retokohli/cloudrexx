@@ -1948,7 +1948,7 @@ class Order
      * @return  float                               The net item sum on success,
      *                                              false otherwise
      */
-    function view_items($objTemplate, $edit, $total_weight=0, $i=0)
+    function view_items($objTemplate, $edit, &$total_weight=0, $i=0)
     {
         global $objDatabase, $_ARRAYLANG;
 
