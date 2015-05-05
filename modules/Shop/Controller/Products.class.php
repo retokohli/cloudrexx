@@ -86,7 +86,8 @@ class Products
      *                                      by reference.  Set to the actual
      *                                      total matching number.
      * @param   integer     $offset         The Product offset
-     * @param   integer     $product_id     The Product ID
+     * @param   integer|array   $product_id     The optional Product ID,
+     *                                      or an array of such
      * @param   integer     $category_id    The ShopCategory ID
      * @param   integer     $manufacturer_id  The Manufacturer ID
      * @param   string      $pattern        A search pattern
@@ -183,6 +184,24 @@ class Products
     }
 
 
+    /**
+     * Builds and returns a database query for Products
+     * @param   integer|array   $product_id         The optional Product ID,
+     *                                              an array of such, or null
+     * @param   integer|string  $category_id        The optional Category ID,
+     *                                              or comma separated list
+     * @param   integer         $manufacturer_id    The optional manufacturer ID
+     * @param   string          $pattern            The optional search term
+     * @param   integer         $flagSpecialoffer   The optional special offer
+     *                                              flag
+     * @param   boolean         $flagLastFive       The optional "last five"
+     *                                              flag
+     * @param   integer|string  $orderSetting       The optional order setting,
+     *                                              or SQL string
+     * @param   boolean         $flagIsReseller     The optional reseller flag
+     * @param   boolean         $flagShowInactive   The optional inactive flag
+     * @return  string                              The SQL query
+     */
     public static function getQueryParts(
         $product_id=null, $category_id=null,
         $manufacturer_id=null, $pattern=null,
@@ -292,9 +311,13 @@ class Products
                   : ($flagSpecialoffer === self::DEFAULT_VIEW_MARKED
                       ? " AND `product`.`flags` LIKE '%__SHOWONSTARTPAGE__%'" : '')
                 );
-            // Limit by Product ID (unused by getByShopParameters()!
-            if ($product_id > 0) {
-                $queryWhere .= ' AND `product`.`id`='.$product_id;
+            // Limit by Product ID (unused by getByShopParameters()!)
+            if (is_array($product_id)) {
+                $queryWhere .=
+                    ' AND `product`.`id` IN('.join(',', $product_id).')';
+            } elseif ($product_id > 0) {
+                $queryWhere .=
+                    ' AND `product`.`id`='.$product_id;
             }
             // Limit Products by Manufacturer ID, if any
             if ($manufacturer_id > 0) {
