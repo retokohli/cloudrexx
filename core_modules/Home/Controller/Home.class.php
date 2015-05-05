@@ -59,7 +59,7 @@ class Home {
 
     function getPage()
     {
-        global $_CORELANG, $_CONFIG, $objTemplate;
+        global $objTemplate;
 
         if (!isset($_GET['act'])) {
             $_GET['act']='';
@@ -125,7 +125,7 @@ class Home {
             'TXT_DASHBOARD_STATS_ALERT'     => htmlentities($_CORELANG['TXT_DASHBOARD_STATS_ALERT'], ENT_QUOTES, CONTREXX_CHARSET),
         ));
         $objTemplate->setGlobalVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
-        
+
         if (\Permission::checkAccess(17, 'static', true)) {
             $objTemplate->touchBlock('news_delete');
             $objTemplate->touchBlock('stats_delete');
@@ -158,7 +158,8 @@ class Home {
             $objTemplate->setVariable('MESSAGE_LINK_TARGET', contrexx_raw2xhtml($message->getLinkTarget()));
         }
 
-        $objFWUser = \FWUser::getFWUserObject();
+// TODO: Unused
+//        $objFWUser = \FWUser::getFWUserObject();
         $objResult = $objDatabase->SelectLimit(
            'SELECT `logs`.`datetime`, `users`.`username`
             FROM `'.DBPREFIX.'log` AS `logs`
@@ -192,9 +193,13 @@ class Home {
             $objTemplate->hideBlock('stats_javascript');
         }
 
-        $objRss = new \XML_RSS($_CONFIG['dashboardNewsSrc'] . '?version=' . $_CONFIG['coreCmsVersion']);
-        $objRss->parse();
-        $arrItems = $objRss->getItems();
+        $arrItems = null;
+		// This index may be unset
+        if (!empty($_CONFIG['dashboardNewsSrc'])) {
+            $objRss = new \XML_RSS($_CONFIG['dashboardNewsSrc'] . '?version=' . $_CONFIG['coreCmsVersion']);
+            $objRss->parse();
+            $arrItems = $objRss->getItems();
+        }
         if (!empty($arrItems) && ($_CONFIG['dashboardNews'] == 'on')) {
             if (empty($arrItems[0]['description'])) {
                 $objTemplate->setVariable(array(
@@ -218,19 +223,19 @@ class Home {
     private function getStatistics()
     {
         global $_CORELANG, $objDatabase;
-        
+
         $rangeStart = date('j', strtotime('last month')) + 1;
         $rangeStart = $rangeStart > 31 ? 1 : $rangeStart;
         $rangeEnd   = date('j');
         $arrRange   = array();
-        
+
         if ($rangeStart >= $rangeEnd) {
             $first = range($rangeStart, date('t', strtotime('last month')));
             $month = date('M', strtotime('last month'));
             foreach ($first as $day) {
                 $arrRange[$day] = $day.' '.$month;
             }
-            
+
             $second = range(1, $rangeEnd);
             $month  = date('M');
             foreach ($second as $day) {
@@ -243,7 +248,7 @@ class Home {
                 $arrRange[$day] = $day.' '.$month;
             }
         }
-        
+
         $arrMonths   = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
         $arrDays     = explode(',', $_CORELANG['TXT_DAY_ARRAY']);
         $arrDays[7]  = $arrDays[0];
@@ -253,7 +258,7 @@ class Home {
         $ticks       = array();
         $visitors    = array();
         $requests    = array();
-        
+
         $query = '
             SELECT `timestamp`, `count`
             FROM `'.DBPREFIX.'stats_visitors_summary`
@@ -267,13 +272,13 @@ class Home {
             ).'"
         ';
         $objResult = $objDatabase->Execute($query);
-        
+
         while (!$objResult->EOF) {
             $day = date('j', $objResult->fields['timestamp']);
             $arrVisitors[$day] = $objResult->fields['count'];
             $objResult->MoveNext();
         }
-        
+
         $query = '
             SELECT `timestamp`, `count`
             FROM `'.DBPREFIX.'stats_requests_summary`
@@ -287,13 +292,13 @@ class Home {
             ).'"
         ';
         $objResult = $objDatabase->Execute($query);
-    
+
         while (!$objResult->EOF) {
             $day = date('j', $objResult->fields['timestamp']);
             $arrRequests[$day] = $objResult->fields['count'];
             $objResult->MoveNext();
         }
-        
+
         $i = 1;
         foreach ($arrRange as $day => $date) {
             $ticks[]    = $date;
@@ -303,7 +308,7 @@ class Home {
             $requests[] = isset($arrRequests[$day]) ? intval($arrRequests[$day]) : 0;
             $i++;
         }
-        
+
         return array(
             'ticks'    => $ticks,
             'dates'    => $dates,
@@ -311,7 +316,7 @@ class Home {
             'requests' => $requests,
         );
     }
-    
+
     private function deactivateSetting($config)
     {
         if (\Permission::checkAccess(17, 'static', true)) {
@@ -326,7 +331,7 @@ class Home {
                 die('success');
             }
         }
-        
+
         die('error');
     }
 }
