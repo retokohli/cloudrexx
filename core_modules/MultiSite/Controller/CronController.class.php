@@ -45,6 +45,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         
         foreach ($cronMails as $cronMail) {
             $criterias = array();
+            $filterIds = array();
             foreach ($cronMail->getCronMailCriterias() as $cronMailCriteria) {
                 list($tableAlias, $attribute) = explode('.', $cronMailCriteria->getAttribute());
                 $criterias[$tableAlias][$attribute] = $cronMailCriteria->getCriteria();
@@ -246,12 +247,13 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     public function addFilterToQueryBuilder(\Doctrine\ORM\QueryBuilder & $qb, $cronMailCriterias, $dateFields) 
     {
         $filterPos = 1;
+        $userDateField = array('User.regdate', 'User.lastAuth', 'User.lastActivity');
         foreach ($cronMailCriterias as $alias => $criterias) {
             foreach ($criterias as $attribute => $criteria) {
                 $formattedCriteria = $alias . '.' . $attribute;
                 //for date field
                 if (in_array($formattedCriteria, $dateFields)) {
-                    $timeStamp = ($formattedCriteria == 'User.regdate') ? true : false;
+                    $timeStamp = in_array($formattedCriteria, $userDateField) ? true : false;
                     $this->addDateFilterToQueryBuilder($qb, $formattedCriteria, $criteria, $filterPos, $timeStamp);
                 } else {
                     $qb->andWhere($formattedCriteria . ' = ?' . $filterPos)->setParameter($filterPos, $criteria);
@@ -283,7 +285,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                    ->from('\Cx\Core\User\Model\Entity\User', 'User');
             }
                     
-            $dateFields = array('User.regdate', 'Website.creationDate');
+            $dateFields = array('User.regdate', 'User.lastAuth', 'User.lastActivity', 'Website.creationDate', );
             $this->addFilterToQueryBuilder($qb, $cronMailCriterias, $dateFields);
             
             if (!empty($filterIds)) {
