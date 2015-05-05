@@ -872,6 +872,10 @@ die("Cart::view(): ERROR: No template");
                 $objTemplate->touchBlock('shopCartEmpty');
                 $objTemplate->parse('shopCartEmpty');
             }
+            if ($_SESSION['shop']['previous_product_ids']) {
+                $ids = $_SESSION['shop']['previous_product_ids']->toArray();
+                Shop::view_product_overview($ids);
+            }
         }
 
         $objTemplate->setGlobalVariable(array(

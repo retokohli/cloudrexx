@@ -70,7 +70,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // && MODULE_INDEX == ''
                 ) {
                     \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
-                    if (\Cx\Core\Setting\Controller\Setting::getValue('shopnavbar_on_all_pages','Shop')) {
+                    if (\Cx\Core\Setting\Controller\Setting::getValue('shopnavbar_on_all_pages', 'Shop')) {
                         Shop::init();
                         Shop::setNavbar();
                     }
@@ -92,7 +92,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     public function preFinalize(\Cx\Core\Html\Sigma $template)
     {
-        if (    \Cx\Core\Core\Controller\Cx::instanciate()->getMode()
+        if (    $this->cx->getMode()
             !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
