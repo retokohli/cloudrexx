@@ -44,7 +44,7 @@ class FWUser extends User_Setting
      * @var array
      */
     public static $allowedHosts = array();
-            
+
     function __construct($backend = false)
     {
         parent::__construct();
@@ -83,7 +83,7 @@ class FWUser extends User_Setting
      */
     function checkAuth()
     {
-        global $sessionObj, $_CORELANG, $objInit;
+        global $sessionObj, $_CORELANG;
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
@@ -170,13 +170,13 @@ class FWUser extends User_Setting
      * If no redirect parameter is present, the frontend login page is shown.
      */
     function logout()
-    {        
-        
+    {
+
          $this->logoutAndDestroySession();
-        
+
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;
-            
+
             \Cx\Core\Csrf\Controller\Csrf::header('Location: '.(!empty($pathOffset)
                 ? $pathOffset
                 : '/'));
@@ -196,16 +196,16 @@ class FWUser extends User_Setting
     public static function getRedirectUrl($redirectUrl)
     {
         global $_CONFIG;
-        
+
         $pathOffset = ASCMS_PATH_OFFSET;
-        
+
         $redirect = $baseUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . (!empty($pathOffset) ? $pathOffset : '/');
         $rawUrl   = trim(self::getRawUrL(urldecode($redirectUrl), $baseUrl));
 
         if (
-                self::hostFromUri($baseUrl) == self::hostFromUri($rawUrl) 
+                self::hostFromUri($baseUrl) == self::hostFromUri($rawUrl)
              || (!empty(self::$allowedHosts) && in_array(self::hostFromUri($rawUrl), array_map(array('FWUser', 'hostFromUri'), self::$allowedHosts)))
-           ) {            
+           ) {
             $redirect = $rawUrl;
         }
 
@@ -215,21 +215,23 @@ class FWUser extends User_Setting
     /**
      * Returns the host name from the given url
      * www will be striped from the given url
-     * 
+     *
      * @param string $uri url string
      * @return string
      */
     public static function hostFromUri($uri)
     {
         extract(parse_url($uri));
-        
+
+// TODO: $scheme is not defined
+// TODO: $host is not defined
         return str_ireplace('www.', '', $scheme.'://'.$host);
     }
 
     /**
      * Return the Absolute URL associated of the given string.
-     *     
-     * @return string The URL     
+     *
+     * @return string The URL
      */
     public static function getRawUrL($url, $baseUrl)
     {
@@ -250,6 +252,7 @@ class FWUser extends User_Setting
         if ($url[0] == '/') $path = '';
 
         /* dirty absolute URL // with port number if exists */
+// TODO: $host is not defined
         if (parse_url($baseUrl, PHP_URL_PORT) != ''){
             $abs = "$host:".parse_url($baseUrl, PHP_URL_PORT)."$path/$url";
         }else{
@@ -259,11 +262,12 @@ class FWUser extends User_Setting
         $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
         for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
 
+// TODO: $scheme is not defined
         /* absolute URL is ready! */
-        return $scheme.'://'.$abs;        
-        
+        return $scheme.'://'.$abs;
+
     }
-    
+
     /**
      * Logs the user off and destroys the session.
      */
@@ -586,7 +590,10 @@ class FWUser extends User_Setting
         return $verificationLink;
     }
 
-    public function verifyUserAccount($email, $key) {
+    public function verifyUserAccount($email, $key)
+    {
+        global $_CORELANG;
+
 // TODO: add verificationTimeout as configuration option
         $verificationExpired = time() - 30 * 86400;
         $userFilter = array(
@@ -622,17 +629,17 @@ class FWUser extends User_Setting
 
     /**
      * Get the user details link
-     * 
+     *
      * @param mixed $user \User or
      *                    \Cx\Core\User\Model\Entity\User or
      *                    $userId (Id of a user)
-     * 
+     *
      * @return string Returns the parsed user detail link(crm and access)
      */
     public static function getParsedUserLink($user)
     {
         global $_CORELANG;
-        
+
         if ($user instanceof \Cx\Core\User\Model\Entity\User) {
             $user = self::getFWUserObject()->objUser->getUser($user->getId());
         }
@@ -642,14 +649,14 @@ class FWUser extends User_Setting
         if (!($user instanceof \User)) {
             return '';
         }
-        
+
         $crmDetailImg = '';
         if (!\FWValidator::isEmpty($user->getCrmUserId())) {
-            $crmDetailImg = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$user->getCrmUserId()}' 
+            $crmDetailImg = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$user->getCrmUserId()}'
                                 title='{$_CORELANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT']}'>
-                                <img 
-                                    src='../core/Core/View/Media/navigation_level_1_189.png' 
-                                    width='16' height='16' 
+                                <img
+                                    src='../core/Core/View/Media/navigation_level_1_189.png'
+                                    width='16' height='16'
                                     alt='{$_CORELANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT']}'
                                 />
                             </a>";
@@ -657,7 +664,7 @@ class FWUser extends User_Setting
         return "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$user->getId()}'
                     title='{$_CORELANG['TXT_EDIT_USER_ACCOUNT']}'>" .
                     self::getParsedUserTitle($user) .
-                "</a>" . 
+                "</a>" .
                 $crmDetailImg;
     }
 
@@ -675,7 +682,7 @@ class FWUser extends User_Setting
         global $_CORELANG;
 
         static $arrTitles = array();
-        
+
         if ($user instanceof \Cx\Core\User\Model\Entity\User) {
             $user = FWUser::getFWUserObject()->objUser->getUser($user->getId());
         }
@@ -824,7 +831,7 @@ class FWUser extends User_Setting
     public static function getFWUserObject()
     {
         global $objInit;
-        static $objFWUser;
+        static $objFWUser = null;
 
         if (!isset($objFWUser)) {
             $objFWUser = new FWUser($objInit->mode == 'backend');
@@ -940,19 +947,19 @@ class FWUser extends User_Setting
         $arrOptions['minLength'] = empty($arrOptions['minLength']) ? 3 : intval($arrOptions['minLength']);
         $arrOptions['canCancel'] = empty($arrOptions['canCancel']) ? 0 : 1;
         $arrOptions['canClear']  = empty($arrOptions['canClear'])  ? 0 : 1;
-        
+
         $txtUserSearchInfo = sprintf($_CORELANG['TXT_CORE_SEARCH_USER_INFO'], $arrOptions['minLength']);
-        
+
         $scope = 'user/live-search';
         $objCx = \ContrexxJavascript::getInstance();
-        
+
         $objCx->setVariable('userMinLength',     $arrOptions['minLength'],           $scope);
         $objCx->setVariable('userCanCancel',     $arrOptions['canCancel'],           $scope);
         $objCx->setVariable('userCanClear',      $arrOptions['canClear'],            $scope);
         $objCx->setVariable('txtUserSearch',     $_CORELANG['TXT_CORE_SEARCH_USER'], $scope);
         $objCx->setVariable('txtUserCancel',     $_CORELANG['TXT_CANCEL'],           $scope);
         $objCx->setVariable('txtUserSearchInfo', $txtUserSearchInfo,                 $scope);
-        
+
         \JS::activate('user-live-search');
     }
 
