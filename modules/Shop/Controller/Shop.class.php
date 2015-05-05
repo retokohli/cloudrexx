@@ -1048,7 +1048,7 @@ die("Failed to update the Cart!");
             // resulting dataset only if active!
             'bestseller' => $_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_BESTSELLER'],
         );
-        $defaultOrder = \Sorting::getFieldindex(\Products::$arrProductOrder[
+        $defaultOrder = \Sorting::getFieldindex(Products::$arrProductOrder[
             \Cx\Core\Setting\Controller\Setting::getValue(
                 'product_sorting', 'Shop')]);
         $objSorting = new \Sorting(
