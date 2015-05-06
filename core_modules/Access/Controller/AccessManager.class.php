@@ -1248,7 +1248,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             $objUser->setPrimaryGroup(isset($_POST['access_user_primary_group']) ? $_POST['access_user_primary_group'] : 0);
             
-            if (((isset($_POST['notification_email']) && $_POST['notification_email'] == 1 && empty($objUser->getId())) || $objUser->setPassword(isset($_POST['access_user_password']) ? trim(contrexx_stripslashes($_POST['access_user_password'])) : '', isset($_POST['access_user_password_confirmed']) ? trim(contrexx_stripslashes($_POST['access_user_password_confirmed'])) : '')) &&
+            if (((isset($_POST['notification_email']) && $_POST['notification_email'] == 1 && !$objUser->getId()) || $objUser->setPassword(isset($_POST['access_user_password']) ? trim(contrexx_stripslashes($_POST['access_user_password'])) : '', isset($_POST['access_user_password_confirmed']) ? trim(contrexx_stripslashes($_POST['access_user_password_confirmed'])) : '')) &&
                 // only administrators are allowed to change the admin status and the account validity
                 (!\Permission::hasAllAccess() || $objUser->getId() == $objFWUser->objUser->getId() || (
                     $objUser->setAdminStatus(isset($_POST['access_user_is_admin']) ? (bool)$_POST['access_user_is_admin'] : false) &&
