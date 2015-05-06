@@ -53,7 +53,7 @@ class Url {
      */
     protected $protocol = 'http';
     /**
-     * http://example.com/
+     * example.com
      * @var string
      */
     protected $domain = null;
@@ -96,22 +96,26 @@ class Url {
     const ROUTED = 2;
 
     protected $state = 0;
+    
+    protected $port = 0;
 
     /**
      * Initializes $domain and $path.
      * @param string $url http://example.com/Test
      */
-    public function __construct($url) {
-        $matches = array();
-        $matchCount = preg_match('/^((https?):\/\/[^\/]+\/)(.*)?/', $url, $matches);
-        if ($matchCount == 0) {
-            throw new UrlException('Malformed URL: ' . $url);
-        }
+    public function __construct($url, $replacePorts = false) {
+        
+        $data = parse_url($url);
 
-        $this->domain = $matches[1];
-        $this->protocol = $matches[2];
-        if (isset($matches[3])) {
-            $this->setPath($matches[3]);
+        $this->domain   = $data['host'];
+        $this->protocol = $data['scheme'];
+        $this->port     = ($replacePorts ? $this->getDefaultPort() : $data['port']);
+        $path = ltrim($data['path'], '/');
+        if(!empty($data['query'])) {
+            $path .= '?' . $data['query'];
+        }
+        if (!empty($path)) {
+            $this->setPath($path);
         } else {
             $this->suggest();
         }
@@ -146,6 +150,25 @@ class Url {
     public function isRouted() {
         return $this->state >= self::ROUTED;
     }
+    
+    function getPort() {
+        return $this->port;
+    }
+
+    function setPort($port) {
+        $this->port = $port;
+    }
+    
+    /** 
+     * gets default port from settings
+     */
+    function getDefaultPort() {
+        $mode = $this->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND ? 'Backend' : 'Frontend';
+        \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::POPULATE);
+        $protocol = strtoupper($this->getProtocol());
+        $port  =  \Cx\Core\Setting\Controller\Setting::getValue('port' . $mode . $protocol);
+        return $port;
+    }    
 
     /**
      * sets $this->suggestedParams and $this->suggestedTargetPath
@@ -156,7 +179,6 @@ class Url {
         }
         $matches = array();
         $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
-        
 
         if ($matchCount == 0) {//seemingly, no parameters are set.
             $this->suggestedTargetPath = $this->path;
@@ -171,6 +193,7 @@ class Url {
                 $this->suggestedParams = $matches[2];
             }
         }
+        
 
         $this->state = self::SUGGESTED;
     }
@@ -448,7 +471,7 @@ class Url {
         $sp = strtolower($_SERVER['SERVER_PROTOCOL']);
         $protocol = substr($sp, 0, strpos($sp, '/')) . $s;
         $port = ($_SERVER['SERVER_PORT'] == '80') ? '' : (':'.$_SERVER['SERVER_PORT']);
-        return new Url($protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI']);
+        return new Url($protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'], true);
     }
 
     /**
@@ -488,7 +511,7 @@ class Url {
         }
         $request = preg_replace('/index.php/', '', $request);
 
-        return new Url($protocol.'://'.$host.'/'.$request.$params);
+        return new Url($protocol.'://'.$host.'/'.$request.$params, true);
     }
 
 
@@ -529,7 +552,7 @@ class Url {
             throw new UrlException("Unable to find a page with MODULE:$module and CMD:$cmd in language:$lang!");
         }
 
-        return static::fromPage($page, $parameters, $protocol);
+        return static::fromPage($page, $parameters, $protocol, true);
     }
     
     /**
@@ -604,7 +627,7 @@ class Url {
             $parameters = '?'.implode('&', $arrParams);
         }
 
-        return new Url($protocol.'://'.$host.$offset.'/'.$langDir.'/'.$parameters);
+        return new Url($protocol.'://'.$host.$offset.'/'.$langDir.'/'.$parameters, true);
     }
 
     /**
@@ -684,7 +707,7 @@ class Url {
             }
             $getParams = '?' . implode('&', $paramArray);
         }
-        return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams);
+        return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams, true);
     }
 
     /**
@@ -732,9 +755,7 @@ class Url {
     public function __toString()
     {
         return
-            ASCMS_INSTANCE_OFFSET.'/'.
-            ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '').
-            $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
+            $this->protocol . '://' . $this->domain . ':' . $this->port . $this->path;
     }
 
 

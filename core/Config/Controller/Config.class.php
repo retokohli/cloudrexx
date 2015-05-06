@@ -1142,6 +1142,17 @@ class Config
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolFrontend','none', 9,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
+            }            
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTP')
+                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTP',80, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
+                    \DBG::log("Failed to add Setting entry for core HTTP Port (Frontend)");
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTP Port (Frontend)");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTPS')
+                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTPS',443, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
 
             //administrationArea group
@@ -1188,6 +1199,16 @@ class Config
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolBackend','none', 8,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use Administrator");
+            }            
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('portBackendHTTP')
+                && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTP',80, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTP Port (Backend)");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('portBackendHTTPS')
+                && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTPS',443, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Backend)");
             }
             
             //security group
