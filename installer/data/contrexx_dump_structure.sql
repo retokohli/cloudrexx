@@ -440,6 +440,7 @@ CREATE TABLE `contrexx_core_module_multisite_cron_mail_log` (
   `user_id` int(5) NOT NULL,
   `websiteId` int(11) default NULL,
   `success` tinyint(1) NOT NULL default '0',
+  `sent_date` datetime NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `IDX_A532A954EF07C77B` (`cron_mail_id`),
   CONSTRAINT `contrexx_core_module_multisite_cron_mail_log_ibfk_1` FOREIGN KEY (`cron_mail_id`) REFERENCES `contrexx_core_module_multisite_cron_mail` (`id`)
