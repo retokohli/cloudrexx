@@ -164,6 +164,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         
         //If the owner already have a log and status failed, update the log
         if ($cronMailLogEntity && !$cronMailLogEntity->getSuccess()) {
+            $cronMailLogEntity->setSentDate(new \DateTime());
             $cronMailLogEntity->setSuccess($mailStatus ? true : false);
         }
         
@@ -174,6 +175,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
             if ($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                 $cronMailLog->setWebsiteId($websiteObj->getId());
             }
+            $cronMailLog->setSentDate(new \DateTime());
             $cronMailLog->setSuccess($mailStatus ? true : false);
             $cronMail->addCronMailLog($cronMailLog);
             \Env::get('em')->persist($cronMailLog);

@@ -42,6 +42,11 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
     protected $success;
 
     /**
+     * @var datetime $sentDate; 
+     */
+    protected $sentDate;
+
+    /**
      *
      * @var Cx\Core_Modules\MultiSite\Model\Entity\CronMail $cronMail
      */
@@ -122,6 +127,24 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
      */
     public function setSuccess($success) {
         $this->success = $success;
+    }
+
+    /**
+     * Get the sentDate
+     * 
+     * @return datetime $sentDate
+     */
+    public function getSentDate() {
+        return $this->sentDate;
+    }
+
+    /**
+     * Set the sentDate
+     * 
+     * @param datetime $sentDate
+     */
+    public function setSentDate($sentDate) {
+        $this->sentDate = $sentDate;
     }
 
     /**
