@@ -1,0 +1,54 @@
+<script type="text/javascript">
+  function websiteRestoreCallbackJs(callback) {
+      if ($J.trim(callback) != '') {
+          var params = {uploadedFilePath: callback[0]};
+          Multisite.websiteRestore(params, true);
+      }
+  }
+</script>
+
+<div id="instance_table">
+  <form method="get" action="" name="websitebackupAndRestore" id="websitebackupAndRestore">
+    <input type='hidden' name="cmd" value="MultiSite" />
+    <input type='hidden' name="act" value="Maintenance/BackupsAndRestore" />
+    <input type="hidden" name="show_all" value="1" />
+    <table cellspacing="0" cellpadding="5" border="0" width="100%" class="adminlist" ><tr>
+        <th valign="top" colspan="2">
+      <div align="left">{FILTER}</div>
+      </th></tr><tr><td>
+          <input type="text" name="term" placeholder="{SEARCH_TERM}" id="term"  style="width: 300px;" class="search-box" value="" autocomplete="off" />
+          &nbsp;&nbsp;
+          <input type="submit" value="{SEARCH}"  id="searchButton"/>&nbsp;&nbsp;
+        </td></tr>
+    </table>
+    {TABLE}
+  </form>
+  <br />
+  <input type="button" value="Show All Backups" id="showAll_backups" onclick="$J('#searchwebsiteBackup').submit();"/>&nbsp;
+  {UPLOADER_CODE}
+  
+  <!--dialog box for restore website-->
+  <div id="restoreWebsite" title="{TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE}" style="display: none;">
+    <form id="restoreWebsiteForm">
+      <span id="restoreform_error"></span>
+      <table id="MultisiteWebsiteRestore" class="adminlist" cellspacing = "0" cellpadding = "3" width = "100%">
+        <tr>
+          <td>
+            <label><strong>{TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER}&nbsp;<span class="mandatory">*</span></strong></label>
+          </td>
+          <td>
+            <div id="serviceServerList"></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label><strong>{TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME}&nbsp;<span class="mandatory">*</span></strong></label>
+          </td>
+          <td>
+            <input type="text" name="restoreWebsiteName" required="" class="restoreWebsiteName"/>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</div>

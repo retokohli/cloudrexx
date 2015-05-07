@@ -24,6 +24,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     const MULTISITE_DEFAULT_ACCESS_ID = 183;
     const MULTISITE_COMMUNICATION_MANAGEMENT_ACCESS_ID = 198;
     const MULTISITE_SYSTEM_MANAGEMENT_ACCESS_ID         = 199;
+    const MULTISITE_BACKUP_TEMP_DIR  = '/backupzips';
      
     public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponentController, $cx);
@@ -80,7 +81,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'permission' => $systemMgmtPermissionObj,
                         'children'   => array(
                             ''    => array('permission' => $systemMgmtPermissionObj),
-                            'Ftp' => array('permission' => $systemMgmtPermissionObj)
+                            'Ftp' => array('permission' => $systemMgmtPermissionObj),
+                            'BackupsAndRestore' => array('permission' => $systemMgmtPermissionObj)
                         )
                     ),
                     'statistics' => array(
@@ -113,7 +115,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'permission' => $systemMgmtPermissionObj,
                         'children'   => array(
                             '' => array('permission' => $systemMgmtPermissionObj),
-                            'Ftp' => array('permission' => $systemMgmtPermissionObj)
+                            'Ftp' => array('permission' => $systemMgmtPermissionObj),
+                            'BackupsAndRestore' => array('permission' => $systemMgmtPermissionObj)
                         )
                     ),
                     'statistics' => array(
@@ -243,10 +246,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sorting' => true,
                         'paging' => true,       // cannot be turned off yet
                         'filtering' => false,   // this does not exist yet
-                        'actions' => (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) ? 
-                                        function($rowData) {
-                                            return \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, true);
-                                        } : false,
+                        'actions' => function($rowData) {
+                                        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                            $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::websiteBackup($rowData, true);
+                                            $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, true);
+                                        }
+                                        return $actions;
+                                    }
                     ),
                     'fields' => array(
                         'id' => array(
@@ -629,6 +635,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                     }
                                 }
                                 if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                    $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::websiteBackup($rowData);
+                                }
+                                if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
                                     $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::multiSiteConfig($rowData, false);
                                 }
                                 return $actions;
@@ -738,6 +747,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         switch ($section) {
             case 'Ftp':
                 $this->parseSectionFtp($template, $cmd);
+                break;
+            case 'BackupsAndRestore':
+                $this->parseSectionBackupAndRestore($template, $cmd);
                 break;
 
             default:
@@ -1021,6 +1033,159 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
     
     /**
+     * Parse the section Backups and Restore
+     * List all Backups
+     * 
+     * @param \Cx\Core\Html\Sigma $template Template object
+     * @param array               $cmd      Commands             
+     */
+    public function parseSectionBackupAndRestore(\Cx\Core\Html\Sigma $template, array $cmd) {
+        global $_ARRAYLANG;
+        
+        if (isset($_GET['show_all'])) {
+            $term = (isset($_GET['term']) && !empty($_GET['term'])) ? contrexx_input2raw($_GET['term']) : '';
+            $allBackupsArray = self::getAllBackupFilesInfoAsArray($term);
+            if ($allBackupsArray) {
+                $websiteBackupRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($allBackupsArray);
+                $backupAndRestore = new \Cx\Core\Html\Controller\ViewGenerator($websiteBackupRepositoryDataSet,
+                    array(
+                        'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_BACKUPS_AND_RESTORE'],
+                        'functions' => array(
+                            'delete'   => false,
+                            'sorting'  => true,
+                            'paging'   => true,      
+                            'filtering'=> false,
+                            'actions'  => function($rowData) {
+                                                $actions = \Cx\Core_Modules\MultiSite\Controller\BackendController::restoreOrDeleteBackupedWebsite($rowData);
+                                                $actions.= \Cx\Core_Modules\MultiSite\Controller\BackendController::restoreOrDeleteBackupedWebsite($rowData, true);
+                                            return $actions;
+                                        }
+                        ),
+                        'fields' => array(
+                            'websiteName' => array(
+                                'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITENAME']
+                             ),
+                            'dateAndTime' => array(
+                                'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DATE_AND_TIME'],
+                            ),
+                            'serviceServer' => array(
+                                'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_SERVICE_SERVER']
+                            ),
+                            'serviceId'   => array(
+                                'readonly'     => true,
+                                'showOverview' => false
+                            )
+                        )
+                    )
+                );
+                $template->setVariable('TABLE', $backupAndRestore->render());
+            }
+            
+        } 
+        
+        // Upload File
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $uploader->setFinishedCallback(array(
+            \Env::get('cx')->getCodeBaseCoreModulePath().'/Multisite/Controller/BackendController.class.php',
+            'Cx\Core_Modules\MultiSite\Controller\BackendController',
+            'uploadFinished'
+        ));
+        $uploader->setCallback('websiteRestoreCallbackJs');
+        $uploader->setOptions(array(
+            'id' => 'page_target_browse',
+            'type' => 'button',
+            'data-upload-limit' => 1
+            )
+        );
+        
+        $cxjs = \ContrexxJavascript::getInstance();
+        $cxjs->setVariable(array(
+            'serviceServers'               => explode(',', ComponentController::getWebsiteServiceServerList()),
+            'websiteRestoreInProgress'     => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_INPROGRESS'],
+            'websiteBackupDeleteInProgress'=> $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_INPROGRESS'],
+            'websiteFieldRequired'         => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_FIELD_REQUIRED'],
+            'websiteRestoreConfirm'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_CONFIRM'],
+            'websiteBackupDeleteConfirm'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_CONFIRM'],
+            'websiteRestoreTitle'          => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'],
+            'websiteChooseService'         => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'],
+            'websiteEnterWebsiteName'      => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'],
+            'websiteRestoreCancelButton'   => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_BUTTON_CANCEL'],
+            'websiteRestoreButton'         => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_BUTTON'],
+        ), 'multisite/lang');
+        
+        $template->setVariable(array(
+            'SEARCH'                                         => $_ARRAYLANG['TXT_MULTISITE_SEARCH'],
+            'FILTER'                                         => $_ARRAYLANG['TXT_MULTISITE_FILTER'],
+            'SEARCH_TERM'                                    => $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'],
+            'TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'      => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'],
+            'TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'=> $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'],
+            'TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'],
+            'UPLOADER_CODE'                                  => $uploader->getXHtml($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPLOAD_BUTTON'])
+        ));
+        
+    }
+    
+    /**
+     * Upload Finished callback
+     * 
+     * @param string  $tempPath    temporary uploaded path
+     * @param string  $tempWebPath temporary uploaded webpath
+     * @param array   $data        file data
+     * @param integer $uploadId    upload id
+     * @param array   $fileInfos   file info
+     * @param array   $response    file response
+     * 
+     * @return array
+     */
+    public function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) {
+        $tempBackupPath = \Env::get('cx')->getWebsiteTempPath(). self::MULTISITE_BACKUP_TEMP_DIR;
+        $tempBackupWebPath = \Env::get('cx')->getWebsiteTempWebPath() . self::MULTISITE_BACKUP_TEMP_DIR;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tempBackupPath)) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder($tempBackupPath);
+        }
+        
+        return array(
+            $tempBackupPath,
+            $tempBackupWebPath
+        );
+    }
+    
+    /**
+     * Get all backup File info as array
+     * 
+     * @return mixed boolean|array
+     */
+    public static function getAllBackupFilesInfoAsArray($searchTerm = null) {
+        $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
+        if (empty($websiteServiceServers)) {
+            return false;
+        }
+        
+        $allBackupFilesInfo = array();
+        foreach ($websiteServiceServers as $websiteServiceServer) {
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getAllBackupFilesInfo', array(), $websiteServiceServer);
+            if(!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
+                continue;
+            }
+            if ($resp->data->backupFilesInfo) {
+                foreach ($resp->data->backupFilesInfo as $data) {
+                    $allBackupFilesInfo[] = array(
+                        'websiteName'   => $data[0], 
+                        'dateAndTime'   => $data[1], 
+                        'serviceServer' => $websiteServiceServer->gethostname(),
+                        'serviceId'     => $websiteServiceServer->getId()
+                    );
+                }
+            }
+        }
+        
+        return !empty($searchTerm) ? array_filter($allBackupFilesInfo, function($el) use ($searchTerm) {
+                                        return ( strpos($el['websiteName'], $searchTerm) !== false );
+                                    })
+                                   : $allBackupFilesInfo;
+    }
+    
+    /**
      * Set up the page with a list of all Settings  
      * Stores the settings if requested to.
      * @return  boolean             True on success, false otherwise
@@ -1275,6 +1440,66 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return $websiteRemoteLogin; 
     }
     
+    /**
+     * Backup the website
+     * 
+     * @param array   $rowData arrayData of website
+     * @param boolean $serviceServer serviceServer
+     * @return string
+     */
+    public function websiteBackup($rowData, $serviceServer = false) 
+    {
+        global $_ARRAYLANG;
+        
+        $id = $rowData['id'];
+        if (empty($id)) {
+            return;
+        }
+        
+        $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+        $websiteRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $resultObj     = ($serviceServer) ? $websiteServiceServerRepo->findOneById($id) : $websiteRepo->findOneById($id);
+        
+        if (!$resultObj) {
+            return;
+        }
+        $title  = ($serviceServer) ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_IN_SERVICE_TITLE'], $resultObj->getHostname()) : sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_TITLE'], $resultObj->getFqdn()->getName());
+        $dataId = ($serviceServer) ? 'service:' . $id : 'website:' . $id;
+        $cxjs   = \ContrexxJavascript::getInstance();
+        
+        $cxjs->setVariable(array(
+            'websiteBackupConfirm' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_CONFIRM'],
+            'websiteInProgress'    => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_INPROGRESS']
+        ), 'multisite/lang');
+        
+        $websiteBackup = '<a href="javascript:void(0);" class = "websiteBackup" data-params = '.$dataId.' title = "'.$title.'" ></a>';
+        return $websiteBackup; 
+    }
+    
+    /**
+     * Restore Or Delete the backuped website
+     * 
+     * @param array $rowData
+     * @return mixed boolean | string
+     */
+    public function restoreOrDeleteBackupedWebsite($rowData, $deleteBackupedWebsite = false)
+    {
+        global $_ARRAYLANG;
+        
+        if (   empty($rowData) 
+            || empty($rowData['serviceId']) 
+            || empty($rowData['websiteName'])
+            ) {
+            return false;
+        }
+        
+        $websiteBackupFileName = isset($rowData['dateAndTime']) ? $rowData['websiteName'].'_'.$rowData['dateAndTime'].'.zip' : $rowData['websiteName'];
+        $title = ($deleteBackupedWebsite) ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE'] : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'];
+        $class = ($deleteBackupedWebsite) ? 'deleteWebsiteBackup delete' : 'websiteRestore';
+        
+        return '<a href="javascript:void(0);" class="'.$class.'" data-serviceid = "'.$rowData['serviceId'].'" data-backupFile = "'.$websiteBackupFileName.'" title = "'.$title.'"></a>';
+    }
+   
     /**
      * Fetching the plans from the associated mail server
      * 

@@ -296,4 +296,28 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_WRONG_CHARS'] = 'Der Name da
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_ERROR'] = 'Die Anforderung konnte nicht ausgelöst werden.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_SUCCESS'] = 'Die Anforderung wurde erfolgreich ausgelöst.';
 
+//Website Backup and Restore
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_TITLE'] = 'Backup von %s erstellen ';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_CONFIRM'] = 'Bitte bestätigen Sie das Erstellen des Backups.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_INPROGRESS'] = 'Erstellung des Website-Backups in Arbeit...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER'] = 'Unbekannter Service Server.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NOT_EXISTS'] = 'Die Website %s existiert nicht auf diesem Service Server.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_SUCCESS'] = 'Das Website Backup wurde erfolgreich erstellt.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_FAILED'] = 'Beim Erstellen des Website Backups ist ein Fehler aufgetreten.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_IN_SERVICE_TITLE'] = 'Ein Backup aller Webseiten des Service Servers %s erstellen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS'] = 'Invalide Parameter. Bitte versuchen Sie es später erneut.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_MAINTENANCE_BACKUPSANDRESTORE'] = 'Backups & Wiederherstellung';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'] = 'Diese Website wiederherstellen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_INPROGRESS'] = 'Wiederherstellung der Website ist in Arbeit...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'Der gewählte Website-Name (%s) ist bereits in Gebrauch.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED'] = 'Das Wiederherstellen der Website unter dem gewählten Namen ist Fehlgeschlagen.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_FIELD_REQUIRED'] = 'Es müssen alle zwingenden Felder ausgefüllt werden.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_CONFIRM'] = 'Bitte bestätigen Sie das Wiederherstellen der Website.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_SUCCESS'] = 'Die Website %s wurde erfolgreich wiederhergestellt.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPLOAD_BUTTON'] = 'Datei hochladen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'] = 'Bitte Service Server wählen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'] = 'Bitte Name der Website angeben';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DATE_AND_TIME'] = 'Datum und Zeit';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_BUTTON'] = 'Wiederherstellen';
+
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'] = 'Erfolgreich an der Adminkonsole der Webseite %s angemeldet!<br />Die Adminkonsole öffnet sich in einem neuen Fenster. <a href="#anleitung" title="Anleitung">Hier</a> eine Anleitung, sollte sich kein neues Fenster geöffnet haben.';

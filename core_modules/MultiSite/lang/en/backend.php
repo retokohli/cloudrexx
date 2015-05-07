@@ -436,6 +436,37 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYPALPROFILEATTRIBUTEID_TOOLTIP']='ID of
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_ERROR'] = 'Unable to send payout-request.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_SUCCESS'] = 'Payout-request has been sent successfully.';
 
+//Website Backup and Restore
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_TITLE'] = 'Create a backup of %s ';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_CONFIRM'] = 'Please confirm to proceed with website backup.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_INPROGRESS'] = 'Website backup is in progress...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER'] = 'Unknown service server requested.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NOT_EXISTS'] = 'The website %s does not exists on the service server.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_SUCCESS'] = 'The website was backup-ed successfully.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_FAILED'] = 'Failed to backup the website repository.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_IN_SERVICE_TITLE'] = 'Create a backup for all websites under the %s Service Server.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS'] = 'Invalid parameters. Please try again after sometime.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_MAINTENANCE_BACKUPSANDRESTORE'] = 'Backups & Restore';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'] = 'Restore the website';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_INPROGRESS'] = 'Website restore is in Progress...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'] = 'The given website name(%s) is already in use.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED'] = 'Failed to restore the website for the given website name.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_FIELD_REQUIRED'] = 'Please fill all the mandatory fields.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_CONFIRM'] = 'Please confirm to proceed website Restore process.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_SUCCESS'] = 'Successfully restored the backup website with the name %s.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPLOAD_BUTTON'] = 'Upload File';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'] = 'Choose the service server';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'] = 'Enter the Website name';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DATE_AND_TIME'] = 'Date and Time';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_BUTTON'] = 'Restore';
+
+//delete the backuped website
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE'] = 'Delete the Backuped Website';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_CONFIRM'] = 'Please confirm to delete the backuped website.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_INPROGRESS'] = 'Backuped File delete is in progress...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED'] = 'Failed to delete the backuped website.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_SUCCESS'] = 'Successfully deleted the backuped website.';
+
 // Notification section
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_DEFAULT'] = 'Overview';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_EMAILS'] = 'E-mails';

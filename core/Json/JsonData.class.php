@@ -239,7 +239,7 @@ class JsonData {
      * </pre>
      * @return mixed Decoded JSON on success, false otherwise
      */
-    public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array()) {
+    public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array(), $files = array()) {
         $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
 
         if (!empty($httpAuth)) {
@@ -259,6 +259,13 @@ class JsonData {
         foreach ($data as $name=>$value) {
             $request->addPostParameter($name, $value);
         }
+        
+        if (!empty($files)) {
+            foreach ($files as $fieldId => $file) {
+                $request->addUpload($fieldId, $file);
+            }
+        }
+        
         if ($this->sessionId !== null) {
             $request->addCookie(session_name(), $this->sessionId);
         }

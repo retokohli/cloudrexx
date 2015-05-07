@@ -50,7 +50,7 @@ a.showLicense {
     cursor: pointer;
 }
 
-a.remoteWebsiteLogin {
+a.remoteWebsiteLogin, a.websiteBackup, a.websiteRestore {
     background-image: url(../Media/RemoteLogin.png);
     display: inline-block;
     height: 16px;
@@ -110,4 +110,15 @@ a.deleteMultisiteConfig {
 
 .stopexecutionQuery.ui-button {
     display :none;
+}
+#restoreform_error {
+    padding: 3px 0 3px 5px;
+    color: #a94442;
+    display: none;
+}
+.mandatory {
+    color: red;
+}
+.border-red {
+    border-color: #b94a48;
 }

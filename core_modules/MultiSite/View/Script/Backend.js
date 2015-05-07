@@ -492,6 +492,82 @@
             return html;
         };
         
+        //Create a backup of website(s)
+        $('.websiteBackup').click(function() {
+            var iAttr = $(this).data('params').split(':');
+            var params = '';
+            if (!iAttr[0] || !iAttr[1]) {
+                return false;
+            }
+            
+            switch(iAttr[0]) {
+                case 'service':
+                    params = {serviceServerId: iAttr[1]};
+                    break;
+                case 'website':
+                    params = {websiteId: iAttr[1]};
+                    break;
+                default:
+                    return false;
+                    break;
+            }
+            if (!confirm(cx.variables.get('websiteBackupConfirm', 'multisite/lang'))) {
+                return false;
+            }
+            
+            cx.bind("loadingStart", cx.lock, "websiteBackup");
+            cx.bind("loadingEnd", cx.unlock, "websiteBackup");
+            $.ajax({
+                url: '/api/MultiSite/Backup',
+                data: params,
+                type: "GET",
+                beforeSend: function() {
+                    cx.trigger("loadingStart", "websiteBackup", {});
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() +"</div>");
+                    $('#loading > span').html(cx.variables.get('websiteInProgress', 'multisite/lang'));
+                },
+                success: function(response) {
+                    cx.tools.StatusMessage.showMessage(response, null, 2000);
+                    cx.trigger("loadingEnd", "websiteBackup", {});
+                }
+            });
+            
+        });
+
+        //Website restore by clicking restore button
+        $('.websiteRestore').click(function() {
+            var params = {backupedServiceServer: $(this).data('serviceid'), websiteBackupFileName: $(this).attr('data-backupFile')};
+                Multisite.websiteRestore(params, false);
+        });
+        
+        //Remove Backuped website in the service server
+        $('.deleteWebsiteBackup').click(function() {
+            if (!confirm(cx.variables.get('websiteBackupDeleteConfirm', 'multisite/lang'))) {
+                return false;
+            }
+            
+            cx.bind("loadingStart", cx.lock, "deleteWebsiteBackup");
+            cx.bind("loadingEnd", cx.unlock, "deleteWebsiteBackup");
+            $.ajax({
+                url: '/api/MultiSite/Backup',
+                data: {serviceServerId: $(this).data('serviceid'), websiteBackupFileName: $(this).attr('data-backupFile')},
+                type: "GET",
+                beforeSend: function() {
+                    cx.trigger("loadingStart", "deleteWebsiteBackup", {});
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() +"</div>");
+                    $('#loading > span').html(cx.variables.get('websiteBackupDeleteInProgress', 'multisite/lang'));
+                },
+                success: function(response) {
+                    var $resp = JSON.parse(response);
+                    if ($resp && $resp.status == 'success') {
+                        location.reload();
+                    }
+                    cx.tools.StatusMessage.showMessage($resp.message, null, 2000);
+                    cx.trigger("loadingEnd", "deleteWebsiteBackup", {});
+                }
+            });
+        });
+        
         //Login to remote website when the following click operation is performed
         $('.remoteWebsiteLogin').click(function() {
             cx.bind("loadingStart", cx.lock, "remoteLogin");
@@ -1037,6 +1113,101 @@ var Multisite = {
                 $table.append(tr);
         });
         return $table;
+    },
+    
+    validateInput: function(inputClassArray, error_msg, err_block) {
+        var err_cnt = 0;
+        $J.each(inputClassArray,function(key, elem){
+            if ($J(elem).val() == '') {
+                $J(elem).addClass('border-red');
+                err_cnt++;
+            } else {
+                $J(elem).removeClass('border-red');
+            }
+        }); 
+        
+        (err_cnt > 0) ? $J('#'+err_block).html(error_msg).show() : $J('#'+err_block).html('').hide();
+        return (err_cnt == 0) ? true : false;
+    },
+    
+    websiteRestore: function (data, upload) {
+        $J('#restoreWebsite .serviceServer').val('');
+        $J('#restoreWebsite .restoreWebsiteName').val('');
+        $J('#restoreWebsite #restoreform_error').html('').hide();
+        if ($J('#serviceServerList .serviceServer').length == 0) {
+            $J('#serviceServerList').append(getEditOption('dropdown', 'serviceServer', 'serviceServer', '', cx.variables.get('serviceServers', 'multisite/lang')));
+        }
+        
+        var buttons = [
+            {
+                text: cx.variables.get('websiteRestoreButton', 'multisite/lang'),
+                click: function () {
+                    if (!Multisite.validateInput(['#restoreWebsite .serviceServer', '#restoreWebsite .restoreWebsiteName'], cx.variables.get('websiteFieldRequired', 'multisite/lang'), 'restoreform_error')) {
+                        return false;
+                    }
+
+                    if (!confirm(cx.variables.get('websiteRestoreConfirm', 'multisite/lang'))) {
+                        return false;
+                    }
+                    
+                    var params = (upload) ? {   uploadedFilePath: data.uploadedFilePath,
+                                                restoreOnServiceServer: $J('#restoreWebsite .serviceServer').val(),
+                                                restoreWebsiteName: $J('#restoreWebsite .restoreWebsiteName').val()
+                                            }
+                                          : {
+                                                backupedServiceServer: data.backupedServiceServer,
+                                                websiteBackupFileName: data.websiteBackupFileName,
+                                                restoreOnServiceServer: $J('#restoreWebsite .serviceServer').val(),
+                                                restoreWebsiteName: $J('#restoreWebsite .restoreWebsiteName').val()
+                                            };
+
+                    cx.bind("loadingStart", cx.lock, "websiteRestore");
+                    cx.bind("loadingEnd", cx.unlock, "websiteRestore");
+                    cx.trigger("loadingStart", "websiteRestore", {});
+                    $J.ajax({
+                        url: '/api/MultiSite/Restore',
+                        data: params,
+                        beforeSend: function () {
+                            $J('#restoreWebsite').dialog("close");
+                            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+                            $J('#loading > span').html(cx.variables.get('websiteRestoreInProgress', 'multisite/lang'));
+                        },
+                        success: function (response) {
+                            var $resp = '';
+                            
+                            try {
+                               $resp = JSON.parse(response);
+                            } catch(e) {
+                               $resp = response;
+                            }
+                            
+                            if (typeof($resp.websiteUrl) != "undefined" && $resp.websiteUrl !== null) {
+                                window.open($resp.websiteUrl, '_blank').focus();
+                            }
+                            cx.tools.StatusMessage.showMessage(typeof($resp.message) != "undefined" ? $resp.message : $resp, null, 2000);
+                            cx.trigger("loadingEnd", "websiteRestore", {});
+                        }
+                    });
+                }
+            },
+            {
+                text: cx.variables.get('websiteRestoreCancelButton', 'multisite/lang'),
+                click: function () {
+                    $J(this).dialog("close");
+                }
+            }
+        ];
+                
+        $J('#restoreWebsite').dialog({
+            width: 500,
+            height: 200,
+            autoOpen: true,
+            modal: true,
+            buttons: buttons,
+            close: function () {
+                $J(this).dialog("destroy");
+            }
+        });
     }
 };
 

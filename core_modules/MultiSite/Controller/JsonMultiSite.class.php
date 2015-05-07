@@ -119,6 +119,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'getWebsiteInfo'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'deleteBackupedWebsite' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'getAllBackupFilesInfo' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'sendFileToRemoteServer'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteConfig'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteSubscriptionInfo'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'websiteRestore'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
@@ -2099,17 +2102,17 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return array('status' => 'success');
     }
     
-    public static function executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth) {
+    public static function executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth, $files) {
         $params['auth'] = self::getAuthenticationObject($secretKey, $installationId);
         $objJsonData = new \Cx\Core\Json\JsonData();
-        return $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $host . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=' . $command, $params, false, '', $httpAuth);
+        return $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol() . $host . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=' . $command, $params, false, '', $httpAuth, $files);
     }
 
     /**
      * This method will be used by the Website Service to execute commands on the Website Manager
      * Fetch connection data to Manager and pass it to the method executeCommand()
      */
-    public static function executeCommandOnManager($command, $params = array()) {
+    public static function executeCommandOnManager($command, $params = array(), $files = array()) {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER, SERVICE or HYBRID.');
         }
@@ -2136,14 +2139,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername','MultiSite'),
             'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword','MultiSite'),
         );
-        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth, $files);
     }
 
     /**
      * This method will be used by a Websites to execute commands on its Website Service
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
-    public static function executeCommandOnMyServiceServer($command, $params) {
+    public static function executeCommandOnMyServiceServer($command, $params, $files = array()) {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_WEBSITE))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode WEBSITE.');
         }
@@ -2155,14 +2158,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername','MultiSite'),
             'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword','MultiSite'),
         );
-        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth, $files);
     }
     
     /**
      * This method will be used by the Website Manager to execute commands on the Website Service
      * Fetch connection data to Service and pass it to the method executeCommand()
      */
-    public static function executeCommandOnServiceServerOfWebsite($command, $params, $website) {
+    public static function executeCommandOnServiceServerOfWebsite($command, $params, $website, $files = array()) {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER.');
         }
@@ -2175,14 +2178,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'httpAuthUsername' => $websiteServiceServer->getHttpAuthUsername(),
             'httpAuthPassword' => $websiteServiceServer->getHttpAuthPassword(),
         );
-        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth, $files);
     }
 
     /**
      * This method will be used by the Website Manager to execute commands on a Website Service
      * Fetch connection data to Service and pass it to the method executeCommand():
      */
-    public static function executeCommandOnServiceServer($command, $params, $websiteServiceServer) {
+    public static function executeCommandOnServiceServer($command, $params, $websiteServiceServer, $files = array()) {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER))) {
             throw new MultiSiteJsonException('Command'.__METHOD__.' is only available in MultiSite-mode MANAGER.');
         }
@@ -2194,21 +2197,21 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'httpAuthUsername' => $websiteServiceServer->getHttpAuthUsername(),
             'httpAuthPassword' => $websiteServiceServer->getHttpAuthPassword(),
         );
-        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth, $files);
     }
 
     /**
      * This method will be used by the Website Service to execute commands on a Website
      * Fetch connection data to Website and pass it to the method executeCommand():
      */
-    public static function executeCommandOnWebsite($command, $params, $website) {
+    public static function executeCommandOnWebsite($command, $params, $website, $files = array()) {
         if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID, ComponentController::MODE_SERVICE))) {
             throw new MultiSiteJsonException('Command '.__METHOD__.' is only available in MultiSite-mode MODE_MANAGER, HYBRID or SERVICE (running on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' '.$website->getName().')');
         }
 
         // In case mode is Manager, the request shall be routed through the associated Service Server
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == ComponentController::MODE_MANAGER) {
-            return self::executeCommandOnServiceServerOfWebsite('executeOnWebsite', array('command' => $command, 'params' => $params, 'websiteId' => $website->getId()), $website);
+            return self::executeCommandOnServiceServerOfWebsite('executeOnWebsite', array('command' => $command, 'params' => $params, 'websiteId' => $website->getId()), $website, $files);
         }
 
         // JsonData requests shall be made to the FQDN of the Website,
@@ -2221,7 +2224,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername','MultiSite'),
             'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword','MultiSite'),
         );
-        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth);
+        return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth, $files);
     }
 
     public function executeOnManager($params) {
@@ -3684,10 +3687,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      */
     public function websiteBackup($param) {
+        global $_ARRAYLANG;
+        
         $websiteId         = isset($param['post']['websiteId']) ? contrexx_input2raw($param['post']['websiteId']) : '';
         $backupLocation    = !empty($param['post']['backupLocation']) ? $param['post']['backupLocation'] : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
         $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $websites          = (!\FWValidator::isEmpty($websiteId)) ? $websiteRepository->findBy(array('id' => $websiteId)) : $websiteRepository->findAll();
+        $websites          = !empty($websiteId) ? $websiteRepository->findBy(array('id' => $websiteId)) : $websiteRepository->findAll();
 
         //change the backup location path to absolute location path
         \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($backupLocation);
@@ -3704,9 +3709,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     continue;
                 }
             }
-            return array('status' => 'success', 'message' => 'Successfully Backup the website Repository');
+            return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_SUCCESS']);
         }
-        return array('status' => 'error', 'message' => 'Failed to Backup the website Repository!');
+        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_FAILED']);
     }
 
     /**
@@ -3761,8 +3766,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function createWebsiteArchive($websiteBackupPath) {
-        $websiteZipFileName      = $this->websiteZipArchiveName($websiteBackupPath);
-        $websiteZipArchive       = new \PclZip($websiteZipFileName . '.zip');
+        $websiteZipArchive       = new \PclZip($websiteBackupPath . '_'.date("Y-m-d H:i:s").'.zip');
         $websiteArchiveFileCount = $websiteZipArchive->add($websiteBackupPath, PCLZIP_OPT_REMOVE_PATH, $websiteBackupPath);
 
         if ($websiteArchiveFileCount == 0) {
@@ -3779,24 +3783,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         //cleanup website Backup Folder
         \Cx\Lib\FileSystem\FileSystem::delete_folder($websiteBackupPath, true);
         return true;
-    }
-
-    /**
-     * Set websiteZipArchiveName
-     * 
-     * @param string $websiteBackupPath website backupLocation
-     * 
-     * @return string
-     */
-    public function websiteZipArchiveName($websiteBackupPath) {
-        $i = 1;
-        $websiteZipFileName = $websiteBackupPath;
-
-        while (\Cx\Lib\FileSystem\FileSystem::exists($websiteZipFileName . '.zip')) {
-            $websiteZipFileName = $websiteBackupPath . '_' . $i;
-            $i++;
-        }
-        return $websiteZipFileName;
     }
 
     /**
@@ -3867,6 +3853,71 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException('JsonMultiSite::getWebsiteInfo() failed: To get the website info'. $e->getMessage());
         }
         
+    }
+    
+    /**
+     * Get All Backup Files Info
+     * 
+     * @return array
+     */
+    public function getAllBackupFilesInfo()
+    {
+        $backupLocation    = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
+        //change the backup location path to absolute location path
+        \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($backupLocation);
+        
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation)) {
+            return array('status' => 'error');
+        }
+        
+        $backupFilesInfo = array();
+        foreach (glob($backupLocation."/*.zip") as $filename) {
+            $backupFilesInfo[] = explode('_',basename($filename, '.zip'));
+        }
+        
+        return array('status' => 'success', 'backupFilesInfo' => $backupFilesInfo);
+    }
+    
+    /**
+     * Delete the backuped website file from service server
+     * 
+     * @param array $params
+     * @return array
+     */
+    public function deleteBackupedWebsite($params)
+    {
+        global $_ARRAYLANG;
+        
+        if (   empty($params) 
+            || empty($params['post']) 
+            || empty($params['post']['websiteBackupFileName'])
+            ) {
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+        }
+        
+        $websiteBackupFileName = isset($params['post']['websiteBackupFileName']) ? contrexx_input2raw($params['post']['websiteBackupFileName']) : '';
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
+                    $backupFileLocation = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
+                    if (!\Cx\Lib\FileSystem\FileSystem::exists($backupFileLocation) || !\Cx\Lib\FileSystem\FileSystem::exists($backupFileLocation.'/'.$websiteBackupFileName)) {
+                        \DBG::log('The requested file ('.$backupFileLocation.'/'.$websiteBackupFileName.') doesnot exists');
+                        return array('status' => 'error');
+                    }
+                    
+                    if (!\Cx\Lib\FileSystem\FileSystem::delete_file($backupFileLocation.'/'.$websiteBackupFileName)) {
+                        \DBG::log('Failed to delete the backuped website file');
+                        return array('status' => 'error');
+                    }
+                    return array('status' => 'success');
+                    break;
+                default:
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::log('JsonMultiSite::deleteBackupedWebsite() failed: To delete the backuped website'. $e->getMessage());
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED']);
+        } 
     }
     
     /**
@@ -3978,28 +4029,40 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function websiteRestore($params)
     {
+        global $_ARRAYLANG;
+        
+        if(empty($params) || !\Cx\Lib\FileSystem\FileSystem::exists(\Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite'))) {
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+        }
+        
         $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
-        $websiteBackupFilePath = !empty($params['post']['websiteBackupFilePath']) ? $params['post']['websiteBackupFilePath'] : '';
+        $websiteBackupFileName = !empty($params['post']['websiteBackupFileName']) ? $params['post']['websiteBackupFileName'] : '';
+        if (empty($websiteName) || empty($websiteBackupFileName)) {
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+        }
+        
+        $websiteBackupFilePath = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite').'/'.$websiteBackupFileName;
+        
         if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupFilePath) 
             || \Cx\Lib\FileSystem\FileSystem::exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $websiteName)
            ) {
             \DBG::log('The website datafolder/backup repository doesnot exists!.');
-            return array('status' => 'error', 'message' => 'Failed to Restore the website.');
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
         }
         
         if (!$this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath)) {
-            return array('status' => 'error', 'message' => 'Failed to Restore the website.');
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
         }
         
         if (!$this->websiteDataRestore($websiteName, $websiteBackupFilePath)) {
-            return array('status' => 'error', 'message' => 'Failed to Restore the website.');
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
         }
         
         if (!$this->websiteInfoRestore($websiteName, $websiteBackupFilePath)) {
-            return array('status' => 'error', 'message' => 'Failed to Restore website.');
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
         }
         
-        return array('status' => 'success', 'message' => 'Successfully Restored the website!');
+        return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_SUCCESS'], $websiteName));
     }
     
     /**
@@ -4388,7 +4451,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function createNewWebsiteBySubscription($params)
     {
         
-        $subscriptionId = isset($params['post']['subscriptionId']) ? (int)$params['post']['subscriptionId'] : '';
+        $subscriptionId = isset($params['post']['subscriptionId']) ? contrexx_input2int($params['post']['subscriptionId']) : '';
         $websiteName    = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
         $email          = isset($params['post']['websiteEmail']) ? contrexx_input2raw($params['post']['websiteEmail']) : '';
         
@@ -4409,6 +4472,111 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return array('status' => 'error');
         }
         return array('status' => 'success');
+    }
+    
+    /**
+     * Send a file to remote server
+     * 
+     * @param array $params
+     * 
+     * @return array
+     */
+    public function sendFileToRemoteServer($params) {
+        if (!isset($params['post'])) {
+            return array('status' => 'error');
+        }
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    if (!isset($params['post']['serviceServerId'])) {
+                         return array('status' => 'error');
+                    }
+
+                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                    $websiteServiceServer     = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
+                    if (empty($websiteServiceServer)) {
+                        return array('status' => 'error');
+                    }
+
+                    $destinationFolder = \Env::get('cx')->getWebsiteTempPath().  BackendController::MULTISITE_BACKUP_TEMP_DIR;
+                    $files = $this->moveFileToRemoteServer($destinationFolder);
+                    $resp = JsonMultiSite::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $params['post']['serviceServerId']), $websiteServiceServer, $files);
+                    if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
+                        return array('status' => 'error');
+                    }
+
+                    //cleanup folder
+                    if (\Cx\Lib\FileSystem\FileSystem::exists($destinationFolder)) {
+                        \Cx\Lib\FileSystem\FileSystem::delete_folder($destinationFolder, true);
+                    }
+                    return array('status' => 'success');
+                    break;
+                case ComponentController::MODE_SERVICE:
+                    if (isset($params['post']['destinationServer'])) {
+                        if (!$this->moveFileToRemoteServer()) {
+                            return array('status' => 'error');
+                        }
+                        return array('status' => 'success');
+                    } else {
+                        $backupFileName = isset($params['post']['backupFileName']) ? contrexx_input2raw($params['post']['backupFileName']) : '';
+                        $serviceServerId = isset($params['post']['serviceServerId']) ? contrexx_input2int($params['post']['serviceServerId']) : 0;
+                        if (empty($backupFileName) || empty($serviceServerId)) {
+                            return array('status' => 'error');
+                        }
+
+                        $backupLocation = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
+                        $filePath       = $backupLocation.'/'.$backupFileName;
+                        if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) || !\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
+                            return array('status' => 'error');
+                        }
+                        $resp = JsonMultiSite::executeCommandOnManager('sendFileToRemoteServer', array('serviceServerId' => $serviceServerId), array($filePath));
+                        if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
+                            return array('status' => 'error');
+                        }
+                        return array('status' => 'success');
+                    }
+                    break;
+                default :
+                    break;
+            }
+        
+        } catch (\Exception $e) {
+             \DBG::log('JsonMultisite::sendFileToRemoteServer() failed!. '.$e->getMessage());
+            return array('status' => 'error');
+        }
+    }
+    
+    /**
+     * Move a File to remote server
+     * 
+     * @param string $destinationFolder destinationFolder name
+     * 
+     * @return mixed boolean | array
+     */
+    public function moveFileToRemoteServer($destinationFolder = null) {
+        $fileLocation = !empty($destinationFolder) ? $destinationFolder : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($fileLocation) && !\Cx\Lib\FileSystem\FileSystem::make_folder($fileLocation)) {
+           return false;
+        }
+        
+        $filesArray = array();
+        foreach ($_FILES as $file) {
+            if ($file['error'] != 0) {
+                continue;
+            }
+            if(!move_uploaded_file($file['tmp_name'], $fileLocation.'/'.$file['name'])) {
+                \DBG::log('Failed to move/copy a file'.$file['name']);
+                continue;
+            }
+
+            if(!empty($destinationFolder)) {
+                $filesArray[] = $fileLocation.'/'.$file['name'];
+            }
+        }
+        
+        return !empty($filesArray) ? $filesArray : true;
     }
     
     protected function activateDebuggingToMemory() {
