@@ -6,6 +6,7 @@
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
  * @package     contrexx
  * @subpackage  core_wysiwyg
+ * @version     1.0.0
  */
 
 namespace Cx\Core\Wysiwyg\Controller;
@@ -17,6 +18,7 @@ namespace Cx\Core\Wysiwyg\Controller;
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
  * @package     contrexx
  * @subpackage  core_wysiwyg
+ * @version     1.0.0
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
     /**
@@ -39,6 +41,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     * To show messages, use \Message class
     * @param \Cx\Core\Html\Sigma $template Template for current CMD
     * @param array $cmd CMD separated by slashes
+    * @global array $_ARRAYLANG Language data
     */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
@@ -100,6 +103,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * This loads a template named after current $act and calls parsePage($actTemplate)
      * @todo $this->cx->getTemplate()->setVariable() should not be called here but in Cx class
      * @global array $_ARRAYLANG Language data
+     * @global $subMenuTitle
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
      */
     public function getPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -225,7 +229,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         ));
     }
     
-    
+    /**
+     * This method defines the option to generate the backend view (list and form)
+     * 
+     * @global array $_ARRAYLANG Language data
+     * @param string $entityClassName class name of the used entity
+     * @param string $classIdentifier class identifier
+     * @return array formed as needed for the view generator
+     */
     protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
         global $_ARRAYLANG;
         

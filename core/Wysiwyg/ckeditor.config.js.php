@@ -32,11 +32,16 @@ $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
 $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
 
-$ymlOption = $wysiwyg->getCustomCSSVariables($pageRepo->find($pageId)->getSkin());
+$skinId = 0;
+if(!empty($pageId)){
+    $skinId = $pageRepo->find($pageId)->getSkin();
+}
+
+$ymlOption = $wysiwyg->getCustomCSSVariables($skinId);
 ?>
 //if the wysiwyg css not defined in the session, then load the css variables and put it into the session
-if(!cx.variables.get('wysiwygCss', 'wysiwyg')) {
-    cx.variables.set('wysiwygCss', [<?php echo '\'' . implode($ymlOption['wysiwygCss'], '\',\'') . '\'' ?>], 'wysiwyg');
+if(!cx.variables.get('css', 'wysiwyg')) {
+    cx.variables.set('css', [<?php echo '\'' . implode($ymlOption['css'], '\',\'') . '\'' ?>], 'wysiwyg');
     cx.variables.set('bodyClass', <?php echo '\'' . $ymlOption['bodyClass'] . '\'' ?>, 'wysiwyg');
     cx.variables.set('bodyId', <?php echo '\'' . $ymlOption['bodyId'] . '\'' ?>, 'wysiwyg');
 }
@@ -66,7 +71,7 @@ CKEDITOR.editorConfig = function( config )
     config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
-    config.baseHref = 'http://<?php echo $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET; ?>/';
+    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getProtocol() . '://' . $_CONFIG['domainUrl'] . $cx->getWebsiteOffsetPath(); ?>/';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
     
@@ -117,7 +122,7 @@ CKEDITOR.editorConfig = function( config )
     config.extraPlugins = 'codemirror';
     
     //Set the CSS Stuff
-    config.contentsCss = cx.variables.get('wysiwygCss', 'wysiwyg');
+    config.contentsCss = cx.variables.get('css', 'wysiwyg');
     config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
     config.bodyId = cx.variables.get('bodyId', 'wysiwyg');
 };
@@ -151,8 +156,6 @@ CKEDITOR.on('instanceReady',function(){
                 this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
             }
         }).bind(loadingTemplates)();
-    
-    
     }
 });
 
@@ -206,16 +209,16 @@ if (<?php
 cx.bind("loadingEnd", function(myArgs) {
     if(myArgs.hasOwnProperty('data')) {
         var data = myArgs['data'];
-        if(data.hasOwnProperty('wysiwygCssReload') && (data.wysiwygCssReload).hasOwnProperty('wysiwygCss')) {
+        if(data.hasOwnProperty('wysiwygCssReload') && (data.wysiwygCssReload).hasOwnProperty('css')) {
             for(var instanceName in CKEDITOR.instances) {
-                //CKEDITOR.instances[instanceName].config.contentsCss =  data.wysiwygCssReload.wysiwygCss;
-                var is_same = cx.variables.get('wysiwygCss', 'wysiwyg').length == (data.wysiwygCssReload.wysiwygCss).length && cx.variables.get('wysiwygCss', 'wysiwyg').every(function(element, index) {
-                    return element === data.wysiwygCssReload.wysiwygCss[index]; 
+                //CKEDITOR.instances[instanceName].config.contentsCss =  data.wysiwygCssReload.css;
+                var is_same = (data.wysiwygCssReload.css).equals(cx.variables.get('css', 'wysiwyg')) && cx.variables.get('css', 'wysiwyg').every(function(element, index) {
+                    return element === data.wysiwygCssReload.css[index]; 
                 });
                 if(!is_same){
                     //cant set the css on the run, so you must destroy the wysiwyg and recreate it
                     CKEDITOR.instances[instanceName].destroy();
-                    cx.variables.set('wysiwygCss', data.wysiwygCssReload.wysiwygCss, 'wysiwyg')
+                    cx.variables.set('css', data.wysiwygCssReload.css, 'wysiwyg')
                     cx.variables.set('bodyClass', data.wysiwygCssReload.bodyClass, 'wysiwyg')
                     cx.variables.set('bodyId', data.wysiwygCssReload.bodyId, 'wysiwyg')
                     var config = {
@@ -229,3 +232,30 @@ cx.bind("loadingEnd", function(myArgs) {
         }
     }
 }, "contentmanager");
+
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array) {
+        return false;
+    }
+    
+    // compare lengths - can save a lot of time 
+    if (this.length != array.length) {
+        return false;
+    }
+
+    for (var i = 0, l=this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i])) {
+                return false;
+            }
+        } else if (this[i] != array[i]) {
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;
+        }
+    }
+    return true;
+}

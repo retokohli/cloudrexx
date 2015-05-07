@@ -257,6 +257,25 @@ class FileSystem
     }
 
     /**
+     * Get the web path from the virtual path.
+     * If the path is already formed for web nothing will happen to it.
+     *
+     * @param $virtualPath string The virtual Path
+     *
+     * @return string The web Path
+     */
+    public static function getWebPath($virtualPath)
+    {
+        if($virtualPath) {
+            $file = preg_replace('#\\\\#', '/', $virtualPath);
+            $file = preg_replace('#'.preg_quote(\Env::get('cx')->getWebsiteDocumentRootPath(), '#').'#', '', $file);
+            $file = preg_replace('#'.preg_quote(\Env::get('cx')->getCodeBaseDocumentRootPath(), '#').'#', '', $file);
+            return \Env::get('cx')->getWebsiteOffsetPath() . $file;
+        }
+        return $virtualPath;
+    }
+
+    /**
      * Checks if $subdirectory is a subdirectory of $path.
      * You can use a virtual path as a parameter.
      *
