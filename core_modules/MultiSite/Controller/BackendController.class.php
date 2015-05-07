@@ -480,9 +480,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $template->setVariable('TABLE', $cronMailsView->render());
         } else {
             $cronMailLog = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog')->findAll();
-            if (empty($cronMailLog)) {
-                $cronMailLog = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog();
-            }
             $cronMailLogView = new \Cx\Core\Html\Controller\ViewGenerator($cronMailLog,
                     array(
                     'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_DEFAULT'],
@@ -504,6 +501,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             ),
                             'success' => array(
                                 'header' => 'Success',
+                            ),
+                            'sentDate' => array(
+                                'header' => 'SentDate',
                             ),
                             'cronMail' => array(
                                 'header' => 'CronMail',
