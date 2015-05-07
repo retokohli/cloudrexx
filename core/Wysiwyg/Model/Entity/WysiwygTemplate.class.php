@@ -1,4 +1,13 @@
 <?php
+/**
+ * Properties for the wysiwyg template entity
+ *
+ * @copyright   Comvation AG
+ * @author      Sebastian Brand <sebastian.brand@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_wysiwyg
+ * @version     1.0.0
+ */
 
 namespace Cx\Core\Wysiwyg\Model\Entity;
 

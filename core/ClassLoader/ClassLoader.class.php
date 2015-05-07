@@ -167,34 +167,29 @@ class ClassLoader {
         return true;
     }
     
-    public function getFilePath($file, &$isCustomized = false) {
+    public function getFilePath($file, &$isCustomized = false, &$isWebsite = false) {
         $file = preg_replace('#\\\\#', '/', $file);
         // using $this->cx->getCodeBaseDocumentRootPath() here instead of $this->basePath
         // makes sure that no matter where the ClassLoader gets initialized,
         // all customized files are always located in the folder /customizing.
         // This means that also the customized files of the installer will be
         // located in the folder /customizing. 
-        $regex = preg_replace('#([\(\)])#', '\\\\$1', $this->cx->getCodeBaseDocumentRootPath());
-        $fileInCodeBase = preg_replace('#'.$regex.'#', '', $file);
+        $file = preg_replace('#'.preg_quote($this->cx->getWebsiteDocumentRootPath(), '#').'#', '', $file);
+        $file = preg_replace('#'.preg_quote($this->cx->getCodeBaseDocumentRootPath(), '#').'#', '', $file);
         
         // load class from customizing folder
-        if ($this->customizingPath && file_exists($this->customizingPath.$fileInCodeBase)) {
+        $isCustomized = false;
+        $isWebsite = false;
+        if ($this->customizingPath && file_exists($this->customizingPath.$file)) {
             $isCustomized = true;
-            return $this->customizingPath.$fileInCodeBase;
-        
+            return $this->customizingPath.$file;
+        // load class from websitepath
+        } else if (file_exists($this->cx->getWebsiteDocumentRootPath().$file)) {
+            $isWebsite = true;
+            return $this->cx->getWebsiteDocumentRootPath().$file;
         // load class from basepath
-        } else if (file_exists($this->basePath.$fileInCodeBase)) {
-            $isCustomized = false;
-            return $this->basePath.$fileInCodeBase;
-        }
-
-        $regex = preg_replace('#([\(\)])#', '\\\\$1', $this->cx->getWebsiteThemesPath());
-        $fileInWebsite = preg_replace('#'.$regex.'#', '', $file);
-        
-        // load class from basepath
-        if (file_exists($this->cx->getWebsiteThemesPath().$fileInWebsite)) {
-            $isCustomized = false;
-            return $this->cx->getWebsiteThemesPath().$fileInWebsite;
+        } else if (file_exists($this->basePath.$file)) {
+            return $this->basePath.$file;
         }
 
         return false;
