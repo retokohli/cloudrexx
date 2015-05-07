@@ -87,7 +87,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'permission' => $systemMgmtPermissionObj
                     ),
                     'notifications' => array(
-                        'permission' => $communicationAndSystemMgmtPermissionObj
+                        'permission' => $communicationAndSystemMgmtPermissionObj,
+                        'children'   => array(
+                            '' => array('permission' => $systemMgmtPermissionObj),
+                            'emails' => array('permission' => $communicationAndSystemMgmtPermissionObj)
+                        )
                     ),
                     'settings'    => array(
                         'permission' => $communicationAndSystemMgmtPermissionObj,
@@ -116,7 +120,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'permission' => $systemMgmtPermissionObj
                     ),
                     'notifications' => array(
-                        'permission' => $communicationAndSystemMgmtPermissionObj
+                        'permission' => $communicationAndSystemMgmtPermissionObj,
+                        'children'   => array(
+                            '' => array('permission' => $systemMgmtPermissionObj),
+                            'emails' => array('permission' => $communicationAndSystemMgmtPermissionObj)
+                        )
                     ),
                     'settings'    => array(
                         'permission' => $communicationAndSystemMgmtPermissionObj,
@@ -450,26 +458,61 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
     public function parseSectionNotifications(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
-        
-        $cronMails = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMail')->findAll();
-        if (empty($cronMails)) {
-            $cronMails = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMail();
-        }
-        
-        $cronMailsView = new \Cx\Core\Html\Controller\ViewGenerator($cronMails,
-                array(
-                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_CRON_MAILS'],
-                    'functions' => array(
-                        'edit' => true,
-                        'add' => true,
-                        'delete' => true,
-                        'sorting' => true,
-                        'paging' => true,
-                        'filtering' => false,
+        if (!empty($cmd[1]) && $cmd[1] == 'emails') {
+            $cronMails = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMail')->findAll();
+            if (empty($cronMails)) {
+                $cronMails = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMail();
+            }
+
+            $cronMailsView = new \Cx\Core\Html\Controller\ViewGenerator($cronMails,
+                    array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_EMAILS'],
+                        'functions' => array(
+                            'edit' => true,
+                            'add' => true,
+                            'delete' => true,
+                            'sorting' => true,
+                            'paging' => true,
+                            'filtering' => false,
+                        )
                     )
-                )
-        );
-        $template->setVariable('TABLE', $cronMailsView->render());
+            );
+            $template->setVariable('TABLE', $cronMailsView->render());
+        } else {
+            $cronMailLog = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog')->findAll();
+            if (empty($cronMailLog)) {
+                $cronMailLog = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog();
+            }
+            $cronMailLogView = new \Cx\Core\Html\Controller\ViewGenerator($cronMailLog,
+                    array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_DEFAULT'],
+                        'functions' => array(
+                            'edit' => true,
+                            'add' => false,
+                            'delete' => true,
+                            'sorting' => true,
+                            'paging' => true,
+                            'filtering' => false,
+                        ),
+                        'fields' => array(
+                            'id' => array('showOverview' => false),
+                            'userId' => array(
+                                'header' => 'UserId',
+                            ),
+                            'websiteId' => array(
+                                'header' => 'WebsiteId',
+                            ),
+                            'success' => array(
+                                'header' => 'Success',
+                            ),
+                            'cronMail' => array(
+                                'header' => 'CronMail',
+                            )
+                        )
+                    )
+            );
+            $template->setVariable('TABLE', $cronMailLogView->render());
+        }
     }
 
     public function parseSectionStatistics(\Cx\Core\Html\Sigma $template, array $cmd) {
