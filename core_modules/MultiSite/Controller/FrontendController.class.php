@@ -24,7 +24,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd) {
         global $_ARRAYLANG;
-
+        
         switch ($cmd) {
             case 'Website':
                 if (empty($_GET['id'])) {
@@ -185,6 +185,49 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                         'MULTISITE_USER_PROFILE_SUBMIT_URL'   => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
                         'MULTISITE_PAYPAL_EMAIL_ATTRIBUTE_ID' => $paypalEmailAddressProfileAttribute,
                     ));
+                }
+                break;
+            case 'NotificationUnsubscribe':
+                    $cronMailLogId    = isset($_GET['i']) ? $_GET['i'] : false;
+                    $cronMailLogToken = isset($_GET['t']) ? $_GET['t'] : false;
+                    if(!$cronMailLogId || !$cronMailLogToken){
+                        $template->setVariable(array(
+                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'],
+                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-error',
+                        ));
+                        break;
+                    }
+                    
+                    $cronMailLogRepo = \Env::em()->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog');
+                    $cronMailLog = $cronMailLogRepo->findBy(array('id' => $cronMailLogId, 'token' => $cronMailLogToken));
+                    
+                    if ($cronMailLog) {
+                    $userId = $cronMailLog->getUserId();
+                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
+                    if (!$objUser) {
+                        $template->setVariable(array(
+                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'],
+                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-error',
+                        ));
+                        break;
+                    }
+                    $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId', 'MultiSite');
+                    $objUser->setProfile(array(
+                        $notificationCancelledProfileAttributeId => array(0 => true)
+                    ));
+                    if (!$objUser->store()) {
+                        $template->setVariable(array(
+                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'],
+                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-error',
+                        ));
+                        break;
+                    }
+                    
+                    $template->setVariable(array(
+                        'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_SUCCESS'],
+                        'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-success',
+                    ));
+                                   
                 }
                 break;
             default:

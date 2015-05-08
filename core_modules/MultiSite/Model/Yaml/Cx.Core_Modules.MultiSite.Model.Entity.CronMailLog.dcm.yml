@@ -23,6 +23,8 @@ Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog:
     sentDate:
         type: datetime
         column: sent_date
+    token:
+        type: string
             
   manyToOne: # owning side
     cronMail:

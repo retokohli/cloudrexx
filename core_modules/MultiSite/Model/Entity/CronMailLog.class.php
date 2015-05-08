@@ -25,7 +25,7 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
      * @var integer $id
      */
     protected $id;
-    
+
     /**
      * @var integer $userId 
      */
@@ -51,12 +51,17 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
      * @var Cx\Core_Modules\MultiSite\Model\Entity\CronMail $cronMail
      */
     protected $cronMail;
+    
+    /**
+     * @var string $token
+     */
+    protected $token;
 
     /**
      * Constructor
      */
     public function __construct() {}
-
+        
     /**
      * Get the id
      * 
@@ -74,7 +79,7 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
     public function setId($id) {
         $this->id = $id;
     }
-    
+
     /**
      * Get the userid
      * 
@@ -155,7 +160,7 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
     public function setCronMail(CronMail $cronMail) {
         $this->cronMail = $cronMail;
     }
-    
+
     /**
      * Get the cron mail
      * 
@@ -164,4 +169,23 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
     public function getCronMail() {
         return $this->cronMail;
     }
+
+    /**
+     * Set the token
+     * 
+     * @param string $token
+     */
+    public function setToken($token) {
+        $this->token = $token;
+    }
+
+    /**
+     * Get the token
+     * 
+     * @return string $token
+     */
+    public function getToken() {
+        return $this->token;
+    }
+
 }

@@ -106,7 +106,25 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         if ($cronMailLogEntity && $cronMailLogEntity->getSuccess()) {
             return;
         }
-     
+        
+        //create a new log
+        if (!$cronMailLogEntity) {
+            $cronMailLogEntity = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog();
+            $cronMailLogEntity->setUserId($objUser->getId());
+            if ($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                $cronMailLogEntity->setWebsiteId($websiteObj->getId());
+            }
+            $cronMailLogEntity->setSuccess(false);
+            $cronMailLogEntity->setToken(\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey());
+            $cronMail->addCronMailLog($cronMailLogEntity);
+            \Env::get('em')->persist($cronMailLogEntity);
+            \Env::get('em')->flush();
+        }
+
+        $unSubscribeUrl = ComponentController::getApiProtocol() .
+                           \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite') .
+                           '/' . \Cx\Core\Routing\Url::fromModuleAndCmd('MultiSite', 'NotificationUnsubscribe', null, array('i'=> $cronMailLogEntity->getId(),'t'=> $cronMailLogEntity->getToken()))->getPath();
+            
         if ($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
             $search  = array(
                             '[[WEBSITE_CREATION_DATE]]',
@@ -114,7 +132,8 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                             '[[WEBSITE_MAIL]]',
                             '[[CUSTOMER_MAIL]]',
                             '[[WEBSITE_DOMAIN]]',
-                            '[[CUSTOMER_NAME]]'
+                            '[[CUSTOMER_NAME]]',
+                            '[[UNSUBSCRIBE]]'
                         );
             $replace = array(
                             $websiteObj->getCreationDate()->format(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME),
@@ -122,7 +141,8 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                             $objUser->getEmail(),
                             $objUser->getEmail(),
                             $websiteObj->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
-                            \FWUser::getParsedUserTitle($objUser)
+                            \FWUser::getParsedUserTitle($objUser),
+                            $unSubscribeUrl
                         );
              $substitution = array();   
         } else {
@@ -141,10 +161,12 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
             $search  = array(
                             '[[CUSTOMER_MAIL]]',
                             '[[CUSTOMER_NAME]]',
+                            '[[UNSUBSCRIBE]]'
                         );
             $replace = array(
                             $objUser->getEmail(),
                             \FWUser::getParsedUserTitle($objUser),
+                            $unSubscribeUrl
                         );            
             $substitution = array('WEBSITE_LIST' => array(0 => array('WEBSITE_DETAIL' => $websiteDetails)));
         }
@@ -163,25 +185,10 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         $mailStatus = \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrValues);
         
         //If the owner already have a log and status failed, update the log
-        if ($cronMailLogEntity && !$cronMailLogEntity->getSuccess()) {
-            $cronMailLogEntity->setSentDate(new \DateTime());
-            $cronMailLogEntity->setSuccess($mailStatus ? true : false);
-        }
-        
-        //Otherwise create a new log
-        if (!$cronMailLogEntity) {
-            $cronMailLog = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog();
-            $cronMailLog->setUserId($objUser->getId());
-            if ($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                $cronMailLog->setWebsiteId($websiteObj->getId());
-            }
-            $cronMailLog->setSentDate(new \DateTime());
-            $cronMailLog->setSuccess($mailStatus ? true : false);
-            $cronMail->addCronMailLog($cronMailLog);
-            \Env::get('em')->persist($cronMailLog);
-        }
+        $cronMailLogEntity->setSentDate(new \DateTime());
+        $cronMailLogEntity->setSuccess($mailStatus ? true : false);
         \Env::get('em')->flush();
-        
+              
         return true;
     }
     

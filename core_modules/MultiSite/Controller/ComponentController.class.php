@@ -2447,6 +2447,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'payPalProfileAttributeId', 
                         'PayPal profile attribute ID',
                         9);
+                    self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                        'notificationCancelledProfileAttributeId', 
+                        'Cancelled notification emails user profile attribute ID',
+                        10);
                 }
                 if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite') === NULL
                     && !\Cx\Core\Setting\Controller\Setting::add('affiliateIdQueryStringKey', 'ref', 7, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT)
