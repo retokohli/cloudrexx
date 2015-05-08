@@ -99,6 +99,18 @@ class CxCore_ModulesMultiSiteModelEntityCronMailLogProxy extends \Cx\Core_Module
         return parent::getCronMail();
     }
 
+    public function setToken($token)
+    {
+        $this->_load();
+        return parent::setToken($token);
+    }
+
+    public function getToken()
+    {
+        $this->_load();
+        return parent::getToken();
+    }
+
     public function __get($name)
     {
         $this->_load();
@@ -138,7 +150,7 @@ class CxCore_ModulesMultiSiteModelEntityCronMailLogProxy extends \Cx\Core_Module
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'userId', 'websiteId', 'success', 'sentDate', 'cronMail');
+        return array('__isInitialized__', 'id', 'userId', 'websiteId', 'success', 'sentDate', 'token', 'cronMail');
     }
 
     public function __clone()
