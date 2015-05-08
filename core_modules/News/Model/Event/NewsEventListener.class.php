@@ -23,9 +23,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
-    }
-   
-    public static function SearchFindContent($search) {
+    	$search = current($eventArgs);
         $term_db = $search->getTerm();
         $query = "SELECT id, text AS content, title, date, redirect,
                MATCH (text,title,teaser_text) AGAINST ('%$term_db%') AS score

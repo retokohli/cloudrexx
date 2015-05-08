@@ -65,13 +65,6 @@ class ComponentController extends
         );
     }
 
-    /**
-     * {@inheritdoc }
-     */
-    public function preContentLoad(Page $page) {
-        $eventHandlerInstance = $this->cx->getEvents();
-        $eventHandlerInstance->addEvent('mediasource.load');
-    }
 
     /**
      * {@inheritdoc }

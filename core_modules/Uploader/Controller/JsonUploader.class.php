@@ -11,12 +11,9 @@
 
 namespace Cx\Core_Modules\Uploader\Controller;
 
-use Cx\Core\Core\Controller\Cx;
-use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use \Cx\Core\Json\JsonAdapter;
 use Cx\Core\Model\RecursiveArrayAccess;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
 use Cx\Core_Modules\MediaBrowser\Model\MoveFileException;
 use Cx\Core_Modules\MediaBrowser\Model\RemoveDirectoryException;
 use Cx\Core_Modules\MediaBrowser\Model\RemoveFileException;
@@ -27,23 +24,16 @@ use Cx\Lib\FileSystem\FileSystem;
  *
  * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
- * @package     contrexx
- * @subpackage  coremodule_uploader
  */
 class JsonUploader extends SystemComponentController implements JsonAdapter
 {
-    protected $message = '';
     
     /**
-     * @var Cx
+     * Message which gets displayed.
+     *
+     * @var string
      */
-    protected $cx;
-
-    function __construct(SystemComponent $systemComponent, Cx $cx)
-    {
-        parent::__construct($systemComponent, $cx);
-        $this->cx = Cx::instanciate();
-    }
+    protected $message = '';
 
 
     /**
@@ -76,6 +66,14 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         return $this->message;
     }
 
+    /**
+     * Upload handler.
+     *
+     * @param $params
+     *
+     * @return array
+     * @throws UploaderException
+     */
     public function upload($params)
     {
         global $_ARRAYLANG;
@@ -91,10 +89,9 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $tmpPath = $path;
         } elseif (isset($params['post']['path'])) {
             $path_part = explode("/", $params['post']['path'], 2);
-            $mediaBrowserConfiguration
-                = MediaBrowserConfiguration::getInstance(
-            );
-            $path = $mediaBrowserConfiguration->getMediaTypePathsbyNameAndOffset($path_part[0],0)
+            $mediaSourceManager
+                = $this->cx->getMediaSourceManager();
+            $path = $mediaSourceManager->getMediaTypePathsbyNameAndOffset($path_part[0],0)
                 . '/' . $path_part[1];
 
             $tmpPath = $_SESSION->getTempPath();
@@ -125,6 +122,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         );
 
 
+        $response = new UploadResponse();
         if (isset($_SESSION['uploader']['handlers'][$id]['callback'])) {
 
             /**
@@ -149,7 +147,6 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             }
 
             $filePath = dirname( $uploader['path']);
-            $response = new UploadResponse();
             if (!is_array($callback)) {
                 $class = new \ReflectionClass($callback);
                 if ($class->implementsInterface(
@@ -216,13 +213,11 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         global $_ARRAYLANG;
 
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $mediaBrowserConfiguration
-            = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::getInstance(
-        );
-        $mediaBrowserConfiguration->getMediaTypes();
+        $mediaSourceManager
+            = $this->cx->getMediaSourceManager();
+        $mediaSourceManager->getMediaTypes();
         $pathArray = explode('/', $params['get']['path']);
-        $strPath = MediaBrowserConfiguration::getInstance(
-        )->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0);
+        $strPath = $mediaSourceManager->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0);
 
 
         $strPath .= '/' . join('/', $pathArray);
@@ -276,8 +271,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
             $fileExtension = end($fileArray);
         }
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $strPath = MediaBrowserConfiguration::getInstance(
-        )->getMediaTypePathsbyNameAndOffset(rtrim($params['get']['path'], "/"),0);
+        $strPath = $this->cx->getMediaSourceManager()->getMediaTypePathsbyNameAndOffset(rtrim($params['get']['path'], "/"),0);
 
         $fileDot = '.';
         if (is_dir($strPath . '/' . $params['post']['oldName'])) {

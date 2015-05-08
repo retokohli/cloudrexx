@@ -11,9 +11,9 @@
  */
 
 namespace Cx\Modules\Podcast\Model\Event;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
  * Class PodcastEventListener
@@ -53,10 +53,10 @@ class PodcastEventListener extends DefaultEventListener {
         $search->appendResult($podcastCategoryResult);
     }
 
-    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
-        $mediaType = new MediaType();
+        $mediaType = new MediaSource();
         $mediaType->setName('podcast');
         $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_PODCAST']);
         $mediaType->setDirectory(array(

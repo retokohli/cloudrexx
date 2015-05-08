@@ -82,7 +82,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     public function getSources()
     {
         global $_ARRAYLANG, $_CORELANG;
-        $mediaBrowser = MediaBrowserConfiguration::getInstance();
+        $mediaSourceManager = $this->cx->getMediaSourceManager();
 
         \Env::get('init')->loadLanguageData('MediaBrowser');
         // standard
@@ -90,7 +90,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
         \Env::get('init')->loadLanguageData('FileBrowser');
         foreach (
-            $mediaBrowser->getMediaTypes() as $type =>
+            $mediaSourceManager->getMediaTypes() as $type =>
             $name
         ) {
             if (!$this->_checkForModule($type)) {
@@ -102,7 +102,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
                 'path' => array_values(
                     array_filter(
                         explode(
-                            '/', $mediaBrowser->getMediaTypePathsbyNameAndOffset($type,1)
+                            '/', $mediaSourceManager->getMediaTypePathsbyNameAndOffset($type,1)
                         )
                     )
                 )
@@ -133,10 +133,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
         if (array_key_exists(
             $mediaType,
-            MediaBrowserConfiguration::getInstance()->getMediaTypePaths()
+            $this->cx->getMediaSourceManager()->getMediaTypePaths()
         )) {
-            $strPath = MediaBrowserConfiguration::getInstance(
-                )->getMediaTypePaths();
+            $strPath = $this->cx->getMediaSourceManager()->getMediaTypePaths();
              $strPath=    $strPath[$mediaType][0] . $filePath;
         } else {
             $strPath = $this->cx->getWebsiteImagesPath() . $filePath;

@@ -11,13 +11,11 @@
  */
 
 namespace Cx\Modules\Calendar\Model\Event;
-
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
- * Class CalendarEventListener
  * EventListener for Calendar
  * 
  * @copyright   Comvation AG
@@ -37,10 +35,10 @@ class CalendarEventListener extends DefaultEventListener {
         $search->appendResult($result);
     }
 
-    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
-        $mediaType = new MediaType();
+        $mediaType = new MediaSource();
         $mediaType->setName('calendar');
         $mediaType->setHumanName($_ARRAYLANG['TXT_CALENDAR']);
         $mediaType->setDirectory(array(

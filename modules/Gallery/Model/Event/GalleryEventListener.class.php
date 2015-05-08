@@ -11,10 +11,9 @@
  */
 
 namespace Cx\Modules\Gallery\Model\Event;
-
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
  * Class GalleryEventListener
@@ -59,11 +58,11 @@ class GalleryEventListener extends DefaultEventListener {
     }
 
 
-    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('Gallery');
-        $mediaType = new MediaType();
+        $mediaType = new MediaSource();
         $mediaType->setName('gallery');
         $mediaType->setHumanName($_ARRAYLANG['TXT_THUMBNAIL_GALLERY']);
         $mediaType->setDirectory(array(

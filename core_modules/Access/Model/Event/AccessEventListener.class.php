@@ -13,8 +13,8 @@
 namespace Cx\Core_Modules\Access\Model\Event;
 
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 
 /**
  * Class AccessEventListener
@@ -29,13 +29,13 @@ class AccessEventListener extends DefaultEventListener
 {
 
     /**
-     * @param MediaBrowserConfiguration $mediaBrowserConfiguration
+     * @param MediaSourceManager $mediaBrowserConfiguration
      */
     public function mediasourceLoad(
-        MediaBrowserConfiguration $mediaBrowserConfiguration
+        MediaSourceManager $mediaBrowserConfiguration
     ) {
         global $_ARRAYLANG;
-        $mediaType = new MediaType(
+        $mediaType = new MediaSource(
             'access',
             $_ARRAYLANG['TXT_USER_ADMINISTRATION'],
             array(

@@ -12,9 +12,11 @@
 
 namespace Cx\Core_Modules\Contact\Model\Event;
 
+use Cx\Core\Core\Controller\Cx;
+use Cx\Core\Event\Model\Entity\EventListener;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
  * Class ContactEventListener
@@ -28,13 +30,13 @@ use Cx\Core\Model\Model\Entity\MediaType;
 class ContactEventListener extends DefaultEventListener  {
 
     /**
-     * @param MediaBrowserConfiguration $mediaBrowserConfiguration
+     * @param MediaSourceManager $mediaBrowserConfiguration
      */
-    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('Contact');
-        $mediaType = new MediaType();
+        $mediaType = new MediaSource();
         $mediaType->setName('attach');
         $mediaType->setHumanName($_ARRAYLANG['TXT_CONTACT_UPLOADS']);
         $mediaType->setDirectory(array(

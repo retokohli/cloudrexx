@@ -13,8 +13,8 @@
 namespace Cx\Core\Wysiwyg\Model\Event;
 
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 
 /**
  * Class WysiwygEventListener
@@ -28,12 +28,12 @@ use Cx\Core\Model\Model\Entity\MediaType;
 class WysiwygEventListener extends DefaultEventListener {
 
     /**
-     * @param MediaBrowserConfiguration $mediaBrowserConfiguration
+     * @param MediaSourceManager $mediaBrowserConfiguration
      */
-    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
-        $mediaType = new MediaType();
+        $mediaType = new MediaSource();
         $mediaType->setName('wysiwyg');
         $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_WYSIWYG']);
         $mediaType->setDirectory(array(

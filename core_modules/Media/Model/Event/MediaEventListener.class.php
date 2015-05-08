@@ -13,8 +13,8 @@
 namespace Cx\Core_Modules\Media\Model\Event;
 
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 
 /**
  * Class MediaEventListener
@@ -32,12 +32,12 @@ class MediaEventListener extends DefaultEventListener
      * @param MediaBrowserConfiguration $mediaBrowserConfiguration
      */
     public function mediasourceLoad(
-        MediaBrowserConfiguration $mediaBrowserConfiguration
+        MediaSourceManager $mediaBrowserConfiguration
     ) {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('Media');
         for ($i = 1; $i < 5; $i++) {
-            $mediaType = new MediaType();
+            $mediaType = new MediaSource();
             $mediaType->setName('media' . $i);
             $mediaType->setHumanName(
                 $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] . ' ' . $i
