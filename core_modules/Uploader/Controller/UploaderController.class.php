@@ -3,6 +3,7 @@
 /**
  * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
+ *              Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_uploader
  */
@@ -17,8 +18,6 @@ use Cx\Lib\FileSystem\FileSystem;
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  coremodule_uploader
  */
 class UploaderException extends \Exception {
 
@@ -32,10 +31,34 @@ define('PLUPLOAD_TYPE_ERR', 104);
 define('PLUPLOAD_UNKNOWN_ERR', 111);
 define('PLUPLOAD_SECURITY_ERR', 105);
 
+/**
+ * Class UploaderController
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
+ *              Robin Glauser <robin.glauser@comvation.com>
+ */
 class UploaderController {
 
+    /**
+     * Configuration array
+     *
+     * @var array
+     */
     public static $conf;
+
+    /**
+     * Error id
+     *
+     * @var int
+     */
     private static $_error = null;
+
+    /**
+     * List of errors
+     *
+     * @var array
+     */
     private static $_errors = array(
         PLUPLOAD_MOVE_ERR => "Failed to move uploaded file.",
         PLUPLOAD_INPUT_ERR => "Failed to open input stream.",
@@ -76,6 +99,8 @@ class UploaderController {
     }
 
     /**
+     * Handles the upload request.
+     *
      * @param array $conf
      *
      * @return array|bool
@@ -281,6 +306,9 @@ class UploaderController {
         self::rrmdir($chunk_dir);
     }
 
+    /**
+     * Send static no caching header
+     */
     static function noCacheHeaders() {
         // Make sure this file is not cached (as it might happen on iOS devices, for example)
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -290,6 +318,12 @@ class UploaderController {
         header("Pragma: no-cache");
     }
 
+    /**
+     * Send cors headers
+     *
+     * @param array  $headers
+     * @param string $origin
+     */
     static function corsHeaders($headers = array(), $origin = '*') {
         $allow_origin_present = false;
 
@@ -312,6 +346,9 @@ class UploaderController {
         }
     }
 
+    /**
+     * Cleanup method
+     */
     private static function cleanup() {
         // Remove old temp files	
         if (file_exists(self::$conf['tmp_dir'])) {

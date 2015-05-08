@@ -11,10 +11,10 @@
  */
 
 namespace Cx\Modules\Shop\Model\Event;
-
+use Cx\Core\Core\Controller\Cx;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
  * Class ShopEventListener
@@ -53,11 +53,11 @@ class ShopEventListener extends DefaultEventListener {
         $search->appendResult($result);
     }
 
-    public function mediasourceLoad(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $mediaType = new MediaType();
+        $mediaType = new MediaSource();
         $mediaType->setName('shop');
         $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_SHOP']);
         $mediaType->setDirectory(array(

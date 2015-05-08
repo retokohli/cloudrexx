@@ -10,9 +10,11 @@
 
 namespace Cx\Modules\MediaDir\Model\Event;
 
+
+use Cx\Core\Core\Controller\Cx;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core\Model\Model\Entity\MediaType;
 
 /**
  * Class MediaDirEventListener
@@ -26,11 +28,11 @@ class MediaDirEventListener extends DefaultEventListener
 
 
     public function mediasourceLoad(
-        MediaBrowserConfiguration $mediaBrowserConfiguration
+        MediaSourceManager $mediaBrowserConfiguration
     ) {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaDir');
-        $mediaType = new MediaType();
+        $mediaType = new MediaSource();
         $mediaType->setName('mediadir');
         $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_MEDIADIR']);
         $mediaType->setDirectory(

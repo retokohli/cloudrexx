@@ -249,7 +249,7 @@ class FileSystem
     {
         if (self::isVirtualPath($virtualPath)) {
             $pathArray = explode('/', $virtualPath);
-            return MediaBrowserConfiguration::getInstance()->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0) . '/' . join(
+            return \Cx\Core\Core\Controller\Cx::instanciate()->getMediaSourceManager()->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0) . '/' . join(
                 '/', $pathArray
             );
         }
@@ -304,7 +304,7 @@ class FileSystem
     {
         $hasAccess = false;
         foreach (
-            MediaBrowserConfiguration::getInstance()->getMediaTypePaths() as
+            \Cx\Core\Core\Controller\Cx::instanciate()->getMediaSourceManager()->getMediaTypePaths() as
             $virtualPathName => $mediatype
         ) {
             if (self::isSubdirectory($virtualPathName, $path)) {

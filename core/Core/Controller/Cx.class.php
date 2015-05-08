@@ -518,6 +518,11 @@ namespace Cx\Core\Core\Controller {
         protected $websitePublicTempWebPath;
 
         /**
+         * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
+         */
+        protected $mediaSourceManager;
+
+        /**
          * This creates instances of this class
          *
          * Normally the first instance is returned. You may set another instance
@@ -2875,6 +2880,16 @@ namespace Cx\Core\Core\Controller {
 
         public function getInstances() {
             return self::$instances;
+        }
+
+        /**
+         * @return \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
+         */
+        public function getMediaSourceManager(){
+            if (!$this->mediaSourceManager){
+                $this->mediaSourceManager = new \Cx\Core\MediaSource\Model\Entity\MediaSourceManager($this);
+            }
+            return $this->mediaSourceManager;
         }
     }
 }
