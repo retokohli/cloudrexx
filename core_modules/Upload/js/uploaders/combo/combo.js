@@ -152,11 +152,7 @@ var ComboUploader = function(theConfig) {
         switchUploader(curType);
     });
 
-    //hello mr. ugly hack!
-    //periodically check whether the upload finished and display response if yes.
-    //we do this polling because of the api mess (jumploader: global callbacks, pl: nice, 
-    //simple: todo)
-    setInterval(function() {
+    var uploadResponse = function() {
         $.get(
             config.responseUrl,
             {
@@ -164,8 +160,10 @@ var ComboUploader = function(theConfig) {
             },
             function(data) {
                 //sort out empty responses
-                if(!data.fileCount && !data.messages)
+                if(!data.fileCount && !data.messages) {
+                    setTimeout(uploadResponse(), 1000);
                     return;
+                }
 
                 if(data.messages && data.messages.length > 0) {
                     var html = '<ul>';
@@ -196,11 +194,18 @@ var ComboUploader = function(theConfig) {
 
                 div.find('.responseView').show();
                 div.find('.uploadView').hide();
+                setTimeout(uploadResponse(), 1000);
             },
             'json'
         );
-    }, 1000);
-
+    };
+    
+    //hello mr. ugly hack!
+    //periodically check whether the upload finished and display response if yes.
+    //we do this polling because of the api mess (jumploader: global callbacks, pl: nice, 
+    //simple: todo)
+    setTimeout(uploadResponse(), 1000);
+    
     return {
         refresh: function() {
             switchUploader(curType);
