@@ -1158,9 +1158,14 @@ class Config
             //administrationArea group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNews')
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','on', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','off', 1,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard News");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc')
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc','http://www.contrexx.com/feed/news_headlines_de.xml', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')){
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardStatistics')
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardStatistics','on', 2,
@@ -1417,11 +1422,7 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for useKnowledgePlaceholders");
             }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc')
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc','http://www.contrexx.com/feed/news_headlines_de.xml', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
-            }
+
 
             // release
             \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml', $configPath);
