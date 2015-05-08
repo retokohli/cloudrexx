@@ -161,7 +161,7 @@ var ComboUploader = function(theConfig) {
             function(data) {
                 //sort out empty responses
                 if(!data.fileCount && !data.messages) {
-                    setTimeout(uploadResponse(), 1000);
+                    setTimeout(uploadResponse, 1000);
                     return;
                 }
 
@@ -194,7 +194,7 @@ var ComboUploader = function(theConfig) {
 
                 div.find('.responseView').show();
                 div.find('.uploadView').hide();
-                setTimeout(uploadResponse(), 1000);
+                setTimeout(uploadResponse, 1000);
             },
             'json'
         );
@@ -204,7 +204,7 @@ var ComboUploader = function(theConfig) {
     //periodically check whether the upload finished and display response if yes.
     //we do this polling because of the api mess (jumploader: global callbacks, pl: nice, 
     //simple: todo)
-    setTimeout(uploadResponse(), 1000);
+    setTimeout(uploadResponse, 1000);
     
     return {
         refresh: function() {
