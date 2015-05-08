@@ -320,4 +320,11 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'] = 'Bitte Name der We
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DATE_AND_TIME'] = 'Datum und Zeit';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_BUTTON'] = 'Wiederherstellen';
 
+//delete the backuped website
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE'] = 'Dieses Backup löschen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_CONFIRM'] = 'Bitte bestätigen Sie das Löschen dieses Backups.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_INPROGRESS'] = 'Löschen des Backups ist in Arbeit...';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED'] = 'Beim Löschen des Backups ist ein Fehler aufgetreten.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_SUCCESS'] = 'Das Löschen des Backups war erfolgreich.';
+
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'] = 'Erfolgreich an der Adminkonsole der Webseite %s angemeldet!<br />Die Adminkonsole öffnet sich in einem neuen Fenster. <a href="#anleitung" title="Anleitung">Hier</a> eine Anleitung, sollte sich kein neues Fenster geöffnet haben.';

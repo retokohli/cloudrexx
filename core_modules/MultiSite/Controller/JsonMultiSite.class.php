@@ -119,7 +119,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'getWebsiteInfo'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
-            'deleteBackupedWebsite' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'deleteWebsiteBackup'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'getAllBackupFilesInfo' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'sendFileToRemoteServer'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteConfig'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
@@ -3884,7 +3884,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param array $params
      * @return array
      */
-    public function deleteBackupedWebsite($params)
+    public function deleteWebsiteBackup($params)
     {
         global $_ARRAYLANG;
         
@@ -3915,7 +3915,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
         } catch (\Exception $e) {
-            \DBG::log('JsonMultiSite::deleteBackupedWebsite() failed: To delete the backuped website'. $e->getMessage());
+            \DBG::log('JsonMultiSite::deleteWebsiteBackup() failed: To delete the backuped website'. $e->getMessage());
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED']);
         } 
     }
@@ -4502,7 +4502,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
                     $destinationFolder = \Env::get('cx')->getWebsiteTempPath().  BackendController::MULTISITE_BACKUP_TEMP_DIR;
                     $files = $this->moveFileToRemoteServer($destinationFolder);
-                    $resp = JsonMultiSite::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $params['post']['serviceServerId']), $websiteServiceServer, $files);
+                    $resp = self::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $params['post']['serviceServerId']), $websiteServiceServer, $files);
                     if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
                         return array('status' => 'error');
                     }
@@ -4531,7 +4531,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) || !\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
                             return array('status' => 'error');
                         }
-                        $resp = JsonMultiSite::executeCommandOnManager('sendFileToRemoteServer', array('serviceServerId' => $serviceServerId), array($filePath));
+                        $resp = self::executeCommandOnManager('sendFileToRemoteServer', array('serviceServerId' => $serviceServerId), array($filePath));
                         if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
                             return array('status' => 'error');
                         }

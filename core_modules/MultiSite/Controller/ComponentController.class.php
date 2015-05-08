@@ -1534,7 +1534,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             //delete the backuped website
             if (!empty($deleteBackupedWebsiteName)) {
-                return $this->deleteBackupedWebsite($deleteBackupedWebsiteName, $serviceServerId);
+                return $this->deleteWebsiteBackup($deleteBackupedWebsiteName, $serviceServerId);
             }
             
             if (!empty($websiteId)) {
@@ -1581,7 +1581,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @return string
      */
-    public function deleteBackupedWebsite($backupedWebsiteName, $websiteServiceServerId)
+    public function deleteWebsiteBackup($backupedWebsiteName, $websiteServiceServerId)
     {
         global $_ARRAYLANG;
         
@@ -1597,7 +1597,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return json_encode(array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']));
         }
 
-        $resp = JsonMultiSite::executeCommandOnServiceServer('deleteBackupedWebsite', array('websiteBackupFileName' => $backupedWebsiteName), $websiteServiceServer);
+        $resp = JsonMultiSite::executeCommandOnServiceServer('deleteWebsiteBackup', array('websiteBackupFileName' => $backupedWebsiteName), $websiteServiceServer);
         $responseMessage = (!$resp || $resp->status == 'error' || $resp->data->status == 'error') ? array('status' => 'error', 
                                                                                                           'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED']
                                                                                                     ) 

@@ -122,3 +122,6 @@ a.deleteMultisiteConfig {
 .border-red {
     border-color: #b94a48;
 }
+.ui-dialog #loading.websiteBackup {
+ height: 28px !important;
+}

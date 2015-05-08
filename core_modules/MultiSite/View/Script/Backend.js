@@ -523,7 +523,7 @@
                 type: "GET",
                 beforeSend: function() {
                     cx.trigger("loadingStart", "websiteBackup", {});
-                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() +"</div>");
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\" class = \"websiteBackup\">" + cx.jQuery('#loading').html() +"</div>");
                     $('#loading > span').html(cx.variables.get('websiteInProgress', 'multisite/lang'));
                 },
                 success: function(response) {
@@ -1169,7 +1169,7 @@ var Multisite = {
                         data: params,
                         beforeSend: function () {
                             $J('#restoreWebsite').dialog("close");
-                            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+                            cx.tools.StatusMessage.showMessage("<div id=\"loading\" class = \"websiteBackup\">" + cx.jQuery('#loading').html() + "</div>");
                             $J('#loading > span').html(cx.variables.get('websiteRestoreInProgress', 'multisite/lang'));
                         },
                         success: function (response) {

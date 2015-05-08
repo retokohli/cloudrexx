@@ -1117,6 +1117,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'SEARCH'                                         => $_ARRAYLANG['TXT_MULTISITE_SEARCH'],
             'FILTER'                                         => $_ARRAYLANG['TXT_MULTISITE_FILTER'],
             'SEARCH_TERM'                                    => $_ARRAYLANG['TXT_MULTISITE_ENTER_SEARCH_TERM'],
+            'SHOWALL_BACKUPS_BUTTON'                         => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_SHOWALL_BACKUPS_BUTTON'],
             'TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'      => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'],
             'TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'=> $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'],
             'TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'],
