@@ -24,7 +24,7 @@ use \Cx\Core\Model\RecursiveArrayAccess as RecursiveArrayAccess;
  * @package     contrexx
  * @subpackage  core
  */
-class cmsSession extends RecursiveArrayAccess {
+class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface {
 
     /**
      * Instance of class for use in the singelton pattern.
@@ -152,12 +152,36 @@ class cmsSession extends RecursiveArrayAccess {
     }
 
     /**
-     * Destroy the session and session object
+     * Callable on session destroy
+     *
+     * @param string $aKey
+     * @param boolean $destroyCookie
+     * @return boolean
      */
-    public function destroy()
+    public function destroy($aKey = "", $destroyCookie = true)
     {
-        session_destroy();
-        self::$instance = null;
+        if (empty($aKey)){
+            session_destroy();
+            self::$instance = null;
+        }
+        else {
+            $query = "DELETE FROM " . DBPREFIX . "sessions WHERE sessionid = '" . $aKey . "'";
+            \Env::get('db')->Execute($query);
+
+            $query = "DELETE FROM " . DBPREFIX . "session_variable WHERE sessionid = '" . $aKey . "'";
+            \Env::get('db')->Execute($query);
+
+            if (\Cx\Lib\FileSystem\FileSystem::exists($this->sessionPath)) {
+                \Cx\Lib\FileSystem\FileSystem::delete_folder($this->sessionPath, true);
+            }
+
+            if ($destroyCookie) {
+                setcookie("PHPSESSID", '', time() - 3600, '/');
+            }
+            // do not write the session data
+            $this->discardChanges = true;
+        }
+        return true;
     }
     
     /**
@@ -201,12 +225,7 @@ class cmsSession extends RecursiveArrayAccess {
             $this->initSessionLifetime();
 
         if (session_set_save_handler(
-            array(& $this, 'cmsSessionOpen'),
-            array(& $this, 'cmsSessionClose'),
-            array(& $this, 'cmsSessionRead'),
-            array(& $this, 'cmsSessionWrite'),
-            array(& $this, 'cmsSessionDestroy'),
-            array(& $this, 'cmsSessionGc')))
+            $this, true))
         {
             session_start();
 
@@ -437,11 +456,14 @@ class cmsSession extends RecursiveArrayAccess {
     /**
      * Callable method on session open
      *
+     * @param string $save_path
+     * @param string $session_id
+     *
      * @return bool
      */
-    function cmsSessionOpen()
+    function open($save_path, $session_id)
     {
-        $this->cmsSessionGc();
+        $this->gc(null);
         return true;
     }
 
@@ -450,7 +472,7 @@ class cmsSession extends RecursiveArrayAccess {
      * 
      * @return boolean
      */
-    function cmsSessionClose()
+    function close()
     {
         return true;
     }
@@ -461,9 +483,8 @@ class cmsSession extends RecursiveArrayAccess {
      * @param string $aKey
      * @return string
      */
-    function cmsSessionRead( $aKey )
-    {        
-        
+    function read( $aKey )
+    {
         $this->sessionid = $aKey;        
         $this->sessionPath = \Env::get('cx')->getWebsiteTempWebPath() . '/' . $this->sessionPathPrefix . $this->sessionid;
         /** @var $objResult ADORecordSet */
@@ -488,38 +509,15 @@ class cmsSession extends RecursiveArrayAccess {
     /**
      * Callable on session write
      *
-     * @return boolean
+     * @param string $session_id
+     * @param string $session_data
+     *
+     * @return bool
      */
-    function cmsSessionWrite() {
+    function write($session_id, $session_data) {
         return true;
     }
 
-    /**
-     * Callable on session destroy
-     * 
-     * @param string $aKey
-     * @param boolean $destroyCookie
-     * @return boolean
-     */
-    function cmsSessionDestroy($aKey, $destroyCookie = true) {          
-        $query = "DELETE FROM " . DBPREFIX . "sessions WHERE sessionid = '" . $aKey . "'";
-        \Env::get('db')->Execute($query);
-
-        $query = "DELETE FROM " . DBPREFIX . "session_variable WHERE sessionid = '" . $aKey . "'";
-        \Env::get('db')->Execute($query);
-
-        if (\Cx\Lib\FileSystem\FileSystem::exists($this->sessionPath)) {
-            \Cx\Lib\FileSystem\FileSystem::delete_folder($this->sessionPath, true);
-        }
-
-        if ($destroyCookie) {
-            setcookie("PHPSESSID", '', time() - 3600, '/');
-        }
-        // do not write the session data
-        $this->discardChanges = true;
-        
-        return true;
-    }
 
     /**
      * Destroy session by given user id
@@ -533,7 +531,7 @@ class cmsSession extends RecursiveArrayAccess {
         if ($objResult) {
             while (!$objResult->EOF) {
                 if ($objResult->fields['sessionid'] != $this->sessionid) {
-                    $this->cmsSessionDestroy($objResult->fields['sessionid'], false);
+                    $this->destroy($objResult->fields['sessionid'], false);
                 }
                 $objResult->MoveNext();
             }
@@ -544,10 +542,12 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Clear expired session
-     * 
-     * @return boolean
+     *
+     * @param int $maxlifetime
+     *
+     * @return bool
      */
-    function cmsSessionGc() {
+    function gc($maxlifetime) {
         \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`s`.`remember_me` = 0) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetime) . '))');
         \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`s`.`remember_me` = 1) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetimeRememberMe) . '))');
         return true;
