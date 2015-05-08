@@ -1015,9 +1015,62 @@ class Product
     {
         global $objDatabase;
 
-        $args = array($this->pictures, $this->category_id, $this->distribution, $this->price, $this->resellerprice, $this->stock, $this->stock_visible ? 1 : 0, $this->discountprice, $this->discount_active ? 1 : 0, $this->active ? 1 : 0, $this->b2b ? 1 : 0, $this->b2c ? 1 : 0, $this->date_start, $this->date_end, $this->manufacturer_id, $this->ord, $this->vat_id, $this->weight, addslashes($this->flags), $this->usergroup_ids ? $this->usergroup_ids : 'NULL', $this->group_id ? $this->group_id : 'NULL', $this->article_id ? $this->article_id : 'NULL', $this->id);
-        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products SET picture=?, category_id=?, distribution=?, normalprice=?, resellerprice=?, stock=?, stock_visible=?, discountprice=?, discount_active=?, active=?, b2b=?, b2c=?, date_start=?, date_end=?, manufacturer_id=?, ord=?, vat_id=?, weight=?, flags=?, usergroup_ids=?, group_id=?, article_id=? WHERE id=?";
-
+        $args = array(
+            $this->pictures,
+            $this->category_id,
+            $this->distribution,
+            $this->price,
+            $this->resellerprice,
+            $this->stock,
+            $this->stock_visible ? 1 : 0,
+            $this->discountprice,
+            $this->discount_active ? 1 : 0,
+            $this->active ? 1 : 0,
+            $this->b2b ? 1 : 0,
+            $this->b2c ? 1 : 0,
+            $this->date_start,
+            $this->date_end,
+            $this->manufacturer_id,
+            $this->ord,
+            $this->vat_id,
+            $this->weight,
+            addslashes($this->flags),
+            $this->usergroup_ids ? $this->usergroup_ids : 'NULL',
+            $this->group_id ? $this->group_id : 'NULL',
+            $this->article_id ? $this->article_id : 'NULL',
+            $this->id
+        );
+        
+        $query = '
+            UPDATE
+                `' . DBPREFIX . 'module_shop' . MODULE_INDEX . '_products`
+            SET
+                `picture` = ?,
+                `category_id` = ?,
+                `distribution` = ?,
+                `normalprice` = ?,
+                `resellerprice` = ?,
+                `stock` = ?,
+                `stock_visible` = ?,
+                `discountprice` = ?,
+                `discount_active` = ?,
+                `active` = ?,
+                `b2b` = ?,
+                `b2c` = ?,
+                `date_start` = ?,
+                `date_end` = ?,
+                `manufacturer_id` = ?,
+                `ord` = ?,
+                `vat_id` = ?,
+                `weight` = ?,
+                `flags` = ?,
+                `usergroup_ids` = ?,
+                `group_id` = ?,
+                `article_id` = ?
+            WHERE
+                `id` = ?
+        ';
+        
         $objResult = $objDatabase->Execute($query, $args);
         if (!$objResult) return false;
         return true;
