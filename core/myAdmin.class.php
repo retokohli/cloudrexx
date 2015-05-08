@@ -202,7 +202,7 @@ class myAdminManager {
             $objTemplate->hideBlock('stats_javascript');
         }
 
-        /*$objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml?version=' . $_CONFIG['coreCmsVersion']);
+        $objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml?version=' . $_CONFIG['coreCmsVersion']);
         $objRss->parse();
         $arrItems = $objRss->getItems();
         if (!empty($arrItems) && ($_CONFIG['dashboardNews'] == 'on')) {
@@ -211,9 +211,9 @@ class myAdminManager {
                 'NEWS_LINK'  => $arrItems[0]['link'],
             ));
             $objTemplate->parse('news');
-        } else {*/
+        } else {
             $objTemplate->hideBlock('news');
-        //}
+        }
     }
 
     private function getStatistics()
