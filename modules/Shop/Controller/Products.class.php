@@ -677,7 +677,7 @@ class Products
 
         if (!is_array($arrId)) return false;
         $error = false;
-        $objImageManager = new ImageManager();
+        $objImageManager = new \ImageManager();
         foreach ($arrId as $product_id) {
             if ($product_id <= 0) {
                 \Message::error(sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $product_id));
