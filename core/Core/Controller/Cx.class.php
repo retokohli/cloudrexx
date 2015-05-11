@@ -1294,34 +1294,38 @@ namespace Cx\Core\Core\Controller {
             if ($this->getMode() == static::MODE_COMMAND) {
                 global $argv;
 
-                // cleanup params
-                $params = array();
-                if (isset($argv)) {
-                    $params = array_slice($argv, 1);
-                } else {
-                    $params = preg_replace('#' . $this->getWebsiteOffsetPath() . static::FOLDER_NAME_COMMAND_MODE . '(/)?#', '', $_GET['__cap']);
-                    $params = explode('/', $params) + $_GET;
-                    unset($params['__cap']);
+                try {
+                    // cleanup params
+                    $params = array();
+                    if (isset($argv)) {
+                        $params = array_slice($argv, 1);
+                    } else {
+                        $params = preg_replace('#' . $this->getWebsiteOffsetPath() . static::FOLDER_NAME_COMMAND_MODE . '(/)?#', '', $_GET['__cap']);
+                        $params = explode('/', $params) + $_GET;
+                        unset($params['__cap']);
+                    }
+
+                    $this->getCommands();
+
+                    // find component (defaults to help)
+                    $command = current($params);
+                    $params = array_slice($params, 1);
+                    if (!isset($this->commands[$command])) {
+                        echo 'Command \'' . $command . '\' does not exist';
+                        $command = 'help';
+                    }
+
+                    if (!isset($this->commands[$command])) {
+                        throw new \Exception('Command \'' . $command . '\' does not exist');
+                    }
+
+                    // execute command
+                    $this->commands[$command]->executeCommand($command, $params);
+                    return;
+                } catch (\Exception $e) {
+                    throw new \Exception($e);
                 }
-
-                $this->getCommands();
-
-                // find component (defaults to help)
-                $command = current($params);
-                $params = array_slice($params, 1);
-                if (!isset($this->commands[$command])) {
-                    echo 'Command \'' . $command . '\' does not exist
-';
-                    $command = 'help';
-                }
-
-                if (!isset($this->commands[$command])) {
-                    throw new \Exception('Command \'' . $command . '\' does not exist');
-                }
-
-                // execute command
-                $this->commands[$command]->executeCommand($command, $params);
-                return;
+                
             }
             // init template
             $this->loadTemplate();                      // Sigma Template
@@ -2160,7 +2164,8 @@ namespace Cx\Core\Core\Controller {
                 $componentRepo = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
                 $this->commands = array();
                 foreach ($componentRepo->findAll() as $component) {
-                    foreach ($component->getCommandsForCommandMode() as $command) {
+                    foreach ($component->getCommandsForCommandMode() as $cmdKey => $cmdValue) {
+                        $command = ($cmdValue && $cmdValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) ? $cmdKey : $cmdValue;
                         if (isset($this->commands[$command])) {
                             throw new \Exception('Command \'' . $command . '\' is already in index');
                         }

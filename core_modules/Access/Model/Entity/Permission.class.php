@@ -100,11 +100,15 @@ class Permission {
      * @return boolean
      */
     public function hasAccess(array $params = array()) {
-        $protocol = \Env::get('cx')->getRequest()->getUrl()->getProtocol();
-        $method   = \Env::get('cx')->getRequest()->getHttpRequestMethod();
+        $mode  = \Cx\Core\Core\Controller\Cx::instanciate()->getMode();
+        
+        $protocol = \Env::get('cx')->getRequest() ? \Env::get('cx')->getRequest()->getUrl()->getProtocol() : '';
+        $method   = \Env::get('cx')->getRequest() ? \Env::get('cx')->getRequest()->getHttpRequestMethod() 
+                        : ((php_sapi_name() === 'cli' || $mode == \Cx\Core\Core\Controller\Cx::MODE_COMMAND) ? 'cli' : '');
+        
         
         //protocol check
-        if (!empty($this->allowedProtocols) && !in_array($protocol, $this->allowedProtocols)) {
+        if ($mode != \Cx\Core\Core\Controller\Cx::MODE_COMMAND && !empty($this->allowedProtocols) && !in_array($protocol, $this->allowedProtocols)) {
             return false;
         }
         
