@@ -57,7 +57,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @param string $command
      */
-    public function executeCommand($command) {
+    public function executeCommand($command, $arguments) {
+        parent::executeCommand($command, $arguments);
+        
         switch ($command) {
             case 'Cron':
                 $executedJobs = 0;

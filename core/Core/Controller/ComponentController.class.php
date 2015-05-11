@@ -56,6 +56,8 @@ cx(.bat) uninstall [core|core_module|module|lib|theme] {component name}';
     }
 
     public function executeCommand($command, $arguments) {
+        parent::executeCommand($command, $arguments);
+        
         switch ($command) {
             case 'help':
                 echo 'Contrexx command mode help.

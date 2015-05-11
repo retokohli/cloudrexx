@@ -197,7 +197,18 @@ class SystemComponentController extends Controller {
      * @param array $arguments List of arguments for the command
      * @return void
      */
-    public function executeCommand($command, $arguments) {}
+    public function executeCommand($command, $arguments) {
+        $commands = $this->getCommandsForCommandMode();
+       
+        $objPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, array('cli'), false, null, null, null);
+        if (isset($commands[$command]) && $commands[$command] instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) {
+            $objPermission = $commands[$command];
+        }
+
+        if (!$objPermission->hasAccess($arguments)) {
+            throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
+        }
+    }
     
     /**
      * Do something before system initialization
