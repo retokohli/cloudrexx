@@ -755,7 +755,7 @@ class Url {
     public function __toString()
     {
         return
-            $this->protocol . '://' . $this->domain . ':' . $this->port . $this->path;
+            $this->protocol . '://' . $this->domain . ':' . $this->port . '/' . $this->path;
     }
 
 
