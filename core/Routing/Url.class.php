@@ -754,8 +754,12 @@ class Url {
      */
     public function __toString()
     {
-        return
-            $this->protocol . '://' . $this->domain . ':' . $this->port . '/' . $this->path;
+        $url = $this->protocol . '://' . 
+               $this->domain . ':' . 
+               $this->port . '/' . 
+               ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
+               $this->path;
+        return $url;
     }
 
 
