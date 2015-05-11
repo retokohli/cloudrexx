@@ -43,6 +43,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
             return;
         }
         
+        $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId','MultiSite');                
         foreach ($cronMails as $cronMail) {
             $criterias = array();
             $filterIds = array();
@@ -75,8 +76,11 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                                                           ->findWebsitesByCriteria(array('user.id' => $user->getId()))
                                                      : $result;
                                                         
-                \DBG::msg(__METHOD__.": matched CronMail (ID={$cronMail->getId()}): User=".\FWUser::getParsedUserTitle($user).(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
-                $this->sendMail($cronMail, $user, $website, $cronMailLogRepo);
+                $objUser = \FWUser::getFWUserObject()->objUser->getUser($user->getId());
+                if ($objUser && !$user->getProfileAttribute($notificationCancelledProfileAttributeId)) {                    
+                    \DBG::msg(__METHOD__.": matched CronMail (ID={$cronMail->getId()}): User=".\FWUser::getParsedUserTitle($user).(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
+                    $this->sendMail($cronMail, $user, $website, $cronMailLogRepo);
+                }
             }
         }
     }
@@ -293,7 +297,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                 $qb->select('User')
                    ->from('\Cx\Core\User\Model\Entity\User', 'User');
             }
-                    
+
             $dateFields = array('User.regdate', 'User.lastAuth', 'User.lastActivity', 'Website.creationDate', );
             $this->addFilterToQueryBuilder($qb, $cronMailCriterias, $dateFields);
             
