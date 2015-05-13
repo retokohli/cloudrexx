@@ -182,11 +182,13 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_WEBMAIL'] = 'Webmail';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL'] = 'SSL';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_USERNAME'] = 'Benutzername';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PASSWORD'] = 'Passwort';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_ALIAS'] = 'E-Mail & Aliasse';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_EMAIL_ALIAS_HELP'] = 'Der Empfang und Versand von Nachrichten ist über die oben aufgeführte E-Mail und Aliasse möglich. Damit der Empfang über die Aliasse funktioniert, muss der <a target="_blank" href="https://contrexx.freshdesk.com/solution/articles/5000622145-e-mail-dienst-aktivieren">E-Mail Dienst pro Domain-Alias aktiviert werden</a>.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT'] = 'Port';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_RESET_PASSWORD'] = 'Kennwort zur&uuml;cksetzen';
 $_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_ERROR_MSG'] = 'Die Rücksetzung Ihres E-Mail Kennworts schlug fehl. Bitte versuchen Sie es erneut.';
 $_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_MSG'] = 'Ihr E-Mail Kennwort wurde erfolgreich zurück gesetzt.';
-$_ARRAYLANG['TXT_MULTISITE_WEBSITE_SHOW_EMAIL'] = 'E-Mail Konto anzeigen';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_SHOW_EMAIL'] = 'E-Mail Konfiguration anzeigen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_ACCESS_DATA'] = "Zugangsdaten";
 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_EMAIL_CONFIG'] = "E-Mail Konfiguration";

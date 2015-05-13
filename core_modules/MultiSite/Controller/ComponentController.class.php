@@ -1286,12 +1286,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         } else {
             if (($loadPageAction == 'Edit') && $objTemplate->blockExists('showEditEmailName')) {
+                $domains = array_merge(array($website->getBaseDn()), $website->getDomainAliases());
+                foreach ($domains as $key => $val) {
+                    $domains[$key] = 'info@' . \Cx\Core\Net\Controller\ComponentController::convertIdnToUtf8Format($val->getName());
+                }
                 $objTemplate->setVariable(array(
                     'MULTISITE_EMAIL_USERNAME' => 'info@' . $website->getMailDn()->getName(),
                     'MULTISITE_EMAIL_SERVER' => $website->getMailDn()->getName(),
                     'MULTISITE_EMAIL_WEBMAIL' => $website->getWebmailDn()->getName(),
                     'MULTISITE_EMAIL_PASSWORD' => empty($password)?'********':base64_decode($password),
                     'MULTISITE_WEBSITE_ID' => contrexx_raw2xhtml($website->getId()),
+                    'MULTISITE_EMAIL_ALIAS'=> implode('<br />', $domains),
                 ));
             }
             $objTemplate->setVariable(array(
@@ -2578,7 +2583,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
-        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainEventListener);
     }
         
     protected function registerWebsiteEventListener() {
