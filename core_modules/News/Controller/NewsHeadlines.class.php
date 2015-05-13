@@ -160,6 +160,9 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         // Backward compatibility for templates pre 3.0
                         'HEADLINE_IMAGE_PATH'     => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
                         'HEADLINE_THUMBNAIL_PATH' => contrexx_raw2xhtml($imageSource),
+                        
+                        'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['teaser_image_thumbnail_path']),
+                        'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
                     ));
 
                     if ($this->_objTemplate->blockExists('news_image')) {
