@@ -143,6 +143,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         news.author_id          AS authorid,
                                                         news.changelog          AS changelog,
                                                         news.teaser_image_path  AS newsimage,
+                                                        news.teaser_image_thumbnail_path AS newsThumbImg,
                                                         news.typeid             AS typeid,
                                                         news.catid              AS catid,
                                                         news.allow_comments     AS commentactive,
@@ -265,12 +266,14 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
          * purpose of this: @link news::getTeaser()
          */
         $this->_teaser = contrexx_raw2xhtml($newsTeaser);
-
-        if (!empty($objResult->fields['newsimage'])) {
+        
+        if (!empty($objResult->fields['newsimage']) || !empty($objResult->fields['newsThumbImg'])) {
             $this->_objTpl->setVariable(array(
-                'NEWS_IMAGE'         => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
-                'NEWS_IMAGE_SRC'     => $objResult->fields['newsimage'],
-                'NEWS_IMAGE_ALT'     => $newstitle
+                'NEWS_IMAGE'               => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
+                'NEWS_IMAGE_SRC'           => $objResult->fields['newsimage'],
+                'NEWS_IMAGE_ALT'           => $newstitle,
+                'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['newsThumbImg']),
+                'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['newsimage']),
             ));
 
             if ($this->_objTpl->blockExists('news_image')) {
@@ -990,10 +993,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
                 if (!empty($image)) {
                     $this->_objTpl->setVariable(array(
-                        'NEWS_IMAGE'         => $image,
-                        'NEWS_IMAGE_SRC'     => contrexx_raw2xhtml($imageSource),
-                        'NEWS_IMAGE_ALT'     => contrexx_raw2xhtml($newstitle),
-                        'NEWS_IMAGE_LINK'    => $htmlLinkImage,
+                        'NEWS_IMAGE'               => $image,
+                        'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
+                        'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
+                        'NEWS_IMAGE_LINK'          => $htmlLinkImage,
+                        'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['teaser_image_thumbnail_path']),
+                        'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
@@ -1225,10 +1230,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
                 if (!empty($image)) {
                     $this->_objTpl->setVariable(array(
-                        'NEWS_IMAGE'         => $image,
-                        'NEWS_IMAGE_SRC'     => contrexx_raw2xhtml($imageSource),
-                        'NEWS_IMAGE_ALT'     => contrexx_raw2xhtml($newstitle),
-                        'NEWS_IMAGE_LINK'    => $htmlLinkImage,
+                        'NEWS_IMAGE'               => $image,
+                        'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
+                        'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
+                        'NEWS_IMAGE_LINK'          => $htmlLinkImage,
+                        'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['teaser_image_thumbnail_path']),
+                        'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
