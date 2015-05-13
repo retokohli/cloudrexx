@@ -75,6 +75,10 @@
                 border-right: 1px solid #ddd;
             }
 
+            #multisite_edit_email_form .tab-form-content {
+                padding: 0px 15px;
+            }
+
             #multisite_edit_email_form .form-row {
                 padding: 10px 0 0 0;
             }
@@ -120,206 +124,233 @@
                 class="sr-only">Close</span></button>
         <h2>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_EMAIL_CONFIG}</h2>
         <fieldset>
-            <h3>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_ACCESS_DATA}</h3>
-            <h4>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_MAIL_ACCOUNT}</h4>
-
-            <div class="row process form-row-close">
-                <div class="form-group form-group-narrow">
-                    <label class="col-md-3 control-label" for="username_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_USERNAME}</label>
-
-                    <div class="col-md-9">
-                        <input id="username_email" name="username_email" readonly="readonly" type="text"
-                               value="{MULTISITE_EMAIL_USERNAME}" class="form-control input-md">
-                    </div>
-                </div>
-            </div>
-            <div class="row process form-row-close">
-                <div class="form-group form-group-narrow">
-                    <label class="col-md-3 control-label" for="reset_password_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PASSWORD}</label>
-
-                    <div class="col-md-9">
-                        <div class="input-group">
-                            <input id="reset_password_email" name="buttondropdown" class="form-control" type="text"
-                                   value="{MULTISITE_EMAIL_PASSWORD}" readonly="readonly">
-
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-default" id="resetPassword"
-                                        name="reset_password_email"
-                                        style="margin:0">
-                                    {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_RESET_PASSWORD}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <h4>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_MORE_MAIL_ACCOUNTS}</h4>
-
-            <p>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_USERNAME_HELP}</p>
-
-            <button type="button" data-id="{MULTISITE_WEBSITE_ID}"
-                    data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' ></button> Laden..."
-                    onclick="pleskAutoLogin(jQuery(this));">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_OPEN_MANAGER}
-            </button>
-            <h3>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_WEBMAIL}</h3>
-            {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_WEBMAIL_HELP}
-            <a href="https://{MULTISITE_EMAIL_WEBMAIL}" target="_blank">https://{MULTISITE_EMAIL_WEBMAIL}</a>
-
-            <h3>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIL_SETUP}</h3>
-            {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIL_SETUP_INFO}
-            <h4>{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_INCOMING_MAIL_SERVER}
-                ({TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}/{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP})
-            </h4>
-            {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER_INFO}
             <div role="tabpanel">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#POP3" aria-controls="POP3" role="tab"
-                                                              data-toggle="tab">POP3</a></li>
-                    <li role="presentation"><a href="#IMAP" aria-controls="IMAP" role="tab" data-toggle="tab">IMAP</a>
+                    <li role="presentation" class="active"><a href="#access_data" aria-controls="access_data" role="tab"
+                                                              data-toggle="tab">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_ACCESS_DATA}</a></li>
+                    <li role="presentation"><a href="#webmail" aria-controls="webmail" role="tab" data-toggle="tab">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_WEBMAIL}</a>
+                    <li role="presentation"><a href="#mail_setup" aria-controls="mail_setup" role="tab" data-toggle="tab">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIL_SETUP}</a>
                     </li>
                 </ul>
                 <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="POP3">
+                    <div role="tabpanel" class="tab-pane active" id="access_data">
+                        <h4>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_MAIL_ACCOUNT}</h4>
+                        <div class="tab-form-content">
+                            <div class="row process form-row-close">
+                                <div class="form-group form-group-narrow">
+                                    <label class="col-md-3 control-label" for="username_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_USERNAME}</label>
 
+                                    <div class="col-md-9">
+                                        <input id="username_email" name="username_email" readonly="readonly" type="text"
+                                               value="{MULTISITE_EMAIL_USERNAME}" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row process form-row-close">
+                                <div class="form-group form-group-narrow">
+                                    <label class="col-md-3 control-label" for="reset_password_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PASSWORD}</label>
 
-                        <div class="form-group">
-                            <label class="col-md-3 control-label" for="ssl-pop3">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
+                                    <div class="col-md-9">
+                                        <div class="input-group">
+                                            <input id="reset_password_email" name="buttondropdown" class="form-control" type="text"
+                                                   value="{MULTISITE_EMAIL_PASSWORD}" readonly="readonly">
 
-                            <div class="col-md-9">
-                                <div class="checkbox">
-                                    <label for="ssl-pop3">
-                                        <input type="checkbox" name="ssl" id="ssl-pop3" value="1">
-                                    </label>
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-default" id="resetPassword"
+                                                        name="reset_password_email"
+                                                        style="margin:0">
+                                                    {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_RESET_PASSWORD}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row process form-row-close">
+                                <div class="form-group form-group-narrow">
+                                    <label class="col-md-3 control-label" for="email_alias">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_ALIAS}</label>
+
+                                    <div class="col-md-9">
+                                        {MULTISITE_EMAIL_ALIAS}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group pop3 form-group-narrow">
-                            <label class="col-md-3 control-label" for="incoming_server_pop3_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+                        {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_EMAIL_ALIAS_HELP}
+                        <h4>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_MORE_MAIL_ACCOUNTS}</h4>
 
-                            <div class="col-md-9">
-                                <input id="incoming_server_pop3_email" name="incoming_server_pop3_email"
-                                       readonly="readonly" type="text"
-                                       class="form-control input-md" value="110">
-                            </div>
-                        </div>
-                        <div class="form-group pop3-ssl form-group-narrow" style="display: none">
-                            <label class="col-md-3 control-label" for="incoming_server_ssl_pop3_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL}
-                                {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+                        <p>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_USERNAME_HELP}</p>
 
-                            <div class="col-md-9">
-                                <input id="incoming_server_ssl_pop3_email" name="incoming_server_ssl_pop3_email"
-                                       readonly="readonly" type="text"
-                                       class="form-control input-md" value="995">
-                            </div>
-                        </div>
-                        <div class="form-group form-group-narrow">
-                            <label class="col-md-3 control-label" for="incoming_server_email_pop3">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
-
-                            <div class="col-md-9">
-                                <input id="incoming_server_email_pop3" name="incoming_server_email_pop3"
-                                       readonly="readonly" type="text"
-                                       value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
-                            </div>
-                        </div>
+                        <button type="button" data-id="{MULTISITE_WEBSITE_ID}"
+                                data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' ></button> Laden..."
+                                onclick="pleskAutoLogin(jQuery(this));">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_OPEN_MANAGER}
+                        </button>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="IMAP">
+                    <div role="tabpanel" class="tab-pane" id="webmail">
+                        <h3>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_WEBMAIL}</h3>
+                        {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_WEBMAIL_HELP}
+                        <a href="https://{MULTISITE_EMAIL_WEBMAIL}" target="_blank">https://{MULTISITE_EMAIL_WEBMAIL}</a>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="mail_setup">
+                        {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIL_SETUP_INFO}
+                        <h4>{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_INCOMING_MAIL_SERVER}
+                            ({TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}/{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP})
+                        </h4>
+                        {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER_INFO}
+                        <div role="tabpanel">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation"><a href="#POP3" aria-controls="POP3" role="tab"
+                                                                          data-toggle="tab">POP3</a></li>
+                                <li role="presentation" class="active"><a href="#IMAP" aria-controls="IMAP" role="tab" data-toggle="tab">IMAP</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane" id="POP3">
 
 
-                        <div class="form-group">
-                            <label class="col-md-3 control-label" for="ssl-imap">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label" for="ssl-pop3">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
 
-                            <div class="col-md-9">
-                                <div class="checkbox">
-                                    <label for="ssl-imap">
-                                        <input type="checkbox" name="ssl" id="ssl-imap" value="1">
-                                    </label>
+                                        <div class="col-md-9">
+                                            <div class="checkbox">
+                                                <label for="ssl-pop3">
+                                                    <input type="checkbox" name="ssl" id="ssl-pop3" value="1" checked="checked">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group pop3 form-group-narrow" style="display: none">
+                                        <label class="col-md-3 control-label" for="incoming_server_pop3_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+
+                                        <div class="col-md-9">
+                                            <input id="incoming_server_pop3_email" name="incoming_server_pop3_email"
+                                                   readonly="readonly" type="text"
+                                                   class="form-control input-md" value="110">
+                                        </div>
+                                    </div>
+                                    <div class="form-group pop3-ssl form-group-narrow">
+                                        <label class="col-md-3 control-label" for="incoming_server_ssl_pop3_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL}
+                                            {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_POP3}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+
+                                        <div class="col-md-9">
+                                            <input id="incoming_server_ssl_pop3_email" name="incoming_server_ssl_pop3_email"
+                                                   readonly="readonly" type="text"
+                                                   class="form-control input-md" value="995">
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-group-narrow">
+                                        <label class="col-md-3 control-label" for="incoming_server_email_pop3">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
+
+                                        <div class="col-md-9">
+                                            <input id="incoming_server_email_pop3" name="incoming_server_email_pop3"
+                                                   readonly="readonly" type="text"
+                                                   value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane active" id="IMAP">
+
+
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label" for="ssl-imap">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
+
+                                        <div class="col-md-9">
+                                            <div class="checkbox">
+                                                <label for="ssl-imap">
+                                                    <input type="checkbox" name="ssl" id="ssl-imap" value="1" checked="checked">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group imap form-group-narrow" style="display: none">
+                                        <label class="col-md-3 control-label" for="incoming_server_imap_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+
+                                        <div class="col-md-9">
+                                            <input id="incoming_server_imap_email" name="incoming_server_imap_email"
+                                                   readonly="readonly" type="text"
+                                                   class="form-control input-md" value="143">
+                                        </div>
+                                    </div>
+                                    <div class="form-group imap-ssl form-group-narrow">
+                                        <label class="col-md-3 control-label" for="incoming_server_ssl_imap_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL}
+                                            {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+
+                                        <div class="col-md-9">
+                                            <input id="incoming_server_ssl_imap_email" name="incoming_server_ssl_imap_email"
+                                                   readonly="readonly" type="text"
+                                                   class="form-control input-md" value="993">
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-group-narrow">
+                                        <label class="col-md-3 control-label" for="incoming_server_email_imap">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
+
+                                        <div class="col-md-9">
+                                            <input id="incoming_server_email_imap" name="incoming_server_email_imap"
+                                                   readonly="readonly" type="text"
+                                                   value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group imap form-group-narrow">
-                            <label class="col-md-3 control-label" for="incoming_server_imap_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+                        <h4>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER}</h4>
 
-                            <div class="col-md-9">
-                                <input id="incoming_server_imap_email" name="incoming_server_imap_email"
-                                       readonly="readonly" type="text"
-                                       class="form-control input-md" value="143">
+                        <p> {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER_INFO}</p>
+
+                        <div class="tab-form-content">
+                            <div class="row process">
+                                <div class="form-group form-group-narrow">
+                                    <label class="col-md-3 control-label" for="ssl-smtp">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
+
+                                    <div class="col-md-9">
+                                        <div class="checkbox">
+                                            <label for="ssl-smtp">
+                                                <input type="checkbox" name="ssl" id="ssl-smtp" value="1" checked="checked">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row process smtp form-row-close" style="display: none">
+                                <div class="form-group form-group-narrow">
+                                    <label class="col-md-3 control-label" for="outgoing_server_port_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SMTP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+
+                                    <div class="col-md-9">
+                                        <input id="outgoing_server_port_email" name="outgoing_server_port_email"
+                                               readonly="readonly" type="text" value="25" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row process smtp-ssl form-row-close">
+                                <div class="form-group form-group-narrow">
+                                    <label class="col-md-3 control-label" for="outgoing_server_ssl_port_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL}
+                                        {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SMTP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
+
+                                    <div class="col-md-9">
+                                        <input id="outgoing_server_ssl_port_email" name="outgoing_server_ssl_port_email"
+                                               readonly="readonly" type="text" value="465" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row process form-row-close">
+                                <div class="form-group form-group-narrow">
+                                    <label class="col-md-3 control-label" for="outgoing_server_email_smtp">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
+
+                                    <div class="col-md-9">
+                                        <input id="outgoing_server_email_smtp" name="outgoing_server_email_smtp" readonly="readonly"
+                                               type="text"
+                                               value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group imap-ssl form-group-narrow" style="display: none">
-                            <label class="col-md-3 control-label" for="incoming_server_ssl_imap_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL}
-                                {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_IMAP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
-
-                            <div class="col-md-9">
-                                <input id="incoming_server_ssl_imap_email" name="incoming_server_ssl_imap_email"
-                                       readonly="readonly" type="text"
-                                       class="form-control input-md" value="993">
-                            </div>
-                        </div>
-                        <div class="form-group form-group-narrow">
-                            <label class="col-md-3 control-label" for="incoming_server_email_imap">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
-
-                            <div class="col-md-9">
-                                <input id="incoming_server_email_imap" name="incoming_server_email_imap"
-                                       readonly="readonly" type="text"
-                                       value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
-                            </div>
-                        </div>
-
                     </div>
                 </div>
-            </div>
-            <h4>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER}</h4>
-
-            <p> {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_OUTPUT_SERVER_INFO}</p>
-
-
-            <div class="row process">
-                <div class="form-group form-group-narrow">
-                    <label class="col-md-3 control-label" for="ssl-smtp">{TXT_CORE_MODULE_MULTISITE_EMAIL_SECURE_CONNECTION}</label>
-
-                    <div class="col-md-9">
-                        <div class="checkbox">
-                            <label for="ssl-smtp">
-                                <input type="checkbox" name="ssl" id="ssl-smtp" value="1">
-                            </label>
-                        </div>
-                    </div>
+            <div class="tab-form-content">    
+                <div class="row form-row">
+                    <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CLOSE}</button>
                 </div>
-            </div>
-            <div class="row process smtp form-row-close">
-                <div class="form-group form-group-narrow">
-                    <label class="col-md-3 control-label" for="outgoing_server_port_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SMTP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
-
-                    <div class="col-md-9">
-                        <input id="outgoing_server_port_email" name="outgoing_server_port_email"
-                               readonly="readonly" type="text" value="25" class="form-control input-md">
-                    </div>
-                </div>
-            </div>
-            <div class="row process smtp-ssl form-row-close" style="display: none">
-                <div class="form-group form-group-narrow">
-                    <label class="col-md-3 control-label" for="outgoing_server_ssl_port_email">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SSL}
-                        {TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_SMTP}-{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_PORT}</label>
-
-                    <div class="col-md-9">
-                        <input id="outgoing_server_ssl_port_email" name="outgoing_server_ssl_port_email"
-                               readonly="readonly" type="text" value="465" class="form-control input-md">
-                    </div>
-                </div>
-            </div>
-            <div class="row process form-row-close">
-                <div class="form-group form-group-narrow">
-                    <label class="col-md-3 control-label" for="outgoing_server_email_smtp">{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_HOST}</label>
-
-                    <div class="col-md-9">
-                        <input id="outgoing_server_email_smtp" name="outgoing_server_email_smtp" readonly="readonly"
-                               type="text"
-                               value="{MULTISITE_EMAIL_SERVER}" class="form-control input-md">
-                    </div>
-                </div>
-            </div>
-            <div class="row form-row">
-                <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CLOSE}</button>
             </div>
         </fieldset>
     </form>
