@@ -425,7 +425,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_cron_mail_criteria` (
   `id` int(11) NOT NULL auto_increment,
   `cron_mail_id` int(11) default NULL,
-  `attribute` varchar(20) NOT NULL,
+  `attribute` varchar(50) NOT NULL,
   `criteria` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `IDX_F33B4339EF07C77B` (`cron_mail_id`),
