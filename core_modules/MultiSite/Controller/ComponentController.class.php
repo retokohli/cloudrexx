@@ -377,7 +377,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         //Get the orders based on CRM contact id and get params
         $orderRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order');
         $orders    = $orderRepo->getOrdersByCriteria($crmContactId, $status, $excludeProduct, $includeProduct);
-
+        
         //parse the Site Details
         if (!empty($orders)) {            
             foreach ($orders as $order) {
@@ -390,9 +390,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if (!$product) {
                         continue;
                     }
+                    
+                    $description       = $subscription->getDescription();
+                    $websiteCollection = $subscription->getProductEntity();
+                    $websiteNames      = array();
+                    if (empty($description)) {
+                        if (   $websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection
+                            && $websiteCollection->getWebsites()
+                           ) {
+                            foreach ($websiteCollection->getWebsites() as $website) {
+                                $websiteNames[] = $website->getName();
+                            }
+                        }
+                    }
+                    
                     $objTemplate->setGlobalVariable(array(
                         'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
-                        'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($subscription->getDescription()),
+                        'MULTISITE_SUBSCRIPTION_DESCRIPTION' => !empty($description) ? contrexx_raw2xhtml($description) 
+                                                                : (!empty($websiteNames) ? contrexx_raw2xhtml(implode(',', $websiteNames)) : ''),
                         'MULTISITE_WEBSITE_PLAN'             => contrexx_raw2xhtml($product->getName()),
                         'MULTISITE_WEBSITE_INVOICE_DATE'     => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
                         'MULTISITE_WEBSITE_EXPIRE_DATE'      => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',    
@@ -403,7 +418,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     }
 
                     if ($status != 'expired') {
-                        $websiteCollection = $subscription->getProductEntity();
                         if ($websiteCollection) {
                             if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
                                 foreach ($websiteCollection->getWebsites() as $website) {
