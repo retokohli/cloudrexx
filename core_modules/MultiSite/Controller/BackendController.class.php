@@ -500,19 +500,57 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'fields' => array(
                             'id' => array('showOverview' => false),
                             'userId' => array(
-                                'header' => 'UserId',
+                                'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER'],
+                                'table' => array(
+                                    'parse' => function($user) {
+                                        return \FWUser::getParsedUserLink($user);
+                                    },
+                                ),
                             ),
                             'websiteId' => array(
-                                'header' => 'WebsiteId',
+                                'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE'],
+                                'table'  => array(
+                                    'parse' => function($websiteId) {
+                                        global $_ARRAYLANG;
+                                        if (empty($websiteId)) {
+                                            return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ALL'];
+                                        }
+                                        $websiteEntity = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')
+                                                ->findOneById($websiteId);
+                                        if (!$websiteEntity) {
+                                            return;
+                                        }
+                                        return $websiteEntity->getEditLink();
+                                    }
+                                )
                             ),
                             'success' => array(
-                                'header' => 'Success',
+                                'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITESTATE'],
+                                'table' => array(
+                                    'parse' => function($value) {
+                                        return self::getStatusImageTag($value);
+                                    }
+                                )
                             ),
                             'sentDate' => array(
-                                'header' => 'SentDate',
+                                'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATIONS_SENT'],
                             ),
+                            'token' => array('showOverview' => false),
                             'cronMail' => array(
-                                'header' => 'CronMail',
+                                'header' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_EMAIL'],
+                                'table' => array(
+                                    'parse' => function($value) {
+                                        global $_ARRAYLANG;
+                                        $cronMailEntity = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMail')
+                                                            ->findOneById($value);
+                                        if (!$cronMailEntity) {
+                                            return;
+                                        }
+                                        return '<a href="index.php?cmd=MultiSite&amp;act=notifications/emails&amp;editid='
+                                            . $cronMailEntity->getId() . '" title="' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATIONS_EMAIL_EDIT'] . '">'
+                                            . $cronMailEntity->getMailTemplateKey() . '</a>';
+                                    }
+                                )
                             )
                         )
                     )
@@ -520,7 +558,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $template->setVariable('TABLE', $cronMailLogView->render());
         }
     }
-
+    
     public function parseSectionStatistics(\Cx\Core\Html\Sigma $template, array $cmd) {
         //dynamic use websites path
         //self::errorHandler();
@@ -920,8 +958,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'header' => 'TXT_CORE_MODULE_MULTISITE_WEBSITESTATE',
                                 'table' => array(
                                     'parse' => function($value, $arrData) {
-                                        $led = $value ? 'led_green.gif' : 'led_red.gif';
-                                        return '<img src="../core/Core/View/Media/icons/'. $led .'" alt="status" />';
+                                        return self::getStatusImageTag($value);
                                     }
                                 )
                             ),
@@ -1621,5 +1658,22 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return isset($referrals[$affiliateId]) ? $referrals[$affiliateId] : 0;
     }
     
+    /**
+     * Get the status image tag
+     * 
+     * @staticvar string $htmlImgTag
+     * @param boolean $status
+     * 
+     * @return string
+     */
+    private static function getStatusImageTag($status)
+    {
+        static $htmlImgTag = '<img src="%1$s" alt="%2$s" />';
+        
+        $src = '../core/Core/View/Media/icons/';
+        $src .= $status ? 'led_green.gif' : 'led_red.gif';
+        $alt = $status ? 'success' : 'error';
+        return sprintf($htmlImgTag, contrexx_raw2xhtml($src), $alt);
+    }
 }
 

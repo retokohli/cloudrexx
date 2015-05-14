@@ -330,3 +330,10 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED'] = 'Beim L�
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_SUCCESS'] = 'Das Löschen des Backups war erfolgreich.';
 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'] = 'Erfolgreich an der Adminkonsole der Webseite %s angemeldet!<br />Die Adminkonsole öffnet sich in einem neuen Fenster. <a href="#anleitung" title="Anleitung">Hier</a> eine Anleitung, sollte sich kein neues Fenster geöffnet haben.';
+
+// Notification section
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_DEFAULT'] = 'Übersicht';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_EMAILS'] = 'E-Mails';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATIONS_SENT'] = 'Gesendet';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE'] = 'Website';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ALL'] ='Alle';
