@@ -1251,6 +1251,7 @@ class NewsletterManager extends NewsletterLib
             ORDER BY date_create DESC, status, id DESC", $_CONFIG['corePagingLimit'], $pos);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
+                $arrMailRecipientCount = $this->_getMailRecipientCount(NULL, $_CONFIG['corePagingLimit'], $pos);
                 $feedbackCount = isset($arrFeedback[$objResult->fields['id']]) ? $arrFeedback[$objResult->fields['id']] : 0;
                 $feedbackStrFormat = '%1$s (%2$s%%)';
                 $feedbackPercent = ($objResult->fields['count'] > 0 && $feedbackCount  > 0) ? round(100 / $objResult->fields['count'] * $feedbackCount) : 0;
@@ -1267,7 +1268,7 @@ class NewsletterManager extends NewsletterLib
                     'NEWSLETTER_MAIL_TEMPLATE' => htmlentities($arrTemplates[$objResult->fields['template']]['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $objResult->fields['date_create']),
                     'NEWSLETTER_MAIL_COUNT' => $objResult->fields['count'],
-                    'NEWSLETTER_MAIL_USERS' => (int) $this->getCurrentMailRecipientCount($objResult->fields['id']), // we need to get user amount anyway for a listing
+                    'NEWSLETTER_MAIL_USERS' => isset($arrMailRecipientCount[$objResult->fields['id']]) ? $arrMailRecipientCount[$objResult->fields['id']] : 0
                 ));
 
                 $this->_objTpl->setGlobalVariable('NEWSLETTER_MAIL_ID', $objResult->fields['id']);
@@ -2693,7 +2694,7 @@ class NewsletterManager extends NewsletterLib
                     }
                 }
 
-				die(json_encode($arrJsonData));
+		die(json_encode($arrJsonData));
             } else {
                 // request was sent through regular POST
                 $this->_objTpl->setVariable(array(
