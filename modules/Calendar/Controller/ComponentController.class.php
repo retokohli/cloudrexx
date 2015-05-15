@@ -37,12 +37,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                 define('CALENDAR_MANDATE', MODULE_INDEX);
                 
-                $objCalendar = new \Cx\Modules\Calendar\Controller\Calendar(\Env::get('cx')->getPage()->getContent(), MODULE_INDEX);
-                \Env::get('cx')->getPage()->setContent($objCalendar->getCalendarPage());
+                $objCalendar = new \Cx\Modules\Calendar\Controller\Calendar($page->getContent(), MODULE_INDEX);
+                $page->setContent($objCalendar->getCalendarPage());
                 if ($objCalendar->pageTitle) {
-                    \Env::get('cx')->getPage()->setTitle($objCalendar->pageTitle);
-                    \Env::get('cx')->getPage()->setContentTitle($objCalendar->pageTitle);
-                    \Env::get('cx')->getPage()->setMetaTitle($objCalendar->pageTitle);
+                    $page->setTitle($objCalendar->pageTitle);
+                    $page->setContentTitle($objCalendar->pageTitle);
+                    $page->setMetaTitle($objCalendar->pageTitle);
                 }
                 break;
 
