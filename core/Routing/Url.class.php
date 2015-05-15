@@ -203,7 +203,7 @@ class Url {
     }
 
     public function setDomain(\Cx\Core\Net\Model\Entity\Domain $domain) {
-        $this->domain = $this->protocol . '://'. $domain->getName() . '/';
+        $this->domain =  $domain->getName();
     }
 
     public function getPath() {
@@ -711,15 +711,17 @@ class Url {
     }
 
     /**
-     * Returns an absolute link
+     * Returns an absolute or relative link
      * @param boolean $absolute (optional) set to false to return a relative URL
      * @return type 
      */
     public function toString($absolute = true) {
-        if (!$absolute) {
-            return $this . '';
+        if(!$absolute) {
+            return '/' . 
+               ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
+               $this->path;
         }
-        return $this->domain . substr($this, 1);
+        return $this . '';
     }
 
     public function getLangDir() {
@@ -747,9 +749,7 @@ class Url {
     }
 
     /**
-     * Returns URL without hostname for use in internal links.
-     * Use $this->toString() for full URL including protocol and hostname
-     * @todo this should only return $this->protocol . '://' . $this->host . '/' . $this->path . $this->getParamsForUrl();
+     * Returns an absolute link;
      * @return type
      */
     public function __toString()
@@ -757,7 +757,7 @@ class Url {
         $url = $this->protocol . '://' . 
                $this->domain . ':' . 
                $this->port . '/' . 
-               ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
+               ($this->getMode() != 'backend' ? $this->getLangDir(). '/' : '') . 
                $this->path;
         return $url;
     }
