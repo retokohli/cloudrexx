@@ -97,29 +97,34 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
                 ),
             ),
             'functions' => array(
-                'add'       => true,
-                'edit'      => false,
-                'delete'    => false,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                'actions'   => function($rowData, $rowId) {
-                            global $_CORELANG;
-                            static $mainDomainName;
-                            if (empty($mainDomainName)) {
-                                $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
-                                $mainDomainName = $domainRepository->getMainDomain()->getName();
-                            }
-                            $actionIcons = '';
-                            $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
-                            if ($mainDomainName !== $rowData['name']) {
-                                $actionIcons = '<a href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;editid=' . $rowId . '" class="edit" title="Edit entry"></a>';
-                                $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;deleteid=' . $rowId . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
-                            }
-                            return $actionIcons;
+                'add'           => true,
+                'edit'          => false,
+                'alliowEdit'    => true,
+                'delete'        => false,
+                'allowDelete'   => true,
+                'sorting'       => true,
+                'paging'        => true,
+                'filtering'     => false,
+                'actions'       => function($rowData, $rowId) {
+                    global $_CORELANG;
+                    static $mainDomainName;
+                    if (empty($mainDomainName)) {
+                        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                        $mainDomainName = $domainRepository->getMainDomain()->getName();
                     }
-                )
-            ));
+                    
+                    preg_match_all('/\d+/', $rowId, $ids, null, 0); 
+                    
+                    $actionIcons = '';
+                    $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
+                    if ($mainDomainName !== $rowData['name']) {
+                        $actionIcons = '<a href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;editid=' . $rowId . '" class="edit" title="Edit entry"></a>';
+                        $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;deleteid=' . (empty($ids[0][1])?0:$ids[0][1]) . '&amp;vg_increment_number=' . (empty($ids[0][0])?0:$ids[0][0]) . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
+                    }
+                    return $actionIcons;
+                }
+            )
+        ));
                         
         $this->template->setVariable('DOMAINS_CONTENT', $view->render());
     }
