@@ -2099,6 +2099,7 @@ if (\$J("#editor").length) {
                         );
                     }
                     editor.resize();
+                    editor.focus();
             }
     });
     editor.focus();
