@@ -39,7 +39,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 
                 $objCalendar = new \Cx\Modules\Calendar\Controller\Calendar(\Env::get('cx')->getPage()->getContent(), MODULE_INDEX);
                 \Env::get('cx')->getPage()->setContent($objCalendar->getCalendarPage());
-               
+                if ($objCalendar->pageTitle) {
+                    \Env::get('cx')->getPage()->setTitle($objCalendar->pageTitle);
+                    \Env::get('cx')->getPage()->setContentTitle($objCalendar->pageTitle);
+                    \Env::get('cx')->getPage()->setMetaTitle($objCalendar->pageTitle);
+                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
