@@ -131,6 +131,8 @@ class BackendTable extends HTML_Table {
                             $this->setCellContents(0, $col, $header, 'th', 0, true);
                         }
                     }
+                    
+                    $this->updateColAttributes($col, array('style' => 'text-align:right;'));
                     if (!isset($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
                     }
