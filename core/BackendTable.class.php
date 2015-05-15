@@ -255,7 +255,7 @@ class BackendTable extends HTML_Table {
             $editUrl = clone $baseUrl;
             $params = $editUrl->getParamArray();
             $editId = '';
-            if (isset($params['editid'])) {
+            if (!empty($params['editid'])) {
                 $editId = $params['editid'] . ',';
             }
             $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';

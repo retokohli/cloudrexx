@@ -81,7 +81,15 @@ class ViewGenerator {
              *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
              */
             $add=(!empty($_GET['add'])? contrexx_input2raw($_GET['add']):null);
-            if (!empty($add) && !empty($this->options['functions']['add']) && $this->options['functions']['add'] != false) {
+            if (
+                !empty($add) && (
+                    !empty($this->options['functions']['add']) &&
+                    $this->options['functions']['add'] != false
+                ) || (
+                    !empty($this->options['functions']['allowAdd']) &&
+                    $this->options['functions']['allowAdd'] != false
+                )
+            ) {
                 
                 $this->renderFormForEntry(null);
                 $form = $this->formGenerator;
@@ -183,7 +191,15 @@ class ViewGenerator {
              *  postEdit event
              *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
              */
-            if ($this->isInEditMode() && !empty($this->options['functions']['edit']) && $this->options['functions']['edit'] != false) {
+            if (
+                $this->isInEditMode() && (
+                    !empty($this->options['functions']['edit']) &&
+                    $this->options['functions']['edit'] != false
+                ) || (
+                    !empty($this->options['functions']['allowEdit']) &&
+                    $this->options['functions']['allowEdit'] != false
+                )
+            ) {
                 $entityId = contrexx_input2raw($this->isInEditMode());
                 // render form for editid
                 $this->renderFormForEntry($entityId);
@@ -280,7 +296,15 @@ class ViewGenerator {
              * execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
              */
             $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
-            if ($deleteId!='' && !empty($this->options['functions']['delete']) && $this->options['functions']['delete'] != false) {
+            if (
+                $deleteId!='' && (
+                    !empty($this->options['functions']['delete']) &&
+                    $this->options['functions']['delete'] != false
+                ) || (
+                    !empty($this->options['functions']['allowDelete']) &&
+                    $this->options['functions']['allowDelete'] != false
+                )
+            ) {
                 $entityObject = $this->object->getEntry($deleteId);
                 if (empty($entityObject)) {
                     \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
