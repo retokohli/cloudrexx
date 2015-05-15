@@ -267,7 +267,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
          */
         $this->_teaser = contrexx_raw2xhtml($newsTeaser);
         
-        if (!empty($objResult->fields['newsimage']) || !empty($objResult->fields['newsThumbImg'])) {
+        if (!empty($objResult->fields['newsimage'])) {
             $this->_objTpl->setVariable(array(
                 'NEWS_IMAGE'               => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
                 'NEWS_IMAGE_SRC'           => $objResult->fields['newsimage'],
