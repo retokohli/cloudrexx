@@ -96,8 +96,6 @@
             }
 
             #multisite_edit_email_form fieldset {
-                height: calc(100vh - 158px);
-                overflow-y: scroll;
                 overflow-x: hidden;
                 padding-right: 15px;
             }
@@ -167,7 +165,7 @@
                                 </div>
                             </div>
                             <div class="row process form-row-close">
-                                <div class="form-group form-group-narrow">
+                                <div class="form-group">
                                     <label class="col-md-3 control-label" for="email_alias">{TXT_CORE_MODULE_MULTISITE_WEBSITE_EMAIL_ALIAS}</label>
 
                                     <div class="col-md-9">
@@ -187,7 +185,6 @@
                         </button>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="webmail">
-                        <h3>{TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_WEBMAIL}</h3>
                         {TXT_CORE_MODULE_MULTISITE_EMAIL_INFO_MAIN_WEBMAIL_HELP}
                         <a href="https://{MULTISITE_EMAIL_WEBMAIL}" target="_blank">https://{MULTISITE_EMAIL_WEBMAIL}</a>
                     </div>
