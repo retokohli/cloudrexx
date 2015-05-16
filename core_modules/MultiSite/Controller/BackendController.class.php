@@ -488,11 +488,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $cronMailLog = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog')->findAll();
             $cronMailLogView = new \Cx\Core\Html\Controller\ViewGenerator($cronMailLog,
                     array(
-                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_DEFAULT'],
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATION_LOGS'],
                         'functions' => array(
-                            'edit' => true,
+                            'edit' => false,
                             'add' => false,
-                            'delete' => true,
+                            'delete' => false,
                             'sorting' => true,
                             'paging' => true,
                             'filtering' => false,
