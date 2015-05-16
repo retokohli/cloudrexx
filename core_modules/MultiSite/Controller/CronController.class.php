@@ -77,7 +77,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                                                      : $result;
                                                         
                 $objUser = \FWUser::getFWUserObject()->objUser->getUser($user->getId());
-                if ($objUser && !$user->getProfileAttribute($notificationCancelledProfileAttributeId)) {                    
+                if ($objUser && !$objUser->getProfileAttribute($notificationCancelledProfileAttributeId)) {                    
                     \DBG::msg(__METHOD__.": matched CronMail (ID={$cronMail->getId()}): User=".\FWUser::getParsedUserTitle($user).(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
                     $this->sendMail($cronMail, $user, $website, $cronMailLogRepo);
                 }
