@@ -46,26 +46,14 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId','MultiSite');                
         foreach ($cronMails as $cronMail) {
             $criterias = array();
-            $filterIds = array();
             foreach ($cronMail->getCronMailCriterias() as $cronMailCriteria) {
                 list($tableAlias, $attribute) = explode('.', $cronMailCriteria->getAttribute());
                 $criterias[$tableAlias][$attribute] = $cronMailCriteria->getCriteria();
             }
-            $isWebsiteCriteriaExists = isset($criterias['Website']);
-            if (isset($criterias['Subscription'])) {
-                if (!$isWebsiteCriteriaExists && !isset($criterias['User'])) {
-                    $isWebsiteCriteriaExists = true;
-                }
-                //Get all the website / owner ids based on the Subscription criteria and $isWebsiteCriteriaExists
-                $filterIds = $this->getWebsiteOrUserIdsBasedOnSubscriptionsCriteria(array('Subscription' => $criterias['Subscription']), $isWebsiteCriteriaExists);
-                if (empty($filterIds)) {
-                    continue;
-                }
-                unset($criterias['Subscription']); // unset the Subscription criteria
-            }
+            $isWebsiteCriteriaExists = isset($criterias['Website']) || isset($criterias['Subscription']);
             
             //Get all the websites and owners based on the criteria
-            $results = $this->getWebsitesOrOwnersByCriteria($criterias, $isWebsiteCriteriaExists, $filterIds);
+            $results = $this->getWebsitesOrOwnersByCriteria($criterias);
             if (empty($results)) {
                 continue;
             }
@@ -150,7 +138,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                         );
              $substitution = array();   
         } else {
-            $websiteDetails = array();            
+            $websiteDetails = array();  
             if (!empty($websiteObj) && is_array($websiteObj)) {
                 foreach ($websiteObj as $website) {
                     $websiteDetails[] = array(
@@ -172,7 +160,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                             \FWUser::getParsedUserTitle($objUser),
                             $unSubscribeUrl
                         );            
-            $substitution = array('WEBSITE_LIST' => array(0 => array('WEBSITE_DETAIL' => $websiteDetails)));
+            $substitution = array('WEBSITE_LISTS' => array(0 => array('WEBSITE_DETAILS' => $websiteDetails)));
         }
         
         //send mail to website owner
@@ -197,17 +185,15 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     }
     
     /**
-     * Add the date filter to the query builder
+     * Get the date filter for the query
      * 
-     * @param \Doctrine\ORM\QueryBuilder $qb             Query builder object
-     * @param string                     $fieldName      filter field name
-     * @param string                     $filterCriteria filter criteria    
-     * @param int                        $filterPos      current postion of filter query
-     * @param boolean                    $useTimeStamp   use datetime or timestamp in the query
+     * @param string  $fieldName      filter field name
+     * @param string  $filterCriteria filter criteria
+     * @param boolean $useTimeStamp   use datetime or timestamp in the query
      * 
-     * @return null
+     * @return string $condition
      */
-    public function addDateFilterToQueryBuilder(\Doctrine\ORM\QueryBuilder & $qb, $fieldName, $filterCriteria, & $filterPos, $useTimeStamp = false)
+    public function getDateFilter($fieldName, $filterCriteria, $useTimeStamp = false)
     {
         if (empty($fieldName) || empty($filterCriteria)) {
             return;
@@ -216,96 +202,116 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         $criteria = preg_replace('#^\+#i', '-', $filterCriteria);  // +n days = (date - n days)
         $format   = preg_replace('/\b(ON|BEFORE|AFTER) \b/i', '', $criteria);
         
+        $condition = '';
         $startDate = new \DateTime($format);
-        $startDate->setTime(0, 0, 1);
+        $startDate->setTime(0, 0, 0);
         
-        $method = ($filterPos == 1) ? 'where' : 'andWhere';
         switch (true) {
             case preg_match('#^ON\ #i', $criteria):
             case preg_match('#^\-#i', $criteria):
-                $qb
-                    ->$method($fieldName . ' > ?'. $filterPos)
-                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));                
+                $condition = $fieldName . ' >= "' . self::parseTimeForFilter($startDate, $useTimeStamp) . '" ';
                 $startDate->setTime(23, 59, 59);
-                $filterPos++;
-                
-                $qb
-                    ->andWhere($fieldName . ' < ?'. $filterPos)
-                    ->setParameter($filterPos,  self::parseTimeForFilter($startDate, $useTimeStamp));
+                $condition .= ' AND ' . $fieldName . ' <= "' . self::parseTimeForFilter($startDate, $useTimeStamp) . '" ';
                 break;
             case preg_match('#^BEFORE\ #i', $criteria):
-                $qb
-                    ->$method($fieldName . '< ?'. $filterPos)
-                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));
+                $condition = $fieldName . ' < "' . self::parseTimeForFilter($startDate, $useTimeStamp) . '" ';
                 break;
             case preg_match('#^AFTER\ #i', $criteria):
                 $startDate->setTime(23, 59, 59);
-                $qb
-                    ->$method($fieldName . ' > ?'. $filterPos)
-                    ->setParameter($filterPos, self::parseTimeForFilter($startDate, $useTimeStamp));
+                $condition = $fieldName . ' > "' . self::parseTimeForFilter($startDate, $useTimeStamp) . '" ';
                 break;
         }
-        $filterPos++;        
+        
+        return $condition;
     }
     
     /**
-     * Add the filter to the query builder
+     * Get the filter for the query
      * 
-     * @param \Doctrine\ORM\QueryBuilder $qb
      * @param array $cronMailCriterias
-     * @param array $dateFields
      * 
-     * return null
+     * return array $conditions
      */
-    public function addFilterToQueryBuilder(\Doctrine\ORM\QueryBuilder & $qb, $cronMailCriterias, $dateFields) 
+    public function getFilter($cronMailCriterias) 
     {
-        $filterPos = 1;
-        $userDateField = array('User.regdate', 'User.lastAuth', 'User.lastActivity');
+        $conditions     = array();
+        $userDateField  = array('User.regdate', 'User.last_auth', 'User.last_activity');
+        $dateFieldTypes = array(\Doctrine\DBAL\Types\Type::DATETIME, \Doctrine\DBAL\Types\Type::DATE);
+        $classes        = array('Subscription' => 'Cx\Modules\Order\Model\Entity\Subscription',
+                               'Website' => 'Cx\Core_Modules\MultiSite\Model\Entity\Website', 
+                               'User'    => 'Cx\Core\User\Model\Entity\User');
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
         foreach ($cronMailCriterias as $alias => $criterias) {
-            foreach ($criterias as $attribute => $criteria) {
-                $formattedCriteria = $alias . '.' . $attribute;
+            $classMetaData = $em->getClassMetadata($classes[$alias]);
+            foreach ($criterias as $fieldName => $criteria) {
+                $attribute = $classMetaData->getColumnName($fieldName);
+                $fieldType = $classMetaData->getTypeOfColumn($attribute);
+                $formattedCriteria  = $alias . '.' . $attribute;
                 //for date field
-                if (in_array($formattedCriteria, $dateFields)) {
-                    $timeStamp = in_array($formattedCriteria, $userDateField) ? true : false;
-                    $this->addDateFilterToQueryBuilder($qb, $formattedCriteria, $criteria, $filterPos, $timeStamp);
+                $isUserDateField = in_array($formattedCriteria, $userDateField);
+                if ($isUserDateField || in_array($fieldType, $dateFieldTypes)) {
+                    $conditions[] = $this->getDateFilter($formattedCriteria, $criteria, $isUserDateField);
                 } else {
-                    $qb->andWhere($formattedCriteria . ' = ?' . $filterPos)->setParameter($filterPos, $criteria);
-                    $filterPos++;
-                }                
+                    $conditions[] = $formattedCriteria . ' = "' . $criteria . '" ';
+                }
             }
         }
+        return $conditions;
     }
 
     /**
      * get the websites or owners by criteria
      * 
-     * @param array   $cronMailCriterias
-     * @param boolean $isWebsiteCriteriaExists
-     * @param array   $filterIds
+     * @param array $cronMailCriterias
      * 
      * @return array
      */
-    public function getWebsitesOrOwnersByCriteria($cronMailCriterias, $isWebsiteCriteriaExists, $filterIds) {
-        
+    public function getWebsitesOrOwnersByCriteria($cronMailCriterias)
+    {
         try {
-            $qb = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->createQueryBuilder();
-            if ($isWebsiteCriteriaExists) {
-                $qb->select('Website')
-                   ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'Website')
-                   ->leftJoin('Website.owner', 'User');
+            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+            if (isset($cronMailCriterias['Website']) || isset($cronMailCriterias['Subscription'])) {
+                //NativeQuery for Website and Subscription Criteria
+                $rsm   = self::getResultSetMapping(
+                            array(
+                                'Cx\Core_Modules\MultiSite\Model\Entity\Website' => '',
+                                'Cx\Core\User\Model\Entity\User' => 'Website.owner'
+                            ),
+                            array(
+                                'Website' => array('id', 'name', 'creationDate'),
+                                'User'    => array('id', 'email')
+                            )
+                        );
+                //we must set the alias name for all the select fields. Alias Format like as Table Alias name + Field name in CC Format
+                $query = 'SELECT `Website`.`id` as WebsiteId, `Website`.`name` as WebsiteName, 
+                                 `Website`.`creationDate` as WebsiteCreationDate, 
+                                 `User`.`id` as UserId, `User`.`email` as UserEmail
+                                FROM 
+                                    `' . DBPREFIX . 'core_module_multisite_website` As Website
+                                LEFT JOIN 
+                                    `' . DBPREFIX . 'access_users` As User
+                                ON
+                                    `User`.`id` = `Website`.`ownerId`
+                                LEFT JOIN 
+                                    `' . DBPREFIX . 'module_order_subscription` As Subscription
+                                ON 
+                                    `Subscription`.`product_entity_id` = IF(`Website`.`websiteCollectionId` IS NULL, `Website`.`id`, `Website`.`websiteCollectionId`)';
             } else {
-                $qb->select('User')
-                   ->from('\Cx\Core\User\Model\Entity\User', 'User');
+                //NativeQuery for User Criteria
+                $rsm   = self::getResultSetMapping(
+                            array('Cx\Core\User\Model\Entity\User' => ''),
+                            array('User' => array('id', 'email'))
+                        );
+                $query = 'SELECT `User`.`id` as UserId, 
+                                 `User`.`email` as UserEmail
+                                FROM `' . DBPREFIX . 'access_users` as User';
             }
 
-            $dateFields = array('User.regdate', 'User.lastAuth', 'User.lastActivity', 'Website.creationDate', );
-            $this->addFilterToQueryBuilder($qb, $cronMailCriterias, $dateFields);
+            $conditions = $this->getFilter($cronMailCriterias);
+            $query .= !empty($conditions) ? ' WHERE ' . implode(' AND ', array_filter($conditions)) : '';
             
-            if (!empty($filterIds)) {
-                $qb->andWhere($qb->expr()->in($isWebsiteCriteriaExists ? 'Website.id' : 'User.id', $filterIds));
-            }
-            
-            $objResult = $qb->getQuery()->getResult();
+            $queryObj  = $em->createNativeQuery($query, $rsm);
+            $objResult = $queryObj->getResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             \DBG::dump('CronController (getWebsiteOwnersByCriteria) : Failed to get the website owners by criteria' . $e->getMessage());
             $objResult = array();
@@ -315,72 +321,47 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     }
     
     /**
+     * Get the result set mapping object
+     * 
+     * @param array  $entityClasses
+     * @param array  $requiredFields
+     * 
+     * @return \Doctrine\ORM\Query\ResultSetMapping
+     */
+    private static function getResultSetMapping($entityClasses = array(), $requiredFields = array())
+    {
+        if (empty($entityClasses)) {
+            return;
+        }
+        
+        $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
+        $first = true;
+        foreach ($entityClasses as $class => $options) {
+            $alias = end(explode('\\', $class));
+            if ($first) {
+                $rsm->addEntityResult($class, $alias);
+            } else {
+                list($parentAlias, $relationField) = explode('.', $options);
+                $rsm->addJoinedEntityResult($class, $alias, $parentAlias, $relationField);
+            }
+            foreach ($requiredFields[$alias] as $field) {
+                $rsm->addFieldResult($alias, $alias.ucfirst($field), $field);
+            }
+            $first = false;
+        }
+        
+        return $rsm;
+    }
+    
+    /**
      * Get the timestamp or date value based on the date time object
      * 
      * @param \DateTime $date
      * @param boolean   $timeStamp
      * 
-     * @return array
+     * @return string
      */
     public static function parseTimeForFilter(\DateTime $date, $timeStamp = false) {
         return $timeStamp ? $date->getTimestamp() : $date->format('Y-m-d H:i:s');
-    }
-    
-    /**
-     * get the Website / User ids based on the Subscription criteria
-     * 
-     * @param array   $cronMailCriterias
-     * @param boolean $isWebsiteCriteriaExists
-     * 
-     * @return type
-     */
-    public function getWebsiteOrUserIdsBasedOnSubscriptionsCriteria($cronMailCriterias, $isWebsiteCriteriaExists) {
-        $qb = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->createQueryBuilder();
-        $qb
-            ->select('Subscription')
-            ->from('\Cx\Modules\Order\Model\Entity\Subscription', 'Subscription');
-        
-        $dateFields = array('Subscription.subscriptionDate', 'Subscription.expirationDate',
-                            'Subscription.renewalDate', 'Subscription.terminationDate');
-        $this->addFilterToQueryBuilder($qb, $cronMailCriterias, $dateFields);
-
-        $filterIds = array();
-        $subscriptions = $qb->getQuery()->getResult();
-        if (!empty($subscriptions)) {
-            foreach ($subscriptions as $subscription) {
-                $productEntity = $subscription->getProductEntity();
-                if (!$productEntity) {
-                    continue;
-                }
-                
-                if ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                    $filterIds[] = $isWebsiteCriteriaExists ? $productEntity->getId() : self::getUserIdFromWebsite($productEntity);
-                } elseif (   
-                       $productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection 
-                    && $productEntity->getWebsites()
-                ) {
-                    foreach ($productEntity->getWebsites() as $website) {
-                        $filterIds[] = $isWebsiteCriteriaExists ? $website->getId() : self::getUserIdFromWebsite($website);
-                    }
-                }
-            }
-        }
-        
-        return $filterIds;
-    }
-    
-    /**
-     * Get the userId from the website by id
-     * 
-     * @param object  $website
-     * 
-     * @return mixed integer|boolean
-     */
-    public static function getUserIdFromWebsite(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website) {
-        
-        if ($website && $website->getOwner()) {
-            return $website->getOwner()->getId();
-        }
-        return false;
     }
 }
