@@ -45,4 +45,5 @@ $_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "A file with the name %s already 
 $_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Specified File %s not found";
 $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "Името на файла не може да бъде празно!";
 $_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Папка са успешно изтрити!";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Wollen Sie diese Datei(n) wirklich löschen? ACHTUNG! Diese Änderung kann nicht mehr rückgängig gemacht werden!";
 ?>

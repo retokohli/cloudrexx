@@ -45,4 +45,5 @@ $_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "A file with the name %s already 
 $_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Specified File %s not found";
 $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "Nome del file non può essere vuoto!";
 $_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Folder cancellati con successo!";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Do you really want to delete this file(s)? IMPORTANT! This change cannot be undo!";
 ?>

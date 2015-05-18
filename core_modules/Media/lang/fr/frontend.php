@@ -45,4 +45,5 @@ $_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "A file with the name %s already 
 $_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Specified File %s not found";
 $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "Nom de fichier ne peut pas être vide!";
 $_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Dossier a effacé avec succès!";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Voulez-vous vraiment supprimer ce(s) fichier(s)? Attention, cette opération est irréversible!";
 ?>
