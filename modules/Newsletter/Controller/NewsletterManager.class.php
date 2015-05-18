@@ -6275,7 +6275,7 @@ function MultiAction() {
 }
 
 
-if (!class_exists('DBIterator')) {
+if (!class_exists('DBIterator', false)) {
 
     /**
      * Iterator wrapper for adodb result objects
