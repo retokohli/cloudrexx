@@ -421,15 +421,22 @@ class Gallery
             "SELECT value FROM ".DBPREFIX."module_gallery_language ".
             "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
             "AND name='desc' LIMIT 1");
-        $strCategoryComment = $objResult->fields['value'];
+        $strCategoryComment = '';
+        if ($objResult && $objResult->RecordCount()) {
+            $strCategoryComment = $objResult->fields['value'];
+        }
 
         $objResult = $objDatabase->Execute(
             "SELECT comment, voting ".
             "FROM ".DBPREFIX."module_gallery_categories ".
             "WHERE id=$intCatId");
-        $boolComment = $objResult->fields['comment'];
-        $boolVoting = $objResult->fields['voting'];
-
+        $boolComment = '';
+        $boolVoting = '';
+        if ($objResult && $objResult->RecordCount()) {
+            $boolComment = $objResult->fields['comment'];
+            $boolVoting = $objResult->fields['voting'];
+        }
+        
         // get picture informations
         $objResult = $objDatabase->Execute(
             "SELECT id, path, link, size_show ".
@@ -455,11 +462,13 @@ class Gallery
             "SELECT id FROM ".DBPREFIX."module_gallery_pictures ".
             "WHERE status='1' AND validated='1' AND catid=$intCatId ".
             "ORDER BY sorting, id");
-        while (!$objResult->EOF) {
-            array_push($arrPictures,$objResult->fields['id']);
-            $objResult->MoveNext();
+        if ($objResult && $objResult->RecordCount()) {
+            while (!$objResult->EOF) {
+                array_push($arrPictures,$objResult->fields['id']);
+                $objResult->MoveNext();
+            }
         }
-
+        
         // get next picture id
         if (array_key_exists(array_search($intPicId,$arrPictures)+1,$arrPictures)) {
             $intPicIdNext = $arrPictures[array_search($intPicId,$arrPictures)+1];
@@ -934,6 +943,8 @@ class Gallery
             $this->_objTpl->setVariable(array('GALLERY_CATEGORY_COMMENT' =>    $strCategoryComment));
             $intFillLastRow = 1;
             while (!$objResult->EOF) {
+                $imageVotingOutput = '';
+                $imageCommentOutput = '';
                 $objSubResult = $objDatabase->Execute(
                     "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
                     "WHERE picture_id=".$objResult->fields['id']." AND lang_id=$this->langId LIMIT 1");
@@ -1040,8 +1051,6 @@ class Gallery
                         } else {
                             $imageCommentOutput = $objSubResult->RecordCount().' '.$_ARRAYLANG['TXT_COMMENTS_ADD_COMMENTS'].'<br />';
                         }
-                    } else {
-                        $imageCommentOutput = '';
                     }
                 }
 
@@ -1056,8 +1065,6 @@ class Gallery
                             $objSubResult->MoveNext();
                         }
                         $imageVotingOutput = $_ARRAYLANG['TXT_VOTING_SCORE'].'&nbsp;&Oslash;'.number_format(round($intMark / $objSubResult->RecordCount(),1),1,'.','\'').'<br />';
-                    } else {
-                        $imageVotingOutput = '';
                     }
                 }
 
