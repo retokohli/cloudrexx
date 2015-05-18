@@ -267,15 +267,22 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
          */
         $this->_teaser = contrexx_raw2xhtml($newsTeaser);
         
-        if (!empty($objResult->fields['newsimage'])) {
-            $this->_objTpl->setVariable(array(
-                'NEWS_IMAGE'               => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
-                'NEWS_IMAGE_SRC'           => $objResult->fields['newsimage'],
-                'NEWS_IMAGE_ALT'           => $newstitle,
-                'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['newsThumbImg']),
-                'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['newsimage']),
-            ));
-
+        if (!empty($objResult->fields['newsimage']) || !empty($objResult->fields['newsThumbImg'])) {
+            if (!empty($objResult->fields['newsimage'])) {
+                $this->_objTpl->setVariable(array(
+                    'NEWS_IMAGE'               => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
+                    'NEWS_IMAGE_SRC'           => $objResult->fields['newsimage'],
+                    'NEWS_IMAGE_ALT'           => $newstitle,
+                    'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['newsimage']),
+                ));
+            }
+            
+            if (!empty($objResult->fields['newsThumbImg'])) {
+                $this->_objTpl->setVariable(array(
+                    'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['newsThumbImg']),
+                ));
+            }
+            
             if ($this->_objTpl->blockExists('news_image')) {
                 $this->_objTpl->parse('news_image');
             }
@@ -284,7 +291,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTpl->hideBlock('news_image');
             }
         }
-
+        
         if (empty($redirect)) {
             $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
             $newsTeaser = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $newsTeaser);
