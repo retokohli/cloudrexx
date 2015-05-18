@@ -397,17 +397,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if (empty($description)) {
                         if (   $websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection
                             && $websiteCollection->getWebsites()
-                           ) {
+                        ) {
                             foreach ($websiteCollection->getWebsites() as $website) {
                                 $websiteNames[] = $website->getName();
                             }
+                            $description = !empty($websiteNames) ? implode(', ', $websiteNames) : '';
+                        } elseif ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                            $description = $websiteCollection->getName();
                         }
                     }
                     
                     $objTemplate->setGlobalVariable(array(
                         'MULTISITE_SUBSCRIPTION_ID'          => contrexx_raw2xhtml($subscription->getId()),
-                        'MULTISITE_SUBSCRIPTION_DESCRIPTION' => !empty($description) ? contrexx_raw2xhtml($description) 
-                                                                : (!empty($websiteNames) ? contrexx_raw2xhtml(implode(',', $websiteNames)) : ''),
+                        'MULTISITE_SUBSCRIPTION_DESCRIPTION' => contrexx_raw2xhtml($description),
                         'MULTISITE_WEBSITE_PLAN'             => contrexx_raw2xhtml($product->getName()),
                         'MULTISITE_WEBSITE_INVOICE_DATE'     => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('d.m.Y') : '',
                         'MULTISITE_WEBSITE_EXPIRE_DATE'      => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('d.m.Y') : '',    
