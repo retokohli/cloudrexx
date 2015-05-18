@@ -15,4 +15,5 @@ $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Dieses Verzeichnis ist leer";
 $_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Dateiordner";
 $_ARRAYLANG['TXT_MEDIA_FILE'] = "Datei";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Wollen Sie diese Datei(n) wirklich löschen? ACHTUNG! Diese Änderung kann nicht mehr rückgängig gemacht werden!";
 ?>

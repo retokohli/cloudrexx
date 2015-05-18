@@ -50,4 +50,5 @@ $_ARRAYLANG['TXT_MEDIA_FILE_DONT_CREATE'] = "You are not able to create the requ
 $_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT'] = "You are not able to edit the requested file.";
 $_ARRAYLANG['TXT_MEDIA_FILE_DONT_DELETE'] = "You are not able to delete the requested file.";
 $_ARRAYLANG['TXT_MEDIA_FILE_DONT_DOWNLOAD'] = "You are not able to download the requested file.";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Do you really want to delete this file(s)? IMPORTANT! This change cannot be undone!";
 ?>

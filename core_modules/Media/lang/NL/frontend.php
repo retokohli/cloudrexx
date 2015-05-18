@@ -15,4 +15,5 @@ $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Deze map is leeg!";
 $_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Type";
 $_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Bestandsmap";
 $_ARRAYLANG['TXT_MEDIA_FILE'] = "Bestand";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Deze bestanden verwijderen? Attentie: deze handeling kan niet ongedaan worden gemaakt!";
 ?>

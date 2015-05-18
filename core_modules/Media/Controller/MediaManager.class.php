@@ -141,9 +141,9 @@ class MediaManager extends MediaLibrary
 
         // get variables
         $this->getAct      = isset($_POST['deleteMedia']) && $_POST['deleteMedia'] ? 'delete' : (!empty($_GET['act']) ? trim($_GET['act']) : '');
-        $this->getPath     = \Cx\Lib\FileSystem\FileSystem::sanitizePath($_GET['path']);
+        $this->getPath     = isset($_GET['path']) ? \Cx\Lib\FileSystem\FileSystem::sanitizePath($_GET['path']) : false;
         if ($this->getPath === false) $this->getPath = $this->arrWebPaths[$this->archive];
-        $this->getFile     = \Cx\Lib\FileSystem\FileSystem::sanitizeFile($_REQUEST['file']);
+        $this->getFile     = isset($_REQUEST['file']) ? \Cx\Lib\FileSystem\FileSystem::sanitizeFile($_REQUEST['file']) : false;
         if ($this->getFile === false) $this->getFile = '';
         $this->getData     = !empty($_GET['data']) ? $_GET['data']       : '';
         $this->sortBy      = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';

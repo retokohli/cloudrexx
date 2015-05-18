@@ -335,7 +335,9 @@ class Media extends MediaLibrary
      */
     private function uploadAccessGranted()
     {
-        $uploadAccessSetting = $this->_arrSettings[$this->archive . '_frontend_changable'];
+        $uploadAccessSetting = isset($this->_arrSettings[$this->archive . '_frontend_changable'])
+                                ? $this->_arrSettings[$this->archive . '_frontend_changable']
+                                : '';
         if (is_numeric($uploadAccessSetting)
            && \Permission::checkAccess(intval($uploadAccessSetting), 'dynamic', true)) { // access group
             return true;
@@ -355,7 +357,9 @@ class Media extends MediaLibrary
      */
     private function manageAccessGranted()
     {
-        $manageAccessSetting = $this->_arrSettings[$this->archive . '_frontend_managable'];
+        $manageAccessSetting = isset($this->_arrSettings[$this->archive . '_frontend_managable'])
+                                ? $this->_arrSettings[$this->archive . '_frontend_managable']
+                                : '';
         if (is_numeric($manageAccessSetting)
            && \Permission::checkAccess(intval($manageAccessSetting), 'dynamic', true)) { // access group
             return true;

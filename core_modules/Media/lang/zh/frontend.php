@@ -45,4 +45,5 @@ $_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "A file with the name %s already 
 $_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Specified File %s not found";
 $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "文件名不能为空！";
 $_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "文件夹已删除成功！";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Do you really want to delete this file(s)? IMPORTANT! This change cannot be undone!";
 ?>
