@@ -133,6 +133,7 @@ class googleMap
 
     private function getMapMarkers()
     {
+        $markers = '';
         foreach ($this->mapMarkers as $id => $marker) {
             if($marker['lon'] >= 0 && $marker['lat'] >= 0) {
                 if ($marker['click'] != null) {
@@ -140,7 +141,7 @@ class googleMap
                         ".$marker['click']."
                     });";
                 } else {
-                    $mouseover = '';
+                    $click = '';
                 }
 
                 if ($marker['mouseover'] != null) {
@@ -218,7 +219,7 @@ class googleMap
         $tmpGoogleMapOnLoad = "tmpGoogleMapOnLoad_".$this->mapIndex;
 
         $layer .= <<<EOF
-<script src="https://maps.googleapis.com/maps/api/js?key=$strKey&sensor=false&v=3"></script>
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3"></script>
 <script>
 //<![CDATA[
 var $map;
