@@ -89,13 +89,16 @@ class FileSharing extends FileSharingLib
      */
     public function getPage()
     {
-        $hash = contrexx_input2raw($this->uriParams["hash"]);
-        $check = contrexx_input2raw($this->uriParams["check"]);
+        $hash     = isset($this->uriParams["hash"])     ? contrexx_input2raw($this->uriParams["hash"])     : '';
+        $check    = isset($this->uriParams["check"])    ? contrexx_input2raw($this->uriParams["check"])    : '';
+        $uploadId = isset($this->uriParams["uploadId"]) ? contrexx_input2raw($this->uriParams["uploadId"]) : 0;
+        
+        if (!empty($uploadId)) {
+            $this->files = $this->getSharedFiles($uploadId);
+        }
 
-        if ($this->uriParams["uploadId"])
-            $this->files = $this->getSharedFiles($this->uriParams["uploadId"]);
-
-        switch ($this->uriParams["act"]) {
+        $act = isset($this->uriParams["act"]) ? $this->uriParams["act"] : '';
+        switch ($act) {
             case "image":
                 $this->loadImage($hash);
                 break;
