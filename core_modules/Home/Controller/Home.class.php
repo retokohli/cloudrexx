@@ -30,7 +30,7 @@ namespace Cx\Core_Modules\Home\Controller;
  */
 class Home {
     var $statusMessage;
-
+            
     /**
     * Constructor
     *
@@ -40,7 +40,8 @@ class Home {
     function __construct()
     {
         global $_CORELANG, $objTemplate;
-
+        
+        $administratorsOnline = '';
         if ($objUser = \FWUser::getFWUserObject()->objUser->getUsers($filter = array('is_admin' => true, 'active' => true, 'last_activity' => array('>' => (time()-3600))))) {
             $arrAdministratorsOnline = array();
             $i = 0;
@@ -49,7 +50,7 @@ class Home {
                 $arrAdministratorsOnline[$i++]['username'] = $objUser->getUsername();
                 $objUser->next();
             }
-            $administratorsOnline = '';
+            
             for ($i = 0; $i < count($arrAdministratorsOnline); $i++) {
                 $administratorsOnline .= '<a href="index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id='.$arrAdministratorsOnline[$i]['id'].'">'.$arrAdministratorsOnline[$i]['username'].($i == (count($arrAdministratorsOnline)-1) ? '' : ',').'</a>';
             }
