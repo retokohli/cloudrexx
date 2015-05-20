@@ -607,11 +607,12 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 $langString = implode($lang);
 
                 $formName = contrexx_raw2xhtml($arrForm['lang'][$selectedInterfaceLanguage]['name']);
-                $useCrm   = $arrForm['saveDataInCRM'] ? "&nbsp;&nbsp;<img style='margin-top: 2px;' src='../core/Core/View/Media/navigation_level_1_189.png' class='tooltip-trigger' alt='crm' /><span class='tooltip-message'>".$_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM']."</span>" : '';
+                $useCrm   = isset($arrForm['saveDataInCRM']) ? "&nbsp;&nbsp;<img style='margin-top: 2px;' src='../core/Core/View/Media/navigation_level_1_189.png' class='tooltip-trigger' alt='crm' /><span class='tooltip-message'>".$_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM']."</span>" : '';
 
                 // check if the form contains submitted data
-                if ($arrForm['number'] > 0) {
-                    $entryCount = $arrForm['number'];
+                $arrFormNumber = isset($arrForm['number']) ? $arrForm['number'] : 0;
+                if ($arrFormNumber > 0) {
+                    $entryCount = $arrFormNumber;
                     $formName = "<a href='index.php?cmd=Contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId."' title='".$_ARRAYLANG['TXT_CONTACT_SHOW_ENTRIES']."'>".$formName."</a>";
 
                     $this->_objTpl->touchBlock('contact_export');
@@ -624,7 +625,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
                         'CONTACT_FORM_NAME'                 => $formName,
                         'CONTACT_CRM_IMG'                   => $useCrm,
-                        'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
+                        'CONTACT_FORM_LAST_ENTRY'           => isset($arrForm['last']) ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $entryCount,
                         'CONTACT_DELETE_CONTENT'            => $pageExists ? 'true' : 'false',
                         'CONTACT_FORM_LANGUAGES'            => $langString
@@ -849,8 +850,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             }
         }
         //Get the fallback languages array
-        $fallBackArr = \FWLanguage::getFallbackLanguageArray();
-
+        $fallBackArr      = \FWLanguage::getFallbackLanguageArray();
+        $strJsFallBackArr = '';
         foreach ($fallBackArr as $languageId => $fallBackLanguageId) {
             $strJsFallBackArr .= 'arrFallBackLang['.$languageId.'] = "'.$fallBackLanguageId.'";'."\n";
         }
