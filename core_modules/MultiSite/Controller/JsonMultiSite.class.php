@@ -118,14 +118,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'getPayrexxUrl'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'push'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'websiteBackup'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
-            'getWebsiteInfo'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
-            'deleteWebsiteBackup'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
-            'getAllBackupFilesInfo' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
-            'sendFileToRemoteServer'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'triggerWebsiteBackup'  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'triggerWebsiteRestore' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'getWebsiteInfo'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
+            'deleteWebsiteBackup'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
+            'getAllBackupFilesInfo' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
+            'sendFileToRemoteServer'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteConfig'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
-            'updateWebsiteSubscriptionInfo'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'updateWebsiteSubscriptionInfo'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'websiteRestore'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
-            'createNewWebsiteBySubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
+            'addNewWebsiteInSubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'getUser'               => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
@@ -3682,36 +3684,51 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * To take websiteBackup to specified location in service server
      * 
-     * @param array $param website data
+     * @param array $params website data
      * 
      * @return array
+     * @throws MultiSiteJsonException
      */
-    public function websiteBackup($param) {
+    public function websiteBackup($params) 
+    {
         global $_ARRAYLANG;
         
-        $websiteId         = isset($param['post']['websiteId']) ? contrexx_input2raw($param['post']['websiteId']) : '';
-        $backupLocation    = !empty($param['post']['backupLocation']) ? $param['post']['backupLocation'] : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
-        $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $websites          = !empty($websiteId) ? $websiteRepository->findBy(array('id' => $websiteId)) : $websiteRepository->findAll();
-
-        //change the backup location path to absolute location path
-        \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($backupLocation);
-
-        if (!\FWValidator::isEmpty($websites)) {
-            foreach ($websites as $website) {
-                if (!$website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                    \DBG::log('Unknown website requested');
-                    continue;
-                }
-                
-                if (!($this->websiteDataBackup($website, $backupLocation))) {
-                    \DBG::log('Failed to backup the ' . $website->getName() . ' !.');
-                    continue;
-                }
-            }
-            return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_SUCCESS']);
+        if (empty($params) || empty($params['post'])) {
+            \DBG::log(__METHOD__.' failed!: '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_FAILED']);
         }
-        return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_FAILED']);
+        
+        try {
+            $websiteId         = isset($params['post']['websiteId']) 
+                                 ? contrexx_input2int($params['post']['websiteId']) 
+                                 : 0;
+            $backupLocation    = !empty($params['post']['backupLocation']) 
+                                 ? contrexx_input2raw($params['post']['backupLocation']) 
+                                 : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation', 'MultiSite');
+            $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $websites          = !empty($websiteId) 
+                                 ? $websiteRepository->findBy(array('id' => $websiteId))
+                                 : $websiteRepository->findAll();
+
+            //change the backup location path to absolute location path
+            \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($backupLocation);
+
+            if (empty($websites)) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NO_WEBSITE_FOUND']);
+            }
+
+            foreach ($websites as $website) {
+                $this->websiteDataBackup($website, $backupLocation);
+            }
+
+            return array(
+                'status'  => 'success', 
+                'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_SUCCESS']
+            );
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' failed!: '.$e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_FAILED']);
+        }
     }
 
     /**
@@ -3719,70 +3736,64 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website $website        websiteObject
      * @param string                                          $backupLocation websiteBackupLocation
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function websiteDataBackup(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $backupLocation) {
+    private function websiteDataBackup(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $backupLocation)
+    {
         $websiteName       = $website->getName();
-        $websitePath       = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $websiteName;
+        $websitePath       = \Cx\Core\Setting\Controller\Setting::getValue('websitePath', 'MultiSite').'/'.$websiteName;
         $websiteBackupPath = $backupLocation . '/' . $website->getName();
         
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($websitePath)) {
-            \DBG::log('Failed to backup the ' . $websiteName . ' due to the website may not exists in the repository!.');
-            return false;
-        }
-        
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation)) {
-            \DBG::log('Failed to create the backup location');
-            return false;
-        }
-        
-        if (!$this->websiteInfoBackup($website->getId(), $websiteBackupPath)) {
-            \DBG::log('Failed to backup the website info  for  ' . $websiteName);
-            return false;
-        }
-        
-        if (!$this->websiteDatabaseBackup($websiteBackupPath, $websitePath)) {
-            \DBG::log('Failed to backup the database for  ' . $websiteName);
-            return false;
-        }
-        
-        if (!$this->websiteRepositoryBackup($websiteBackupPath, $websitePath)) {
-            \DBG::log('Failed to backup the database for  ' . $websiteName);
-            return false;
-        }
-        
-        if (!$this->createWebsiteArchive($websiteBackupPath)) {
-            \DBG::log('Failed to create backup Archiev for  ' . $websiteName . ' in the location ' . $backupLocation);
-            return false;
-        }
-        return true;
-    }
+        try {
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($websitePath)) {
+                throw new MultiSiteJsonException('Failed to backup the ' .$websiteName. '. Website not exists in the repository!.');
+            }
 
+            if (   !\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) 
+                && !\Cx\Lib\FileSystem\FileSystem::make_folder($backupLocation)
+            ) {
+                throw new MultiSiteJsonException('Failed to create the backup location');
+            }
+            
+            \DBG::log('JsonMultisite: Website Info Backup...');
+            $this->websiteInfoBackup($website->getId(), $websiteBackupPath);
+            
+            \DBG::log('JsonMultisite: Website Database Backup...');
+            $this->websiteDatabaseBackup($websiteBackupPath, $websitePath);
+            
+            \DBG::log('JsonMultisite: Website Data Repository Backup...');
+            $this->websiteRepositoryBackup($websiteBackupPath, $websitePath);
+            
+            \DBG::log('JsonMultisite: Create Website Zip Archive...');
+            $this->createWebsiteArchive($websiteBackupPath);
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException('JsonMultisite::websiteDataBackup() : failed !. : '. $e->getMessage());
+        } 
+    }
+        
     /**
      * Create Website Zip Archive for the given Location
      * 
      * @param string $websiteBackupPath websiteBackupLocation
      * 
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function createWebsiteArchive($websiteBackupPath) {
-        $websiteZipArchive       = new \PclZip($websiteBackupPath . '_'.date("Y-m-d H:i:s").'.zip');
+    private function createWebsiteArchive($websiteBackupPath) 
+    {
+        $websiteZipArchive       = new \PclZip($websiteBackupPath . '_'.date('Y-m-d H:i:s').'.zip');
         $websiteArchiveFileCount = $websiteZipArchive->add($websiteBackupPath, PCLZIP_OPT_REMOVE_PATH, $websiteBackupPath);
 
         if ($websiteArchiveFileCount == 0) {
-            \DBG::log('Failed to create Zip Archiev' . $websiteZipArchive->errorInfo(true));
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' : Failed to create Zip Archiev ' . $websiteZipArchive->errorInfo(true));
         }
 
         $explodeFileCount = $websiteZipArchive->delete(PCLZIP_OPT_BY_PREG, '/.ftpaccess$/');
         if ($explodeFileCount == 0) {
-            \DBG::log('Failed to explode .ftpaccess in the  Archiev' . $websiteZipArchive->errorInfo(true));
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' : Failed to explode .ftpaccess in the  Archiev' . $websiteZipArchive->errorInfo(true));
         }
 
         //cleanup website Backup Folder
         \Cx\Lib\FileSystem\FileSystem::delete_folder($websiteBackupPath, true);
-        return true;
     }
 
     /**
@@ -3791,27 +3802,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $websiteBackupPath websiteBackup Location
      * @param string $websitePath       websitePath
      * 
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function websiteRepositoryBackup($websiteBackupPath, $websitePath) {
-        if (!(\Cx\Lib\FileSystem\FileSystem::exists($websitePath) && \Cx\Lib\FileSystem\FileSystem::copy_folder($websitePath, $websiteBackupPath . '/dataRepository', true))) {
-            \DBG::log('Failed to copy the website from ' . $websitePath . 'to ' . $websiteBackupPath);
-            return false;
+    private function websiteRepositoryBackup($websiteBackupPath, $websitePath)
+    {
+        if (   !\Cx\Lib\FileSystem\FileSystem::exists($websitePath) 
+            || !\Cx\Lib\FileSystem\FileSystem::copy_folder($websitePath, $websiteBackupPath . '/dataRepository', true)
+        ) {
+            throw new MultiSiteJsonException(__METHOD__.' failed! : Failed to copy the website from ' . $websitePath . 'to ' . $websiteBackupPath);
         }
-        return true;
     }
     
     /**
      * get website Info data
      * 
      * @param array $params
-     * @return boolean
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
      */
     public function getWebsiteInfo($params)
     {
-        if (!$params['post']['websiteId']) {
-            \DBG::log('Unknown website requested!.');
-            return array('status' => 'error');
+        global $_ARRAYLANG;
+        
+        if (empty($params['post']) || !isset($params['post']['websiteId'])) {
+            throw new MultiSiteJsonException(__METHOD__.' failed! : '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
         }
         
         try {
@@ -3821,7 +3836,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website = $websiteServiceRepo->findOneById($params['post']['websiteId']);
                     if (!$website) {
-                        return array('status' => 'error');
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
                     }
                     
                     $websiteName = $website->getName();
@@ -3835,9 +3850,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $subscription = ComponentController::getSubscriptionByWebsiteId($website->getId());
                     if ($subscription) {
                         $metaInfo['subscription'] = array(
-                            'subscriptionCreatedDate'       => $subscription->getSubscriptionDate() ? $subscription->getSubscriptionDate()->format('Y-m-d H:i:s') : '',
-                            'subscriptionExpiredDate'       => $subscription->getExpirationDate() ? $subscription->getExpirationDate()->format('Y-m-d H:i:s') : '',
-                            'subscriptionRenewalDate'       => $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('Y-m-d H:i:s') : '',
+                            'subscriptionCreatedDate'       => $subscription->getSubscriptionDate() 
+                                                               ? $subscription->getSubscriptionDate()->format('Y-m-d H:i:s') 
+                                                               : '',
+                            'subscriptionExpiredDate'       => $subscription->getExpirationDate() 
+                                                               ? $subscription->getExpirationDate()->format('Y-m-d H:i:s') 
+                                                               : '',
+                            'subscriptionRenewalDate'       => $subscription->getRenewalDate() 
+                                                               ? $subscription->getRenewalDate()->format('Y-m-d H:i:s') 
+                                                               : '',
                             'subscriptionRenewalUnit'       => $subscription->getRenewalUnit(),
                             'subscriptionRenewalQuantifier' => $subscription->getRenewalQuantifier(),
                             'subscriptionProductId'         => $subscription->getProduct()->getId(),
@@ -3850,9 +3871,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getWebsiteInfo() failed: To get the website info'. $e->getMessage());
+            throw new MultiSiteJsonException(__METHOD__.' failed! : '. $e->getMessage());
         }
-        
     }
     
     /**
@@ -3860,9 +3880,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return array
      */
-    public function getAllBackupFilesInfo()
+    public function getAllBackupFilesInfo($params)
     {
-        $backupLocation    = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
+        $searchTerm = isset($params['post']['searchTerm']) 
+                      ? contrexx_input2raw($params['post']['searchTerm'])
+                      : '';
+        $backupLocation = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation', 'MultiSite');
         //change the backup location path to absolute location path
         \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($backupLocation);
         
@@ -3871,10 +3894,15 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         $backupFilesInfo = array();
-        foreach (glob($backupLocation."/*.zip") as $filename) {
-            $backupFilesInfo[] = explode('_',basename($filename, '.zip'));
+        foreach (glob($backupLocation.'/*.zip') as $filename) {
+            $backupFilesInfo[] = explode('_', basename($filename, '.zip'));
         }
         
+        if (!empty($searchTerm)) {
+            $backupFilesInfo = array_filter($backupFilesInfo, function($el) use ($searchTerm) {
+                return ( strpos($el[0], $searchTerm) !== false );
+            });
+        }
         return array('status' => 'success', 'backupFilesInfo' => $backupFilesInfo);
     }
     
@@ -3883,41 +3911,46 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param array $params
      * @return array
+     * @throws MultiSiteJsonException
      */
     public function deleteWebsiteBackup($params)
     {
         global $_ARRAYLANG;
-        
+
         if (   empty($params) 
             || empty($params['post']) 
             || empty($params['post']['websiteBackupFileName'])
-            ) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+        ) {
+            \DBG::log(__METHOD__.' failed! : '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED']);
         }
         
-        $websiteBackupFileName = isset($params['post']['websiteBackupFileName']) ? contrexx_input2raw($params['post']['websiteBackupFileName']) : '';
+        $websiteBackupFileName = isset($params['post']['websiteBackupFileName']) 
+                                 ? contrexx_input2raw($params['post']['websiteBackupFileName']) 
+                                 : '';
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
-                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    $backupFileLocation = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
-                    if (!\Cx\Lib\FileSystem\FileSystem::exists($backupFileLocation) || !\Cx\Lib\FileSystem\FileSystem::exists($backupFileLocation.'/'.$websiteBackupFileName)) {
-                        \DBG::log('The requested file ('.$backupFileLocation.'/'.$websiteBackupFileName.') doesnot exists');
-                        return array('status' => 'error');
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_SERVICE:
+                    $backupFileLocation = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation', 'MultiSite');
+                    if (   !\Cx\Lib\FileSystem\FileSystem::exists($backupFileLocation) 
+                        || !\Cx\Lib\FileSystem\FileSystem::exists($backupFileLocation.'/'.$websiteBackupFileName)
+                    ) {
+                        throw new MultiSiteJsonException('The requested file '.$websiteBackupFileName.' doesnot exists.');
+                    }
+
+                    if (!\Cx\Lib\FileSystem\FileSystem::delete_file($backupFileLocation.'/'.$websiteBackupFileName)) {
+                        throw new MultiSiteJsonException('Failed to delete the backuped website file');
                     }
                     
-                    if (!\Cx\Lib\FileSystem\FileSystem::delete_file($backupFileLocation.'/'.$websiteBackupFileName)) {
-                        \DBG::log('Failed to delete the backuped website file');
-                        return array('status' => 'error');
-                    }
-                    return array('status' => 'success');
+                    return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_SUCCESS']);
                     break;
                 default:
                     break;
             }
         } catch (\Exception $e) {
-            \DBG::log('JsonMultiSite::deleteWebsiteBackup() failed: To delete the backuped website'. $e->getMessage());
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED']);
-        } 
+            \DBG::log(__METHOD__.' failed! : '.$e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED']);
+        }
     }
     
     /**
@@ -3926,43 +3959,38 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param integer $websiteId         websiteId
      * @param string  $websiteBackupPath websiteBackup Location
      * 
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function websiteInfoBackup($websiteId, $websiteBackupPath)
+    private function websiteInfoBackup($websiteId, $websiteBackupPath)
     {
+        global $_ARRAYLANG;
+        
         if (!$websiteId) {
-            \DBG::log('Unknown website requested!.');
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' : Failed! : ' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
         }
         
         try {
             $resp = self::executeCommandOnManager('getWebsiteInfo', array('websiteId' => $websiteId));
             if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
-               \DBG::log('Failed to create the backup of websiteInfo.');
-                return false;
+               throw new MultiSiteJsonException('Failed to fetch the website info.');
             }
 
-            if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupPath) && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteBackupPath)) {
-                \DBG::log('Failed to create the website backup location Folder');
-                return false;
+            if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupPath) 
+                && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteBackupPath)) {
+                throw new MultiSiteJsonException('Failed to create the website backup location Folder.');
             }
 
-            if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupPath.'/info') && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteBackupPath.'/info')) {
-                \DBG::log('Failed to create the website backup info location Folder');
-                return false;
+            if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupPath.'/info') 
+                && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteBackupPath.'/info')) {
+                throw new MultiSiteJsonException('Failed to create the website backup info location Folder');
             }
             
-            
-            $file = new \Cx\Lib\FileSystem\File($websiteBackupPath.'/info/meta.yml');
-            $file->touch();
-            
+            $file    = new \Cx\Lib\FileSystem\File($websiteBackupPath.'/info/meta.yml');
             $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($resp->data->websiteInfo);
+            $file->touch();
             $file->write($dataSet->toYaml());
-            return true;
-                
         } catch (\Exception $e) {
-            \DBG::msg($e->getMessage());
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' : Failed! : ' .$e->getMessage());
         }
     }
     
@@ -3971,39 +3999,63 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param string $websiteBackupPath websiteBackup Location
      * @param string $websitePath       websitePath
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function websiteDatabaseBackup($websiteBackupPath, $websitePath) {
+    private function websiteDatabaseBackup($websiteBackupPath, $websitePath) 
+    {
         $configFilePath = $websitePath . '/config/configuration.php';
-
+        $output = $error = null;
+        
         if (!\Cx\Lib\FileSystem\FileSystem::exists($configFilePath)) {
-            \DBG::log('Website configuration file is not exists in the website.');
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' failed!.: Website configuration file is not exists in the website.');
         }
         
-        list($dbHost, $dbName, $dbUserName, $dbPassword) = $this->getWebsiteDatabaseInfo($configFilePath);
-        if (!empty($dbHost) && !empty($dbUserName) && !empty($dbName)) {
-            if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupPath. '/database') && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteBackupPath . '/database')) {
-                \DBG::log('Failed to create the website databse backup location Folder');
-                return false;
+        try {
+            //Get database configuration details
+            list($dbHost, $dbName, $dbUserName, $dbPassword) = $this->getWebsiteDatabaseInfo($configFilePath);
+
+            if (   empty($dbHost) 
+                || empty($dbUserName) 
+                || empty($dbName)
+            ) {
+                throw new MultiSiteJsonException('database configuration details are not valid.');
             }
-            exec("mysqldump -h '". $dbHost . "' -u '" . $dbUserName . "' -p'" . $dbPassword . "' '".$dbName."' > '".$websiteBackupPath."/database/sql_dump.sql'");
+
+            if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupPath. '/database') 
+                && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteBackupPath . '/database')
+            ) {
+                throw new MultiSiteJsonException('Failed to create the website databse backup location Folder');
+            }
+            $sqlFilePath = $websiteBackupPath.'/database/sql_dump.sql';
+            $exportDbCommand = 'mysqldump -h '. $dbHost . ' -u ' . $dbUserName . ' -p\'' . $dbPassword . '\' '.$dbName.' > '.$sqlFilePath;
+
+            //create database sql dump for the website
+            exec($exportDbCommand, $output, $error);
+
+            if ($error) {
+                throw new MultiSiteJsonException('Failed to create a database sql dump for the '. basename($websitePath));
+            } 
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException(__METHOD__.' : Failed! : ' .$e->getMessage());
         }
-        return true;
     }
     
     /**
-     * Get website database details
+     * Get website database configuration
      * 
      * @param string $configFilePath website config file path
-     * @return boolean
+     * @return array
+     * @throws MultiSiteJsonException
      */
-    public function getWebsiteDatabaseInfo($configFilePath)
+    private function getWebsiteDatabaseInfo($configFilePath)
     {
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($configFilePath)) {
+            throw new MultiSiteJsonException(__METHOD__.' failed! : Website configuration file is not exists in the website.');
+        }
         
         $config = new \Cx\Lib\FileSystem\File($configFilePath);
         $configData = $config->getData();
-        $dbHost = $dbUserName = $dbPassword = $dbName = $matches = '';
+        $dbHost = $dbUserName = $dbPassword = $dbName = $matches = null;
 
         if (preg_match('/\\$_DBCONFIG\\[\'host\'\\] = \'(.*?)\'/', $configData, $matches)) {
             $dbHost = $matches[1];
@@ -4026,43 +4078,64 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param array $params website data
      * @return array
+     * @throws MultiSiteJsonException
      */
     public function websiteRestore($params)
     {
         global $_ARRAYLANG;
         
-        if(empty($params) || !\Cx\Lib\FileSystem\FileSystem::exists(\Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite'))) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+        if (   empty($params)
+            || empty($params['post'])
+            || !\Cx\Lib\FileSystem\FileSystem::exists(\Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation', 'MultiSite'))
+        ) {
+            \DBG::log(__METHOD__.'Failed! : '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
         }
         
-        $websiteName = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
-        $websiteBackupFileName = !empty($params['post']['websiteBackupFileName']) ? $params['post']['websiteBackupFileName'] : '';
-        if (empty($websiteName) || empty($websiteBackupFileName)) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+        try {
+            $websiteName           = isset($params['post']['websiteName']) 
+                                     ? contrexx_input2raw($params['post']['websiteName']) 
+                                     : '';
+            $websiteBackupFileName = isset($params['post']['websiteBackupFileName']) 
+                                     ? contrexx_input2raw($params['post']['websiteBackupFileName'])
+                                     : '';
+            if (   empty($websiteName) 
+                || empty($websiteBackupFileName)
+            ) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            }
+
+            $websiteBackupFilePath = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation', 'MultiSite').'/'.$websiteBackupFileName;
+
+            if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupFilePath) 
+                || \Cx\Lib\FileSystem\FileSystem::exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath', 'MultiSite') . '/' . $websiteName)
+            ) {
+                throw new MultiSiteJsonException('The website datafolder/backup repository doesnot exists!.');
+            }
+            
+            \DBG::log('JsonMultisite: Create a new website on restore..');
+            $this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath);
+            
+            \DBG::log('JsonMultisite: Restore website Database and Repository..');
+            $this->websiteDataRestore($websiteName, $websiteBackupFilePath);
+            
+            \DBG::log('JsonMultisite: Website Info Restore..');
+            $this->websiteInfoRestore($websiteName, $websiteBackupFilePath);
+            
+            $websiteUrl = $this->getWebsiteLinkByName($websiteName);
+            if (!$websiteUrl) {
+                throw new MultiSiteJsonException('Failed to get the website frontend view link.');
+            }
+            
+            return array(
+                'status'    => 'success', 
+                'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_SUCCESS'], $websiteName),
+                'websiteUrl'=> $websiteUrl
+            ); 
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.'Failed! : '.$e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
         }
-        
-        $websiteBackupFilePath = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite').'/'.$websiteBackupFileName;
-        
-        if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupFilePath) 
-            || \Cx\Lib\FileSystem\FileSystem::exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $websiteName)
-           ) {
-            \DBG::log('The website datafolder/backup repository doesnot exists!.');
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
-        }
-        
-        if (!$this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath)) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
-        }
-        
-        if (!$this->websiteDataRestore($websiteName, $websiteBackupFilePath)) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
-        }
-        
-        if (!$this->websiteInfoRestore($websiteName, $websiteBackupFilePath)) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
-        }
-        
-        return array('status' => 'success', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_SUCCESS'], $websiteName));
     }
     
     /**
@@ -4071,14 +4144,41 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $websiteBackupFilePath websiteBackup path
      * @param string $file                  yml file path
      * @return array
+     * @throws MultiSiteJsonException
      */
-    public function getWebsiteInfoFromZip($websiteBackupFilePath, $file)
+    private function getWebsiteInfoFromZip($websiteBackupFilePath, $file)
     {
-        $websiteBackupFile = new \PclZip($websiteBackupFilePath);
-        $list = $websiteBackupFile->extract(PCLZIP_OPT_BY_NAME, $file, PCLZIP_OPT_EXTRACT_AS_STRING);
-        $yaml         = new \Symfony\Component\Yaml\Yaml();
-        $websiteInfo  = $yaml->load($list[0]['content']);
-        return $websiteInfo;
+        try {
+            $websiteBackupFile = new \PclZip($websiteBackupFilePath);
+            $list = $websiteBackupFile->extract(PCLZIP_OPT_BY_NAME, $file, PCLZIP_OPT_EXTRACT_AS_STRING);
+            $yaml         = new \Symfony\Component\Yaml\Yaml();
+            $content      = isset($list[0]['content']) ? $list[0]['content'] : '';
+            $websiteInfo  = $yaml->load($content);
+            return $websiteInfo;
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException(__METHOD__.' failed! : '.$e->getMessage());
+        }
+        
+    }
+    
+    /**
+     * Get website frontend view link by website name
+     * 
+     * @param string $websiteName
+     * @return mixed boolean | string
+     */
+    private function getWebsiteLinkByName($websiteName)
+    {
+        if (empty($websiteName)) {
+            return false;
+        }
+        
+        $websiteRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website       = $websiteRepo->findOneBy(array('name' => $websiteName));
+        if (!$website) {
+            return false;
+        }
+        return ComponentController::getApiProtocol() . $website->getBaseDn()->getName();
     }
     
     /**
@@ -4086,48 +4186,57 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param string $websiteName           websiteName
      * @param string $websiteBackupFilePath websiteBackup path
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath)
+    private function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath)
     {
-        \DBG::log('Create new website on restore: '.$websiteName);
-        $websiteInfoArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'info/meta.yml');
-        if (empty($websiteInfoArray)) {
-            return false;
+        global $_ARRAYLANG;
+        
+        try {
+            $websiteInfoArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'info/meta.yml');
+            if (empty($websiteInfoArray)) {
+                throw new MultiSiteJsonException('Failed to get the website Information from file');
+            }
+            
+            $params = array('multisite_address' => $websiteName);
+            if ($websiteInfoArray['website']) {
+                $params['multisite_email_address'] = $websiteInfoArray['website']['websiteEmail'];
+            }
+
+            if ($websiteInfoArray['subscription']) {
+                $params['product_id']    = $websiteInfoArray['subscription']['subscriptionProductId'];
+                $params['renewalOption'] = $websiteInfoArray['subscription']['subscriptionRenewalUnit'];
+                $subscriptionId          = $websiteInfoArray['subscription']['subscriptionId'];
+            }
+
+            if (empty($subscriptionId) || empty($params['product_id'])) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            }
+
+            $productRepo = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product');
+            $product     = $productRepo->findOneById($params['product_id']);
+
+            if (!$product) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS']);
+            }
+
+            if ($product->getEntityClass() == 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection') {
+                $paramsData = array(
+                    'subscriptionId' => $subscriptionId, 
+                    'websiteName'    => $websiteName, 
+                    'websiteEmail'   => $params['multisite_email_address']
+                );
+                $response = JsonMultiSite::executeCommandOnManager('addNewWebsiteInSubscription', $paramsData);
+            } else {
+                $response = JsonMultiSite::executeCommandOnManager('signup', $params);
+            }
+
+            if ($response->status == 'error' || $response->data->status == 'error') {
+                throw new MultiSiteJsonException('Failed to create a website: '.$websiteName);
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException(__METHOD__.' Failed! : '.$e->getMessage());
         }
-        
-        $params = array('multisite_address' => $websiteName);
-        if ($websiteInfoArray['website']) {
-            $params['multisite_email_address'] = $websiteInfoArray['website']['websiteEmail'];
-        }
-        
-        if ($websiteInfoArray['subscription']) {
-            $params['product_id']    = $websiteInfoArray['subscription']['subscriptionProductId'];
-            $params['renewalOption'] = $websiteInfoArray['subscription']['subscriptionRenewalUnit'];
-            $subscriptionId          = $websiteInfoArray['subscription']['subscriptionId'];
-        }
-        
-        if (empty($subscriptionId) || empty($params['product_id'])) {
-            return false;
-        }
-        
-        $product = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findOneBy(array('id' => $params['product_id']));
-        
-        if (!$product) {
-            return false;
-        }
-        
-        if ($product->getEntityClass() == 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection') {
-            $response = JsonMultiSite::executeCommandOnManager('createNewWebsiteBySubscription', array('subscriptionId' => $subscriptionId, 'websiteName' => $websiteName, 'websiteEmail' => $params['multisite_email_address']));
-        } else {
-            $response = JsonMultiSite::executeCommandOnManager('signup', $params);
-        }
-        
-        if ($response->status == 'error' || $response->data->status == 'error') {
-            return false;
-        }
-        
-        return true;
     }
     
     /**
@@ -4135,26 +4244,23 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param string $websiteName           website Name
      * @param string $websiteBackupFilePath website backup path
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function websiteDataRestore($websiteName, $websiteBackupFilePath)
+    private function websiteDataRestore($websiteName, $websiteBackupFilePath)
     {
-        \DBG::log('Restore website DataBase and Repository: '.$websiteName);
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite') . '/' . $websiteName;
-        
-        if (!$this->extractWebsiteDatabase($websitePath, $websiteBackupFilePath)) {
-            return false;
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath', 'MultiSite') . '/' . $websiteName;
+        try {
+            \DBG::log('JsonMultisite: Extract website database file..');
+            $this->extractWebsiteDatabase($websitePath, $websiteBackupFilePath);
+            
+            \DBG::log('JsonMultisite: Restore website database.. ');
+            $this->websiteDatabaseRestore($websitePath);
+            
+            \DBG::log('JsonMultisite: Restore website data repository files..');
+            $this->websiteRepositoryRestore($websitePath, $websiteBackupFilePath);
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException(__METHOD__.' Failed! : '.$e->getMessage());
         }
-        
-        if (!$this->websiteDatabaseRestore($websitePath)) {
-            return false;
-        }
-        
-        if (!$this->websiteRepositoryRestore($websitePath, $websiteBackupFilePath)) {
-            return false;
-        }
-        
-        return true;
     }
     
     /**
@@ -4162,73 +4268,86 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param string $websitePath           website path
      * @param string $websiteBackupFilePath website backup path
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function websiteRepositoryRestore($websitePath, $websiteBackupFilePath)
+    private function websiteRepositoryRestore($websitePath, $websiteBackupFilePath)
     {
         if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupFilePath)) {
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' failed! : Website Backup file doesnot exists!.');
         }
         
         $restoreWebsiteFile = new \PclZip($websiteBackupFilePath);
-        $restoreWebsiteFile->extract(PCLZIP_OPT_PATH, $websitePath, PCLZIP_OPT_BY_PREG, '/dataRepository(.(?!config))*$/', PCLZIP_OPT_REMOVE_PATH, 'dataRepository', PCLZIP_OPT_REPLACE_NEWER);
-        return true;
+        if ($restoreWebsiteFile->extract(PCLZIP_OPT_PATH, $websitePath, PCLZIP_OPT_BY_PREG, '/dataRepository(.(?!config))*$/', PCLZIP_OPT_REMOVE_PATH, 'dataRepository', PCLZIP_OPT_REPLACE_NEWER) == 0) {
+            throw new MultiSiteJsonException(__METHOD__.' failed! : Failed to extract the website repostory on restore.');
+        }
     }
-    
     
     /**
      * Extract the database folder in website_temp folder
      * 
      * @param string $websitePath           website path
      * @param string $websiteBackupFilePath website backup path
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function extractWebsiteDatabase($websitePath, $websiteBackupFilePath)
+    private function extractWebsiteDatabase($websitePath, $websiteBackupFilePath)
     {
         $websiteTempDir = $websitePath . '/website_temp';
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteTempDir) && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteTempDir)) {
-            return false;
+        if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteTempDir)
+            && !\Cx\Lib\FileSystem\FileSystem::make_folder($websiteTempDir)
+        ) {
+            throw new MultiSiteJsonException(__METHOD__.' : Failed!. Unable to create a directory '.$websiteTempDir);
         }
 
         $restoreWebsiteFile = new \PclZip($websiteBackupFilePath);
-        $restoreWebsiteFile->extract(PCLZIP_OPT_PATH, $websiteTempDir, PCLZIP_OPT_BY_PREG, '/database/');
-        return true;
+        if ($restoreWebsiteFile->extract(PCLZIP_OPT_PATH, $websiteTempDir, PCLZIP_OPT_BY_PREG, '/database/') == 0) {
+            throw new MultiSiteJsonException(__METHOD__.' : Failed!. Unable to extract the files in '.$websiteTempDir);
+        }
     }
     
     /**
      * Restore the website database
      * 
      * @param string $websitePath           website path
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function websiteDatabaseRestore($websitePath)
+    private function websiteDatabaseRestore($websitePath)
     {
         $configFilePath = $websitePath . '/config/configuration.php';
         $websiteTempPath = $websitePath.'/website_temp';
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($configFilePath)) {
-            \DBG::log('Website configuration file is not exists in the website.');
-            return false;
+        
+        try {
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($configFilePath)) {
+               throw new MultiSiteJsonException('Website configuration file is not exists in the website.');
+            }
+
+            list($dbHost, $dbName, $dbUserName, $dbPassword) = $this->getWebsiteDatabaseInfo($configFilePath);
+            
+            if (empty($dbHost) || empty($dbName) || empty($dbUserName) || empty($dbPassword)) {
+                throw new MultiSiteJsonException('Database details are not valid');
+            }
+
+            $sqlDumpFile = $websiteTempPath . '/database/sql_dump.sql';
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($sqlDumpFile)) {
+                throw new MultiSiteJsonException('Database sql file not exists!.');
+            }
+
+            $output = $error = null;
+            $importDbCommand = 'mysql -h '. $dbHost . ' -u ' . $dbUserName . ' -p\'' . $dbPassword . '\' '.$dbName.' < '.$sqlDumpFile;
+
+            //Execute the database import command
+            exec($importDbCommand, $output, $error);
+
+            if ($error) {
+                throw new MultiSiteJsonException('Failed to import database on restore.');
+            }
+            //cleanup website tempory folder
+            if (!\Cx\Lib\FileSystem\FileSystem::delete_folder($websiteTempPath, true)) {
+                throw new MultiSiteJsonException('Failed to delete the website temp folder on restore.');
+            }
+            
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException(__METHOD__.' failed! :'.$e->getMessage());
         }
-
-        list($dbHost, $dbName, $dbUserName, $dbPassword) = $this->getWebsiteDatabaseInfo($configFilePath);
-        if (empty($dbHost) || empty($dbName) || empty($dbUserName) || empty($dbPassword)) {
-            \DBG::log('Database details are not valid');
-            return false;
-        }
-
-        $sqlDumpFile = $websiteTempPath . '/database/sql_dump.sql';
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($sqlDumpFile)) {
-            return false;
-        }
-
-        exec("mysql -h '". $dbHost . "' -u '" . $dbUserName . "' -p'" . $dbPassword . "' '".$dbName."' < '".$sqlDumpFile."'");
-
-        //cleanup website tempory folder
-        if (!\Cx\Lib\FileSystem\FileSystem::delete_folder($websiteTempPath, true)) {
-            return false;
-        }
-
-        return true;
     }
     
     /**
@@ -4236,49 +4355,54 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param string $websiteName           website name
      * @param string $websiteBackupFilePath website backup path
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function websiteInfoRestore($websiteName, $websiteBackupFilePath)
+    private function websiteInfoRestore($websiteName, $websiteBackupFilePath)
     {
-        \DBG::log('Restore website Info: '.$websiteName);
-        $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $website = $websiteServiceRepo->findOneBy(array('name' => $websiteName));
+        global $_ARRAYLANG;
+        
+        $websiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website     = $websiteRepo->findOneBy(array('name' => $websiteName));
         if (!$website) {
-            \DBG::log('This website is not valid');
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' failed! : '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
         
-        $websiteConfigArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'dataRepository/config/Config.yml');
-        $websiteInfoArray   = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'dataRepository/config/MultiSite.yml');
-        $configSettingArray = array();
-        foreach ($websiteConfigArray['data'] as $value) {
-            $configSettingArray[$value->getName()] = array(
-                'name'  => $value->getName(),
-                'group' => $value->getGroup(),
-                'value' => $value->getValue()
-            );
+        try {
+            $websiteConfigArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'dataRepository/config/Config.yml');
+            $websiteInfoArray   = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'dataRepository/config/MultiSite.yml');
+            if (empty($websiteConfigArray) || empty($websiteInfoArray)) {
+                throw new MultiSiteJsonException('Failed to fetch the website information from backuped zip file');
+            }
+            
+            $configSettingArray = array();
+            foreach ($websiteConfigArray['data'] as $value) {
+                $configSettingArray[$value->getName()] = array(
+                    'name'  => $value->getName(),
+                    'group' => $value->getGroup(),
+                    'value' => $value->getValue()
+                );
+            }
+
+            $websiteConfigInfo = array(
+                'websiteMultisite'   => array('websiteState' => $websiteInfoArray['websiteState']['value']),
+                'websiteConfig'      => $configSettingArray
+                );
+            
+            \DBG::log('JsonMultisite: Restore website net domains..');
+            $this->updateWebsiteNetDomainsOnRestore($website, $websiteBackupFilePath);
+            
+            \DBG::log('JsonMultisite: Restore website Configurations..');
+            $resp = JsonMultiSite::executeCommandOnWebsite('updateWebsiteConfig', $websiteConfigInfo, $website);
+            if ($resp->status == 'error' || $resp->data->status == 'error') {
+                throw new MultiSiteJsonException('Failed to update website configurations.');
+            }
+            
+            \DBG::log('JsonMultisite: Restore website subscription details..');
+            $this->updateWebsiteSubscriptionDetails($websiteBackupFilePath, $website->getId());
+
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException(__METHOD__.' failed! : '.$e->getMessage());
         }
-        
-        $websiteConfigInfo = array(
-            'websiteMultisite'   => array('websiteState' => $websiteInfoArray['websiteState']['value']),
-            'websiteConfig'      => $configSettingArray
-            );
-        
-        
-        if (!$this->updateWebsiteNetDomainsOnRestore($website, $websiteBackupFilePath)) {
-            return false;
-        }
-        
-        $resp = JsonMultiSite::executeCommandOnWebsite('updateWebsiteConfig', $websiteConfigInfo, $website);
-        if ($resp->status == 'error' || $resp->data->status == 'error') {
-            return false;
-        }
-        
-        if (!$this->updateWebsiteSubscriptionDetails($websiteBackupFilePath, $website->getId())) {
-            return false;
-        }
-        
-        return true;
     }
     
     /**
@@ -4286,76 +4410,86 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param type $params
      * @return array
+     * @throws MultiSiteJsonException
      */
     public function updateWebsiteConfig($params)
     {
-        if (empty($params) || empty($params['post'])) {
-            return array('status' => 'error');
-        }
+        global $_ARRAYLANG;
         
-        if (!$this->updateWebsiteMultisiteConfigOnRestore($params['post']['websiteMultisite'])) {
-            return array('status' => 'error');
+        try {
+            if (empty($params) || empty($params['post'])) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            }
+            
+            \DBG::log('JsonMultisite: Restore website multisite configurations..');
+            $this->updateWebsiteMultisiteConfigOnRestore($params['post']['websiteMultisite']);
+            
+            \DBG::log('JsonMultisite: Restore website configurations / settings..');
+            $this->updateWebsiteConfigOnRestore($params['post']['websiteConfig']);
+            
+            return array('status' => 'success');
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' failed! : '.$e->getMessage());
+            throw new MultiSiteJsonException('Failed to restore website configurations.');
         }
-        
-        if (!$this->updateWebsiteConfigOnRestore($params['post']['websiteConfig'])) {
-            return array('status' => 'error');
-        }
-        return array('status' => 'success');
-        
     }
     
     /**
      * updateWebsiteNetDomainsOnRestore
      * 
-     * @param array  $website               websiteObject
-     * @param string $websiteBackupFilePath website backup path
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website  $website               websiteObject
+     * @param string                                           $websiteBackupFilePath website backup path
      * 
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function updateWebsiteNetDomainsOnRestore(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $websiteBackupFilePath)
+    private function updateWebsiteNetDomainsOnRestore(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $websiteBackupFilePath)
     {
-        
-        $websiteDomainObjArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'dataRepository/config/DomainRepository.yml');
+        $domainRepositoryFile  = 'dataRepository/config/DomainRepository.yml';
+        $websiteDomainObjArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, $domainRepositoryFile);
         if (empty($websiteDomainObjArray)) {
-            return true;
+            throw new MultiSiteJsonException('Failed to get the backuped website domains.');
         }
         
-        foreach ($websiteDomainObjArray['data'] as $domain) {
-            $resp = JsonMultiSite::executeCommandOnWebsite('mapNetDomain', array('domainName' => $domain->getName()), $website);
-            if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
-                return false;
+        try {
+            foreach ($websiteDomainObjArray['data'] as $domain) {
+                $resp = JsonMultiSite::executeCommandOnWebsite('mapNetDomain', array('domainName' => $domain->getName()), $website);
+                if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
+                    throw new MultiSiteJsonException('Failed to restore the website domains.');
+                }
             }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException(__METHOD__.' failed! : '.$e->getMessage());
         }
-        return true;
     }
     
     /**
      * Update website configuration settings
      * 
      * @param array $websiteInfo websiteConfig details
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function updateWebsiteConfigOnRestore($websiteInfo)
+    private function updateWebsiteConfigOnRestore($websiteInfo)
     {
         if (empty($websiteInfo)) {
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' : failed!. Website info should not be empty');
         }
-        $updateConfigArray = array('systemStatus', 'languageDetection', 'coreGlobalPageTitle', 'mainDomainId', 'forceDomainUrl', 'coreListProtectedPages',
-            'searchVisibleContentOnly', 'advancedUploadFrontend', 'forceProtocolFrontend', 'coreAdminEmail', 'contactFormEmail', 'contactCompany',
-            'contactAddress', 'contactZip', 'contactPlace', 'contactCountry', 'contactPhone', 'contactFax', 'dashboardNews', 'dashboardStatistics',
-            'advancedUploadBackend', 'sessionLifeTime', 'sessionLifeTimeRememberMe', 'forceProtocolBackend', 'coreIdsStatus', 'passwordComplexity',
-            'coreAdminName', 'xmlSitemapStatus', 'frontendEditingStatus', 'corePagingLimit','searchDescriptionLength', 'googleMapsAPIKey',
-            'googleAnalyticsTrackingId'
-            );
         
-        \Cx\Core\Setting\Controller\Setting::init('Config', null,'Yaml');
+        $updateConfigArray = array(
+            'systemStatus', 'languageDetection', 'coreGlobalPageTitle', 'mainDomainId', 'forceDomainUrl', 
+            'coreListProtectedPages', 'searchVisibleContentOnly', 'advancedUploadFrontend', 'forceProtocolFrontend',
+            'coreAdminEmail', 'contactFormEmail', 'contactCompany', 'contactAddress', 'contactZip', 'contactPlace',
+            'contactCountry', 'contactPhone', 'contactFax', 'dashboardNews', 'dashboardStatistics',
+            'advancedUploadBackend', 'sessionLifeTime', 'sessionLifeTimeRememberMe', 'forceProtocolBackend', 
+            'coreIdsStatus', 'passwordComplexity', 'coreAdminName', 'xmlSitemapStatus', 'frontendEditingStatus',
+            'corePagingLimit','searchDescriptionLength', 'googleMapsAPIKey', 'googleAnalyticsTrackingId'
+        );
+        
+        \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml');
         foreach ($updateConfigArray as $config) {
             \Cx\Core\Setting\Controller\Setting::set($config, $websiteInfo[$config]['value']);
         }
         
         \Cx\Core\Setting\Controller\Setting::updateAll();
-        
-        return true;
     }
     
     /**
@@ -4363,19 +4497,18 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param array $websiteInfo websiteInfo
      * 
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function updateWebsiteMultisiteConfigOnRestore($websiteInfo)
+    private function updateWebsiteMultisiteConfigOnRestore($websiteInfo)
     {
         if (empty($websiteInfo)) {
-            return false;
+            throw new MultiSiteJsonException(__METHOD__.' : failed!. Website info should not be empty');
         }
         
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website', 'FileSystem');
         \Cx\Core\Setting\Controller\Setting::set('websiteState', $websiteInfo['websiteState']);
         
         \Cx\Core\Setting\Controller\Setting::update('websiteState');
-        return true;
     }
     
     /**
@@ -4384,26 +4517,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string  $websiteBackupFilePath website backup path
      * @param integer $websiteId             websiteId
      * 
-     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function updateWebsiteSubscriptionDetails($websiteBackupFilePath, $websiteId)
+    private function updateWebsiteSubscriptionDetails($websiteBackupFilePath, $websiteId)
     {
-        $websiteInfoArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'info/meta.yml');
-        if (empty($websiteInfoArray) || !isset($websiteInfoArray['subscription'])) {
-            \DBG::log('This website info is empty');
-            return false;
+        try {
+            $websiteInfoArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'info/meta.yml');
+            if (   empty($websiteInfoArray) 
+                || !isset($websiteInfoArray['subscription'])
+            ) {
+               throw new MultiSiteJsonException('Subscription details are empty.');
+            }
+            
+            $params = array(
+                'websiteId'    => $websiteId,
+                'subscription' => $websiteInfoArray['subscription']
+            );
+        
+            //update subscription details
+            $response = JsonMultiSite::executeCommandOnManager('updateWebsiteSubscriptionInfo', $params);
+            if ($response->status == 'error' || $response->data->status == 'error') {
+                throw new MultiSiteJsonException('Failed to update subscription details.');
+            }
+        } catch (\Exception $e) {
+            throw new MultiSiteJsonException(__METHOD__. ' failed! : '.$e->getMessage());
         }
-        
-        $params = array('websiteId' => $websiteId, 'subscription' => $websiteInfoArray['subscription']);
-        
-        //update subscription details
-        $response = JsonMultiSite::executeCommandOnManager('updateWebsiteSubscriptionInfo', $params);
-        if ($response->status == 'error' || $response->data->status == 'error') {
-            \DBG::log('Failed to update subscription details');
-            return false;
-        }
-        
-        return true;
     }
     
     /**
@@ -4411,24 +4549,41 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param type $params
      * @return array
+     * @throws MultiSiteJsonException
      */
     public function updateWebsiteSubscriptionInfo($params)
     {
-        if (empty($params) || empty($params['post']['websiteId']) || empty($params['post']['subscription'])) {
-            return array('status' => 'error');
+        global $_ARRAYLANG;
+        
+        if (   empty($params) 
+            || empty($params['post']['websiteId'])
+            || empty($params['post']['subscription'])
+        ) {
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
         }
+        
         try {
-            $websiteId         = isset($params['post']['websiteId']) ? $params['post']['websiteId'] : '';
-            $subscriptionInfo  = isset($params['post']['subscription']) ? $params['post']['subscription'] : '';
+            $websiteId         = isset($params['post']['websiteId'])
+                                 ? contrexx_input2int($params['post']['websiteId'])
+                                 : 0;
+            $subscriptionInfo  = isset($params['post']['subscription'])
+                                 ? contrexx_input2raw($params['post']['subscription'])
+                                 : '';
                  
             $subscription = ComponentController::getSubscriptionByWebsiteId($websiteId);
             if (!$subscription) {
-                return array('status' => 'error');
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS']);
             }
             
-            $subscriptionCreatedDate = isset($subscriptionInfo['subscriptionCreatedDate']) ? new \DateTime($subscriptionInfo['subscriptionCreatedDate']) : null;
-            $subscriptionExpiredDate = isset($subscriptionInfo['subscriptionExpiredDate']) ? new \DateTime($subscriptionInfo['subscriptionExpiredDate']) : null;
-            $subscriptionRenewalDate = isset($subscriptionInfo['subscriptionRenewalDate']) ? new \DateTime($subscriptionInfo['subscriptionRenewalDate']) : null;
+            $subscriptionCreatedDate = isset($subscriptionInfo['subscriptionCreatedDate'])
+                                       ? new \DateTime($subscriptionInfo['subscriptionCreatedDate'])
+                                       : null;
+            $subscriptionExpiredDate = isset($subscriptionInfo['subscriptionExpiredDate'])
+                                       ? new \DateTime($subscriptionInfo['subscriptionExpiredDate'])
+                                       : null;
+            $subscriptionRenewalDate = isset($subscriptionInfo['subscriptionRenewalDate'])
+                                       ? new \DateTime($subscriptionInfo['subscriptionRenewalDate'])
+                                       : null;
             $subscription->setSubscriptionDate($subscriptionCreatedDate);
             $subscription->setExpirationDate($subscriptionExpiredDate);
             $subscription->setRenewalDate($subscriptionRenewalDate);
@@ -4437,41 +4592,57 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             return array('status' => 'success');
         } catch (\Exception $e) {
-            \DBG::log('JsonMultisite::updateWebsiteInfo() failed!. '.$e->getMessage());
-            return array('status' => 'error');
+            \DBG::log(__METHOD__. ' failed!. '.$e->getMessage());
+            throw new MultiSiteJsonException('Failed to restore subscription details.');
         }
     }
     
     /**
-     * createNewWebsiteBySubscription
+     * Add New Website In Subscription
      * 
      * @param array $params
      * @return array
+     * @throws MultiSiteJsonException
      */
-    public function createNewWebsiteBySubscription($params)
+    public function addNewWebsiteInSubscription($params)
     {
+        global $_ARRAYLANG;
         
-        $subscriptionId = isset($params['post']['subscriptionId']) ? contrexx_input2int($params['post']['subscriptionId']) : '';
-        $websiteName    = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
-        $email          = isset($params['post']['websiteEmail']) ? contrexx_input2raw($params['post']['websiteEmail']) : '';
+        $subscriptionId = isset($params['post']['subscriptionId'])
+                          ? contrexx_input2int($params['post']['subscriptionId'])
+                          : 0;
+        $websiteName    = isset($params['post']['websiteName'])
+                          ? contrexx_input2raw($params['post']['websiteName'])
+                          : '';
+        $email          = isset($params['post']['websiteEmail'])
+                          ? contrexx_input2raw($params['post']['websiteEmail'])
+                          : '';
         
-        if (   empty($subscriptionId) 
-            || empty($websiteName) 
-            || empty($email) 
+        try {
+           if (   empty($subscriptionId)
+               || empty($websiteName)
+               || empty($email)
             ) {
-            return array('status' => 'error');
-        }
-        
-        $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => $email));
-        if (!$objUser) {
-            return array('status' => 'error');
-        }
-        
-        $response = \Cx\Core_Modules\MultiSite\Controller\ComponentController::createNewWebsiteInSubscription($subscriptionId, $websiteName, $objUser);
-        if (!$response || $response->status == 'error' || $response->data->status == 'error') {
-            return array('status' => 'error');
-        }
-        return array('status' => 'success');
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            }
+
+            $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => $email));
+            if (!$objUser) {
+                throw new MultiSiteJsonException('Failed to fetch the user object from the email '.$email);
+            }
+            
+            $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $multisite = $componentRepo->findOneBy(array('name'=>'Multisite'));
+            $multisiteComponentController = $multisite->getSystemComponentController();
+            $response = $multisiteComponentController->createNewWebsiteInSubscription($subscriptionId, $websiteName, $objUser);
+            if (!$response || $response->status == 'error' || $response->data->status == 'error') {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
+            }
+            return array('status' => 'success'); 
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' failed!. : '.$e->getMessage());
+            throw new MultiSiteJsonException('Failed to create the website in subscription.');
+        }  
     }
     
     /**
@@ -4480,31 +4651,42 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param array $params
      * 
      * @return array
+     * @throws MultiSiteJsonException
      */
-    public function sendFileToRemoteServer($params) {
+    public function sendFileToRemoteServer($params) 
+    {
+        global $_ARRAYLANG;
+        
         if (!isset($params['post'])) {
-            return array('status' => 'error');
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
         }
         
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+            $backupFileName  = isset($params['post']['backupFileName'])
+                               ? contrexx_input2raw($params['post']['backupFileName'])
+                               : '';
+            $serviceServerId = isset($params['post']['serviceServerId'])
+                               ? contrexx_input2int($params['post']['serviceServerId'])
+                               : 0;
+            
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                    if (!isset($params['post']['serviceServerId'])) {
-                         return array('status' => 'error');
+                    if (empty($serviceServerId)) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
                     }
 
                     $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $websiteServiceServer     = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
+                    $websiteServiceServer     = $websiteServiceServerRepo->findOneById($serviceServerId);
                     if (empty($websiteServiceServer)) {
-                        return array('status' => 'error');
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
                     }
 
-                    $destinationFolder = \Env::get('cx')->getWebsiteTempPath().  BackendController::MULTISITE_BACKUP_TEMP_DIR;
+                    $destinationFolder = \Env::get('cx')->getWebsiteTempPath() . BackendController::MULTISITE_BACKUP_TEMP_DIR;
                     $files = $this->moveFileToRemoteServer($destinationFolder);
                     $resp = self::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $params['post']['serviceServerId']), $websiteServiceServer, $files);
                     if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
-                        return array('status' => 'error');
+                        throw new MultiSiteJsonException('Failed to send file to destination service server');
                     }
 
                     //cleanup folder
@@ -4515,35 +4697,37 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
                 case ComponentController::MODE_SERVICE:
                     if (isset($params['post']['destinationServer'])) {
-                        if (!$this->moveFileToRemoteServer()) {
-                            return array('status' => 'error');
-                        }
-                        return array('status' => 'success');
-                    } else {
-                        $backupFileName = isset($params['post']['backupFileName']) ? contrexx_input2raw($params['post']['backupFileName']) : '';
-                        $serviceServerId = isset($params['post']['serviceServerId']) ? contrexx_input2int($params['post']['serviceServerId']) : 0;
-                        if (empty($backupFileName) || empty($serviceServerId)) {
-                            return array('status' => 'error');
-                        }
-
-                        $backupLocation = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
-                        $filePath       = $backupLocation.'/'.$backupFileName;
-                        if (!\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) || !\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
-                            return array('status' => 'error');
-                        }
-                        $resp = self::executeCommandOnManager('sendFileToRemoteServer', array('serviceServerId' => $serviceServerId), array($filePath));
-                        if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
-                            return array('status' => 'error');
-                        }
+                        $this->moveFileToRemoteServer();
                         return array('status' => 'success');
                     }
+                    
+                    if (empty($backupFileName) || empty($serviceServerId)) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+                    }
+
+                    $backupLocation = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation', 'MultiSite');
+                    $filePath       = $backupLocation.'/'.$backupFileName;
+                    if (   !\Cx\Lib\FileSystem\FileSystem::exists($backupLocation) 
+                        || !\Cx\Lib\FileSystem\FileSystem::exists($filePath)
+                    ) {
+                        throw new MultiSiteJsonException('The backped file' .$backupFileName.' not exists in service server.');
+                    }
+
+                    $resp = self::executeCommandOnManager('sendFileToRemoteServer', array('serviceServerId' => $serviceServerId), array($filePath));
+                    if (   !$resp 
+                        || $resp->status == 'error' 
+                        || $resp->data->status == 'error'
+                    ) {
+                        throw new MultiSiteJsonException('Failed to send file to destination service server.');
+                    }
+                    return array('status' => 'success');
                     break;
                 default :
                     break;
             }
         
         } catch (\Exception $e) {
-             \DBG::log('JsonMultisite::sendFileToRemoteServer() failed!. '.$e->getMessage());
+            \DBG::log(__METHOD__.' failed!. : '.$e->getMessage());
             return array('status' => 'error');
         }
     }
@@ -4553,30 +4737,160 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @param string $destinationFolder destinationFolder name
      * 
-     * @return mixed boolean | array
+     * @return array
+     * @throws MultiSiteJsonException
      */
-    public function moveFileToRemoteServer($destinationFolder = null) {
-        $fileLocation = !empty($destinationFolder) ? $destinationFolder : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation','MultiSite');
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($fileLocation) && !\Cx\Lib\FileSystem\FileSystem::make_folder($fileLocation)) {
-           return false;
+    private function moveFileToRemoteServer($destinationFolder = null)
+    {
+        $fileLocation = !empty($destinationFolder) 
+                        ? $destinationFolder 
+                        : \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation', 'MultiSite');
+        
+        if (   !\Cx\Lib\FileSystem\FileSystem::exists($fileLocation) 
+            && !\Cx\Lib\FileSystem\FileSystem::make_folder($fileLocation)
+        ) {
+            throw new MultiSiteJsonException(__METHOD__.' :failed!.  Failed to create a folder '.$fileLocation);
         }
         
         $filesArray = array();
+        if (empty($_FILES)) {
+            throw new MultiSiteJsonException(__METHOD__.' :failed!. Their is no uploaded files.');
+        }
+        
         foreach ($_FILES as $file) {
             if ($file['error'] != 0) {
-                continue;
+                throw new MultiSiteJsonException(__METHOD__.' :failed!. Their is an error in the file.');
             }
-            if(!move_uploaded_file($file['tmp_name'], $fileLocation.'/'.$file['name'])) {
-                \DBG::log('Failed to move/copy a file'.$file['name']);
-                continue;
+            
+            if (!move_uploaded_file($file['tmp_name'], $fileLocation.'/'.$file['name'])) {
+                throw new MultiSiteJsonException(__METHOD__.' :failed!. Failed to move/copy a file'.$file['name']);
             }
 
-            if(!empty($destinationFolder)) {
+            if (!empty($destinationFolder)) {
                 $filesArray[] = $fileLocation.'/'.$file['name'];
             }
         }
         
-        return !empty($filesArray) ? $filesArray : true;
+        return $filesArray;
+    }
+    
+    /**
+     * Trigger a website backup
+     * 
+     * @param array $params
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function triggerWebsiteBackup($params)
+    {
+        global $_ARRAYLANG;
+        
+        if (empty($params) || !isset($params['post'])) {
+            \DBG::log(__METHOD__.' failed ! : '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_FAILED']);
+        }
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $deleteBackupedWebsiteName = isset($params['post']['websiteBackupFileName']) 
+                                                 ? contrexx_input2raw($params['post']['websiteBackupFileName'])
+                                                 : '';
+                    $serviceServerId           = isset($params['post']['serviceServerId']) 
+                                                 ? contrexx_input2int($params['post']['serviceServerId'])
+                                                 : 0;
+
+                    //delete the backuped website
+                    if (!empty($deleteBackupedWebsiteName)) {
+                        $resp = $this->deleteWebsiteBackupFile($deleteBackupedWebsiteName, $serviceServerId);
+                    } else {
+                        $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                        $multisite = $componentRepo->findOneBy(array('name'=>'Multisite'));
+                        $multisiteComponentController = $multisite->getSystemComponentController();
+                        $resp = $multisiteComponentController->executeCommandBackup($params['post']);
+                    }
+                    return ($resp && isset($resp->data)) ? $resp->data : $resp;
+                    break;
+                default:
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' Failed! : '. $e->getMessage());
+            throw new MultiSiteJsonException($e->getMessage());
+        }
+    }
+    
+    /**
+     * Delete the backuped website from service server
+     * 
+     * @param string  $backupedWebsiteName    backuped website file name
+     * @param integer $websiteServiceServerId service server id
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    private function deleteWebsiteBackupFile($backupedWebsiteName, $websiteServiceServerId)
+    {
+        global $_ARRAYLANG;
+        
+        if (   empty($backupedWebsiteName) 
+            || empty($websiteServiceServerId) 
+        ) {
+            \DBG::log(__METHOD__. ' : Invalid parameters');
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+        }
+        
+        try {
+            $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+            $websiteServiceServer     = $websiteServiceServerRepo->findOneById($websiteServiceServerId);
+            if (empty($websiteServiceServer)) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
+            }
+
+            $resp = JsonMultiSite::executeCommandOnServiceServer('deleteWebsiteBackup', array('websiteBackupFileName' => $backupedWebsiteName), $websiteServiceServer);
+            
+            return ($resp && isset($resp->data)) ? $resp->data : $resp;
+            
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' Failed! : '. $e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED']);
+        } 
+    }
+    
+    /**
+     * Trigger websiteRestore
+     * 
+     * @param array $params
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function triggerWebsiteRestore($params)
+    {
+        global $_ARRAYLANG;
+        
+        if (empty($params) || !isset($params['post'])) {
+            \DBG::log(__METHOD__. ' failed! : '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+        }
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                    $multisite = $componentRepo->findOneBy(array('name' => 'Multisite'));
+                    $multisiteComponentController = $multisite->getSystemComponentController();
+                    $resp = $multisiteComponentController->executeCommandRestore($params['post']);
+                    return ($resp && isset($resp->data)) ? $resp->data : $resp;
+                    break;
+                default:
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' Failed! : '. $e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+        }
     }
     
     protected function activateDebuggingToMemory() {

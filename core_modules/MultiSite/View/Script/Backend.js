@@ -502,10 +502,10 @@
             
             switch(iAttr[0]) {
                 case 'service':
-                    params = {serviceServerId: iAttr[1]};
+                    params = {serviceServerId: iAttr[1], responseType: 'json'};
                     break;
                 case 'website':
-                    params = {websiteId: iAttr[1]};
+                    params = {websiteId: iAttr[1], responseType: 'json'};
                     break;
                 default:
                     return false;
@@ -518,16 +518,18 @@
             cx.bind("loadingStart", cx.lock, "websiteBackup");
             cx.bind("loadingEnd", cx.unlock, "websiteBackup");
             $.ajax({
-                url: '/api/MultiSite/Backup',
+                url: cx.variables.get('cadminPath', 'contrexx') + "?cmd=JsonData&object=MultiSite&act=triggerWebsiteBackup",
                 data: params,
-                type: "GET",
+                type: "POST",
+                dataType: "json",
                 beforeSend: function() {
                     cx.trigger("loadingStart", "websiteBackup", {});
                     cx.tools.StatusMessage.showMessage("<div id=\"loading\" class = \"websiteBackup\">" + cx.jQuery('#loading').html() +"</div>");
                     $('#loading > span').html(cx.variables.get('websiteInProgress', 'multisite/lang'));
                 },
                 success: function(response) {
-                    cx.tools.StatusMessage.showMessage(response, null, 2000);
+                    var $resp = (response.data) ? response.data : response;
+                    cx.tools.StatusMessage.showMessage($resp.message ? $resp.message : $resp, null, 2000);
                     cx.trigger("loadingEnd", "websiteBackup", {});
                 }
             });
@@ -549,17 +551,18 @@
             cx.bind("loadingStart", cx.lock, "deleteWebsiteBackup");
             cx.bind("loadingEnd", cx.unlock, "deleteWebsiteBackup");
             $.ajax({
-                url: '/api/MultiSite/Backup',
+                url: cx.variables.get('cadminPath', 'contrexx') + "?cmd=JsonData&object=MultiSite&act=triggerWebsiteBackup",
                 data: {serviceServerId: $(this).data('serviceid'), websiteBackupFileName: $(this).attr('data-backupFile')},
-                type: "GET",
+                type: "POST",
+                dataType: "json",
                 beforeSend: function() {
                     cx.trigger("loadingStart", "deleteWebsiteBackup", {});
                     cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() +"</div>");
                     $('#loading > span').html(cx.variables.get('websiteBackupDeleteInProgress', 'multisite/lang'));
                 },
                 success: function(response) {
-                    var $resp = JSON.parse(response);
-                    if ($resp && $resp.status == 'success') {
+                    var $resp = (response.data) ? response.data : response;
+                    if ($resp.status == 'success') {
                         location.reload();
                     }
                     cx.tools.StatusMessage.showMessage($resp.message, null, 2000);
@@ -1152,39 +1155,37 @@ var Multisite = {
                     
                     var params = (upload) ? {   uploadedFilePath: data.uploadedFilePath,
                                                 restoreOnServiceServer: $J('#restoreWebsite .serviceServer').val(),
-                                                restoreWebsiteName: $J('#restoreWebsite .restoreWebsiteName').val()
+                                                restoreWebsiteName: $J('#restoreWebsite .restoreWebsiteName').val(),
+                                                responseType: 'json'
                                             }
                                           : {
                                                 backupedServiceServer: data.backupedServiceServer,
                                                 websiteBackupFileName: data.websiteBackupFileName,
                                                 restoreOnServiceServer: $J('#restoreWebsite .serviceServer').val(),
-                                                restoreWebsiteName: $J('#restoreWebsite .restoreWebsiteName').val()
+                                                restoreWebsiteName: $J('#restoreWebsite .restoreWebsiteName').val(),
+                                                responseType: 'json'
                                             };
 
                     cx.bind("loadingStart", cx.lock, "websiteRestore");
                     cx.bind("loadingEnd", cx.unlock, "websiteRestore");
                     cx.trigger("loadingStart", "websiteRestore", {});
                     $J.ajax({
-                        url: '/api/MultiSite/Restore',
+                        url: cx.variables.get('cadminPath', 'contrexx') + "?cmd=JsonData&object=MultiSite&act=triggerWebsiteRestore",
                         data: params,
+                        type: "POST",
+                        dataType: "json",
                         beforeSend: function () {
                             $J('#restoreWebsite').dialog("close");
                             cx.tools.StatusMessage.showMessage("<div id=\"loading\" class = \"websiteBackup\">" + cx.jQuery('#loading').html() + "</div>");
                             $J('#loading > span').html(cx.variables.get('websiteRestoreInProgress', 'multisite/lang'));
                         },
                         success: function (response) {
-                            var $resp = '';
-                            
-                            try {
-                               $resp = JSON.parse(response);
-                            } catch(e) {
-                               $resp = response;
-                            }
-                            
+                            var $resp = (response.data) ? response.data : response,
+                                $message = ($resp.message) ? $resp.message : $resp;
                             if (typeof($resp.websiteUrl) != "undefined" && $resp.websiteUrl !== null) {
                                 window.open($resp.websiteUrl, '_blank').focus();
                             }
-                            cx.tools.StatusMessage.showMessage(typeof($resp.message) != "undefined" ? $resp.message : $resp, null, 2000);
+                            cx.tools.StatusMessage.showMessage($message, null, 2000);
                             cx.trigger("loadingEnd", "websiteRestore", {});
                         }
                     });

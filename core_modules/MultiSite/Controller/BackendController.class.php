@@ -1080,7 +1080,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         global $_ARRAYLANG;
         
         if (isset($_GET['show_all'])) {
-            $term = (isset($_GET['term']) && !empty($_GET['term'])) ? contrexx_input2raw($_GET['term']) : '';
+            $term = (isset($_GET['term']) && !empty($_GET['term'])) 
+                    ? contrexx_input2raw($_GET['term']) 
+                    : '';
             $allBackupsArray = self::getAllBackupFilesInfoAsArray($term);
             if ($allBackupsArray) {
                 $websiteBackupRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($allBackupsArray);
@@ -1129,9 +1131,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         ));
         $uploader->setCallback('websiteRestoreCallbackJs');
         $uploader->setOptions(array(
-            'id' => 'page_target_browse',
-            'type' => 'button',
-            'data-upload-limit' => 1
+            'id'                => 'page_target_browse',
+            'type'              => 'button',
+            'data-upload-limit' => 1,
+            'allowed-extensions'=> array('zip')
             )
         );
         
@@ -1193,34 +1196,38 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * 
      * @return mixed boolean|array
      */
-    public static function getAllBackupFilesInfoAsArray($searchTerm = null) {
+    public static function getAllBackupFilesInfoAsArray($searchTerm = null)
+    {
         $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
         if (empty($websiteServiceServers)) {
             return false;
         }
         
-        $allBackupFilesInfo = array();
-        foreach ($websiteServiceServers as $websiteServiceServer) {
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getAllBackupFilesInfo', array(), $websiteServiceServer);
-            if(!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
-                continue;
-            }
-            if ($resp->data->backupFilesInfo) {
-                foreach ($resp->data->backupFilesInfo as $data) {
-                    $allBackupFilesInfo[] = array(
-                        'websiteName'   => $data[0], 
-                        'dateAndTime'   => $data[1], 
-                        'serviceServer' => $websiteServiceServer->gethostname(),
-                        'serviceId'     => $websiteServiceServer->getId()
-                    );
+        try {
+            $allBackupFilesInfo = array();
+            $params = array('searchTerm' => $searchTerm);
+            foreach ($websiteServiceServers as $websiteServiceServer) {
+                $resp = JsonMultiSite::executeCommandOnServiceServer('getAllBackupFilesInfo', $params, $websiteServiceServer);
+                if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
+                    continue;
+                }
+                if ($resp->data->backupFilesInfo) {
+                    foreach ($resp->data->backupFilesInfo as $data) {
+                        $allBackupFilesInfo[] = array(
+                            'websiteName'   => isset($data[0]) ? $data[0] : '', 
+                            'dateAndTime'   => isset($data[1]) ? $data[1] : '', 
+                            'serviceServer' => $websiteServiceServer->gethostname(),
+                            'serviceId'     => $websiteServiceServer->getId()
+                        );
+                    }
                 }
             }
+
+            return $allBackupFilesInfo;
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__ . ' failed ! : '. $e->getMessage());
+            return false;
         }
-        
-        return !empty($searchTerm) ? array_filter($allBackupFilesInfo, function($el) use ($searchTerm) {
-                                        return ( strpos($el['websiteName'], $searchTerm) !== false );
-                                    })
-                                   : $allBackupFilesInfo;
     }
     
     /**

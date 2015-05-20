@@ -759,7 +759,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             $resp = array();
             if (!\FWValidator::isEmpty($subscriptionId)) {
-                $resp = self::createNewWebsiteInSubscription($subscriptionId, $websiteName);
+                $resp = $this->createNewWebsiteInSubscription($subscriptionId, $websiteName);
             } elseif (!\FWValidator::isEmpty($productId)) {
                 $resp = $this->createNewWebsiteByProduct($productId, $websiteName);
             }
@@ -1545,90 +1545,60 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         global $_ARRAYLANG;
         
-        if (empty($arguments['websiteId']) && empty($arguments['serviceServerId'])) {
-            return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS'];
-        }
-        
         try {
-            $websiteId                 = isset($arguments['websiteId']) ? contrexx_input2int($arguments['websiteId']) : 0;
-            $serviceServerId           = isset($arguments['serviceServerId']) ? contrexx_input2int($arguments['serviceServerId']) : 0;
-            $backupLocation            = isset($arguments['backupLocation']) ? contrexx_input2raw($arguments['backupLocation']) : '';
-            $deleteBackupedWebsiteName = isset($arguments['websiteBackupFileName']) ? contrexx_input2raw($arguments['websiteBackupFileName']) : '';
-            
-            //delete the backuped website
-            if (!empty($deleteBackupedWebsiteName)) {
-                return $this->deleteWebsiteBackup($deleteBackupedWebsiteName, $serviceServerId);
+            if (   !isset($arguments['websiteId']) 
+                && !isset($arguments['serviceServerId'])
+            ) {
+                throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
             }
             
+            $websiteId         = isset($arguments['websiteId'])
+                                 ? contrexx_input2int($arguments['websiteId'])
+                                 : 0;
+            $serviceServerId   = isset($arguments['serviceServerId']) 
+                                 ? contrexx_input2int($arguments['serviceServerId'])
+                                 : 0;
+            $backupLocation    = isset($arguments['backupLocation']) 
+                                 ? contrexx_input2raw($arguments['backupLocation'])
+                                 : '';
+            $responseType      = isset($arguments['responseType'])
+                                 ? contrexx_input2raw($arguments['responseType'])
+                                 : '';
+            
+            $params = array();
+            $em     = \Env::get('em');
             if (!empty($websiteId)) {
-                $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                $website = $websiteServiceRepo->findOneById($websiteId);
-
+                $websiteRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $website     = $websiteRepo->findOneById($websiteId);
                 if (!$website) {
-                    return $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS'];
+                    throw new MultiSiteException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
                 }
                 
                 $websiteServiceServer = $website->getWebsiteServiceServer();
-                $params = array(
-                        'websiteId' => $websiteId,
-                        'backupLocation' => $backupLocation
-                );
+                $params['websiteId']  = $websiteId;
             } else {
-                $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                $websiteServiceServerRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
                 $websiteServiceServer     = $websiteServiceServerRepo->findOneById($serviceServerId);
-                $params = array('backupLocation' => $backupLocation);
             }
             
-            if ($websiteServiceServer instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer) {
-                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);                
-                return $resp->status == 'success' ? $resp->data->message : $resp->message;
+            $params['backupLocation'] = $backupLocation;
+            
+            if ($websiteServiceServer) {
+                $resp = JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
+                return $responseType == 'json' ? $resp : ($resp->status == 'success' ? $resp->data->messsage : $resp->message);
             }
-            $this->cx->getEvents()->triggerEvent(
-                    'SysLog/Add', array(
-                        'severity' => 'WARNING',
-                        'message'  => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NOT_EXISTS'], $website->getName()),
-                        'data'     => ' ',
+            
+            $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
+                'severity' => 'WARNING',
+                'message'  => \sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NOT_EXISTS'], $website->getName()),
+                'data'     => ' ',
             ));
             
-            return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER'];
+            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
         } catch (\Exception $e) {
-            throw new MultiSiteException("Failed to backup the website:" . $e->getMessage());
+            \DBG::log(__METHOD__.' Failed! : '. $e->getMessage());
+            return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_FAILED'];
         }
-    }
-    
-    /**
-     * Delete the backuped website from service server
-     * 
-     * @param string  $backupedWebsiteName    backuped website file name
-     * @param integer $websiteServiceServerId service server id
-     * 
-     * @return string
-     */
-    public function deleteWebsiteBackup($backupedWebsiteName, $websiteServiceServerId)
-    {
-        global $_ARRAYLANG;
-        
-        if (   empty($backupedWebsiteName) 
-            || empty($websiteServiceServerId) 
-            ) {
-            return json_encode(array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']));
-        }
-        
-        $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-        $websiteServiceServer     = $websiteServiceServerRepo->findOneById($websiteServiceServerId);
-        if (empty($websiteServiceServer)) {
-            return json_encode(array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']));
-        }
-
-        $resp = JsonMultiSite::executeCommandOnServiceServer('deleteWebsiteBackup', array('websiteBackupFileName' => $backupedWebsiteName), $websiteServiceServer);
-        $responseMessage = (!$resp || $resp->status == 'error' || $resp->data->status == 'error') ? array('status' => 'error', 
-                                                                                                          'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED']
-                                                                                                    ) 
-                                                                                                  : array('status' => 'success', 
-                                                                                                          'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_SUCCESS']
-                                                                                                    );
-        
-        return json_encode($responseMessage);
     }
     
     /**
@@ -1639,69 +1609,89 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $_ARRAYLANG;
         
         try {
-            // Restore the selected backupfile to the new website name
-            $restoreWebsiteName        = isset($arguments['restoreWebsiteName']) ? contrexx_input2raw($arguments['restoreWebsiteName']) : '';
-            // Restore the website to selected service server / destination service server for restore
-            $restoreServiceServerId    = isset($arguments['restoreOnServiceServer']) ? contrexx_input2int($arguments['restoreOnServiceServer']) : '';
-            // Backuped website file name
-            $backupedWebsiteFileName   = isset($arguments['websiteBackupFileName']) ? contrexx_input2raw($arguments['websiteBackupFileName']) : '';
-            // Backuped website zip file in the Service server
-            $backupedServiceServerId   = isset($arguments['backupedServiceServer']) ? contrexx_input2int($arguments['backupedServiceServer']) : '';
-            // Uploaded Zip File path
-            $uploadedBackupFilePath    = isset($arguments['uploadedFilePath']) ? contrexx_input2raw(($arguments['uploadedFilePath'])) : '';
-            $websiteServiceRepo        = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $websiteServiceServerRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-            
-            if (   empty($restoreWebsiteName) 
-                || empty($restoreServiceServerId)
+            if (   !isset($arguments['restoreWebsiteName'])
+                || !isset($arguments['restoreOnServiceServer'])
             ) {
-                \DBG::log('Invalid arguements are supplied.');
-                return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS'];
+                throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
             }
             
-            $website = $websiteServiceRepo->findOneBy(array('name' => $restoreWebsiteName));
-            if ($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
-                \DBG::log('This website already exists.');
-                $this->cx->getEvents()->triggerEvent(
-                    'SysLog/Add', array(
-                        'severity'=> 'WARNING',
-                        'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'], $restoreWebsiteName),
-                        'data'    => ' ',
+            // Restore the selected backupfile to the new website name
+            $restoreWebsiteName       = isset($arguments['restoreWebsiteName'])
+                                        ? contrexx_input2raw($arguments['restoreWebsiteName'])
+                                        : '';
+            
+            // Restore the website to selected service server / destination service server for restore
+            $restoreServiceServerId   = isset($arguments['restoreOnServiceServer'])
+                                        ? contrexx_input2int($arguments['restoreOnServiceServer'])
+                                        : 0;
+            
+            // Backuped website file name
+            $backupedWebsiteFileName  = isset($arguments['websiteBackupFileName'])
+                                        ? contrexx_input2raw($arguments['websiteBackupFileName'])
+                                        : '';
+            
+            // Backuped website zip file in the Service server
+            $backupedServiceServerId  = isset($arguments['backupedServiceServer'])
+                                        ? contrexx_input2int($arguments['backupedServiceServer'])
+                                        : 0;
+            
+            // Uploaded Zip File path
+            $uploadedBackupFilePath   = isset($arguments['uploadedFilePath'])
+                                        ? contrexx_input2raw(($arguments['uploadedFilePath']))
+                                        : '';
+            $responseType             = isset($arguments['responseType'])
+                                        ? contrexx_input2raw($arguments['responseType'])
+                                        : '';
+            
+            $em     = \Env::get('em');
+            $websiteRepo              = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $websiteServiceServerRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+            $website = $websiteRepo->findOneBy(array('name' => $restoreWebsiteName));
+            if ($website) {
+                $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
+                    'severity'=> 'WARNING',
+                    'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'], $restoreWebsiteName),
+                    'data'    => ' '
                 ));
-                return sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'], $restoreWebsiteName);
+                
+                throw new MultiSiteException(\sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'], $restoreWebsiteName));
             }
             
             $restoreInServiceServer  = $websiteServiceServerRepo->findOneById($restoreServiceServerId);
             if (!$restoreInServiceServer) {
-                return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER'];
+                throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
             }
             
             if (empty($uploadedBackupFilePath)) {
                 if (empty($backupedWebsiteFileName)) {
-                    \DBG::log('Website Backup file is empty');
-                    return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED'];
+                    throw new MultiSiteException('Website Backup file name is empty');
                 }
                 
                 /*If the backuped service server is differ from destination service server, copy a file from
                   backuped  service server to destination service server*/
-                if (!empty($backupedServiceServerId) && $backupedServiceServerId != $restoreServiceServerId) {
+                if (   !empty($backupedServiceServerId) 
+                    && $backupedServiceServerId != $restoreServiceServerId
+                ) {
                     $backupedServiceServer = $websiteServiceServerRepo->findOneById($backupedServiceServerId);
                     if (!$backupedServiceServer) {
-                        return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER'];
+                        throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
                     }
-  
+                    
+                    $backupServiceServerParams = array(
+                        'backupFileName'  => $backupedWebsiteFileName,
+                        'serviceServerId' => $restoreInServiceServer->getId()
+                    );
+                    
                     //Copy a file from  $backupedServiceServer to $restoreInServiceServer
-                    $response = JsonMultiSite::executeCommandOnServiceServer('sendFileToRemoteServer', array('backupFileName' => $backupedWebsiteFileName,'serviceServerId' => $restoreInServiceServer->getId()), $backupedServiceServer);
+                    $response = JsonMultiSite::executeCommandOnServiceServer('sendFileToRemoteServer', $backupServiceServerParams, $backupedServiceServer);
                     if (!$response || $response->status == 'error' || $response->data->status == 'error') {
-                        return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED'];
+                        throw new MultiSiteException('Failed to copy/move a file to '.$restoreInServiceServer->getHostName());
                     }
                 }
             } else {
                  //Move a uploaded zip file to destination/selected service server
-                if (!$this->moveUploadedFileToServiceOnRestore($uploadedBackupFilePath, $restoreInServiceServer)) {
-                    return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED'];
-                }
-
+                $this->moveUploadedFileToServiceOnRestore($uploadedBackupFilePath, $restoreInServiceServer);
+                
                 $backupedWebsiteFileName = basename($uploadedBackupFilePath);
             }
 
@@ -1709,54 +1699,53 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'websiteName'           => $restoreWebsiteName,
                 'websiteBackupFileName' => $backupedWebsiteFileName
             );
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('websiteRestore', $params, $restoreInServiceServer);
+            $resp = JsonMultiSite::executeCommandOnServiceServer('websiteRestore', $params, $restoreInServiceServer);
+            return $responseType == 'json' ? $resp : ($resp->status == 'success' ? $resp->data->messsage : $resp->message);
             
-            if ($resp->status == 'success' && $resp->data->status == 'success') {
-                $website = $websiteServiceRepo->findOneBy(array('name' => $restoreWebsiteName));
-                $respMessage = json_encode( $website ? array('websiteUrl' => self::getApiProtocol() . $website->getBaseDn()->getName() , 'message' => $resp->data->message) : array('message' => $resp->data->message));
-            } else {
-                $respMessage = $resp->status == 'success' ? $resp->data->message : $resp->message;
-            }
-            
-            return $respMessage;
         } catch (\Exception $e) {
-            throw new MultiSiteException("Failed to restore the website:" . $e->getMessage());
+            \DBG::log(__METHOD__ .' failed! : '. $e->getMessage());
+            return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED'];
         } 
     }
     
     /**
      * Move UploadedFile To Service On Restore
      * 
-     * @param string $filePath uploaded file path
+     * @param string                                                        $filePath             uploaded file path
      * @param \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer  $websiteServiceServer $websiteServiceServerObj
      * 
-     * @return boolean
+     * @throws MultiSiteException
      */
     public function moveUploadedFileToServiceOnRestore($filePath, \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer $websiteServiceServer) {
-        if (empty($filePath) || empty($websiteServiceServer)) {
-            return false;
+        if (   empty($filePath) 
+            || empty($websiteServiceServer)
+        ) {
+            throw new MultiSiteException(__METHOD__.' : failed!. '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
         }
         
         \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($filePath);
-                
-        if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
-            \DBG::log('Uploaded Backup File doesnot exists');
-            return false;
-        }
-
-        //Copy a backup file to selected service server
-        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $websiteServiceServer->getId()), $websiteServiceServer, array($filePath));
-        if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
-            \DBG::log('Failed to send a file to selected server '.$websiteServiceServer->getHostname());
-            return false;
-        }
-
-        //cleanup temp dir
-        if (!\Cx\Lib\FileSystem\FileSystem::delete_file($filePath)) {
-            return false;
-        }
         
-        return true;
+        try {
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
+                throw new MultiSiteException('Uploaded Backup File doesnot exists!');
+            }
+
+            //Copy a backup file to selected service server
+            $resp = JsonMultiSite::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $websiteServiceServer->getId()), $websiteServiceServer, array($filePath));
+            if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
+                throw new MultiSiteException('Failed to send a file to '.$websiteServiceServer->getHostname());
+            }
+
+            //cleanup temp dir
+            if (   \Cx\Lib\FileSystem\FileSystem::exists($filePath) 
+                && !\Cx\Lib\FileSystem\FileSystem::delete_file($filePath)
+            ) {
+                throw new MultiSiteException('Unable to delete the file: '. $filePath);
+            }
+
+        } catch (\Exception $e) {
+            throw new MultiSiteException(__METHOD__ .' failed! : '. $e->getMessage());
+        }
     }
         
     /**
@@ -1804,7 +1793,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * return array return's array that contains array('status' => success | error, 'message' => 'Status message')
      */
-    public static function createNewWebsiteInSubscription($subscriptionId, $websiteName, $userObj = null)
+    public function createNewWebsiteInSubscription($subscriptionId, $websiteName, $userObj = null)
     {
         global $_ARRAYLANG;
         
@@ -3563,32 +3552,34 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return mixed boolean or subscription
      */
     public static function getSubscriptionByWebsiteId($websiteId) {
+        global $_ARRAYLANG;
+        
         if (empty($websiteId)) {
+            \DBG::log(__METHOD__. ' : '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
             return false;
         }
-        try {
-            $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $website = $websiteServiceRepo->findOneById($websiteId);
-            if (!$website) {
-                return false;
-            }
-
-            $websiteCollection = $website->getWebsiteCollection();
-            $subscriptionRepo  = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
-            $subscriptions     = !empty($websiteCollection) ? $subscriptionRepo->getSubscriptionsByCriteria(array(
-                                                                                                            'in' => array('0' => array('s.productEntityId', array($websiteCollection->getId()))),
-                                                                                                            'p.entityClass' => 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection'
-                                                                                                            )) 
-                                                            : $subscriptionRepo->findOneBy(array(
-                                                                                            'productEntityId' => $websiteId
-                                                                                            ));
-
-            $subscription = is_array($subscriptions) ? current($subscriptions) : $subscriptions;
-
-            return $subscription;
-        } catch (\Exception $e) {
-             \DBG::log('ComponentController::getSubscriptionByWebsiteId() failed!. '.$e->getMessage());
+        
+        $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website = $websiteServiceRepo->findOneById($websiteId);
+        if (!$website) {
+            \DBG::log(__METHOD__. ' : '.$_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
             return false;
         }
+
+        $websiteCollection = $website->getWebsiteCollection();
+        $subscriptionRepo  = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Subscription');
+        $subscriptions     = !empty($websiteCollection) 
+                             ? $subscriptionRepo->getSubscriptionsByCriteria(array(
+                                'in'            => array(
+                                                        array('s.productEntityId', array($websiteCollection->getId()))
+                                                    ),
+                                'p.entityClass' => 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\WebsiteCollection'
+                               )) 
+                             : $subscriptionRepo->findOneBy(array(
+                                'productEntityId' => $websiteId
+                               ));
+
+        $subscription = is_array($subscriptions) ? current($subscriptions) : $subscriptions;
+        return $subscription;
     }
 }
