@@ -122,6 +122,10 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         if (!$objUser->isVerified()) {
                             throw new \Exception('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
+
+                        if ($objUser->getId() != \FWUser::getFWUserObject()->objUser->getId()) {
+                            throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
+                        }
                         
                         $objWebsiteOwner = \FWUser::getFWUserObject()->objUser->getUser($websiteUserId);
                         $newEmail = $objUser->getEmail();
