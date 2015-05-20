@@ -1249,9 +1249,9 @@ class NewsletterManager extends NewsletterLib
             tblMail.date_sent
             FROM ".DBPREFIX."module_newsletter AS tblMail
             ORDER BY date_create DESC, status, id DESC", $_CONFIG['corePagingLimit'], $pos);
-        if ($objResult !== false) {
+        if ($objResult !== false) {            
+            $arrMailRecipientCount = $this->_getMailRecipientCount(NULL, $_CONFIG['corePagingLimit'], $pos);
             while (!$objResult->EOF) {
-                $arrMailRecipientCount = $this->_getMailRecipientCount(NULL, $_CONFIG['corePagingLimit'], $pos);
                 $feedbackCount = isset($arrFeedback[$objResult->fields['id']]) ? $arrFeedback[$objResult->fields['id']] : 0;
                 $feedbackStrFormat = '%1$s (%2$s%%)';
                 $feedbackPercent = ($objResult->fields['count'] > 0 && $feedbackCount  > 0) ? round(100 / $objResult->fields['count'] * $feedbackCount) : 0;
@@ -2818,8 +2818,11 @@ class NewsletterManager extends NewsletterLib
     function _setTmpSending($mailId)
     {
         $mailAddresses = $this->getAllRecipientEmails($mailId);
-        foreach ($mailAddresses as $mail) {
+        $mailAddresses->rewind();
+        while ($mailAddresses->valid()) {
+            $mail = $mailAddresses->current();
             $this->insertTmpEmail($mailId, $mail['email'], $mail['type']);
+            $mailAddresses->next();
         }
         $this->updateNewsletterRecipientCount($mailId);
     }
@@ -6312,7 +6315,7 @@ if (!class_exists('DBIterator', false)) {
          * @param       object (adodb result object)
          */
         public function __construct($obj) {
-            $this->empty = !($obj instanceof ADORecordSet);
+            $this->empty = (!($obj instanceof \ADORecordSet_pdo) && empty($obj->fields));
 
             $this->obj = $obj;
         }
