@@ -278,11 +278,11 @@ class FileSharing extends FileSharingLib
 
             // send the mail to the reciever
             if (\FWValidator::isEmail($_POST["email"])) {
-                parent::sendMail($params["uploadId"], $_POST["subject"], $_POST["email"], $_POST["message"]);
+                parent::sendMail($params["uploadId"], $_POST["subject"], array($_POST["email"]), $_POST["message"]);
             }
 
             // send the mail to the administrator
-            parent::sendMail($params["uploadId"], null, $_CONFIG['coreAdminEmail'], $_POST["message"]);
+            parent::sendMail($params["uploadId"], null, array($_CONFIG['coreAdminEmail']), $_POST["message"]);
 
             // reset the upload id so the uploads are invisible now
             $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `upload_id` = NULL WHERE `upload_id` = " . intval($params["uploadId"]));
