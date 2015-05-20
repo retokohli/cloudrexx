@@ -93,11 +93,11 @@ $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tra
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Kennwort muss der Komplexitätsvoraussetzung entsprechen';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl';
-$_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Erweiterte Dateiuploadmöglickeiten (Administrationsoberfläche)';
-$_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADFRONTEND'] = 'Erweiterte Dateiuploadmöglickeiten (Frontend)';
+$_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Erweiterte Dateiuploadmöglickeiten';
+$_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADFRONTEND'] = 'Erweiterte Dateiuploadmöglickeiten';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND_TOOLTIP_HELP'] = $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND_TOOLTIP_HELP'] = 'Contrexx erzwingt standardmässig kein Protokoll. Sie können HTTP erzwingen um die Suchmaschinen-Bewertung zu verbessern oder HTTPS (Hypertext Transfer Protocol Secure), ein Protokoll das zusätzlich mehr Sicherheit garantiert, aktivieren. Sollte Ihr Webserver dies nicht unterstützen, deaktiviert Contrexx diese Einstellung automatisch wieder.';
-$_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND'] = 'Verwendetes Protokoll (Administrationsoberfläche)';
-$_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND'] = 'Verwendetes Protokoll (Frontend)';
+$_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND'] = 'Verwendetes Protokoll';
+$_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND'] = 'Verwendetes Protokoll';
 $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_NONE'] = 'dynamisch';
 $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTP'] = 'HTTP';
 $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTPS'] = 'HTTPS';
@@ -158,7 +158,7 @@ $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_RELOAD'] = 'Alle Vorschaubilder neu generieren
 $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_FILE'] = 'Datei';
 $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_THUMBNAILS_GENERATED'] = 'Für %s Dateien Vorschaubilder generiert';
 $_ARRAYLANG['TXT_IMAGE_THUMBNAILS_NO_FILES_WITHOUT_THUMBNAILS_FOUND'] = 'Keine Dateien ohne Vorschaubilder gefunden.';
-$_ARRAYLANG['TXT_CORE_CONFIG_PORTFRONTENDHTTP'] = 'HTTP Port (Frontend)';
-$_ARRAYLANG['TXT_CORE_CONFIG_PORTFRONTENDHTTPS'] = 'HTTPS Port (Frontend)';
-$_ARRAYLANG['TXT_CORE_CONFIG_PORTBACKENDHTTP'] = 'HTTP Port (Backend)';
-$_ARRAYLANG['TXT_CORE_CONFIG_PORTBACKENDHTTPS'] = 'HTTPS Port (Backend)';
+$_ARRAYLANG['TXT_CORE_CONFIG_PORTFRONTENDHTTP'] = 'HTTP Port';
+$_ARRAYLANG['TXT_CORE_CONFIG_PORTFRONTENDHTTPS'] = 'HTTPS Port';
+$_ARRAYLANG['TXT_CORE_CONFIG_PORTBACKENDHTTP'] = 'HTTP Port';
+$_ARRAYLANG['TXT_CORE_CONFIG_PORTBACKENDHTTPS'] = 'HTTPS Port';
