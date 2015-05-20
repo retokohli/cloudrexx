@@ -233,7 +233,8 @@ class DocSysLibrary
                 ON entry.id=j.entry
              WHERE entry.lang=$this->langId
                AND (startdate<=" . time() . " OR startdate=0)
-               AND (enddate>=" . time() . " OR enddate=0)";
+               AND (enddate>=" . time() . " OR enddate=0)
+               AND status = 1";
         if (isset($category)) {
             $category = intval($category);
             $query .= " AND j.category=$category";
@@ -313,7 +314,8 @@ class DocSysLibrary
               FROM " . DBPREFIX . "module_docsys" . MODULE_INDEX . " AS e
               LEFT JOIN " . DBPREFIX . "module_docsys" . MODULE_INDEX . "_entry_category as j
                 ON e.id=j.entry
-             WHERE j.category=$category";
+             WHERE j.category=$category
+             AND `status` = 1";
         $objResult = $objDatabase->Execute($query);
         if ($objResult === false) {
             return false;
