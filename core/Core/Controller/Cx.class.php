@@ -268,6 +268,7 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         const FOLDER_NAME_PUBLIC_TEMP = '/public';
+
         /**
          * The webserver's DocumentRoot path.
          * Formerly known as ASCMS_PATH.
@@ -511,7 +512,6 @@ namespace Cx\Core\Core\Controller {
         protected $websiteMediaarchive3WebPath;
         protected $websiteMediaarchive4WebPath;
         protected $websiteMediaFileSharingWebPath;
-
         protected $websiteImagesPath;
         protected $websiteImagesWebPath;
         protected $websitePublicTempPath;
