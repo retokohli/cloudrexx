@@ -162,7 +162,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         // ignore time for previews
                                                         .((!$newsPreview) ? ' AND (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
                                                         (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")' : '')
-                                                       .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                                       .($this->arrSettings['news_message_protection'] == '1' && !\Permission::hasAllAccess() ? (
                                                             ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
                                                                 " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
                                                                 :   " AND frontend_access_id=0 ")
