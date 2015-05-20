@@ -97,11 +97,16 @@ class Url {
 
     protected $state = 0;
     
+    /**
+     * The port of the URL
+     * @var int
+     */
     protected $port = 0;
 
     /**
-     * Initializes $domain and $path.
+     * Initializes $domain, $protocol, $port and $path.
      * @param string $url http://example.com/Test
+     * @param bool $replacePorts - indicates if we need to replace ports with default ones
      */
     public function __construct($url, $replacePorts = false) {
         
@@ -151,10 +156,16 @@ class Url {
         return $this->state >= self::ROUTED;
     }
     
+    /**
+     * gets port of URL;
+     */
     function getPort() {
         return $this->port;
     }
 
+    /**
+     * sets port of URL;
+     */
     function setPort($port) {
         $this->port = $port;
     }
@@ -717,7 +728,7 @@ class Url {
      */
     public function toString($absolute = true) {
         if(!$absolute) {
-            return '/' . 
+            return ASCMS_INSTANCE_OFFSET . '/' .
                ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
                $this->path;
         }
@@ -756,7 +767,8 @@ class Url {
     {
         $url = $this->protocol . '://' . 
                $this->domain . ':' . 
-               $this->port . '/' . 
+               $this->port . 
+               ASCMS_INSTANCE_OFFSET . '/' .
                ($this->getMode() != 'backend' ? $this->getLangDir(). '/' : '') . 
                $this->path;
         return $url;

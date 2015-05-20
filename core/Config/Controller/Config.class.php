@@ -415,6 +415,22 @@ class Config
         }
         return implode(',',$timezoneOptions);
     }
+    
+    /**
+     * Returns port options
+     * 
+     * @return string  port options as string
+     */
+    public static function getPortOptions() {
+        global $_ARRAYLANG;
+        $options = array(
+            'none:' .  $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_NONE'],
+            'http:' .  $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTP'],            
+            'https:' .  $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTPS'],
+        );
+        return implode(',', $options);
+    }
+    
 
     /**
      * Sets debugging related template variables according to session state.
@@ -1140,7 +1156,7 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceProtocolFrontend')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolFrontend','none', 9,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'site')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getPortOptions()}', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
             }            
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTP')
@@ -1202,7 +1218,7 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceProtocolBackend')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolBackend','none', 8,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'administrationArea')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getPortOptions()}', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use Administrator");
             }            
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('portBackendHTTP')
