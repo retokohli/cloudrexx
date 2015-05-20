@@ -689,8 +689,8 @@ class StatsLibrary
             $this->arrClient['useragent'] = "<b>p_h_p_i_n_f_o() Possible Hacking Attack</b>";
         }
 
-        $this->arrClient['language'] = htmlspecialchars($_SERVER['HTTP_ACCEPT_LANGUAGE'], ENT_QUOTES, CONTREXX_CHARSET);
-
+        $this->arrClient['language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) 
+                                        ? htmlspecialchars($_SERVER['HTTP_ACCEPT_LANGUAGE'], ENT_QUOTES, CONTREXX_CHARSET) : '';
         $this->_getProxyInformations(); // get also the client ip
 
         $this->md5Id = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
