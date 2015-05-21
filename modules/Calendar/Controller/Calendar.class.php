@@ -149,7 +149,7 @@ class Calendar extends CalendarLibrary
     function getCalendarPage()
     {
         self::loadEventManager();
-        
+        $id = !empty($_GET['id']) ? $_GET['id'] : 0 ;
 
         if(isset($_GET['export'])) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($_GET['export']));
@@ -158,10 +158,10 @@ class Calendar extends CalendarLibrary
 
         switch ($_REQUEST['cmd']) {
             case 'detail':
-                if($_GET['id'] != null && $_GET['date'] != null) {
+                if( $id!= null && $_GET['date'] != null) {
                     self::showEvent();
                 } else {
-                    \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
                     exit();
                 }
                 break;
@@ -185,7 +185,7 @@ class Calendar extends CalendarLibrary
                 break;
             case 'edit':
                 parent::checkAccess('edit_event');
-                self::modifyEvent(intval($_GET['id']));
+                self::modifyEvent(intval($id));
                 break;
             case 'my_events':
                 parent::checkAccess('my_events');
@@ -714,7 +714,7 @@ UPLOADER;
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
         if (empty($this->objEventManager->eventList)) {
-            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
             exit;
         }
         
