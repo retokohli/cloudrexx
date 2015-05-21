@@ -464,7 +464,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
     private function parseMessageCommentForm($newsMessageId, $newsMessageTitle, $newsCommentActive)
     {
         global $_CORELANG, $_ARRAYLANG;
-
+        
         // abort if template block is missing
         if (!$this->_objTpl->blockExists('news_add_comment')) {
             return;
@@ -2027,6 +2027,7 @@ RSS2JSCODE;
         global $objDatabase, $_ARRAYLANG;
 
         $categories = '';
+        $i          = 0;
         if ($categories = substr($_REQUEST['cmd'], 7)) {
             $categories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories(explode(',', $categories)));
         }
@@ -2043,6 +2044,71 @@ RSS2JSCODE;
                 $this->_objTpl->parse('news_archive_months_list_item');
 
                 foreach ($value['news'] as $news) {
+                    $newsid         = $news['id'];
+                    $newstitle      = $news['newstitle'];
+                    $newsCommentActive = $news['commentactive'];
+                    $newsUrl        = empty($news['newsredirect'])
+                                        ? (empty($news['newscontent'])
+                                            ? ''
+                                            : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $news['cat']), FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                        : $news['newsredirect'];
+
+                    $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
+                    $htmlLinkTitle  = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
+                    // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
+                    if (empty($htmlLinkTitle)) {
+                        $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
+                    }
+
+                    list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($news['teaser_image_path'],
+                                                                                           $news['teaser_image_thumbnail_path'],
+                                                                                           $newstitle,
+                                                                                           $newsUrl);
+                    $author = \FWUser::getParsedUserTitle($news['author_id'], $news['author']);
+                    $publisher = \FWUser::getParsedUserTitle($news['publisher_id'], $news['publisher']);
+                    $objResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
+                    $this->_objTpl->setVariable(array(
+                       'NEWS_ARCHIVE_ID'            => $newsid,
+                       'NEWS_ARCHIVE_CSS'           => 'row'.($i % 2 + 1),
+                       'NEWS_ARCHIVE_TEASER'        => nl2br($news['teaser_text']),
+                       'NEWS_ARCHIVE_TITLE'         => contrexx_raw2xhtml($newstitle),
+                       'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['newsdate']),
+                       'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['newsdate']),
+                       'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['newsdate']),
+                       'NEWS_ARCHIVE_LINK_TITLE'    => $htmlLinkTitle,
+                       'NEWS_ARCHIVE_LINK'          => $htmlLink,
+                       'NEWS_ARCHIVE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
+                       'NEWS_ARCHIVE_CATEGORY'      => stripslashes($news['name']),
+                       'NEWS_ARCHIVE_AUTHOR'        => contrexx_raw2xhtml($author),
+                       'NEWS_ARCHIVE_PUBLISHER'     => contrexx_raw2xhtml($publisher),
+                       'NEWS_ARCHIVE_COUNT_COMMENTS'=> contrexx_raw2xhtml($objResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),
+                    ));
+                    
+                    if (!$newsCommentActive || !$this->arrSettings['news_comments_activated']) {
+                        if ($this->_objTpl->blockExists('news_archive_comments_count')) {
+                            $this->_objTpl->hideBlock('news_archive_comments_count');
+                        }
+                    }
+                    
+                    if (!empty($image)) {
+                        $this->_objTpl->setVariable(array(
+                            'NEWS_ARCHIVE_IMAGE'               => $image,
+                            'NEWS_ARCHIVE_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
+                            'NEWS_ARCHIVE_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
+                            'NEWS_ARCHIVE_IMAGE_LINK'          => $htmlLinkImage,
+                            'NEWS_ARCHIVE_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($news['teaser_image_thumbnail_path']),
+                            'NEWS_ARCHIVE_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($news['teaser_image_path']),
+                        ));
+                        if ($this->_objTpl->blockExists('news_archive_image')) {
+                            $this->_objTpl->parse('news_archive_image');
+                        }
+                    } elseif ($this->_objTpl->blockExists('news_archive_image')) {
+                        $this->_objTpl->hideBlock('news_archive_image');
+                    }
+
+                    $this->_objTpl->parse('news_archive_row');
+                    $i++;
+                    
                     $this->_objTpl->setVariable(array(
                         'NEWS_ARCHIVE_LINK_TITLE'   => contrexx_raw2xhtml($news['newstitle']),
                         'NEWS_ARCHIVE_LINK_URL'     => empty($news['newsredirect']) ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $news['cat']), FRONTEND_LANG_ID, array('newsid' => $news['id'])) : $news['newsredirect'],

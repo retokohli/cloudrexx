@@ -129,6 +129,9 @@ $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-Klasse: row1 oder row2";
 $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer Newsmeldung.<br />
 Starttag: &lt!-- BEGIN newsrow --&gt;<br />
 Endtag: &lt!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Block zur definierung einer Newsmeldung.<br />
+Starttag: &lt!-- BEGIN news_archive_row --&gt;<br />
+Endtag: &lt!-- END news_archive_row --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Die folgenden Platzhalter stehen bei den Seiten zur Verfügung, welche zur <b>section</b> news gehören und als <b>cmd</b> details haben.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titel der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text der Newsmeldung";
@@ -225,6 +228,9 @@ $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Quelle/Pfad des Bildes";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optionaler Block zur Darstellung des Bildes.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_ROW_DESCRIPTION'] = "Optionaler Block zur Darstellung des Bildes.<br />
+Starttag: &lt!-- BEGIN news_archive_image --&gt;<br />
+Endtag: &lt!-- END news_archive_image --&gt;";
 $_ARRAYLANG['TXT_NEWS_COMMENT_LIST'] = "Comments list";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_NEWS_COMMENT_DATE'] = "Date &amp; time";

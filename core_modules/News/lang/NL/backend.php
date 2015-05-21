@@ -120,6 +120,9 @@ $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-klasse (row1 of row2)";
 $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block voor de definiering van een nieuwsbericht.<br />
 De starttag: &lt!-- BEGIN newsrow --&gt;<br />
 en de eindtag: &lt!-- END newsrow --&gt;.";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Block voor de definiering van een nieuwsbericht.<br />
+De starttag: &lt!-- BEGIN news_archive_row --&gt;<br />
+en de eindtag: &lt!-- END news_archive_row --&gt;.";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "De onderstaande placeholders zijn beschikbaar en behoren tot de <b>sectie</b> nieuws en hebben <b>cmd</b> als details.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titel van het nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Tekst van het nieuwsbericht";
@@ -216,6 +219,9 @@ $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Picture source/path ";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
+Starttag: &lt!-- BEGIN news_archive_image --&gt;<br />
+Endtag: &lt!-- END news_archive_image --&gt;";
 $_ARRAYLANG['TXT_NEWS_COMMENT_LIST'] = "Comments list";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_NEWS_COMMENT_DATE'] = "Date &amp; time";

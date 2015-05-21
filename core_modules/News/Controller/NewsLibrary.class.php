@@ -1002,28 +1002,42 @@ class NewsLibrary
         global $objDatabase, $_CORELANG;
         
         $categoryFilter = '';
+        $monthlyStats = array();
         if (!empty($categories)) {
            $categoryFilter .= ' AND (n.catid = '.implode(' OR n.catid = ', array_map('intval', $categories)).')';            
         }
 
-        $query = "SELECT            n.id             AS id,
-                                    n.date           AS date,
-                                    n.changelog      AS changelog,
-                                    n.redirect       AS newsredirect,
-                                    nl.title         AS newstitle,
-                                    n.catid          AS cat
-                            FROM    ".DBPREFIX."module_news AS n LEFT JOIN  ".DBPREFIX."module_news_locale AS nl ON nl.news_id = n.id
-                            WHERE   n.validated = '1'
-                                    AND n.status = 1
-                                    AND nl.lang_id = ".FRONTEND_LANG_ID."
-                                    AND nl.is_active=1
-                                    ".$categoryFilter."
-                                    " .($this->arrSettings['news_message_protection'] == '1' && !\Permission::hasAllAccess() ? (
-                                    ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
-                                        " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
-                                        :   " AND frontend_access_id=0 ")
-                                    :   '')
-                            ."ORDER BY date DESC";
+        $query = '  SELECT      n.id             AS id,
+                                n.date           AS date,
+                                n.teaser_image_path AS teaser_image_path,
+                                n.teaser_image_thumbnail_path AS teaser_image_thumbnail_path,
+                                n.changelog      AS changelog,
+                                n.redirect       AS newsredirect,
+                                n.publisher      AS publisher,
+                                n.publisher_id   AS publisher_id,
+                                n.author         AS author,
+                                n.author_id      AS author_id,
+                                n.allow_comments AS commentactive,
+                                nl.title         AS newstitle,
+                                nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
+                                nl.teaser_text,
+                                nc.name          AS name,
+                                nc.category_id   AS cat
+                    FROM       '.DBPREFIX.'module_news AS n 
+                    LEFT JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
+                    INNER JOIN '.DBPREFIX.'module_news_categories_locale AS nc ON nc.category_id=n.catid
+                    WHERE       n.validated = "1"
+                                AND n.status = 1
+                                AND nl.lang_id = '.FRONTEND_LANG_ID.'
+                                AND nc.lang_id='.FRONTEND_LANG_ID.'
+                                AND nl.is_active=1
+                                '.$categoryFilter.'
+                                ' .($this->arrSettings['news_message_protection'] == "1" && !\Permission::hasAllAccess() ? (
+                                ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                    ' AND (frontend_access_id IN ('.implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).') OR userid = '.$objFWUser->objUser->getId().') '
+                                    :   ' AND frontend_access_id=0 ')
+                                :   '')
+                    .'ORDER BY date DESC';
 
         $objResult = $objDatabase->Execute($query);
 
