@@ -370,6 +370,7 @@ class JsonPage implements JsonAdapter {
         
         $draftUpdateLog = null;
         $liveUpdateLog = null;
+        $updatingDraft = false;
         if (($action == 'publish') && \Permission::checkAccess(78, 'static', true)) {
             // User w/permission clicked save&publish. we should either publish the page or submit the draft for approval.
             if ($page->getEditingStatus() == 'hasDraftWaiting') {

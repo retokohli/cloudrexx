@@ -167,6 +167,7 @@ $_ARRAYLANG['TXT_CALENDAR_MODULE_DESCRIPTION'] = "Events calendar system";
 $_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'] = "Import/Export";
 $_ARRAYLANG['TXT_THEME_LIBRARIES'] = "Libraries";
 $_ARRAYLANG['TXT_THEME_LIBRARY'] = "Libraries";
+$_ARRAYLANG['TXT_THEME_PREVIEW'] = 'Preview';
 $_ARRAYLANG['TXT_DOC_SYS_MODULE_DESCRIPTION'] = "Document management system";
 $_ARRAYLANG['TXT_SHOP_MODULE_DESCRIPTION'] = "B2B und B2C Online Shop Solution";
 $_ARRAYLANG['TXT_SITEMAP_MODULE_DESCRIPTION'] = "Dynamical site map system. Displays the site map in Explorer style.";
@@ -894,6 +895,7 @@ $_ARRAYLANG['TXT_CORE_SAVED'] = "Saved";
 $_ARRAYLANG['TXT_CORE_SAVED_BLOCK'] = "Saved the block";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Draft submitted for publishing";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Publish draft";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'] = 'Publish';
 
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_MENU_MULTI'] = "Menu mit Mehrfachauswahl";
@@ -1255,6 +1257,7 @@ $_ARRAYLANG['TXT_CORE_CM_TRANSLATION_INFO'] = "Click here to edit the page in th
 $_ARRAYLANG['TXT_CORE_CM_PREVIEW_INFO'] = "Click here to see a preview of this page in the frontend.";
 $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Please confirm that you want to delete this node and all its child nodes.";
 $_ARRAYLANG['TXT_CORE_CM_USAGE_DENIED'] = "You don't have enough rights to use the content manager.";
+$_ARRAYLANG['TXT_CORE_CM_READ_DENIED'] = 'You are not allowed to access this page.';
 $_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = "You don't have enough rights to create pages.";
 $_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = "You don't have enough rights to delete pages";
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = "You don't have enough rights to change the access premissions.";
@@ -1267,6 +1270,7 @@ $_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Copy';
 $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = 'Copy %s';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_ENTRIES'] = 'Entries';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] = 'Hide drafts';
+$_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";
