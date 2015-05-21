@@ -2105,8 +2105,11 @@ RSS2JSCODE;
                     } elseif ($this->_objTpl->blockExists('news_archive_image')) {
                         $this->_objTpl->hideBlock('news_archive_image');
                     }
-
-                    $this->_objTpl->parse('news_archive_row');
+                    
+                    if ($this->_objTpl->blockExists('news_archive_row')) {
+                        $this->_objTpl->parse('news_archive_row');
+                    }
+                    
                     $i++;
                     
                     $this->_objTpl->setVariable(array(
