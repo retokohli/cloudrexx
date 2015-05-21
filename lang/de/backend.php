@@ -1203,6 +1203,7 @@ $_ARRAYLANG['TXT_CORE_SAVED'] = "Seite gespeichert";
 $_ARRAYLANG['TXT_CORE_SAVED_BLOCK'] = "Inhaltscontainer gespeichert";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Entwurf zur Ver&ouml;ffentlichung freigegeben";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Entwurf veröffentlichen";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'] = 'Aktivieren';
 
 $_ARRAYLANG['TXT_CORE_ALIAS_CREATION_DENIED'] = "Aliasse konnten nicht erstellt werden";
 
@@ -1214,6 +1215,7 @@ $_ARRAYLANG['TXT_GENERAL_OPTIONS'] = "Datumsgesteuerte Veröffentlichung";
 $_ARRAYLANG['TXT_MENU_NAME'] = "Linkname (für die Navigation)";
 $_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_UPDATING'] = "Fehler beim Aktualisieren des Benutzerkontos %1\$s";
 $_ARRAYLANG['TXT_THEMES'] = "Design Vorlage";
+$_ARRAYLANG['TXT_THEME_PREVIEW'] = 'Vorschau';
 
 $_ARRAYLANG['TXT_CORE_NAVTITLE'] = "Titel (Navigation)";
 $_ARRAYLANG['TXT_CORE_CONTENTTITLE'] = "Titel (Seite)";
@@ -1336,6 +1338,7 @@ $_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Kopie';
 $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = '%s. Kopie';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_ENTRIES'] = 'Einträge';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] = 'Entwürfe ausblenden';
+$_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
 
 // core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
