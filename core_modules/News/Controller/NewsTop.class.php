@@ -156,7 +156,10 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $this->_objTemplate->hideBlock('news_image');
                     }
                 }
-
+                
+                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'thumbnail');
+                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'detail');
+               
                 $this->_objTemplate->parseCurrentBlock();
                 $i++;
                 $objResult->MoveNext();

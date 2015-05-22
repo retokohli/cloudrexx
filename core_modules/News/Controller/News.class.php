@@ -292,6 +292,9 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
         
+        self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'thumbnail');
+        self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'detail');
+         
         if (empty($redirect)) {
             $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
             $newsTeaser = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $newsTeaser);
@@ -1016,7 +1019,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $this->_objTpl->hideBlock('news_image');
                     }
                 }
-
+                
+                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'thumbnail');
+                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'detail');
+                
                 $this->_objTpl->parse('newsrow');
                 $i++;
                 $objResult->MoveNext();
@@ -1253,7 +1259,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $this->_objTpl->hideBlock('news_image');
                     }
                 }
-
+                
+                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'thumbnail');
+                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'detail');
+                
                 $this->_objTpl->parse('newsrow');
                 $i++;
                 $objResult->MoveNext();

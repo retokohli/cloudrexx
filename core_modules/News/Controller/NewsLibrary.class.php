@@ -1114,5 +1114,36 @@ class NewsLibrary
             }
         }
     }
+    /**
+     * Parse the Image Block for thumbnail and detail image
+     * 
+     * @param object $objTpl     Template object \Cx\Core\Html\Sigma
+     * @param string $imagePath  Image path(Thumbnail/Detail Image)
+     * @param string $altText    News  title
+     * @param string $newsUrl    News  url
+     * @param string $block      Block name
+     */
+    public static function parseImageBlock($objTpl, $imagePath, $altText, $newsUrl, $block)  
+    {
+        if (!$objTpl->blockExists('news_image_' . $block)) {
+            return;
+        }
+        
+        if (!empty($imagePath)) {
+            $image          = self::getHtmlImageTag($imagePath, $altText);
+            $imgLink        = self::parseLink($newsUrl, $altText, $image);
+            $imgPlaceholder = strtoupper($block);
+
+            $objTpl->setVariable(array(
+                'NEWS_IMAGE_' . $imgPlaceholder           => $image,
+                'NEWS_IMAGE_' . $imgPlaceholder . '_ALT'  => contrexx_raw2xhtml($altText),
+                'NEWS_IMAGE_' . $imgPlaceholder . '_LINK' => $imgLink,
+            ));
+            $objTpl->parse('news_image_' . $block);
+        } else {
+            $objTpl->hideBlock('news_image_' . $block);
+        }
+        
+    }
 
 }
