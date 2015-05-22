@@ -130,8 +130,8 @@ $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Tag for defining News Entries<br />
 Starttag: &lt!-- BEGIN newsrow --&gt;<br />
 Endtag: &lt!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Tag for defining News Entries<br />
-Starttag: &lt!-- BEGIN news_archive_row --&gt;<br />
-Endtag: &lt!-- END news_archive_row --&gt;";
+Starttag: &lt!-- BEGIN news_archive_link --&gt;<br />
+Endtag: &lt!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "The following Placeholders are available in the News Module.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Title of the news message";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text of the news message";
@@ -358,4 +358,11 @@ $_ARRAYLANG['TXT_NEWS_COMMENTS_DATE_DESCRIPTION'] = "Comment added date";
 $_ARRAYLANG['TXT_NEWS_COMMENTS_TIME_DESCRIPTION'] = "Comment added time";
 $_ARRAYLANG['TXT_NEWS_COMMENT_LINK_DESCRIPTION'] = "News details link source";
 $_ARRAYLANG['TXT_NEWS_COMMENT_URL_DESCRIPTION'] = "News details link";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_MONTH_KEY_DESCRIPTION'] = "News archive month's key (for example september 2015 will be 2015_09)";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_MONTH_NAME_DESCRIPTION'] = "Month's name of news archive";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_MONTH_COUNT_DESCRIPTION'] = "Total number of news archives in a month";
+$_ARRAYLANG['TXT_NEWS_TIME_DESCRIPTION'] = "Time of the news message";
+$_ARRAYLANG['TXT_NEWS_LINK_TITLE_DESCRIPTION'] = "Link title of the news";
+$_ARRAYLANG['TXT_NEWS_LINK_URL_DESCRIPTION'] = "News url";
+$_ARRAYLANG['TXT_NEWS_PUBLISHER_DESCRIPTION'] = "Name of the Publisher";
 ?>

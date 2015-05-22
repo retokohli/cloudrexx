@@ -120,8 +120,8 @@ $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Blok til definitionen af en nyhed.<br 
 Starttag: &lt!-- BEGIN newsrow --&gt;<br />
 Endtag: &lt!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Blok til definitionen af en nyhed.<br />
-Starttag: &lt!-- BEGIN news_archive_row --&gt;<br />
-Endtag: &lt!-- END news_archive_row --&gt;";
+Starttag: &lt!-- BEGIN news_archive_link --&gt;<br />
+Endtag: &lt!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Følgende pladsholdere kan anvendes ved siderne, som tilhører <b>section</b> news og som har <b>cmd</b> som detalje.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Nyhedens overskrift";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Nyhedens tekst";

@@ -475,9 +475,7 @@
         <tr class="row1">
             <td>[[HEADLINE_THUMBNAIL_PATH]]</td>
             <td>{TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION}</td>
-        </tr>        
         </tr>
-        
     </table>
     <br />
     <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -646,14 +644,26 @@
             <th colspan="2">{TXT_PLACEHOLDER_LIST}</th>
         </tr>
         <tr class="row1">
-            <td width="15%">[[NEWS_ARCHIVE_ID]]</td>
-            <td width="85%">{TXT_NEWS_ID_DESCRIPTION}</td>
+            <td width="15%">[[NEWS_ARCHIVE_MONTH_KEY]]</td>
+            <td width="85%">{TXT_NEWS_ARCHIVE_MONTH_KEY_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_MONTH_NAME]]</td>
+            <td>{TXT_NEWS_ARCHIVE_MONTH_NAME_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_MONTH_COUNT]]</td>
+            <td>{TXT_NEWS_ARCHIVE_MONTH_COUNT_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_ID]]</td>
+            <td>{TXT_NEWS_ID_DESCRIPTION}</td>
         </tr>
         <tr class="row1">
             <td>[[NEWS_ARCHIVE_CSS]]</td>
             <td>{TXT_NEWS_CSS_DESCRIPTION}</td>
         </tr>
-        <tr class="row1">
+        <tr class="row2">
             <td>[[NEWS_ARCHIVE_TEASER]]</td>
             <td>{TXT_NEWS_TEASER_TEXT_DESCRIPTION}</td>
         </tr>
@@ -669,7 +679,7 @@
             <td>[[NEWS_ARCHIVE_DATE]]</td>
             <td>{TXT_NEWS_DATE_DESCRIPTION}</td>
         </tr>
-        <tr class="row1">
+        <tr class="row2">
             <td>[[NEWS_ARCHIVE_TIME]]</td>
             <td>{TXT_NEWS_TIME_DESCRIPTION}</td>
         </tr>
@@ -681,11 +691,11 @@
             <td>[[NEWS_ARCHIVE_LINK]]</td>
             <td>{TXT_NEWS_LINK_DESCRIPTION}</td>
         </tr>
-        <tr class="row2">
+        <tr class="row1">
             <td>[[NEWS_ARCHIVE_LINK_URL]]</td>
             <td>{TXT_NEWS_LINK_URL_DESCRIPTION}</td>
         </tr>       
-        <tr class="row1">
+        <tr class="row2">
             <td>[[NEWS_ARCHIVE_AUTHOR]]</td>
             <td>{TXT_NEWS_AUTHOR_DESCRIPTION}</td>
         </tr>        
@@ -693,37 +703,37 @@
             <td>[[NEWS_ARCHIVE_PUBLISHER]]</td>
             <td>{TXT_NEWS_PUBLISHER_DESCRIPTION}</td>
         </tr>                                
-        <tr class="row1">
+        <tr class="row2">
             <td>[[NEWS_ARCHIVE_IMAGE]]</td>
             <td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
         </tr>
-        <tr class="row2">
+        <tr class="row1">
             <td>[[NEWS_ARCHIVE_IMAGE_SRC]]</td>
             <td>{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
         </tr>
-        <tr class="row1">
+        <tr class="row2">
             <td>[[NEWS_ARCHIVE_IMAGE_ALT]]</td>
             <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
         </tr>
-        <tr class="row2">
+        <tr class="row1">
             <td>[[NEWS_ARCHIVE_IMAGE_LINK]]</td>
             <td>{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
         </tr>
         
-        <tr class="row1">
+        <tr class="row2">
             <td>[[NEWS_ARCHIVE_IMAGE_THUMBNAIL_SRC]]</td>
             <td>{TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION}</td>
         </tr>
-        <tr class="row2">
+        <tr class="row1">
             <td>[[NEWS_ARCHIVE_IMAGE_DETAIL_SRC]]</td>
             <td>{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
         </tr>
-        <tr class="row1">
+        <tr class="row2">
             <td>&lt;-- news_archive_image --&gt;</td>
             <td>{TXT_NEWS_ARCHIVE_IMAGE_ROW_DESCRIPTION}</td>
         </tr>
-        <tr class="row2">
-            <td>&lt;!-- news_archive_row --&gt;</td>
+        <tr class="row1">
+            <td>&lt;!-- news_archive_link --&gt;</td>
             <td>{TXT_NEWS_ARCHIVE_ROW_DESCRIPTION}</td>
         </tr>
     </table>
@@ -733,12 +743,40 @@
             <th>{TXT_EXAMPLE}</th>
         </tr>
         <tr class="row1">
-            <td>&lt;ul&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;{TXT_NEWS_ARCHIVE_LIST}&lt;/li&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_row --&gt;</b><br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<b>[[NEWS_ARCHIVE_LINK]]</b>&lt;/li&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_row --&gt;</b><br />
+          <td><b>&lt;!-- BEGIN news_archive_status_message --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;<b>[[TXT_NEWS_NO_NEWS_FOUND]]</b><br />
+                <b>&lt;!-- END news_archive_status_message --&gt;</b><br />
+                <br />
+                
+                &lt;ul&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_months_list --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;
+                &lt;a href = &quot;#<b>[[NEWS_ARCHIVE_MONTH_KEY]]</b>&quot;&gt;<b>[[NEWS_ARCHIVE_MONTH_NAME]]</b>&lt;/a&gt;
+                &LeftAngleBracket;<b>[[NEWS_ARCHIVE_MONTH_COUNT]]</b>&RightAngleBracket;&lt;/li&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_months_list --&gt;</b><br />
                 &lt;/ul&gt;<br />
+                <br />
+                
+                <b>&lt;!-- BEGIN news_archive_months_list --&gt;</b><br/>
+                &nbsp;&nbsp;&nbsp;&lt;ul&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_month_list_item --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a name = &quot;#<b>[[NEWS_ARCHIVE_MONTH_KEY]]</b>&quot;&gt;<b>[[NEWS_ARCHIVE_MONTH_NAME]]</b>&lt;/a&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_link --&gt;</b><br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href=&quot;<b>[[NEWS_ARCHIVE_LINK_URL]]</b>&quot;&nbsp;title=&quot;<b>[[NEWS_ARCHIVE_LINK_TITLE]]</b>&quot;&gt;<b>[[NEWS_ARCHIVE_LINK_TITLE]]</b>&lt;/a&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_image --&gt;</b><br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&gt;<b>[[NEWS_ARCHIVE_IMAGE]]</b>&lt;/span&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_image --&gt;</b><br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_link --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_month_list_item --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&lt;/ul&gt;<br />
+                <b>&lt;!-- END news_archive_months_list --&gt;</b><br />
+                <br />
             </td>
         </tr>
     </table>

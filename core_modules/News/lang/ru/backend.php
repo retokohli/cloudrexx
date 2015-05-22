@@ -121,8 +121,8 @@ $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Блок определения нов
 Начинается: &lt;!-- BEGIN newsrow --&gt;<br />
 Endtag: &lt;!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Блок определения новостей.<br />
-Начинается: &lt;!-- BEGIN news_archive_row --&gt;<br />
-Endtag: &lt;!-- END news_archive_row --&gt;";
+Начинается: &lt;!-- BEGIN news_archive_link --&gt;<br />
+Endtag: &lt;!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Следующие пути к файлам находятся на странице, принадлежащей к  <b>разделу</b> новостей и имеющих <b>cmd</b> детали.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Заголовок новости";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Текст новости";
