@@ -2054,11 +2054,6 @@ RSS2JSCODE;
                                         : $news['newsredirect'];
 
                     $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
-                    $htmlLinkTitle  = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
-                    // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
-                    if (empty($htmlLinkTitle)) {
-                        $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
-                    }
 
                     list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($news['teaser_image_path'],
                                                                                            $news['teaser_image_thumbnail_path'],
@@ -2075,7 +2070,7 @@ RSS2JSCODE;
                        'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['newsdate']),
                        'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['newsdate']),
                        'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['newsdate']),
-                       'NEWS_ARCHIVE_LINK_TITLE'    => $htmlLinkTitle,
+                       'NEWS_ARCHIVE_LINK_TITLE'    => contrexx_raw2xhtml($newstitle),
                        'NEWS_ARCHIVE_LINK'          => $htmlLink,
                        'NEWS_ARCHIVE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
                        'NEWS_ARCHIVE_CATEGORY'      => stripslashes($news['name']),
@@ -2106,17 +2101,8 @@ RSS2JSCODE;
                         $this->_objTpl->hideBlock('news_archive_image');
                     }
                     
-                    if ($this->_objTpl->blockExists('news_archive_row')) {
-                        $this->_objTpl->parse('news_archive_row');
-                    }
-                    
-                    $i++;
-                    
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_ARCHIVE_LINK_TITLE'   => contrexx_raw2xhtml($news['newstitle']),
-                        'NEWS_ARCHIVE_LINK_URL'     => empty($news['newsredirect']) ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $news['cat']), FRONTEND_LANG_ID, array('newsid' => $news['id'])) : $news['newsredirect'],
-                    ));
                     $this->_objTpl->parse('news_archive_link');
+                    $i++;
                 }
                 $this->_objTpl->setVariable(array(
                     'NEWS_ARCHIVE_MONTH_KEY'    => $key,
@@ -2127,14 +2113,14 @@ RSS2JSCODE;
 
             $this->_objTpl->parse('news_archive_months_list');
             $this->_objTpl->parse('news_archive_month_list');
-            if ($this->_objTpl->blockExists('news_status_message')) {
-                $this->_objTpl->hideBlock('news_status_message');
+            if ($this->_objTpl->blockExists('news_archive_status_message')) {
+                $this->_objTpl->hideBlock('news_archive_status_message');
             }
         } else {
             $this->_objTpl->setVariable('TXT_NEWS_NO_NEWS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND']);
 
-            if ($this->_objTpl->blockExists('news_status_message')) {
-                $this->_objTpl->parse('news_status_message');
+            if ($this->_objTpl->blockExists('news_archive_status_message')) {
+                $this->_objTpl->parse('news_archive_status_message');
             }
             $this->_objTpl->hideblock('news_archive_months_list');
             $this->_objTpl->hideBlock('news_archive_month_list');

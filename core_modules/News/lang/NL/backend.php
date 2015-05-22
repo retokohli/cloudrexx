@@ -121,8 +121,8 @@ $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block voor de definiering van een nieu
 De starttag: &lt!-- BEGIN newsrow --&gt;<br />
 en de eindtag: &lt!-- END newsrow --&gt;.";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Block voor de definiering van een nieuwsbericht.<br />
-De starttag: &lt!-- BEGIN news_archive_row --&gt;<br />
-en de eindtag: &lt!-- END news_archive_row --&gt;.";
+De starttag: &lt!-- BEGIN news_archive_link --&gt;<br />
+en de eindtag: &lt!-- END news_archive_link --&gt;.";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "De onderstaande placeholders zijn beschikbaar en behoren tot de <b>sectie</b> nieuws en hebben <b>cmd</b> als details.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titel van het nieuwsbericht";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Tekst van het nieuwsbericht";

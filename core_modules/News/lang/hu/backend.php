@@ -120,8 +120,8 @@ $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Block zur definierung einer News meldu
 Starttag: &lt!-- BEGIN newsrow --&gt;<br />
 Endtag: &lt!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Block zur definierung einer News meldung.<br />
-Starttag: &lt!-- BEGIN news_archive_row --&gt;<br />
-Endtag: &lt!-- END news_archive_row --&gt;";
+Starttag: &lt!-- BEGIN news_archive_link --&gt;<br />
+Endtag: &lt!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Die folgenden Platzhalter stehen bei den Seiten zur Verfügung, welche zur <b>section</b> news gehören und als <b>cmd</b> details haben.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titel der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text der Newsmeldung";

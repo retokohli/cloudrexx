@@ -121,8 +121,8 @@ $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Tag para definir nuevas entradas<br />
 Apertura: &lt!-- BEGIN newsrow --&gt;<br />
 Cierre: &lt!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Tag para definir nuevas entradas<br />
-Apertura: &lt!-- BEGIN news_archive_row --&gt;<br />
-Cierre: &lt!-- END news_archive_row --&gt;";
+Apertura: &lt!-- BEGIN news_archive_link --&gt;<br />
+Cierre: &lt!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Las siguientes variables est&aacute;n disponibles en el m&oacute;dulo de noticias.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "T&iacute;tulo de la noticia";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Texto de la noticia";

@@ -121,8 +121,8 @@ $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Brique pour la définition d'un articl
 Tag de début: &lt;!-- BEGIN newsrow --&gt;<br />
 Tag de fin: &lt;!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Brique pour la définition d'un article.<br />
-Tag de début: &lt;!-- BEGIN news_archive_row --&gt;<br />
-Tag de fin: &lt;!-- END news_archive_row --&gt;";
+Tag de début: &lt;!-- BEGIN news_archive_link --&gt;<br />
+Tag de fin: &lt;!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Ces variables peuvent être utilisées dans les pages de contenu de la <b>section</b> \"news\" qui comportent la <b>cmd</b> \"details\" (index.php?section=News&cmd=details).";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titre de l'article";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Texte de l'article";
