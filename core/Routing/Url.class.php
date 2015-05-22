@@ -728,7 +728,7 @@ class Url {
      */
     public function toString($absolute = true) {
         if(!$absolute) {
-            return ASCMS_INSTANCE_OFFSET . '/' .
+            return \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()  . '/' .
                ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
                $this->path;
         }
@@ -768,7 +768,7 @@ class Url {
         $url = $this->protocol . '://' . 
                $this->domain . ':' . 
                $this->port . 
-               ASCMS_INSTANCE_OFFSET . '/' .
+               \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()  . '/' .
                ($this->getMode() != 'backend' ? $this->getLangDir(). '/' : '') . 
                $this->path;
         return $url;
