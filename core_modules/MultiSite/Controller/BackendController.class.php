@@ -496,6 +496,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'sorting' => true,
                             'paging' => true,
                             'filtering' => false,
+                            'order' => array(
+                                'sentDate' => SORT_DESC
+                            )
                         ),
                         'fields' => array(
                             'id' => array('showOverview' => false),

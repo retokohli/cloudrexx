@@ -117,12 +117,15 @@ class ListingController {
         if (isset($options['paging'])) {
             $this->paging = $options['paging'];
         }
+        if (isset($options['order'])) {
+            $this->order = $options['order'];
+        }
         // init handlers (filtering, paging and sorting)
-        $this->handlers = array(
-            new FilteringController(),
-            new SortingController(),
-            new PagingController,
-        );
+        $this->handlers[] = new FilteringController();
+        if (!empty($options['sorting'])) {
+            $this->handlers[] = new SortingController();
+        }
+        $this->handlers[] = new PagingController();
         
         if (is_callable($entities)) {
             \DBG::msg('Init ListingController using callback function');
