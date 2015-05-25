@@ -385,7 +385,8 @@ class Resolver {
         }
         
         $langDir = $this->url->getLangDir();
-        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, FRONTEND_LANG_ID, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
+        $frontendLang = defined('FRONTEND_LANG_ID') ? FRONTEND_LANG_ID : null;
+        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, $frontendLang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
             return null;
         }
 
