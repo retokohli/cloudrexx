@@ -267,21 +267,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
          */
         $this->_teaser = contrexx_raw2xhtml($newsTeaser);
         
-        if (!empty($objResult->fields['newsimage']) || !empty($objResult->fields['newsThumbImg'])) {
-            if (!empty($objResult->fields['newsimage'])) {
-                $this->_objTpl->setVariable(array(
-                    'NEWS_IMAGE'               => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
-                    'NEWS_IMAGE_SRC'           => $objResult->fields['newsimage'],
-                    'NEWS_IMAGE_ALT'           => $newstitle,
-                    'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['newsimage']),
-                ));
-            }
-            
-            if (!empty($objResult->fields['newsThumbImg'])) {
-                $this->_objTpl->setVariable(array(
-                    'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['newsThumbImg']),
-                ));
-            }
+        if (!empty($objResult->fields['newsimage'])) {
+            $this->_objTpl->setVariable(array(
+                'NEWS_IMAGE'               => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
+                'NEWS_IMAGE_SRC'           => $objResult->fields['newsimage'],
+                'NEWS_IMAGE_ALT'           => $newstitle,
+            ));
             
             if ($this->_objTpl->blockExists('news_image')) {
                 $this->_objTpl->parse('news_image');
@@ -292,8 +283,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
         
-        self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'thumbnail');
-        self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'detail');
+        self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'image_thumbnail');
+        self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'image_detail');
          
         if (empty($redirect)) {
             $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
@@ -1007,8 +998,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
                         'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
                         'NEWS_IMAGE_LINK'          => $htmlLinkImage,
-                        'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['teaser_image_thumbnail_path']),
-                        'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
@@ -1020,8 +1009,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     }
                 }
                 
-                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'thumbnail');
-                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'detail');
+                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
+                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
                 
                 $this->_objTpl->parse('newsrow');
                 $i++;
@@ -1247,8 +1236,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
                         'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
                         'NEWS_IMAGE_LINK'          => $htmlLinkImage,
-                        'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['teaser_image_thumbnail_path']),
-                        'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
@@ -1260,8 +1247,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     }
                 }
                 
-                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'thumbnail');
-                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'detail');
+                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
+                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
                 
                 $this->_objTpl->parse('newsrow');
                 $i++;
@@ -2100,8 +2087,6 @@ RSS2JSCODE;
                             'NEWS_ARCHIVE_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
                             'NEWS_ARCHIVE_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
                             'NEWS_ARCHIVE_IMAGE_LINK'          => $htmlLinkImage,
-                            'NEWS_ARCHIVE_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($news['teaser_image_thumbnail_path']),
-                            'NEWS_ARCHIVE_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($news['teaser_image_path']),
                         ));
                         if ($this->_objTpl->blockExists('news_archive_image')) {
                             $this->_objTpl->parse('news_archive_image');
@@ -2109,6 +2094,9 @@ RSS2JSCODE;
                     } elseif ($this->_objTpl->blockExists('news_archive_image')) {
                         $this->_objTpl->hideBlock('news_archive_image');
                     }
+                    
+                    self::parseImageBlock($this->_objTpl, $news['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'archive_image_thumbnail');
+                    self::parseImageBlock($this->_objTpl, $news['teaser_image_path'], $newstitle, $newsUrl, 'archive_image_detail');
                     
                     $this->_objTpl->parse('news_archive_link');
                     $i++;

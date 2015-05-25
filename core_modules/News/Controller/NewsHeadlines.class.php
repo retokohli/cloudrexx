@@ -160,9 +160,6 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         // Backward compatibility for templates pre 3.0
                         'HEADLINE_IMAGE_PATH'     => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
                         'HEADLINE_THUMBNAIL_PATH' => contrexx_raw2xhtml($imageSource),
-                        
-                        'NEWS_IMAGE_THUMBNAIL_SRC' => contrexx_raw2xhtml($objResult->fields['teaser_image_thumbnail_path']),
-                        'NEWS_IMAGE_DETAIL_SRC'    => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
                     ));
 
                     if ($this->_objTemplate->blockExists('news_image')) {
@@ -174,8 +171,8 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     }
                 }
                 
-                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'thumbnail');
-                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'detail');
+                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
+                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
                 
                 $this->_objTemplate->parse('headlines_row');
                 $i++;
