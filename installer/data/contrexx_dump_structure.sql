@@ -3323,7 +3323,6 @@ CREATE TABLE `contrexx_module_news` (
   `source` varchar(250) NOT NULL default '',
   `url1` varchar(250) NOT NULL default '',
   `url2` varchar(250) NOT NULL default '',
-  `catid` int(2) unsigned NOT NULL default '0',
   `typeid` int(2) unsigned NOT NULL default '0',
   `publisher` varchar(255) NOT NULL default '',
   `publisher_id` int(5) unsigned NOT NULL default '0',
@@ -3409,6 +3408,14 @@ CREATE TABLE `contrexx_module_news_locale` (
   PRIMARY KEY  (`news_id`,`lang_id`),
   FULLTEXT KEY `newsindex` (`text`,`title`,`teaser_text`)
 ) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_rel_categories` (
+  `news_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  UNIQUE KEY `NewsTagsRelation` (`news_id`,`category_id`)
+) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
