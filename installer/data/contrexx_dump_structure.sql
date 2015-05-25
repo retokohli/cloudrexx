@@ -386,12 +386,12 @@ CREATE TABLE `contrexx_core_module_multisite_affiliate_credit` (
   `credited` tinyint(1) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `UNIQ_4775298D9A1887DC` (`subscription_id`),
-  KEY `IDX_4775298D38248176` (`currency_id`),
-  KEY `IDX_4775298D4A087CA2` (`referee_id`),
-  KEY `IDX_4775298DC6D61B7F` (`payout_id`),
-  CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_payout_id` FOREIGN KEY (`payout_id`) REFERENCES `contrexx_core_module_multisite_affiliate_payout` (`id`),
+  UNIQUE KEY `subscription_id` (`subscription_id`),
+  KEY `currency_id` (`currency_id`),
+  KEY `payout_id` (`payout_id`),
+  KEY `referee_id` (`referee_id`),
   CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_currency_id` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_payout_id` FOREIGN KEY (`payout_id`) REFERENCES `contrexx_core_module_multisite_affiliate_payout` (`id`),
   CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_referee_id` FOREIGN KEY (`referee_id`) REFERENCES `contrexx_access_users` (`id`),
   CONSTRAINT `contrexx_core_module_multisite_affiliate_credit_ibfk_subid` FOREIGN KEY (`subscription_id`) REFERENCES `contrexx_module_order_subscription` (`id`)
 ) ENGINE=InnoDB;
@@ -405,10 +405,10 @@ CREATE TABLE `contrexx_core_module_multisite_affiliate_payout` (
   `date` datetime NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `IDX_159AEE7138248176` (`currency_id`),
-  KEY `IDX_159AEE714A087CA2` (`referee_id`),
-  CONSTRAINT `contrexx_core_module_multisite_affiliate_payout_ibfk_referee_id` FOREIGN KEY (`referee_id`) REFERENCES `contrexx_access_users` (`id`),
-  CONSTRAINT `contrexx_core_module_multisite_affiliate_payout_ibfk_currency_id` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`)
+  KEY `currency_id` (`currency_id`),
+  KEY `referee_id` (`referee_id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_payout_ibfk_currency_id` FOREIGN KEY (`currency_id`) REFERENCES `contrexx_module_crm_currency` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_affiliate_payout_ibfk_referee_id` FOREIGN KEY (`referee_id`) REFERENCES `contrexx_access_users` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
