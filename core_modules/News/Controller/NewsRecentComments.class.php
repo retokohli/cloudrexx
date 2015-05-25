@@ -59,8 +59,7 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
                               `nComment`.`poster_name`,
                               `nComment`.`userid`,
                               `nComment`.`text`,
-                              `news`.`id`,
-                              `news`.`catid`
+                              `news`.`id`
                         FROM  
                               `".DBPREFIX."module_news_comments` AS nComment
                         LEFT JOIN 
@@ -103,8 +102,8 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 self::parseUserAccountData($this->_objTemplate, $objResult->fields['userid'], $objResult->fields['poster_name'], 'news_comments_poster');
                 
                 $commentTitle = $objResult->fields['title'];
-                
-                $newsUrl  = \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $objResult->fields['catid']), FRONTEND_LANG_ID, array('newsid' => $objResult->fields['id']));
+                $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
+                $newsUrl  = \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', array_keys($newsCategories)), FRONTEND_LANG_ID, array('newsid' => $objResult->fields['id']));
                 $newsLink = self::parseLink($newsUrl, $commentTitle, contrexx_raw2xhtml($commentTitle));
                 
                 $this->_objTemplate->setVariable(array(

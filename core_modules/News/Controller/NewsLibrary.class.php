@@ -40,6 +40,13 @@ class NewsLibrary
     protected $nestedSetRootId;
 
     /**
+     * Status messages.
+     *
+     * @var string
+     */
+    protected $errMsg = array();
+    
+    /**
      * Initializes the NestedSet object
      * which is needed to manage the news categories.
      *
@@ -187,12 +194,18 @@ class NewsLibrary
      *
      * @access  protected
      * @param   array or integer    $categories                   categories which have to be listed
-     * @param   integer             $selectedCategory             selected category
+     * @param   array               $selectedCategory             selected category
      * @param   array               $hiddenCategories             the categories which shouldn't be shown as option
      * @param   boolean             $onlyCategoriesWithEntries    only categories which have entries
      * @return  string              $options                      html options
      */
-    protected function getCategoryMenu($categories, $selectedCategory = 0, $hiddenCategories = array(), $onlyCategoriesWithEntries = false)
+    protected function getCategoryMenu(
+            $categories, 
+            $selectedCategory = 0, 
+            $hiddenCategories = array(), 
+            $onlyCategoriesWithEntries = false,
+            $showLevel = true
+    )
     {
         if (empty($categories)) {
             $categories = array($this->nestedSetRootId);
@@ -218,9 +231,9 @@ class NewsLibrary
             if(in_array($category['id'], $hiddenCategories)) {
                 continue;
             }
-            $selected = $category['id'] == $selectedCategory ? 'selected="selected"' : '';
+            $selected = in_array($category['id'], $selectedCategory) ? 'selected="selected"' : '';
             $options .= '<option value="'.$category['id'].'" '.$selected.'>'
-                    .str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level))
+                    .($showLevel ? str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level)) : '')
                     .contrexx_raw2xhtml($categoriesLang[$category['id']][
                         \Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND ? BACKEND_LANG_ID : FRONTEND_LANG_ID
                     ])
@@ -230,6 +243,248 @@ class NewsLibrary
         return $options;
     }
 
+    /**
+     * Manipulating the submitted categories from the news Entry form.
+     * i)  Update the relationship of the news in the corresponding table
+     * ii) Delete the removed categories ids from the news relation table
+     *
+     * @param type $categoryIds Array of submitted category Ids
+     * @param type $newsId      News id for manipulation
+     * 
+     * @global object $objDatabase
+     * @global array $_ARRAYLANG
+     * 
+     * @return boolean
+     */
+    protected function manipulateCategories($categoryIds = array(), $newsId = null)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $oldNewsCategoryIds = $this->getNewsRelCategories($newsId);
+
+        foreach ($categoryIds as $categoryId) {
+            /**
+             * Insert the category id with the news id to make the relationship
+             * between news and categories
+             */
+            //Checking category is already related
+            if (in_array($categoryId, $oldNewsCategoryIds)) {
+                if(($key = array_search($categoryId, $oldNewsCategoryIds)) !== false) {
+                    unset($oldNewsCategoryIds[$key]); //Removing from the current list
+                }
+            } else {
+                $insertCategoryRelQuery = 'INSERT INTO `'
+                    . DBPREFIX . 'module_news_rel_categories` '
+                    . '(`news_id`, `category_id`) '
+                    . 'VALUES ('
+                    . $newsId . ','
+                    . contrexx_raw2db($categoryId)
+                    . ')';
+                if (!$objDatabase->Execute($insertCategoryRelQuery)) {
+                    \DBG::log('Error: While saving the news category relation.');
+                    $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'];
+                    return false;
+                }
+            }
+        }
+
+        //Delete the relationship of removed categories while editing the news
+        if (    !empty($newsId)
+            &&  !empty($oldNewsCategoryIds)
+        ) {
+            $deleteNewsRealtionQuery = 'DELETE FROM `'
+                . DBPREFIX . 'module_news_rel_categories` '
+                . 'WHERE `news_id` = "'. $newsId . '" '
+                . 'AND `category_id` IN ('
+                . implode(',', $oldNewsCategoryIds).')';
+            
+            if (!$objDatabase->Execute($deleteNewsRealtionQuery)) {
+                \DBG::log('Error: While removing the news category relation.');
+                $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'];
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Get the news related category by ID
+     * 
+     * @param integer $newsId
+     * 
+     * @global object $objDatabase
+     * 
+     * @return boolean
+     */
+    public function getNewsRelCategories($newsId)
+    {
+        global $objDatabase;
+
+        if (empty($newsId)) {
+            return array();
+        }
+
+        $query = 'SELECT `category_id`
+                        FROM `' . DBPREFIX . 'module_news_rel_categories` as tnrc
+                            LEFT JOIN `' . DBPREFIX . 'module_news_categories` as tnc
+                            ON `tnc`.`catid` = `tnrc`.`category_id`
+                        WHERE `news_id` = "' . $newsId . '" ORDER BY `tnc`.`sorting`';
+        
+        $objNewsCategories = $objDatabase->Execute($query);
+
+        if (!$objNewsCategories) {
+            \DBG::log('No category found in the News ID:' . $newsId);
+            return false;
+        }
+        
+        $categoryIdList = array();
+        while (!$objNewsCategories->EOF) {
+            $categoryIdList[] = $objNewsCategories->fields['category_id'];
+            $objNewsCategories->MoveNext();
+        }
+        return $categoryIdList;
+    }
+
+    /**
+     * Get the news ID list based on the category 
+     * 
+     * @param integer $categoryId
+     * 
+     * @global object $objDatabase
+     * 
+     * @return mixed boolean|array
+     */
+    public function getCategoryRelNews($categoryId)
+    {
+        global $objDatabase;
+
+        if (empty($categoryId)) {
+            return false;
+        }
+
+        $query = 'SELECT
+            `news_id`
+            FROM `' . DBPREFIX . 'module_news_rel_categories`
+            WHERE `category_id` = "' . $categoryId . '"';
+
+        $objCategoryNewsList = $objDatabase->Execute($query);
+
+        if (!$objCategoryNewsList) {
+            \DBG::log('No News entries found on the category ID: ' . $categoryId);
+            return false;
+        }
+        $newsIdList = array();
+        while (!$objCategoryNewsList->EOF) {
+            $newsIdList[] = $objCategoryNewsList->fields['news_id'];
+            $objCategoryNewsList->MoveNext();
+        }
+        return $newsIdList;
+    }
+
+    /**
+     * Getting the locale categories
+     *
+     * @param mixed $categoryIds
+     * @param mixed $langIds
+     * 
+     * @global object $objDatabase
+     * 
+     * @return array
+     */
+    public function getCategoryLocale($categoryIds=null, $langIds=null)
+    {
+        global $objDatabase;
+
+        $query = 'SELECT `tncl`.`category_id`, '
+                      . '`tncl`.`lang_id`, '
+                      . '`tncl`.`name` '
+               . 'FROM `' . DBPREFIX . 'module_news_categories_locale` as tncl '
+               . 'LEFT JOIN `' . DBPREFIX . 'module_news_categories` as tnc '
+               . 'ON (`tnc`.`catid` = `tncl`.`category_id`) ';
+
+        $where = array();
+
+        if (!empty($categoryIds)) {
+            if (is_array($categoryIds)) {
+                $where[] = "`category_id` IN ('"
+                        . implode(',', $categoryIds)
+                        . "')";
+            } else {
+                $where[] = "`category_id` ='"
+                        . $categoryIds
+                        . "'";
+            }
+        }
+        
+        if (!empty($langIds)) {
+            if (is_array($langIds)) {
+                $where[] = "`lang_id` IN ('"
+                        . implode(',', $langIds)
+                        . "')";
+            } else {
+                $where[] = "`lang_id` ='"
+                        . $langIds
+                        . "'";
+            }
+        }
+        $query .= !empty($where)
+            ? ' WHERE ' . implode(' AND ', $where)
+            : '';
+        $query .= ' ORDER BY `tnc`.`sorting`';
+        $objCategoriesLocale = $objDatabase->Execute($query);
+        $categoriesLocale = array();
+        
+        if ($objCategoriesLocale && $objCategoriesLocale->RecordCount() > 0) {
+            while (!$objCategoriesLocale->EOF) {
+                $categoriesLocale
+                        [$objCategoriesLocale->fields['lang_id']]
+                        [$objCategoriesLocale->fields['category_id']]
+                        = $objCategoriesLocale->fields['name'];
+
+                $objCategoriesLocale->MoveNext();
+
+            }
+        }
+        return $categoriesLocale;
+    }
+
+    /**
+     * Get the categories by News ID
+     * 
+     * @param integer $newsId
+     * 
+     * @global object $objDatabase
+     * 
+     * @return mixed boolean|array
+     */
+    protected function getCategoriesByNewsId($newsId)
+    {
+        global $objDatabase;
+        
+        if (empty($newsId)) {
+            return false;
+        }
+        
+        $query = 'SELECT `tnc`.`catid`, `tncl`.`name` '
+                        . 'FROM `'. DBPREFIX . 'module_news_categories` as tnc '
+                        . 'LEFT JOIN `' . DBPREFIX . 'module_news_categories_locale` as tncl '
+                        . 'ON (`tnc`.`catid` = `tncl`.`category_id`) '
+                        . 'LEFT JOIN `' . DBPREFIX . 'module_news_rel_categories` as tnrc '
+                        . 'ON (`tncl`.`category_id` = `tnrc`.`category_id`) '
+                        . 'WHERE `tnrc`.`news_id` = ' . $newsId . ' AND `tncl`.`lang_id` = ' . FRONTEND_LANG_ID
+                        . ' ORDER BY `tnc`.`sorting`';
+        $objResult = $objDatabase->Execute($query);
+        
+        $arrCategories = array();
+        if ($objResult && $objResult->RecordCount() > 0) {
+            while(!$objResult->EOF) {
+                $arrCategories[$objResult->fields['catid']] = $objResult->fields['name'];
+                $objResult->MoveNext();
+            }
+        }
+        return $arrCategories;
+    }
+    
     /**
      * Returns an array containing the nested set information 
      * for the passed categories and their subcategories 
@@ -289,24 +544,28 @@ class NewsLibrary
                 $whereDate   = 'WHERE `n`.`date` BETWEEN ' . mktime(0, 0, 0, 1, 1, $year) . ' AND ' . mktime(23, 59, 59, 12, 31, $year);
             }
             $selectCatIdBetweenDate = '
-                SELECT `n`.`catid`
+                SELECT `rc`.`category_id`
                   FROM `' . DBPREFIX . 'module_news_categories` AS `c`
+             LEFT JOIN `' . DBPREFIX . 'module_news_rel_categories` AS `rc`
+                    ON `c`.`catid` = `rc`.`category_id`         
              LEFT JOIN `' . DBPREFIX . 'module_news` AS `n`
-                    ON `c`.`catid` = `n`.`catid`
+                    ON `rc`.`news_id` = `n`.`id`
                    ' . $whereDate . '
               GROUP BY `c`.`catid`
             ';
-            $orCatIdNotIn = 'OR (`n`.`catid` NOT IN (' . $selectCatIdBetweenDate . '))';
+            $orCatIdNotIn = 'OR (`c`.`catid` NOT IN (' . $selectCatIdBetweenDate . '))';
         }
 
         $query = '
                 SELECT `c`.`catid`
-                  FROM `' . DBPREFIX . 'module_news_categories` AS `c`
-             LEFT JOIN `' . DBPREFIX . 'module_news` AS `n`
-                    ON `c`.`catid` = `n`.`catid`
-                 WHERE `n`.`catid` IS NULL
-                   ' . $orCatIdNotIn . '
-              GROUP BY `c`.`catid`
+                FROM `contrexx_module_news_categories` `c`
+                WHERE `c`.`catid`
+                NOT IN (
+                    SELECT `rc`.`category_id`
+                    FROM `contrexx_module_news_rel_categories` `rc`
+                )
+                ' . $orCatIdNotIn . '
+                GROUP BY `c`.`catid`
         ';
 
         $objResult = $objDatabase->Execute($query);
@@ -403,7 +662,16 @@ class NewsLibrary
         return $strMenu;
     }
     
-    protected function getPublisherMenu($selectedOption = '', $categoryId = 0)
+
+    /**
+     * Get Publisher dropdown options
+     *      
+     * @param integer $selectedOption
+     * @param array   $categoryId
+     * 
+     * @return string options string
+     */
+    protected function getPublisherMenu($selectedOption = '', $categoryId = array())
     {
         global $objDatabase, $objInit;
 
@@ -414,10 +682,12 @@ class NewsLibrary
                     FROM ".DBPREFIX."module_news AS n 
                     INNER JOIN ".DBPREFIX."module_news_locale AS nl
                     ON nl.news_id = n.id
+                    LEFT JOIN ".DBPREFIX."module_news_rel_categories AS nc
+                    ON nc.news_id = n.id
                     WHERE  nl.lang_id=".FRONTEND_LANG_ID."
                     AND n.status = 1
                     AND n.publisher_id != 0
-                    ".($categoryId ? " AND n.catid=".$categoryId : '');
+                    ".(!empty($categoryId) ? " AND nc.category_id IN (". implode(', ', contrexx_input2int($categoryId)) .")" : '');
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
             $arrNewsPublisher[] = $objResult->fields['publisher_id'];
@@ -445,7 +715,15 @@ class NewsLibrary
         return $menu;
     }
 
-    protected function getAuthorMenu($selectedOption = '', $categoryId = 0)
+    /**
+     * Get Author dropdown options
+     *      
+     * @param integer $selectedOption
+     * @param array   $categoryId
+     * 
+     * @return string options string
+     */
+    protected function getAuthorMenu($selectedOption = '', $categoryId = array())
     {
         global $objDatabase, $objInit;
 
@@ -456,10 +734,12 @@ class NewsLibrary
                     FROM ".DBPREFIX."module_news AS n 
                     INNER JOIN ".DBPREFIX."module_news_locale AS nl
                     ON nl.news_id = n.id
+                    LEFT JOIN ".DBPREFIX."module_news_rel_categories AS nc
+                    ON nc.news_id = n.id
                     WHERE  nl.lang_id=".FRONTEND_LANG_ID."
                     AND n.status = 1
                     AND n.author_id != 0
-                    ".($categoryId ? " AND n.catid=".$categoryId : '');
+                    ".(!empty($categoryId) ? " AND nc.category_id IN (". implode(', ', contrexx_input2int($categoryId)) .")" : '');
         $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
             $arrNewsAuthor[] = $objResult->fields['author_id'];
@@ -486,7 +766,7 @@ class NewsLibrary
 
         return $menu;
     }
-
+    
     
     /**
      * Gets only the body content and deleted all the other tags
@@ -920,19 +1200,22 @@ class NewsLibrary
     }
 
     /**
-     * Searches for cmds having the passed id and 
-     * returns the cmd of the result set having the lowest length.
-     *
-     * @access  protected
-     * @param   string      $cmdName
-     * @param   integer     $cmdId
-     * @param   string      $cmdSeparator
-     * @param   string      $module
-     * @param   integer     $lang
-     * @return  string      $cmd
+     * Find the Page based on the category id $cmdId
+     * 
+     * @param string  $cmdName
+     * @param array   $cmdId
+     * @param string  $cmdSeparator
+     * @param string  $module
+     * @param integer $lang
+     * 
+     * @return boolean
      */
-    protected function findCmdById($cmdName, $cmdId, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID)
+    protected function findPageById($cmdName, $cmdId, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID)
     {
+        if (empty($cmdId)) {
+            return false;
+        }
+                
         $qb = \Env::get('em')->createQueryBuilder();
         $qb ->select('p', 'LENGTH(p.cmd) AS length')
             ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p')
@@ -959,21 +1242,49 @@ class NewsLibrary
                 'module' => $module,
             ));
         $page = $qb->getQuery()->getResult();
-
-        if (!empty($page[0][0])) {
-            // a page having the given id in cmd was found
-            return $page[0][0]->getCmd();
-        } else {
-            // check if there's a cmd of a parent category
-            if (($parentCategory = $this->getParentCatId($cmdId)) && ($cmd = $this->findCmdById($cmdName, $parentCategory))) {
-                return $cmd;
-            }
-            if ($page = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang($module, $cmdName, $lang)) {
-                // a page having the given cmd name without id was found
+        
+        return !empty($page[0][0]) ? $page[0][0] : null;
+    }
+    
+    /**
+     * Searches for cmds having the passed id and 
+     * returns the cmd of the result set having the lowest length.
+     *
+     * @access  protected
+     * @param   string      $cmdName
+     * @param   array       $cmdIds
+     * @param   string      $cmdSeparator
+     * @param   string      $module
+     * @param   integer     $lang
+     * 
+     * @return  string      $cmd
+     */
+    protected function findCmdById($cmdName, $cmdIds, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID)
+    {
+        //Get the CMD based on the $cmdIds
+        foreach ($cmdIds as $cmdId) {
+            $page = $this->findPageById($cmdName, $cmdId, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID);
+            if (!empty($page)) {
                 return $page->getCmd();
             }
-            return '';
         }
+
+        //Get the CMD based on the parent category of $cmdIds
+        foreach ($cmdIds as $cmdId) {
+            if (    ($parentCategory = $this->getParentCatId($cmdId)) 
+                &&  ($page = $this->findPageById($cmdName, $parentCategory, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID))
+            ) {
+                return $page->getCmd();
+            }
+        }
+
+        //Get the default News details page CMD
+        if ($page = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang($module, $cmdName, $lang)) {
+            // a page having the given cmd name without id was found
+            return $page->getCmd();
+        }
+        
+        return '';
     }
 
     /**
@@ -994,7 +1305,7 @@ class NewsLibrary
      * Returns the news monthly stats by the given filters
      * 
      * @access protected
-     * @param  array     $category      category filter
+     * @param  array     $categories      category filter
      * 
      * @return array     $monthlyStats  Monthly status array
      */
@@ -1004,10 +1315,10 @@ class NewsLibrary
         $categoryFilter = '';
         $monthlyStats = array();
         if (!empty($categories)) {
-           $categoryFilter .= ' AND (n.catid = '.implode(' OR n.catid = ', array_map('intval', $categories)).')';            
+           $categoryFilter .= ' AND nc.category_id IN ('. implode(', ', contrexx_input2int($categories)) .')';            
         }
 
-        $query = '  SELECT      n.id             AS id,
+        $query = '  SELECT      DISTINCT(n.id)   AS id,
                                 n.date           AS date,
                                 n.teaser_image_path AS teaser_image_path,
                                 n.teaser_image_thumbnail_path AS teaser_image_thumbnail_path,
@@ -1020,16 +1331,13 @@ class NewsLibrary
                                 n.allow_comments AS commentactive,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
-                                nl.teaser_text,
-                                nc.name          AS name,
-                                nc.category_id   AS cat
+                                nl.teaser_text
                     FROM       '.DBPREFIX.'module_news AS n 
                     LEFT JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
-                    INNER JOIN '.DBPREFIX.'module_news_categories_locale AS nc ON nc.category_id=n.catid
+                    LEFT JOIN '.DBPREFIX.'module_news_rel_categories AS nc ON nc.news_id = n.id
                     WHERE       n.validated = "1"
                                 AND n.status = 1
-                                AND nl.lang_id = '.FRONTEND_LANG_ID.'
-                                AND nc.lang_id='.FRONTEND_LANG_ID.'
+                                AND nl.lang_id = '.FRONTEND_LANG_ID.'                         
                                 AND nl.is_active=1
                                 '.$categoryFilter.'
                                 ' .($this->arrSettings['news_message_protection'] == "1" && !\Permission::hasAllAccess() ? (
@@ -1114,6 +1422,34 @@ class NewsLibrary
             }
         }
     }
+    
+    /**
+     * Prepend the array by the given values
+     *  
+     * @param array $categoryIds
+     * @param array $priorityIds
+     * 
+     * @return mixed boolean|array
+     */
+    protected static function sortCategoryIdByPriorityId($categoryIds = array(), $priorityIds = array()) 
+    {
+        if (empty($categoryIds)) {
+            return false;
+        }
+        
+        if (empty($priorityIds)) {
+            return $categoryIds;
+        }
+        
+        foreach ($categoryIds as $key => $categoryId) {
+            if (in_array($categoryId, $priorityIds)) {
+                unset($categoryIds[$key]);
+                array_unshift($categoryIds, $categoryId);
+            }
+        }
+        return $categoryIds;
+    }
+
     /**
      * Parse the Image Block for thumbnail and detail image
      * 

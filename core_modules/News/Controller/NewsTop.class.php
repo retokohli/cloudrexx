@@ -77,7 +77,7 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
             $objResult=false;
         } else {//fetch news
             $objResult = $objDatabase->SelectLimit("
-                SELECT tblN.id AS id,
+                SELECT DISTINCT(tblN.id) AS id,
                        tblN.`date`, 
                        tblN.teaser_image_path,
                        tblN.teaser_image_thumbnail_path,
@@ -86,13 +86,13 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
-                       tblN.catid,
                        tblL.title AS title, 
                        tblL.teaser_text
                   FROM ".DBPREFIX."module_news AS tblN
             INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
+            INNER JOIN ".DBPREFIX."module_news_rel_categories AS tblC ON tblC.news_id=tblL.news_id
                   WHERE tblN.status=1".
-                   ($catId > 0 ? " AND tblN.catid=$catId" : '')."
+                   ($catId > 0 ? " AND tblC.category_id=$catId" : '')."
                    AND tblN.teaser_only='0'
                    AND tblL.lang_id=".FRONTEND_LANG_ID."
                    AND (startdate<='".date('Y-m-d H:i:s')."' OR startdate='0000-00-00 00:00:00')
@@ -114,8 +114,9 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $newstitle  = $objResult->fields['title'];
                 $author     = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
                 $publisher  = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
+                $newsCategories  = $this->getCategoriesByNewsId($newsid);
                 $newsUrl    = empty($objResult->fields['redirect'])
-                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $objResult->fields['catid']), FRONTEND_LANG_ID, array('newsid' => $newsid))
+                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid))
                                 : $objResult->fields['redirect'];
                 $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
 

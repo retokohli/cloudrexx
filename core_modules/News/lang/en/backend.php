@@ -386,4 +386,11 @@ $_ARRAYLANG['TXT_NEWS_TIME_DESCRIPTION'] = "Time of the news message";
 $_ARRAYLANG['TXT_NEWS_LINK_TITLE_DESCRIPTION'] = "Link title of the news";
 $_ARRAYLANG['TXT_NEWS_LINK_URL_DESCRIPTION'] = "News url";
 $_ARRAYLANG['TXT_NEWS_PUBLISHER_DESCRIPTION'] = "Name of the Publisher";
+$_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Select category";
+$_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'] = "Error occured while removing the news category relationship!...";
+$_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Error occured while saving the news category relationship!...";
+$_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "You must specify a category.";
+$_ARRAYLANG['TXT_NEWS_NO_TITLE'] = "You must specify a title";
+$_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "You must specify a title and category";
+$_ARRAYLANG['TXT_NEWS_ERR_SAVING_FORM'] = "Error saving the news message";
 ?>

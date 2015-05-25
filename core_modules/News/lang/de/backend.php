@@ -345,4 +345,7 @@ $_ARRAYLANG['TXT_NEWS_COMMENTS_DATE_DESCRIPTION'] = "Kommentar Datum";
 $_ARRAYLANG['TXT_NEWS_COMMENTS_TIME_DESCRIPTION'] = "Kommentar Zeit";
 $_ARRAYLANG['TXT_NEWS_COMMENT_LINK_DESCRIPTION'] = "News Detail Link (nur Quelle)";
 $_ARRAYLANG['TXT_NEWS_COMMENT_URL_DESCRIPTION'] = "News Detail Link";
+
+$_ARRAYLANG['TXT_NEWS_NO_TITLE'] = "Es muss ein Titel angegeben werden.";
+$_ARRAYLANG['TXT_NEWS_ERR_SAVING_FORM'] = "Fehler beim Speichern der Newsmeldung.";
 ?>

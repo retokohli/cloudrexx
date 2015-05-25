@@ -84,21 +84,16 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                    tblN.date,
                    tblN.userid,
                    tblN.teaser_frames,
-                   tblN.catid,
                    tblN.redirect,
                    tblN.teaser_show_link,
                    tblN.teaser_image_path,
                    tblN.teaser_image_thumbnail_path,
                    tblL.title,
                    tblL.text AS teaser_full_text,
-                   tblL.teaser_text,
-                   tblC.name AS category_name,
-                   tblC.category_id AS category_id
+                   tblL.teaser_text
               FROM ".DBPREFIX."module_news AS tblN
              INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
-             INNER JOIN ".DBPREFIX."module_news_categories_locale AS tblC ON tblC.category_id=tblN.catid
-             WHERE tblL.lang_id=".FRONTEND_LANG_ID."
-               AND tblC.lang_id=".FRONTEND_LANG_ID.
+             WHERE tblL.lang_id=".FRONTEND_LANG_ID.
               ($this->administrate == false
                 ? " AND tblN.validated='1'
                     AND tblN.status='1'
@@ -157,6 +152,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 } else {
                     $image = ASCMS_CORE_MODULE_WEB_PATH.'/News/View/Media/pixel.gif';
                 }
+                $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
                 $this->arrTeasers[$objResult->fields['id']] = array(
                     'id'                => $objResult->fields['id'],
                     'date'              => $objResult->fields['date'],
@@ -164,8 +160,8 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     'teaser_frames'     => $objResult->fields['teaser_frames'],
                     'redirect'          => $objResult->fields['redirect'],
                     'ext_url'           => $extUrl,
-                    'category'          => $objResult->fields['category_name'],
-                    'category_id'       => $objResult->fields['category_id'],
+                    'category'          => implode(', ', contrexx_raw2xhtml($newsCategories)),
+                    'category_id'       => array_keys($newsCategories), 
                     'teaser_full_text'  => $objResult->fields['teaser_full_text'],
                     'teaser_text'       => $objResult->fields['teaser_text'],
                     'teaser_show_link'  => $objResult->fields['teaser_show_link'],
