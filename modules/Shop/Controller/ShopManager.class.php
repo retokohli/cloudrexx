@@ -2285,8 +2285,9 @@ if ($test === NULL) {
         $product_name = contrexx_input2raw($_POST['product_name']);
         $product_code = contrexx_input2raw($_POST['product_code']);
         // Multiple Categories
-        $category_id = contrexx_input2raw(
-            join(',', $_POST['shopCategoriesAssigned']));
+        $category_id = isset($_POST['shopCategoriesAssigned'])
+                        ? contrexx_input2raw(join(',', $_POST['shopCategoriesAssigned']))
+                        : '';
         $customer_price = $_POST['customer_price'];
         $reseller_price = $_POST['reseller_price'];
         $discount_active = !empty($_POST['discount_active']);
@@ -2303,7 +2304,7 @@ if ($test === NULL) {
         $b2c = !empty($_POST['B2C']);
         $date_start = contrexx_input2raw($_POST['date_start']);
         $date_end = contrexx_input2raw($_POST['date_end']);
-        $manufacturer_id = $_POST['manufacturer_id'];
+        $manufacturer_id = isset($_POST['manufacturer_id']) ? contrexx_input2int($_POST['manufacturer_id']) : 0;
         $minimum_order_quantity = $_POST['minimum_order_quantity'];
 // Currently not used on the detail page
 //        $flags = (isset($_POST['Flags'])
