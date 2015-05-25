@@ -6,7 +6,7 @@
         <div><label for="newsTitle">{TXT_TITLE}</label><input id="newsTitle" name="newsTitle" value="{NEWS_TITLE}" type="text" /></div>
         <div>
             <label for="newsCat">{TXT_CATEGORY}</label>
-            <select class="form-control" id="newsCat" name="newsCat">
+            <select id="newsCat" data-placeholder="{TXT_CATEGORY_SELECT}" multiple name="newsCat[]">
                 <!-- BEGIN news_category_menu -->
                 <option value="{NEWS_CATEGORY_ID}">{NEWS_CATEGORY_TITLE}</option>
                 <!-- END news_category_menu -->

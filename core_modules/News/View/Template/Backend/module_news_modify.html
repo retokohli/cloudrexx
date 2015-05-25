@@ -1,6 +1,9 @@
 <!-- START module_news_modify.html -->
 <script type="text/javascript">
     //adds the datetimepicker to the date fields
+    cx.jQuery(document).ready(function () {
+       $J('#news_category').chosen(); 
+    });
     cx.ready(function() {
         var dpOptions = {
             onSelect: function(dateText, inst) {
@@ -363,7 +366,7 @@
             <tr class="{NEWS_FORM_CAT_ROW}">
                 <td nowrap="nowrap"><label for="news_category">{TXT_CATEGORY}</label></td>
                 <td>
-                    <select id="news_category" name="newsCat">
+                    <select id="news_category" data-placeholder="{TXT_CATEGORY_SELECT}" multiple name="newsCat[]">
                         {NEWS_CAT_MENU}
                     </select>
                 </td>

@@ -26,6 +26,7 @@ $_ARRAYLANG['TXT_SUBMIT_NEWS'] = "Newsmeldung anmelden";
 $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED'] = "Die Newsmeldung wurde erfolgreich angemeldet.";
 $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR'] = "Es trat ein unerwarteter Fehler auf beim anmelden der Newsmeldung.<br />Versuchen Sie es erneut!";
 $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT'] = "Sie müssen für den News Eintrag mindestens einen Titel setzen und etwas Text hinzu schreiben oder eine Weiterleitungsadresse angeben.";
+$_ARRAYLANG['TXT_SET_NEWS_TITLE_CATEGORY_AND_TEXT_OR_REDIRECT'] = "Sie müssen für den News Eintrag mindestens einen Titel setzen, Kategorie und etwas Text hinzu schreiben oder eine Weiterleitungsadresse angeben.";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS'] = "News anzeigen";
 $_ARRAYLANG['TXT_NEWS_OPTIONAL_VARS'] = "Diese Variablen sind optional";
 $_ARRAYLANG['TXT_NEWS_FONT_COLOR'] = "Schriftfarbe";
