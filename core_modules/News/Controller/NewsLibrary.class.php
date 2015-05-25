@@ -1125,23 +1125,24 @@ class NewsLibrary
      */
     public static function parseImageBlock($objTpl, $imagePath, $altText, $newsUrl, $block)  
     {
-        if (!$objTpl->blockExists('news_image_' . $block)) {
-            return;
-        }
-        
         if (!empty($imagePath)) {
             $image          = self::getHtmlImageTag($imagePath, $altText);
             $imgLink        = self::parseLink($newsUrl, $altText, $image);
             $imgPlaceholder = strtoupper($block);
-
+            
             $objTpl->setVariable(array(
-                'NEWS_IMAGE_' . $imgPlaceholder           => $image,
-                'NEWS_IMAGE_' . $imgPlaceholder . '_ALT'  => contrexx_raw2xhtml($altText),
-                'NEWS_IMAGE_' . $imgPlaceholder . '_LINK' => $imgLink,
+                'NEWS_' . $imgPlaceholder           => $image,
+                'NEWS_' . $imgPlaceholder . '_ALT'  => contrexx_raw2xhtml($altText),
+                'NEWS_' . $imgPlaceholder . '_LINK' => $imgLink,
+                'NEWS_' . $imgPlaceholder . '_SRC'  => contrexx_raw2xhtml($imagePath)
             ));
-            $objTpl->parse('news_image_' . $block);
+            if ($objTpl->blockExists('news_' . $block)) {
+                $objTpl->parse('news_' . $block);
+            }
         } else {
-            $objTpl->hideBlock('news_image_' . $block);
+            if ($objTpl->blockExists('news_' . $block)) { 
+                $objTpl->hideBlock('news_' . $block);
+            }
         }
         
     }

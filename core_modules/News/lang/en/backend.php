@@ -231,6 +231,27 @@ Endtag: &lt!-- END news_image --&gt;";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
 Starttag: &lt!-- BEGIN news_archive_image --&gt;<br />
 Endtag: &lt!-- END news_archive_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_DETAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser image.<br />
+Starttag: &lt!-- BEGIN news_image_detail --&gt;<br />
+Endtag: &lt!-- END news_image_detail --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser thumbnail image.<br />
+Starttag: &lt!-- BEGIN news_image_thumbnail --&gt;<br />
+Endtag: &lt!-- END news_image_thumbnail --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_DETAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser image.<br />
+Starttag: &lt!-- BEGIN news_archive_image_detail --&gt;<br />
+Endtag: &lt!-- END news_archive_image_detail --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_THUMBNAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser thumbnail image.<br />
+Starttag: &lt!-- BEGIN news_archive_image_thumbnail --&gt;<br />
+Endtag: &lt!-- END news_archive_image_thumbnail --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_DETAIL_DESCRIPTION'] = 'Teaser image';
+$_ARRAYLANG['TXT_NEWS_IMAGE_DETAIL_LINK_DESCRIPTION'] = 'Teaser image-link of the news message';
+$_ARRAYLANG['TXT_NEWS_IMAGE_DETAIL_SRC_DESCRIPTION'] = 'Teaser image source/path';
+$_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_DESCRIPTION'] = 'Teaser thumbnail Image';
+$_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_LINK_DESCRIPTION'] = 'Teaser thumbnail image-link of the news message';
+$_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_SRC_DESCRIPTION'] = 'Teaser thumbnail image source/path';
+$_ARRAYLANG['TXT_NEWS_HEADLINES_ROW_DESCRIPTION'] = 'Tag for defining News Headlines Entries<br />
+Starttag: &lt!-- BEGIN headlines_row --&gt;<br />
+Endtag: &lt!-- END headlines_row --&gt;';
 $_ARRAYLANG['TXT_NEWS_COMMENT_LIST'] = "Comments list";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_NEWS_COMMENT_DATE'] = "Date &amp; time";
