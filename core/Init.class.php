@@ -315,7 +315,7 @@ class InitCMS
      */
     function _getClientAcceptedLanguages()
     {
-        $arrLanguages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        $arrLanguages = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) : array();
         $arrAcceptedLanguages = array();
         $q = 1;
         foreach ($arrLanguages as $languageString) {
@@ -489,7 +489,7 @@ class InitCMS
             foreach ($theme->getDependencies() as $libraryName => $libraryVersions) {
                 if (!isset($libraries[$libraryName])) continue;
                 $version = $libraryVersions[0];
-                $libraryData = $libraries[$libraryName]['versions'][$version];
+                $libraryData = isset($libraries[$libraryName]['versions'][$version]) ? $libraries[$libraryName]['versions'][$version] : array();
                 if (isset($libraryData['jsfiles'])) {
                     foreach ($libraryData['jsfiles'] as $file) {
                         \JS::registerJS($file, true);
