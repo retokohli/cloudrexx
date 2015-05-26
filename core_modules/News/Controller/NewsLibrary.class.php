@@ -457,7 +457,7 @@ class NewsLibrary
      * 
      * @return mixed boolean|array
      */
-    protected function getCategoriesByNewsId($newsId)
+    public function getCategoriesByNewsId($newsId)
     {
         global $objDatabase;
         
@@ -1251,7 +1251,7 @@ class NewsLibrary
      * Searches for cmds having the passed id and 
      * returns the cmd of the result set having the lowest length.
      *
-     * @access  protected
+     * @access  public
      * @param   string      $cmdName
      * @param   array       $cmdIds
      * @param   string      $cmdSeparator
@@ -1260,7 +1260,7 @@ class NewsLibrary
      * 
      * @return  string      $cmd
      */
-    protected function findCmdById($cmdName, $cmdIds, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID)
+    public function findCmdById($cmdName, $cmdIds, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID)
     {
         //Get the CMD based on the $cmdIds
         foreach ($cmdIds as $cmdId) {
