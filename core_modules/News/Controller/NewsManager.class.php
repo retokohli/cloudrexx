@@ -2308,7 +2308,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'active'        => $activeLanguages,
                 'title'         => $_POST['newsTitle'],
                 'text'          => $_POST['news_text'],
-                'teaser_text'   => $_POST['newsTeaserText']
+                'teaser_text'   => isset($_POST['newsTeaserText']) ? $_POST['newsTeaserText'] : array()
             );
             
             if (!$this->validateNews($locales, $newsCategories)) {
