@@ -1865,7 +1865,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $licenseValidTo = isset($params['post']['validTo']) ? $params['post']['validTo'] : (isset($params['post']['licenseValidTo']) ? $params['post']['licenseValidTo'] : '');
                     $licenseUpdateInterval = isset($params['post']['updateInterval']) ? $params['post']['updateInterval'] : (isset($params['post']['licenseUpdateInterval']) ? $params['post']['licenseUpdateInterval'] : '');
                     $availableComponents = (isset($params['post']['availableComponents']) ? unserialize($params['post']['availableComponents']) : '');
-                    $licenseLegalComponents = isset($params['post']['legalComponents']) ? $params['post']['legalComponents'] : $availableComponents;
+                    $licenseLegalComponents = isset($params['post']['legalComponents'])
+                                              ? $params['post']['legalComponents'] 
+                                              : (!empty($availableComponents)
+                                                ? $availableComponents    
+                                                : $license->getAvailableComponents());
                     
                     //If available components is set and not in a proper serialized format, throw error.
                     if (isset($params['post']['availableComponents'])) {
