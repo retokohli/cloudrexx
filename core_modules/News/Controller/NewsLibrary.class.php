@@ -472,7 +472,7 @@ class NewsLibrary
                         . 'LEFT JOIN `' . DBPREFIX . 'module_news_rel_categories` as tnrc '
                         . 'ON (`tncl`.`category_id` = `tnrc`.`category_id`) '
                         . 'WHERE `tnrc`.`news_id` = ' . $newsId . ' AND `tncl`.`lang_id` = ' . FRONTEND_LANG_ID
-                        . ' ORDER BY `tnc`.`sorting`';
+                        . ' ORDER BY `tnc`.`left_id`';
         $objResult = $objDatabase->Execute($query);
         
         $arrCategories = array();
