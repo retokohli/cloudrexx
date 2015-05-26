@@ -45,8 +45,12 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         
         $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId','MultiSite');                
         foreach ($cronMails as $cronMail) {
+            $cronMailCriterias = $cronMail->getCronMailCriterias();
+            if (empty($cronMailCriterias)) {
+                continue;
+            }
             $criterias = array();
-            foreach ($cronMail->getCronMailCriterias() as $cronMailCriteria) {
+            foreach ($cronMailCriterias as $cronMailCriteria) {
                 list($tableAlias, $attribute) = explode('.', $cronMailCriteria->getAttribute());
                 $criterias[$tableAlias][$attribute] = $cronMailCriteria->getCriteria();
             }
@@ -160,7 +164,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                             \FWUser::getParsedUserTitle($objUser),
                             $unSubscribeUrl
                         );            
-            $substitution = array('WEBSITE_LISTS' => array(0 => array('WEBSITE_DETAILS' => $websiteDetails)));
+            $substitution = array('WEBSITE_LIST' => array(0 => array('WEBSITE_DETAIL' => $websiteDetails)));
         }
         
         //send mail to website owner
@@ -173,7 +177,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                         'replace' => $replace,
                         'substitution' => $substitution);
         
-        \DBG::msg(__METHOD__." ID={$cronMail->getId()}) / User=".\FWUser::getParsedUserTitle($objUser).(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
+        \DBG::msg(__METHOD__." ID={$cronMail->getId()}) / User=".\FWUser::getParsedUserTitle($objUser).(($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$websiteObj->getName() : ''));
         $mailStatus = \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrValues);
         
         //If the owner already have a log and status failed, update the log
@@ -337,7 +341,8 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         $rsm = new \Doctrine\ORM\Query\ResultSetMapping();
         $first = true;
         foreach ($entityClasses as $class => $options) {
-            $alias = end(explode('\\', $class));
+            $splitClass = explode('\\', $class);
+            $alias      = end($splitClass);
             if ($first) {
                 $rsm->addEntityResult($class, $alias);
             } else {
