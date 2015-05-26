@@ -204,6 +204,7 @@ $_ARRAYLANG['TXT_NEWS_DEFINE_LINK_ALT_TEXT'] = "Define a text that should be use
 $_ARRAYLANG['TXT_NEWS_INSERT_LINK'] = "Insert link";
 $_ARRAYLANG['TXT_NEWS_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_NEWS_ID_DESCRIPTION'] = "ID of the news entry";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID of the news category";
 $_ARRAYLANG['TXT_NOTIFY_GROUP'] = "Notify group:";
 $_ARRAYLANG['TXT_NOTIFY_USER'] = "Notify user:";
 $_ARRAYLANG['TXT_NEWS_PERMISSIONS'] = "Permissions";
