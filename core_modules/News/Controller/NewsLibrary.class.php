@@ -921,10 +921,10 @@ class NewsLibrary
             if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_locale` (`lang_id`, `news_id`, `is_active`,  `title`, `text`, `teaser_text`)
                     VALUES ("   . intval($langId) . ", "
                                 . $newsId . ", '"
-                                . contrexx_input2db($newLangData['active'][$langId]) . "', '"
+                                . (isset($newLangData['active'][$langId]) ? contrexx_input2db($newLangData['active'][$langId]) : 0) . "', '"
                                 . contrexx_input2db($newLangData['title'][$langId]) . "', '"
                                 . $this->filterBodyTag(contrexx_input2db($newLangData['text'][$langId])) . "', '"
-                                . contrexx_input2db($newLangData['teaser_text'][$langId]) . "')") === false) {
+                                . (isset($newLangData['teaser_text'][$langId]) ? contrexx_input2db($newLangData['teaser_text'][$langId]) : "") . "')") === false) {
                 $status = false;
             }
         }
@@ -935,10 +935,11 @@ class NewsLibrary
         }
         foreach ($arrUpdatedLocales as $langId) {
             $newLangData['active'][$langId] = isset($newLangData['active'][$langId]) ? 1 : 0;
+            $teaserText = isset($newLangData['teaser_text'][$langId]) ? ($newLangData['teaser_text'][$langId] != $oldLangData[$langId]['teaser_text']) : false;
             if ($newLangData['active'][$langId] != $oldLangData[$langId]['active']
             || $newLangData['title'][$langId] != $oldLangData[$langId]['title']
             || $newLangData['text'][$langId] != $oldLangData[$langId]['text']
-            || $newLangData['teaser_text'][$langId] != $oldLangData[$langId]['teaser_text'] ) {
+            || $teaserText ) {
                 if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_news_locale` SET
                         `is_active` = '" . contrexx_input2db($newLangData['active'][$langId]) . "',
                         `title` = '" . contrexx_input2db($newLangData['title'][$langId]) . "',
