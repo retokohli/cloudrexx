@@ -1042,6 +1042,7 @@ class Product
             $this->usergroup_ids ? $this->usergroup_ids : 'NULL',
             $this->group_id ? $this->group_id : 'NULL',
             $this->article_id ? $this->article_id : 'NULL',
+            $this->minimum_order_quantity ? $this->minimum_order_quantity : '0',
             $this->id
         );
         
@@ -1070,7 +1071,8 @@ class Product
                 `flags` = ?,
                 `usergroup_ids` = ?,
                 `group_id` = ?,
-                `article_id` = ?
+                `article_id` = ?,
+                `minimum_order_quantity` = ?
             WHERE
                 `id` = ?
         ';
