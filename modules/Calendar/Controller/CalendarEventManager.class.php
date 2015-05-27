@@ -596,7 +596,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             $attachNamelength = strlen($objEvent->attach);
             $attachName        = substr($objEvent->attach, $attachNamePos+1, $attachNamelength);
             
-            $hostUri = '';
+            $hostUri    = '';
+            $hostTarget = '';
             if($objEvent->external) {   
                 $objHost = new \Cx\Modules\Calendar\Controller\CalendarHost($objEvent->hostId);    
                 
@@ -790,10 +791,10 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 $objTpl->parse('calendarEventHost');
             }
              
-            if(($objEvent->registration == 1) && (mktime() <= $objEvent->startDate)) {  
+            if(($objEvent->registration == 1) && (time() <= $objEvent->startDate)) {  
                 
                 if($numRegistrations < $objEvent->numSubscriber || $objEvent->external == 1) {
-                    $regLink = '<a href="'.$hostUri.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
+                    $regLink = '<a href="'.$hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
                 } else {
                     $regLink = '<i>'.$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'].'</i>';
                 }
