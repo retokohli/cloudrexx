@@ -99,7 +99,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller
             'functions' => array(
                 'add'           => true,
                 'edit'          => false,
-                'alliowEdit'    => true,
+                'allowEdit'    => true,
                 'delete'        => false,
                 'allowDelete'   => true,
                 'sorting'       => true,
