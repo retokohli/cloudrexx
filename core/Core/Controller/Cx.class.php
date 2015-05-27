@@ -476,11 +476,16 @@ namespace Cx\Core\Core\Controller {
          */
         protected $websiteFeedPath = null;
 
-
+        /**
+         * Id of the Cx object
+         */
         protected $id = 0;
 
-        static protected  $autoIncrementValueOfId = 0;
-
+        /**
+         * Auto-increment value used for the
+         * next Cx object to be instanciated.
+         */
+        static protected $autoIncrementValueOfId = 0;
 
         protected $websiteImagesContentPath;
         protected $websiteImagesAttachPath;
@@ -574,10 +579,10 @@ namespace Cx\Core\Core\Controller {
          *                               instead of the default one.
          */
         protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false) {
-
             /** setting up id of new initialized object**/
             self::$autoIncrementValueOfId++;
             $this->id = self::$autoIncrementValueOfId;
+
             if (!count(self::$instances) || $setAsPreferred) {
                 self::$preferredInstance = $this;
             }
