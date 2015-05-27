@@ -103,7 +103,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'executeOnWebsite'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'executeOnManager'      => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'generateAuthToken'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
-            'executeSql'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'checkExecuteSqlAccess')),
+            'executeSql'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'checkAuthenticationByMode')),
             'removeUser'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'setWebsiteTheme'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'getFtpUser'            => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
@@ -159,6 +159,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'checkAvailabilityOfAffiliateId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'setAffiliate'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'sendNotificationForPayoutRequest' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'getCodebaseAndWebsites' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'checkAuthenticationByMode')),
+            'triggerWebsiteUpdate' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'checkAuthenticationByMode')),
         );  
     }
 
@@ -2625,7 +2627,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @return boolean
      */
-    public function checkExecuteSqlAccess($params) {
+    public function checkAuthenticationByMode($params) {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_MANAGER:
             case ComponentController::MODE_HYBRID:
@@ -6120,4 +6122,144 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_PAYOUT_REQUEST_SUCCESS']);
     }
-} 
+    
+    /**
+     * Get latest codebase and fetch the all websites
+     * 
+     * @param array $params
+     * 
+     * @return array
+     * 
+     * @throws MultiSiteJsonException
+     */
+    public function getCodebaseAndWebsites($params) {
+        global $_ARRAYLANG;
+        try {
+            self::loadLanguageData();
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                    if (   empty($params['post']) 
+                        || !isset($params['post']['serviceServerId'])
+                    ) {
+                        \DBG::msg('JsonMultiSite::getCodebaseAndWebsites() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+                    }
+                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                    $websiteServiceServer = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
+                    if (empty($websiteServiceServer)) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
+                    }
+                    
+                    $response = self::executeCommandOnServiceServer('getCodebaseAndWebsites', array(), $websiteServiceServer);
+                    if ($response && $response->status = 'success') {
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SERVICE_SERVER_CODEBASE_REQUEST_SUCCESS'], 'codeBase' => $response->data->codeBase, 'websites' => $response->data->websites);
+                    }
+                    break;
+                case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:
+                    //codebase
+                    $codeBasePath = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository', 'MultiSite');
+                    $codebaseScannedDir = array_values(array_diff(scandir($codeBasePath), array('..', '.')));
+                    foreach ($codebaseScannedDir as $value) {
+                        $configFile = $codeBasePath . '/' . $value . '/installer/config/config.php';
+                        if (file_exists($configFile)) {
+                            $configContents = file_get_contents($configFile);
+                            if (preg_match_all('/\\$_CONFIG\\[\'(.*?)\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $matches)) {
+                                $configValues = array_combine($matches[1], $matches[2]);
+                                $codebaseRepositoryDataArray[] = $configValues['coreCmsVersion'];
+                            }
+                        }
+                    }
+                    //websites
+                    $websiteArray = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findAll();
+                    $websites = array();
+                    foreach ($websiteArray as $website) {
+                        $websites[] = array(                                
+                            'id' => $website->getId(),
+                            'name' => $website->getName(),
+                        );
+                    }
+                    return array('codeBase' => max($codebaseRepositoryDataArray), 'websites' => $websites);
+                    break;
+            }
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+        }
+    }
+    
+   /**
+    * Triggering the website update process
+    * 
+    * @param array $params
+    * @return array
+    * @throws MultiSiteJsonException
+    */ 
+    public function triggerWebsiteUpdate($params)  {
+        global $_ARRAYLANG;
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                    if (    empty($params['post']) 
+                        ||  !isset($params['post']['serviceServerId']) 
+                        ||  empty($params['post']['serviceServerId'])
+                    ) {
+                        \DBG::msg('JsonMultiSite::triggerWebsiteUpdate() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']);
+                    }
+                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+                    $websiteServiceServer = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
+                    if (empty($websiteServiceServer)) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
+                    }
+                    $response = self::executeCommandOnServiceServer('triggerWebsiteUpdate', $params['post'], $websiteServiceServer);
+                    if ($response && $response->status == 'success') {
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TRIGGERING_WEBSITE_UPDATE_SUCCESS_MSG']);
+                    }
+                    break;
+                case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:
+                    if (    empty($params['post']) 
+                        ||  empty($params['post']['codeBase']) 
+                        ||  empty($params['post']['websites'])
+                    ) {
+                        \DBG::msg('JsonMultiSite::triggerWebsiteUpdate() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']);
+                    }
+                    $ymlContent = array(
+                                    'codeBase' => $params['post']['codeBase'],
+                                    'websites' => $params['post']['websites']
+                                  );
+                    $folderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/MultiSite';
+                    $filePath = $folderPath .'/PendingCodeBaseChanges.yml';
+                    
+                    try {
+                        if (!file_exists($folderPath)) {
+                            \Cx\Lib\FileSystem\FileSystem::make_folder($folderPath);
+                        }
+                        $file = new \Cx\Lib\FileSystem\File($filePath);
+                        $file->touch();
+
+                        $yaml = new \Symfony\Component\Yaml\Yaml();
+                        $file->write(
+                                $yaml->dump(
+                                        array('PendingCodeBaseChanges' => $ymlContent )
+                                )
+                        );
+                    } catch (\Exception $e) {
+                        \DBG::log($e->getMessage());
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']);
+                    }
+                    //TODO:- Async call
+                    return array('status' => 'success');
+                    break;
+            }
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']);
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']);
+        }
+    }
+}

@@ -60,6 +60,29 @@ a.remoteWebsiteLogin, a.websiteBackup, a.websiteRestore {
     cursor: pointer;
 }
 
+a.websiteUpdate{
+    background-image: url(../Media/update.png);
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    margin-top: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+#websitesSection label{
+    font-weight: bold;
+}
+
+#websiteUpdateForm{
+      padding: 45px 80px;
+}
+#websiteUpdateForm a{
+      color: #1a74bd;
+}
+#websiteUpdateForm input{
+    margin-left: 15px
+}
 a.mailServerPlans {
     background-image: url(../Media/details.gif);
     display: inline-block;

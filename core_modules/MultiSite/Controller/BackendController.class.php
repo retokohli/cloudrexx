@@ -248,6 +248,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'filtering' => false,   // this does not exist yet
                         'actions' => function($rowData) {
                                         if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                                            $actions .= '<a href="javascript:void(0);" class = "websiteUpdate" data-id = '.$rowData['id'].' title = "update" ></a>';
                                             $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::websiteBackup($rowData, true);
                                             $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, true);
                                         }
@@ -298,6 +299,20 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     )
                 )
             );
+                                 
+            $cxjs = \ContrexxJavascript::getInstance();
+            $cxjs->setVariable(array(
+                'selectAll'                 => $_ARRAYLANG['TXT_SELECT_ALL'],
+                'deSelectAll'               => $_ARRAYLANG['TXT_DESELECT_ALL'],
+                'loadingServiceServerInfo'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_SERVICE_SERVER_INFO'],
+                'triggeringWebsiteUpdate'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TRIGGERING_WEBSITE_UPDATE'],
+                'latestCodeBaseVersion'     => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CODEBASE_VERSION'],
+                'listOfWebsites'            => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITES_LIST'],
+                'codeBaseNotExist'          => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CODEBASE_NOT_EXIST'],
+                'updateNotAvailable'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_NOT_AVAILABLE'],
+                    
+                ), 'multisite/lang');
+            
             $template->setVariable('TABLE', $view->render());
         } elseif (!empty($cmd[1]) && $cmd[1]=='codebases') {
             $codeBasePath   = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite');
@@ -1686,4 +1701,3 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return sprintf($htmlImgTag, contrexx_raw2xhtml($src), $alt);
     }
 }
-
