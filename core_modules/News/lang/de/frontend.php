@@ -69,3 +69,7 @@ $_ARRAYLANG['TXT_NEWS_PUBLISHER'] = "Herausgeber";
 $_ARRAYLANG['TXT_NEWS_AUTHOR'] = "Autor";
 $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'] = "Über folgenden Link gelangen Sie zur Meldung:";
 $_ARRAYLANG['TXT_NEWS_REDIRECT_LABEL'] = "Weiterleitung";
+$_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'] = "Bei der Entfernung der Rubrikzugehörigkeit trat ein Fehler auf";
+$_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Beim Speichervorgang der Rubrikzugehörigkeit trat ein Fehler auf";
+$_ARRAYLANG['TXT_SET_NEWS_TITLE_CATEGORY_AND_TEXT_OR_REDIRECT'] = "Es muss zwingend ein Titel, eine Rubrikzugehörigkeit und etwas Inhalt (oder eine Weiterleitung) erfasst werden.";
+$_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
