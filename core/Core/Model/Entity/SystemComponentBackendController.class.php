@@ -175,7 +175,7 @@ class SystemComponentBackendController extends Controller {
      * @param array $cmd
      * @param array $currentCommands
      */
-    public function checkAndModifyCmdByPermission(&$cmd, $currentCommands) {
+    protected function checkAndModifyCmdByPermission(&$cmd, $currentCommands) {
         $command  = array();
         $keys     = array_keys($currentCommands);
         $cmd[1]   = !isset($cmd[1]) ? '' : $cmd[1];
@@ -206,7 +206,7 @@ class SystemComponentBackendController extends Controller {
      * @param boolean             $isActiveNav
      * @param boolean             $isSubNav
      */
-    public function parseCurrentNavItem(\Cx\Core\Html\Sigma $navigation, $blockName, $currentCmd, $mainCmd, $isActiveNav, $isSubNav) {
+    protected function parseCurrentNavItem(\Cx\Core\Html\Sigma $navigation, $blockName, $currentCmd, $mainCmd, $isActiveNav, $isSubNav) {
         global $_ARRAYLANG;
         
         if (empty($blockName)) {
@@ -240,7 +240,7 @@ class SystemComponentBackendController extends Controller {
      * 
      * @return boolean
      */
-    public function hasAccessToCommand($commands = array()) {
+    protected function hasAccessToCommand($commands = array()) {
         $currentCommands = array_merge(array('' => array('permission' => $this->defaultPermission)), $this->getCommands());
         
         foreach ($commands as $command) {
@@ -261,7 +261,7 @@ class SystemComponentBackendController extends Controller {
      * 
      * @return boolean
      */
-    public function hasAccess($command) {
+    protected function hasAccess($command) {
         $objPermission = is_array($command) && isset($command['permission']) ? $command['permission'] : $this->defaultPermission;
         if ($objPermission instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) {
             if (!$objPermission->hasAccess()) {
