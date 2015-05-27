@@ -1204,6 +1204,9 @@ die("Failed to update the Cart!");
                         $arrSize = array($image['width'], $image['height']);
                     } else {
                         $pictureLink = '#';
+                        if (!file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath)) {
+                            continue;
+                        }
                         $arrSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath);
                     }
                     self::scaleImageSizeToThumbnail($arrSize);
