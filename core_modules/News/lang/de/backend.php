@@ -348,4 +348,9 @@ $_ARRAYLANG['TXT_NEWS_COMMENT_URL_DESCRIPTION'] = "News Detail Link";
 
 $_ARRAYLANG['TXT_NEWS_NO_TITLE'] = "Es muss ein Titel angegeben werden.";
 $_ARRAYLANG['TXT_NEWS_ERR_SAVING_FORM'] = "Fehler beim Speichern der Newsmeldung.";
-?>
+$_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'] = "Bei der Entfernung der Rubrikzugehörigkeit trat ein Fehler auf";
+$_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Beim Speichervorgang der Rubrikzugehörigkeit trat ein Fehler auf";
+$_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "Weisen Sie der Meldung eine Rubrik zu.";
+$_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "Setzen Sie einen Titel und weisen Sie die Meldung einer Rubrik zu";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID der News Rubrik";
+$_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
