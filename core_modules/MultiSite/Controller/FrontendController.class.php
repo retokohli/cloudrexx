@@ -188,52 +188,65 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 }
                 break;
             case 'NotificationUnsubscribe':
-                    $cronMailLogId    = isset($_GET['i']) ? $_GET['i'] : false;
-                    $cronMailLogToken = isset($_GET['t']) ? $_GET['t'] : false;
-                    if(!$cronMailLogId || !$cronMailLogToken){
-                        $template->setVariable(array(
-                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'],
-                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-error',
-                        ));
-                        break;
-                    }
-                    
-                    $cronMailLogRepo = \Env::em()->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog');
-                    $cronMailLog = $cronMailLogRepo->findBy(array('id' => $cronMailLogId, 'token' => $cronMailLogToken));
-                    
-                    if ($cronMailLog) {
-                    $userId = $cronMailLog->getUserId();
-                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
-                    if (!$objUser) {
-                        $template->setVariable(array(
-                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'],
-                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-error',
-                        ));
-                        break;
-                    }
-                    $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId', 'MultiSite');
-                    $objUser->setProfile(array(
-                        $notificationCancelledProfileAttributeId => array(0 => true)
-                    ));
-                    if (!$objUser->store()) {
-                        $template->setVariable(array(
-                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'],
-                            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-error',
-                        ));
-                        break;
-                    }
-                    
-                    $template->setVariable(array(
-                        'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_SUCCESS'],
-                        'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-success',
-                    ));
-                                   
-                }
+                $this->parseNotificationUnsubscribe($template);
                 break;
             default:
         }
     }
         
+    /**
+     * Parse the section NotificationUnsubscribe
+     * 
+     * @param \Cx\Core\Html\Sigma $template Template object
+     * 
+     * @return null
+     * 
+     * @throws \Exception
+     */
+    private function parseNotificationUnsubscribe(\Cx\Core\Html\Sigma $template)
+    {
+        global $_ARRAYLANG;
+        
+        try {
+            $cronMailLogId    = isset($_GET['i']) ? $_GET['i'] : false;
+            $cronMailLogToken = isset($_GET['t']) ? $_GET['t'] : false;
+            if (!$cronMailLogId || !$cronMailLogToken) {
+                throw new \Exception('$cronMailLogId or $cronMailLogToken does not exist');
+            }
+
+            $cronMailLogRepo = \Env::em()->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog');
+            $cronMailLog     = $cronMailLogRepo->findBy(array('id' => $cronMailLogId, 'token' => $cronMailLogToken));
+
+            if (!$cronMailLog) {
+                throw new \Exception('Cron mail log doesnot exist, id : '. $cronMailLogId .', token : '. $cronMailLogToken);
+            }
+            $userId  = $cronMailLog->getUserId();
+            $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
+            if (!$objUser) {
+                throw new \Exception('User doesnot exist, User id : '. $userId);
+            }
+            $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId', 'MultiSite');
+            $objUser->setProfile(array(
+                $notificationCancelledProfileAttributeId => array(0 => true)
+            ));
+            if (!$objUser->store()) {
+                throw new \Exception('Could not save the user');
+            }
+        } catch (\Exception $e) {
+            \DBG::log('NotificationUnsubscribe : '. $e->getMessage());
+            $template->setVariable(array(
+                'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'],
+                'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-error',
+            ));
+            return;
+        }
+
+        $template->setVariable(array(
+            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_SUCCESS'],
+            'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-success',
+        ));                
+    }
+    
     /**
      * Redirect to subscription overview page
      */
