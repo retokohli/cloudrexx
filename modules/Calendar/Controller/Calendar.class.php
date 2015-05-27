@@ -161,7 +161,7 @@ class Calendar extends CalendarLibrary
                 if( $id!= null && $_GET['date'] != null) {
                     self::showEvent();
                 } else {
-                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
                     exit();
                 }
                 break;
@@ -447,7 +447,7 @@ EOF;
         $showFrom = true;
         if(isset($_POST['submitFormModifyEvent'])) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
-
+        
             $arrData = array();
             $arrData = $_POST;
             
@@ -714,7 +714,7 @@ UPLOADER;
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
         if (empty($this->objEventManager->eventList)) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
             exit;
         }
         

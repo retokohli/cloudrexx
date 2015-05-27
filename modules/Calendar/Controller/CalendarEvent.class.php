@@ -685,7 +685,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 $this->emailTemplate = json_decode($objResult->fields['email_template'], true);
                 $this->ticketSales = intval($objResult->fields['ticket_sales']);
                 $this->arrNumSeating = json_decode($objResult->fields['num_seating']);
-                $this->numSeating = implode(',', $this->arrNumSeating);
+                $this->numSeating = !empty($this->arrNumSeating) ? implode(',', $this->arrNumSeating) : '';
                 
                 $queryCountRegistration = "SELECT 
                                                 COUNT(1) AS numSubscriber, 
