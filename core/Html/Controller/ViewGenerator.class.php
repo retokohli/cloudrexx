@@ -193,11 +193,13 @@ class ViewGenerator {
              */
             if (
                 $this->isInEditMode() && (
-                    !empty($this->options['functions']['edit']) &&
-                    $this->options['functions']['edit'] != false
-                ) || (
-                    !empty($this->options['functions']['allowEdit']) &&
-                    $this->options['functions']['allowEdit'] != false
+                    (
+                        !empty($this->options['functions']['edit']) &&
+                        $this->options['functions']['edit'] != false
+                    ) || (
+                        !empty($this->options['functions']['allowEdit']) &&
+                        $this->options['functions']['allowEdit'] != false
+                    )
                 )
             ) {
                 $entityId = contrexx_input2raw($this->isInEditMode());
@@ -298,11 +300,13 @@ class ViewGenerator {
             $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
             if (
                 $deleteId!='' && (
-                    !empty($this->options['functions']['delete']) &&
-                    $this->options['functions']['delete'] != false
-                ) || (
-                    !empty($this->options['functions']['allowDelete']) &&
-                    $this->options['functions']['allowDelete'] != false
+                    (
+                        !empty($this->options['functions']['delete']) &&
+                        $this->options['functions']['delete'] != false
+                    ) || (
+                        !empty($this->options['functions']['allowDelete']) &&
+                        $this->options['functions']['allowDelete'] != false
+                    )
                 )
             ) {
                 $entityObject = $this->object->getEntry($deleteId);
