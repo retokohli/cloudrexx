@@ -70,12 +70,12 @@ class MediaDirectory extends MediaDirectoryLibrary
         if($this->arrSettings['settingsAllowComments'] == 1) {
             $objComment = new MediaDirectoryComment($this->moduleName);
             $this->setJavascript($objComment->getCommentJavascript());
-
-            if($_GET['comment'] == 'add' && intval($_GET['eid']) != 0) {
+            $comment = isset($_GET['comment']) ? $_GET['comment'] : '';
+            if($comment == 'add' && intval($_GET['eid']) != 0) {
                 $objComment->saveComment(intval($_GET['eid']), $_POST);
             }
 
-            if($_GET['comment'] == 'refresh' && intval($_GET['eid']) != 0) {
+            if($comment == 'refresh' && intval($_GET['eid']) != 0) {
                 $objComment->refreshComments(intval($_GET['eid']), $_GET['pageSection'], $_GET['pageCmd']);
             }
         }
@@ -156,6 +156,10 @@ class MediaDirectory extends MediaDirectoryLibrary
         global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
+        
+        $intCmdFormId = 0;
+        $bolFormUseCategory = false;
+        $bolFormUseLevel = false;
 
         //search existing category&level blocks
         $arrExistingBlocks = array();
@@ -180,7 +184,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
             $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : $intLevelId;
 
-            if(intval($arrIds[1]) != 0) {
+            if(!empty($arrIds[1])) {
                 $intCategoryCmd = $arrIds[1];
             } else {
                 $intCategoryCmd = 0;
@@ -247,8 +251,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             if(!empty($arrFormCmd[$_GET['cmd']])) {
                 $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
             }
-        } else {
-            $intCmdFormId = 0;
         }
 
         //list levels / categories
@@ -269,7 +271,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
             }
 
-            if((($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1 || $intLevelId === 0) || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
+            if((((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1) || $intLevelId === 0) || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, 1, $this->moduleName);
                 $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
@@ -301,7 +303,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             }                 
 
             //check show entries
-            if($objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1 || $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1 || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
+            if((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
                 $objEntries = new MediaDirectoryEntry($this->moduleName);
                 
                 $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
