@@ -184,7 +184,7 @@ class ClassLoader {
             $isCustomized = true;
             return $this->customizingPath.$file;
         // load class from websitepath
-        } else if (\FWValidator::is_file_ending_harmless($file) && file_exists($this->cx->getWebsiteDocumentRootPath().$file)) {
+        } else if (file_exists($this->cx->getWebsiteDocumentRootPath().$file)) {
             $isWebsite = true;
             return $this->cx->getWebsiteDocumentRootPath().$file;
         // load class from basepath
