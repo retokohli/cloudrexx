@@ -789,7 +789,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
 
         $objFWUser = \FWUser::getFWUserObject();
-
+        $translationStatus = isset($arrData['translationStatus']) ? $arrData['translationStatus'] : array();
+        
         //get data
         $intId = intval($intEntryId);
         $intFormId = intval($arrData['formId']);
@@ -797,7 +798,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $strUpdateDate = mktime();
         $intUserId = intval($objFWUser->objUser->getId());
         $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
-        $strTransStatus = contrexx_addslashes(join(",", $arrData['translationStatus']));
+        $strTransStatus = contrexx_addslashes(join(",", $translationStatus));
 
 
         //$arrCategories = explode(",",$arrData['selectedCategories']);

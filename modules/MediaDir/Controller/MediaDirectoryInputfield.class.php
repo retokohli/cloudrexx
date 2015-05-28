@@ -174,22 +174,22 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
         }
 
         $arrCategorySelector['id'] = 1;
-        $arrCategorySelector['order'] = $this->arrSettings['categorySelectorOrder'][$this->intFormId];
+        $arrCategorySelector['order'] = !empty($this->intFormId) ? $this->arrSettings['categorySelectorOrder'][$this->intFormId] : 0;
         $arrCategorySelector['name'][0] = $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'];
         $arrCategorySelector['type_name'] = '';
         $arrCategorySelector['required'] = 1;
         $arrCategorySelector['type'] = 0;
-        $arrCategorySelector['search'] = $this->arrSettings['categorySelectorExpSearch'][$this->intFormId];
+        $arrCategorySelector['search'] = !empty($this->intFormId) ? $this->arrSettings['categorySelectorExpSearch'][$this->intFormId] : 0;
         $arrInputfields[1] = $arrCategorySelector;
 
         if($this->arrSettings['settingsShowLevels']) {
             $arrLevelSelector['id'] = 2;
-            $arrLevelSelector['order'] = $this->arrSettings['levelSelectorOrder'][$this->intFormId];
+            $arrLevelSelector['order'] = !empty($this->intFormId) ? $this->arrSettings['levelSelectorOrder'][$this->intFormId] : 0;
             $arrLevelSelector['name'][0] = $_ARRAYLANG['TXT_MEDIADIR_LEVELS'];
             $arrLevelSelector['type_name'] = '';
             $arrLevelSelector['required'] = 1;
             $arrLevelSelector['type'] = 0;
-            $arrLevelSelector['search'] = $this->arrSettings['levelSelectorExpSearch'][$this->intFormId];
+            $arrLevelSelector['search'] = !empty($this->intFormId) ? $this->arrSettings['levelSelectorExpSearch'][$this->intFormId] : 0;
             $arrInputfields[2] = $arrLevelSelector;
         }
 
@@ -551,7 +551,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields WHERE form='".$this->intFormId."'");
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names WHERE form_id='".$this->intFormId."'");
-
+        
         foreach ($arrData['inputfieldId'] as $intKey => $intFieldId) {
             $intFieldId = intval($intFieldId);
             $intFieldOrder = intval($arrData['inputfieldOrder'][$intFieldId]);
@@ -559,7 +559,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             $intFieldType = intval($arrData['inputfieldType'][$intFieldId]);
             $intFieldShowIn = intval($arrData['inputfieldShow'][$intFieldId]);
             $arrFieldDefaultValues = $arrData['inputfieldDefaultvalue'][$intFieldId];
-            $arrFieldInfos = $arrData['inputfieldInfo'][$intFieldId];
+            $arrFieldInfos = isset($arrData['inputfieldInfo'][$intFieldId]) ? $arrData['inputfieldInfo'][$intFieldId] : array();
             $intFieldVerification = intval($arrData['inputfieldVerification'][$intFieldId]);
             $intFieldMustfield = intval($arrData['inputfieldMustfield'][$intFieldId]);
             $intFieldExpSearch = intval($arrData['inputfieldExpSearch'][$intFieldId]);
