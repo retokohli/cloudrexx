@@ -1714,35 +1714,40 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function setupFtpAccount($websiteName) {
         try {
-            if (\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup','MultiSite')) {
-                //create FTP-Account
-                //validate FTP user name if website name doesn't starts with alphabetic letters, add the prefix to website name
-                $ftpUser   = (\Cx\Core\Setting\Controller\Setting::getValue('forceFtpAccountFixPrefix','MultiSite')) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix','MultiSite') . $websiteName : 
-                             !preg_match('#^[a-z]#i', $websiteName) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix','MultiSite') . $websiteName : $websiteName;
-                
-                if (
-                       \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName','MultiSite')
-                    && strlen($ftpUser) > \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName','MultiSite')
-                        ) {
-                    $ftpUser = substr($ftpUser, 0, \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName','MultiSite') - 1);                    
-                }
-                
-                $existingFtpAccounts = $this->websiteController->getFtpAccounts();
-                $flag = 1;
-                $tmpFtpUser = $ftpUser;
-                while (in_array($tmpFtpUser, $existingFtpAccounts)) {
-                    $tmpFtpUser = $ftpUser . $flag;
-                    $flag++;
-                }
-                $ftpUser = $tmpFtpUser;
+            if (!\Cx\Core\Setting\Controller\Setting::getValue('createFtpAccountOnSetup','MultiSite')) {
+                return false;
+            }
+            
+            //create FTP-Account
+            //validate FTP user name if website name doesn't starts with alphabetic letters, add the prefix to website name
+            $ftpUser   = (\Cx\Core\Setting\Controller\Setting::getValue('forceFtpAccountFixPrefix','MultiSite')) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix','MultiSite') . $websiteName : 
+                         !preg_match('#^[a-z]#i', $websiteName) ? \Cx\Core\Setting\Controller\Setting::getValue('ftpAccountFixPrefix','MultiSite') . $websiteName : $websiteName;
 
-                $password  = \User::make_password(8, true);
-                $accountId = $this->websiteController->addFtpAccount($ftpUser, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath','MultiSite') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId','MultiSite'));
-
-                if ($accountId) {
-                    $this->ftpUser = $ftpUser;
-                    return $password;
+            $maxLengthFtpAccountName = \Cx\Core\Setting\Controller\Setting::getValue('maxLengthFtpAccountName','MultiSite');
+            $existingFtpAccounts     = $this->websiteController->getFtpAccounts();
+            
+            $tmpFtpUser = $ftpUser;
+            $flag       = 1;
+            $cutOfCount = 1;
+            while (
+                     (!empty($maxLengthFtpAccountName) && strlen($tmpFtpUser) > $maxLengthFtpAccountName) 
+                  || in_array($tmpFtpUser, $existingFtpAccounts)
+            ) {
+                if (strlen($tmpFtpUser) > $maxLengthFtpAccountName) {
+                    $ftpUser = substr($ftpUser, 0, $maxLengthFtpAccountName - $cutOfCount);
+                    $cutOfCount++;
                 }
+                $tmpFtpUser = $ftpUser . $flag;    
+                $flag++;
+            }
+            $ftpUser = $tmpFtpUser;
+
+            $password  = \User::make_password(8, true);
+            $accountId = $this->websiteController->addFtpAccount($ftpUser, $password, \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpPath','MultiSite') . '/' . $websiteName, \Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId','MultiSite'));
+
+            if ($accountId) {
+                $this->ftpUser = $ftpUser;
+                return $password;
             }
 
             return false;
