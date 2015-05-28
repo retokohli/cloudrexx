@@ -120,6 +120,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 $arrCategoryName = array();
                 $arrCategoryDesc = array();
                 $this->intNumEntries = 0;
+                $arrCategory['catNumEntries'] = 0;
 
                 //get lang attributes
                 $arrCategoryName[0] = $objCategories->fields['name'];
@@ -521,7 +522,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         $intId = intval($intCategoryId);
         $intParentId = intval($arrData['categoryPosition']);
         $intShowEntries = intval($arrData['categoryShowEntries']);
-        $intShowCategories = intval($arrData['categoryShowSubcategories']);
+        $intShowCategories = isset($arrData['categoryShowSubcategories']) ? contrexx_input2int($arrData['categoryShowSubcategories']) : 0;
         $intActive = intval($arrData['categoryActive']);
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['categoryImage']));
 

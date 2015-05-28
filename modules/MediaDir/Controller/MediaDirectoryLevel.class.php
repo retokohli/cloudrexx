@@ -223,6 +223,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         switch ($intView) {
             case 1:
                 //Backend View
+                $expandLevel = isset($_GET['exp_level']) ? $_GET['exp_level'] : null;
                 foreach ($arrLevels as $key => $arrLevel) {
                     //generate space
                     $spacer = null;
@@ -231,15 +232,15 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $spacer .= '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
                     //check expanded categories
-                    if($_GET['exp_level'] == 'all') {
+                    if($expandLevel == 'all') {
                         $bolExpandLevel = true;
                     } else {
                         $this->arrExpandedLevelIds = array();
-                        $bolExpandLevel = $this->getExpandedLevels($_GET['exp_level'], array($arrLevel));
+                        $bolExpandLevel = $this->getExpandedLevels($expandLevel, array($arrLevel));
                     }
 
                     if(!empty($arrLevel['levelChildren'])) {
-                        if((in_array($arrLevel['levelId'], $this->arrExpandedLevelIds) && $bolExpandLevel) || $_GET['exp_level'] == 'all'){
+                        if((in_array($arrLevel['levelId'], $this->arrExpandedLevelIds) && $bolExpandLevel) || $expandLevel == 'all'){
                             $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelParentId'].'"><img src="../core/Core/View/Media/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
                         } else {
                             $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelId'].'"><img src="../core/Core/View/Media/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';

@@ -247,7 +247,6 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
         $intId = intval($intFormId);
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['formImage']));
-        $intActive = intval($arrData['categoryActive']);
 
         $arrName = $arrData['formName'];
         $arrDescription = $arrData['formDescription'];

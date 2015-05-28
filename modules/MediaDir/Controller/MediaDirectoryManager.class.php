@@ -122,8 +122,8 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_overview.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'];
-
-        switch ($_GET['act']) {
+        $act = isset($_GET['act']) ? $_GET['act'] : '';
+        switch ($act) {
             case 'delete_level':
                 $objLevel = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
                 $strStatus = $objLevel->deleteLevel(intval($_GET['id']));
@@ -266,7 +266,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             $objLevels->listLevels($this->_objTpl, 1, null);
 
 
-            if(isset($_GET['exp_cat']) || $_GET['act'] == 'order_category' || $_GET['act'] == 'delete_category') {
+            if(isset($_GET['exp_cat']) || $act == 'order_category' || $act == 'delete_category') {
                 $strTabLevelsDisplay = 'none';
                 $strTabLevelsActive = '';
                 $strTabCategoriesDisplay = 'block';
@@ -353,7 +353,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $intCountForms = count($arrActiveForms);
 
         if($intCountForms > 0) {
-            if(intval($intEntryId) == 0 && (intval($_POST['selectedFormId']) == 0 && intval($_POST['formId']) == 0) && $intCountForms > 1) {
+            if(intval($intEntryId) == 0 && (empty($_POST['selectedFormId']) && empty($_POST['formId'])) && $intCountForms > 1) {
                 $intFormId = null;
 
                 //get form selector
@@ -365,7 +365,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $this->_objTpl->hideBlock($this->moduleNameLC.'SpezfieldList');
             } else {
                 //save entry data
-                if(isset($_POST['submitEntryModfyForm']) && intval($_POST['formId']) != 0) {
+                if(isset($_POST['submitEntryModfyForm']) && !empty($_POST['formId'])) {
                     $objEntry = new MediaDirectoryEntry($this->moduleName);
                     $intEntryId = intval($_POST['entryId']);
                     $intEntryId = $objEntry->saveEntry($_POST, $intEntryId);
@@ -406,7 +406,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                         $intFormId = intval($_POST['selectedFormId']);
                     }
 
-                    if(intval($_POST['formId']) != 0) {
+                    if(!empty($_POST['formId'])) {
                         $intFormId = intval($_POST['formId']);
                     }
                 }
@@ -447,8 +447,8 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 
                 //get user data
                 $objFWUser = \FWUser::getFWUserObject();
-                $addedBy   = $objEntry->arrEntries[$intEntryId]['entryAddedBy'];
-                if ($objUser = $objFWUser->objUser->getUser($addedBy)) {
+                $addedBy   = $objEntry ? $objEntry->arrEntries[$intEntryId]['entryAddedBy'] : '';
+                if (!empty($addedBy) && $objUser = $objFWUser->objUser->getUser($addedBy)) {
                     $userId  = $objUser->getId();
                 } else {
                     $userId  = $objFWUser->objUser->getId();

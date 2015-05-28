@@ -1438,10 +1438,13 @@ EOF;
 
             $objTpl->hideBlock($this->moduleNameLC.'InputfieldsForm');
         }
-
+        
+        $strFormName = '';
+        $strFormDescription = '';
+        
         //form name language block
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-            if(isset($intFormId)){
+            if(!empty($intFormId)){
                 $strFormName = empty($objForm->arrForms[$intFormId]['formName'][$arrLang['id']]) ? $objForm->arrForms[$intFormId]['formName'][0] : $objForm->arrForms[$intFormId]['formName'][$arrLang['id']];
             } else {
                 $intFormId = '';
@@ -1465,7 +1468,7 @@ EOF;
 
         //form decription language block
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-            if(isset($intFormId)){
+            if(!empty($intFormId)){
                 $strFormDescription = empty($objForm->arrForms[$intFormId]['formDescription'][$arrLang['id']]) ? $objForm->arrForms[$intFormId]['formDescription'][0] : $objForm->arrForms[$intFormId]['formDescription'][$arrLang['id']];
             } else {
                 $intFormId = '';

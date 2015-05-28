@@ -295,7 +295,7 @@ EOF;
         }
 
         //search levels and categorie names
-        if (intval($arrData['cid']) == 0 && $arrData['type'] == 'exp') {
+        if (empty($arrData['cid']) && $arrData['type'] == 'exp') {
             $arrFoundLevelsCategories = $this->searchLevelsCategories(1, $strTerm, $intCmdFormId);
         }
         $arrFoundIds = array_merge($arrFoundIds, $arrFoundLevelsCategories);
