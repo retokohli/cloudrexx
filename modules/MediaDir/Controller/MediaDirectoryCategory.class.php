@@ -525,9 +525,9 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         $intShowCategories = isset($arrData['categoryShowSubcategories']) ? contrexx_input2int($arrData['categoryShowSubcategories']) : 0;
         $intActive = intval($arrData['categoryActive']);
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['categoryImage']));
-
+        
         $arrName = $arrData['categoryName'];
-       
+        
         $arrDescription = $arrData['categoryDescription'];
 
         if(empty($intId)) {
@@ -554,7 +554,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                     $strDescription = $arrDescription[$arrLang['id']];
 
                     if(empty($strName)) $strName = $arrName[0];
-                    if(empty($strDescription)) $strDescription = $arrDescription[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -608,7 +607,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $strDescription = $arrDescription[$arrLang['id']];
 
                         if(empty($strName)) $strName = $arrName[0];
-                        if(empty($strDescription)) $strDescription = $arrDescription[0];
 
                         $objInsertNames = $objDatabase->Execute("
                             INSERT INTO

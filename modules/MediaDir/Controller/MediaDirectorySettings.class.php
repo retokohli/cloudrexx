@@ -795,9 +795,12 @@ EOF;
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_SELECT_PERIOD' => $strDisplaydurationPeriod,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_SHOW_PERIOD' => $strDisplaydurationShowPeriod,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE' => $intDisplaydurationValue,
-            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => $strDisplaydurationValueTypeDay,
-            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => $strDisplaydurationValueTypeMonth,
-            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $strDisplaydurationValueTypeYear,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => !empty($strDisplaydurationValueTypeDay) 
+                                                                                    ? $strDisplaydurationValueTypeDay : '',
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => !empty($strDisplaydurationValueTypeMonth) 
+                                                                                    ? $strDisplaydurationValueTypeMonth : '',
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => !empty($strDisplaydurationValueTypeYear) 
+                                                                                    ? $strDisplaydurationValueTypeYear : '',
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_OFF' => $strDisplaydurationNotificationOff,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_ON' => $strDisplaydurationNotificationOn,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFIVATION_SHOW_DAYBEFORE' => $strDisplaydurationNotificationShowDaybefore,
