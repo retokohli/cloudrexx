@@ -208,20 +208,21 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         global $_ARRAYLANG;
         
         try {
-            $cronMailLogId    = isset($_GET['i']) ? $_GET['i'] : false;
-            $cronMailLogToken = isset($_GET['t']) ? $_GET['t'] : false;
+            $cronMailLogId    = isset($_GET['i']) ? contrexx_input2raw($_GET['i']) : false;
+            $cronMailLogToken = isset($_GET['t']) ? contrexx_input2raw($_GET['t']) : false;
             if (!$cronMailLogId || !$cronMailLogToken) {
                 throw new \Exception('$cronMailLogId or $cronMailLogToken does not exist');
             }
 
-            $cronMailLogRepo = \Env::em()->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog');
-            $cronMailLog     = $cronMailLogRepo->findBy(array('id' => $cronMailLogId, 'token' => $cronMailLogToken));
+            $cronMailLogRepo   = \Env::em()->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog');
+            $cronMailLogResult = $cronMailLogRepo->findBy(array('id' => $cronMailLogId, 'token' => $cronMailLogToken));
 
-            if (!$cronMailLog) {
+            if (empty($cronMailLogResult)) {
                 throw new \Exception('Cron mail log doesnot exist, id : '. $cronMailLogId .', token : '. $cronMailLogToken);
             }
-            $userId  = $cronMailLog->getUserId();
-            $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
+            $cronMailLog = current($cronMailLogResult);
+            $userId      = $cronMailLog->getUserId();
+            $objUser     = \FWUser::getFWUserObject()->objUser->getUser($userId);
             if (!$objUser) {
                 throw new \Exception('User doesnot exist, User id : '. $userId);
             }
@@ -230,7 +231,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 $notificationCancelledProfileAttributeId => array(0 => true)
             ));
             if (!$objUser->store()) {
-                throw new \Exception('Could not save the user');
+                throw new \Exception('Could not update the user, User id : '. $userId);
             }
         } catch (\Exception $e) {
             \DBG::log('NotificationUnsubscribe : '. $e->getMessage());
