@@ -235,8 +235,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             }
         } catch (\Exception $e) {
             \DBG::log('NotificationUnsubscribe : '. $e->getMessage());
+            $supportRecipientMailAddress = \Cx\Core\Setting\Controller\Setting::getValue('supportRecipientMailAddress', 'MultiSite');
             $template->setVariable(array(
-                'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'],
+                'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE' => sprintf($_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'], $supportRecipientMailAddress),
                 'MULTISITE_NOTIFICATION_UNSUBSCRIBE_MESSAGE_CLASS' => 'msg-error',
             ));
             return;

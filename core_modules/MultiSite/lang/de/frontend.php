@@ -59,3 +59,4 @@ $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_CREDITED_LABEL'] = 'Bestätigt';
 $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_PAIDOUT_LABEL'] = 'Bezahlt';
 $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_PAYOUT_BUTTON_LABEL'] = 'Geld anfordern';
 $_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_SUCCESS'] = 'Sie haben sich erfolgreich abgemeldet.';
+$_ARRAYLANG['TXT_CORE_MODULES_MULTISITE_NOTIFICATION_UNSUBSCRIBE_ERROR'] = 'Die Abmeldung von den Benachrichtigungs-E-Mails ist fehlgeschlagen. Bitte wenden Sie sich an unseren <a href="mailto:%s">Kundendienst</a> für weitere Unterstützung.';
