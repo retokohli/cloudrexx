@@ -552,7 +552,9 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields WHERE form='".$this->intFormId."'");
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names WHERE form_id='".$this->intFormId."'");
         
-        foreach ($arrData['inputfieldId'] as $intKey => $intFieldId) {
+        $inputfieldId = isset($arrData['inputfieldId']) ? $arrData['inputfieldId'] : array();
+        
+        foreach ($inputfieldId as $intKey => $intFieldId) {
             $intFieldId = intval($intFieldId);
             $intFieldOrder = intval($arrData['inputfieldOrder'][$intFieldId]);
             $arrFieldNames = $arrData['inputfieldName'][$intFieldId];
@@ -561,8 +563,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             $arrFieldDefaultValues = $arrData['inputfieldDefaultvalue'][$intFieldId];
             $arrFieldInfos = isset($arrData['inputfieldInfo'][$intFieldId]) ? $arrData['inputfieldInfo'][$intFieldId] : array();
             $intFieldVerification = intval($arrData['inputfieldVerification'][$intFieldId]);
-            $intFieldMustfield = intval($arrData['inputfieldMustfield'][$intFieldId]);
-            $intFieldExpSearch = intval($arrData['inputfieldExpSearch'][$intFieldId]);
+            $intFieldMustfield = isset($arrData['inputfieldMustfield'][$intFieldId]) ? contrexx_input2int($arrData['inputfieldMustfield'][$intFieldId]) : 0;
+            $intFieldExpSearch = isset($arrData['inputfieldExpSearch'][$intFieldId]) ? contrexx_input2int($arrData['inputfieldExpSearch'][$intFieldId]) : 0;
             $fieldContextType = contrexx_input2db($arrData['inputfieldContext'][$intFieldId]);
 
             //add inputfield

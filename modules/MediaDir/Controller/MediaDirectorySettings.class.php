@@ -1380,7 +1380,7 @@ EOF;
         }
 
         //load form data
-        if(intval($_GET['id']) != 0) {
+        if(!empty($_GET['id'])) {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_EDIT_FORM_TEMPLATE'];
             $intFormId = intval($_GET['id']);
 
