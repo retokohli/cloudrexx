@@ -511,7 +511,7 @@ EOF;
     //OSEC CUSTOMIZING (ev. �bernehmen)
     function searchCountries($strTerm, $intCmdFormId)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
         
         $arrFoundIds = array();
         
