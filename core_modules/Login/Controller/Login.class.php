@@ -156,8 +156,7 @@ class Login
                 // get the url to the welcome page
                 $homeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Home', '', FRONTEND_LANG_ID);
 
-                $statusMessage .= '<br /><a href="' . $homeUrl->toString(false) . '" title="'.$_CORELANG['TXT_WELCOME_PAGE'].'">'
-                    . $_CORELANG['TXT_WELCOME_PAGE'] . '</a>';
+                $statusMessage .= '<br />' . sprintf($_CORELANG['TXT_LOGIN_WELCOME_PAGE'], $homeUrl);
             } else {
                 $statusMessage = $objFWUser->getErrorMsg();
 
