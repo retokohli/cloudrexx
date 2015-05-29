@@ -2293,7 +2293,7 @@ class CrmLibrary
             'address'      => array(0 => $address),
             'city'         => array(0 => $city),
             'zip'          => array(0 => $zip),
-            'country'      => array(0 => $country['name'])
+            'country'      => array(0 => $country['id'])
         );
         
         //set profile picture
