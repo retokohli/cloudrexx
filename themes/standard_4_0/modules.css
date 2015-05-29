@@ -248,7 +248,7 @@ table tr.marketRow2 {
 table tr.row2,
 table tr.marketRow3 {
     background-color: #F6F6F6;
-    padding: 0;    
+    padding: 0;
 }
 #tagelement td {
     float: left;
@@ -1563,6 +1563,19 @@ form[name="registrationForm"] .row {
 #shop input.min-order-quantity.not-valid{
     border: 1px solid red;
 }
+/* Product order selection in list view */
+#shop .product_orders {
+  clear: both;
+}
+#shop .product_order {
+  padding: 3px 6px;
+  margin: 3px 6px 10px 0px;
+  float: left;
+  background-color: #aaaaaa;
+  color: #ffffff;
+  border: 0;
+}
+
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
