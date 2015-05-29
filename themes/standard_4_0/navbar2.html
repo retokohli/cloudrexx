@@ -11,6 +11,27 @@
             <a class="{STYLE} {CSS_NAME}" href="{URL}" target="{TARGET}" title="{NAME}">{NAME}</a>{SUB_MENU}
         </li>
         <!-- END level_2 -->
+        <!-- BEGIN level_3 -->
+        <li class="level-3 {STYLE} {CSS_NAME}">
+            <span class="circle reddot"></span><a class="{STYLE} {CSS_NAME}" href="{URL}" target="{TARGET}" title="{NAME}">{NAME}</a>
+        </li>
+        <!-- END level_3 -->  
     </ul>
     <!-- END navigation_dropdown -->
+	<ul class="side-meta-nav navigation sidebar-list nav navbar-nav">
+		<li><a href="#">Jobs</a>
+		</li>
+		<li><a href="#">Kontakt</a>
+		</li>
+		<li><a href="#">Downloads</a>
+		</li>
+		<li><a href="#">Presse</a>
+		</li>
+		<li class="search-item">
+		<form role="search" method="get" class="search" action="{NODE_SEARCH}">
+			<input type="text" name="term" class="search">
+			<button class="btn btn-default">Suchen</button>
+		</form>
+		</li>
+	</ul>
 </nav>
