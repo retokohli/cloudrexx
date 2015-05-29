@@ -135,10 +135,11 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-	$intId = intval($arrInputfield['id']);
+        $intId = intval($arrInputfield['id']);
+
         $objInputfieldValue = $objDatabase->Execute("
             SELECT
-                `name`
+                ".DBPREFIX."core_text.`text`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             LEFT JOIN
@@ -147,17 +148,19 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                 ".DBPREFIX."core_text.id = ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.value
             AND
                 ".DBPREFIX."core_text.key = 'core_country_name'
-            AND
-                ".DBPREFIX."core_text.lang = $_LANGID
             WHERE
                 field_id=".$intId."
             AND
                 entry_id=".$intEntryId."
+            ORDER BY
+                CASE ".DBPREFIX."core_text.lang_id
+                    WHEN ".$_LANGID." THEN 1
+                    ELSE 2
+                END
             LIMIT 1
         ");
 
-
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['name'], ENT_QUOTES, CONTREXX_CHARSET));
+        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['text'], ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_INPUTFIELD_TYPE_COUNTRY'];
