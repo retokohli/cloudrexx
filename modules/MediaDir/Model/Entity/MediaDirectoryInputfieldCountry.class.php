@@ -82,14 +82,8 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                 	$strInputfield = '<select name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldDropdown '.$strInfoClass.'" '.$strInfoValue.'>';
                 }
 
-                $strInputfieldOptions = '';
-                $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $_LANGID);
-                foreach ($country as $id => $name) {
-                    $strOptionSelected = ($strValue == $id) ? 'selected="selected"' : '';
-
-                    $strInputfieldOptions .= '<option value="'.$id.'" '.$strOptionSelected.'>'.$name.'</option>';                	
-                }
-
+                $strInputfieldOptions = \Cx\Core\Country\Controller\Country::getMenuoptions($strValue);
+                
                 $strInputfield .= $strInputfieldOptions.'</select>';
 
                 return $strInputfield;
@@ -139,18 +133,22 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-		$intId = intval($arrInputfield['id']);
+	$intId = intval($arrInputfield['id']);
         $objInputfieldValue = $objDatabase->Execute("
             SELECT
                 `name`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             LEFT JOIN
-            	".DBPREFIX."core_country
+            ".DBPREFIX."core_text
             ON
-            	".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.value = ".DBPREFIX."core_country.id
+                ".DBPREFIX."core_text.id = ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.value
+            AND
+                ".DBPREFIX."core_text.key = 'core_country_name'
+            AND
+                ".DBPREFIX."core_text.lang = $_LANGID
             WHERE
                 field_id=".$intId."
             AND

@@ -1655,7 +1655,7 @@ JS_misc;
                         $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $lang);
         
                         foreach ($country as $id => $name) {
-                            $sourcecode[] = "<option value=\"" . $id . "\" >" . $name . "</option>";
+                            $sourcecode[] = "<option value=\"" . $name . "\" >" . $name . "</option>";
                         }
                     } else {
                         $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";

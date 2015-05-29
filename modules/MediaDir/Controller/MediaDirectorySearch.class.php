@@ -533,13 +533,11 @@ EOF;
                         ON 
                             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.value = ".DBPREFIX."core_country.id
                         INNER JOIN
-                        ".DBPREFIX."_core_text
+                        ".DBPREFIX."core_text
                         ON
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."core_text.id = ".DBPREFIX."core_country.id
+                            ".DBPREFIX."core_text.id = ".DBPREFIX."core_country.id
                         AND
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."core_text.key = 'core_country_name'
-                        AND
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."core_text.lang = $_LANGID
+                            ".DBPREFIX."core_text.key = 'core_country_name'
                         INNER JOIN 
                             ".DBPREFIX."module_".$this->moduleTablePrefix."_entries 
                         ON 
@@ -565,6 +563,6 @@ EOF;
             }
         }
         
-        return $arrFoundIds;
+        return array_unique($arrFoundIds);
     }
 }
