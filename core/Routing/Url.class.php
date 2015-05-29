@@ -114,7 +114,15 @@ class Url {
 
         $this->domain   = $data['host'];
         $this->protocol = $data['scheme'];
-        $this->port     = ($replacePorts ? $this->getDefaultPort() : $data['port']);
+        if (isset($data['port'])) {
+            $this->port = $data['port'];
+        }
+        if ($replacePorts) {
+            $this->port = $this->getDefaultPort();
+        }
+        if (!$this->port) {
+            $this->port = getservbyname($this->protocol, 'tcp');
+        }
         $path = ltrim($data['path'], '/');
         if(!empty($data['query'])) {
             $path .= '?' . $data['query'];
@@ -726,13 +734,21 @@ class Url {
      * @param boolean $absolute (optional) set to false to return a relative URL
      * @return type 
      */
-    public function toString($absolute = true) {
+    public function toString($absolute = true, $forcePort = false) {
         if(!$absolute) {
             return \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()  . '/' .
-               ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
-               $this->path;
+                ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
+                $this->path;
         }
-        return $this . '';
+        $defaultPort = getservbyname($this->protocol, 'tcp');
+        $portPart = '';
+        if (!$defaultPort || $this->port != $defaultPort || $forcePort) {
+            $portPart = ':' . $this->port;
+        }
+        return $this->protocol . '://' .
+            $this->domain .
+            $portPart .
+            $this->toString(false);
     }
 
     public function getLangDir() {
@@ -765,13 +781,7 @@ class Url {
      */
     public function __toString()
     {
-        $url = $this->protocol . '://' . 
-               $this->domain . ':' . 
-               $this->port . 
-               \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()  . '/' .
-               ($this->getMode() != 'backend' ? $this->getLangDir(). '/' : '') . 
-               $this->path;
-        return $url;
+        return $this->toString(false);
     }
 
 
