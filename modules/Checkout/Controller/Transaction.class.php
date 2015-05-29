@@ -157,7 +157,22 @@ class Transaction {
         $arrTransactions = array();
         $objResult = $this->objDatabase->Execute('
             SELECT
-                *
+                `transactions`.`id`,
+                `transactions`.`time`,
+                `transactions`.`status`,
+                `transactions`.`invoice_number`,
+                `transactions`.`invoice_currency`,
+                `transactions`.`invoice_amount`,
+                `transactions`.`contact_title`,
+                `transactions`.`contact_forename`,
+                `transactions`.`contact_surname`,
+                `transactions`.`contact_company`,
+                `transactions`.`contact_street`,
+                `transactions`.`contact_postcode`,
+                `transactions`.`contact_place`,
+                `countries`.`name` as `contact_country`,
+                `transactions`.`contact_phone`,
+                `transactions`.`contact_email`
             FROM `'.DBPREFIX.'module_checkout_transactions` as `transactions`
             '.$SQLWhere.'
             ORDER BY `transactions`.`id` DESC'
