@@ -611,18 +611,10 @@ class NewsletterLib
 
     protected function getCountryMenu($selectedCountry = 0, $mantatory = false)
     {
-        global $objDatabase, $_ARRAYLANG;
-
-        $objResult = $objDatabase->Execute("
-            SELECT `id`, `name`
-              FROM ".DBPREFIX."lib_country
-             ORDER BY `name`");
+        global $_ARRAYLANG;
         $menu  = '<select name="newsletter_country_id" size="1">';
         $menu .= "<option value='0'>".(($mantatory) ? $_ARRAYLANG['TXT_NEWSLETTER_PLEASE_SELECT'] : $_ARRAYLANG['TXT_NEWSLETTER_NOT_SPECIFIED'])."</option>";
-        while (!$objResult->EOF) {
-            $menu .= '<option value="'.$objResult->fields['id'].'"'.($objResult->fields['id'] == $selectedCountry ? ' selected="selected"' : '').'>'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
-            $objResult->MoveNext();
-        }
+        $menu .= \Cx\Core\Country\Controller\Country::getMenuoptions($selectedCountry);
         $menu .= '</select>';
         return $menu;
     }

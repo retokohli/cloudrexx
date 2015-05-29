@@ -2301,7 +2301,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'),
             // New template - since 2.1.0
             'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
-                \Cx\Core\Country\Controller\Country::getMenuoptions($country_id, true),
+                \Cx\Core\Country\Controller\Country::getMenuoptions($country_id),
             // Old template
             // Compatibility with 2.0 and older versions
             'SHOP_ACCOUNT_COUNTRY' => \Cx\Core\Country\Controller\Country::getMenu('countryId', $country_id),

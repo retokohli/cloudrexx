@@ -1158,13 +1158,9 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         case 'access_country':
             /* Only one instance of country select is allowed for any number of active language */
             if ($show) {
-                $objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."lib_country");
                 $field ="<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."]\">\n";
                 $field .= "<option value=\"".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."\" >".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."</option>\n";
-                while (!$objResult->EOF) {
-                    $field .= "<option value=\"".$objResult->fields['name']."\" ".(($attr == $objResult->fields['name'])?'selected="selected"':'')." >".$objResult->fields['name']."</option>\n";
-                    $objResult->MoveNext();
-                }
+                $field .= \Cx\Core\Country\Controller\Country::getMenuoptions($attr);
                 $field .= "</select>";
                 return $field;
             }

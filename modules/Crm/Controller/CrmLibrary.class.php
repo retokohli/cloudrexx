@@ -836,12 +836,10 @@ class CrmLibrary
         if (!empty($this->countries)) return $this->countries;
 
         // Selecting the Country Name from the Database
-        $objResult =   $objDatabase->Execute('SELECT  iso_code_2,id,name FROM '.DBPREFIX.'lib_country ORDER BY id' );
+        $countries = \Cx\Core\Country\Controller\Country::getArray($count);
 
-        while (!$objResult->EOF) {
-            $this->countries[$objResult->fields['id']] = array("id" => $objResult->fields['id'], "name" => $objResult->fields['name'], "iso_code_2" => $objResult->fields['iso_code_2']);
-
-            $objResult->MoveNext();
+        foreach($countries as $country) {
+            $this->countries[$country['id']] = array("id" => $country['id'], "name" => $country['name'], "iso_code_2" => $country['alpha2']);
         }
         return $this->countries;
     }
@@ -2281,7 +2279,7 @@ class CrmLibrary
                 $address = contrexx_input2db($value['address']);
                 $city    = contrexx_input2db($value['city']);
                 $zip     = contrexx_input2db($value['zip']);
-                $country = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."lib_country` WHERE name = '".$value['country']."'");
+                $country = \Cx\Core\Country\Controller\Country::getByName($value['country']);
             }
         }
         $gender = ($this->contact->contact_gender == 1) ? 'gender_female' : ($this->contact->contact_gender == 2 ? 'gender_male' : 'gender_undefined');
@@ -2295,7 +2293,7 @@ class CrmLibrary
             'address'      => array(0 => $address),
             'city'         => array(0 => $city),
             'zip'          => array(0 => $zip),
-            'country'      => array(0 => $country)
+            'country'      => array(0 => $country['name'])
         );
         
         //set profile picture
@@ -2784,12 +2782,13 @@ class CrmLibrary
                     //insert address
                     if (!empty ($arrFormData['address'][0]) || !empty ($arrFormData['city'][0]) || !empty ($arrFormData['zip'][0]) || !empty ($arrFormData['country'][0])) {
                         $addressExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE is_primary = '1' AND contact_id = '{$this->contact->id}'");
+                        $country = \Cx\Core\Country\Controller\Country::getById($arrFormData['country'][0]);
                         if ($addressExists && $addressExists->RecordCount()) {
                             $query = "UPDATE `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` SET
                                     address      = '". contrexx_input2db($arrFormData['address'][0]) ."',
                                     city         = '". contrexx_input2db($arrFormData['city'][0]) ."',
                                     zip          = '". contrexx_input2db($arrFormData['zip'][0]) ."',
-                                    country      = '". $objDatabase->getOne("SELECT name FROM `".DBPREFIX."lib_country` WHERE id = '".$arrFormData['country'][0]."'") ."',
+                                    country      = '". $country['name'] ."',
                                     Address_Type = '2'
                                  WHERE is_primary   = '1' AND contact_id   = '{$this->contact->id}'";
                         } else {
@@ -2798,7 +2797,7 @@ class CrmLibrary
                                     city         = '". contrexx_input2db($arrFormData['city'][0]) ."',
                                     state        = '". contrexx_input2db($arrFormData['city'][0]) ."',
                                     zip          = '". contrexx_input2db($arrFormData['zip'][0]) ."',
-                                    country      = '". $objDatabase->getOne("SELECT name FROM `".DBPREFIX."lib_country` WHERE id = '".$arrFormData['country'][0]."'") ."',
+                                    country      = '". $country['name'] ."',
                                     Address_Type = '2',
                                     is_primary   = '1',
                                     contact_id   = '{$this->contact->id}'";

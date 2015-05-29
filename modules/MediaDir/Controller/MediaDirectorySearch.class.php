@@ -511,7 +511,7 @@ EOF;
     //OSEC CUSTOMIZING (ev. �bernehmen)
     function searchCountries($strTerm, $intCmdFormId)
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID;
         
         $arrFoundIds = array();
         
@@ -529,22 +529,30 @@ EOF;
 			ON 
 			    ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields.id = ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.field_id
 			INNER JOIN 
-		        contrexx_lib_country 
-		    ON 
-		        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.value = ".DBPREFIX."lib_country.id
-            INNER JOIN 
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries 
-            ON 
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.entry_id = ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.id
-		WHERE
-            ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields.type = '25' 
-		AND 
-		    ".DBPREFIX."lib_country.name LIKE '%".$strTerm."%' 
-		AND 
-		    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.active = '1'
-            ".$strWhereForm."
-		GROUP BY
-		  ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.id"
+		        ".DBPREFIX."core_country 
+                        ON 
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.value = ".DBPREFIX."core_country.id
+                        INNER JOIN
+                        ".DBPREFIX."_core_text
+                        ON
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."core_text.id = ".DBPREFIX."core_country.id
+                        AND
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."core_text.key = 'core_country_name'
+                        AND
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."core_text.lang = $_LANGID
+                        INNER JOIN 
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_entries 
+                        ON 
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.entry_id = ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.id
+                            WHERE
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields.type = '25' 
+                            AND 
+                                ".DBPREFIX."core_text.text LIKE '%".$strTerm."%' 
+                            AND 
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.active = '1'
+                        ".$strWhereForm."
+                            GROUP BY
+                              ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.id"
         );
 
         if ($objResultSearchCountry) {

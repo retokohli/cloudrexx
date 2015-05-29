@@ -135,19 +135,21 @@ class Country
         &$count, $lang_id=null, $limit=-1, $offset=0, $order='`name` ASC'
     ) {
         global $objDatabase;
-
-        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
+        
+        $lang_id = (int)$lang_id;
+        if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID; 
         $arrSqlName = \Text::getSqlSnippets('`country`.`id`', $lang_id,
             'core', array('name' => self::TEXT_NAME));
         if (empty($limit)) $limit  = -1;
         if (empty($offset)) $offset =  0;
         if (empty($order)) $order  = $arrSqlName['text'].' ASC';
+        if (!empty($arrSqlName['field'])) $arrSqlName['field'] = ',' . $arrSqlName['field'];
         $count = 0;
         $query = "
             SELECT `country`.`id`,
                    `country`.`alpha2`, `country`.`alpha3`,
                    `country`.`ord`,
-                   `country`.`active`, ".
+                   `country`.`active` ".
             $arrSqlName['field']."
               FROM ".DBPREFIX."core_country AS `country`".
             $arrSqlName['join']."
@@ -192,7 +194,6 @@ class Country
      *    'alpha2'       => alpha-2 (two letter) code,
      *    'alpha3'       => alpha-3 (three letter) code,
      *    'active'       => boolean,
-     *    'ord'          => ordinal value,
      *  ),
      * The Country is returned in the current frontend language
      * as set in FRONTEND_LANG_ID, except if the optional $lang_id
@@ -206,7 +207,8 @@ class Country
     static function getById($country_id, $lang_id=null)
     {
         global $objDatabase;
-
+        
+        $lang_id = (int)$lang_id;
         if (empty($lang_id)) {
 //die("Country::getById(): ERROR: Empty language ID");
             $lang_id = FRONTEND_LANG_ID;
@@ -243,6 +245,66 @@ class Country
         );
     }
 
+    /**
+     * Returns an array of Country data for the given Name
+     *
+     * The array created is of the form
+     *  array(
+     *    'id'           => country ID,
+     *    'name'         => country name,
+     *    'alpha2'       => alpha-2 (two letter) code,
+     *    'alpha3'       => alpha-3 (three letter) code,
+     *    'active'       => boolean,
+     *  ),
+     * The Country is returned in the current frontend language
+     * as set in FRONTEND_LANG_ID, except if the optional $lang_id
+     * argument is not empty.
+     * @global  ADONewConnection  $objDatabase
+     * @param   string    $country_name     The Country name
+     * @param   integer   $lang_id          The optional language ID
+     * @return  array                       The Country array on success,
+     *                                      false otherwise
+     */
+    static function getByName($country_name, $lang_id=null)
+    {
+        global $objDatabase;
+        
+        $lang_id = (int)$lang_id;
+        if (empty($lang_id)) {
+            $lang_id = FRONTEND_LANG_ID;
+        }
+        $arrSqlName = \Text::getSqlSnippets('`country`.`id`', $lang_id,
+            'core', array('name' => self::TEXT_NAME));
+        $query = "
+            SELECT `country`.`alpha2`, `country`.`alpha3`,
+                   `country`.`ord`,
+                   `country`.`active`, ".
+                   $arrSqlName['field']."
+              FROM ".DBPREFIX."core_country AS `country`".
+                   $arrSqlName['join']."
+             WHERE `name`='$country_name'";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+// Disabled, as this method is called by errorHandler() as well!
+//            return self::errorHandler();
+            return false;
+        }
+        if ($objResult->EOF) return false;
+        $strName = $objResult->fields['name'];
+        if ($strName === null) {
+            $objText = \Text::getById($country_id, 'core', self::TEXT_NAME);
+            if ($objText) $strName = $objText->content();
+        }
+        return array(
+            'id'     => $country_id,
+            'name'   => $strName,
+            'ord'    => $objResult->fields['ord'],
+            'alpha2' => $objResult->fields['alpha2'],
+            'alpha3' => $objResult->fields['alpha3'],
+            'active' => $objResult->fields['active'],
+        );
+    }
+    
 
     /**
      * Returns the current number of Country records present in the database
@@ -287,8 +349,8 @@ class Country
      *
      * If the optional $lang_id parameter is empty, the FRONTEND_LANG_ID
      * constant's value is used instead.
-     * @param   boolean   $full       If true, all Countries are included,
-     *                                only active ones otherwise.
+     * @param   boolean   $active     If true, only active Countries are included,
+     *                                all Countries otherwise.
      *                                Defaults to false
      * @param   integer   $lang_id    The optional language ID.
      *                                Defaults to the FRONTEND_LANG_ID
@@ -296,7 +358,7 @@ class Country
      * @return  array                 The country names array on success,
      *                                false otherwise
      */
-    static function getNameArray($active=true, $lang_id=null)
+    static function getNameArray($active=false, $lang_id=null)
     {
         static $arrName = null;
 
@@ -605,13 +667,13 @@ class Country
      *                                defaults to "countryId"
      * @param   string    $selected   Optional selected country ID
      * @param   boolean   $active     Include inactive countries if false.
-     *                                Defaults to true
+     *                                Defaults to false
      * @param   string    $onchange   Optional onchange callback function
      * @return  string                The HTML dropdown menu code
      * @static
      */
     static function getMenu(
-        $menuName='countryId', $selected='', $active=true, $onchange=''
+        $menuName='countryId', $selected='', $active=false, $onchange=''
     ) {
         if (is_null(self::$arrCountries)) self::init();
         if (empty(self::$arrCountries)) return '';
@@ -636,7 +698,7 @@ class Country
      * @return  string                The HTML dropdown menu options code
      * @static
      */
-    static function getMenuoptions($selected=0, $active=true)
+    static function getMenuoptions($selected=0, $active=false)
     {
         return \Html::getOptions(self::getNameArray($active), $selected);
     }
