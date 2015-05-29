@@ -379,27 +379,22 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
                     case 'access_country':
                     case 'country':
-                        $objResult = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
-                        if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
-                            $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_globalVariables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
-                        }
-                        
-                        while (!$objResult->EOF) {
-// TODO: where is this 'name' field comming from? do we have to escape it?
-                            $this->objTemplate->setVariable($fieldId.'_VALUE', $objResult->fields['name']);
+                        $lang = $arrField['lang'][$_LANGID]['value'];
+                        $country = \Cx\Core\Country\Controller\Country::getNameArray(false, $lang);
+                        foreach ($country as $id => $name) {
+                            $this->objTemplate->setVariable($fieldId.'_VALUE', $name);
                             
                             if ((!empty($_POST['contactFormField_'.$fieldId]))) {
-                              if (strcasecmp($objResult->fields['name'], $_POST['contactFormField_'.$fieldId]) == 0) {
+                              if (strcasecmp($name, $_POST['contactFormField_'.$fieldId]) == 0) {
                                   $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                               }
                             } elseif ((!empty($_GET[$fieldId]))) {
-                                if (strcasecmp($objResult->fields['name'], $_GET[$fieldId]) == 0) {
+                                if (strcasecmp($name, $_GET[$fieldId]) == 0) {
                                     $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                                 }
-                            } elseif ($objResult->fields['name'] == $arrField['lang'][$_LANGID]['value']) {
+                            } elseif ($name == $arrField['lang'][$_LANGID]['value']) {
                                     $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                             }
-                            $objResult->MoveNext();
                             $this->objTemplate->parse('field_'.$fieldId);
                         }
                         $this->objTemplate->setVariable(array(

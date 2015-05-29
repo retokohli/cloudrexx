@@ -2,6 +2,7 @@
 
 /**
  * Countries
+ * Obsolete since CLX-478
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
@@ -49,22 +50,7 @@ class Countries {
      */
     public function getAll()
     {
-        $arrCountries = array();
-    
-        $objResult = $this->objDatabase->Execute('
-            SELECT `id`, `name` as `country`
-            FROM `'.DBPREFIX.'lib_country`
-            ORDER BY `name` ASC
-        ');
-
-        if ($objResult) {
-            $i = 0;
-            while (!$objResult->EOF) {
-                $arrCountries[$objResult->fields['id']] = $objResult->fields['country'];
-                $objResult->MoveNext();
-                $i++;
-            }
-        }
+        $arrCountries = \Cx\Core\Country\Controller\Country::getNameArray(false);
 
         if (!empty($arrCountries)) {
             return $arrCountries;

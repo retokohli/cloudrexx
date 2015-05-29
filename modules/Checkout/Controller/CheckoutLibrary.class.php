@@ -81,9 +81,6 @@ class CheckoutLibrary {
      * @access      public
      */
     public function __construct()  {
-        global $objDatabase;
-
-        $objCountries = new Countries($objDatabase);
-        $this->arrCountries = $objCountries->getAll();
+        $this->arrCountries = \Cx\Core\Country\Controller\Country::getNameArray();
     }
 }

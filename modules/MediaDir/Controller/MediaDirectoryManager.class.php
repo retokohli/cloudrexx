@@ -472,17 +472,17 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                     $strUserMail = '<a href="mailto:'.contrexx_raw2xhtml($objUser->getEmail()).'">'.contrexx_raw2xhtml($objUser->getEmail()).'</a>';
                     $intUserLang = intval($objUser->getFrontendLanguage());
 		            
-					if ($objUser = $objUser->getUser($id = $intUserId)) {
-						//get lang
-						foreach ($this->arrFrontendLanguages as $intKey => $arrLang) {
-							if($arrLang['id'] == $intUserLang) {
-								$strUserLang = $arrLang['name'];
-							}
-						}
-						
-						//get country
-						$objCountry = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."lib_country WHERE id = '".intval($objUser->getProfileAttribute('country'))."' LIMIT 1");
-						$strCountry = $objCountry->fields['name'];
+                    if ($objUser = $objUser->getUser($id = $intUserId)) {
+                        //get lang
+                        foreach ($this->arrFrontendLanguages as $intKey => $arrLang) {
+                                if($arrLang['id'] == $intUserLang) {
+                                        $strUserLang = $arrLang['name'];
+                                }
+                        }
+
+                        //get country
+                        $arrCountry = \Cx\Core\Country\Controller\Country::getById(intval($objUser->getProfileAttribute('country')));						
+                        $strCountry = $arrCountry['name'];
 						
                         //get title
                         $objTitle = $objDatabase->Execute("SELECT `title` FROM ".DBPREFIX."access_user_title WHERE id = '".intval($objUser->getProfileAttribute('title'))."' LIMIT 1");

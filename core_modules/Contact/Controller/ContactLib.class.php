@@ -1644,7 +1644,6 @@ JS_misc;
 
                 case 'country':
                 case 'access_country':
-                    $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                     if ($arrField['is_required'] == 1) {
                         $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."</option>";
@@ -1652,9 +1651,11 @@ JS_misc;
                         $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."</option>";
                     }
                     if ($preview) {
-                        while (!$objResult->EOF) {
-                            $sourcecode[] = "<option value=\"".$objResult->fields['name']."\" >".$objResult->fields['name']."</option>";
-                            $objResult->MoveNext();
+                        $lang = $arrField['lang'][$lang]['name'];
+                        $country = \Cx\Core\Country\Controller\Country::getNameArray(false, $lang);
+        
+                        foreach ($country as $id => $name) {
+                            $sourcecode[] = "<option value=\"" . $id . "\" >" . $name . "</option>";
                         }
                     } else {
                         $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
