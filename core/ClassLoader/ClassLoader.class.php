@@ -48,6 +48,7 @@ class ClassLoader {
             }
         }
         spl_autoload_register(array($this, 'autoload'));
+        
         if ($useLegacyAsFallback) {
             $this->legacyClassLoader = new LegacyClassLoader($this, $cx);
         }
@@ -184,7 +185,15 @@ class ClassLoader {
             $isCustomized = true;
             return $this->customizingPath.$file;
         // load class from websitepath
-        } else if (file_exists($this->cx->getWebsiteDocumentRootPath().$file)) {
+        } else if (
+            // When the LegacyClassLoader is not initialized you cant load the FWValidator class
+            // where is needed for the security check
+            $this->legacyClassLoader &&
+            // Checks if the file is a harmless one, because you can upload anything
+            // over the ftp which probably not should be executed
+            \FWValidator::is_file_ending_harmless($file) &&
+            file_exists($this->cx->getWebsiteDocumentRootPath().$file)
+        ) {
             $isWebsite = true;
             return $this->cx->getWebsiteDocumentRootPath().$file;
         // load class from basepath
