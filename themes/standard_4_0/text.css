@@ -53,8 +53,17 @@ table {
     border-spacing: 0;
 }
 /* End CSS Reset */
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('fonts/ubuntu.eot'); /* here you go, IE */
+}
+@font-face {
+    font-family: 'Ubuntu';
+    src: url('fonts/ubuntu.ttf') format('truetype');
+}
 body {
     color: #505050;
+    font-family: Arial, Helvetica;
     font-size: 14px;
     line-height: 1.5em;
     background: #f7f7f7;
@@ -96,15 +105,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     padding: 10px 0 10px 0;
     line-height: 1.4;
     color: #151515;
-    /*font-family: 'Ubuntu';*/
-    font-family: 'Ubuntu', sans-serif;
+    font-family: 'Ubuntu';
     font-weight: normal;
 }
 h1 {
     font-size: 34px;
 }
-h1.first,
-#news-title-main {
+h1.first {
     padding-top: 0;
 }
 h2 {
@@ -129,18 +136,24 @@ select,
 textarea {
     display: block;
     width: 100%;
-    height: 40px;
+    height: 34px;
     padding: 6px 12px;
-    font-size: 18px;
+    font-size: 13px;
     font-family: Arial, Helvetica;
     line-height: 1.42857143;
     color: #414141;
     background-color: #ffffff;
     background-image: none;
-    border: 1px solid #cccccc; 
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; 
 }
 input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus{outline: none;}
-input[type="submit"], input[type="reset"], input[type=button] { font-size: 13px;}
+input[type="submit"], input[type="reset"], input[type=button] {color: #414141; font-size: 13px;}
 textarea {color: #7d7d7d;}
 select.form-control {
     padding: 7px 8px;
@@ -227,12 +240,12 @@ input[name="access_signup"]:focus {
     border-color: #CCCCCC;
     box-shadow: none;
 }
-/*input[type=submit]:hover,
+input[type=submit]:hover,
 input[type=reset]:hover, button[name="recipient_save"]:hover, #podcast input:hover {
     background-color: #e6e6e6;
     border-color: #adadad;
     color: #414141;
-}              */
+}
 textarea {
     height: 113px;
 }
@@ -269,9 +282,9 @@ input,
 optgroup,
 select,
 textarea {
-    font-family: 'Ubuntu', sans-serif;
+    font-family: arial;
     color: #414141;
-    font-size: 16px;
+    font-size: 13px;
     margin: 0;
 }
 h1,
