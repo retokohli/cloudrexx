@@ -379,6 +379,9 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
                     case 'access_country':
                     case 'country':
+                        if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
+                            $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_globalVariables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
+                        }                        
                         $lang = $arrField['lang'][$_LANGID]['value'];
                         $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $lang);
                         foreach ($country as $id => $name) {

@@ -1160,7 +1160,10 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             if ($show) {
                 $field ="<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."]\">\n";
                 $field .= "<option value=\"".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."\" >".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."</option>\n";
-                $field .= \Cx\Core\Country\Controller\Country::getMenuoptions($attr);
+                $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $langid);
+                foreach ($country as $id => $name) {
+                    $sourcecode[] = "<option value=\"" . $name . "\" " . ($attr == $name ? 'selected="selected"' : '') . ">" . $name . "</option>";
+                }
                 $field .= "</select>";
                 return $field;
             }
