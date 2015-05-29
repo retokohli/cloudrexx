@@ -1,6 +1,8 @@
 (function($) {
     $(document).ready(function() {
-        /*Header trasparent START here*/
+    $("a[rel^='prettyPhoto']").prettyPhoto();
+  
+        /*Header trasparent START here*//*
         var fadeSpeed = 10, fadeTo = 0.6, topDistance = 30;
         var topbarME = function() {
             $('.header').fadeTo(fadeSpeed, 1);
@@ -24,7 +26,7 @@
                 $('.header').unbind('mouseleave', topbarML);
                 inside = false;
             }
-        });
+        }); */
         /*Header trasparent END here*/
         /*Mobile naviagtion START here*/
         function navHide() {
@@ -33,7 +35,7 @@
             $('.btn-navbar').one("click", navOpen);
         }
         function navOpen() {
-            $('section, footer').animate({right: '100%'}, 10);
+            $('section, footer').animate({right: '80%'}, 10);
             $('.mobile-nav').css('visibility', 'visible');
             $('.btn-navbar').one("click", navHide);
         }
@@ -86,6 +88,7 @@
         }
         /* Metanavigation End */
         /* Navigation Start */
+        /* Uncommented this because we use dropdown menu from bootstrap with onclick hide function 
         $('#navigation-wrapper .navigation > li').hover(function() {
             $(this).children('ul').animate({
                 height: 'toggle',
@@ -93,7 +96,7 @@
             }, 150);
         }, function() {
             $(this).children('ul').hide();
-        });
+        }); */
         $('.navigation li.level-1:first').addClass('first');
         $('.navigation li.level-1:last').addClass('last');
         $('.navigation li.level-1').children('ul').each(function() {

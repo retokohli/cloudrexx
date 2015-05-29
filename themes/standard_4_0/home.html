@@ -1,56 +1,127 @@
-<style>
-    body section {margin-top: 49px;}
-</style>
-<div class="banner-slider container-fluid">
-    <div id="carousel-example-generic" class="carousel slide container" data-ride="carousel">
-        <!-- Indicators -->
-        <ol class="carousel-indicators">
-            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-            <li data-target="#carousel-example-generic" data-slide-to="1"></li>
-        </ol>
-        <!-- Wrapper for slides -->
-        <div class="carousel-inner">
-            <div class="item active">{BLOCK_29}</div>
-            <div class="item">{BLOCK_30}</div>
+<div class="main-slider">
+    <!-- Slider main container -->
+    <div class="swiper-container swiper-top relative">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+            <!-- Slides -->
+            {BLOCK_CAT_8}
+
         </div>
-        <!-- Controls -->
-        <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-        </a>
-        <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
-            <span class="glyphicon glyphicon-chevron-right"></span>
-        </a>
+        <div class="container">
+            <!-- If we need pagination -->
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <!-- If we need navigation buttons -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
     </div>
+    <!-- Slider main container END-->
 </div>
 <div id="home-content" class="clearfix inner container">
-    <div class="row">
+    <div class="row main-padding">
         <div id="home-page-wrapper" class="content">
-            <div id="home-page" class="col-md-12 col-xs-12">
+            <div id="home-page" class="full-width">
                 <h1 class="first">{CONTENT_TITLE}</h1>
                 {CONTENT_TEXT}
             </div>
         </div>
-        <div id="home-boxes">
-            <div class="box1 col-md-6 col-sm-12">
-                <div class="home-box">
-                    <h2>News</h2>
-                    {HEADLINES_FILE}
-                    <a class="more-link" href="{NODE_NEWS}">Weitere News</a>
+    </div>
+</div>
+<div id="home-content-news" class="clearfix inner">
+    <div class="container">
+        <div class="news-box relative main-padding">
+            <h2>MS Direct Neuigkeiten</h2>
+            {HEADLINES_FILE}
+            <a class="more-link" href="{NODE_NEWS}">
+               <!-- <img alt="pfeil" class="arrow arrow-red" src="/themes/standard_4_0/images/pfeil-rot.png" /> -->
+                <i class="fa fa-long-arrow-right"></i>Zu den News</a>
+        </div>
+    </div>
+</div>
+<div id="home-content-mediadir" class="clearfix inner">
+    <div class="container">
+        <div class="best-practice-box relative main-padding">
+            <h2>Best Practices</h2>
+            <div class="row">
+            <!-- BEGIN mediadirLatest -->
+            
+            <!-- BEGIN mediadirLatest_form_referenzen -->
+            <div class="col-sm-4 col-xs-12 bestpractice">
+                <div class="mediadir-best-pic effect img-responsive">
+                    <a href="index.php?section=MediaDir&amp;cmd=detail31&amp;eid={MEDIADIR_ENTRY_ID}" class="view">
+                        <!-- BEGIN mediadir_inputfield_180 --><img alt="Best Practice" src="{MEDIADIR_INPUTFIELD_VALUE_SRC}" /><!-- END mediadir_inputfield_180 -->
+                        <div class="mask">
+                            <span class="info"><img alt="pfeil" class="arrow arrow-red" src="/themes/standard_4_0/images/pfeil-weiss.png" /></span>
+                        </div>
+                    </a>
                 </div>
+                <!-- BEGIN mediadir_inputfield_173 --><h3>{MEDIADIR_INPUTFIELD_VALUE}</h3><!-- END mediadir_inputfield_173 -->
+                <!-- BEGIN mediadir_inputfield_175 --><p>{MEDIADIR_INPUTFIELD_VALUE_SHORT}</p><!-- END mediadir_inputfield_175 -->
+
             </div>
-            <div class="box2 col-md-6 col-sm-12">
-                <div class="home-box last">
-                    <h2>Newsletter</h2>
-                    <div id="home-newsletter">
-                        Sie m&ouml;chten gerne regelm&auml;ssig &uuml;ber die neusten Themen informiert werden? Dann melden Sie sich einfach hier f&uuml;r unseren kostenlosen Newsletter an:
-                        <form name="newsletter" action="{NODE_NEWSLETTER_SUBSCRIBE}" method="post">
-                            <input type="hidden" name="list[1]" value="1" />
-                            <input type="text" onfocus="this.value = ''" name="email" value="E-mail address" maxlength="255" />
-                            <button name="recipient_save">Anmelden</button>
-                        </form>
-                    </div>
-                </div>
+            <!-- END mediadirLatest_form_referenzen -->
+            
+            <!-- END mediadirLatest -->
+            <a class="more-link" href="{NODE_MEDIADIR_REFERENZEN}">
+                <!--<img alt="pfeil" class="arrow arrow-red" src="/themes/standard_4_0/images/pfeil-rot.png" /> -->
+<i class="fa fa-long-arrow-right"></i>Zu den Best Practices</a>
             </div>
         </div>
     </div>
 </div>
+<div id="home-content-kunden" class="clearfix inner">
+    <!-- Swiper -->
+    <div class="swiper-container swiper-bottom">
+        <div class="swiper-wrapper random-wrapper">
+            {BLOCK_CAT_5}
+        </div>
+    </div>
+    <div id="testamonial-link">
+    {BLOCK_41}
+    </div>
+</div>
+<!--script type="text/javascript">
+
+    jQuery('document').ready(function() {
+        var slides = [];
+        console.log('itt kezdodik');
+        jQuery('.swiper-random').each(function(index, value){
+        //console.log(jQuery(this).html());
+        //console.log(value);
+        //console.log('_____________');
+            slides.push(value);
+        });
+        //console.log(slides.length);
+        /*for (var i = 0; i < slides.length; i++) {
+            console.log(slides[i]);
+            console.log('_____________');
+        };*/
+        //var slidesCopy = slides;
+        //console.log('itt a vege');
+        var randomIdList = [];
+        jQuery('.random-wrapper').empty();
+        for (var i = 0; i <= slides.length; i++) {
+            //console.log(slides[0]);
+            var id = getRandomInt(0, slides.length);
+            while(randomIdList.indexOf(id) >= 0){
+                id = getRandomInt(0, slides.length);
+            }
+               randomIdList.push(id);
+           
+            //console.log(id);
+            jQuery('.random-wrapper').append(slides[id]);
+            //console.log(slides[id]);
+            //slides.splice(id, 1);
+        }
+        console.log('itt a vege');
+    });
+
+
+    // Returns a random integer between min (included) and max (excluded)
+    // Using Math.round() will give you a non-uniform distribution!
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+</script-->

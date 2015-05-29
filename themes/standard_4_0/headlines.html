@@ -1,5 +1,20 @@
-<ul id="home-headlines">
+<div id="home-headlines">
     <!-- BEGIN headlines_row -->
-    <li>{NEWS_LINK_TITLE}</li>
+    <div class="col-md-6 col-xs-12">
+    	<div class="row">
+	    	<a class="newslink effect" href="{NEWS_LINK_URL}">
+		    	<div class="view relative">
+		    		{NEWS_IMAGE}
+		    		<div class="mask">
+						<span class="info"><img alt="pfeil" class="arrow arrow-white" src="/themes/standard_4_0/images/pfeil-weiss.png" /></span>
+					</div>
+		    	</div>
+		    	<div class="newstext">
+		    		<p>{NEWS_TITLE}</p>
+		    		<b>{NEWS_DATE}</b><span>&nbsp;-&nbsp;{NEWS_TEASER}</span>
+		    	</div>
+	    	</a>
+    	</div>
+    </div>
     <!-- END headlines_row -->
-</ul>
+</div>
