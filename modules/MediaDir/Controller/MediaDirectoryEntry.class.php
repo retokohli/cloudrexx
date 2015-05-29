@@ -953,7 +953,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             // store selected level (field = level)
             if ($arrInputfield['id'] == 2) {
                 if ($this->arrSettings['settingsShowLevels'] == 1) {
-                    foreach ($arrData['selectedLevels'] as $intLevelId) {
+                    $selectedLevels = isset($arrData['selectedLevels']) ? $arrData['selectedLevels'] : array();
+                    foreach ($selectedLevels as $intLevelId) {
                         $objResult = $objDatabase->Execute("
                         INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
                            SET `entry_id`='".intval($intId)."',

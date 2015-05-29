@@ -330,7 +330,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
          //get seting values
         parent::getSettings();
 
-        if(intval($_GET['id']) != 0) {
+        if(!empty($_GET['id'])) {
             \Permission::checkAccess(MediaDirectoryAccessIDs::ModifyEntry, 'static');
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
             $intEntryId = intval($_GET['id']);
@@ -447,7 +447,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 
                 //get user data
                 $objFWUser = \FWUser::getFWUserObject();
-                $addedBy   = $objEntry ? $objEntry->arrEntries[$intEntryId]['entryAddedBy'] : '';
+                $addedBy   = isset($objEntry) ? $objEntry->arrEntries[$intEntryId]['entryAddedBy'] : '';
                 if (!empty($addedBy) && $objUser = $objFWUser->objUser->getUser($addedBy)) {
                     $userId  = $objUser->getId();
                 } else {
@@ -1397,10 +1397,11 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $this->pageTitle = $_CORELANG['TXT_SETTINGS'];
 
         $objSettings = new MediaDirectorySettings($this->moduleName);
-
+        $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
+        
         //save settings global
         if(isset($_POST['submitSettingsForm'])) {
-            switch ($_GET['tpl']) {
+            switch ($tpl) {
                 case 'modify_form':
                     if(intval($_POST['formId']) != 0) {
                         $objInputfields = new MediaDirectoryInputfield(intval($_POST['formId']), false, null, $this->moduleName);
@@ -1451,7 +1452,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_EXPORT_MASKS' => $_ARRAYLANG['TXT_MEDIADIR_EXPORT_MASKS'],       
         ));
 
-        switch ($_GET['tpl']) {
+        switch ($tpl) {
             case 'delete_mask':
             case 'masks':
                 $objSettings->settings_masks($this->_objTpl);

@@ -252,8 +252,8 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
         $arrDescription = $arrData['formDescription'];
         $strCmd = strtolower(contrexx_addslashes(contrexx_strip_tags($arrData['formCmd'])));
         $intUseCategory = intval($arrData['formUseCategory']);
-        $intUseLevel = intval($arrData['formUseLevel']);
-        $intUseReadyToConfirm = intval($arrData['formUseReadyToConfirm']);
+        $intUseLevel = isset($arrData['formUseLevel']) ? contrexx_input2int($arrData['formUseLevel']) : 0;
+        $intUseReadyToConfirm = isset($arrData['formUseReadyToConfirm']) ? contrexx_input2int($arrData['formUseReadyToConfirm']) : 0;
 
         if(empty($intId)) {
             //insert new form
@@ -351,42 +351,44 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 WHERE
                     `id`='".$intId."'
             ");
-
-            $objDefaultLang = $objDatabase->Execute("
-                SELECT
-                    `form_name` AS `name`,
-                    `form_description` AS `description`
-                FROM
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
-                WHERE
-                    lang_id=".$_LANGID."
-                    AND `form_id` = '".$intId."'
-                LIMIT
-                    1
-            ");
-
-            if ($objDefaultLang !== false) {
-                $strOldDefaultName = $objDefaultLang->fields['name'];
-                $strOldDefaultDescription = $objDefaultLang->fields['description'];
-            }
-
-            //permissions
-            $objDeletePerm = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms WHERE form_id='".$intId."'");
-
-            foreach ($arrData['settingsPermGroupForm'][$intId] as $intGroupId => $intGroupStatus) {
-                $objInsertPerm = $objDatabase->Execute("
-                    INSERT INTO
-                        ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms
-                    SET
-                        `group_id`='".intval($intGroupId)."',
-                        `form_id`='".intval($intId)."',
-                        `status_group`='".intval($intGroupStatus)."'
+            
+            if($objUpdateAttributes !== false) {
+                
+                $objDefaultLang = $objDatabase->Execute("
+                    SELECT
+                        `form_name` AS `name`,
+                        `form_description` AS `description`
+                    FROM
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
+                    WHERE
+                        lang_id=".$_LANGID."
+                        AND `form_id` = '".$intId."'
+                    LIMIT
+                        1
                 ");
-            }
 
-            $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names WHERE form_id='".$intId."'");
+                if ($objDefaultLang !== false) {
+                    $strOldDefaultName = $objDefaultLang->fields['name'];
+                    $strOldDefaultDescription = $objDefaultLang->fields['description'];
+                }
 
-            if($objInsertNames !== false) {
+                //permissions
+                $objDeletePerm = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms WHERE form_id='".$intId."'");
+                $settingsPermissionGroupForm = isset($arrData['settingsPermGroupForm'][$intId]) ? $arrData['settingsPermGroupForm'][$intId] : array();
+                
+                foreach ($settingsPermissionGroupForm as $intGroupId => $intGroupStatus) {
+                    $objInsertPerm = $objDatabase->Execute("
+                        INSERT INTO
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms
+                        SET
+                            `group_id`='".intval($intGroupId)."',
+                            `form_id`='".intval($intId)."',
+                            `status_group`='".intval($intGroupStatus)."'
+                    ");
+                } 
+                
+                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names WHERE form_id='".$intId."'");
+
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
