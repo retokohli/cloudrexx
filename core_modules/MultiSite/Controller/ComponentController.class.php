@@ -1697,7 +1697,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             $params = array(
                 'websiteName'           => $restoreWebsiteName,
-                'websiteBackupFileName' => $backupedWebsiteFileName
+                'websiteBackupFileName' => $backupedWebsiteFileName,
+                'serviceServerId'       => $restoreServiceServerId
             );
             $resp = JsonMultiSite::executeCommandOnServiceServer('websiteRestore', $params, $restoreInServiceServer);
             return $responseType == 'json' ? $resp : ($resp->status == 'success' ? $resp->data->messsage : $resp->message);
@@ -1787,13 +1788,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Create new website into the existing subscription
      * 
-     * @param integer $subscriptionId Subscription id
-     * @param string  $websiteName    Name of the website
-     * @param \User   $userObj        userObj
+     * @param integer $subscriptionId  Subscription id
+     * @param string  $websiteName     Name of the website
+     * @param \User   $userObj         userObj
+     * @param integer $serviceServerId serviceServerId
      * 
      * return array return's array that contains array('status' => success | error, 'message' => 'Status message')
      */
-    public function createNewWebsiteInSubscription($subscriptionId, $websiteName, $userObj = null)
+    public function createNewWebsiteInSubscription($subscriptionId, $websiteName, $userObj = null, $serviceServerId = 0)
     {
         global $_ARRAYLANG;
         
@@ -1835,7 +1837,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     return array('status' => 'error', 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_QUOTA_REACHED'], $websiteCollection->getQuota()));
                 }
                 //create new website object and add to website
-                $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, $objUser);
+                $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, $objUser, 0, $serviceServerId);
                 $websiteCollection->addWebsite($website);
                 \Env::get('em')->persist($website);
                 // flush $website to database -> subscription will need the ID of $website

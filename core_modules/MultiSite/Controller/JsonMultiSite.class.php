@@ -77,7 +77,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function getAccessableMethods() {
         $multiSiteProtocol = (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite') == 'mixed')? \Env::get('cx')->getRequest()->getUrl()->getProtocol(): \Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite');
         return array(
-            'signup'                => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
+            'signup'                => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'verifySignupRequest')),
             'email'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'address'               => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
             'createWebsite'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
@@ -268,6 +268,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             // set website name and website theme
             $websiteName = contrexx_input2raw($params['post']['multisite_address']);
             $websiteThemeId = !empty($params['post']['themeId']) ? contrexx_input2raw($params['post']['themeId']) : null;
+            $serviceServerId = !empty($params['post']['serviceServerId']) 
+                               ? contrexx_input2int($params['post']['serviceServerId'])
+                               : 0;
 
             // create new user account
             $arrSettings = \User_Setting::getSettings();
@@ -292,7 +295,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             // create new subscription of selected product
             $renewalOption = isset($params['post']['renewalOption']) ? $params['post']['renewalOption'] : 'monthly';
-			list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($renewalOption);
+	    list($renewalUnit, $renewalQuantifier) = self::getProductRenewalUnitAndQuantifier($renewalOption);
             $subscriptionOptions = array(
                 'renewalUnit'       => $renewalUnit,
                 'renewalQuantifier' => $renewalQuantifier,
@@ -303,6 +306,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             //pass the website's theme id to subscription option, if $themeId set
             if (!empty($websiteThemeId)) {
                 $subscriptionOptions['themeId'] = $websiteThemeId;
+            }
+            
+            //pass the service server id to the subscription option when the $serviceServerId is set
+            if (!empty($serviceServerId)) {
+                $subscriptionOptions['serviceServerId'] = $serviceServerId;
             }
             
             $transactionReference = "|$id|name|$websiteName|";
@@ -1149,7 +1157,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         return true;
     }
-
+    
+    /**
+     * Callback authentication for verifing signup request
+     * 
+     * @param array $params
+     * @return boolean
+     */
+    public function verifySignupRequest($params)
+    {
+        if (isset($params['post']['serviceServerId']) && !$this->auth($params)) {
+            return false;
+        }
+        
+        return true;
+    }
+    
     /**
      * callback authentication for verifing website owner
      * 
@@ -4105,8 +4128,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $websiteBackupFileName = isset($params['post']['websiteBackupFileName']) 
                                      ? contrexx_input2raw($params['post']['websiteBackupFileName'])
                                      : '';
+            $serviceServerId       = isset($params['post']['serviceServerId']) 
+                                     ? contrexx_input2int($params['post']['serviceServerId'])
+                                     : 0;
             if (   empty($websiteName) 
                 || empty($websiteBackupFileName)
+                || empty($serviceServerId)
             ) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
             }
@@ -4120,7 +4147,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             
             \DBG::log('JsonMultisite: Create a new website on restore..');
-            $this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath);
+            $this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId);
             
             \DBG::log('JsonMultisite: Restore website Database and Repository..');
             $this->websiteDataRestore($websiteName, $websiteBackupFilePath);
@@ -4190,11 +4217,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * createNewWebsite by using Restore Option
      * 
-     * @param string $websiteName           websiteName
-     * @param string $websiteBackupFilePath websiteBackup path
+     * @param string  $websiteName           websiteName
+     * @param string  $websiteBackupFilePath websiteBackup path
+     * @param integer $serviceServerId       service server id
      * @throws MultiSiteJsonException
      */
-    private function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath)
+    private function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId)
     {
         global $_ARRAYLANG;
         
@@ -4204,7 +4232,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('Failed to get the website Information from file');
             }
             
-            $params = array('multisite_address' => $websiteName);
+            $params = array('multisite_address' => $websiteName, 'serviceServerId' => $serviceServerId);
             if ($websiteInfoArray['website']) {
                 $params['multisite_email_address'] = $websiteInfoArray['website']['websiteEmail'];
             }
@@ -4228,9 +4256,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             if ($product->getEntityClass() == 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection') {
                 $paramsData = array(
-                    'subscriptionId' => $subscriptionId, 
-                    'websiteName'    => $websiteName, 
-                    'websiteEmail'   => $params['multisite_email_address']
+                    'subscriptionId'  => $subscriptionId, 
+                    'websiteName'     => $websiteName, 
+                    'websiteEmail'    => $params['multisite_email_address'],
+                    'serviceServerId' => $serviceServerId
                 );
                 $response = JsonMultiSite::executeCommandOnManager('addNewWebsiteInSubscription', $paramsData);
             } else {
@@ -4614,20 +4643,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     {
         global $_ARRAYLANG;
         
-        $subscriptionId = isset($params['post']['subscriptionId'])
-                          ? contrexx_input2int($params['post']['subscriptionId'])
-                          : 0;
-        $websiteName    = isset($params['post']['websiteName'])
-                          ? contrexx_input2raw($params['post']['websiteName'])
-                          : '';
-        $email          = isset($params['post']['websiteEmail'])
-                          ? contrexx_input2raw($params['post']['websiteEmail'])
-                          : '';
+        $subscriptionId   = isset($params['post']['subscriptionId'])
+                            ? contrexx_input2int($params['post']['subscriptionId'])
+                            : 0;
+        $websiteName      = isset($params['post']['websiteName'])
+                            ? contrexx_input2raw($params['post']['websiteName'])
+                            : '';
+        $email            = isset($params['post']['websiteEmail'])
+                            ? contrexx_input2raw($params['post']['websiteEmail'])
+                            : '';
+        $serviceServerId  = isset($params['post']['serviceServerId'])
+                            ? contrexx_input2int($params['post']['serviceServerId'])
+                            : 0;
         
         try {
            if (   empty($subscriptionId)
                || empty($websiteName)
                || empty($email)
+               || empty($serviceServerId)
             ) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
             }
@@ -4640,7 +4673,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
             $multisite = $componentRepo->findOneBy(array('name'=>'Multisite'));
             $multisiteComponentController = $multisite->getSystemComponentController();
-            $response = $multisiteComponentController->createNewWebsiteInSubscription($subscriptionId, $websiteName, $objUser);
+            $response = $multisiteComponentController->createNewWebsiteInSubscription($subscriptionId, $websiteName, $objUser, $serviceServerId);
             if (!$response || $response->status == 'error' || $response->data->status == 'error') {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
             }

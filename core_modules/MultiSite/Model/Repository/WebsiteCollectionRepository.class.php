@@ -48,12 +48,13 @@ class WebsiteCollectionRepository extends \Doctrine\ORM\EntityRepository {
                 $baseSubscription->terminate();
                 $websiteCollection = $productEntity;
             }
-        } else {            
+        } else { 
             //Initialize new website
             $websiteThemeId = isset($saleOptions['themeId']) ? $saleOptions['themeId'] : null;
             $websiteName = isset($saleOptions['websiteName']) ? $saleOptions['websiteName'] : null;
             $customer = isset($saleOptions['customer']) ? $saleOptions['customer'] : null;
-            $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, $customer, $websiteThemeId);
+            $serviceServerId = isset($saleOptions['serviceServerId']) ? $saleOptions['serviceServerId'] : 0;
+            $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->initWebsite($websiteName, $customer, $websiteThemeId, $serviceServerId); 
         }
         
         if (!($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection)) {
