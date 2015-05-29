@@ -1652,7 +1652,7 @@ JS_misc;
                     }
                     if ($preview) {
                         $lang = $arrField['lang'][$lang]['name'];
-                        $country = \Cx\Core\Country\Controller\Country::getNameArray(false, $lang);
+                        $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $lang);
         
                         foreach ($country as $id => $name) {
                             $sourcecode[] = "<option value=\"" . $id . "\" >" . $name . "</option>";

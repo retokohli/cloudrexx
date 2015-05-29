@@ -194,6 +194,7 @@ class Country
      *    'alpha2'       => alpha-2 (two letter) code,
      *    'alpha3'       => alpha-3 (three letter) code,
      *    'active'       => boolean,
+     *    'ord'          => ordinal value,
      *  ),
      * The Country is returned in the current frontend language
      * as set in FRONTEND_LANG_ID, except if the optional $lang_id
@@ -255,6 +256,7 @@ class Country
      *    'alpha2'       => alpha-2 (two letter) code,
      *    'alpha3'       => alpha-3 (three letter) code,
      *    'active'       => boolean,
+     *    'ord'          => ordinal value,
      *  ),
      * The Country is returned in the current frontend language
      * as set in FRONTEND_LANG_ID, except if the optional $lang_id
@@ -282,7 +284,7 @@ class Country
                    $arrSqlName['field']."
               FROM ".DBPREFIX."core_country AS `country`".
                    $arrSqlName['join']."
-             WHERE `name`='$country_name'";
+             WHERE " . $arrSqlName['field'] . "='$country_name'";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
 // Disabled, as this method is called by errorHandler() as well!
@@ -358,7 +360,7 @@ class Country
      * @return  array                 The country names array on success,
      *                                false otherwise
      */
-    static function getNameArray($active=false, $lang_id=null)
+    static function getNameArray($active=true, $lang_id=null)
     {
         static $arrName = null;
 
@@ -673,7 +675,7 @@ class Country
      * @static
      */
     static function getMenu(
-        $menuName='countryId', $selected='', $active=false, $onchange=''
+        $menuName='countryId', $selected='', $active=true, $onchange=''
     ) {
         if (is_null(self::$arrCountries)) self::init();
         if (empty(self::$arrCountries)) return '';
@@ -698,7 +700,7 @@ class Country
      * @return  string                The HTML dropdown menu options code
      * @static
      */
-    static function getMenuoptions($selected=0, $active=false)
+    static function getMenuoptions($selected=0, $active=true)
     {
         return \Html::getOptions(self::getNameArray($active), $selected);
     }

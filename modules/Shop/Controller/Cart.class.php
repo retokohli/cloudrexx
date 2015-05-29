@@ -945,7 +945,7 @@ die("Cart::view(): ERROR: No template");
                 // Old, obsolete
                 'SHOP_COUNTRIES_MENU' => \Cx\Core\Country\Controller\Country::getMenu(
                     'countryId2', $_SESSION['shop']['countryId2'],
-                        false, "document.forms['shopForm'].submit()"),
+                        true, "document.forms['shopForm'].submit()"),
                 // New; use this so you can apply CSS more easily
                 'SHOP_COUNTRIES_MENUOPTIONS' => \Cx\Core\Country\Controller\Country::getMenuoptions(
                     $_SESSION['shop']['countryId2']),
