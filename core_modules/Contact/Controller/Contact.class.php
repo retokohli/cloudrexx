@@ -380,7 +380,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                     case 'access_country':
                     case 'country':
                         $lang = $arrField['lang'][$_LANGID]['value'];
-                        $country = \Cx\Core\Country\Controller\Country::getNameArray(false, $lang);
+                        $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $lang);
                         foreach ($country as $id => $name) {
                             $this->objTemplate->setVariable($fieldId.'_VALUE', $name);
                             

@@ -1527,7 +1527,7 @@ if ($test === NULL) {
             'SHOP_CONTACT_FAX' => \Cx\Core\Setting\Controller\Setting::getValue('fax','Shop'),
             // Country settings
             'SHOP_GENERAL_COUNTRY_MENUOPTIONS' => \Cx\Core\Country\Controller\Country::getMenuoptions(
-                \Cx\Core\Setting\Controller\Setting::getValue('country_id','Shop'), false),
+                \Cx\Core\Setting\Controller\Setting::getValue('country_id','Shop')),
             // Thumbnail settings
             'SHOP_THUMBNAIL_MAX_WIDTH' => \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop'),
             'SHOP_THUMBNAIL_MAX_HEIGHT' => \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height','Shop'),

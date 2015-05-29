@@ -83,7 +83,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                 }
 
                 $strInputfieldOptions = '';
-                $country = \Cx\Core\Country\Controller\Country::getNameArray(false, $_LANGID);
+                $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $_LANGID);
                 foreach ($country as $id => $name) {
                     $strOptionSelected = ($strValue == $id) ? 'selected="selected"' : '';
 
@@ -97,7 +97,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                 break;
             case 2:
                 //search View
-                $country = \Cx\Core\Country\Controller\Country::getNameArray(false, $_LANGID);
+                $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $_LANGID);
                 foreach ($country as $id => $name) {
                 	$strInputfieldOptions .= '<option value="'.$id.'">'.$name.'</option>';
                 }
