@@ -19,29 +19,34 @@ cx.ready(function() {
  * @param html    msgTxt         Html format message text
  * @param string  type           Type of message(error, warning, info, success)
  * @param boolean hideAfterDelay Hide the modal after a delay, default true
+ * @param boolean reload         If the page shall be reloaded after timeout or not
+ * @param int     duration       How long the message shall be displayed in milliseconds default is 2000
  */
-function showMessage(msgTxt, type, hideAfterDelay, reload) {
+function showMessage(msgTxt, type, hideAfterDelay, reload, duration) {
     type           = jQuery.inArray(type, customerPanel.messageTypes) !== -1 ? type : 'error';
     hideAfterDelay = typeof hideAfterDelay !== 'undefined' ? hideAfterDelay : true;
-    
+    duration       = typeof duration !== 'undefined' ? duration : 2000;
+
     // hide all message modals
-    jQuery.each(customerPanel.messageTypes, function( index, value ) {      
+    jQuery.each(customerPanel.messageTypes, function( index, value ) {
       jQuery('#'+ value + '_msg_container').modal('hide');
     });
-    
+
     $objModal = jQuery('#'+ type + '_msg_container');
     $content  = $objModal.find('.msg_text');
-    
+
     $content.html(msgTxt);
     $objModal.modal('show');
 
-    if(reload){
-        window.location.reload();
-    } else if (hideAfterDelay) {
-        setTimeout(function() {
+    setTimeout(function() {
+        if(reload){
+            window.location.reload();
+        } else if (hideAfterDelay) {
             $objModal.modal('hide');
-        }, 2000);
-    }
+        }
+        }, duration
+    );
+
 }
 
 function getQueryParams(qs) {
@@ -152,7 +157,7 @@ function getRemoteLoginToken($this) {
                         //Browser has allowed it to be opened
                         newWindow.focus();
                     }
-                    showMessage(resp.message, 'info');
+                    showMessage(resp.message, 'info', true, false, 5000);
                 } else {
                     showMessage(resp.message, 'error');
                 }

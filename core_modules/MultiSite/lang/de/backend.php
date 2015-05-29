@@ -330,7 +330,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_INPROGRESS'] = 'Lö
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_FAILED'] = 'Beim Löschen des Backups ist ein Fehler aufgetreten.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_SUCCESS'] = 'Das Löschen des Backups war erfolgreich.';
 
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'] = 'Erfolgreich an der Adminkonsole der Webseite %s angemeldet!<br />Die Adminkonsole öffnet sich in einem neuen Fenster. <a href="#anleitung" title="Anleitung">Hier</a> eine Anleitung, sollte sich kein neues Fenster geöffnet haben.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'] = 'Erfolgreich an der Adminkonsole der Webseite %s angemeldet!<br />Die Adminkonsole öffnet sich in einem neuen Fenster. Klicken Sie <a href="https://contrexx.freshdesk.com/solution/articles/5000624941-wie-aktiviere-ich-popups-f-r-cloudrexx-" title="Anleitung" target="_blank"><strong>hier</strong></a>, sollte sich kein neues Fenster geöffnet haben.';
 
 // Notification section
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_NOTIFICATIONS_DEFAULT'] = 'Übersicht';
